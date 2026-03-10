@@ -4,6 +4,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import './index.css';
 
+console.log('Environment:', import.meta.env.VITE_ENVIRONMENT);
+console.log('Mode:', import.meta.env.MODE || "none");
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
