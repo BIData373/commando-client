@@ -74,7 +74,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 /** Core API client with typed methods */
 export const apiClient = {
   async get<T>(path: string, options?: RequestOptions): Promise<T> {
-    const { params, ...fetchOptions } = options || {};
+    const { params, body, ...fetchOptions } = options || {};
     const response = await fetch(buildUrl(path, params), {
       ...fetchOptions,
       method: 'GET',
@@ -118,7 +118,7 @@ export const apiClient = {
   },
 
   async delete<T>(path: string, options?: RequestOptions): Promise<T> {
-    const { params, ...fetchOptions } = options || {};
+    const { params, body, ...fetchOptions } = options || {};
     const response = await fetch(buildUrl(path, params), {
       ...fetchOptions,
       method: 'DELETE',

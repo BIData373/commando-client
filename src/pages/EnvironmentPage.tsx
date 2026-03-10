@@ -155,7 +155,7 @@ export function EnvironmentPage() {
         const assigneeMatch = i.assignees.some((a) =>
           a.user.name.toLowerCase().includes(q)
         );
-        return titleMatch || sourceMatch || tagMatch || assigneeMatch;
+        return titleMatch || sourceMatch || assigneeMatch;
       });
     }
 
