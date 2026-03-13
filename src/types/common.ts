@@ -23,13 +23,21 @@ export interface SortParams {
 }
 
 /** Instruction status values */
-export type InstructionStatus = 'open' | 'in_progress' | 'completed' | 'archived';
+export type InstructionStatus = 'open' | 'inProgress' | 'completed' | 'archived';
+
+export const statusOptions: InstructionStatus[] = ['open', 'inProgress', 'completed', 'archived'];
 
 /** Instruction priority values */
 export type InstructionPriority = 'low' | 'medium' | 'high' | 'urgent';
 
 /** Due-date type values */
 export type DueDateType = 'routine' | 'immediate' | 'date';
+
+export const DUE_DATE_TYPES = [
+  { value: 'routine', label: 'שוטף' },
+  { value: 'immediate', label: 'מיידי' },
+  { value: 'date', label: 'תאריך' },
+] as const;
 
 /** Hebrew due-date type labels */
 export const DUE_DATE_TYPE_LABELS: Record<DueDateType, string> = {
@@ -44,17 +52,17 @@ export type MemberRole = 'manager' | 'responsible';
 /** Activity action types */
 export type ActivityAction =
   | 'created'
-  | 'status_changed'
+  | 'statusChanged'
   | 'assigned'
   | 'unassigned'
   | 'commented'
   | 'edited'
-  | 'tag_added'
-  | 'tag_removed'
-  | 'due_date_changed'
-  | 'priority_changed'
-  | 'attachment_added'
-  | 'attachment_removed'
+  | 'tagAdded'
+  | 'tagRemoved'
+  | 'dueDateChanged'
+  | 'priorityChanged'
+  | 'attachmentAdded'
+  | 'attachmentRemoved'
   | 'archived'
   | 'restored';
 
@@ -75,7 +83,7 @@ export interface PriorityInfo {
 /** Hebrew status labels (military) */
 export const STATUS_LABELS: Record<InstructionStatus, string> = {
   open: 'ממתין לביצוע',
-  in_progress: 'בביצוע',
+  inProgress: 'בביצוע',
   completed: 'בוצע',
   archived: 'בארכיון',
 };
@@ -91,7 +99,7 @@ export const PRIORITY_LABELS: Record<InstructionPriority, string> = {
 /** Status color mapping */
 export const STATUS_COLORS: Record<InstructionStatus, string> = {
   open: '#3b82f6',
-  in_progress: '#f59e0b',
+  inProgress: '#f59e0b',
   completed: '#10b981',
   archived: '#6b7280',
 };

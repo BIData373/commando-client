@@ -1,52 +1,66 @@
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { Button, Tooltip, useToast } from '@/components/ui';
+import styled from '@emotion/styled';
 import {
-  Plus, Table2, LayoutGrid, Download,
-  Search, X, FileText, MessagesSquare, ChevronDown,
+  ChevronDown,
+  Download,
+  FileText,
+  LayoutGrid,
+  MessagesSquare,
+  Plus,
+  Search,
+  Table2,
+  X,
 } from 'lucide-react';
-import { useEnvironment } from '@/hooks/useEnvironments';
-import { useInstructions, useInstructionStats, useUpdateInstruction, useDeleteInstruction } from '@/hooks/useInstructions';
-import { useTablePreferences } from '@/hooks/useTablePreferences';
-import { EnvironmentTopbar } from '@/components/environment/EnvironmentSidebar';
-import type { SidebarItem } from '@/components/environment/EnvironmentSidebar';
-import { InstructionFilters } from '@/components/environment/InstructionFilters';
-import { InstructionsTable } from '@/components/environment/InstructionsTable';
-import type { ColumnFilterOptions } from '@/components/environment/InstructionsTable';
-import { CardsView } from '@/components/environment/CardsView';
-import { CreateInstructionDialog } from '@/components/environment/CreateInstructionDialog';
-import { EnvironmentHomeDashboard } from '@/components/environment/EnvironmentHomeDashboard';
-import { InstructionViewModal } from '@/components/environment/InstructionViewModal';
-import { ConfirmDeleteDialog } from '@/components/environment/ConfirmDeleteDialog';
-import { LoadingState, ErrorState, EmptyState } from '@/components/common';
-import type { InstructionListItem } from '@/types';
-import { STATUS_LABELS } from '@/types';
+import { type ChangeEvent, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import CardsView from '../components/environment/CardsView';
+import ConfirmDeleteDialog from '../components/environment/ConfirmDeleteDialog';
+import CreateDiscussionDialog from '../components/environment/CreateDiscussionDialog/DiscussionDialog';
+import CreateSingleInstructionDialog from '../components/environment/CreateSingleInstructionDialog';
+import EnvironmentHomeDashboard from '../components/environment/EnvironmentHomeDashboard/EnvironmentHomeDashboard';
+import InstructionFilters from '../components/environment/InstructionFilters';
+import InstructionsTable from '../components/environment/InstructionsTable/InstructionsTable';
+import Button from '../components/shared/Button';
+import DropdownMenu from '../components/shared/DropdownMenu/DropdownMenu';
+import DropdownMenuContent from '../components/shared/DropdownMenu/DropdownMenuContent';
+import DropdownMenuItem from '../components/shared/DropdownMenu/DropdownMenuItem';
+import DropdownMenuTrigger from '../components/shared/DropdownMenu/DropdownMenuTrigger';
+import EmptyState from '../components/shared/EmptyState';
+import type { SidebarItem } from '../components/shared/EnvironmentHeader/EnvironmentHeader';
+import EnvironmentHeader from '../components/shared/EnvironmentHeader/EnvironmentHeader';
+import ErrorState from '../components/shared/ErrorState';
+import InstructionViewModal from '../components/shared/InstructionViewModal/InstructionViewModal';
+import LoadingState from '../components/shared/LoadingState';
+import Tooltip from '../components/shared/Tooltip';
+import { useEnvironment } from '../hooks/useEnvironments';
+import {
+  useDeleteInstruction,
+  useInstructionStats,
+  useInstructions,
+  useUpdateInstruction,
+} from '../hooks/useInstructions';
+import { useTablePreferences } from '../hooks/useTablePreferences';
+import { useToast } from '../hooks/useToast';
+import { applyAllFilters, buildFilterOptions } from '../utils/filterUtils';
+import type { PageParams } from '../utils/paramUtils';
 
 type ViewMode = 'table' | 'cards';
+type CreateMode = 'single' | 'discussion';
 
-export function EnvironmentPage() {
-  const { envId } = useParams<{ envId: string }>();
+interface ViewModalState {
+  instructionId: string;
+  editMode: boolean;
+}
+
+export default function EnvironmentPage() {
+  const { envId = '' } = useParams<PageParams>();
+  const toast = useToast();
+
   const [sidebarItem, setSidebarItem] = useState<SidebarItem>('home');
   const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [searchQuery, setSearchQuery] = useState('');
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [createMode, setCreateMode] = useState<'single' | 'discussion'>('single');
-  const [createMenuOpen, setCreateMenuOpen] = useState(false);
-  const createMenuRef = useRef<HTMLDivElement>(null);
-  const [viewModalInstructionId, setViewModalInstructionId] = useState<string | null>(null);
-  const [viewModalEditMode, setViewModalEditMode] = useState(false);
+  const [createMode, setCreateMode] = useState<CreateMode>();
+  const [viewModal, setViewModal] = useState<ViewModalState | null>(null);
   const [deleteDialogInstructionId, setDeleteDialogInstructionId] = useState<string | null>(null);
-  const toast = useToast();
-
-  useEffect(() => {
-    if (!createMenuOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (createMenuRef.current && !createMenuRef.current.contains(e.target as Node)) setCreateMenuOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [createMenuOpen]);
 
   const {
     preferences,
@@ -56,456 +70,496 @@ export function EnvironmentPage() {
     clearAllFilters,
     setQuickFilter,
     hasActiveFilters,
-  } = useTablePreferences(envId || '');
+  } = useTablePreferences(envId);
 
-  const {
-    data: environment,
-    isLoading: envLoading,
-    isError: envError,
-  } = useEnvironment(envId || '');
+  const { data: environment, isLoading: envLoading, isError: envError } = useEnvironment(envId);
 
   const {
     data: instructionsData,
     isLoading: instLoading,
     isError: instError,
     refetch: refetchInstructions,
-  } = useInstructions(envId || '');
+  } = useInstructions(envId);
+  const { data: stats } = useInstructionStats(envId);
 
-  const { data: stats } = useInstructionStats(envId || '');
+  const updateMutation = useUpdateInstruction(envId);
+  const deleteMutation = useDeleteInstruction(envId);
 
-  const updateMutation = useUpdateInstruction(envId || '');
-  const deleteMutation = useDeleteInstruction(envId || '');
-
-  // Extract unique filter options from raw data
-  const filterOptions = useMemo<ColumnFilterOptions>(() => {
-    const items = instructionsData?.data || [];
-    const assigneeMap = new Map<string, string>();
-
-    items.forEach((i) => {
-      i.assignees.forEach((a) => assigneeMap.set(a.user.id, a.user.name));
-    });
-
-    return {
-      assignees: Array.from(assigneeMap, ([value, label]) => ({ value, label })),
-      dueDate: [
-        { value: 'routine', label: 'שוטף' },
-        { value: 'immediate', label: 'מיידי' },
-        { value: 'date', label: 'תאריך' },
-      ],
-      status: [
-        { value: 'open', label: STATUS_LABELS.open },
-        { value: 'in_progress', label: STATUS_LABELS.in_progress },
-        { value: 'completed', label: STATUS_LABELS.completed },
-      ],
-    };
-  }, [instructionsData]);
-
-  // Apply filtering + sorting
-  const filteredAndSortedInstructions = useMemo(() => {
-    if (!instructionsData?.data) return [];
-
-    let items = instructionsData.data;
-
-    // 1. Quick filter
-    const now = new Date();
-    switch (preferences.quickFilter) {
-      case 'archived':
-        items = items.filter((i) => i.status === 'archived');
-        break;
-      case 'overdue':
-        items = items.filter(
-          (i) =>
-            i.status !== 'archived' &&
-            i.dueDate &&
-            i.dueDate.getTime() < now.getTime() &&
-            i.status !== 'completed'
-        );
-        break;
-      case 'routine':
-        items = items.filter((i) => i.status !== 'archived' && i.dueDateType === 'routine');
-        break;
-      case 'important':
-        items = items.filter((i) => i.status !== 'archived' && (i.priority === 'high' || i.priority === 'urgent' || i.isImportant));
-        break;
-      default:
-        // 'all' — exclude archived
-        items = items.filter((i) => i.status !== 'archived');
-    }
-
-    // 2. Column filters
-    const { columnFilters } = preferences;
-    if (columnFilters.assignees?.length) {
-      items = items.filter((i) =>
-        i.assignees.some((a) => columnFilters.assignees.includes(a.user.id))
-      );
-    }
-    if (columnFilters.dueDate?.length) {
-      items = items.filter((i) => columnFilters.dueDate.includes(i.dueDateType));
-    }
-    if (columnFilters.status?.length) {
-      items = items.filter((i) => columnFilters.status.includes(i.status));
-    }
-
-    // 3. Text search
-    if (searchQuery.trim()) {
-      const q = searchQuery.trim().toLowerCase();
-      items = items.filter((i) => {
-        const titleMatch = i.title.toLowerCase().includes(q);
-        const sourceMatch = i.source?.toLowerCase().includes(q);
-        const assigneeMatch = i.assignees.some((a) =>
-          a.user.name.toLowerCase().includes(q)
-        );
-        return titleMatch || sourceMatch || assigneeMatch;
-      });
-    }
-
-    // 4. Sort
-    const sortCol = preferences.sortColumn;
-    const sortDir = preferences.sortDirection;
-    if (sortCol && sortDir) {
-      items = [...items].sort((a, b) => {
-        const aVal = a[sortCol as keyof InstructionListItem];
-        const bVal = b[sortCol as keyof InstructionListItem];
-        if (aVal === null || aVal === undefined) return 1;
-        if (bVal === null || bVal === undefined) return -1;
-
-        let compare: number;
-        if (aVal instanceof Date && bVal instanceof Date) {
-          compare = aVal.getTime() - bVal.getTime();
-        } else if (typeof aVal === 'string' && typeof bVal === 'string') {
-          compare = aVal.localeCompare(bVal, 'he');
-        } else {
-          compare = String(aVal).localeCompare(String(bVal), 'he');
-        }
-        return sortDir === 'desc' ? -compare : compare;
-      });
-    } else {
-      // Default: newest first
-      items = [...items].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    }
-
-    return items;
-  }, [instructionsData, sidebarItem, preferences, searchQuery]);
-
-  // Handlers
-  const handleArchive = useCallback(
-    async (instructionId: string) => {
-      try {
-        await updateMutation.mutateAsync({
-          instructionId,
-          data: { status: 'archived' },
-        });
-        toast.success('ההנחיה הועברה לארכיון בהצלחה');
-      } catch {
-        toast.error('תקלה בהעברת ההנחיה לארכיון');
-      }
-    },
-    [updateMutation, toast]
+  const filterOptions = buildFilterOptions(instructionsData?.data ?? []);
+  const filteredAndSortedInstructions = applyAllFilters(
+    instructionsData?.data ?? [],
+    preferences,
+    searchQuery
   );
 
-  const handleRestore = useCallback(
-    async (instructionId: string) => {
-      try {
-        await updateMutation.mutateAsync({
-          instructionId,
-          data: { status: 'open' },
-        });
-        toast.success('ההנחיה שוחזרה מהארכיון בהצלחה');
-      } catch {
-        toast.error('תקלה בשחזור ההנחיה מהארכיון');
-      }
-    },
-    [updateMutation, toast]
-  );
+  const deleteInstruction = instructionsData?.data.find((i) => i.id === deleteDialogInstructionId);
 
-  const handleDeleteConfirm = useCallback(async () => {
+  function handleArchive(instructionId: string) {
+    updateMutation.mutate(
+      { instructionId, data: { status: 'archived' } },
+      {
+        onSuccess: () => toast.success('ההנחיה הועברה לארכיון בהצלחה'),
+        onError: () => toast.error('תקלה בהעברת ההנחיה לארכיון'),
+      }
+    );
+  }
+
+  function handleRestore(instructionId: string) {
+    updateMutation.mutate(
+      { instructionId, data: { status: 'open' } },
+      {
+        onSuccess: () => toast.success('ההנחיה שוחזרה מהארכיון בהצלחה'),
+        onError: () => toast.error('תקלה בשחזור ההנחיה מהארכיון'),
+      }
+    );
+  }
+
+  function handleDeleteConfirm() {
     if (!deleteDialogInstructionId) return;
-    try {
-      await deleteMutation.mutateAsync(deleteDialogInstructionId);
-      setDeleteDialogInstructionId(null);
-      toast.success('ההנחיה בוטלה בהצלחה');
-    } catch {
-      toast.error('תקלה בביטול ההנחיה');
-    }
-  }, [deleteDialogInstructionId, deleteMutation, toast]);
+    deleteMutation.mutate(deleteDialogInstructionId, {
+      onSuccess: () => {
+        setDeleteDialogInstructionId(null);
+        toast.success('ההנחיה בוטלה בהצלחה');
+      },
+      onError: () => toast.error('תקלה בביטול ההנחיה'),
+    });
+  }
 
-  const deleteInstruction = instructionsData?.data.find(
-    (i) => i.id === deleteDialogInstructionId
+  function handleViewInstruction(id: string) {
+    setViewModal({ instructionId: id, editMode: false });
+  }
+
+  function handleEditInstruction(id: string) {
+    setViewModal({ instructionId: id, editMode: true });
+  }
+
+  function handleCloseViewModal() {
+    setViewModal(null);
+  }
+
+  function handleOpenSingleCreate() {
+    setCreateMode('single');
+  }
+
+  function handleOpenDiscussionCreate() {
+    setCreateMode('discussion');
+  }
+
+  function handleCloseCreateDialog() {
+    setCreateMode(undefined);
+  }
+
+  function handleSearchChange(e: ChangeEvent<HTMLInputElement>) {
+    setSearchQuery(e.target.value);
+  }
+
+  function handleClearSearch() {
+    setSearchQuery('');
+  }
+
+  function handleRetryInstructions() {
+    refetchInstructions();
+  }
+
+  function handleNavigateToInstructions() {
+    setSidebarItem('instructions');
+  }
+
+  function handleOpenCreateFromDashboard() {
+    // FIX Needs menu instead of single?
+    setCreateMode('single');
+  }
+
+  const searchAdornment = (
+    <FiltersEndSlot>
+      <SearchWrapper>
+        <SearchIcon size={16} />
+        <SearchInput
+          type="text"
+          placeholder="חיפוש..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          aria-label="חיפוש הנחיות"
+        />
+        {searchQuery && (
+          <ClearSearchButton onClick={handleClearSearch}>
+            <X size={16} />
+          </ClearSearchButton>
+        )}
+      </SearchWrapper>
+      <ViewModeToggle>
+        {[
+          { value: 'cards' as ViewMode, icon: LayoutGrid, label: 'כרטיסיות' },
+          { value: 'table' as ViewMode, icon: Table2, label: 'טבלה' },
+        ].map((item) => (
+          <Tooltip key={item.value} content={item.label}>
+            <ViewModeButton
+              onClick={() => setViewMode(item.value)}
+              $active={viewMode === item.value}
+              aria-label={`תצוגת ${item.label}`}
+            >
+              <item.icon size={16} />
+            </ViewModeButton>
+          </Tooltip>
+        ))}
+      </ViewModeToggle>
+    </FiltersEndSlot>
   );
-
-  if (envLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <LoadingState message="טוען מערך..." />
-      </div>
-    );
-  }
-
-  if (envError || !environment) {
-    return (
-      <div className="min-h-screen bg-background">
-        <ErrorState message="תקלה בטעינת המערך" />
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Top Navbar */}
-      <EnvironmentTopbar
-        environmentName={environment.name}
-        activeItem={sidebarItem}
-        onItemChange={setSidebarItem}
-      />
+    <PageWrapper>
+      {envLoading && <LoadingState message="טוען מערך..." />}
 
-      {/* Secondary Bar: title (right) + create buttons (left) */}
-      <div className="bg-paper border-b border-gray-200">
-        <div className="flex items-center justify-between px-6 py-2.5 gap-4">
-          {/* Right side (RTL start): Title */}
-          <h1 className="text-[30px] font-bold text-text-primary">
-            {sidebarItem === 'home' ? 'בית' : 'הנחיות'}
-          </h1>
+      {(envError || (!envLoading && !environment)) && <ErrorState message="תקלה בטעינת המערך" />}
 
-          {/* Left side (RTL end): Export + Create button */}
-          <div className="flex items-center gap-3">
-            {sidebarItem !== 'home' && (
-            <Button variant="outline" size="sm" onClick={() => {}}>
-              <Download className="w-4 h-4 me-1.5" />
-              ייצוא
-            </Button>
-            )}
-            {sidebarItem !== 'home' && (
-            <div className="relative" ref={createMenuRef}>
-              <Button
-                size="sm"
-                onClick={() => setCreateMenuOpen(!createMenuOpen)}
-                aria-label="הנחיה חדשה"
-              >
-                <Plus className="w-4 h-4 me-1.5" />
-                יצירת הנחיה
-                <ChevronDown className={cn('w-3.5 h-3.5 ms-1.5 transition-transform', createMenuOpen && 'rotate-180')} />
-              </Button>
-              {createMenuOpen && (
-                <div className="absolute top-full mt-1 end-0 z-40 bg-paper rounded-lg shadow-xl border border-gray-200 py-1 min-w-[200px]">
-                  <button
-                    onClick={() => {
-                      setCreateMode('single');
-                      setCreateDialogOpen(true);
-                      setCreateMenuOpen(false);
-                    }}
-                    className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-start hover:bg-gray-50 transition-colors cursor-pointer"
-                  >
-                    <FileText className="w-4 h-4 text-primary" />
-                    <div>
-                      <span className="font-medium text-text-primary">הנחיה בודדת</span>
-                      <p className="text-xs text-text-secondary mt-0.5">יצירת הנחיה חדשה</p>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setCreateMode('discussion');
-                      setCreateDialogOpen(true);
-                      setCreateMenuOpen(false);
-                    }}
-                    className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-start hover:bg-gray-50 transition-colors cursor-pointer"
-                  >
-                    <MessagesSquare className="w-4 h-4 text-primary" />
-                    <div>
-                      <span className="font-medium text-text-primary">מתוך דיון</span>
-                      <p className="text-xs text-text-secondary mt-0.5">חילוץ הנחיות מדיון או ישיבה</p>
-                    </div>
-                  </button>
-                </div>
-              )}
-            </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Content Area */}
-      <div className="flex-1 p-6 overflow-y-auto">
-        {/* Home Dashboard */}
-        {sidebarItem === 'home' && !instLoading && !instError && stats && (
-          <EnvironmentHomeDashboard
-            envId={envId || ''}
-            stats={stats}
-            instructions={instructionsData?.data || []}
-            onViewInstruction={setViewModalInstructionId}
-            onNavigateToInstructions={() => setSidebarItem('instructions')}
-            onCreateInstruction={() => setCreateDialogOpen(true)}
+      {environment && (
+        <>
+          <EnvironmentHeader
+            environmentName={environment.name}
+            activeItem={sidebarItem}
+            onItemChange={setSidebarItem}
           />
-        )}
-        {sidebarItem === 'home' && instLoading && (
-          <LoadingState message="טוען נתונים..." />
-        )}
 
-        {sidebarItem === 'instructions' && (
-          <>
-            {/* Filters + View Toggle */}
-            <div className="mb-4">
-              <InstructionFilters
-                activeQuickFilter={preferences.quickFilter}
-                onQuickFilterChange={setQuickFilter}
-                endAdornment={
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled" />
-                      <input
-                        type="text"
-                        placeholder="חיפוש..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        aria-label="חיפוש הנחיות"
-                        className="w-[220px] ps-9 pe-8 py-1.5 text-sm rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 focus:bg-paper focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors"
-                      />
-                      {searchQuery && (
-                        <button
-                          onClick={() => setSearchQuery('')}
-                          className="absolute end-2 top-1/2 -translate-y-1/2 text-text-disabled hover:text-text-secondary cursor-pointer"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  <div className="inline-flex rounded-lg border border-gray-200 overflow-hidden">
-                    {([
-                      { value: 'cards' as ViewMode, icon: LayoutGrid, label: 'כרטיסיות' },
-                      { value: 'table' as ViewMode, icon: Table2, label: 'טבלה' },
-                    ]).map((item) => (
-                      <Tooltip key={item.value} content={item.label}>
-                        <button
-                          onClick={() => setViewMode(item.value)}
-                          className={cn(
-                            'p-2 transition-colors cursor-pointer',
-                            viewMode === item.value
-                              ? 'bg-primary/10 text-primary'
-                              : 'text-text-secondary hover:bg-gray-50'
-                          )}
-                          aria-label={`תצוגת ${item.label}`}
-                        >
-                          <item.icon className="w-4 h-4" />
-                        </button>
-                      </Tooltip>
-                    ))}
-                  </div>
-                  </div>
-                }
-              />
-            </div>
+          <SecondaryBar>
+            <SecondaryBarInner>
+              <PageTitle>{sidebarItem === 'home' ? 'בית' : 'הנחיות'}</PageTitle>
 
-            {/* Loading State */}
-            {instLoading && <LoadingState message="טוען הנחיות..." />}
+              {sidebarItem !== 'home' && (
+                <ActionGroup>
+                  <Button variant="outline" size="sm" onClick={() => {}}>
+                    <Download size={16} />
+                    ייצוא
+                  </Button>
 
-            {/* Error State */}
-            {instError && (
-              <ErrorState
-                message="תקלה בטעינת ההנחיות"
-                onRetry={() => refetchInstructions()}
-              />
+                  <DropdownMenu>
+                    <CreateMenuTrigger>
+                      <Plus size={16} />
+                      יצירת הנחיה
+                      <ChevronDown size={14} />
+                    </CreateMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <CreateMenuItem onClick={handleOpenSingleCreate}>
+                        <FileText size={16} />
+                        <CreateMenuItemText>
+                          <CreateMenuItemTitle>הנחיה בודדת</CreateMenuItemTitle>
+                          <CreateMenuItemDesc>יצירת הנחיה חדשה</CreateMenuItemDesc>
+                        </CreateMenuItemText>
+                      </CreateMenuItem>
+                      <CreateMenuItem onClick={handleOpenDiscussionCreate}>
+                        <MessagesSquare size={16} />
+                        <CreateMenuItemText>
+                          <CreateMenuItemTitle>מתוך דיון</CreateMenuItemTitle>
+                          <CreateMenuItemDesc>חילוץ הנחיות מדיון או ישיבה</CreateMenuItemDesc>
+                        </CreateMenuItemText>
+                      </CreateMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </ActionGroup>
+              )}
+            </SecondaryBarInner>
+          </SecondaryBar>
+
+          <ContentArea>
+            {sidebarItem === 'home' && (
+              <>
+                {instLoading && <LoadingState message="טוען נתונים..." />}
+                {!instLoading && !instError && stats && (
+                  <EnvironmentHomeDashboard
+                    envId={envId}
+                    stats={stats}
+                    instructions={instructionsData?.data ?? []}
+                    onViewInstruction={handleViewInstruction}
+                    onNavigateToInstructions={handleNavigateToInstructions}
+                    onCreateInstruction={handleOpenCreateFromDashboard}
+                  />
+                )}
+              </>
             )}
 
-            {/* Table View */}
-            {!instLoading &&
-              !instError &&
-              viewMode === 'table' &&
-              filteredAndSortedInstructions.length > 0 && (
-                <InstructionsTable
-                  instructions={filteredAndSortedInstructions}
-                  sortState={{
-                    column: preferences.sortColumn,
-                    direction: preferences.sortDirection,
-                  }}
-                  onSort={setSort}
-                  columnFilters={preferences.columnFilters}
-                  filterOptions={filterOptions}
-                  onFilterApply={setColumnFilter}
-                  onFilterReset={clearColumnFilter}
-                  onViewInstruction={(id) => { setViewModalEditMode(false); setViewModalInstructionId(id); }}
-                  onEditInstruction={(id) => { setViewModalEditMode(true); setViewModalInstructionId(id); }}
-                  onArchiveInstruction={handleArchive}
-                  onRestoreInstruction={handleRestore}
-                  onDeleteInstruction={setDeleteDialogInstructionId}
-                />
-              )}
+            {sidebarItem === 'instructions' && (
+              <>
+                <FiltersWrapper>
+                  <InstructionFilters
+                    activeQuickFilter={preferences.quickFilter}
+                    onQuickFilterChange={setQuickFilter}
+                    endAdornment={searchAdornment}
+                  />
+                </FiltersWrapper>
 
-            {/* Cards View */}
-            {!instLoading &&
-              !instError &&
-              viewMode === 'cards' &&
-              filteredAndSortedInstructions.length > 0 && (
-                <CardsView
-                  instructions={filteredAndSortedInstructions}
-                  envId={envId || ''}
-                  onViewInstruction={setViewModalInstructionId}
-                  onArchiveInstruction={handleArchive}
-                  onRestoreInstruction={handleRestore}
-                />
-              )}
+                {instLoading && <LoadingState message="טוען הנחיות..." />}
 
-            {/* Empty State */}
-            {!instLoading &&
-              !instError &&
-              (viewMode === 'table' || viewMode === 'cards') &&
-              filteredAndSortedInstructions.length === 0 && (
-                <EmptyState
-                  title="אין הנחיות להצגה"
-                  description={
-                    searchQuery.trim()
-                      ? `לא נמצאו תוצאות עבור "${searchQuery}"`
-                      : hasActiveFilters
-                        ? 'לא נמצאו הנחיות התואמות את הסינון'
-                        : 'צור הנחיה חדשה כדי להתחיל'
-                  }
-                  actionLabel={
-                    hasActiveFilters
-                      ? 'נקה סינון'
-                      : !searchQuery.trim()
-                        ? 'צור הנחיה'
-                        : undefined
-                  }
-                  onAction={
-                    hasActiveFilters
-                      ? clearAllFilters
-                      : !searchQuery.trim()
-                        ? () => setCreateDialogOpen(true)
-                        : undefined
-                  }
-                />
-              )}
+                {instError && (
+                  <ErrorState message="תקלה בטעינת ההנחיות" onRetry={handleRetryInstructions} />
+                )}
 
-          </>
-        )}
+                {!instLoading &&
+                  !instError &&
+                  viewMode === 'table' &&
+                  filteredAndSortedInstructions.length > 0 && (
+                    <InstructionsTable
+                      instructions={filteredAndSortedInstructions}
+                      sortState={{
+                        column: preferences.sortColumn,
+                        direction: preferences.sortDirection,
+                      }}
+                      onSort={setSort}
+                      columnFilters={preferences.columnFilters}
+                      filterOptions={filterOptions}
+                      onFilterApply={setColumnFilter}
+                      onFilterReset={clearColumnFilter}
+                      onViewInstruction={handleViewInstruction}
+                      onEditInstruction={handleEditInstruction}
+                      onArchiveInstruction={handleArchive}
+                      onRestoreInstruction={handleRestore}
+                      onDeleteInstruction={setDeleteDialogInstructionId}
+                    />
+                  )}
 
-      </div>
+                {!instLoading &&
+                  !instError &&
+                  viewMode === 'cards' &&
+                  filteredAndSortedInstructions.length > 0 && (
+                    <CardsView
+                      instructions={filteredAndSortedInstructions}
+                      envId={envId}
+                      onViewInstruction={handleViewInstruction}
+                      onArchiveInstruction={handleArchive}
+                      onRestoreInstruction={handleRestore}
+                    />
+                  )}
 
-      {/* Create Instruction Dialog */}
-      <CreateInstructionDialog
-        open={createDialogOpen}
-        onClose={() => setCreateDialogOpen(false)}
-        envId={envId || ''}
-        initialMode={createMode}
-      />
+                {!instLoading && !instError && filteredAndSortedInstructions.length === 0 && (
+                  <EmptyState
+                    title="אין הנחיות להצגה"
+                    description={
+                      searchQuery.trim()
+                        ? `לא נמצאו תוצאות עבור "${searchQuery}"`
+                        : hasActiveFilters
+                          ? 'לא נמצאו הנחיות התואמות את הסינון'
+                          : 'צור הנחיה חדשה כדי להתחיל'
+                    }
+                    actionLabel={
+                      hasActiveFilters ? 'נקה סינון' : !searchQuery.trim() ? 'צור הנחיה' : undefined
+                    }
+                    onAction={
+                      hasActiveFilters
+                        ? clearAllFilters
+                        : !searchQuery.trim()
+                          ? handleOpenSingleCreate
+                          : undefined
+                    }
+                  />
+                )}
+              </>
+            )}
+          </ContentArea>
 
-      {/* Instruction View Modal */}
-      {viewModalInstructionId && (
-        <InstructionViewModal
-          open={!!viewModalInstructionId}
-          onClose={() => { setViewModalInstructionId(null); setViewModalEditMode(false); }}
-          instructionId={viewModalInstructionId}
-          envId={envId || ''}
-          initialEditMode={viewModalEditMode}
-        />
+          <CreateSingleInstructionDialog
+            open={createMode === 'single'}
+            onClose={handleCloseCreateDialog}
+            envId={envId}
+          />
+
+          <CreateDiscussionDialog
+            open={createMode === 'discussion'}
+            onClose={handleCloseCreateDialog}
+            envId={envId}
+          />
+
+          {/* // FIX Remove condition */}
+          {viewModal && (
+            <InstructionViewModal
+              open
+              onClose={handleCloseViewModal}
+              instructionId={viewModal.instructionId}
+              envId={envId}
+              initialEditMode={viewModal.editMode}
+            />
+          )}
+
+          <ConfirmDeleteDialog
+            open={!!deleteDialogInstructionId}
+            onClose={() => setDeleteDialogInstructionId(null)}
+            onConfirm={handleDeleteConfirm}
+            instructionTitle={deleteInstruction?.title ?? ''}
+            isLoading={deleteMutation.isPending}
+          />
+        </>
       )}
-
-      {/* Confirm Delete Dialog */}
-      <ConfirmDeleteDialog
-        open={!!deleteDialogInstructionId}
-        onClose={() => setDeleteDialogInstructionId(null)}
-        onConfirm={handleDeleteConfirm}
-        instructionTitle={deleteInstruction?.title || ''}
-        isLoading={deleteMutation.isPending}
-      />
-    </div>
+    </PageWrapper>
   );
 }
+
+const PageWrapper = styled.div`
+  min-height: 100vh;
+  background-color: var(--color-background);
+  display: flex;
+  flex-direction: column;
+`;
+
+const SecondaryBar = styled.div`
+  background-color: var(--color-paper);
+  border-bottom: 1px solid var(--color-gray-200);
+`;
+
+const SecondaryBarInner = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 1.5rem;
+  gap: 1rem;
+`;
+
+const PageTitle = styled.h1`
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+`;
+
+const ActionGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+const CreateMenuTrigger = styled(DropdownMenuTrigger)`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: var(--color-primary);
+  color: white;
+  cursor: pointer;
+  transition: background-color 150ms;
+
+  &:hover {
+    background-color: var(--color-primary-dark);
+  }
+`;
+
+const CreateMenuItem = styled(DropdownMenuItem)`
+  align-items: flex-start;
+  padding: 0.625rem 1rem;
+  gap: 0.625rem;
+  color: var(--color-primary);
+`;
+
+const CreateMenuItemText = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+`;
+
+const CreateMenuItemTitle = styled.span`
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+`;
+
+const CreateMenuItemDesc = styled.p`
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+`;
+
+const ContentArea = styled.div`
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+`;
+
+const FiltersWrapper = styled.div`
+  margin-bottom: 1rem;
+`;
+
+const FiltersEndSlot = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+const SearchWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+const SearchIcon = styled(Search)`
+  position: absolute;
+  inset-inline-start: 0.75rem;
+  color: var(--color-text-disabled);
+  pointer-events: none;
+`;
+
+const SearchInput = styled.input`
+  width: 220px;
+  padding: 0.375rem 2rem 0.375rem 2.25rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-gray-200);
+  background-color: var(--color-gray-50);
+  color: var(--color-text-primary);
+  outline: none;
+  transition: background-color 150ms, border-color 150ms, box-shadow 150ms;
+
+  &::placeholder {
+    color: var(--color-text-disabled);
+  }
+
+  &:hover {
+    background-color: var(--color-gray-100);
+  }
+
+  &:focus {
+    background-color: var(--color-paper);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+`;
+
+const ClearSearchButton = styled.button`
+  position: absolute;
+  inset-inline-end: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-disabled);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 150ms;
+
+  &:hover {
+    color: var(--color-text-secondary);
+  }
+`;
+
+const ViewModeToggle = styled.div`
+  display: inline-flex;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-gray-200);
+  overflow: hidden;
+`;
+
+const ViewModeButton = styled.button<{ $active: boolean }>`
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms;
+  color: ${({ $active }) => ($active ? 'var(--color-primary)' : 'var(--color-text-secondary)')};
+  background-color: ${({ $active }) =>
+    $active ? 'color-mix(in srgb, var(--color-primary) 10%, transparent)' : 'transparent'};
+
+  &:hover {
+    background-color: ${({ $active }) =>
+      $active
+        ? 'color-mix(in srgb, var(--color-primary) 10%, transparent)'
+        : 'var(--color-gray-50)'};
+  }
+`;

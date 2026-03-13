@@ -1,21 +1,18 @@
-import { http, HttpResponse } from 'msw';
+import { HttpResponse, http } from 'msw';
+import type { ICreateInstruction, IUpdateInstruction } from '../types';
 import {
+  currentUser,
+  getStatsForEnv,
+  mockActivity,
+  mockComments,
   mockEnvironments,
+  mockInstructions,
   mockMembers,
   mockTags,
-  mockInstructions,
-  toListItem,
-  getStatsForEnv,
-  mockComments,
-  mockActivity,
-  currentUser,
-  mockUsers,
   mockUserSummaries,
-  mockNotifications,
-  mockNotificationPreferences,
+  mockUsers,
+  toListItem,
 } from './data';
-import type { NotificationPreferencesDto } from './data';
-import type { CreateInstructionDto, UpdateInstructionDto } from '@/api/dtos';
 
 const API = '/api';
 
@@ -49,14 +46,14 @@ export const handlers = [
       id: `env-new-${Date.now()}`,
       name: body.name,
       description: body.description || null,
-      logo_url: null,
-      created_by: currentUser.id,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      logoUrl: null,
+      createdBy: currentUser.id,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       archived: false,
-      member_count: 1,
-      instruction_count: 0,
-      current_user_role: 'manager' as const,
+      memberCount: 1,
+      instructionCount: 0,
+      currentUserRole: 'manager' as const,
     };
     mockEnvironments.push(newEnv);
     return HttpResponse.json(newEnv, { status: 201 });
@@ -64,15 +61,13 @@ export const handlers = [
 
   // ─── Environment Members ─────────────────────
   http.get(`${API}/environments/:envId/members`, ({ params }) => {
-    const members = mockMembers.filter(
-      (m) => m.environment_id === params.envId
-    );
+    const members = mockMembers.filter((m) => m.environmentId === params.envId);
     return HttpResponse.json(members);
   }),
 
   // ─── Tags ────────────────────────────────────
   http.get(`${API}/environments/:envId/tags`, ({ params }) => {
-    const tags = mockTags.filter((t) => t.environment_id === params.envId);
+    const tags = mockTags.filter((t) => t.environmentId === params.envId);
     return HttpResponse.json(tags);
   }),
 
@@ -84,9 +79,7 @@ export const handlers = [
     const sortBy = url.searchParams.get('sort_by');
     const sortDir = url.searchParams.get('sort_direction') || 'desc';
 
-    let items = mockInstructions.filter(
-      (i) => i.environment_id === params.envId
-    );
+    let items = mockInstructions.filter((i) => i.environmentId === params.envId);
 
     // Filter by status
     if (status) {
@@ -98,8 +91,8 @@ export const handlers = [
       const now = new Date();
       items = items.filter(
         (i) =>
-          i.due_date &&
-          new Date(i.due_date) < now &&
+          i.dueDate &&
+          new Date(i.dueDate) < now &&
           i.status !== 'completed' &&
           i.status !== 'archived'
       );
@@ -130,9 +123,7 @@ export const handlers = [
 
   // ─── Single Instruction ─────────────────────
   http.get(`${API}/instructions/:instructionId`, ({ params }) => {
-    const inst = mockInstructions.find(
-      (i) => i.id === params.instructionId
-    );
+    const inst = mockInstructions.find((i) => i.id === params.instructionId);
     if (!inst) {
       return new HttpResponse(null, { status: 404 });
     }
@@ -140,77 +131,64 @@ export const handlers = [
   }),
 
   // ─── Create Instruction ─────────────────────
-  http.post(
-    `${API}/environments/:envId/instructions`,
-    async ({ params, request }) => {
-      const body = (await request.json()) as CreateInstructionDto;
-      const newInst = {
-        id: `inst-new-${Date.now()}`,
-        environment_id: params.envId as string,
-        title: body.title,
-        description: body.description || null,
+  http.post(`${API}/environments/:envId/instructions`, async ({ params, request }) => {
+    const body = (await request.json()) as ICreateInstruction;
+    const newInst = {
+      id: `inst-new-${Date.now()}`,
+      environmentId: params.envId as string,
+      title: body.title,
+      description: body.description || null,
+      status: body.status || ('open' as const),
+      priority: body.priority || ('medium' as const),
+      dueDateType: body.dueDateType || ('routine' as const),
+      dueDateFrom: body.dueDateFrom || null,
+      dueDate: body.dueDate || null,
+      source: body.source || null,
+      createdBy: currentUser,
+      assignees: (body.assigneeIds || []).map((uid, idx) => ({
+        id: `asgn-new-${idx}`,
+        user: mockUserSummaries.find((u) => u.id === uid) || currentUser,
+        assignedAt: new Date().toISOString(),
+        assignedBy: currentUser,
         status: body.status || ('open' as const),
-        priority: body.priority || ('medium' as const),
-        due_date_type: body.due_date_type || ('routine' as const),
-        due_date_from: body.due_date_from || null,
-        due_date: body.due_date || null,
-        source: body.source || null,
-        created_by: currentUser,
-        assignees: (body.assignee_ids || []).map((uid, idx) => ({
-          id: `asgn-new-${idx}`,
-          user: mockUserSummaries.find((u) => u.id === uid) || currentUser,
-          assigned_at: new Date().toISOString(),
-          assigned_by: currentUser,
-          status: body.status || ('open' as const),
-        })),
-        tags: (body.tag_ids || [])
-          .map((tid) => mockTags.find((t) => t.id === tid))
-          .filter(Boolean) as typeof mockTags,
-        comment_count: 0,
-        attachment_count: 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        completed_at: null,
-        archived: false,
-        is_important: body.is_important || false,
-      };
-      mockInstructions.push(newInst);
-      return HttpResponse.json(newInst, { status: 201 });
-    }
-  ),
+      })),
+      tags: (body.tagIds || [])
+        .map((tid) => mockTags.find((t) => t.id === tid))
+        .filter(Boolean) as typeof mockTags,
+      commentCount: 0,
+      attachmentCount: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      completedAt: null,
+      archived: false,
+      isImportant: body.isImportant || false,
+    };
+    mockInstructions.push(newInst);
+    return HttpResponse.json(newInst, { status: 201 });
+  }),
 
   // ─── Update Instruction ─────────────────────
-  http.patch(
-    `${API}/instructions/:instructionId`,
-    async ({ params, request }) => {
-      const body = (await request.json()) as UpdateInstructionDto;
-      const idx = mockInstructions.findIndex(
-        (i) => i.id === params.instructionId
-      );
-      if (idx === -1) {
-        return new HttpResponse(null, { status: 404 });
-      }
-
-      const current = mockInstructions[idx];
-      const updated = {
-        ...current,
-        ...body,
-        updated_at: new Date().toISOString(),
-        completed_at:
-          body.status === 'completed'
-            ? new Date().toISOString()
-            : current.completed_at,
-      };
-      mockInstructions[idx] = updated;
-      return HttpResponse.json(updated);
+  http.patch(`${API}/instructions/:instructionId`, async ({ params, request }) => {
+    const body = (await request.json()) as IUpdateInstruction;
+    const idx = mockInstructions.findIndex((i) => i.id === params.instructionId);
+    if (idx === -1) {
+      return new HttpResponse(null, { status: 404 });
     }
-  ),
+
+    const current = mockInstructions[idx];
+    const updated = {
+      ...current,
+      ...body,
+      updatedAt: new Date().toISOString(),
+      completedAt: body.status === 'completed' ? new Date().toISOString() : current.completedAt,
+    };
+    mockInstructions[idx] = updated;
+    return HttpResponse.json(updated);
+  }),
 
   // ─── Delete Instruction ─────────────────────
   http.delete(`${API}/instructions/:instructionId`, ({ params }) => {
-    const idx = mockInstructions.findIndex(
-      (i) => i.id === params.instructionId
-    );
+    const idx = mockInstructions.findIndex((i) => i.id === params.instructionId);
     if (idx === -1) {
       return new HttpResponse(null, { status: 404 });
     }
@@ -219,77 +197,31 @@ export const handlers = [
   }),
 
   // ─── Comments ────────────────────────────────
-  http.get(
-    `${API}/instructions/:instructionId/comments`,
-    ({ params }) => {
-      const comments = mockComments.filter(
-        (c) => c.instruction_id === params.instructionId
-      );
-      return HttpResponse.json(comments);
-    }
-  ),
+  http.get(`${API}/instructions/:instructionId/comments`, ({ params }) => {
+    const comments = mockComments.filter((c) => c.instructionId === params.instructionId);
+    return HttpResponse.json(comments);
+  }),
 
-  http.post(
-    `${API}/instructions/:instructionId/comments`,
-    async ({ params, request }) => {
-      const body = (await request.json()) as { content: string };
-      const newComment = {
-        id: `cmt-new-${Date.now()}`,
-        instruction_id: params.instructionId as string,
-        user: currentUser,
-        content: body.content,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        edited: false,
-      };
-      mockComments.push(newComment);
-      return HttpResponse.json(newComment, { status: 201 });
-    }
-  ),
+  http.post(`${API}/instructions/:instructionId/comments`, async ({ params, request }) => {
+    const body = (await request.json()) as { content: string };
+    const newComment = {
+      id: `cmt-new-${Date.now()}`,
+      instructionId: params.instructionId as string,
+      user: currentUser,
+      content: body.content,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      edited: false,
+    };
+    mockComments.push(newComment);
+    return HttpResponse.json(newComment, { status: 201 });
+  }),
 
   // ─── Activity ────────────────────────────────
-  http.get(
-    `${API}/instructions/:instructionId/activity`,
-    ({ params }) => {
-      const events = mockActivity
-        .filter((a) => a.instruction_id === params.instructionId)
-        .sort(
-          (a, b) =>
-            new Date(b.created_at).getTime() -
-            new Date(a.created_at).getTime()
-        );
-      return HttpResponse.json(events);
-    }
-  ),
-
-  // ─── Notifications ──────────────────────────
-  http.get(`${API}/notifications`, () => {
-    const sorted = [...mockNotifications].sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
-    return HttpResponse.json(sorted);
-  }),
-
-  http.patch(`${API}/notifications/:id/read`, ({ params }) => {
-    const notif = mockNotifications.find((n) => n.id === params.id);
-    if (!notif) return new HttpResponse(null, { status: 404 });
-    notif.read = true;
-    return HttpResponse.json(notif);
-  }),
-
-  http.post(`${API}/notifications/read-all`, () => {
-    mockNotifications.forEach((n) => { n.read = true; });
-    return HttpResponse.json({ success: true });
-  }),
-
-  // ─── Notification Preferences ───────────────
-  http.get(`${API}/notification-preferences`, () => {
-    return HttpResponse.json(mockNotificationPreferences);
-  }),
-
-  http.post(`${API}/notification-preferences`, async ({ request }) => {
-    const body = (await request.json()) as NotificationPreferencesDto;
-    Object.assign(mockNotificationPreferences, body);
-    return HttpResponse.json(mockNotificationPreferences);
+  http.get(`${API}/instructions/:instructionId/activity`, ({ params }) => {
+    const events = mockActivity
+      .filter((a) => a.instructionId === params.instructionId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return HttpResponse.json(events);
   }),
 ];

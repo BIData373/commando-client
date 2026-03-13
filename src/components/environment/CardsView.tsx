@@ -1,24 +1,22 @@
-import { useMemo, useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import styled from '@emotion/styled';
+import { Archive, Eye, Flag, MoreVertical } from 'lucide-react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { StatusChip, PriorityChip } from './StatusChip';
-import { UserAvatarGroup } from '@/components/common';
-import { MoreVertical, Eye, Archive, Flag } from 'lucide-react';
 import {
-  STATUS_LABELS,
-  STATUS_COLORS,
-  type InstructionListItem,
+  type IInstructionListItem,
   type InstructionStatus,
-} from '@/types';
-
-interface CardsViewProps {
-  instructions: InstructionListItem[];
-  envId: string;
-  onViewInstruction?: (id: string) => void;
-  onArchiveInstruction?: (id: string) => void;
-  onRestoreInstruction?: (id: string) => void;
-}
+  STATUS_COLORS,
+  STATUS_LABELS,
+} from '../../types';
+import { formatDate } from '../../utils/dateUtils';
+import DropdownMenu from '../shared/DropdownMenu/DropdownMenu';
+import DropdownMenuContent from '../shared/DropdownMenu/DropdownMenuContent';
+import DropdownMenuItem from '../shared/DropdownMenu/DropdownMenuItem';
+import DropdownMenuSeparator from '../shared/DropdownMenu/DropdownMenuSeparator';
+import DropdownMenuTrigger from '../shared/DropdownMenu/DropdownMenuTrigger';
+import PriorityChip from '../shared/PriorityChip';
+import StatusChip from '../shared/StatusChip';
+import UserAvatarGroup from '../shared/UserAvatarGroup';
 
 type GroupBy = 'status' | 'assignee' | 'source';
 
@@ -26,28 +24,46 @@ interface GroupedColumn {
   key: string;
   label: string;
   color: string;
-  items: InstructionListItem[];
+  items: IInstructionListItem[];
 }
 
-function formatDate(date: Date | null): string {
-  if (!date) return '—';
-  return date.toLocaleDateString('he-IL', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
+interface CardsViewProps {
+  instructions: IInstructionListItem[];
+  envId: string;
+  onViewInstruction?: (id: string) => void;
+  onArchiveInstruction?: (id: string) => void;
+  onRestoreInstruction?: (id: string) => void;
 }
+
+interface ColumnDotProps {
+  $color: string;
+}
+
+interface DueDateTextProps {
+  $color: string;
+}
+
+interface ColorDropdownMenuItemProps {
+  $color: string;
+}
+
+const groupOptions: { value: GroupBy; label: string }[] = [
+  { value: 'status', label: 'מצב' },
+  { value: 'assignee', label: 'ממונה' },
+  { value: 'source', label: 'גורם מפקד' },
+];
 
 function getDueDateColor(dueDate: Date | null, status: InstructionStatus): string {
-  if (!dueDate || status === 'completed' || status === 'archived') return '#6b7280';
+  if (!dueDate || status === 'completed' || status === 'archived')
+    return 'var(--color-text-secondary)';
   const diffDays = Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-  if (diffDays < 0) return '#ef4444';
-  if (diffDays <= 3) return '#f59e0b';
-  return '#6b7280';
+  if (diffDays < 0) return 'var(--color-error)';
+  if (diffDays <= 3) return 'var(--color-warning)';
+  return 'var(--color-text-secondary)';
 }
 
-function groupByStatus(instructions: InstructionListItem[]): GroupedColumn[] {
-  const statusOrder: InstructionStatus[] = ['open', 'in_progress', 'completed', 'archived'];
+function groupByStatus(instructions: IInstructionListItem[]): GroupedColumn[] {
+  const statusOrder: InstructionStatus[] = ['open', 'inProgress', 'completed', 'archived'];
   return statusOrder.map((status) => ({
     key: status,
     label: STATUS_LABELS[status],
@@ -56,8 +72,8 @@ function groupByStatus(instructions: InstructionListItem[]): GroupedColumn[] {
   }));
 }
 
-function groupByAssignee(instructions: InstructionListItem[]): GroupedColumn[] {
-  const map = new Map<string, { label: string; items: InstructionListItem[] }>();
+function groupByAssignee(instructions: IInstructionListItem[]): GroupedColumn[] {
+  const map = new Map<string, { label: string; items: IInstructionListItem[] }>();
   const colors = ['#3f51b5', '#7c4dff', '#e91e63', '#009688', '#ff5722', '#795548'];
 
   instructions.forEach((inst) => {
@@ -86,8 +102,8 @@ function groupByAssignee(instructions: InstructionListItem[]): GroupedColumn[] {
   }));
 }
 
-function groupBySource(instructions: InstructionListItem[]): GroupedColumn[] {
-  const map = new Map<string, InstructionListItem[]>();
+function groupBySource(instructions: IInstructionListItem[]): GroupedColumn[] {
+  const map = new Map<string, IInstructionListItem[]>();
   const colors = ['#06b6d4', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444'];
 
   instructions.forEach((inst) => {
@@ -106,39 +122,28 @@ function groupBySource(instructions: InstructionListItem[]): GroupedColumn[] {
   }));
 }
 
-const groupOptions: { value: GroupBy; label: string }[] = [
-  { value: 'status', label: 'מצב' },
-  { value: 'assignee', label: 'ממונה' },
-  { value: 'source', label: 'גורם מפקד' },
-];
+const groupedColumnsPredicates: Record<
+  GroupBy,
+  (instructions: IInstructionListItem[]) => GroupedColumn[]
+> = {
+  status: groupByStatus,
+  assignee: groupByAssignee,
+  source: groupBySource,
+};
 
-export function CardsView({ instructions, envId, onViewInstruction, onArchiveInstruction, onRestoreInstruction }: CardsViewProps) {
+export default function CardsView({
+  instructions,
+  envId,
+  onViewInstruction,
+  onArchiveInstruction,
+  onRestoreInstruction,
+}: CardsViewProps) {
   const navigate = useNavigate();
   const [groupBy, setGroupBy] = useState<GroupBy>('status');
-  const [cardMenu, setCardMenu] = useState<{ id: string; rect: DOMRect } | null>(null);
-  const cardMenuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!cardMenu) return;
-    const handler = (e: MouseEvent) => {
-      if (cardMenuRef.current && !cardMenuRef.current.contains(e.target as Node)) setCardMenu(null);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [cardMenu]);
+  const groupedColumns = groupedColumnsPredicates[groupBy](instructions);
 
-  const groupedColumns = useMemo(() => {
-    switch (groupBy) {
-      case 'status':
-        return groupByStatus(instructions);
-      case 'assignee':
-        return groupByAssignee(instructions);
-      case 'source':
-        return groupBySource(instructions);
-    }
-  }, [instructions, groupBy]);
-
-  const handleCardClick = (instruction: InstructionListItem) => {
+  const handleCardClick = (instruction: IInstructionListItem) => {
     if (onViewInstruction) {
       onViewInstruction(instruction.id);
     } else {
@@ -147,168 +152,292 @@ export function CardsView({ instructions, envId, onViewInstruction, onArchiveIns
   };
 
   return (
-    <>
-    <div>
-      {/* Grouping toggle */}
-      <div className="flex items-center gap-3 mb-4">
-        <span className="text-sm text-text-secondary font-medium">קיבוץ לפי:</span>
-        <div className="inline-flex rounded-lg border border-gray-200 overflow-hidden">
+    <Root>
+      <GroupToggleRow>
+        <GroupToggleLabel>קיבוץ לפי:</GroupToggleLabel>
+        <GroupToggleButtons>
           {groupOptions.map((opt) => (
-            <button
+            <GroupToggleButton
               key={opt.value}
+              $active={groupBy === opt.value}
               onClick={() => setGroupBy(opt.value)}
-              className={cn(
-                'px-3 py-1.5 text-sm font-medium transition-colors cursor-pointer',
-                groupBy === opt.value
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-text-secondary hover:bg-gray-50'
-              )}
             >
               {opt.label}
-            </button>
+            </GroupToggleButton>
           ))}
-        </div>
-      </div>
+        </GroupToggleButtons>
+      </GroupToggleRow>
 
-      {/* Kanban columns */}
-      <div className="flex gap-3 overflow-x-auto pb-3 min-h-[400px]">
+      <KanbanBoard>
         {groupedColumns.map((column) => (
-          <div
-            key={column.key}
-            className="min-w-[300px] max-w-[340px] shrink-0 flex flex-col"
-          >
-            {/* Column header */}
-            <div className="flex items-center gap-2 mb-3 px-1">
-              <div
-                className="w-3 h-3 rounded-full shrink-0"
-                style={{ backgroundColor: column.color }}
-              />
-              <span className="text-sm font-semibold text-text-primary">
-                {column.label}
-              </span>
-              <span className="text-xs font-semibold text-text-secondary bg-gray-100 rounded-full px-2 py-0.5">
-                {column.items.length}
-              </span>
-            </div>
+          <KanbanColumn key={column.key}>
+            <ColumnHeader>
+              <ColumnDot $color={column.color} />
+              <ColumnLabel>{column.label}</ColumnLabel>
+              <ColumnCount>{column.items.length}</ColumnCount>
+            </ColumnHeader>
 
-            {/* Cards */}
-            <div className="flex-1 bg-gray-50 rounded-lg p-3 flex flex-col gap-3 min-h-[100px]">
+            <ColumnBody>
               {column.items.length === 0 && (
-                <div className="py-8 text-center">
-                  <span className="text-xs text-text-disabled">אין הנחיות</span>
-                </div>
+                <EmptyColumn>
+                  <EmptyText>אין הנחיות</EmptyText>
+                </EmptyColumn>
               )}
 
               {column.items.map((instruction) => (
-                <div
-                  key={instruction.id}
-                  onClick={() => handleCardClick(instruction)}
-                  className="bg-paper rounded-lg shadow-card hover:shadow-hover hover:-translate-y-px transition-all cursor-pointer text-start p-3"
-                >
-                  {/* Priority + Status + Menu */}
-                  <div className="flex justify-between items-start mb-2">
+                <InstructionCard key={instruction.id} onClick={() => handleCardClick(instruction)}>
+                  <CardTopRow>
                     <PriorityChip priority={instruction.priority} />
-                    <div className="flex items-center gap-1">
+                    <CardActions>
                       <StatusChip status={instruction.status} />
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const rect = e.currentTarget.getBoundingClientRect();
-                          setCardMenu(cardMenu?.id === instruction.id ? null : { id: instruction.id, rect });
-                        }}
-                        className={cn(
-                          'p-1 rounded transition-colors cursor-pointer',
-                          cardMenu?.id === instruction.id
-                            ? 'bg-gray-200 text-text-primary'
-                            : 'hover:bg-gray-100 text-text-secondary'
-                        )}
-                        aria-label="פעולות"
-                      >
-                        <MoreVertical className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
+                      <DropdownMenu>
+                        <CardMenuTrigger aria-label="פעולות">
+                          <MoreVertical size={16} />
+                        </CardMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleCardClick(instruction)}>
+                            <Eye size={16} /> צפה בהנחיה
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          {instruction.status === 'archived'
+                            ? onRestoreInstruction && (
+                                <ColorDropdownMenuItem
+                                  $color="var(--color-success)"
+                                  onClick={() => onRestoreInstruction(instruction.id)}
+                                >
+                                  <Archive size={16} /> שחזור מארכיון
+                                </ColorDropdownMenuItem>
+                              )
+                            : onArchiveInstruction && (
+                                <ColorDropdownMenuItem
+                                  $color="var(--color-warning)"
+                                  onClick={() => onArchiveInstruction(instruction.id)}
+                                >
+                                  <Archive size={16} /> העברה לארכיון
+                                </ColorDropdownMenuItem>
+                              )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </CardActions>
+                  </CardTopRow>
 
-                  {/* Title */}
-                  <div className="flex items-start gap-1.5 mb-2">
-                    {instruction.isImportant && (
-                      <Flag className="w-4 h-4 text-amber-500 fill-amber-500 shrink-0 mt-0.5" />
-                    )}
-                    <p className="text-sm font-semibold text-text-primary leading-relaxed line-clamp-2">
-                      {instruction.title}
-                    </p>
-                  </div>
+                  <CardTitleRow>
+                    {instruction.isImportant && <FlagIcon size={16} />}
+                    <CardTitle>{instruction.title}</CardTitle>
+                  </CardTitleRow>
 
-                  {/* Assignees */}
                   {instruction.assignees.length > 0 && (
-                    <div className="mb-2">
+                    <AssigneesRow>
                       <UserAvatarGroup
                         users={instruction.assignees.map((a) => a.user)}
                         max={3}
                         size={26}
                       />
-                    </div>
+                    </AssigneesRow>
                   )}
 
-                  {/* Bottom row: due date */}
                   {instruction.dueDate && (
-                    <div className="mt-1">
-                      <span
-                        className="text-xs font-medium"
-                        style={{ color: getDueDateColor(instruction.dueDate, instruction.status) }}
-                      >
-                        תג״ב: {formatDate(instruction.dueDate)}
-                      </span>
-                    </div>
+                    <DueDateText
+                      $color={getDueDateColor(new Date(instruction.dueDate), instruction.status)}
+                    >
+                      תג״ב: {formatDate(new Date(instruction.dueDate))}
+                    </DueDateText>
                   )}
-                </div>
+                </InstructionCard>
               ))}
-            </div>
-          </div>
+            </ColumnBody>
+          </KanbanColumn>
         ))}
-      </div>
-    </div>
-
-    {/* Card action menu — rendered via portal */}
-    {cardMenu && (() => {
-      const inst = instructions.find((i) => i.id === cardMenu.id);
-      if (!inst) return null;
-      return createPortal(
-        <div
-          ref={cardMenuRef}
-          className="fixed z-50 bg-paper rounded-lg shadow-xl border border-gray-200 py-1 min-w-[160px]"
-          style={{ top: cardMenu.rect.bottom + 4, left: cardMenu.rect.left }}
-        >
-          <button
-            onClick={() => { handleCardClick(inst); setCardMenu(null); }}
-            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-gray-50 text-start cursor-pointer"
-          >
-            <Eye className="w-4 h-4" /> צפה בהנחיה
-          </button>
-          <div className="border-t border-gray-100 my-1" />
-          {inst.status === 'archived' ? (
-            onRestoreInstruction && (
-              <button
-                onClick={() => { onRestoreInstruction(inst.id); setCardMenu(null); }}
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-gray-50 text-start cursor-pointer text-emerald-600"
-              >
-                <Archive className="w-4 h-4" /> שחזור מארכיון
-              </button>
-            )
-          ) : (
-            onArchiveInstruction && (
-              <button
-                onClick={() => { onArchiveInstruction(inst.id); setCardMenu(null); }}
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-gray-50 text-start cursor-pointer text-amber-600"
-              >
-                <Archive className="w-4 h-4" /> העברה לארכיון
-              </button>
-            )
-          )}
-        </div>,
-        document.body
-      );
-    })()}
-    </>
+      </KanbanBoard>
+    </Root>
   );
 }
+
+const Root = styled.div``;
+
+const GroupToggleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+`;
+
+const GroupToggleLabel = styled.span`
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+`;
+
+const GroupToggleButtons = styled.div`
+  display: inline-flex;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-gray-200);
+  overflow: hidden;
+`;
+
+const GroupToggleButton = styled.button<{ $active: boolean }>`
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms;
+  background-color: ${({ $active }) => ($active ? 'color-mix(in srgb, var(--color-primary) 10%, transparent)' : 'transparent')};
+  color: ${({ $active }) => ($active ? 'var(--color-primary)' : 'var(--color-text-secondary)')};
+
+  &:hover {
+    background-color: ${({ $active }) => ($active ? 'color-mix(in srgb, var(--color-primary) 10%, transparent)' : 'var(--color-gray-50)')};
+  }
+`;
+
+const KanbanBoard = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  min-height: 400px;
+`;
+
+const KanbanColumn = styled.div`
+  min-width: 300px;
+  max-width: 340px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ColumnHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0 0.25rem;
+`;
+
+const ColumnDot = styled.div<ColumnDotProps>`
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  background-color: ${({ $color }) => $color};
+`;
+
+const ColumnLabel = styled.span`
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+`;
+
+const ColumnCount = styled.span`
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background-color: var(--color-gray-100);
+  border-radius: 9999px;
+  padding: 0.125rem 0.5rem;
+`;
+
+const ColumnBody = styled.div`
+  flex: 1;
+  background-color: var(--color-gray-50);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 100px;
+`;
+
+const EmptyColumn = styled.div`
+  padding: 2rem 0;
+  text-align: center;
+`;
+
+const EmptyText = styled.span`
+  font-size: 0.75rem;
+  color: var(--color-text-disabled);
+`;
+
+const InstructionCard = styled.div`
+  background-color: var(--color-paper);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-card);
+  padding: 0.75rem;
+  cursor: pointer;
+  text-align: start;
+  transition: box-shadow 150ms, transform 150ms;
+
+  &:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
+  }
+`;
+
+const CardTopRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+`;
+
+const CardActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+`;
+
+const CardMenuTrigger = styled(DropdownMenuTrigger)`
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  transition: background-color 150ms, color 150ms;
+
+  &:hover {
+    background-color: var(--color-gray-100);
+    color: var(--color-text-primary);
+  }
+`;
+
+const CardTitleRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  margin-bottom: 0.5rem;
+`;
+
+const FlagIcon = styled(Flag)`
+  color: var(--color-warning);
+  fill: var(--color-warning);
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+`;
+
+const CardTitle = styled.p`
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
+const AssigneesRow = styled.div`
+  margin-bottom: 0.5rem;
+`;
+
+const DueDateText = styled.span<DueDateTextProps>`
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+  display: block;
+  color: ${({ $color }) => $color};
+`;
+
+const ColorDropdownMenuItem = styled(DropdownMenuItem)<ColorDropdownMenuItemProps>`
+  color: ${({ $color }) => $color} !important;
+`;

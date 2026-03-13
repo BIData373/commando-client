@@ -129,8 +129,8 @@ CREATE TABLE users (
   name VARCHAR(255) NOT NULL,
   avatar_url VARCHAR(500),
   role VARCHAR(50) DEFAULT 'user', -- 'admin', 'user'
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   last_login TIMESTAMP
 );
 
@@ -143,14 +143,14 @@ CREATE TABLE environments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(255) NOT NULL,
   description TEXT,
-  logo_url VARCHAR(500),
-  created_by UUID REFERENCES users(id),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  logoUrl VARCHAR(500),
+  createdBy UUID REFERENCES users(id),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   archived BOOLEAN DEFAULT FALSE
 );
 
-CREATE INDEX idx_environments_created_by ON environments(created_by);
+CREATE INDEX idx_environments_created_by ON environments(createdBy);
 CREATE INDEX idx_environments_archived ON environments(archived);
 ```
 
@@ -160,7 +160,7 @@ CREATE TABLE roles (
   id SERIAL PRIMARY KEY,
   name VARCHAR(50) UNIQUE NOT NULL, -- 'owner', 'admin', 'member', 'viewer'
   permissions JSONB, -- flexible permissions structure
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 INSERT INTO roles (name, permissions) VALUES
@@ -174,14 +174,14 @@ INSERT INTO roles (name, permissions) VALUES
 ```sql
 CREATE TABLE environment_members (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  environment_id UUID REFERENCES environments(id) ON DELETE CASCADE,
+  environmentId UUID REFERENCES environments(id) ON DELETE CASCADE,
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   role_id INTEGER REFERENCES roles(id),
   joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(environment_id, user_id)
+  UNIQUE(environmentId, user_id)
 );
 
-CREATE INDEX idx_env_members_env ON environment_members(environment_id);
+CREATE INDEX idx_env_members_env ON environment_members(environmentId);
 CREATE INDEX idx_env_members_user ON environment_members(user_id);
 ```
 
@@ -189,7 +189,7 @@ CREATE INDEX idx_env_members_user ON environment_members(user_id);
 ```sql
 CREATE TABLE instruction_statuses (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(50) UNIQUE NOT NULL, -- 'open', 'in_progress', 'completed', 'archived'
+  name VARCHAR(50) UNIQUE NOT NULL, -- 'open', 'inProgress', 'completed', 'archived'
   display_name_he VARCHAR(100) NOT NULL, -- 'פתוח', 'בטיפול', 'הושלם', 'בארכיון'
   color VARCHAR(7), -- hex color for UI
   sort_order INTEGER DEFAULT 0
@@ -197,7 +197,7 @@ CREATE TABLE instruction_statuses (
 
 INSERT INTO instruction_statuses (name, display_name_he, color, sort_order) VALUES
   ('open', 'פתוח', '#3b82f6', 1),
-  ('in_progress', 'בטיפול', '#f59e0b', 2),
+  ('inProgress', 'בטיפול', '#f59e0b', 2),
   ('completed', 'הושלם', '#10b981', 3),
   ('archived', 'בארכיון', '#6b7280', 4);
 ```
@@ -223,25 +223,25 @@ INSERT INTO instruction_priorities (name, display_name_he, color, sort_order) VA
 ```sql
 CREATE TABLE instructions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  environment_id UUID REFERENCES environments(id) ON DELETE CASCADE,
+  environmentId UUID REFERENCES environments(id) ON DELETE CASCADE,
   title VARCHAR(500) NOT NULL,
   description TEXT,
   status_id INTEGER REFERENCES instruction_statuses(id) DEFAULT 1,
   priority_id INTEGER REFERENCES instruction_priorities(id) DEFAULT 2,
   due_date TIMESTAMP,
   source VARCHAR(255), -- e.g., "ישיבת צוות 15/01", "דיון עם מנכ״ל"
-  created_by UUID REFERENCES users(id),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  createdBy UUID REFERENCES users(id),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   completed_at TIMESTAMP,
   archived BOOLEAN DEFAULT FALSE
 );
 
-CREATE INDEX idx_instructions_env ON instructions(environment_id);
+CREATE INDEX idx_instructions_env ON instructions(environmentId);
 CREATE INDEX idx_instructions_status ON instructions(status_id);
 CREATE INDEX idx_instructions_priority ON instructions(priority_id);
 CREATE INDEX idx_instructions_due_date ON instructions(due_date);
-CREATE INDEX idx_instructions_created_by ON instructions(created_by);
+CREATE INDEX idx_instructions_created_by ON instructions(createdBy);
 ```
 
 #### `instruction_assignees`
@@ -263,14 +263,14 @@ CREATE INDEX idx_instruction_assignees_user ON instruction_assignees(user_id);
 ```sql
 CREATE TABLE tags (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  environment_id UUID REFERENCES environments(id) ON DELETE CASCADE,
+  environmentId UUID REFERENCES environments(id) ON DELETE CASCADE,
   name VARCHAR(100) NOT NULL,
   color VARCHAR(7), -- hex color
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(environment_id, name)
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(environmentId, name)
 );
 
-CREATE INDEX idx_tags_env ON tags(environment_id);
+CREATE INDEX idx_tags_env ON tags(environmentId);
 ```
 
 #### `instruction_tags`
@@ -279,7 +279,7 @@ CREATE TABLE instruction_tags (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   instruction_id UUID REFERENCES instructions(id) ON DELETE CASCADE,
   tag_id UUID REFERENCES tags(id) ON DELETE CASCADE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(instruction_id, tag_id)
 );
 
@@ -294,14 +294,14 @@ CREATE TABLE comments (
   instruction_id UUID REFERENCES instructions(id) ON DELETE CASCADE,
   user_id UUID REFERENCES users(id),
   content TEXT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   edited BOOLEAN DEFAULT FALSE
 );
 
 CREATE INDEX idx_comments_instruction ON comments(instruction_id);
 CREATE INDEX idx_comments_user ON comments(user_id);
-CREATE INDEX idx_comments_created_at ON comments(created_at DESC);
+CREATE INDEX idx_comments_created_at ON comments(createdAt DESC);
 ```
 
 #### `attachments`
@@ -328,28 +328,28 @@ CREATE TABLE activity_log (
   user_id UUID REFERENCES users(id),
   action VARCHAR(100) NOT NULL, -- 'created', 'status_changed', 'assigned', 'commented', etc.
   metadata JSONB, -- flexible structure for action details
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_activity_log_instruction ON activity_log(instruction_id);
 CREATE INDEX idx_activity_log_user ON activity_log(user_id);
-CREATE INDEX idx_activity_log_created_at ON activity_log(created_at DESC);
+CREATE INDEX idx_activity_log_created_at ON activity_log(createdAt DESC);
 ```
 
 ### Audit Fields
 
 לכל טבלה רלוונטית מומלץ להוסיף:
-- `created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
-- `updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
-- `created_by UUID REFERENCES users(id)` (לפי הצורך)
+- `createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
+- `updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
+- `createdBy UUID REFERENCES users(id)` (לפי הצורך)
 
-### Triggers for `updated_at`
+### Triggers for `updatedAt`
 
 ```sql
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
-  NEW.updated_at = CURRENT_TIMESTAMP;
+  NEW.updatedAt = CURRENT_TIMESTAMP;
   RETURN NEW;
 END;
 $$ language 'plpgsql';

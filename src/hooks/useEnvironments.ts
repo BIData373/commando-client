@@ -1,116 +1,177 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { environmentsApi } from '@/api/endpoints';
-import { environmentMapper } from '@/api/mappers';
-import type { EnvironmentWithRole, EnvironmentMember, Tag, ResponsibleGroup } from '@/types';
-import type { CreateEnvironmentDto, CreateResponsibleGroupDto } from '@/api/dtos';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { sendRequest } from '../axios';
+import { environmentsApi } from '../mocks/endpoints';
+import type { MutationOptions, QueryOptions } from '../queryClient';
+import type {
+  ICreateEnvironment,
+  ICreateResponsibleGroup,
+  IEnvironmentMember,
+  IEnvironmentWithRole,
+  IResponsibleGroup,
+  ITag,
+} from '../types';
+import { USE_MOCK_API } from '../utils/envUtils';
+
+const environmentsUrl = 'environments';
 
 export const environmentKeys = {
-  all: ['environments'] as const,
-  detail: (id: string) => ['environments', id] as const,
-  members: (id: string) => ['environments', id, 'members'] as const,
-  tags: (id: string) => ['environments', id, 'tags'] as const,
-  responsibleGroups: (id: string) => ['environments', id, 'responsibleGroups'] as const,
+  all: [environmentsUrl] as const,
+  detail: (id: string) => [environmentsUrl, id] as const,
+  members: (id: string) => [environmentsUrl, id, 'members'] as const,
+  tags: (id: string) => [environmentsUrl, id, 'tags'] as const,
+  responsibleGroups: (id: string) => [environmentsUrl, id, 'responsibleGroups'] as const,
 };
 
-export function useEnvironments() {
+interface UpdateResponsibleGroupParams {
+  groupId: string;
+  data: ICreateResponsibleGroup;
+}
+
+export function useEnvironments(options?: QueryOptions<IEnvironmentWithRole[]>) {
   return useQuery({
     queryKey: environmentKeys.all,
-    queryFn: async (): Promise<EnvironmentWithRole[]> => {
-      const data = await environmentsApi.getAll();
-      return data.map(environmentMapper.toDomain);
-    },
+    queryFn: async (): Promise<IEnvironmentWithRole[]> =>
+      USE_MOCK_API
+        ? await environmentsApi.getAll()
+        : await sendRequest<IEnvironmentWithRole[]>({ method: 'GET', url: environmentsUrl }),
+    ...options,
   });
 }
 
-export function useEnvironment(envId: string) {
+export function useEnvironment(envId: string, options?: QueryOptions<IEnvironmentWithRole>) {
   return useQuery({
     queryKey: environmentKeys.detail(envId),
-    queryFn: async (): Promise<EnvironmentWithRole> => {
-      const data = await environmentsApi.getById(envId);
-      return environmentMapper.toDomain(data);
-    },
+    queryFn: async (): Promise<IEnvironmentWithRole> =>
+      USE_MOCK_API
+        ? await environmentsApi.getById(envId)
+        : await sendRequest<IEnvironmentWithRole>({
+            method: 'GET',
+            url: `${environmentsUrl}/${envId}`,
+          }),
     enabled: !!envId,
+    ...options,
   });
 }
 
-export function useCreateEnvironment() {
+export function useCreateEnvironment(options?: MutationOptions<ICreateEnvironment>) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateEnvironmentDto) => environmentsApi.create(data),
-    onSuccess: () => {
+    mutationFn: async (data: ICreateEnvironment) =>
+      USE_MOCK_API
+        ? await environmentsApi.create(data)
+        : await sendRequest<IEnvironmentWithRole>({ method: 'POST', url: environmentsUrl, data }),
+    ...options,
+    onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: environmentKeys.all });
+      options?.onSuccess?.(...args);
     },
   });
 }
 
-// ── Members ──
-
-export function useEnvironmentMembers(envId: string) {
+export function useEnvironmentMembers(envId: string, options?: QueryOptions<IEnvironmentMember[]>) {
   return useQuery({
     queryKey: environmentKeys.members(envId),
-    queryFn: async (): Promise<EnvironmentMember[]> => {
-      const data = await environmentsApi.getMembers(envId);
-      return data.map(environmentMapper.memberToDomain);
-    },
+    queryFn: async (): Promise<IEnvironmentMember[]> =>
+      USE_MOCK_API
+        ? await environmentsApi.getMembers(envId)
+        : await sendRequest<IEnvironmentMember[]>({
+            method: 'GET',
+            url: `${environmentsUrl}/${envId}/members`,
+          }),
     enabled: !!envId,
+    ...options,
   });
 }
 
-// ── Tags ──
-
-export function useEnvironmentTags(envId: string) {
+export function useEnvironmentTags(envId: string, options?: QueryOptions<ITag[]>) {
   return useQuery({
     queryKey: environmentKeys.tags(envId),
-    queryFn: async (): Promise<Tag[]> => {
-      const data = await environmentsApi.getTags(envId);
-      return data.map(environmentMapper.tagToDomain);
-    },
+    queryFn: async (): Promise<ITag[]> =>
+      USE_MOCK_API
+        ? await environmentsApi.getTags(envId)
+        : await sendRequest<ITag[]>({ method: 'GET', url: `${environmentsUrl}/${envId}/tags` }),
     enabled: !!envId,
+    ...options,
   });
 }
 
+// FIX Move to useResponsibleGroup file?
 // ── Responsible Groups ──
 
-export function useResponsibleGroups(envId: string) {
+export function useResponsibleGroups(envId: string, options?: QueryOptions<IResponsibleGroup[]>) {
   return useQuery({
     queryKey: environmentKeys.responsibleGroups(envId),
-    queryFn: async (): Promise<ResponsibleGroup[]> => {
-      const data = await environmentsApi.getResponsibleGroups(envId);
-      return data.map(environmentMapper.responsibleGroupToDomain);
-    },
+    queryFn: async (): Promise<IResponsibleGroup[]> =>
+      USE_MOCK_API
+        ? await environmentsApi.getResponsibleGroups(envId)
+        : await sendRequest<IResponsibleGroup[]>({
+            method: 'GET',
+            url: `${environmentsUrl}/${envId}/responsible-groups`,
+          }),
     enabled: !!envId,
+    ...options,
   });
 }
 
-export function useCreateResponsibleGroup(envId: string) {
+export function useCreateResponsibleGroup(
+  envId: string,
+  options?: MutationOptions<ICreateResponsibleGroup>
+) {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (data: CreateResponsibleGroupDto) =>
-      environmentsApi.createResponsibleGroup(envId, data),
-    onSuccess: () => {
+    mutationFn: async (data: ICreateResponsibleGroup) =>
+      USE_MOCK_API
+        ? await environmentsApi.createResponsibleGroup(envId, data)
+        : await sendRequest<IResponsibleGroup>({
+            method: 'POST',
+            url: `${environmentsUrl}/${envId}/responsible-groups`,
+            data,
+          }),
+    ...options,
+    onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: environmentKeys.responsibleGroups(envId) });
+      options?.onSuccess?.(...args);
     },
   });
 }
 
-export function useUpdateResponsibleGroup(envId: string) {
+export function useUpdateResponsibleGroup(
+  envId: string,
+  options?: MutationOptions<UpdateResponsibleGroupParams>
+) {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: ({ groupId, data }: { groupId: string; data: CreateResponsibleGroupDto }) =>
-      environmentsApi.updateResponsibleGroup(groupId, data),
-    onSuccess: () => {
+    mutationFn: async ({ groupId, data }: UpdateResponsibleGroupParams) =>
+      USE_MOCK_API
+        ? await environmentsApi.updateResponsibleGroup(groupId, data)
+        : await sendRequest<IResponsibleGroup>({
+            method: 'PATCH',
+            url: `/responsible-groups/${groupId}`,
+            data,
+          }),
+    ...options,
+    onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: environmentKeys.responsibleGroups(envId) });
+      options?.onSuccess?.(...args);
     },
   });
 }
 
-export function useDeleteResponsibleGroup(envId: string) {
+export function useDeleteResponsibleGroup(envId: string, options?: MutationOptions<string>) {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (groupId: string) => environmentsApi.deleteResponsibleGroup(groupId),
-    onSuccess: () => {
+    mutationFn: async (groupId: string) =>
+      USE_MOCK_API
+        ? await environmentsApi.deleteResponsibleGroup(groupId)
+        : await sendRequest<void>({ method: 'DELETE', url: `/responsible-groups/${groupId}` }),
+    ...options,
+    onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: environmentKeys.responsibleGroups(envId) });
+      options?.onSuccess?.(...args);
     },
   });
 }

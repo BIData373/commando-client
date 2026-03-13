@@ -6,14 +6,20 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "biome lint ./src",
+    "format": "biome format --write ./src",
+    "check": "biome check --write ./src",
     "preview": "vite preview",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css,scss}\""
+    "postinstall": "lefthook install || echo 'ERROR: lefthook install failed. Git hooks will not be active.'"
   },
   "dependencies": {
+    "@emotion/css": "^11.13.5",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@mui/x-data-grid": "^6.19.5",
     "@tanstack/react-query": "^5.20.5",
     "@tanstack/react-query-devtools": "^5.20.5",
+    "axios": "^1.13.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.575.0",
@@ -26,6 +32,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.6",
+    "@emotion/babel-plugin": "^11.13.5",
     "@tailwindcss/vite": "^4.2.0",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
@@ -35,6 +43,7 @@
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "lefthook": "^2.1.4",
     "msw": "^2.1.5",
     "prettier": "^3.2.5",
     "sass": "^1.70.0",

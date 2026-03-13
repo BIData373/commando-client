@@ -1,9 +1,9 @@
-import type { InstructionStatus, InstructionPriority, DueDateType } from './common';
-import type { UserSummary } from './user';
-import type { Tag } from './environment';
+import type { DueDateType, InstructionPriority, InstructionStatus } from './common';
+import type { ITag } from './environment';
+import type { IUserSummary } from './user';
 
 /** Core Instruction type */
-export interface Instruction {
+export interface IInstruction {
   id: string;
   environmentId: string;
   title: string;
@@ -11,23 +11,23 @@ export interface Instruction {
   status: InstructionStatus;
   priority: InstructionPriority;
   dueDateType: DueDateType;
-  dueDateFrom: Date | null;
-  dueDate: Date | null;
+  dueDateFrom: string | null;
+  dueDate: string | null;
   source: string | null;
-  createdBy: UserSummary;
-  assignees: InstructionAssignee[];
-  tags: Tag[];
+  createdBy: IUserSummary;
+  assignees: IInstructionAssignee[];
+  tags: ITag[];
   commentCount: number;
   attachmentCount: number;
-  createdAt: Date;
-  updatedAt: Date;
-  completedAt: Date | null;
+  createdAt: string;
+  updatedAt: string;
+  completedAt: string | null;
   archived: boolean;
   isImportant: boolean;
 }
 
 /** Instruction list item (lighter version for tables) */
-export interface InstructionListItem {
+export interface IInstructionListItem {
   id: string;
   environmentId: string;
   title: string;
@@ -35,49 +35,53 @@ export interface InstructionListItem {
   status: InstructionStatus;
   priority: InstructionPriority;
   dueDateType: DueDateType;
-  dueDateFrom: Date | null;
-  dueDate: Date | null;
+  dueDateFrom: string | null;
+  dueDate: string | null;
   source: string | null;
-  assignees: InstructionAssignee[];
-  tags: Tag[];
+  assignees: IInstructionAssignee[];
+  tags: ITag[];
   commentCount: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   isImportant: boolean;
 }
 
+export interface IPersonalInstruction extends IInstructionListItem {
+  environmentName: string;
+}
+
 /** Instruction assignee */
-export interface InstructionAssignee {
+export interface IInstructionAssignee {
   id: string;
-  user: UserSummary;
-  assignedAt: Date;
-  assignedBy: UserSummary | null;
+  user: IUserSummary;
+  assignedAt: string;
+  assignedBy: IUserSummary | null;
   status: InstructionStatus;
 }
 
 /** Attachment on an instruction */
-export interface Attachment {
+export interface IAttachment {
   id: string;
   instructionId: string;
   fileName: string;
   fileUrl: string;
   fileSize: number;
   mimeType: string;
-  uploadedBy: UserSummary;
-  uploadedAt: Date;
+  uploadedBy: IUserSummary;
+  uploadedAt: string;
 }
 
 /** Source/Discussion reference */
-export interface Source {
+export interface ISource {
   id: string;
   label: string;
   type: 'meeting' | 'discussion' | 'email' | 'document' | 'other';
-  date: Date | null;
+  date: string | null;
   url: string | null;
 }
 
 /** Dashboard statistics for an environment */
-export interface InstructionStats {
+export interface IInstructionStats {
   total: number;
   open: number;
   inProgress: number;
@@ -86,4 +90,49 @@ export interface InstructionStats {
   overdue: number;
   urgent: number;
   dueSoon: number;
+}
+
+/** Create instruction request */
+export interface ICreateInstruction {
+  title: string;
+  description?: string;
+  status?: InstructionStatus;
+  priority?: InstructionPriority;
+  dueDateType?: DueDateType;
+  dueDateFrom?: string;
+  dueDate?: string;
+  source?: string;
+  assigneeIds?: string[];
+  responsibleGroupIds?: string[];
+  tagIds?: string[];
+  isImportant?: boolean;
+}
+
+/** Update instruction request */
+export interface IUpdateInstruction {
+  title?: string;
+  description?: string;
+  status?: InstructionStatus;
+  priority?: InstructionPriority;
+  dueDateType?: DueDateType;
+  dueDateFrom?: string | null;
+  dueDate?: string | null;
+  source?: string | null;
+  assigneeIds?: string[];
+  responsibleGroupIds?: string[];
+  tagIds?: string[];
+  isImportant?: boolean;
+}
+
+export interface IInstructionFilters {
+  status?: string;
+  priority?: string;
+  assigneeId?: string;
+  tagId?: string;
+  search?: string;
+  overdue?: boolean;
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortDirection?: 'asc' | 'desc';
 }

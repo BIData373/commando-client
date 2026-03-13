@@ -1,22 +1,22 @@
 import type { ActivityAction } from './common';
-import type { UserSummary } from './user';
+import type { IUserSummary } from './user';
 
 /** Activity event metadata - varies by action type */
 export interface ActivityMetadata {
   oldValue?: string;
   newValue?: string;
-  targetUser?: UserSummary;
+  targetUser?: IUserSummary;
   tagName?: string;
   fileName?: string;
   commentPreview?: string;
 }
 
 /** Activity log event */
-export interface ActivityEvent {
+export interface IActivityEvent {
   id: string;
   instructionId: string;
-  user: UserSummary;
+  user: IUserSummary;
   action: ActivityAction;
   metadata: ActivityMetadata;
-  createdAt: Date;
+  createdAt: string;
 }

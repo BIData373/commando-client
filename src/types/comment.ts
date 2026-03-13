@@ -1,12 +1,17 @@
-import type { UserSummary } from './user';
+import type { IUserSummary } from './user';
 
 /** Comment on an instruction */
-export interface Comment {
+export interface IComment {
   id: string;
   instructionId: string;
-  user: UserSummary;
+  user: IUserSummary;
   content: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   edited: boolean;
+}
+
+/** Create comment request */
+export interface ICreateComment {
+  content: string;
 }

@@ -1,6 +1,13 @@
-import type { QuickFilterType } from '@/hooks/useTablePreferences';
+import styled from '@emotion/styled';
+import type { QuickFilterType } from '../../hooks/useTablePreferences';
 
 export type { QuickFilterType };
+
+interface FilterChip {
+  value: QuickFilterType;
+  label: string;
+  color: string;
+}
 
 interface InstructionFiltersProps {
   activeQuickFilter: QuickFilterType;
@@ -9,42 +16,69 @@ interface InstructionFiltersProps {
   endAdornment?: React.ReactNode;
 }
 
-const quickFilterChips: { value: QuickFilterType; label: string; color: string }[] = [
-  { value: 'all', label: 'הכול', color: '#3b82f6' },
-  { value: 'overdue', label: 'חריגה מתג״ב', color: '#ef4444' },
-  { value: 'routine', label: 'הנחיות שוטפות', color: '#10b981' },
-  { value: 'important', label: 'הנחיות חשובות', color: '#f59e0b' },
-  { value: 'archived', label: 'ארכיון', color: '#9ca3af' },
+const quickFilterChips: FilterChip[] = [
+  { value: 'all', label: 'הכול', color: 'var(--color-info)' },
+  { value: 'overdue', label: 'חריגה מתג״ב', color: 'var(--color-error)' },
+  { value: 'routine', label: 'הנחיות שוטפות', color: 'var(--color-success)' },
+  { value: 'important', label: 'הנחיות חשובות', color: 'var(--color-warning)' },
+  { value: 'archived', label: 'ארכיון', color: 'var(--color-text-disabled)' },
 ];
 
-export function InstructionFilters({
+export default function InstructionFilters({
   activeQuickFilter,
   onQuickFilterChange,
   endAdornment,
 }: InstructionFiltersProps) {
   return (
-    <div className="flex items-center justify-between flex-wrap gap-2">
-      <div className="flex gap-2 flex-wrap">
-        {quickFilterChips.map((chip) => {
-          const isActive = activeQuickFilter === chip.value;
-          return (
-            <button
-              key={chip.value}
-              onClick={() => onQuickFilterChange(chip.value)}
-              className="rounded-full px-3 py-1 text-sm font-medium transition-colors cursor-pointer border"
-              style={{
-                borderColor: isActive ? chip.color : '#e5e7eb',
-                backgroundColor: isActive ? `${chip.color}15` : 'transparent',
-                color: isActive ? chip.color : '#6b7280',
-              }}
-              aria-label={`סנן לפי ${chip.label}`}
-            >
-              {chip.label}
-            </button>
-          );
-        })}
-      </div>
+    <Root>
+      <ChipList>
+        {quickFilterChips.map((chip) => (
+          <Chip
+            key={chip.value}
+            $active={activeQuickFilter === chip.value}
+            $color={chip.color}
+            onClick={() => onQuickFilterChange(chip.value)}
+            aria-label={`סנן לפי ${chip.label}`}
+          >
+            {chip.label}
+          </Chip>
+        ))}
+      </ChipList>
       {endAdornment}
-    </div>
+    </Root>
   );
 }
+
+const Root = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
+
+const ChipList = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+`;
+
+const Chip = styled.button<{ $active: boolean; $color: string }>`
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 150ms, color 150ms, border-color 150ms;
+  cursor: pointer;
+  border: 1px solid;
+  border-color: ${({ $active, $color }) => ($active ? $color : 'var(--color-gray-200)')};
+  background-color: ${({ $active, $color }) =>
+    $active ? `color-mix(in srgb, ${$color} 12%, transparent)` : 'transparent'};
+  color: ${({ $active, $color }) => ($active ? $color : 'var(--color-text-secondary)')};
+
+  &:hover {
+    border-color: ${({ $color }) => $color};
+    color: ${({ $color }) => $color};
+    background-color: ${({ $color }) => `color-mix(in srgb, ${$color} 8%, transparent)`};
+  }
+`;

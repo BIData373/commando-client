@@ -1,13 +1,25 @@
-import { useState, useMemo } from 'react';
+import { keyframes } from '@emotion/react';
+import styled from '@emotion/styled';
 import {
-  PlusCircle, ArrowLeftRight, UserPlus, UserMinus,
-  MessageCircle, Pencil, Tag, Calendar,
-  AlertTriangle, Paperclip, Archive, RotateCcw, ArrowRight,
+  AlertTriangle,
+  Archive,
+  ArrowLeftRight,
+  ArrowRight,
+  Calendar,
+  MessageCircle,
+  Paperclip,
+  Pencil,
+  PlusCircle,
+  RotateCcw,
+  Tag,
+  UserMinus,
+  UserPlus,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Spinner } from '@/components/ui';
-import { useActivity } from '@/hooks/useActivity';
-import type { ActivityEvent, ActivityAction } from '@/types';
+import { type MouseEvent, type ReactNode, useState } from 'react';
+import { useActivity } from '../../hooks/useActivity';
+import type { ActivityAction, IActivityEvent } from '../../types';
+import { formatDateTime } from '../../utils/dateUtils';
+import Spinner from '../shared/Spinner';
 
 interface ActivityTimelineProps {
   open: boolean;
@@ -15,30 +27,83 @@ interface ActivityTimelineProps {
   instructionId: string;
 }
 
-const ACTION_CONFIG: Record<ActivityAction, { icon: React.ReactNode; label: string; color: string; group: string }> = {
-  created: { icon: <PlusCircle className="w-3.5 h-3.5" />, label: 'יצר את ההנחיה', color: '#3f51b5', group: 'כללי' },
-  status_changed: { icon: <ArrowLeftRight className="w-3.5 h-3.5" />, label: 'שינה מצב', color: '#f59e0b', group: 'מצב' },
-  assigned: { icon: <UserPlus className="w-3.5 h-3.5" />, label: 'שיבץ', color: '#10b981', group: 'שיבוץ' },
-  unassigned: { icon: <UserMinus className="w-3.5 h-3.5" />, label: 'הסיר שיבוץ', color: '#ef4444', group: 'שיבוץ' },
-  commented: { icon: <MessageCircle className="w-3.5 h-3.5" />, label: 'דיווח', color: '#3b82f6', group: 'דיווחים' },
-  edited: { icon: <Pencil className="w-3.5 h-3.5" />, label: 'עדכן', color: '#8b5cf6', group: 'עדכון' },
-  tag_added: { icon: <Tag className="w-3.5 h-3.5" />, label: 'הוסיף סימון', color: '#06b6d4', group: 'סימונים' },
-  tag_removed: { icon: <Tag className="w-3.5 h-3.5" />, label: 'הסיר סימון', color: '#6b7280', group: 'סימונים' },
-  due_date_changed: { icon: <Calendar className="w-3.5 h-3.5" />, label: 'שינה תג״ב', color: '#f59e0b', group: 'עדכון' },
-  priority_changed: { icon: <AlertTriangle className="w-3.5 h-3.5" />, label: 'שינה דחיפות', color: '#ef4444', group: 'עדכון' },
-  attachment_added: { icon: <Paperclip className="w-3.5 h-3.5" />, label: 'הוסיף קובץ', color: '#10b981', group: 'קבצים' },
-  attachment_removed: { icon: <Paperclip className="w-3.5 h-3.5" />, label: 'הסיר קובץ', color: '#6b7280', group: 'קבצים' },
-  archived: { icon: <Archive className="w-3.5 h-3.5" />, label: 'העביר לארכיון', color: '#6b7280', group: 'כללי' },
-  restored: { icon: <RotateCcw className="w-3.5 h-3.5" />, label: 'שחזר מארכיון', color: '#3b82f6', group: 'כללי' },
+const ACTION_CONFIG: Record<
+  ActivityAction,
+  { icon: ReactNode; label: string; color: string; group: string }
+> = {
+  created: {
+    icon: <PlusCircle size={14} />,
+    label: 'יצר את ההנחיה',
+    color: '#3f51b5',
+    group: 'כללי',
+  },
+  statusChanged: {
+    icon: <ArrowLeftRight size={14} />,
+    label: 'שינה מצב',
+    color: '#f59e0b',
+    group: 'מצב',
+  },
+  assigned: { icon: <UserPlus size={14} />, label: 'שיבץ', color: '#10b981', group: 'שיבוץ' },
+  unassigned: {
+    icon: <UserMinus size={14} />,
+    label: 'הסיר שיבוץ',
+    color: '#ef4444',
+    group: 'שיבוץ',
+  },
+  commented: {
+    icon: <MessageCircle size={14} />,
+    label: 'דיווח',
+    color: '#3b82f6',
+    group: 'דיווחים',
+  },
+  edited: { icon: <Pencil size={14} />, label: 'עדכן', color: '#8b5cf6', group: 'עדכון' },
+  tagAdded: { icon: <Tag size={14} />, label: 'הוסיף סימון', color: '#06b6d4', group: 'סימונים' },
+  tagRemoved: { icon: <Tag size={14} />, label: 'הסיר סימון', color: '#6b7280', group: 'סימונים' },
+  dueDateChanged: {
+    icon: <Calendar size={14} />,
+    label: 'שינה תג״ב',
+    color: '#f59e0b',
+    group: 'עדכון',
+  },
+  priorityChanged: {
+    icon: <AlertTriangle size={14} />,
+    label: 'שינה דחיפות',
+    color: '#ef4444',
+    group: 'עדכון',
+  },
+  attachmentAdded: {
+    icon: <Paperclip size={14} />,
+    label: 'הוסיף קובץ',
+    color: '#10b981',
+    group: 'קבצים',
+  },
+  attachmentRemoved: {
+    icon: <Paperclip size={14} />,
+    label: 'הסיר קובץ',
+    color: '#6b7280',
+    group: 'קבצים',
+  },
+  archived: {
+    icon: <Archive size={14} />,
+    label: 'העביר לארכיון',
+    color: '#6b7280',
+    group: 'כללי',
+  },
+  restored: {
+    icon: <RotateCcw size={14} />,
+    label: 'שחזר מארכיון',
+    color: '#3b82f6',
+    group: 'כללי',
+  },
 };
 
 const FILTER_GROUPS = [...new Set(Object.values(ACTION_CONFIG).map((c) => c.group))];
 
-function getActivityDescription(event: ActivityEvent): string {
+function getActivityDescription(event: IActivityEvent): string {
   const config = ACTION_CONFIG[event.action];
   let desc = config.label;
 
-  if (event.action === 'status_changed' && event.metadata.oldValue && event.metadata.newValue) {
+  if (event.action === 'statusChanged' && event.metadata.oldValue && event.metadata.newValue) {
     desc += ` מ-"${event.metadata.oldValue}" ל-"${event.metadata.newValue}"`;
   }
   if (event.action === 'assigned' && event.metadata.targetUser) {
@@ -47,13 +112,13 @@ function getActivityDescription(event: ActivityEvent): string {
   if (event.action === 'unassigned' && event.metadata.targetUser) {
     desc += ` את ${event.metadata.targetUser.name}`;
   }
-  if ((event.action === 'tag_added' || event.action === 'tag_removed') && event.metadata.tagName) {
+  if ((event.action === 'tagAdded' || event.action === 'tagRemoved') && event.metadata.tagName) {
     desc += `: ${event.metadata.tagName}`;
   }
-  if (event.action === 'priority_changed' && event.metadata.oldValue && event.metadata.newValue) {
+  if (event.action === 'priorityChanged' && event.metadata.oldValue && event.metadata.newValue) {
     desc += ` מ-"${event.metadata.oldValue}" ל-"${event.metadata.newValue}"`;
   }
-  if (event.action === 'due_date_changed' && event.metadata.oldValue && event.metadata.newValue) {
+  if (event.action === 'dueDateChanged' && event.metadata.oldValue && event.metadata.newValue) {
     desc += ` מ-${event.metadata.oldValue} ל-${event.metadata.newValue}`;
   }
   if (event.action === 'commented' && event.metadata.commentPreview) {
@@ -63,122 +128,226 @@ function getActivityDescription(event: ActivityEvent): string {
   return desc;
 }
 
-function formatDateTime(date: Date): string {
-  return date.toLocaleDateString('he-IL', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
-export function ActivityTimeline({ open, onClose, instructionId }: ActivityTimelineProps) {
+export default function ActivityTimeline({ open, onClose, instructionId }: ActivityTimelineProps) {
   const { data: events, isLoading } = useActivity(instructionId);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
-  const filteredEvents = useMemo(() => {
-    if (!events) return [];
-    if (!activeFilter) return events;
-    return events.filter((e) => ACTION_CONFIG[e.action].group === activeFilter);
-  }, [events, activeFilter]);
-
   if (!open) return null;
 
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-stretch justify-end bg-slate-900/10 backdrop-blur-[2px]"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white w-full max-w-sm h-full shadow-xl animate-slide-in-right p-8 overflow-y-auto border-s border-slate-100"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-lg font-bold text-slate-900">יומן פעילות</h2>
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-slate-900 transition-colors cursor-pointer"
-            aria-label="סגור"
-          >
-            <ArrowRight size={24} className="rotate-180" />
-          </button>
-        </div>
+  const filteredEvents = !events
+    ? []
+    : !activeFilter
+      ? events
+      : events.filter((e) => ACTION_CONFIG[e.action].group === activeFilter);
 
-        {/* Filter chips */}
-        <div className="flex flex-wrap gap-1.5 mb-6">
-          <button
-            onClick={() => setActiveFilter(null)}
-            className={cn(
-              'px-2.5 py-1 rounded-md text-[10px] font-bold border transition-colors cursor-pointer',
-              !activeFilter
-                ? 'bg-indigo-50 text-indigo-600 border-indigo-100'
-                : 'bg-slate-50 text-slate-400 border-slate-100 hover:bg-slate-100'
-            )}
-          >
+  function handleClickDrawer(e: MouseEvent<HTMLDivElement>) {
+    e.stopPropagation();
+  }
+
+  function handleClickFilterChip() {
+    setActiveFilter(null);
+  }
+
+  return (
+    <Overlay onClick={onClose}>
+      <Drawer onClick={handleClickDrawer}>
+        <DrawerHeader>
+          <DrawerTitle>יומן פעילות</DrawerTitle>
+
+          <CloseButton onClick={onClose} aria-label="סגור">
+            <RotatedArrow size={24} />
+          </CloseButton>
+        </DrawerHeader>
+
+        <FilterRow>
+          <FilterChip $active={!activeFilter} onClick={handleClickFilterChip}>
             הכל
-          </button>
+          </FilterChip>
+
           {FILTER_GROUPS.map((group) => (
-            <button
+            <FilterChip
               key={group}
+              $active={activeFilter === group}
               onClick={() => setActiveFilter(group)}
-              className={cn(
-                'px-2.5 py-1 rounded-md text-[10px] font-bold border transition-colors cursor-pointer',
-                activeFilter === group
-                  ? 'bg-indigo-50 text-indigo-600 border-indigo-100'
-                  : 'bg-slate-50 text-slate-400 border-slate-100 hover:bg-slate-100'
-              )}
             >
               {group}
-            </button>
+            </FilterChip>
           ))}
-        </div>
+        </FilterRow>
 
-        {/* Loading */}
         {isLoading && (
-          <div className="py-8 text-center">
-            <Spinner size={24} />
-          </div>
+          <CenteredRow>
+            <Spinner $size={24} />
+          </CenteredRow>
         )}
 
-        {/* Empty */}
         {filteredEvents.length === 0 && !isLoading && (
-          <div className="py-8 text-center">
-            <span className="text-sm text-slate-400">
-              {activeFilter ? 'אין אירועים מסוג זה' : 'אין רשומות ביומן'}
-            </span>
-          </div>
+          <CenteredRow>
+            <EmptyText>{activeFilter ? 'אין אירועים מסוג זה' : 'אין רשומות ביומן'}</EmptyText>
+          </CenteredRow>
         )}
 
-        {/* Timeline */}
         {filteredEvents.length > 0 && (
-          <div className="space-y-8 relative before:absolute before:end-2 before:top-2 before:bottom-2 before:w-px before:bg-slate-100">
+          <Timeline>
             {filteredEvents.map((event) => (
-              <div key={event.id} className="relative pe-8">
-                <div className="absolute end-0.5 top-1.5 w-3 h-3 rounded-full bg-white border-2 border-slate-200 z-10" />
-                <div className="text-[10px] font-bold text-slate-400 mb-1">
-                  {formatDateTime(event.createdAt)}
-                </div>
-                <div className="text-xs text-slate-700">
-                  <span className="font-bold text-slate-900">{event.user.name}</span>{' '}
-                  {getActivityDescription(event)}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              <TimelineItem key={event.id}>
+                <TimelineDot />
 
-      <style>{`
-        @keyframes slide-in-right {
-          from { transform: translateX(100%); }
-          to { transform: translateX(0); }
-        }
-        .animate-slide-in-right {
-          animation: slide-in-right 0.4s cubic-bezier(0.05, 0.7, 0.1, 1);
-        }
-      `}</style>
-    </div>
+                <EventTime>{formatDateTime(new Date(event.createdAt))}</EventTime>
+
+                <EventText>
+                  <EventAuthor>{event.user.name}</EventAuthor> {getActivityDescription(event)}
+                </EventText>
+              </TimelineItem>
+            ))}
+          </Timeline>
+        )}
+      </Drawer>
+    </Overlay>
   );
 }
+
+const slideInRight = keyframes`
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+`;
+
+const Overlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  background-color: rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(2px);
+`;
+
+const Drawer = styled.div`
+  animation: ${slideInRight} 0.4s cubic-bezier(0.05, 0.7, 0.1, 1);
+  background-color: var(--color-paper);
+  width: 100%;
+  max-width: 24rem;
+  height: 100%;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  padding: 2rem;
+  overflow-y: auto;
+  border-inline-start: 1px solid var(--color-gray-100);
+`;
+
+const DrawerHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+`;
+
+const DrawerTitle = styled.h2`
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+`;
+
+const CloseButton = styled.button`
+  color: var(--color-text-disabled);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 150ms;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    color: var(--color-text-primary);
+  }
+`;
+
+const RotatedArrow = styled(ArrowRight)`
+  transform: rotate(180deg);
+`;
+
+const FilterRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 1.5rem;
+`;
+
+const FilterChip = styled.button<{ $active: boolean }>`
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid;
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms;
+
+  background-color: ${({ $active }) => ($active ? 'color-mix(in srgb, var(--color-primary) 8%, transparent)' : 'var(--color-gray-50)')};
+  color: ${({ $active }) => ($active ? 'var(--color-primary)' : 'var(--color-text-disabled)')};
+  border-color: ${({ $active }) => ($active ? 'color-mix(in srgb, var(--color-primary) 20%, transparent)' : 'var(--color-gray-100)')};
+
+  &:hover {
+    background-color: ${({ $active }) => ($active ? 'color-mix(in srgb, var(--color-primary) 8%, transparent)' : 'var(--color-gray-100)')};
+  }
+`;
+
+const CenteredRow = styled.div`
+  padding: 2rem 0;
+  text-align: center;
+`;
+
+const EmptyText = styled.span`
+  font-size: 0.875rem;
+  color: var(--color-text-disabled);
+`;
+
+const Timeline = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset-inline-end: 0.5rem;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 1px;
+    background-color: var(--color-gray-100);
+  }
+`;
+
+const TimelineItem = styled.div`
+  position: relative;
+  padding-inline-end: 2rem;
+`;
+
+const TimelineDot = styled.div`
+  position: absolute;
+  inset-inline-end: 0.125rem;
+  top: 0.375rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+  background-color: var(--color-paper);
+  border: 2px solid var(--color-gray-200);
+  z-index: 1;
+`;
+
+const EventTime = styled.div`
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-text-disabled);
+  margin-bottom: 0.25rem;
+`;
+
+const EventText = styled.div`
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+`;
+
+const EventAuthor = styled.span`
+  font-weight: 700;
+  color: var(--color-text-primary);
+`;

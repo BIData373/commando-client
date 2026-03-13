@@ -1,5 +1,5 @@
-import { createTheme } from '@mui/material/styles';
 import { heIL } from '@mui/material/locale';
+import { createTheme } from '@mui/material/styles';
 
 // RTL theme configuration for Hebrew
 export const theme = createTheme(
