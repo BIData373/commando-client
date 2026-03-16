@@ -1,4 +1,4 @@
-import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card'
 import styled from '@emotion/styled'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
