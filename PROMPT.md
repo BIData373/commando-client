@@ -4,26 +4,17 @@ Make sure to read @CLAUDE.md for an overview, DO NOT scan the codebase unless ab
 
 Your job today is the following:
 
-1. To create all of our route files for our software, TanStack Dev Server generates the code automatically, you just need to make the file
-
-- / - the home page
-- /new-workspace - a modal on top of the home page for requesting a new workspace
-- /personal - the users personal area
-- /workspace/:urlName
-  - / - maps automatically to /tasks
-  - /tasks
-    - / - a single workspaces tasks, has an enum paramater called `view`` (TABLE | CARDS)
-    - /:taskId - a singular task, behaves like a modal on top of /tasks/ unless navigated to directly
-    - /new - allows the creation of a task, behaves like a modal on top /tasks/
-  - /dashboard - a high level overview of the users workspace with statistics
-  - /settings - configuration for the workspace
-    - /general - workspace name, image, etc.
-    - /assignees - a list of cards that are the assignees who can receive tasks
-    - /permissions - a search and list to add users via email and change their permission level
+1. Update @src/components/Header.tsx so that it follows the following design from the Figma MCP https://www.figma.com/design/mny5BO79QxDcen9OSZILcQ/%F0%9F%A7%A9-%D7%9E%D7%A6%D7%A4%D7%9F-%D7%94%D7%9E%D7%A4%D7%A7%D7%93?node-id=4008-1162&t=LVLD4U9XAqCoPKlg-4
+   1. Ensure that the right side image is a placeholder word Logo
+   2. Convert the left side to an Avatar and DropdownMenu
+   3. The middle title can remain as is, and again another placeholder word (Workspace Icon) instead of the image
 
 DO NOT fabricate, if something is unclear, ask clarifying questions!
 Make no mistakes and clarify anything that is not understood
 Do not test things or verify builds, I will always do that manually
+
+DO NOT create new components unless they do not exist in Shadcn
+DO NOT write inline CSS, if CSS is required use Emotion
 
 Once your task is complete:
 

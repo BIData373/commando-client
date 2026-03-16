@@ -125,10 +125,34 @@ const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
 
 ---
 
+## Known CSS Variables (from existing components)
+
+| Variable               | Usage                          |
+| ---------------------- | ------------------------------ |
+| `var(--header-bg)`     | Header background              |
+| `var(--line)`          | Border color                   |
+| `var(--chip-bg)`       | Pill/chip background           |
+| `var(--chip-line)`     | Pill/chip border               |
+| `var(--sea-ink)`       | Primary text color             |
+| `var(--sea-ink-soft)`  | Secondary/muted text           |
+| `var(--link-bg-hover)` | Nav link hover background      |
+| `var(--z-dropdown)`    | Z-index for dropdowns/overlays |
+
+## Static Assets (`public/`)
+
+| File                 | Description                                    |
+| -------------------- | ---------------------------------------------- |
+| `workspace-icon.png` | 32px circular workspace logo (PNG 800×796)     |
+| `logo.svg`           | App logo used in Header right side             |
+
+## Component Notes
+
+**Header.tsx** — 3-column CSS Grid (`1fr auto 1fr`). Left: Avatar+DropdownMenu pill (`UserTrigger` styled.button with `asChild`). Center: workspace name + 32px `WorkspaceIcon` img. Right: `NavLink` (styled TanStack `Link`) items + `LogoImage`. ThemeToggle lives in the user dropdown as a `DropdownMenuItem` with `onSelect={(e) => e.preventDefault()}` to prevent menu close on toggle.
+
+---
+
 # Workflow (MANDATORY — follow for every file)
 
 1. **INGEST** — Review the provided file/component.
 2. **PLAN** — List required changes to meet standards. Ask if unclear.
 3. **EXECUTE** — Output fully refactored, production-ready code only.
-4. **AGGREGATE** — Update `claude-context.md` with session context.
-5. **HARD STOP** — Output exactly: `Awaiting your approval to proceed.` Do NOT continue until explicitly approved.
