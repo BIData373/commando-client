@@ -8,8 +8,11 @@ Make sure to read @CLAUDE.md for an overview, DO NOT scan the codebase unless ab
 
 Your job today is the following:
 
-1. Restructure @src/routes/__root.tsx
-   1. Make `Header` stay on top and then have the `Outlet` content become scrollable if necessary, use flex
+1. Update @src/routes/workspace/$urlName/settings/assignees.tsx
+   1. Add a row above the checkbox row
+      1. A search input with the placeholder ""
+      2. A button that has primary background with the text "צור אחראי" and a plus icon
+2. Update @src/routes/workspace/$urlName/settings/general.tsx so that all the inputs are the same width, make a fixed width parent container
 
 
 DO NOT fabricate, if something is unclear, ask clarifying questions!

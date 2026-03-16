@@ -229,6 +229,16 @@ function SettingsAssignees() {
   )
 }
 
+const SearchWrapper = styled.div`
+  flex: 1;
+`
+
+const ToolbarRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`
+
 const AssigneesRoot = styled.div`
   display: flex;
   flex-direction: column;
