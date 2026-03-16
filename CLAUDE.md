@@ -147,7 +147,7 @@ const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
 
 ## Component Notes
 
-**WorkspaceHeader.tsx** — 3-column CSS Grid (`1fr auto 1fr`). Props: `disableLeftSection?: boolean`, `workspace?: { name: string; iconUrl: string }`. Left: Avatar+DropdownMenu pill (`UserTrigger` 52px tall, `padding-inline-start: 16px`, `padding-inline-end: 6px`, icons `size={20}`); hidden when `disableLeftSection` is true. Center: workspace name + 32px `WorkspaceIcon` img; hidden when `workspace` is undefined. Right: `NavMenuLink` (styled TanStack `Link`) items + `LogoImage`. ThemeToggle lives in the user dropdown as a `DropdownMenuItem` with `onSelect={(e) => e.preventDefault()}` to prevent menu close on toggle. Background uses `var(--header-bg)`.
+**Header.tsx** — Returns a fragment: `<HeaderRoot>` (sticky colored bar) + optional `<TitleBar>` below it. `HeaderRoot` uses 3-column CSS Grid (`1fr auto 1fr`). Config read via `useMatches()` → `HeaderConfig`: `{ title, navigation, user, workspace }`. Left: Avatar+DropdownMenu pill (`UserTrigger` 52px tall, icons `size={20}`); shown when `user` is true. Center: workspace name; shown when `workspace` is true. Right: `NavMenuLink` items + `LogoImage`; shown when `navigation` is true. ThemeToggle lives in user dropdown with `onSelect={(e) => e.preventDefault()}`. `TitleBar` renders below the bar only when `title` is non-empty — `PageTitle` is an `h1`, `text-align: start` (RTL logical = visual right).
 
 ---
 

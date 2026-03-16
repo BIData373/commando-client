@@ -3,6 +3,7 @@ import { Outlet, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import Header from '../components/Header'
 
+import { StrictMode } from 'react'
 import '../styles.css'
 
 export const Route = createRootRoute({
@@ -11,7 +12,7 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <>
+    <StrictMode>
       <Header />
       <Outlet />
       <TanStackDevtools
@@ -25,6 +26,6 @@ function RootComponent() {
           },
         ]}
       />
-    </>
+    </StrictMode>
   )
 }

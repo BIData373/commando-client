@@ -5,7 +5,7 @@ Make sure to read @CLAUDE.md for an overview, DO NOT scan the codebase unless ab
 Your job today is the following:
 
 1. Update @src/components/Header.tsx 
-   
+  1. Add a new section below the colored header bar for the title, make it on the right side, make it h1 and use the `title` from the `header` config
 
 
 DO NOT fabricate, if something is unclear, ask clarifying questions!

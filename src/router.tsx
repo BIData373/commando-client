@@ -1,7 +1,7 @@
-import { createRouter as createTanStackRouter } from '@tanstack/react-router'
+import { createRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 
-const router = createTanStackRouter({
+const router = createRouter({
   routeTree,
 
   scrollRestoration: true,

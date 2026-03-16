@@ -1,6 +1,6 @@
 import type { HeaderConfig } from '#/router'
 import styled from '@emotion/styled'
-import { Link, useMatches, type LinkComponentProps } from '@tanstack/react-router'
+import { Link, useRouterState, type LinkComponentProps } from '@tanstack/react-router'
 import { ChevronDown, User } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import { Avatar, AvatarFallback } from './ui/avatar'
@@ -20,70 +20,80 @@ export default function Header() {
     { to: '/workspace/$urlName/dashboard', children: 'בית' }
   ]
 
-  const matches = useMatches()
-  const { title = '', navigation = true, user = true, workspace = false } = (matches.reverse().find(m => m.staticData.header) ?? {}) as HeaderConfig
+  const { matches } = useRouterState()
+  const headerConfig = matches.findLast(m => m.staticData.header)?.staticData.header as HeaderConfig | undefined
+  const { title = '', navigation = true, user = true, workspace = false } = headerConfig ?? {}
 
   return (
-    <HeaderRoot>
-      <HeaderInner>
-        <LeftSection>
-          {user && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <UserTrigger>
-                  <ChevronDown size={20} />
-                  <Avatar>
-                    <AvatarFallback>
-                      <User size={20} />
-                    </AvatarFallback>
-                  </Avatar>
-                </UserTrigger>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  <ThemeToggle />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </LeftSection>
+    <HeaderContainer>
+      <HeaderRoot>
+        <HeaderInner>
+          <LeftSection>
+            {user && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <UserTrigger>
+                    <ChevronDown size={20} />
+                    <Avatar>
+                      <AvatarFallback>
+                        <User size={20} />
+                      </AvatarFallback>
+                    </Avatar>
+                  </UserTrigger>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <ThemeToggle />
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </LeftSection>
 
-        <CenterSection>
-          {workspace && (
-            <>
-              {/* <WorkspaceName>{workspace.name}</WorkspaceName>
-              <WorkspaceIcon src={workspace.iconUrl} alt="Workspace icon" /> */}
-              <WorkspaceName>Example Workspace</WorkspaceName>
-              {/* <WorkspaceIcon src={workspace.iconUrl} alt="Workspace icon" /> */}
-            </>
-          )}
-        </CenterSection>
+          <CenterSection>
+            {workspace && (
+              <>
+                <WorkspaceName>Example Workspace</WorkspaceName>
+                <WorkspaceIcon src="/public/workspace-icon.png" alt="Workspace icon" />
+              </>
+            )}
+          </CenterSection>
 
-        <RightSection>
-          {navigation && (
-            <NavigationMenu>
-              <NavigationMenuList>
-                {links.map((link, index) => (
-                  <NavigationMenuItem key={index}>
-                    <NavMenuLink asChild>
-                      <Link to={link.to}>{link.children}</Link>
-                    </NavMenuLink>
-                  </NavigationMenuItem>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
-          )}
-          <LogoImage src="/logo.svg" alt="Logo" />
-        </RightSection>
-      </HeaderInner>
-    </HeaderRoot>
+          <RightSection>
+            {navigation && (
+              <NavigationMenu>
+                <NavigationMenuList>
+                  {links.map((link, index) => (
+                    <NavigationMenuItem key={index}>
+                      <NavMenuLink asChild>
+                        <Link to={link.to}>{link.children}</Link>
+                      </NavMenuLink>
+                    </NavigationMenuItem>
+                  ))}
+                </NavigationMenuList>
+              </NavigationMenu>
+            )}
+            <LogoImage src="/logo.svg" alt="Logo" />
+          </RightSection>
+        </HeaderInner>
+      </HeaderRoot>
+
+      {title && (
+        <TitleBar>
+          <PageTitle>{title}</PageTitle>
+        </TitleBar>
+      )}
+    </HeaderContainer>
   )
 }
 
+const HeaderContainer = styled.div`
+  margin: 20px 32px 28px 32px;
+`
+
 const HeaderRoot = styled.header`
   position: sticky;
-  margin: 20px 32px 28px 32px;
   top: 0;
   background: oklch(0.2077 0.038 275.77);
   border-bottom: 1px solid var(--line);
@@ -153,6 +163,19 @@ const LogoImage = styled.img`
   height: 28px;
   margin-inline-start: 28px;
   object-fit: contain;
+`
+
+const TitleBar = styled.div`
+  direction: rtl;
+  padding-block: 16px 8px;
+  text-align: start;
+`
+
+const PageTitle = styled.h1`
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--sea-ink);
 `
 
 const NavMenuLink = styled(NavigationMenuLink)`
