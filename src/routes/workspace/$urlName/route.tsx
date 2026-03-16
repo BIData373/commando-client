@@ -1,4 +1,3 @@
-import WorkspaceHeader from '#/components/WorkspaceHeader'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/workspace/$urlName')({
@@ -8,7 +7,6 @@ export const Route = createFileRoute('/workspace/$urlName')({
 function RouteComponent() {
   return (
     <>
-      <WorkspaceHeader />
       <Outlet />
     </>
   )

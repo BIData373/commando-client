@@ -4,10 +4,11 @@ Make sure to read @CLAUDE.md for an overview, DO NOT scan the codebase unless ab
 
 Your job today is the following:
 
-1. Update @src/components/Header.tsx so that it follows the following design from the Figma MCP https://www.figma.com/design/mny5BO79QxDcen9OSZILcQ/%F0%9F%A7%A9-%D7%9E%D7%A6%D7%A4%D7%9F-%D7%94%D7%9E%D7%A4%D7%A7%D7%93?node-id=4008-1162&t=LVLD4U9XAqCoPKlg-4
-   1. Ensure that the right side image is a placeholder word Logo
-   2. Convert the left side to an Avatar and DropdownMenu
-   3. The middle title can remain as is, and again another placeholder word (Workspace Icon) instead of the image
+1. Update @src/components/Header.tsx 
+   1. LeftSection dropdown menu trigger follows the attached design
+   2. Has a prop to disable the LeftSection
+   3. Has a prop to control the middle section, not every page has workspace context, allow it to accept the workspace object which for now is `name` and `iconUrl`
+
 
 DO NOT fabricate, if something is unclear, ask clarifying questions!
 Make no mistakes and clarify anything that is not understood

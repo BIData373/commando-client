@@ -9,9 +9,19 @@ const router = createTanStackRouter({
   defaultPreloadStaleTime: 0,
 })
 
+export interface HeaderConfig {
+  title?: string
+  user?: boolean
+  navigation?: boolean
+  workspace?: boolean
+}
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router
+  }
+
+  interface StaticDataRouteOption {
+    header?: HeaderConfig
   }
 }
 
