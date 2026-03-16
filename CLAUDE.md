@@ -161,14 +161,6 @@ const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
 - `TitleBar` renders below bar when `title` is non-empty. `PageTitle` is an `h1`.
 - Image paths: `/logo.svg` and `/workspace-icon.png` (no `/public/` prefix).
 
-**`__root.tsx`** — `AppShell` (`display: flex; flex-direction: column; height: 100vh`) wraps `Header` + `PageContainer` (`flex: 1; min-height: 0; overflow-y: auto`). TanStack devtools rendered outside `AppShell`.
-
-**settings.tsx** — SETTINGS_TABS array is **reversed** so RTL flex renders tabs in intended LTR visual order (פרטי הלשכה leftmost, הרשאות ניהול צפיה rightmost).
-
-**settings/general.tsx** — Uses `@tanstack/react-form` (`useForm`). `FormRoot` has `width: 480px; max-width: 100%` so all fields are the same width.
-
-**settings/assignees.tsx** — `AssigneeCard` uses `CardHeader` with a custom `CardHeaderRow` (flex row) instead of `CardAction`, placing `Avatar` first in DOM (= visual RIGHT in RTL).
-
 ---
 
 # Workflow (MANDATORY — follow for every file)

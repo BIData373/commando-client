@@ -6,10 +6,10 @@ import { Badge } from '../../../../components/ui/badge'
 import { Button } from '../../../../components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../components/ui/card'
 import { Checkbox } from '../../../../components/ui/checkbox'
-import { Input } from '../../../../components/ui/input'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '../../../../components/ui/input-group'
 import { Separator } from '../../../../components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../../components/ui/tooltip'
-import { Info, Plus } from 'lucide-react'
+import { Info, Plus, Search } from 'lucide-react'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({ component: SettingsAssignees })
 
@@ -190,9 +190,14 @@ function SettingsAssignees() {
     <AssigneesRoot>
       <ToolbarRow>
         <SearchWrapper>
-          <Input value={searchQuery} onChange={handleSearchChange} placeholder="" />
+          <InputGroup>
+            <InputGroupAddon align="inline-start">
+              <Search size={16} />
+            </InputGroupAddon>
+            <InputGroupInput value={searchQuery} onChange={handleSearchChange} placeholder="חפש קבוצת אחראים" />
+          </InputGroup>
         </SearchWrapper>
-        <Button>
+        <Button variant="default">
           <Plus size={16} />
           צור אחראי
         </Button>

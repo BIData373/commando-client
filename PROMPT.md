@@ -8,12 +8,14 @@ Make sure to read @CLAUDE.md for an overview, DO NOT scan the codebase unless ab
 
 Your job today is the following:
 
-1. Update @src/routes/workspace/$urlName/settings/assignees.tsx
-   1. Add a row above the checkbox row
-      1. A search input with the placeholder ""
-      2. A button that has primary background with the text "צור אחראי" and a plus icon
-2. Update @src/routes/workspace/$urlName/settings/general.tsx so that all the inputs are the same width, make a fixed width parent container
 
+1. Fix @src/routes/workspace/$urlName/tasks.tsx, the switcher does not update the url param and therefore does not change the view
+2. The tabs selector in @src/routes/workspace/$urlName/settings.tsx is not RTL friendly
+3. The tabs selector in @src/routes/workspace/$urlName/settings/permissions.tsx  is not RTL friendly
+4. Fix the content wrapper in @src/routes/workspace/$urlName/settings.tsx
+   1. @src/routes/workspace/$urlName/settings/general.tsx is fine to have a fixed width
+   2. @src/routes/workspace/$urlName/settings/assignees.tsx needs to be tweaked, the search bar and add button need to be fixed width but the `CardGrid` needs to be full width
+   3. @src/routes/workspace/$urlName/settings/permissions.tsx can have a fixed width
 
 DO NOT fabricate, if something is unclear, ask clarifying questions!
 Make no mistakes and clarify anything that is not understood

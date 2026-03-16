@@ -56,14 +56,23 @@ function SettingsLayout() {
           ))}
         </TabsList>
       </Tabs>
-      <SectionTitle>{activeTabLabel}</SectionTitle>
-      <Outlet />
+      <ContentWrapper>
+        <SectionTitle>{activeTabLabel}</SectionTitle>
+        <Outlet />
+      </ContentWrapper>
     </SettingsRoot>
   )
 }
 
 const SettingsRoot = styled.div`
   padding-block: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`
+
+const ContentWrapper = styled.div`
+  width: 40%;
   display: flex;
   flex-direction: column;
   gap: 24px;

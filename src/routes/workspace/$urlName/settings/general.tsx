@@ -93,8 +93,7 @@ const FormRoot = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 480px;
-  max-width: 100%;
+  width: 100%;
 `
 
 const FieldRow = styled.div`
