@@ -2,18 +2,19 @@ You are a Senior Frontend Engineer and an expert in TanStack, Shadcn, and Emotio
 
 Make sure to read @CLAUDE.md for an overview, DO NOT scan the codebase unless absolutely necessary
 
+- ALWAYS use shadcn/ui components from `@/components/ui/*`
+- NEVER create raw div-based UI components if a shadcn component exists
+- DO NOT write inline CSS, if CSS is required use Emotion
+
 Your job today is the following:
 
-1. Update @src/components/Header.tsx 
-  1. Add a new section below the colored header bar for the title, make it on the right side, make it h1 and use the `title` from the `header` config
+1. Restructure @src/routes/__root.tsx
+   1. Make `Header` stay on top and then have the `Outlet` content become scrollable if necessary, use flex
 
 
 DO NOT fabricate, if something is unclear, ask clarifying questions!
 Make no mistakes and clarify anything that is not understood
 Do not test things or verify builds, I will always do that manually
-
-DO NOT create new components unless they do not exist in Shadcn
-DO NOT write inline CSS, if CSS is required use Emotion
 
 Once your task is complete:
 

@@ -14,10 +14,11 @@ import {
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from './ui/navigation-menu'
 
 export default function Header() {
+  // In RTL flex, first item is rightmost. 'בית' is the primary/rightmost link.
   const links: LinkComponentProps[] = [
-    { to: '/workspace/$urlName/settings', children: 'הגדרות לשכה' },
+    { to: '/workspace/$urlName/dashboard', children: 'בית' },
     { to: '/workspace/$urlName/tasks', children: 'הנחיות' },
-    { to: '/workspace/$urlName/dashboard', children: 'בית' }
+    { to: '/workspace/$urlName/settings', children: 'הגדרות לשכה' },
   ]
 
   const { matches } = useRouterState()
@@ -28,17 +29,48 @@ export default function Header() {
     <HeaderContainer>
       <HeaderRoot>
         <HeaderInner>
-          <LeftSection>
+          {/* Col 1 — physically RIGHT in RTL: logo + nav */}
+          <StartSection>
+            {navigation && (
+              <>
+                <LogoImage src="/logo.svg" alt="Logo" />
+                <NavigationMenu>
+                  <NavigationMenuList>
+                    {links.map((link, index) => (
+                      <NavigationMenuItem key={index}>
+                        <NavMenuLink asChild>
+                          <Link to={link.to}>{link.children}</Link>
+                        </NavMenuLink>
+                      </NavigationMenuItem>
+                    ))}
+                  </NavigationMenuList>
+                </NavigationMenu>
+              </>
+            )}
+          </StartSection>
+
+          <CenterSection>
+            {workspace && (
+              <>
+                {/* Icon first = rightmost in RTL */}
+                <WorkspaceIcon src="/workspace-icon.png" alt="Workspace icon" />
+                <WorkspaceName>Example Workspace</WorkspaceName>
+              </>
+            )}
+          </CenterSection>
+
+          {/* Col 3 — physically LEFT in RTL: user avatar */}
+          <EndSection>
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <UserTrigger>
-                    <ChevronDown size={20} />
                     <Avatar>
                       <AvatarFallback>
                         <User size={20} />
                       </AvatarFallback>
                     </Avatar>
+                    <ChevronDown size={20} />
                   </UserTrigger>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
@@ -49,33 +81,7 @@ export default function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-          </LeftSection>
-
-          <CenterSection>
-            {workspace && (
-              <>
-                <WorkspaceName>Example Workspace</WorkspaceName>
-                <WorkspaceIcon src="/public/workspace-icon.png" alt="Workspace icon" />
-              </>
-            )}
-          </CenterSection>
-
-          <RightSection>
-            {navigation && (
-              <NavigationMenu>
-                <NavigationMenuList>
-                  {links.map((link, index) => (
-                    <NavigationMenuItem key={index}>
-                      <NavMenuLink asChild>
-                        <Link to={link.to}>{link.children}</Link>
-                      </NavMenuLink>
-                    </NavigationMenuItem>
-                  ))}
-                </NavigationMenuList>
-              </NavigationMenu>
-            )}
-            <LogoImage src="/logo.svg" alt="Logo" />
-          </RightSection>
+          </EndSection>
         </HeaderInner>
       </HeaderRoot>
 
@@ -111,9 +117,22 @@ const HeaderInner = styled.div`
   height: 62px;
 `
 
-const LeftSection = styled.div`
+const StartSection = styled.div`
   display: flex;
   align-items: center;
+  gap: 8px;
+`
+
+const CenterSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`
+
+const EndSection = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 `
 
 const UserTrigger = styled.button`
@@ -123,17 +142,11 @@ const UserTrigger = styled.button`
   background: var(--chip-bg);
   border: 1px solid var(--chip-line);
   border-radius: 40px;
-  padding-inline-start: 16px;
-  padding-inline-end: 6px;
+  padding-inline-start: 6px;
+  padding-inline-end: 16px;
   height: 52px;
   cursor: pointer;
   color: var(--sea-ink);
-`
-
-const CenterSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
 `
 
 const WorkspaceName = styled.p`
@@ -152,21 +165,14 @@ const WorkspaceIcon = styled.img`
   object-fit: cover;
 `
 
-const RightSection = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-`
-
 const LogoImage = styled.img`
   width: 28px;
   height: 28px;
-  margin-inline-start: 28px;
+  margin-inline-end: 20px;
   object-fit: contain;
 `
 
 const TitleBar = styled.div`
-  direction: rtl;
   padding-block: 16px 8px;
   text-align: start;
 `

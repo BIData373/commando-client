@@ -145,9 +145,29 @@ const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
 | `workspace-icon.png` | 32px circular workspace logo (PNG 800×796)     |
 | `logo.svg`           | App logo used in Header right side             |
 
+## RTL Notes (`dir="rtl"` on `<html>`)
+
+- CSS Grid column order reverses in RTL: column 1 = visual RIGHT, column 3 = visual LEFT.
+- Flex items flow right-to-left: first DOM child = rightmost visually.
+- Always use logical CSS properties: `inset-inline-start`, `margin-inline-end`, `padding-block`, etc.
+- To control item order for RTL: reverse the array (not the DOM structure).
+
 ## Component Notes
 
-**Header.tsx** — Returns a fragment: `<HeaderRoot>` (sticky colored bar) + optional `<TitleBar>` below it. `HeaderRoot` uses 3-column CSS Grid (`1fr auto 1fr`). Config read via `useMatches()` → `HeaderConfig`: `{ title, navigation, user, workspace }`. Left: Avatar+DropdownMenu pill (`UserTrigger` 52px tall, icons `size={20}`); shown when `user` is true. Center: workspace name; shown when `workspace` is true. Right: `NavMenuLink` items + `LogoImage`; shown when `navigation` is true. ThemeToggle lives in user dropdown with `onSelect={(e) => e.preventDefault()}`. `TitleBar` renders below the bar only when `title` is non-empty — `PageTitle` is an `h1`, `text-align: start` (RTL logical = visual right).
+**Header.tsx** — `HeaderContainer` wraps `HeaderRoot` (sticky bar) + optional `TitleBar`. `HeaderInner` is a 3-column CSS Grid (`1fr auto 1fr`). Config via `useMatches()` → `HeaderConfig`: `{ title, navigation, user, workspace }`.
+- **Col 1 – `StartSection`** (visual RIGHT in RTL): `LogoImage` + `NavigationMenu`; shown when `navigation` is true. Nav links order: `['בית', 'הנחיות', 'הגדרות לשכה']` — first item is rightmost in RTL. `LogoImage` has `margin-inline-end: 20px` (gap between logo and first nav link).
+- **Col 2 – `CenterSection`**: `WorkspaceIcon` then `WorkspaceName`; shown when `workspace` is true. Icon is first = rightmost in RTL.
+- **Col 3 – `EndSection`** (visual LEFT in RTL, `justify-content: flex-end`): `UserTrigger` pill (52px tall, Avatar + ChevronDown); shown when `user` is true.
+- `TitleBar` renders below bar when `title` is non-empty. `PageTitle` is an `h1`.
+- Image paths: `/logo.svg` and `/workspace-icon.png` (no `/public/` prefix).
+
+**`__root.tsx`** — `AppShell` (`display: flex; flex-direction: column; height: 100vh`) wraps `Header` + `PageContainer` (`flex: 1; min-height: 0; overflow-y: auto`). TanStack devtools rendered outside `AppShell`.
+
+**settings.tsx** — SETTINGS_TABS array is **reversed** so RTL flex renders tabs in intended LTR visual order (פרטי הלשכה leftmost, הרשאות ניהול צפיה rightmost).
+
+**settings/general.tsx** — Uses `@tanstack/react-form` (`useForm`). `FormRoot` has `width: 480px; max-width: 100%` so all fields are the same width.
+
+**settings/assignees.tsx** — `AssigneeCard` uses `CardHeader` with a custom `CardHeaderRow` (flex row) instead of `CardAction`, placing `Avatar` first in DOM (= visual RIGHT in RTL).
 
 ---
 
