@@ -5,9 +5,7 @@ Make sure to read @CLAUDE.md for an overview, DO NOT scan the codebase unless ab
 Your job today is the following:
 
 1. Update @src/components/Header.tsx 
-   1. LeftSection dropdown menu trigger follows the attached design
-   2. Has a prop to disable the LeftSection
-   3. Has a prop to control the middle section, not every page has workspace context, allow it to accept the workspace object which for now is `name` and `iconUrl`
+   
 
 
 DO NOT fabricate, if something is unclear, ask clarifying questions!

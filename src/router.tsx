@@ -15,6 +15,7 @@ export interface HeaderConfig {
   navigation?: boolean
   workspace?: boolean
 }
+
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router
@@ -25,4 +26,4 @@ declare module '@tanstack/react-router' {
   }
 }
 
-export { router }
+export default router 

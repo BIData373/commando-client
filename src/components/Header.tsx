@@ -1,6 +1,8 @@
+import type { HeaderConfig } from '#/router'
 import styled from '@emotion/styled'
-import { Link, useRouterState, type LinkComponentProps } from '@tanstack/react-router'
+import { Link, useMatches, type LinkComponentProps } from '@tanstack/react-router'
 import { ChevronDown, User } from 'lucide-react'
+import ThemeToggle from './ThemeToggle'
 import { Avatar, AvatarFallback } from './ui/avatar'
 import {
   DropdownMenu,
@@ -9,9 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
-import ThemeToggle from './ThemeToggle'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from './ui/navigation-menu'
-import type { HeaderConfig } from '#/router'
 
 export default function Header() {
   const links: LinkComponentProps[] = [
@@ -20,18 +20,14 @@ export default function Header() {
     { to: '/workspace/$urlName/dashboard', children: 'בית' }
   ]
 
-  const matches = useRouterState({
-    select: (s) => s.matches
-  })
+  const matches = useMatches()
   const { title = '', navigation = true, user = true, workspace = false } = (matches.reverse().find(m => m.staticData.header) ?? {}) as HeaderConfig
-  // TODO - if workspace, get loader data
-  console.log(title, navigation, workspace, user)
 
   return (
     <HeaderRoot>
       <HeaderInner>
         <LeftSection>
-          {!user && (
+          {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <UserTrigger>
