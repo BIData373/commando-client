@@ -16,11 +16,10 @@ export const Route = createFileRoute('/workspace/$urlName/settings')({
 
 type SettingsTabPath = 'general' | 'assignees' | 'permissions'
 
-// Reversed so RTL flex renders: פרטי הלשכה (left) | מקבלי הנחיות | הרשאות ניהול צפיה (right)
 const SETTINGS_TABS: { label: string; path: SettingsTabPath }[] = [
-  { label: 'הרשאות ניהול צפיה', path: 'permissions' },
-  { label: 'מקבלי הנחיות', path: 'assignees' },
   { label: 'פרטי הלשכה', path: 'general' },
+  { label: 'מקבלי הנחיות', path: 'assignees' },
+  { label: 'הרשאות ניהול צפיה', path: 'permissions' },
 ]
 
 const SETTINGS_ROUTES = {
@@ -48,13 +47,13 @@ function SettingsLayout() {
   return (
     <SettingsRoot>
       <Tabs value={activeTab} onValueChange={handleTabChange}>
-        <TabsList variant="line">
+        <FullWidthTabsList variant="line">
           {SETTINGS_TABS.map((tab) => (
             <TabsTrigger key={tab.path} value={tab.path}>
               {tab.label}
             </TabsTrigger>
           ))}
-        </TabsList>
+        </FullWidthTabsList>
       </Tabs>
       <ContentWrapper>
         <SectionTitle>{activeTabLabel}</SectionTitle>
@@ -71,8 +70,12 @@ const SettingsRoot = styled.div`
   gap: 24px;
 `
 
+const FullWidthTabsList = styled(TabsList)`
+  width: 100%;
+  border-bottom: 1px solid var(--line);
+`
+
 const ContentWrapper = styled.div`
-  width: 40%;
   display: flex;
   flex-direction: column;
   gap: 24px;

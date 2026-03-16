@@ -1,3 +1,5 @@
+import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
+import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card'
 import styled from '@emotion/styled'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
@@ -26,6 +28,41 @@ const PLACEHOLDER_WORKSPACES: Workspace[] = [
   { urlName: 'command-hq', displayName: 'מפקדה', description: 'מטה פיקוד עליון', memberCount: 5 },
 ]
 
+interface WorkspaceCardProps {
+  workspace: Workspace
+}
+
+function WorkspaceCard({ workspace }: WorkspaceCardProps) {
+  const navigate = useNavigate()
+
+  function handleWorkspaceClick() {
+    navigate({ to: '/workspace/$urlName', params: { urlName: workspace.urlName } })
+  }
+
+  return (
+    <Card onClick={handleWorkspaceClick}>
+      <CardHeader>
+        <CardTitle>{workspace.displayName}</CardTitle>
+        <CardDescription>{workspace.description}</CardDescription>
+
+        <CardAction>
+          <Avatar>
+            <AvatarImage
+              src="/workspace-icon.png"
+              alt="@shadcn"
+              className="grayscale"
+            />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+        </CardAction>
+      </CardHeader>
+      <CardFooter>
+        {workspace.memberCount} משתמשים
+      </CardFooter>
+    </Card>
+  )
+}
+
 function RouteComponent() {
   const navigate = useNavigate()
 
@@ -48,14 +85,7 @@ function RouteComponent() {
 
       <WorkspaceGrid>
         {PLACEHOLDER_WORKSPACES.map((ws) => (
-          <WorkspaceCard key={ws.urlName} onClick={() => handleWorkspaceClick(ws.urlName)}>
-            <WorkspaceIcon src="/workspace-icon.png" alt={ws.displayName} />
-            <WorkspaceInfo>
-              <WorkspaceName>{ws.displayName}</WorkspaceName>
-              <WorkspaceDesc>{ws.description}</WorkspaceDesc>
-              <WorkspaceMeta>{ws.memberCount} חברים</WorkspaceMeta>
-            </WorkspaceInfo>
-          </WorkspaceCard>
+          <WorkspaceCard key={ws.urlName} workspace={ws} />
         ))}
       </WorkspaceGrid>
     </PageRoot>
@@ -113,22 +143,6 @@ const WorkspaceGrid = styled.div`
   gap: 16px;
 `
 
-const WorkspaceCard = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 20px;
-  background: var(--chip-bg);
-  border: 1px solid var(--chip-line);
-  border-radius: 12px;
-  cursor: pointer;
-  text-align: start;
-  transition: background 0.15s;
-
-  &:hover {
-    background: var(--link-bg-hover);
-  }
-`
 
 const WorkspaceIcon = styled.img`
   width: 40px;

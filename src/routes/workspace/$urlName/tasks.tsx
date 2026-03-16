@@ -17,11 +17,13 @@ import {
 } from '../../../components/ui/table'
 import { LayoutGrid, Table2 } from 'lucide-react'
 
+type View = 'TABLE' | 'CARDS'
+
 export const Route = createFileRoute('/workspace/$urlName/tasks')({
-  validateSearch: (search) => ({
-    view: (search.view === 'cards' ? 'cards' : 'table') as 'table' | 'cards',
-  }),
   component: TasksLayout,
+  validateSearch: (search: Record<string, unknown>): { view: View } => ({
+    view: search.view === 'CARDS' ? 'CARDS' : 'TABLE',
+  }),
   staticData: {
     header: {
       title: 'הנחיות',
@@ -148,8 +150,6 @@ const MOCK_TASKS: Task[] = [
   },
 ]
 
-type ViewMode = 'table' | 'cards'
-
 const columnHelper = createColumnHelper<Task>()
 
 const columns = [
@@ -177,6 +177,7 @@ const columns = [
 
 function TasksLayout() {
   const { view } = Route.useSearch()
+  const { urlName } = Route.useParams()
   const navigate = useNavigate()
 
   const table = useReactTable({
@@ -186,11 +187,11 @@ function TasksLayout() {
   })
 
   function handleSetTable() {
-    navigate({ search: (prev) => ({ ...prev, view: 'table' as ViewMode }) })
+    navigate({ to: '/workspace/$urlName/tasks/', params: { urlName }, search: { view: 'TABLE' } })
   }
 
   function handleSetCards() {
-    navigate({ search: (prev) => ({ ...prev, view: 'cards' as ViewMode }) })
+    navigate({ to: '/workspace/$urlName/tasks/', params: { urlName }, search: { view: 'CARDS' } })
   }
 
   return (
@@ -198,16 +199,16 @@ function TasksLayout() {
       <TasksRoot>
         <Toolbar>
           <ViewSwitcher>
-            <SwitcherButton $active={view === 'table'} onClick={handleSetTable} title="תצוגת טבלה">
+            <SwitcherButton $active={view === 'TABLE'} onClick={handleSetTable} title="תצוגת טבלה">
               <Table2 size={16} />
             </SwitcherButton>
-            <SwitcherButton $active={view === 'cards'} onClick={handleSetCards} title="תצוגת כרטיסיות">
+            <SwitcherButton $active={view === 'CARDS'} onClick={handleSetCards} title="תצוגת כרטיסיות">
               <LayoutGrid size={16} />
             </SwitcherButton>
           </ViewSwitcher>
         </Toolbar>
 
-        {view === 'table' ? (
+        {view === 'TABLE' ? (
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (

@@ -16,6 +16,8 @@ Your job today is the following:
    1. @src/routes/workspace/$urlName/settings/general.tsx is fine to have a fixed width
    2. @src/routes/workspace/$urlName/settings/assignees.tsx needs to be tweaked, the search bar and add button need to be fixed width but the `CardGrid` needs to be full width
    3. @src/routes/workspace/$urlName/settings/permissions.tsx can have a fixed width
+5. The search in @src/routes/workspace/$urlName/settings/permissions.tsx needs to have the same input group with icon as the search in @src/routes/workspace/$urlName/settings/assignees.tsx
+6. Migrate @src/routes/index.tsx to use Shadcn Card
 
 DO NOT fabricate, if something is unclear, ask clarifying questions!
 Make no mistakes and clarify anything that is not understood

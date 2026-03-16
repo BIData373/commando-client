@@ -29,23 +29,20 @@ export default function Header() {
     <HeaderContainer>
       <HeaderRoot>
         <HeaderInner>
-          {/* Col 1 — physically RIGHT in RTL: logo + nav */}
           <StartSection>
+            <LogoImage src="/logo.svg" alt="Logo" />
             {navigation && (
-              <>
-                <LogoImage src="/logo.svg" alt="Logo" />
-                <NavigationMenu>
-                  <NavigationMenuList>
-                    {links.map((link, index) => (
-                      <NavigationMenuItem key={index}>
-                        <NavMenuLink asChild>
-                          <Link to={link.to}>{link.children}</Link>
-                        </NavMenuLink>
-                      </NavigationMenuItem>
-                    ))}
-                  </NavigationMenuList>
-                </NavigationMenu>
-              </>
+              <NavigationMenu>
+                <NavigationMenuList>
+                  {links.map((link, index) => (
+                    <NavigationMenuItem key={index}>
+                      <NavMenuLink asChild>
+                        <Link to={link.to}>{link.children}</Link>
+                      </NavMenuLink>
+                    </NavigationMenuItem>
+                  ))}
+                </NavigationMenuList>
+              </NavigationMenu>
             )}
           </StartSection>
 
