@@ -19,8 +19,34 @@ lib/              ← Pure helpers grouped by subject (dateUtils, filterUtils, e
 hooks/           ← Custom React hooks
 providers/       ← Contexts (avoid prop drilling)
 store/           ← Global state (Zustand)
-routes/          ← Route definitions via TanStack Router
+routes/          ← Route definitions via TanStack Router (folder-based, $param for dynamic segments)
 router.tsx       ← TanStack router object
+```
+
+---
+
+# Route Tree (`src/routes/`)
+```
+__root.tsx
+index.tsx                                     /
+new-workspace.tsx                             /new-workspace  (modal over /)
+personal.tsx                                  /personal
+workspace/
+  $urlName.tsx                                /workspace/:urlName  (layout → Outlet)
+  $urlName/
+    index.tsx                                 /workspace/:urlName/  → redirect to tasks
+    dashboard.tsx                             /workspace/:urlName/dashboard
+    tasks.tsx                                 /workspace/:urlName/tasks  (layout: renders list + Outlet for modals)
+    tasks/
+      index.tsx                               /workspace/:urlName/tasks/  (search: view: TABLE|CARDS)
+      new.tsx                                 /workspace/:urlName/tasks/new  (modal overlay)
+      $taskId.tsx                             /workspace/:urlName/tasks/:taskId  (modal overlay)
+    settings.tsx                              /workspace/:urlName/settings  (layout → Outlet)
+    settings/
+      index.tsx                               /workspace/:urlName/settings/  → redirect to general
+      general.tsx                             /workspace/:urlName/settings/general
+      assignees.tsx                           /workspace/:urlName/settings/assignees
+      permissions.tsx                         /workspace/:urlName/settings/permissions
 ```
 
 ---

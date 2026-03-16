@@ -9,9 +9,33 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PersonalRouteImport } from './routes/personal'
+import { Route as NewWorkspaceRouteImport } from './routes/new-workspace'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorkspaceUrlNameRouteImport } from './routes/workspace/$urlName'
+import { Route as WorkspaceUrlNameIndexRouteImport } from './routes/workspace/$urlName/index'
+import { Route as WorkspaceUrlNameTasksRouteImport } from './routes/workspace/$urlName/tasks'
+import { Route as WorkspaceUrlNameSettingsRouteImport } from './routes/workspace/$urlName/settings'
+import { Route as WorkspaceUrlNameDashboardRouteImport } from './routes/workspace/$urlName/dashboard'
+import { Route as WorkspaceUrlNameTasksIndexRouteImport } from './routes/workspace/$urlName/tasks/index'
+import { Route as WorkspaceUrlNameSettingsIndexRouteImport } from './routes/workspace/$urlName/settings/index'
+import { Route as WorkspaceUrlNameTasksNewRouteImport } from './routes/workspace/$urlName/tasks/new'
+import { Route as WorkspaceUrlNameTasksTaskIdRouteImport } from './routes/workspace/$urlName/tasks/$taskId'
+import { Route as WorkspaceUrlNameSettingsPermissionsRouteImport } from './routes/workspace/$urlName/settings/permissions'
+import { Route as WorkspaceUrlNameSettingsGeneralRouteImport } from './routes/workspace/$urlName/settings/general'
+import { Route as WorkspaceUrlNameSettingsAssigneesRouteImport } from './routes/workspace/$urlName/settings/assignees'
 
+const PersonalRoute = PersonalRouteImport.update({
+  id: '/personal',
+  path: '/personal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewWorkspaceRoute = NewWorkspaceRouteImport.update({
+  id: '/new-workspace',
+  path: '/new-workspace',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -22,35 +46,206 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkspaceUrlNameRoute = WorkspaceUrlNameRouteImport.update({
+  id: '/workspace/$urlName',
+  path: '/workspace/$urlName',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkspaceUrlNameIndexRoute = WorkspaceUrlNameIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => WorkspaceUrlNameRoute,
+} as any)
+const WorkspaceUrlNameTasksRoute = WorkspaceUrlNameTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => WorkspaceUrlNameRoute,
+} as any)
+const WorkspaceUrlNameSettingsRoute =
+  WorkspaceUrlNameSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => WorkspaceUrlNameRoute,
+  } as any)
+const WorkspaceUrlNameDashboardRoute =
+  WorkspaceUrlNameDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => WorkspaceUrlNameRoute,
+  } as any)
+const WorkspaceUrlNameTasksIndexRoute =
+  WorkspaceUrlNameTasksIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => WorkspaceUrlNameTasksRoute,
+  } as any)
+const WorkspaceUrlNameSettingsIndexRoute =
+  WorkspaceUrlNameSettingsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => WorkspaceUrlNameSettingsRoute,
+  } as any)
+const WorkspaceUrlNameTasksNewRoute =
+  WorkspaceUrlNameTasksNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => WorkspaceUrlNameTasksRoute,
+  } as any)
+const WorkspaceUrlNameTasksTaskIdRoute =
+  WorkspaceUrlNameTasksTaskIdRouteImport.update({
+    id: '/$taskId',
+    path: '/$taskId',
+    getParentRoute: () => WorkspaceUrlNameTasksRoute,
+  } as any)
+const WorkspaceUrlNameSettingsPermissionsRoute =
+  WorkspaceUrlNameSettingsPermissionsRouteImport.update({
+    id: '/permissions',
+    path: '/permissions',
+    getParentRoute: () => WorkspaceUrlNameSettingsRoute,
+  } as any)
+const WorkspaceUrlNameSettingsGeneralRoute =
+  WorkspaceUrlNameSettingsGeneralRouteImport.update({
+    id: '/general',
+    path: '/general',
+    getParentRoute: () => WorkspaceUrlNameSettingsRoute,
+  } as any)
+const WorkspaceUrlNameSettingsAssigneesRoute =
+  WorkspaceUrlNameSettingsAssigneesRouteImport.update({
+    id: '/assignees',
+    path: '/assignees',
+    getParentRoute: () => WorkspaceUrlNameSettingsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/new-workspace': typeof NewWorkspaceRoute
+  '/personal': typeof PersonalRoute
+  '/workspace/$urlName': typeof WorkspaceUrlNameRouteWithChildren
+  '/workspace/$urlName/dashboard': typeof WorkspaceUrlNameDashboardRoute
+  '/workspace/$urlName/settings': typeof WorkspaceUrlNameSettingsRouteWithChildren
+  '/workspace/$urlName/tasks': typeof WorkspaceUrlNameTasksRouteWithChildren
+  '/workspace/$urlName/': typeof WorkspaceUrlNameIndexRoute
+  '/workspace/$urlName/settings/assignees': typeof WorkspaceUrlNameSettingsAssigneesRoute
+  '/workspace/$urlName/settings/general': typeof WorkspaceUrlNameSettingsGeneralRoute
+  '/workspace/$urlName/settings/permissions': typeof WorkspaceUrlNameSettingsPermissionsRoute
+  '/workspace/$urlName/tasks/$taskId': typeof WorkspaceUrlNameTasksTaskIdRoute
+  '/workspace/$urlName/tasks/new': typeof WorkspaceUrlNameTasksNewRoute
+  '/workspace/$urlName/settings/': typeof WorkspaceUrlNameSettingsIndexRoute
+  '/workspace/$urlName/tasks/': typeof WorkspaceUrlNameTasksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/new-workspace': typeof NewWorkspaceRoute
+  '/personal': typeof PersonalRoute
+  '/workspace/$urlName/dashboard': typeof WorkspaceUrlNameDashboardRoute
+  '/workspace/$urlName': typeof WorkspaceUrlNameIndexRoute
+  '/workspace/$urlName/settings/assignees': typeof WorkspaceUrlNameSettingsAssigneesRoute
+  '/workspace/$urlName/settings/general': typeof WorkspaceUrlNameSettingsGeneralRoute
+  '/workspace/$urlName/settings/permissions': typeof WorkspaceUrlNameSettingsPermissionsRoute
+  '/workspace/$urlName/tasks/$taskId': typeof WorkspaceUrlNameTasksTaskIdRoute
+  '/workspace/$urlName/tasks/new': typeof WorkspaceUrlNameTasksNewRoute
+  '/workspace/$urlName/settings': typeof WorkspaceUrlNameSettingsIndexRoute
+  '/workspace/$urlName/tasks': typeof WorkspaceUrlNameTasksIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/new-workspace': typeof NewWorkspaceRoute
+  '/personal': typeof PersonalRoute
+  '/workspace/$urlName': typeof WorkspaceUrlNameRouteWithChildren
+  '/workspace/$urlName/dashboard': typeof WorkspaceUrlNameDashboardRoute
+  '/workspace/$urlName/settings': typeof WorkspaceUrlNameSettingsRouteWithChildren
+  '/workspace/$urlName/tasks': typeof WorkspaceUrlNameTasksRouteWithChildren
+  '/workspace/$urlName/': typeof WorkspaceUrlNameIndexRoute
+  '/workspace/$urlName/settings/assignees': typeof WorkspaceUrlNameSettingsAssigneesRoute
+  '/workspace/$urlName/settings/general': typeof WorkspaceUrlNameSettingsGeneralRoute
+  '/workspace/$urlName/settings/permissions': typeof WorkspaceUrlNameSettingsPermissionsRoute
+  '/workspace/$urlName/tasks/$taskId': typeof WorkspaceUrlNameTasksTaskIdRoute
+  '/workspace/$urlName/tasks/new': typeof WorkspaceUrlNameTasksNewRoute
+  '/workspace/$urlName/settings/': typeof WorkspaceUrlNameSettingsIndexRoute
+  '/workspace/$urlName/tasks/': typeof WorkspaceUrlNameTasksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/new-workspace'
+    | '/personal'
+    | '/workspace/$urlName'
+    | '/workspace/$urlName/dashboard'
+    | '/workspace/$urlName/settings'
+    | '/workspace/$urlName/tasks'
+    | '/workspace/$urlName/'
+    | '/workspace/$urlName/settings/assignees'
+    | '/workspace/$urlName/settings/general'
+    | '/workspace/$urlName/settings/permissions'
+    | '/workspace/$urlName/tasks/$taskId'
+    | '/workspace/$urlName/tasks/new'
+    | '/workspace/$urlName/settings/'
+    | '/workspace/$urlName/tasks/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
+  to:
+    | '/'
+    | '/about'
+    | '/new-workspace'
+    | '/personal'
+    | '/workspace/$urlName/dashboard'
+    | '/workspace/$urlName'
+    | '/workspace/$urlName/settings/assignees'
+    | '/workspace/$urlName/settings/general'
+    | '/workspace/$urlName/settings/permissions'
+    | '/workspace/$urlName/tasks/$taskId'
+    | '/workspace/$urlName/tasks/new'
+    | '/workspace/$urlName/settings'
+    | '/workspace/$urlName/tasks'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/new-workspace'
+    | '/personal'
+    | '/workspace/$urlName'
+    | '/workspace/$urlName/dashboard'
+    | '/workspace/$urlName/settings'
+    | '/workspace/$urlName/tasks'
+    | '/workspace/$urlName/'
+    | '/workspace/$urlName/settings/assignees'
+    | '/workspace/$urlName/settings/general'
+    | '/workspace/$urlName/settings/permissions'
+    | '/workspace/$urlName/tasks/$taskId'
+    | '/workspace/$urlName/tasks/new'
+    | '/workspace/$urlName/settings/'
+    | '/workspace/$urlName/tasks/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  NewWorkspaceRoute: typeof NewWorkspaceRoute
+  PersonalRoute: typeof PersonalRoute
+  WorkspaceUrlNameRoute: typeof WorkspaceUrlNameRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/personal': {
+      id: '/personal'
+      path: '/personal'
+      fullPath: '/personal'
+      preLoaderRoute: typeof PersonalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/new-workspace': {
+      id: '/new-workspace'
+      path: '/new-workspace'
+      fullPath: '/new-workspace'
+      preLoaderRoute: typeof NewWorkspaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -65,12 +260,155 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workspace/$urlName': {
+      id: '/workspace/$urlName'
+      path: '/workspace/$urlName'
+      fullPath: '/workspace/$urlName'
+      preLoaderRoute: typeof WorkspaceUrlNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workspace/$urlName/': {
+      id: '/workspace/$urlName/'
+      path: '/'
+      fullPath: '/workspace/$urlName/'
+      preLoaderRoute: typeof WorkspaceUrlNameIndexRouteImport
+      parentRoute: typeof WorkspaceUrlNameRoute
+    }
+    '/workspace/$urlName/tasks': {
+      id: '/workspace/$urlName/tasks'
+      path: '/tasks'
+      fullPath: '/workspace/$urlName/tasks'
+      preLoaderRoute: typeof WorkspaceUrlNameTasksRouteImport
+      parentRoute: typeof WorkspaceUrlNameRoute
+    }
+    '/workspace/$urlName/settings': {
+      id: '/workspace/$urlName/settings'
+      path: '/settings'
+      fullPath: '/workspace/$urlName/settings'
+      preLoaderRoute: typeof WorkspaceUrlNameSettingsRouteImport
+      parentRoute: typeof WorkspaceUrlNameRoute
+    }
+    '/workspace/$urlName/dashboard': {
+      id: '/workspace/$urlName/dashboard'
+      path: '/dashboard'
+      fullPath: '/workspace/$urlName/dashboard'
+      preLoaderRoute: typeof WorkspaceUrlNameDashboardRouteImport
+      parentRoute: typeof WorkspaceUrlNameRoute
+    }
+    '/workspace/$urlName/tasks/': {
+      id: '/workspace/$urlName/tasks/'
+      path: '/'
+      fullPath: '/workspace/$urlName/tasks/'
+      preLoaderRoute: typeof WorkspaceUrlNameTasksIndexRouteImport
+      parentRoute: typeof WorkspaceUrlNameTasksRoute
+    }
+    '/workspace/$urlName/settings/': {
+      id: '/workspace/$urlName/settings/'
+      path: '/'
+      fullPath: '/workspace/$urlName/settings/'
+      preLoaderRoute: typeof WorkspaceUrlNameSettingsIndexRouteImport
+      parentRoute: typeof WorkspaceUrlNameSettingsRoute
+    }
+    '/workspace/$urlName/tasks/new': {
+      id: '/workspace/$urlName/tasks/new'
+      path: '/new'
+      fullPath: '/workspace/$urlName/tasks/new'
+      preLoaderRoute: typeof WorkspaceUrlNameTasksNewRouteImport
+      parentRoute: typeof WorkspaceUrlNameTasksRoute
+    }
+    '/workspace/$urlName/tasks/$taskId': {
+      id: '/workspace/$urlName/tasks/$taskId'
+      path: '/$taskId'
+      fullPath: '/workspace/$urlName/tasks/$taskId'
+      preLoaderRoute: typeof WorkspaceUrlNameTasksTaskIdRouteImport
+      parentRoute: typeof WorkspaceUrlNameTasksRoute
+    }
+    '/workspace/$urlName/settings/permissions': {
+      id: '/workspace/$urlName/settings/permissions'
+      path: '/permissions'
+      fullPath: '/workspace/$urlName/settings/permissions'
+      preLoaderRoute: typeof WorkspaceUrlNameSettingsPermissionsRouteImport
+      parentRoute: typeof WorkspaceUrlNameSettingsRoute
+    }
+    '/workspace/$urlName/settings/general': {
+      id: '/workspace/$urlName/settings/general'
+      path: '/general'
+      fullPath: '/workspace/$urlName/settings/general'
+      preLoaderRoute: typeof WorkspaceUrlNameSettingsGeneralRouteImport
+      parentRoute: typeof WorkspaceUrlNameSettingsRoute
+    }
+    '/workspace/$urlName/settings/assignees': {
+      id: '/workspace/$urlName/settings/assignees'
+      path: '/assignees'
+      fullPath: '/workspace/$urlName/settings/assignees'
+      preLoaderRoute: typeof WorkspaceUrlNameSettingsAssigneesRouteImport
+      parentRoute: typeof WorkspaceUrlNameSettingsRoute
+    }
   }
 }
+
+interface WorkspaceUrlNameSettingsRouteChildren {
+  WorkspaceUrlNameSettingsAssigneesRoute: typeof WorkspaceUrlNameSettingsAssigneesRoute
+  WorkspaceUrlNameSettingsGeneralRoute: typeof WorkspaceUrlNameSettingsGeneralRoute
+  WorkspaceUrlNameSettingsPermissionsRoute: typeof WorkspaceUrlNameSettingsPermissionsRoute
+  WorkspaceUrlNameSettingsIndexRoute: typeof WorkspaceUrlNameSettingsIndexRoute
+}
+
+const WorkspaceUrlNameSettingsRouteChildren: WorkspaceUrlNameSettingsRouteChildren =
+  {
+    WorkspaceUrlNameSettingsAssigneesRoute:
+      WorkspaceUrlNameSettingsAssigneesRoute,
+    WorkspaceUrlNameSettingsGeneralRoute: WorkspaceUrlNameSettingsGeneralRoute,
+    WorkspaceUrlNameSettingsPermissionsRoute:
+      WorkspaceUrlNameSettingsPermissionsRoute,
+    WorkspaceUrlNameSettingsIndexRoute: WorkspaceUrlNameSettingsIndexRoute,
+  }
+
+const WorkspaceUrlNameSettingsRouteWithChildren =
+  WorkspaceUrlNameSettingsRoute._addFileChildren(
+    WorkspaceUrlNameSettingsRouteChildren,
+  )
+
+interface WorkspaceUrlNameTasksRouteChildren {
+  WorkspaceUrlNameTasksTaskIdRoute: typeof WorkspaceUrlNameTasksTaskIdRoute
+  WorkspaceUrlNameTasksNewRoute: typeof WorkspaceUrlNameTasksNewRoute
+  WorkspaceUrlNameTasksIndexRoute: typeof WorkspaceUrlNameTasksIndexRoute
+}
+
+const WorkspaceUrlNameTasksRouteChildren: WorkspaceUrlNameTasksRouteChildren = {
+  WorkspaceUrlNameTasksTaskIdRoute: WorkspaceUrlNameTasksTaskIdRoute,
+  WorkspaceUrlNameTasksNewRoute: WorkspaceUrlNameTasksNewRoute,
+  WorkspaceUrlNameTasksIndexRoute: WorkspaceUrlNameTasksIndexRoute,
+}
+
+const WorkspaceUrlNameTasksRouteWithChildren =
+  WorkspaceUrlNameTasksRoute._addFileChildren(
+    WorkspaceUrlNameTasksRouteChildren,
+  )
+
+interface WorkspaceUrlNameRouteChildren {
+  WorkspaceUrlNameDashboardRoute: typeof WorkspaceUrlNameDashboardRoute
+  WorkspaceUrlNameSettingsRoute: typeof WorkspaceUrlNameSettingsRouteWithChildren
+  WorkspaceUrlNameTasksRoute: typeof WorkspaceUrlNameTasksRouteWithChildren
+  WorkspaceUrlNameIndexRoute: typeof WorkspaceUrlNameIndexRoute
+}
+
+const WorkspaceUrlNameRouteChildren: WorkspaceUrlNameRouteChildren = {
+  WorkspaceUrlNameDashboardRoute: WorkspaceUrlNameDashboardRoute,
+  WorkspaceUrlNameSettingsRoute: WorkspaceUrlNameSettingsRouteWithChildren,
+  WorkspaceUrlNameTasksRoute: WorkspaceUrlNameTasksRouteWithChildren,
+  WorkspaceUrlNameIndexRoute: WorkspaceUrlNameIndexRoute,
+}
+
+const WorkspaceUrlNameRouteWithChildren =
+  WorkspaceUrlNameRoute._addFileChildren(WorkspaceUrlNameRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  NewWorkspaceRoute: NewWorkspaceRoute,
+  PersonalRoute: PersonalRoute,
+  WorkspaceUrlNameRoute: WorkspaceUrlNameRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
