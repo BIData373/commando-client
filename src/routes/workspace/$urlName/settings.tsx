@@ -17,9 +17,9 @@ export const Route = createFileRoute('/workspace/$urlName/settings')({
 type SettingsTabPath = 'general' | 'assignees' | 'permissions'
 
 const SETTINGS_TABS: { label: string; path: SettingsTabPath }[] = [
-  { label: 'פרטי הלשכה', path: 'general' },
+  { label: 'פרטי הסביבה', path: 'general' },
   { label: 'מקבלי הנחיות', path: 'assignees' },
-  { label: 'הרשאות ניהול צפיה', path: 'permissions' },
+  { label: 'הרשאות ניהול וצפיה', path: 'permissions' },
 ]
 
 const SETTINGS_ROUTES = {
@@ -73,6 +73,9 @@ const SettingsRoot = styled.div`
 const FullWidthTabsList = styled(TabsList)`
   width: 100%;
   border-bottom: 1px solid var(--line);
+  width: 400px;
+  align-self: flex-end;
+  direction: rtl;
 `
 
 const ContentWrapper = styled.div`
