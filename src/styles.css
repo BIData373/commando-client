@@ -5,7 +5,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
-html, body, #app {
+html,
+body,
+#app {
   width: 100%;
   height: 100%;
 }
@@ -44,8 +46,9 @@ html, body, #app {
   --sidebar-ring: oklch(0.708 0 0);
 
   --text-color: rgba(0, 0, 0, 0.65);
-  --card-backround: rgba(0, 0, 0, 0.02);
+  --card-background: rgba(0, 0, 0, 0.02);
   --card-border: #d9d9d9;
+  --background-area: #fafafa;
 
   --font-sans: 'Rubik Variable', ui-sans-serif, sans-serif;
   --font-serif: 'Rubik Variable', ui-sans-serif, sans-serif;

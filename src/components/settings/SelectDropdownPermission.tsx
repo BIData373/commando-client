@@ -45,7 +45,7 @@ const RoleTrigger = styled(DropdownMenuTrigger)`
 
   ${props => props.ghost && `
     border-radius: 6px;
-    border: 1px solid #D9D9D9;
+    border: 1px solid var(--card-border);
     background: rgba(0, 0, 0, 0.04);
   `}
 `

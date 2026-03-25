@@ -158,7 +158,7 @@ const StyledDialogDescription = styled(DialogDescription)`
   direction: rtl;
   text-align: start;
   font-size: 18px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   line-height: 24px;
 `
 
@@ -175,7 +175,7 @@ const UserCardItem = styled.div`
     gap: 4px;
     padding: 1px 8px;
     background: rgba(0, 0, 0, 0.02);
-    border: 1px solid #D9D9D9;
+    border: 1px solid var(--card-border);
     border-radius: 4px;
 `
 
@@ -269,13 +269,13 @@ const ColorRow = styled.div`
 
 const ColorLabel = styled.span`
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   line-height: 22px;
 `
 
 const ColorSwatchContainer = styled.div`
-  background: white;
-  border: 1px solid #d9d9d9;
+  background: var(--backround);
+  border: 1px solid var(--card-border);
   border-radius: 100px;
   padding: 4px;
   display: flex;
@@ -360,7 +360,7 @@ const UserListArea = styled.div`
   scrollbar-width: thin;
 
   border-radius: 8px;
-  background-color: #fafafa;
+  background-color: var(--background-area);
   padding: 8px;
 `
 

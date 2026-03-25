@@ -179,7 +179,7 @@ const UserRow = styled.div`
   align-items: center;
   gap: 12px;
   padding: 14px 0;
-  border-block-end: 1px solid #DFDFDF;
+  border-block-end: 1px solid var(--card-border);
   direction: rtl;
 `
 
