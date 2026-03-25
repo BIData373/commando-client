@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, type ChangeEvent } from 'react'
+import { Info, Plus, Search } from 'lucide-react'
+import { type ChangeEvent, useState } from 'react'
+import { AssigneeDialog } from '#/components/settings/AssigneeDialog'
 import { Avatar, AvatarFallback } from '../../../../components/ui/avatar'
 import { Badge } from '../../../../components/ui/badge'
 import { Button } from '../../../../components/ui/button'
@@ -9,7 +11,7 @@ import { Checkbox } from '../../../../components/ui/checkbox'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../../../../components/ui/input-group'
 import { Separator } from '../../../../components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../../components/ui/tooltip'
-import { Info, Plus, Search } from 'lucide-react'
+import { FAKE_USERS } from './permissions'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({ component: SettingsAssignees })
 
@@ -144,9 +146,21 @@ function AssigneeCard({ assignee }: AssigneeCardProps) {
   const userIds = assignee.userIds ?? []
   const visibleIds = userIds.slice(0, MAX_VISIBLE_TAGS)
   const remaining = userIds.length - MAX_VISIBLE_TAGS
+  const [isUpdateCardOpen, setIsUpdateCardOpen] = useState(false)
+
+  function onCardClick() {
+    setIsUpdateCardOpen(true)
+  }
 
   return (
-    <Card>
+    <>
+      <AssigneeDialog
+        assignee={{ name: assignee.name, color: assignee.color }}
+        assignees={FAKE_USERS.filter(user => userIds.includes(user.id))}
+        open={isUpdateCardOpen}
+        onOpenChange={setIsUpdateCardOpen}
+      />
+      <Card onClick={onCardClick}>
       <CardHeader>
         {/* Flex row: Avatar is first in DOM = inline-start (RIGHT in RTL) */}
         <CardHeaderRow>
@@ -171,12 +185,14 @@ function AssigneeCard({ assignee }: AssigneeCardProps) {
         </TagRow>
       </CardContent>
     </Card>
+    </>
   )
 }
 
 function SettingsAssignees() {
   const [allowAssigneeStatusUpdate, setAllowAssigneeStatusUpdate] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
   function handleCheckboxChange(checked: boolean) {
     setAllowAssigneeStatusUpdate(checked)
@@ -186,8 +202,16 @@ function SettingsAssignees() {
     setSearchQuery(e.target.value)
   }
 
+  function handleOpenCreateDialog() {
+    setIsCreateDialogOpen(true)
+  }
+
   return (
     <AssigneesRoot>
+      <AssigneeDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+      />
       <ToolbarRow>
         <SearchWrapper>
           <InputGroup>
@@ -197,7 +221,7 @@ function SettingsAssignees() {
             <InputGroupInput value={searchQuery} onChange={handleSearchChange} placeholder="חפש קבוצת אחראים" />
           </InputGroup>
         </SearchWrapper>
-        <Button variant="default">
+        <Button variant="default" onClick={handleOpenCreateDialog}>
           <Plus size={16} />
           צור אחראי
         </Button>
@@ -292,7 +316,7 @@ const CardMeta = styled.div`
   gap: 4px;
 `
 
-const ColoredFallback = styled(AvatarFallback)<{ $color: string }>`
+const ColoredFallback = styled(AvatarFallback) <{ $color: string }>`
   background: ${({ $color }) => $color};
   color: white;
   font-size: 11px;
