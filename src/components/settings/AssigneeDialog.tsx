@@ -1,7 +1,7 @@
-import { type FakeUser } from '#/routes/workspace/$urlName/settings/permissions'
 import styled from '@emotion/styled'
 import { useForm } from '@tanstack/react-form'
 import { Search, X } from 'lucide-react'
+import { type FakeUser } from '#/routes/workspace/$urlName/settings/permissions'
 import { Button } from '../ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'

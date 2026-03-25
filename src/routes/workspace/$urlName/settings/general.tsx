@@ -135,10 +135,10 @@ const EmblemPreview = styled.div`
   align-items: center;
   justify-content: center;
 
-  border: 1px dashed black;
+  border: 1px dashed #D9D9D9;
   border-radius: 8px;
   padding: 16px;
-  height: 96px;
+  height: 166px;
 
   img {
     width: 48px;

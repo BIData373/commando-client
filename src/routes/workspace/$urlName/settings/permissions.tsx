@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
-import { ChevronDown, Search, Trash2, UserPlus, X } from 'lucide-react'
+import { Search, Trash2, UserPlus, X } from 'lucide-react'
 import { useState } from 'react'
+import { SelectDropdownPermission } from '#/components/settings/SelectDropdownPermission'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '#/components/ui/input-group'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../../../../components/ui/dropdown-menu'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../components/ui/tabs'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/permissions')({ component: SettingsPermissions })
@@ -32,35 +32,6 @@ export const FAKE_USERS: FakeUser[] = [
   { id: 10, name: 'מיכל אברהם', personalId: 's7651321', unit: 'פד"ם 12/ אכ"א', jobTitle: 'מנהלת פרויקט', role: 'admin' },
 ]
 
-interface SelectDropdownPermissionProps {
-  initialRole: 'viewer' | 'admin'
-  ghost?: boolean
-}
-
-function SelectDropdownPermission({ initialRole, ghost }: SelectDropdownPermissionProps) {
-  const [role, setRole] = useState<'viewer' | 'admin'>(initialRole)
-
-  function onSelectViewer() {
-    setRole('viewer')
-  }
-
-  function onSelectAdmin() {
-    setRole('admin')
-  }
-
-  return (
-    <DropdownMenu>
-      <RoleTrigger ghost={ghost}>
-        {role === 'viewer' ? 'צפייה' : 'ניהול'}
-        <ChevronDown size={16} />
-      </RoleTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem onSelect={onSelectViewer}>צפייה</DropdownMenuItem>
-        <DropdownMenuItem onSelect={onSelectAdmin}>ניהול</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
 
 interface UserListProps {
   users: FakeUser[]
@@ -183,22 +154,6 @@ const AddUserRow = styled.div`
   gap: 8px;
 `
 
-const RoleTrigger = styled(DropdownMenuTrigger)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  gap: 8px;
-  padding: 3px 16px;
-
-  cursor: pointer;
-
-  ${props => props.ghost && `
-    border-radius: 6px;
-    border: 1px solid #D9D9D9;
-    background: rgba(0, 0, 0, 0.04);
-  `}
-`
 
 const AddAvatarButton = styled.button`
   display: flex;
