@@ -11,7 +11,7 @@ import { Checkbox } from '../../../../components/ui/checkbox'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../../../../components/ui/input-group'
 import { Separator } from '../../../../components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../../components/ui/tooltip'
-import { FAKE_USERS } from './permissions'
+import { FAKE_USERS } from '#/components/settings/UsersPermissionList'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({ component: SettingsAssignees })
 
@@ -161,30 +161,30 @@ function AssigneeCard({ assignee }: AssigneeCardProps) {
         onOpenChange={setIsUpdateCardOpen}
       />
       <Card onClick={onCardClick}>
-      <CardHeader>
-        {/* Flex row: Avatar is first in DOM = inline-start (RIGHT in RTL) */}
-        <CardHeaderRow>
-          <Avatar>
-            <ColoredFallback $color={assignee.color}>{getInitials(assignee.name)}</ColoredFallback>
-          </Avatar>
-          <CardMeta>
-            <CardTitle>{assignee.name}</CardTitle>
-            <CardDescription>{userIds.length} משתמשים</CardDescription>
-          </CardMeta>
-        </CardHeaderRow>
-      </CardHeader>
-      <CardContent>
-        <Separator />
-        <TagRow>
-          {visibleIds.map((uid) => (
-            <Badge key={uid} variant="secondary">
-              {FAKE_USER_NAMES[uid] ?? `#${uid}`}
-            </Badge>
-          ))}
-          {remaining > 0 && <Badge variant="outline">+{remaining}</Badge>}
-        </TagRow>
-      </CardContent>
-    </Card>
+        <CardHeader>
+          {/* Flex row: Avatar is first in DOM = inline-start (RIGHT in RTL) */}
+          <CardHeaderRow>
+            <Avatar>
+              <ColoredFallback $color={assignee.color}>{getInitials(assignee.name)}</ColoredFallback>
+            </Avatar>
+            <CardMeta>
+              <CardTitle>{assignee.name}</CardTitle>
+              <CardDescription>{userIds.length} משתמשים</CardDescription>
+            </CardMeta>
+          </CardHeaderRow>
+        </CardHeader>
+        <CardContent>
+          <Separator />
+          <TagRow>
+            {visibleIds.map((uid) => (
+              <Badge key={uid} variant="secondary">
+                {FAKE_USER_NAMES[uid] ?? `#${uid}`}
+              </Badge>
+            ))}
+            {remaining > 0 && <Badge variant="outline">+{remaining}</Badge>}
+          </TagRow>
+        </CardContent>
+      </Card>
     </>
   )
 }

@@ -1,28 +1,28 @@
 import styled from '@emotion/styled'
 import { ChevronDown } from 'lucide-react'
-import { useState } from "react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 
+export type RoleType = 'viewer' | 'admin'
+
 interface SelectDropdownPermissionProps {
-    initialRole: 'viewer' | 'admin'
+    value: RoleType
     ghost?: boolean
+    onChange?(role: RoleType): void
 }
 
-export function SelectDropdownPermission({ initialRole, ghost }: SelectDropdownPermissionProps) {
-    const [role, setRole] = useState<'viewer' | 'admin'>(initialRole)
-
+export function SelectDropdownPermission({ value, ghost, onChange }: SelectDropdownPermissionProps) {
     function onSelectViewer() {
-        setRole('viewer')
+        onChange?.('viewer')
     }
 
     function onSelectAdmin() {
-        setRole('admin')
+        onChange?.('admin')
     }
 
     return (
         <DropdownMenu>
-            <RoleTrigger ghost={ghost}>
-                {role === 'viewer' ? 'צפייה' : 'ניהול'}
+            <RoleTrigger $ghost={ghost}>
+                {value === 'viewer' ? 'צפייה' : 'ניהול'}
                 <ChevronDown size={16} />
             </RoleTrigger>
             <DropdownMenuContent>
@@ -33,7 +33,7 @@ export function SelectDropdownPermission({ initialRole, ghost }: SelectDropdownP
     )
 }
 
-const RoleTrigger = styled(DropdownMenuTrigger)`
+const RoleTrigger = styled(DropdownMenuTrigger) <{ $ghost?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,10 +43,9 @@ const RoleTrigger = styled(DropdownMenuTrigger)`
 
   cursor: pointer;
 
-  ${props => props.ghost && `
+  ${props => props.$ghost && `
     border-radius: 6px;
     border: 1px solid var(--card-border);
     background: rgba(0, 0, 0, 0.04);
   `}
 `
-
