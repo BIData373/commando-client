@@ -3,6 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Info, Plus, Search } from 'lucide-react'
 import { type ChangeEvent, useState } from 'react'
 import { AssigneeDialog } from '#/components/settings/AssigneeDialog'
+import { FAKE_USERS } from '#/components/settings/UsersPermissionList'
 import { Avatar, AvatarFallback } from '../../../../components/ui/avatar'
 import { Badge } from '../../../../components/ui/badge'
 import { Button } from '../../../../components/ui/button'
@@ -11,7 +12,6 @@ import { Checkbox } from '../../../../components/ui/checkbox'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../../../../components/ui/input-group'
 import { Separator } from '../../../../components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../../components/ui/tooltip'
-import { FAKE_USERS } from '#/components/settings/UsersPermissionList'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({ component: SettingsAssignees })
 

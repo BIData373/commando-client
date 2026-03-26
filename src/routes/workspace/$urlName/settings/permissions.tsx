@@ -1,11 +1,10 @@
 import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
-import { Search, X } from 'lucide-react'
 import { useState } from 'react'
 import { AddUserSection } from '#/components/settings/AddUserSection'
 import { type RoleType } from '#/components/settings/SelectDropdownPermission'
+import { UserSearchInput } from '#/components/settings/UserSearchInput'
 import { FAKE_USERS, UserPermissionList } from '#/components/settings/UsersPermissionList'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '#/components/ui/input-group'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../components/ui/tabs'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/permissions')({ component: SettingsPermissions })
@@ -18,9 +17,6 @@ function SettingsPermissions() {
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState<PermissionsTab>('all')
 
-  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setSearch(e.target.value)
-  }
 
   function handleUserAdd(role: RoleType) {
     const id = FAKE_USERS[FAKE_USERS.length - 1].id + 1;
@@ -40,28 +36,16 @@ function SettingsPermissions() {
     setActiveTab(value as PermissionsTab)
   }
 
-  function handleClearSearch() {
-    setSearch('')
-  }
-
   return (
     <PermissionsRoot>
       <Subtitle>מנהל סביבה יוצר הנחיות, מגדיר אחראיים ומבצע בקרה ומעקב אחר סטטוס ההנחיות בסביבה</Subtitle>
       <SearchSection>
-        <InputGroup>
-          <InputGroupAddon align={search.length === 0 ? "inline-start" : "inline-end"}>
-            {search.length === 0 ?
-              <Search size={16} />
-              :
-              <X
-                size={16}
-                onClick={handleClearSearch}
-                cursor={"pointer"}
-              />
-            }
-          </InputGroupAddon>
-          <InputGroupInput value={search} onChange={handleSearchChange} placeholder="חפש קבוצת אחראים" />
-        </InputGroup>
+        <UserSearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder="חפש קבוצת אחראים"
+          clearInput={search.length > 0}
+        />
         {search.length > 0 &&
           <AddUserSection onClick={handleUserAdd} />
         }

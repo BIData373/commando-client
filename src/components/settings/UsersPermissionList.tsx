@@ -39,7 +39,12 @@ export function UserPermissionList({ users }: UserListProps) {
                         <UserName>{user.name} - {user.personalId}</UserName>
                         <UserSubtext>{user.unit}/ {user.jobTitle}</UserSubtext>
                     </UserInfo>
-                    <SelectDropdownPermission value={user.role} />
+                    <SelectDropdownPermission
+                        value={user.role}
+                        onChange={(role) => {
+                            // handleRoleChange()
+                        }}
+                    />
                     <DeleteButton>
                         <Trash2
                             size={16}

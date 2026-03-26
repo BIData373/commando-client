@@ -1,12 +1,13 @@
 import styled from '@emotion/styled'
 import { useForm } from '@tanstack/react-form'
-import { Search, X } from 'lucide-react'
+import { UserPlus, X } from 'lucide-react'
+import { useState } from 'react'
 import { type FakeUser } from '#/routes/workspace/$urlName/settings/permissions'
 import { Button } from '../ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '../ui/input-group'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { UserSearchInput } from './UserSearchInput'
 
 const PRESET_COLORS = [
     '#00474f', '#006d75', '#08979c', '#5cdbd3',
@@ -31,6 +32,7 @@ interface AssigneeDialogProps {
 
 export function AssigneeDialog({ assignees, assignee, open, onOpenChange }: AssigneeDialogProps) {
     const isUpdate = !!assignee
+    const [selectedUser, setSelectedUser] = useState<FakeUser | null>(null)
 
     const form = useForm({
         defaultValues: {
@@ -113,16 +115,23 @@ export function AssigneeDialog({ assignees, assignee, open, onOpenChange }: Assi
                         {(field) => (
                             <FieldGroup>
                                 <FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
-                                <InputGroup>
-                                    <InputGroupAddon align="inline-start">
-                                        <Search size={16} />
-                                    </InputGroupAddon>
-                                    <InputGroupInput
+                                <SearchRow>
+                                    <UserSearchInput
                                         value={field.state.value}
-                                        onChange={(e) => field.handleChange(e.target.value)}
+                                        onChange={field.handleChange}
                                         placeholder="חפש שם/ תפקיד/ מספר אישי"
+                                        clearInput={selectedUser !== null}
+                                        onSelect={setSelectedUser}
                                     />
-                                </InputGroup>
+                                    {field.state.value.length > 0 && (
+                                        <AddUserButton
+                                            type="button"
+                                            $enabled={!!selectedUser}
+                                            disabled={!selectedUser}>
+                                            <UserPlus size={16} />
+                                        </AddUserButton>
+                                    )}
+                                </SearchRow>
                                 <UserListArea>
                                     {assignees && <UserCard>
                                         {assignees.map(user => (
@@ -134,8 +143,7 @@ export function AssigneeDialog({ assignees, assignee, open, onOpenChange }: Assi
                                                 <UserCardClose type="button"><X size={12} /></UserCardClose>
                                             </UserCardItem>
                                         ))}
-                                    </UserCard>
-                                    }
+                                    </UserCard>}
                                 </UserListArea>
                             </FieldGroup>
                         )}
@@ -348,6 +356,29 @@ const HiddenColorInput = styled.input`
   height: 0;
   opacity: 0;
   pointer-events: none;
+`
+
+const SearchRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+`
+
+const AddUserButton = styled.button<{ $enabled: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  cursor: ${({ $enabled }) => ($enabled ? 'pointer' : '')};
+
+  border-radius: 8px;
+  border: 1px solid #D9D9D9;
+
+  background: ${({ $enabled }) => ($enabled ? 'linear-gradient(135deg, #615FFF 0%, #9810FA 100%);' : 'rgba(0, 0, 0, 0.04)')};
 `
 
 const UserListArea = styled.div`
