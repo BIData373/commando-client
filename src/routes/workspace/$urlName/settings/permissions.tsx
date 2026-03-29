@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { AddUserSection } from '#/components/settings/AddUserSection'
 import { UserSearchInput } from '#/components/settings/UserSearchInput'
 import { UserPermissionList } from '#/components/settings/UsersPermissionList'
-import { mockUsers } from '#/mocks/data'
+import { useCreateUser, useDeleteUser, useUpdateUser, useUsers } from '#/hooks/useUsers'
+import type { IUser } from '#/types'
 import { UserRole } from '#/types'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../components/ui/tabs'
 
@@ -12,14 +13,45 @@ export const Route = createFileRoute('/workspace/$urlName/settings/permissions')
 
 type PermissionsTab = 'all' | 'admins' | 'viewers'
 
-
+const now = new Date().toISOString()
 
 function SettingsPermissions() {
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState<PermissionsTab>('all')
-
+  const { data: users = [] } = useUsers();
+  const { mutate: userCreate } = useCreateUser()
+  const { mutate: userUpdate } = useUpdateUser()
+  const { mutate: userDelete } = useDeleteUser()
+  // const [users, setUsers] = useState<IUser[]>(users)
 
   function handleUserAdd(role: UserRole) {
+    const newUser: IUser = {
+      id: Date.now(),
+      name: search,
+      email: '',
+      avatarUrl: null,
+      role,
+      createdAt: now,
+      updatedAt: now,
+      lastLogin: null,
+    }
+    userCreate(newUser)
+    setSearch('')
+  }
+
+  function handleRoleChange(id: number, newRole: UserRole) {
+    userUpdate({
+      userId: id,
+      data: {
+        role: newRole
+      }
+    })
+    // (prev) => prev.map((u) => u.id === id ? { ...u, role: newRole } : u))
+  }
+
+  function handleDelete(id: number) {
+    userDelete(id)
+    // setUsers((prev) => prev.filter((u) => u.id !== id))
   }
 
   function handleTabChange(value: string) {
@@ -47,13 +79,13 @@ function SettingsPermissions() {
           <TabsTrigger value="viewers">צופים</TabsTrigger>
         </StyledTabsList>
         <TabsContent value="all">
-          <UserPermissionList users={mockUsers} />
+          <UserPermissionList users={users} onRoleChange={handleRoleChange} onDelete={handleDelete} />
         </TabsContent>
         <TabsContent value="admins">
-          <UserPermissionList users={mockUsers.filter((u) => u.role === UserRole.ADMIN)} />
+          <UserPermissionList users={users.filter((u) => u.role === UserRole.ADMIN)} onRoleChange={handleRoleChange} onDelete={handleDelete} />
         </TabsContent>
         <TabsContent value="viewers">
-          <UserPermissionList users={mockUsers.filter((u) => u.role === UserRole.VIEWER)} />
+          <UserPermissionList users={users.filter((u) => u.role === UserRole.VIEWER)} onRoleChange={handleRoleChange} onDelete={handleDelete} />
         </TabsContent>
       </Tabs>
     </PermissionsRoot >

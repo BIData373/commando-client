@@ -1,25 +1,16 @@
 import styled from '@emotion/styled'
 import { Trash2 } from 'lucide-react'
-import { mockUsers } from '#/mocks/data'
 import type { IUser, UserRole } from '#/types'
 import { DropdownPermission } from "./DropdownPermission"
 
 interface UserListProps {
     users: IUser[]
+    onRoleChange(id: number, newRole: UserRole): void
+    onDelete(id: number): void
 }
 
 
-export function UserPermissionList({ users }: UserListProps) {
-
-    function handleTrashClick(id: number) {
-        const userToDelete = mockUsers.findIndex(user => user.id === id)
-        mockUsers.splice(userToDelete)
-    }
-
-    function handleUserChangeRole(id: number, newRole: UserRole) {
-        const userToChange = mockUsers.findIndex(user => user.id === id)
-        mockUsers[userToChange].role = newRole
-    }
+export function UserPermissionList({ users, onRoleChange, onDelete }: UserListProps) {
 
     return (
         <UserListRoot>
@@ -31,15 +22,10 @@ export function UserPermissionList({ users }: UserListProps) {
                     </UserInfo>
                     <DropdownPermission
                         value={user.role}
-                        onChange={(role) => {
-                            handleUserChangeRole(user.id, role)
-                        }}
+                        onChange={(role) => onRoleChange(user.id, role)}
                     />
-                    <DeleteButton>
-                        <Trash2
-                            size={16}
-                            onClick={() => handleTrashClick(user.id)}
-                        />
+                    <DeleteButton onClick={() => onDelete(user.id)}>
+                        <Trash2 size={16} />
                     </DeleteButton>
                 </UserRow>
             ))}
