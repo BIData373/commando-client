@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { useForm } from '@tanstack/react-form'
 import { UserPlus, X } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useUsers } from '#/hooks/useUsers'
 import type { Assignee } from '#/routes/workspace/$urlName/settings/assignees'
 import type { IUser } from '#/types'
@@ -35,7 +35,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
     const { data: users = [] } = useUsers()
 
     const userIds = assignee?.userIds ?? [];
-    const assignees = users.filter(user => userIds.includes(user.id))
+    const assignees = useMemo(() => users.filter(user => userIds.includes(user.id)), [userIds, users])
 
     const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
     const [localAssignees, setLocalAssignees] = useState<IUser[]>(assignees)
@@ -58,6 +58,11 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
         }
         form.setFieldValue('userSearch', '')
         setSelectedUser(null)
+    }
+
+    function handleRemoveAssignee(id: number) {
+        const changeAssignees = localAssignees.filter(assignee => assignee.id !== id)
+        setLocalAssignees(changeAssignees)
     }
 
     async function handleSubmit() {
@@ -159,7 +164,9 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
                                                             <UserCardName>{user.name} - {user.id}</UserCardName>
                                                             <UserCardRole>{user.email} {user.role}</UserCardRole>
                                                         </UserCardInfo>
-                                                        <UserCardClose type="button"><X size={12} /></UserCardClose>
+                                                        <UserCardClose type="button">
+                                                            <X size={12} onClick={() => handleRemoveAssignee(user.id)} />
+                                                        </UserCardClose>
                                                     </UserCardItem>
                                                 ))}
                                             </UserCard>)}

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { AddUserSection } from '#/components/settings/AddUserSection'
 import { UserSearchInput } from '#/components/settings/UserSearchInput'
 import { UserPermissionList } from '#/components/settings/UsersPermissionList'
@@ -13,8 +13,6 @@ export const Route = createFileRoute('/workspace/$urlName/settings/permissions')
 
 type PermissionsTab = 'all' | 'admins' | 'viewers'
 
-const now = new Date().toISOString()
-
 function SettingsPermissions() {
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState<PermissionsTab>('all')
@@ -22,7 +20,9 @@ function SettingsPermissions() {
   const { mutate: userCreate } = useCreateUser()
   const { mutate: userUpdate } = useUpdateUser()
   const { mutate: userDelete } = useDeleteUser()
-  // const [users, setUsers] = useState<IUser[]>(users)
+
+  const admins = useMemo(() => users.filter(u => u.role === UserRole.ADMIN), [users])
+  const viewers = useMemo(() => users.filter(u => u.role === UserRole.VIEWER), [users])
 
   function handleUserAdd(role: UserRole) {
     const newUser: IUser = {
@@ -31,8 +31,8 @@ function SettingsPermissions() {
       email: '',
       avatarUrl: null,
       role,
-      createdAt: now,
-      updatedAt: now,
+      createdAt: Date.now().toString(),
+      updatedAt: Date.now().toString(),
       lastLogin: null,
     }
     userCreate(newUser)
@@ -46,12 +46,10 @@ function SettingsPermissions() {
         role: newRole
       }
     })
-    // (prev) => prev.map((u) => u.id === id ? { ...u, role: newRole } : u))
   }
 
   function handleDelete(id: number) {
     userDelete(id)
-    // setUsers((prev) => prev.filter((u) => u.id !== id))
   }
 
   function handleTabChange(value: string) {
@@ -82,10 +80,10 @@ function SettingsPermissions() {
           <UserPermissionList users={users} onRoleChange={handleRoleChange} onDelete={handleDelete} />
         </TabsContent>
         <TabsContent value="admins">
-          <UserPermissionList users={users.filter((u) => u.role === UserRole.ADMIN)} onRoleChange={handleRoleChange} onDelete={handleDelete} />
+          <UserPermissionList users={admins} onRoleChange={handleRoleChange} onDelete={handleDelete} />
         </TabsContent>
         <TabsContent value="viewers">
-          <UserPermissionList users={users.filter((u) => u.role === UserRole.VIEWER)} onRoleChange={handleRoleChange} onDelete={handleDelete} />
+          <UserPermissionList users={viewers} onRoleChange={handleRoleChange} onDelete={handleDelete} />
         </TabsContent>
       </Tabs>
     </PermissionsRoot >
