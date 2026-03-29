@@ -1,26 +1,33 @@
 import styled from '@emotion/styled'
 import { Search, X } from 'lucide-react'
 import { useState } from 'react'
+import { useUsers } from '#/hooks/useUsers'
+import type { IUser } from '#/types'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../ui/input-group'
-import { FAKE_USERS, type FakeUser } from './UsersPermissionList'
+
+
 
 interface UserSearchInputProps {
     placeholder?: string
     clearInput?: boolean
     value?: string
     onChange?(value: string): void
-    onSelect?(user: FakeUser | null): void
+    onSelect?(user: IUser | null): void
+}
+
+function concatName(assignee?: IUser) {
+    return `${assignee?.id} ${assignee?.name} / ${assignee?.email}`
 }
 
 export function UserSearchInput({ placeholder, clearInput, value, onChange, onSelect }: UserSearchInputProps) {
     const [isOpen, setIsOpen] = useState(false)
+    const { data: users = [] } = useUsers()
+
 
     const filtered = value && value.trim().length > 0
-        ? FAKE_USERS.filter((user) =>
+        ? users.filter((user) =>
             user.name.includes(value) ||
-            user.personalId.includes(value) ||
-            user.jobTitle.includes(value) ||
-            user.unit.includes(value)
+            user.email.includes(value)
         )
         : []
 
@@ -34,7 +41,8 @@ export function UserSearchInput({ placeholder, clearInput, value, onChange, onSe
         setIsOpen(false)
     }
 
-    function handleSelect(user: FakeUser) {
+    function handleSelect(user: IUser) {
+        onChange?.(concatName(user))
         onSelect?.(user)
         setIsOpen(false)
     }
@@ -69,8 +77,8 @@ export function UserSearchInput({ placeholder, clearInput, value, onChange, onSe
                 <Dropdown>
                     {filtered.map((user) => (
                         <DropdownItem key={user.id} onMouseDown={() => handleSelect(user)}>
-                            <UserName>{user.name} - {user.personalId}</UserName>
-                            <UserMeta>{user.unit} / {user.jobTitle}</UserMeta>
+                            <UserName>{user.name} - {user.id}</UserName>
+                            <UserMeta>{user.email} / {user.role}</UserMeta>
                         </DropdownItem>
                     ))}
                 </Dropdown>

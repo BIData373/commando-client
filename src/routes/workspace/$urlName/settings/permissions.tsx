@@ -2,9 +2,10 @@ import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { AddUserSection } from '#/components/settings/AddUserSection'
-import { type RoleType } from '#/components/settings/DropdownPermission'
 import { UserSearchInput } from '#/components/settings/UserSearchInput'
-import { FAKE_USERS, UserPermissionList } from '#/components/settings/UsersPermissionList'
+import { UserPermissionList } from '#/components/settings/UsersPermissionList'
+import { mockUsers } from '#/mocks/data'
+import type { UserRole } from '#/types'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../components/ui/tabs'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/permissions')({ component: SettingsPermissions })
@@ -18,18 +19,7 @@ function SettingsPermissions() {
   const [activeTab, setActiveTab] = useState<PermissionsTab>('all')
 
 
-  function handleUserAdd(role: RoleType) {
-    const id = FAKE_USERS[FAKE_USERS.length - 1].id + 1;
-    FAKE_USERS.push(
-      {
-        id,
-        name: search,
-        personalId: '00000000@idf.il',
-        jobTitle: 'Some Job',
-        role,
-        unit: 'Some Unit'
-      })
-    setSearch('')
+  function handleUserAdd(role: UserRole) {
   }
 
   function handleTabChange(value: string) {
@@ -57,13 +47,13 @@ function SettingsPermissions() {
           <TabsTrigger value="viewers">צופים</TabsTrigger>
         </StyledTabsList>
         <TabsContent value="all">
-          <UserPermissionList users={FAKE_USERS} />
+          <UserPermissionList users={mockUsers} />
         </TabsContent>
         <TabsContent value="admins">
-          <UserPermissionList users={FAKE_USERS.filter((u) => u.role === 'admin')} />
+          <UserPermissionList users={mockUsers.filter((u) => u.role === 'admin')} />
         </TabsContent>
         <TabsContent value="viewers">
-          <UserPermissionList users={FAKE_USERS.filter((u) => u.role === 'viewer')} />
+          <UserPermissionList users={mockUsers.filter((u) => u.role === 'user')} />
         </TabsContent>
       </Tabs>
     </PermissionsRoot >

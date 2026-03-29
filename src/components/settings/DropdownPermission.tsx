@@ -1,18 +1,17 @@
 import styled from '@emotion/styled'
 import { ChevronDown } from 'lucide-react'
+import type { UserRole } from '#/types'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 
-export type RoleType = 'viewer' | 'admin'
-
 interface SelectDropdownPermissionProps {
-    value: RoleType
+    value: UserRole
     ghost?: boolean
-    onChange?(role: RoleType): void
+    onChange?(role: UserRole): void
 }
 
 export function DropdownPermission({ value, ghost, onChange }: SelectDropdownPermissionProps) {
     function onSelectViewer() {
-        onChange?.('viewer')
+        onChange?.('user')
     }
 
     function onSelectAdmin() {
@@ -22,7 +21,7 @@ export function DropdownPermission({ value, ghost, onChange }: SelectDropdownPer
     return (
         <DropdownMenu>
             <RoleTrigger $ghost={ghost}>
-                {value === 'viewer' ? 'צפייה' : 'ניהול'}
+                {value === 'user' ? 'צפייה' : 'ניהול'}
                 <ChevronDown size={16} />
             </RoleTrigger>
             <DropdownMenuContent>

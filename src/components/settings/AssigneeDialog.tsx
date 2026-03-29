@@ -2,7 +2,9 @@ import styled from '@emotion/styled'
 import { useForm } from '@tanstack/react-form'
 import { UserPlus, X } from 'lucide-react'
 import { useState } from 'react'
-import { type FakeUser } from '#/routes/workspace/$urlName/settings/permissions'
+import { useUsers } from '#/hooks/useUsers'
+import type { Assignee } from '#/routes/workspace/$urlName/settings/assignees'
+import type { IUser } from '#/types'
 import { Button } from '../ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'
@@ -18,32 +20,47 @@ const PRESET_COLORS = [
     '#9e1068', '#eb2f96', '#ff85c0', '#8c8c8c',
 ]
 
-interface AssigneeInfo {
-    name: string
-    color: string
-}
 
 interface AssigneeDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    assignees?: FakeUser[]
-    assignee?: AssigneeInfo
+    assignees?: IUser[]
+    assignee?: Assignee
 }
 
-export function AssigneeDialog({ assignees, assignee, open, onOpenChange }: AssigneeDialogProps) {
+
+const DEFAULT_COLOR = '#3B82F6'
+
+export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogProps) {
     const isUpdate = !!assignee
-    const [selectedUser, setSelectedUser] = useState<FakeUser | null>(null)
+
+    const { data: users = [] } = useUsers()
+
+    const userIds = assignee?.userIds ?? [];
+    const assignees = users.filter(user => userIds.includes(user.id))
+
+    const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
+    const [localAssignees, setLocalAssignees] = useState<IUser[]>(assignees)
 
     const form = useForm({
         defaultValues: {
-            name: assignee?.name ?? '',
-            color: assignee?.color ?? '#3B82F6',
+            name: assignee ? assignee.name : '',
+            color: assignee?.color ?? DEFAULT_COLOR,
             userSearch: '',
         },
         onSubmit: async () => {
-
         },
     })
+
+    function handleAddUserList() {
+        if (!selectedUser) return
+        const alreadyAdded = localAssignees.some(u => u.id === selectedUser.id)
+        if (!alreadyAdded) {
+            setLocalAssignees(prev => [...prev, selectedUser])
+        }
+        form.setFieldValue('userSearch', '')
+        setSelectedUser(null)
+    }
 
     async function handleSubmit() {
         onOpenChange(false)
@@ -112,41 +129,46 @@ export function AssigneeDialog({ assignees, assignee, open, onOpenChange }: Assi
                     </form.Field>
 
                     <form.Field name="userSearch">
-                        {(field) => (
-                            <FieldGroup>
-                                <FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
-                                <SearchRow>
-                                    <UserSearchInput
-                                        value={field.state.value}
-                                        onChange={field.handleChange}
-                                        placeholder="חפש שם/ תפקיד/ מספר אישי"
-                                        clearInput={selectedUser !== null}
-                                        onSelect={setSelectedUser}
-                                    />
-                                    {field.state.value.length > 0 && (
-                                        <AddUserButton
-                                            type="button"
-                                            $enabled={!!selectedUser}
-                                            disabled={!selectedUser}>
-                                            <UserPlus size={16} />
-                                        </AddUserButton>
-                                    )}
-                                </SearchRow>
-                                <UserListArea>
-                                    {assignees && <UserCard>
-                                        {assignees.map(user => (
-                                            <UserCardItem key={user.id}>
-                                                <UserCardInfo>
-                                                    <UserCardName>{user.name} - {user.personalId}</UserCardName>
-                                                    <UserCardRole>{user.unit} {user.jobTitle}</UserCardRole>
-                                                </UserCardInfo>
-                                                <UserCardClose type="button"><X size={12} /></UserCardClose>
-                                            </UserCardItem>
-                                        ))}
-                                    </UserCard>}
-                                </UserListArea>
-                            </FieldGroup>
-                        )}
+                        {(field) => {
+                            return (
+                                <FieldGroup>
+                                    <FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
+                                    <SearchRow>
+                                        <UserSearchInput
+                                            value={field.state.value}
+                                            onChange={field.handleChange}
+                                            placeholder="חפש שם/ תפקיד/ מספר אישי"
+                                            clearInput={selectedUser !== null}
+                                            onSelect={setSelectedUser}
+                                        />
+                                        {field.state.value.length > 0 && (
+                                            <AddUserButton
+                                                type="button"
+                                                $enabled={!!selectedUser}
+                                                disabled={!selectedUser}
+                                                onClick={handleAddUserList}
+                                            >
+                                                <UserPlus size={16} />
+                                            </AddUserButton>
+                                        )}
+                                    </SearchRow>
+                                    <UserListArea>
+                                        {localAssignees.length > 0 && (
+                                            <UserCard>
+                                                {localAssignees.map(user => (
+                                                    <UserCardItem key={user.id}>
+                                                        <UserCardInfo>
+                                                            <UserCardName>{user.name} - {user.id}</UserCardName>
+                                                            <UserCardRole>{user.email} {user.role}</UserCardRole>
+                                                        </UserCardInfo>
+                                                        <UserCardClose type="button"><X size={12} /></UserCardClose>
+                                                    </UserCardItem>
+                                                ))}
+                                            </UserCard>)}
+                                    </UserListArea>
+                                </FieldGroup>
+                            )
+                        }}
                     </form.Field>
                 </DialogBody>
 

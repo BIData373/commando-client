@@ -3,7 +3,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Info, Plus, Search } from 'lucide-react'
 import { type ChangeEvent, useState } from 'react'
 import { AssigneeDialog } from '#/components/settings/AssigneeDialog'
-import { FAKE_USERS } from '#/components/settings/UsersPermissionList'
 import { Avatar, AvatarFallback } from '../../../../components/ui/avatar'
 import { Badge } from '../../../../components/ui/badge'
 import { Button } from '../../../../components/ui/button'
@@ -31,7 +30,7 @@ interface AssigneeTaskStatus {
   statusId: number
 }
 
-interface Assignee extends MetaFields {
+export interface Assignee extends MetaFields {
   name: string
   color: string
   userIds?: number[]
@@ -143,6 +142,7 @@ interface AssigneeCardProps {
 }
 
 function AssigneeCard({ assignee }: AssigneeCardProps) {
+
   const userIds = assignee.userIds ?? []
   const visibleIds = userIds.slice(0, MAX_VISIBLE_TAGS)
   const remaining = userIds.length - MAX_VISIBLE_TAGS
@@ -155,8 +155,7 @@ function AssigneeCard({ assignee }: AssigneeCardProps) {
   return (
     <>
       <AssigneeDialog
-        assignee={{ name: assignee.name, color: assignee.color }}
-        assignees={FAKE_USERS.filter(user => userIds.includes(user.id))}
+        assignee={assignee}
         open={isUpdateCardOpen}
         onOpenChange={setIsUpdateCardOpen}
       />
