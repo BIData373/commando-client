@@ -10,7 +10,7 @@ interface SelectDropdownPermissionProps {
     onChange?(role: RoleType): void
 }
 
-export function SelectDropdownPermission({ value, ghost, onChange }: SelectDropdownPermissionProps) {
+export function DropdownPermission({ value, ghost, onChange }: SelectDropdownPermissionProps) {
     function onSelectViewer() {
         onChange?.('viewer')
     }

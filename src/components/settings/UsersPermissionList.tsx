@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { Trash2 } from 'lucide-react'
-import { type RoleType, SelectDropdownPermission } from "./SelectDropdownPermission"
+import { DropdownPermission, type RoleType } from "./DropdownPermission"
 
 export interface FakeUser {
     id: number
@@ -39,7 +39,7 @@ export function UserPermissionList({ users }: UserListProps) {
                         <UserName>{user.name} - {user.personalId}</UserName>
                         <UserSubtext>{user.unit}/ {user.jobTitle}</UserSubtext>
                     </UserInfo>
-                    <SelectDropdownPermission
+                    <DropdownPermission
                         value={user.role}
                         onChange={(role) => {
                             // handleRoleChange()

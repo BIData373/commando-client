@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { UserPlus } from 'lucide-react';
 import { useState } from 'react';
-import { type RoleType, SelectDropdownPermission } from './SelectDropdownPermission';
+import { DropdownPermission, type RoleType } from './DropdownPermission';
 
 
 interface IAddUserWithPermissions {
@@ -18,7 +18,7 @@ export function AddUserSection({ onClick }: IAddUserWithPermissions) {
 
     return (
         <AddUserRow>
-            <SelectDropdownPermission
+            <DropdownPermission
                 ghost
                 value={role}
                 onChange={setRole}
