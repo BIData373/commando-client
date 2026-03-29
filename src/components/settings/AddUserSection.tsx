@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { UserPlus } from 'lucide-react';
 import { useState } from 'react';
-import type { UserRole } from '#/types';
+import { UserRole } from '#/types';
 import { DropdownPermission } from './DropdownPermission';
 
 
@@ -11,7 +11,7 @@ interface IAddUserWithPermissions {
 
 
 export function AddUserSection({ onClick }: IAddUserWithPermissions) {
-    const [role, setRole] = useState<UserRole>('user');
+    const [role, setRole] = useState<UserRole>(UserRole.VIEWER);
 
     function handleAddUserClick() {
         onClick(role)

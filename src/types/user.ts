@@ -1,4 +1,7 @@
-export type UserRole = 'admin' | 'user'
+export enum UserRole {
+    ADMIN = 'admin',
+    VIEWER = 'user'
+}
 
 /** Core User type */
 export interface IUser {

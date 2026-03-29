@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { ChevronDown } from 'lucide-react'
-import type { UserRole } from '#/types'
+import { UserRole } from '#/types'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 
 interface SelectDropdownPermissionProps {
@@ -11,11 +11,11 @@ interface SelectDropdownPermissionProps {
 
 export function DropdownPermission({ value, ghost, onChange }: SelectDropdownPermissionProps) {
     function onSelectViewer() {
-        onChange?.('user')
+        onChange?.(UserRole.VIEWER)
     }
 
     function onSelectAdmin() {
-        onChange?.('admin')
+        onChange?.(UserRole.ADMIN)
     }
 
     return (

@@ -24,10 +24,8 @@ const PRESET_COLORS = [
 interface AssigneeDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    assignees?: IUser[]
     assignee?: Assignee
 }
-
 
 const DEFAULT_COLOR = '#3B82F6'
 

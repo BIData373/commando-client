@@ -10,6 +10,7 @@ interface UserListProps {
 
 
 export function UserPermissionList({ users }: UserListProps) {
+
     function handleTrashClick(id: number) {
         const userToDelete = mockUsers.findIndex(user => user.id === id)
         mockUsers.splice(userToDelete)

@@ -16,7 +16,7 @@ interface UserSearchInputProps {
 }
 
 function concatName(assignee?: IUser) {
-    return `${assignee?.id} ${assignee?.name} / ${assignee?.email}`
+    return `${assignee?.name} ${assignee?.id} ${assignee?.email} / ${assignee?.role}`
 }
 
 export function UserSearchInput({ placeholder, clearInput, value, onChange, onSelect }: UserSearchInputProps) {

@@ -5,7 +5,7 @@ import { AddUserSection } from '#/components/settings/AddUserSection'
 import { UserSearchInput } from '#/components/settings/UserSearchInput'
 import { UserPermissionList } from '#/components/settings/UsersPermissionList'
 import { mockUsers } from '#/mocks/data'
-import type { UserRole } from '#/types'
+import { UserRole } from '#/types'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../components/ui/tabs'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/permissions')({ component: SettingsPermissions })
@@ -50,10 +50,10 @@ function SettingsPermissions() {
           <UserPermissionList users={mockUsers} />
         </TabsContent>
         <TabsContent value="admins">
-          <UserPermissionList users={mockUsers.filter((u) => u.role === 'admin')} />
+          <UserPermissionList users={mockUsers.filter((u) => u.role === UserRole.ADMIN)} />
         </TabsContent>
         <TabsContent value="viewers">
-          <UserPermissionList users={mockUsers.filter((u) => u.role === 'user')} />
+          <UserPermissionList users={mockUsers.filter((u) => u.role === UserRole.VIEWER)} />
         </TabsContent>
       </Tabs>
     </PermissionsRoot >
