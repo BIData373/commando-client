@@ -10,6 +10,7 @@ interface SelectDropdownPermissionProps {
 }
 
 export function DropdownPermission({ value, ghost, onChange }: SelectDropdownPermissionProps) {
+
     function onSelectViewer() {
         onChange?.(UserRole.VIEWER)
     }
@@ -21,7 +22,7 @@ export function DropdownPermission({ value, ghost, onChange }: SelectDropdownPer
     return (
         <DropdownMenu>
             <RoleTrigger $ghost={ghost}>
-                {value === 'user' ? 'צפייה' : 'ניהול'}
+                {value === UserRole.VIEWER ? 'צפייה' : 'ניהול'}
                 <ChevronDown size={16} />
             </RoleTrigger>
             <DropdownMenuContent>
@@ -41,6 +42,7 @@ const RoleTrigger = styled(DropdownMenuTrigger) <{ $ghost?: boolean }>`
   padding: 3px 16px;
 
   cursor: pointer;
+  border: none;
 
   ${props => props.$ghost && `
     border-radius: 6px;

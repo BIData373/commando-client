@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { AddUserSection } from '#/components/settings/AddUserSection'
 import { UserSearchInput } from '#/components/settings/UserSearchInput'
 import { UserPermissionList } from '#/components/settings/UsersPermissionList'
-import { useCreateUser, useDeleteUser, useUpdateUser, useUsers } from '#/hooks/useUsers'
+import { useCreateUser, useUsers } from '#/hooks/useUsers'
 import type { IUser } from '#/types'
 import { UserRole } from '#/types'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../components/ui/tabs'
@@ -18,8 +18,6 @@ function SettingsPermissions() {
   const [activeTab, setActiveTab] = useState<PermissionsTab>('all')
   const { data: users = [] } = useUsers();
   const { mutate: userCreate } = useCreateUser()
-  const { mutate: userUpdate } = useUpdateUser()
-  const { mutate: userDelete } = useDeleteUser()
 
   const admins = useMemo(() => users.filter(u => u.role === UserRole.ADMIN), [users])
   const viewers = useMemo(() => users.filter(u => u.role === UserRole.VIEWER), [users])
@@ -39,18 +37,6 @@ function SettingsPermissions() {
     setSearch('')
   }
 
-  function handleRoleChange(id: number, newRole: UserRole) {
-    userUpdate({
-      userId: id,
-      data: {
-        role: newRole
-      }
-    })
-  }
-
-  function handleDelete(id: number) {
-    userDelete(id)
-  }
 
   function handleTabChange(value: string) {
     setActiveTab(value as PermissionsTab)
@@ -77,13 +63,13 @@ function SettingsPermissions() {
           <TabsTrigger value="viewers">צופים</TabsTrigger>
         </StyledTabsList>
         <TabsContent value="all">
-          <UserPermissionList users={users} onRoleChange={handleRoleChange} onDelete={handleDelete} />
+          <UserPermissionList users={users} />
         </TabsContent>
         <TabsContent value="admins">
-          <UserPermissionList users={admins} onRoleChange={handleRoleChange} onDelete={handleDelete} />
+          <UserPermissionList users={admins} />
         </TabsContent>
         <TabsContent value="viewers">
-          <UserPermissionList users={viewers} onRoleChange={handleRoleChange} onDelete={handleDelete} />
+          <UserPermissionList users={viewers} />
         </TabsContent>
       </Tabs>
     </PermissionsRoot >
