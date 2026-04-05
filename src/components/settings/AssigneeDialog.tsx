@@ -2,9 +2,9 @@ import styled from '@emotion/styled'
 import { useForm } from '@tanstack/react-form'
 import { UserPlus, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { useCreateAssignee, useUpdateAssignee } from '#/hooks/useAssignees'
 import { useUsers } from '#/hooks/useUsers'
-import type { Assignee } from '#/routes/workspace/$urlName/settings/assignees'
-import type { IUser } from '#/types'
+import type { IAssignee, IUser } from '#/types'
 import { Button } from '../ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'
@@ -24,7 +24,7 @@ const PRESET_COLORS = [
 interface AssigneeDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    assignee?: Assignee
+    assignee?: IAssignee
 }
 
 const DEFAULT_COLOR = '#3B82F6'
@@ -33,6 +33,8 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
     const isUpdate = !!assignee
 
     const { data: users = [] } = useUsers()
+    const createAssignee = useCreateAssignee()
+    const updateAssignee = useUpdateAssignee()
 
     const userIds = assignee?.userIds ?? [];
     const assignees = useMemo(() => users.filter(user => userIds.includes(user.id)), [userIds, users])
@@ -46,7 +48,18 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
             color: assignee?.color ?? DEFAULT_COLOR,
             userSearch: '',
         },
-        onSubmit: async () => {
+        onSubmit: async ({ value }) => {
+            const payload = {
+                name: value.name,
+                color: value.color,
+                userIds: localAssignees.map((u) => u.id),
+            }
+            if (isUpdate && assignee) {
+                await updateAssignee.mutateAsync({ assigneeId: assignee.id, data: payload })
+            } else {
+                await createAssignee.mutateAsync(payload)
+            }
+            onOpenChange(false)
         },
     })
 
@@ -66,8 +79,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
     }
 
     async function handleSubmit() {
-        onOpenChange(false)
-        await form.handleSubmit();
+        await form.handleSubmit()
     }
 
     return (

@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
 import { Info, Plus, Search } from 'lucide-react'
 import { type ChangeEvent, useState } from 'react'
-import { AssigneeDialog } from '#/components/settings/AssigneeDialog'
+import { AssigneeDialog } from '../../../../components/settings/AssigneeDialog'
 import { Avatar, AvatarFallback } from '../../../../components/ui/avatar'
 import { Badge } from '../../../../components/ui/badge'
 import { Button } from '../../../../components/ui/button'
@@ -11,121 +11,11 @@ import { Checkbox } from '../../../../components/ui/checkbox'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../../../../components/ui/input-group'
 import { Separator } from '../../../../components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../../components/ui/tooltip'
+import { useAssignees } from '../../../../hooks/useAssignees'
+import { useUsers } from '../../../../hooks/useUsers'
+import type { IAssignee } from '../../../../types'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({ component: SettingsAssignees })
-
-interface MetaFields {
-  id: number
-  createdAt: Date
-  createdBy: number
-  updatedAt: Date
-  updatedBy: number
-  deletedAt: Date | null
-  deletedBy: number | null
-}
-
-interface AssigneeTaskStatus {
-  taskId: number
-  assigneeId: number
-  statusId: number
-}
-
-export interface Assignee extends MetaFields {
-  name: string
-  color: string
-  userIds?: number[]
-  taskStatuses?: AssigneeTaskStatus[]
-}
-
-const FAKE_USER_NAMES: Record<number, string> = {
-  1: 'אבי כהן',
-  2: 'מיכל לוי',
-  3: 'יוסי גולן',
-  4: 'רחל מזרחי',
-  5: 'דוד פרץ',
-  6: 'נועה ברקוביץ',
-  7: 'אורן שפירא',
-  8: 'תמר אבידן',
-  9: 'גיל נחמן',
-  10: 'שרה ויסמן',
-  11: 'בנימין חזן',
-  12: 'דינה אורן',
-}
-
-const MOCK_ASSIGNEES: Assignee[] = [
-  {
-    id: 1,
-    name: 'מחלקת מבצעים',
-    color: '#3B82F6',
-    userIds: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-    createdAt: new Date('2026-01-01'),
-    createdBy: 1,
-    updatedAt: new Date('2026-01-01'),
-    updatedBy: 1,
-    deletedAt: null,
-    deletedBy: null,
-  },
-  {
-    id: 2,
-    name: 'צוות לוגיסטיקה',
-    color: '#10B981',
-    userIds: [3, 5, 7, 10, 11],
-    createdAt: new Date('2026-01-01'),
-    createdBy: 1,
-    updatedAt: new Date('2026-01-01'),
-    updatedBy: 1,
-    deletedAt: null,
-    deletedBy: null,
-  },
-  {
-    id: 3,
-    name: 'קצינת מודיעין',
-    color: '#F59E0B',
-    userIds: [4],
-    createdAt: new Date('2026-01-01'),
-    createdBy: 1,
-    updatedAt: new Date('2026-01-01'),
-    updatedBy: 1,
-    deletedAt: null,
-    deletedBy: null,
-  },
-  {
-    id: 4,
-    name: "פלוגה א'",
-    color: '#EF4444',
-    userIds: [1, 2, 6, 8, 9, 10, 11, 12],
-    createdAt: new Date('2026-01-01'),
-    createdBy: 1,
-    updatedAt: new Date('2026-01-01'),
-    updatedBy: 1,
-    deletedAt: null,
-    deletedBy: null,
-  },
-  {
-    id: 5,
-    name: 'קצין קשר',
-    color: '#8B5CF6',
-    userIds: [7, 9],
-    createdAt: new Date('2026-01-01'),
-    createdBy: 1,
-    updatedAt: new Date('2026-01-01'),
-    updatedBy: 1,
-    deletedAt: null,
-    deletedBy: null,
-  },
-  {
-    id: 6,
-    name: 'מפקדת הגדוד',
-    color: '#EC4899',
-    userIds: [2, 4, 6, 12],
-    createdAt: new Date('2026-01-01'),
-    createdBy: 1,
-    updatedAt: new Date('2026-01-01'),
-    updatedBy: 1,
-    deletedAt: null,
-    deletedBy: null,
-  },
-]
 
 const MAX_VISIBLE_TAGS = 3
 
@@ -138,11 +28,11 @@ function getInitials(name: string): string {
 }
 
 interface AssigneeCardProps {
-  assignee: Assignee
+  assignee: IAssignee
+  userNames: Record<number, string>
 }
 
-function AssigneeCard({ assignee }: AssigneeCardProps) {
-
+function AssigneeCard({ assignee, userNames }: AssigneeCardProps) {
   const userIds = assignee.userIds ?? []
   const visibleIds = userIds.slice(0, MAX_VISIBLE_TAGS)
   const remaining = userIds.length - MAX_VISIBLE_TAGS
@@ -161,7 +51,6 @@ function AssigneeCard({ assignee }: AssigneeCardProps) {
       />
       <Card onClick={onCardClick}>
         <CardHeader>
-          {/* Flex row: Avatar is first in DOM = inline-start (RIGHT in RTL) */}
           <CardHeaderRow>
             <Avatar>
               <ColoredFallback $color={assignee.color}>{getInitials(assignee.name)}</ColoredFallback>
@@ -177,7 +66,7 @@ function AssigneeCard({ assignee }: AssigneeCardProps) {
           <TagRow>
             {visibleIds.map((uid) => (
               <Badge key={uid} variant="secondary">
-                {FAKE_USER_NAMES[uid] ?? `#${uid}`}
+                {userNames[uid] ?? `#${uid}`}
               </Badge>
             ))}
             {remaining > 0 && <Badge variant="outline">+{remaining}</Badge>}
@@ -192,6 +81,15 @@ function SettingsAssignees() {
   const [allowAssigneeStatusUpdate, setAllowAssigneeStatusUpdate] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+
+  const { data: assignees = [] } = useAssignees()
+  const { data: users = [] } = useUsers()
+
+  const userNames: Record<number, string> = Object.fromEntries(users.map((u) => [u.id, u.name]))
+
+  const filteredAssignees = searchQuery.trim()
+    ? assignees.filter((a) => a.name.includes(searchQuery))
+    : assignees
 
   function handleCheckboxChange(checked: boolean) {
     setAllowAssigneeStatusUpdate(checked)
@@ -249,8 +147,8 @@ function SettingsAssignees() {
       </CheckboxRow>
 
       <AssigneeCardGrid>
-        {MOCK_ASSIGNEES.map((assignee) => (
-          <AssigneeCard key={assignee.id} assignee={assignee} />
+        {filteredAssignees.map((assignee) => (
+          <AssigneeCard key={assignee.id} assignee={assignee} userNames={userNames} />
         ))}
       </AssigneeCardGrid>
     </AssigneesRoot>
@@ -315,7 +213,7 @@ const CardMeta = styled.div`
   gap: 4px;
 `
 
-const ColoredFallback = styled(AvatarFallback) <{ $color: string }>`
+const ColoredFallback = styled(AvatarFallback)<{ $color: string }>`
   background: ${({ $color }) => $color};
   color: white;
   font-size: 11px;

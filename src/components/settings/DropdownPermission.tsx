@@ -43,6 +43,7 @@ const RoleTrigger = styled(DropdownMenuTrigger) <{ $ghost?: boolean }>`
 
   cursor: pointer;
   border: none;
+  outline: none;
 
   ${props => props.$ghost && `
     border-radius: 6px;

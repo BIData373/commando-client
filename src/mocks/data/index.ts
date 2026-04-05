@@ -1,5 +1,6 @@
 // export { mockActivity } from './activity';
 // export { mockComments } from './comments';
+export { mockAssignees } from './assignees';
 export {
     mockEnvironments,
     mockMembers,
