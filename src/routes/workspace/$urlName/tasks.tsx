@@ -15,19 +15,19 @@ import {
   Plus,
   Search,
 } from 'lucide-react'
-import { Checkbox } from '../../../../components/ui/checkbox'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../../../components/ui/card'
-import { DataTable } from '../../../../components/ui/data-table'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../../components/ui/tooltip'
-import { StatusCell, StatusChip, STATUS_LABELS, type DirectiveStatus, getStatusStyle } from '../../../../components/Tasks/StatusCell'
-import { ResponsibleCell, type Assignee, type RelatedDirective } from '../../../../components/Tasks/ResponsibleCell'
-import { TopicCell } from '../../../../components/Tasks/TopicCell'
-import { RowActionsMenu } from '../../../../components/Tasks/RowActionsMenu'
-import { BulkActionsBar } from '../../../../components/Tasks/BulkActionsBar'
-import { NoResultsFound } from '../../../../components/Tasks/NoResultsFound'
-import { TopicFilterDropdown } from '../../../../components/Tasks/TopicFilterDropdown'
-import { exportToExcel } from '../../../../functions/exportExcel'
-import { useTitleBar } from '../../../../providers/TitleBarProvider'
+import { Checkbox } from '../../../components/ui/checkbox'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../../components/ui/card'
+import { DataTable } from '../../../components/ui/data-table'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../components/ui/tooltip'
+import { StatusCell, StatusChip, STATUS_LABELS, type DirectiveStatus, getStatusStyle } from '../../../components/Tasks/StatusCell'
+import { ResponsibleCell, type Assignee, type RelatedDirective } from '../../../components/Tasks/ResponsibleCell'
+import { TopicCell } from '../../../components/Tasks/TopicCell'
+import { RowActionsMenu } from '../../../components/Tasks/RowActionsMenu'
+import { BulkActionsBar } from '../../../components/Tasks/BulkActionsBar'
+import { NoResultsFound } from '../../../components/Tasks/NoResultsFound'
+import { TopicFilterDropdown } from '../../../components/Tasks/TopicFilterDropdown'
+import { exportToExcel } from '../../../functions/exportExcel'
+import { useTitleBar } from '../../../providers/TitleBarProvider'
 
 const TABLE_BORDER = '0.5px solid rgba(0, 0, 0, 0.15)'
 
@@ -170,7 +170,7 @@ const INITIAL_TASKS: Task[] = [
     discussionDate: '14/03',
     hasAttachment: false,
     attachmentUrl: null,
-    tags: ['דיווח'],
+    tags: ['דיווח', 'שבועי', 'מצב', 'דוח', 'דוחות'],
     notes: 'יש לכלול נתוני נוכחות ומשימות פתוחות',
     createdAt: new Date('2026-03-14'),
     updatedAt: new Date('2026-03-15'),

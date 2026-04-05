@@ -12,19 +12,11 @@ export function TopicCell({ tags }: TopicCellProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const measureRef = useRef<HTMLDivElement>(null)
   const [visibleCount, setVisibleCount] = useState(tags.length)
-  const [measureKey, setMeasureKey] = useState(0)
 
-  useLayoutEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-    const observer = new ResizeObserver(() => setMeasureKey((k) => k + 1))
-    observer.observe(container)
-    return () => observer.disconnect()
-  }, [])
-
-  useLayoutEffect(() => {
+  const calculateVisibleTags = () => {
     const container = containerRef.current
     const measure = measureRef.current
+
     if (!container || !measure || tags.length === 0) {
       setVisibleCount(tags.length)
       return
@@ -32,28 +24,50 @@ export function TopicCell({ tags }: TopicCellProps) {
 
     const budget = container.offsetWidth
     const children = Array.from(measure.children) as HTMLElement[]
-    // Last child is the "+99" sentinel for overflow tag width
     const overflowWidth = children[children.length - 1].offsetWidth
 
     let used = 0
     let fits = 0
+    let i = 0
+    let canFit = true
 
-    for (let i = 0; i < tags.length; i++) {
+    while (i < tags.length && canFit) {
       const tagWidth = children[i].offsetWidth
       const addition = i === 0 ? tagWidth : GAP + tagWidth
       const isLast = i === tags.length - 1
-      const budgetNeeded = isLast ? used + addition : used + addition + GAP + overflowWidth
+
+      const budgetNeeded = isLast
+        ? used + addition
+        : used + addition + GAP + overflowWidth
 
       if (budgetNeeded <= budget) {
         used += addition
         fits = i + 1
+        i++
       } else {
-        break
+        canFit = false
       }
     }
 
     setVisibleCount(fits)
-  }, [tags, measureKey])
+  }
+
+  useLayoutEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const observer = new ResizeObserver(() => {
+      calculateVisibleTags()
+    })
+
+    observer.observe(container)
+
+    return () => observer.disconnect()
+  }, [])
+
+  useLayoutEffect(() => {
+    calculateVisibleTags()
+  }, [tags])
 
   const hiddenTags = tags.slice(visibleCount)
 
