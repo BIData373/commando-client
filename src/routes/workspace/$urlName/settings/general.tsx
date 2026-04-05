@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
-import { useForm } from '@tanstack/react-form'
 import { createFileRoute } from '@tanstack/react-router'
 import { X } from 'lucide-react'
+import { useState } from 'react'
+import { IconSearchInput } from '../../../../components/settings/IconSearchInput'
 import { Input } from '../../../../components/ui/input'
 import {
   Select,
@@ -10,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../../../components/ui/select'
+import { useUpdateWorkspaceSettings, useWorkspaceSettings } from '../../../../hooks/useWorkspaceSettings'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/general')({ component: SettingsGeneral })
 
@@ -25,86 +27,101 @@ const COMMAND_OPTIONS = [
 ] as const
 
 function SettingsGeneral() {
-  const form = useForm({
-    defaultValues: {
-      name: '',
-      command: '',
-      emblem: '',
-    },
-    onSubmit: async () => {
-      // TODO: submit to API
-    },
+  const { urlName } = Route.useParams()
+  const { data: settings } = useWorkspaceSettings(urlName)
+  const { mutate: updateSettings } = useUpdateWorkspaceSettings(urlName)
+
+  if (!settings) return null
+
+  return <SettingsForm settings={settings} onSave={updateSettings} />
+}
+
+interface FormState {
+  name: string
+  command: string
+  emblem: string
+}
+
+interface SettingsFormProps {
+  settings: { name: string; command: string | null; logoUrl: string | null }
+  onSave: (data: { name: string; command: string | null; logoUrl: string | null }) => void
+}
+
+function SettingsForm({ settings, onSave }: SettingsFormProps) {
+  const [form, setForm] = useState<FormState>({
+    name: settings.name,
+    command: settings.command ?? '',
+    emblem: settings.logoUrl ?? '',
   })
 
+  const setField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
+    const next = { ...form, [key]: value }
+    setForm(next)
+    onSave({
+      name: next.name,
+      command: next.command || null,
+      logoUrl: next.emblem || null,
+    })
+  }
+
   function handleClearEmblem() {
-    form.setFieldValue('emblem', '')
+    setField('emblem', '')
   }
 
   return (
     <FormRoot>
-      <form.Field name="name">
-        {(field) => (
-          <FieldRow>
-            <FieldLabel htmlFor={field.name}>שם סביבה</FieldLabel>
-            <InputWrapper>
-              <Input
-                id={field.name}
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value.slice(0, NAME_MAX_LENGTH))}
-                placeholder="הזן שם סביבה"
-                maxLength={NAME_MAX_LENGTH}
-              />
-              <CharCounter $atLimit={field.state.value.length >= NAME_MAX_LENGTH}>
-                {field.state.value.length}/{NAME_MAX_LENGTH}
-              </CharCounter>
-            </InputWrapper>
-          </FieldRow>
-        )}
-      </form.Field>
+      <FieldRow>
+        <FieldLabel>שם סביבה</FieldLabel>
+        <InputWrapper>
+          <Input
+            value={form.name}
+            onChange={(e) => setField('name', e.target.value.slice(0, NAME_MAX_LENGTH))}
+            placeholder="הזן שם סביבה"
+            maxLength={NAME_MAX_LENGTH}
+          />
+          <CharCounter $atLimit={form.name.length >= NAME_MAX_LENGTH}>
+            {form.name.length}/{NAME_MAX_LENGTH}
+          </CharCounter>
+        </InputWrapper>
+      </FieldRow>
 
-      <form.Field name="command">
-        {(field) => (
-          <FieldRow>
-            <FieldLabel>שיוך פיקודי ארגוני</FieldLabel>
-            <Select value={field.state.value} onValueChange={field.handleChange}>
-              <StyledSelectTrigger>
-                <SelectValue placeholder="בחר פיקוד" />
-              </StyledSelectTrigger>
-              <StyledSelectContent position="popper" side="bottom">
-                {COMMAND_OPTIONS.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </StyledSelectContent>
-            </Select>
-          </FieldRow>
-        )}
-      </form.Field>
+      <FieldRow>
+        <FieldLabel>שיוך פיקודי ארגוני</FieldLabel>
+        <Select value={form.command} onValueChange={(v) => setField('command', v)}>
+          <StyledSelectTrigger>
+            <SelectValue placeholder="בחר פיקוד" />
+          </StyledSelectTrigger>
+          <StyledSelectContent position="popper" side="bottom">
+            {COMMAND_OPTIONS.map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </StyledSelectContent>
+        </Select>
+      </FieldRow>
 
-      <form.Field name="emblem">
-        {(field) => (
-          <FieldRow>
-            <FieldLabel htmlFor={field.name}>סמל</FieldLabel>
-            <Input
-              id={field.name}
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
-              placeholder="חפש סמל"
-            />
-            <EmblemPreview>
-              <EmblemClearButton type="button" onClick={handleClearEmblem}>
-                <X size={16} />
-              </EmblemClearButton>
-              {/* TODO: Mesiba api icon */}
-              <img src={'kk'} alt='סמל לשכה' onError={(e) => {
+      <FieldRow>
+        <FieldLabel>סמל</FieldLabel>
+        <IconSearchInput onChange={(v) => setField('emblem', v)} />
+        <EmblemPreview>
+          <EmblemClearButton type="button" onClick={handleClearEmblem}>
+            <X size={16} />
+          </EmblemClearButton>
+          {form.emblem ? (
+            <img
+              src={form.emblem}
+              alt='סמל לשכה'
+              onError={(e) => {
                 e.currentTarget.onerror = null
-                e.currentTarget.src = "/workspace-icon.png"
-              }} />
-            </EmblemPreview>
-          </FieldRow>
-        )}
-      </form.Field>
+                e.currentTarget.src = '/workspace-icon.png'
+              }}
+            />
+          ) : (
+            <EmblemPlaceholder>בחר סמל</EmblemPlaceholder>
+          )}
+        </EmblemPreview>
+      </FieldRow>
     </FormRoot>
   )
 }
@@ -146,6 +163,11 @@ const EmblemPreview = styled.div`
     object-fit: contain;
     border-radius: 50%;
   }
+`
+
+const EmblemPlaceholder = styled.span`
+  font-size: 13px;
+  color: var(--sea-ink-soft);
 `
 
 const EmblemClearButton = styled.button`

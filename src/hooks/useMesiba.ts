@@ -1,8 +1,9 @@
-import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
+import { mesibaApi } from '../mocks/endpoints'
+import { USE_MOCK_API } from '../utils/envUtils'
 
-const mesibaBaseApiUrl = import.meta.VITE_MESIBA_BASE_URL_API
-
+const mesibaBaseApiUrl = import.meta.env.VITE_MESIBA_BASE_URL_API
 
 export interface IMesibaIcon {
     id: number
@@ -14,15 +15,10 @@ export function useSearchMesibaIcons(search: string) {
     return useQuery<IMesibaIcon[]>({
         queryKey: ['mesiba', search],
         queryFn: () =>
-            search
-                ? axios.request({
-                    method: 'GET',
-                    url: `${mesibaBaseApiUrl}${search}`
-                })
-                    .then(response => response.data)
-                    .catch(err => {
-                        throw err
-                    })
-                : []
+            USE_MOCK_API
+                ? mesibaApi.search(search)
+                : search
+                    ? axios.get<IMesibaIcon[]>(`${mesibaBaseApiUrl}${search}`).then((r) => r.data)
+                    : Promise.resolve([]),
     })
 }

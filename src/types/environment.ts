@@ -7,12 +7,27 @@ export interface IEnvironment {
     name: string;
     description: string | null;
     logoUrl: string | null;
+    command: string | null;
     createdBy: string;
     createdAt: string;
     updatedAt: string;
     archived: boolean;
     memberCount: number;
     instructionCount: number;
+}
+
+/** Workspace general settings (subset used in the settings form) */
+export interface IWorkspaceSettings {
+    name: string;
+    command: string | null;
+    logoUrl: string | null;
+}
+
+/** Update payload for workspace general settings */
+export interface IUpdateWorkspaceSettings {
+    name: string;
+    command: string | null;
+    logoUrl: string | null;
 }
 
 /** Environment with member context (for the current user) */
