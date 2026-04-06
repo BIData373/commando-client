@@ -26,38 +26,27 @@ const COMMAND_OPTIONS = [
   'מטכ״ל',
 ] as const
 
-function SettingsGeneral() {
-  const { urlName } = Route.useParams()
-  const { data: settings } = useWorkspaceSettings(urlName)
-  const { mutate: updateSettings } = useUpdateWorkspaceSettings(urlName)
-
-  if (!settings) return null
-
-  return <SettingsForm settings={settings} onSave={updateSettings} />
-}
-
 interface FormState {
   name: string
   command: string
   emblem: string
 }
 
-interface SettingsFormProps {
-  settings: { name: string; command: string | null; logoUrl: string | null }
-  onSave: (data: { name: string; command: string | null; logoUrl: string | null }) => void
-}
+function SettingsGeneral() {
+  const { urlName } = Route.useParams()
+  const { data: settings } = useWorkspaceSettings(urlName)
+  const { mutate: updateSettings } = useUpdateWorkspaceSettings(urlName)
 
-function SettingsForm({ settings, onSave }: SettingsFormProps) {
   const [form, setForm] = useState<FormState>({
-    name: settings.name,
-    command: settings.command ?? '',
-    emblem: settings.logoUrl ?? '',
+    name: settings?.name ?? '',
+    command: settings?.command ?? '',
+    emblem: settings?.logoUrl ?? '',
   })
 
   const setField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     const next = { ...form, [key]: value }
     setForm(next)
-    onSave({
+    updateSettings({
       name: next.name,
       command: next.command || null,
       logoUrl: next.emblem || null,
@@ -125,6 +114,8 @@ function SettingsForm({ settings, onSave }: SettingsFormProps) {
     </FormRoot>
   )
 }
+
+
 
 const FormRoot = styled.div`
   display: flex;
