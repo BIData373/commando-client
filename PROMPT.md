@@ -7,17 +7,11 @@ Make sure to read @CLAUDE.md for an overview, DO NOT scan the codebase unless ab
 - DO NOT write inline CSS, if CSS is required use Emotion
 
 Your job today is the following:
+I need insteas the title that is 'ss' right know to chagne to what is in the figma thre is there buttons etc. it already in the page in the TitleSection see the figma https://www.figma.com/design/mny5BO79QxDcen9OSZILcQ/%F0%9F%A7%A9-%D7%9E%D7%A6%D7%A4%D7%9F-%D7%94%D7%9E%D7%A4%D7%A7%D7%93?node-id=4431-9062&m=dev to get the design
+if you see antd design use instead shadcn 
+WARNING!!!
+Use as few tokens as possible, but be as precise as possible.
 
-
-1. Fix @src/routes/workspace/$urlName/tasks.tsx, the switcher does not update the url param and therefore does not change the view
-2. The tabs selector in @src/routes/workspace/$urlName/settings.tsx is not RTL friendly
-3. The tabs selector in @src/routes/workspace/$urlName/settings/permissions.tsx  is not RTL friendly
-4. Fix the content wrapper in @src/routes/workspace/$urlName/settings.tsx
-   1. @src/routes/workspace/$urlName/settings/general.tsx is fine to have a fixed width
-   2. @src/routes/workspace/$urlName/settings/assignees.tsx needs to be tweaked, the search bar and add button need to be fixed width but the `CardGrid` needs to be full width
-   3. @src/routes/workspace/$urlName/settings/permissions.tsx can have a fixed width
-5. The search in @src/routes/workspace/$urlName/settings/permissions.tsx needs to have the same input group with icon as the search in @src/routes/workspace/$urlName/settings/assignees.tsx
-6. Migrate @src/routes/index.tsx to use Shadcn Card
 
 DO NOT fabricate, if something is unclear, ask clarifying questions!
 Make no mistakes and clarify anything that is not understood

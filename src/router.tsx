@@ -10,7 +10,7 @@ const router = createRouter({
 })
 
 export interface HeaderConfig {
-  title?: string
+  title?: React.ReactNode
   user?: boolean
   navigation?: boolean
   workspace?: boolean
