@@ -1,0 +1,125 @@
+import styled from '@emotion/styled'
+import { FilterX } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+import { TopicFilterDropdown } from './TopicFilterDropdown'
+
+type QuickFilter = 'overdue' | 'approaching' | 'flagged'
+
+interface TaskFiltersProps {
+  activeQuickFilters: Set<QuickFilter>
+  activeTopicFilters: Set<string>
+  allTopics: string[]
+  onToggleQuickFilter: (filter: QuickFilter) => void
+  onApplyTopicFilters: (topics: Set<string>) => void
+  onClearAllFilters: () => void
+}
+
+function TaskFilters({
+  activeQuickFilters,
+  activeTopicFilters,
+  allTopics,
+  onToggleQuickFilter,
+  onApplyTopicFilters,
+  onClearAllFilters,
+}: TaskFiltersProps) {
+  const hasActiveFilters = activeQuickFilters.size > 0 || activeTopicFilters.size > 0
+
+  return (
+    <ToolbarEnd>
+      {hasActiveFilters && (
+        <ClearFiltersButton onClick={onClearAllFilters}>
+          <FilterX size={16} />
+          נקה סננים
+        </ClearFiltersButton>
+      )}
+      <TopicFilterDropdown
+        topics={allTopics}
+        activeTopics={activeTopicFilters}
+        onApply={onApplyTopicFilters}
+        $active={activeTopicFilters.size > 0}
+      />
+      <FilterPill $active={activeQuickFilters.has('flagged')} onClick={() => onToggleQuickFilter('flagged')}>
+        חשובות
+      </FilterPill>
+      <Tooltip>
+        <WarningTrigger>
+          <FilterPill $active={activeQuickFilters.has('approaching')} onClick={() => onToggleQuickFilter('approaching')}>
+            תג"ב מתקרב
+          </FilterPill>
+        </WarningTrigger>
+        <TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
+      </Tooltip>
+      <FilterPill $active={activeQuickFilters.has('overdue')} onClick={() => onToggleQuickFilter('overdue')}>
+        חריגה מתג"ב
+      </FilterPill>
+      <FilterDivider />
+      <FilterPill $active={!hasActiveFilters} onClick={onClearAllFilters}>
+        הכל
+      </FilterPill>
+    </ToolbarEnd>
+  )
+}
+
+export { TaskFilters }
+export type { QuickFilter }
+
+const ToolbarEnd = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`
+
+const ClearFiltersButton = styled.button`
+  direction: rtl;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-inline: 15px;
+  height: 32px;
+  border-radius: 999px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+  background: transparent;
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--link-bg-hover);
+  }
+`
+
+const FilterPill = styled.button<{ $active: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-inline: 12px;
+  height: 32px;
+  border-radius: 999px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+  border: 1px solid ${({ $active }) => ($active ? 'rgba(9, 88, 217, 0.6)' : '#D9D9D9')};
+  background: ${({ $active }) => ($active ? 'rgba(230, 244, 255, 0.5)' : '#FFF')};
+  color: ${({ $active }) => ($active ? 'rgba(9, 88, 217, 1)' : 'var(--sea-ink)')};
+
+  &:hover {
+    background: var(--link-bg-hover);
+  }
+`
+
+const FilterDivider = styled.div`
+  width: 1px;
+  height: 25px;
+  background: var(--Colors-Neutral-Text-colorTextQuaternary, rgba(0, 0, 0, 0.25));
+`
+
+const WarningTrigger = styled(TooltipTrigger)`
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: default;
+  line-height: 0;
+`

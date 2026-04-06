@@ -1,4 +1,8 @@
 import * as XLSX from 'xlsx-js-style'
+import { differenceInDays, format, startOfToday } from 'date-fns'
+import { getStatusStyle, STATUS_LABELS } from '../components/Tasks/StatusCell'
+import { DEADLINE_LABELS } from '../components/Tasks/TaskTable'
+import type { Task } from '../data/Tasks'
 
 interface CellValue {
   value: string
@@ -25,7 +29,42 @@ const RTL_ALIGNMENT = {
   readingOrder: 2,
 }
 
-export function exportToExcel<T>(
+function getDeadlineDateStyle(task: Task) {
+  if (!task.dueDate || task.deadlineType === 'immediate') return {}
+  const today = startOfToday()
+  const daysUntil = differenceInDays(task.dueDate, today)
+  if (daysUntil < 0) return { fontColor: '#f5222d' }
+  if (daysUntil < 2) return { fontColor: '#d46b08' }
+  return {}
+}
+
+export function exportTasksToExcel(tasks: Task[]) {
+  exportToExcel<Task>(tasks, [
+    { header: 'מס"ד', accessor: (t) => String(t.id) },
+    { header: 'ההנחיה', accessor: (t) => t.details ? `${t.title} – ${t.details}` : t.title },
+    { header: 'סטטוס', accessor: (t) => ({
+      value: STATUS_LABELS[t.status],
+      ...getStatusStyle(t.status),
+    }) },
+    { header: 'אחראי', accessor: (t) => t.responsible?.name ?? '' },
+    { header: 'תג"ב - סוג', accessor: (t) => DEADLINE_LABELS[t.deadlineType] },
+    { header: 'תג"ב - תאריך', accessor: (t) => ({
+      value: t.dueDate ? format(t.dueDate, 'dd/MM/yy') : '',
+      ...getDeadlineDateStyle(t),
+    }) },
+    { header: 'מקור', accessor: (t) => `${t.discussionName} | ${t.discussionDate}` },
+    { header: 'קובץ מצורף', accessor: (t) => t.attachmentUrl
+      ? { value: 'קובץ', link: t.attachmentUrl }
+      : 'אין'
+    },
+    { header: 'נושא', accessor: (t) => t.tags.join(', ') },
+    { header: 'הערות', accessor: (t) => t.notes },
+    { header: 'תאריך יצירה', accessor: (t) => format(t.createdAt, 'dd/MM/yy') },
+    { header: 'עודכן ב', accessor: (t) => format(t.updatedAt, 'dd/MM/yy') },
+  ], 'הנחיות')
+}
+
+function exportToExcel<T>(
   rows: T[],
   columns: ExportColumn<T>[],
   fileName: string,
