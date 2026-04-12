@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
-import { ChevronLeft, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { useState } from 'react'
+import { ViewMoreInstructions } from './ViewMoreInstructions'
 
 type FocusedTab = 'deviation' | 'immediate' | 'important'
 
@@ -16,8 +17,8 @@ interface EmptyMessage {
   description: string
 }
 
-interface FocusedInstructionsProps {
-  onViewMore?: () => void
+interface IFocusedInstruction {
+  urlName: string
 }
 
 const TABS: TabConfig[] = [
@@ -41,7 +42,7 @@ const EMPTY_MESSAGES: Record<FocusedTab, EmptyMessage> = {
   },
 }
 
-export default function FocusedInstructions({ onViewMore }: FocusedInstructionsProps) {
+export default function FocusedInstructions({ urlName }: IFocusedInstruction) {
   const [activeTab, setActiveTab] = useState<FocusedTab>('important')
 
   function handleTabClick(tabId: FocusedTab) {
@@ -86,10 +87,7 @@ export default function FocusedInstructions({ onViewMore }: FocusedInstructionsP
           </EmptyState>
         </ContentPanel>
       </TabsWrapper>
-      <ViewMoreButton onClick={onViewMore}>
-        <ChevronLeft size={16} />
-        צפה בעוד הנחיות
-      </ViewMoreButton>
+      <ViewMoreInstructions urlName={urlName} />
     </Section>
   )
 }
@@ -236,22 +234,4 @@ const EmptyDescription = styled.div`
   flex: 1;
   color: var(--sea-ink-soft);
   line-height: 22px;
-`
-
-const ViewMoreButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 15px;
-  font-size: 14px;
-  color: var(--foreground);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  border-radius: 6px;
-  align-self: flex-end;
-
-  &:hover {
-    background: var(--chip-bg);
-  }
 `

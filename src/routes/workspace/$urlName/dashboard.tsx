@@ -58,14 +58,9 @@ function Dashboard() {
   const { urlName } = Route.useParams()
   const navigate = useNavigate()
 
-  function handleViewMore() {
-    navigate({ to: '/workspace/$urlName/tasks', params: { urlName }, search: { view: 'TABLE' } })
-  }
-
   function handleSetAssignees() {
     navigate({ to: '/workspace/$urlName/settings/assignees', params: { urlName } })
   }
-
 
   return (
     <PageWrapper>
@@ -78,12 +73,12 @@ function Dashboard() {
         </DateRangeButton>
 
         <SectionsRow>
-          <FocusedInstructions onViewMore={handleViewMore} />
+          <FocusedInstructions urlName={urlName} />
           <StatusCard />
         </SectionsRow>
 
         <SectionsRow>
-          <RecentlyCompleted onViewMore={handleViewMore} />
+          <RecentlyCompleted urlName={urlName} />
           <SystemDistribution onSetAssignees={handleSetAssignees} />
         </SectionsRow>
       </ContentArea>
@@ -187,10 +182,6 @@ const ContentArea = styled.div`
   gap: 72px;
   
   margin-top: 32px;
-  
-  & > *:first-child {
-    margin-bottom: -56px; /* (72 - 56 = 16) */
-  }
 `
 
 const DateRangeButton = styled.button`

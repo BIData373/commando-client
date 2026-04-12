@@ -7,11 +7,8 @@ Make sure to read @CLAUDE.md for an overview, DO NOT scan the codebase unless ab
 - DO NOT write inline CSS, if CSS is required use Emotion
 
 Your job today is the following:
-I need insteas the title that is 'ss' right know to chagne to what is in the figma thre is there buttons etc. it already in the page in the TitleSection see the figma https://www.figma.com/design/mny5BO79QxDcen9OSZILcQ/%F0%9F%A7%A9-%D7%9E%D7%A6%D7%A4%D7%9F-%D7%94%D7%9E%D7%A4%D7%A7%D7%93?node-id=4431-9062&m=dev to get the design
-if you see antd design use instead shadcn 
-WARNING!!!
-Use as few tokens as possible, but be as precise as possible.
 
+In the src/components/SystemDistibution.tsx when the user click on ATTENTION the design need to look like in the figma https://www.figma.com/design/mny5BO79QxDcen9OSZILcQ/%F0%9F%A7%A9-%D7%9E%D7%A6%D7%A4%D7%9F-%D7%94%D7%9E%D7%A4%D7%A7%D7%93?node-id=4431-9234&m=dev
 
 DO NOT fabricate, if something is unclear, ask clarifying questions!
 Make no mistakes and clarify anything that is not understood

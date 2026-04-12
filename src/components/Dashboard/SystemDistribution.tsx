@@ -1,9 +1,13 @@
-import { useState } from 'react'
 import styled from '@emotion/styled'
 import { Users } from 'lucide-react'
+import { useState } from 'react'
 import { Button } from '../ui/button'
+import TagIllustration from './TagIllustration'
 
-type DistributionTab = 'load' | 'attention'
+enum DistributionTab {
+  LOAD = 'load',
+  ATTENTION = 'attention'
+}
 
 interface DistributionTabConfig {
   id: DistributionTab
@@ -14,13 +18,14 @@ interface SystemDistributionProps {
   onSetAssignees?: () => void
 }
 
+
 const TABS: DistributionTabConfig[] = [
-  { id: 'attention', label: 'חלוקת קשב' },
-  { id: 'load', label: 'חלוקת עומסים' },
+  { id: DistributionTab.LOAD, label: 'חלוקת עומסים' },
+  { id: DistributionTab.ATTENTION, label: 'חלוקת קשב' },
 ]
 
 export default function SystemDistribution({ onSetAssignees }: SystemDistributionProps) {
-  const [activeTab, setActiveTab] = useState<DistributionTab>('load')
+  const [activeTab, setActiveTab] = useState<DistributionTab>(DistributionTab.LOAD)
 
   function handleTabClick(tabId: DistributionTab) {
     setActiveTab(tabId)
@@ -43,15 +48,28 @@ export default function SystemDistribution({ onSetAssignees }: SystemDistributio
         </TabsHeader>
         <ContentPanel>
           <EmptyState>
-            <EmptyIconWrapper>
-              <Users size={48} />
-            </EmptyIconWrapper>
-            <EmptyTitle>טרם הוגדרו אחראים</EmptyTitle>
-            <EmptyDescription>לא נמצאו אחראים כדי להציג נתונים</EmptyDescription>
-            <Button variant="outline" size="sm" onClick={onSetAssignees}>
-              הגדרת מקבלי הנחיות
-              <Users size={16} />
-            </Button>
+            {activeTab === DistributionTab.LOAD ? (
+              <>
+                <EmptyIconWrapper>
+                  <Users size={48} />
+                </EmptyIconWrapper>
+                <EmptyTitle>טרם הוגדרו אחראים</EmptyTitle>
+                <EmptyDescription>לא נמצאו אחראים כדי להציג נתונים</EmptyDescription>
+                <Button variant="outline" size="sm" onClick={onSetAssignees}>
+                  הגדרת מקבלי הנחיות
+                  <Users size={16} />
+                </Button>
+              </>
+            ) : (
+              <>
+                <TagIllustration />
+                <EmptyTitle>טרם הוגדרו נושאים</EmptyTitle>
+                <EmptyDescription>
+                  <span>ביצירת הנחיות ניתן לחלק אותם לנושאים,</span>
+                  <span>קטגוריות או מאמצים</span>
+                </EmptyDescription>
+              </>
+            )}
           </EmptyState>
         </ContentPanel>
       </TabsWrapper>
@@ -111,7 +129,7 @@ const TabTitle = styled.span<{ $active: boolean }>`
   color: var(--foreground);
 `
 
-const ContentPanel = styled.div`
+const ContentPanel = styled.div<{ $dashed?: boolean }>`
   flex: 1;
   background: var(--background);
   border: 1px solid var(--border);
@@ -131,7 +149,7 @@ const EmptyState = styled.div`
   align-items: center;
   gap: 8px;
   padding: 24px;
-  max-width: 260px;
+  max-width: max-content;
   text-align: center;
 `
 
@@ -153,8 +171,12 @@ const EmptyTitle = styled.p`
   margin: 0;
 `
 
-const EmptyDescription = styled.p`
+const EmptyDescription = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-size: 14px;
   color: var(--sea-ink-soft);
   margin: 0 0 12px;
+  line-height: 22px;
 `

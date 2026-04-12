@@ -1,11 +1,12 @@
 import styled from '@emotion/styled'
-import { ChevronLeft, ClipboardList } from 'lucide-react'
+import { ClipboardList } from 'lucide-react'
+import { ViewMoreInstructions } from './ViewMoreInstructions'
 
 interface RecentlyCompletedProps {
-  onViewMore?: () => void
+  urlName: string
 }
 
-export default function RecentlyCompleted({ onViewMore }: RecentlyCompletedProps) {
+export default function RecentlyCompleted({ urlName }: RecentlyCompletedProps) {
   return (
     <Section>
       <SectionTitle>הנחיות שבוצעו לאחרונה</SectionTitle>
@@ -21,10 +22,7 @@ export default function RecentlyCompleted({ onViewMore }: RecentlyCompletedProps
           </EmptyDescription>
         </EmptyState>
       </Card>
-      <ViewMoreButton onClick={onViewMore}>
-        <ChevronLeft size={16} />
-        צפה בעוד הנחיות
-      </ViewMoreButton>
+      <ViewMoreInstructions urlName={urlName} />
     </Section>
   )
 }
@@ -92,22 +90,4 @@ const EmptyDescription = styled.div`
   font-size: 14px;
   color: var(--sea-ink-soft);
   line-height: 22px;
-`
-
-const ViewMoreButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 15px;
-  font-size: 14px;
-  color: var(--foreground);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  border-radius: 6px;
-  align-self: flex-end;
-
-  &:hover {
-    background: var(--chip-bg);
-  }
 `
