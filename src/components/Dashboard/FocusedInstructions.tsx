@@ -137,7 +137,6 @@ const TabItem = styled.button<{ $active: boolean }>`
   cursor: pointer;
   margin-bottom: -1px;
   text-align: end;
-  transition: opacity 0.15s;
 `
 
 const TabTitle = styled.span<{ $active: boolean }>`
@@ -150,7 +149,7 @@ const TabTitle = styled.span<{ $active: boolean }>`
       -webkit-text-fill-color: transparent;
       background-clip: text;
     `
-    : `color: rgba(0, 0, 0, 0.7);`
+    : `color: var(--sea-ink);`
   }
 `
 

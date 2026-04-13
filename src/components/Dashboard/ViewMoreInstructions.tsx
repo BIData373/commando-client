@@ -36,5 +36,6 @@ const ViewMoreButton = styled.button`
 
   &:hover {
     background: var(--chip-bg);
+    /* color: var(--background); */
   }
 `

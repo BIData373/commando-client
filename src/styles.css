@@ -5,7 +5,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
-html, body, #app {
+html,
+body,
+#app {
   width: 100%;
   height: 100%;
 }
@@ -42,7 +44,6 @@ html, body, #app {
   --sidebar-accent-foreground: oklch(0.20 0 0);
   --sidebar-border: oklch(0.92 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  ;
 
   --font-sans: 'Rubik Variable', ui-sans-serif, sans-serif;
   --font-serif: 'Rubik Variable', ui-sans-serif, sans-serif;
@@ -126,9 +127,9 @@ html, body, #app {
   --shadow-2xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.25);
 
   /* Semantic tokens */
-  --sea-ink: oklch(0.12 0.028 254);
+  --sea-ink: oklch(97.614% 0.00011 271.152);
   --sea-ink-soft: oklch(0.52 0.020 252);
-  --chip-bg: oklch(0.96 0.006 252);
+  --chip-bg: oklch(24.776% 0.00003 271.152);
   --chip-line: oklch(0.87 0.010 252);
   --link-bg-hover: oklch(0.93 0.008 252);
   --line: oklch(0.91 0 0);

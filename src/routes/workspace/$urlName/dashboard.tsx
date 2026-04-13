@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { CalendarDays, ChevronDown, Plus, Users } from 'lucide-react'
+import { ChevronDown, Plus, Users } from 'lucide-react'
+import DateRangePicker from '../../../components/Dashboard/DateRangePicker'
 import FocusedInstructions from '../../../components/Dashboard/FocusedInstructions'
 import RecentlyCompleted from '../../../components/Dashboard/RecentlyCompleted'
 import StatusCard from '../../../components/Dashboard/StatusCard'
@@ -66,11 +67,7 @@ function Dashboard() {
     <PageWrapper>
 
       <ContentArea>
-        <DateRangeButton>
-          <ChevronDown size={18} />
-          טווח תאריכים
-          <CalendarDays size={18} />
-        </DateRangeButton>
+        <DateRangePicker />
 
         <SectionsRow>
           <FocusedInstructions urlName={urlName} />
@@ -184,33 +181,6 @@ const ContentArea = styled.div`
   margin-top: 32px;
 `
 
-const DateRangeButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 15px;
-  border: 1px solid var(--purple-start);
-  border-radius: 8px;
-  background: var(--background);
-  font-size: 16px;
-  font-weight: 400;
-  cursor: pointer;
-  white-space: nowrap;
-  align-self: flex-end;
-  transition: opacity 0.15s;
-
-  & > * {
-    background: linear-gradient(150deg, var(--purple-start) 0%, var(--purple-end) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  &:hover {
-    opacity: 0.8;
-  }
-`
 
 const SectionsRow = styled.div`
   display: flex;
