@@ -162,50 +162,48 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
                     </form.Field>
 
                     <form.Field name="userSearch">
-                        {(field) => {
-                            return (
-                                <FieldGroup>
-                                    <FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
-                                    <SearchRow>
-                                        <SearchDropdown<IUser>
-                                            items={filteredUsers}
-                                            value={field.state.value}
-                                            onChange={(v) => { field.handleChange(v); setUserSearchValue(v); if (!v) setSelectedUser(null) }}
-                                            onSelect={(user) => { field.handleChange(concatName(user)); setUserSearchValue(concatName(user)); setSelectedUser(user) }}
-                                            onClear={() => { field.handleChange(''); setUserSearchValue(''); setSelectedUser(null) }}
-                                            placeholder="חפש שם/ תפקיד/ מספר אישי"
-                                            renderItem={renderUserItem}
-                                        />
-                                        {field.state.value.length > 0 && (
-                                            <AddUserButton
-                                                type="button"
-                                                $enabled={!!selectedUser}
-                                                disabled={!selectedUser}
-                                                onClick={handleAddUserList}
-                                            >
-                                                <UserPlus size={16} />
-                                            </AddUserButton>
-                                        )}
-                                    </SearchRow>
-                                    <UserListArea>
-                                        {localAssignees.length > 0 && (
-                                            <UserCard>
-                                                {localAssignees.map(user => (
-                                                    <UserCardItem key={user.id}>
-                                                        <UserCardInfo>
-                                                            <UserCardName>{user.name} - {user.id}</UserCardName>
-                                                            <UserCardRole>{user.email} {user.role}</UserCardRole>
-                                                        </UserCardInfo>
-                                                        <UserCardClose type="button">
-                                                            <X size={12} onClick={() => handleRemoveAssignee(user.id)} />
-                                                        </UserCardClose>
-                                                    </UserCardItem>
-                                                ))}
-                                            </UserCard>)}
-                                    </UserListArea>
-                                </FieldGroup>
-                            )
-                        }}
+                        {(field) => (
+                            <FieldGroup>
+                                <FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
+                                <SearchRow>
+                                    <SearchDropdown<IUser>
+                                        items={filteredUsers}
+                                        value={field.state.value}
+                                        onChange={(v) => { field.handleChange(v); setUserSearchValue(v); if (!v) setSelectedUser(null) }}
+                                        onSelect={(user) => { field.handleChange(concatName(user)); setUserSearchValue(concatName(user)); setSelectedUser(user) }}
+                                        onClear={() => { field.handleChange(''); setUserSearchValue(''); setSelectedUser(null) }}
+                                        placeholder="חפש שם/ תפקיד/ מספר אישי"
+                                        renderItem={renderUserItem}
+                                    />
+                                    {field.state.value.length > 0 && (
+                                        <AddUserButton
+                                            type="button"
+                                            $enabled={!!selectedUser}
+                                            disabled={!selectedUser}
+                                            onClick={handleAddUserList}
+                                        >
+                                            <UserPlus size={16} />
+                                        </AddUserButton>
+                                    )}
+                                </SearchRow>
+                                <UserListArea>
+                                    {localAssignees.length > 0 && (
+                                        <UserCard>
+                                            {localAssignees.map(user => (
+                                                <UserCardItem key={user.id}>
+                                                    <UserCardInfo>
+                                                        <UserCardName>{user.name} - {user.id}</UserCardName>
+                                                        <UserCardRole>{user.email} {user.role}</UserCardRole>
+                                                    </UserCardInfo>
+                                                    <UserCardClose type="button">
+                                                        <X size={12} onClick={() => handleRemoveAssignee(user.id)} />
+                                                    </UserCardClose>
+                                                </UserCardItem>
+                                            ))}
+                                        </UserCard>)}
+                                </UserListArea>
+                            </FieldGroup>
+                        )}
                     </form.Field>
                 </DialogBody>
 
