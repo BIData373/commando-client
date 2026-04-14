@@ -32,9 +32,9 @@ export function SearchDropdown<T extends { id: number | string }>({
     setIsOpen(e.target.value.trim().length > 0)
   }
 
-  // function handleBlur() {
-  //   setIsOpen(false)
-  // }
+  function handleBlur() {
+    setIsOpen(false)
+  }
 
   function handleSelect(item: T) {
     onSelect(item)
@@ -55,6 +55,7 @@ export function SearchDropdown<T extends { id: number | string }>({
         <InputGroupInput
           value={value}
           onChange={handleChange}
+          onBlur={handleBlur}
           placeholder={placeholder}
         />
         {onClear && value.length > 0 && (
