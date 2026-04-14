@@ -71,7 +71,7 @@ function Dashboard() {
 
         <SectionsRow>
           <FocusedInstructions urlName={urlName} />
-          <StatusCard />
+          <StatusCard done={80} inProgress={20} pending={200} />
         </SectionsRow>
 
         <SectionsRow>

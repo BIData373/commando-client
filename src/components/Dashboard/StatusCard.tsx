@@ -7,8 +7,8 @@ interface StatusCardProps {
   pending?: number
 }
 
-const CHART_EMPTY_COLOR = '#f0f0f0'
-const CHART_COLORS = ['#52c41a', '#fa8c16', '#bfbfbf']
+const CHART_EMPTY_COLOR = 'var(--chip-bg)'
+const CHART_COLORS = ['var(--status-done-bg)', 'var(--status-progress-bg)', 'var(--status-pending-bg)']
 
 const VARIANT_STYLES = {
   done: { color: 'var(--status-done)', bg: 'var(--status-done-bg)' },
@@ -41,6 +41,8 @@ export default function StatusCard({ done = 0, inProgress = 0, pending = 0 }: St
               startAngle={90}
               endAngle={-270}
               strokeWidth={0}
+              paddingAngle={2}
+              cornerRadius={6}
             >
               {chartData.map((_, i) => (
                 <Cell key={i} fill={cellFills[i] ?? CHART_EMPTY_COLOR} />
