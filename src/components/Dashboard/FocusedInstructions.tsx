@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import { Search } from 'lucide-react'
 import { useState } from 'react'
+import searchInstruction from '../../assets/icons/searchInstruction.svg'
 import { ViewMoreInstructions } from './ViewMoreInstructions'
 
 type FocusedTab = 'deviation' | 'immediate' | 'important'
@@ -76,7 +76,7 @@ export default function FocusedInstructions({ urlName }: IFocusedInstruction) {
         <ContentPanel>
           <EmptyState>
             <EmptyIconWrapper>
-              <Search size={48} />
+              <img src={searchInstruction} alt='searchInstruction' />
             </EmptyIconWrapper>
             <EmptyTitle>{emptyMsg.title}</EmptyTitle>
             <EmptyDescription>

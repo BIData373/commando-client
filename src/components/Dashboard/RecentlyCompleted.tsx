@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import { ClipboardList } from 'lucide-react'
+import compleateInstruction from '../../assets/icons/completeInstruction.svg'
 import { ViewMoreInstructions } from './ViewMoreInstructions'
 
 interface RecentlyCompletedProps {
@@ -13,7 +13,7 @@ export default function RecentlyCompleted({ urlName }: RecentlyCompletedProps) {
       <Card>
         <EmptyState>
           <EmptyIconWrapper>
-            <ClipboardList size={48} />
+            <img src={compleateInstruction} alt='completeInstruction' />
           </EmptyIconWrapper>
           <EmptyTitle>טרם בוצעו הנחיות</EmptyTitle>
           <EmptyDescription>

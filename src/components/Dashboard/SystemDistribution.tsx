@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import { Users } from 'lucide-react'
 import { useState } from 'react'
+import addAssignee from '../../assets/icons/addPerson.svg'
+import subject from '../../assets/icons/subjects.svg'
 import { Button } from '../ui/button'
-import TagIllustration from './TagIllustration'
 
 enum DistributionTab {
   LOAD = 'load',
@@ -51,7 +52,7 @@ export default function SystemDistribution({ onSetAssignees }: SystemDistributio
             {activeTab === DistributionTab.LOAD ? (
               <>
                 <EmptyIconWrapper>
-                  <Users size={48} />
+                  <img src={addAssignee} alt="assignee" />
                 </EmptyIconWrapper>
                 <EmptyTitle>טרם הוגדרו אחראים</EmptyTitle>
                 <EmptyDescription>לא נמצאו אחראים כדי להציג נתונים</EmptyDescription>
@@ -62,7 +63,7 @@ export default function SystemDistribution({ onSetAssignees }: SystemDistributio
               </>
             ) : (
               <>
-                <TagIllustration />
+                <img src={subject} alt="subjects" />
                 <EmptyTitle>טרם הוגדרו נושאים</EmptyTitle>
                 <EmptyDescription>
                   <span>ביצירת הנחיות ניתן לחלק אותם לנושאים,</span>
