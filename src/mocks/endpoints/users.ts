@@ -1,13 +1,17 @@
 import type { ICreateUser, IUpdateUser, IUser } from '../../types';
-import { mockUsers } from '../data';
+import { mockUsers, mockWorkspaceMemberships } from '../data';
 
 /** Simulate async delay for realistic feel */
 const delay = (ms = 200) => new Promise((r) => setTimeout(r, ms));
 
 /** Users API endpoints — In-memory mock implementation */
 export const usersApi = {
-    async getAll(): Promise<IUser[]> {
+    async getAll(urlName?: string): Promise<IUser[]> {
         await delay();
+        if (urlName) {
+            const memberIds = mockWorkspaceMemberships[urlName] ?? [];
+            return mockUsers.filter((u) => memberIds.includes(u.id));
+        }
         return [...mockUsers];
     },
 
@@ -41,10 +45,27 @@ export const usersApi = {
         return { ...mockUsers[index] };
     },
 
-    async delete(userId: number): Promise<void> {
+    async delete(userId: number, urlName?: string): Promise<void> {
         await delay();
+        if (urlName) {
+            const memberIds = mockWorkspaceMemberships[urlName];
+            if (!memberIds) return;
+            const idx = memberIds.indexOf(userId);
+            if (idx !== -1) memberIds.splice(idx, 1);
+            return;
+        }
         const index = mockUsers.findIndex((u) => u.id === userId);
         if (index === -1) throw new Error('User not found');
         mockUsers.splice(index, 1);
+    },
+
+    async addToWorkspace(userId: number, urlName: string): Promise<void> {
+        await delay();
+        if (!mockWorkspaceMemberships[urlName]) {
+            mockWorkspaceMemberships[urlName] = [];
+        }
+        if (!mockWorkspaceMemberships[urlName].includes(userId)) {
+            mockWorkspaceMemberships[urlName].push(userId);
+        }
     },
 };

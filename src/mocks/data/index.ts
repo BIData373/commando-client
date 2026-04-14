@@ -15,5 +15,5 @@ export {
     toListItem,
 } from './instructions';
 export { mockMesibaIcons } from './mesiba';
-export { currentUser, mockUserSummaries, mockUsers } from './users';
+export { currentUser, mockUserSummaries, mockUsers, mockWorkspaceMemberships } from './users';
 export { mockWorkspaceSettings } from './workspaceSettings';

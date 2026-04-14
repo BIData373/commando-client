@@ -9,7 +9,7 @@ import { Button } from '../ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { UserSearchInput } from './UserSearchInput'
+import { SearchDropdown } from './SearchDropdown'
 
 const PRESET_COLORS = [
     '#00474f', '#006d75', '#08979c', '#5cdbd3',
@@ -29,6 +29,19 @@ interface AssigneeDialogProps {
 
 const DEFAULT_COLOR = '#3B82F6'
 
+function concatName(user: IUser) {
+    return `${user.name} ${user.id} ${user.email} / ${user.role}`
+}
+
+function renderUserItem(user: IUser) {
+    return (
+        <>
+            <AssigneeUserName>{user.name} - {user.id}</AssigneeUserName>
+            <AssigneeUserMeta>{user.email} / {user.role}</AssigneeUserMeta>
+        </>
+    )
+}
+
 export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogProps) {
     const isUpdate = !!assignee
 
@@ -41,6 +54,11 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
 
     const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
     const [localAssignees, setLocalAssignees] = useState<IUser[]>(assignees)
+    const [userSearchValue, setUserSearchValue] = useState('')
+
+    const filteredUsers = userSearchValue.trim()
+        ? users.filter((u) => u.name.includes(userSearchValue) || u.email.includes(userSearchValue))
+        : []
 
     const form = useForm({
         defaultValues: {
@@ -149,12 +167,14 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
                                 <FieldGroup>
                                     <FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
                                     <SearchRow>
-                                        <UserSearchInput
+                                        <SearchDropdown<IUser>
+                                            items={filteredUsers}
                                             value={field.state.value}
-                                            onChange={field.handleChange}
+                                            onChange={(v) => { field.handleChange(v); setUserSearchValue(v); if (!v) setSelectedUser(null) }}
+                                            onSelect={(user) => { field.handleChange(concatName(user)); setUserSearchValue(concatName(user)); setSelectedUser(user) }}
+                                            onClear={() => { field.handleChange(''); setUserSearchValue(''); setSelectedUser(null) }}
                                             placeholder="חפש שם/ תפקיד/ מספר אישי"
-                                            clearInput={selectedUser !== null}
-                                            onSelect={setSelectedUser}
+                                            renderItem={renderUserItem}
                                         />
                                         {field.state.value.length > 0 && (
                                             <AddUserButton
@@ -456,4 +476,15 @@ const GradientButton = styled.button`
   font-weight: 400;
   line-height: 24px;
   flex-shrink: 0;
+`
+
+const AssigneeUserName = styled.span`
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sea-ink);
+`
+
+const AssigneeUserMeta = styled.span`
+  font-size: 12px;
+  color: var(--sea-ink-soft);
 `

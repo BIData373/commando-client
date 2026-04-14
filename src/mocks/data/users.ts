@@ -147,3 +147,7 @@ export const mockUserSummaries: IUserSummary[] = mockUsers.map((u) => ({
     name: u.name,
     avatarUrl: u.avatarUrl,
 }));
+
+export const mockWorkspaceMemberships: Record<string, number[]> = {
+    'env-01': [1, 2, 3, 4, 5, 6],
+};

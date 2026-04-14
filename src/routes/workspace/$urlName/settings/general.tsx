@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
 import { X } from 'lucide-react'
 import { useState } from 'react'
-import { IconSearchInput } from '../../../../components/settings/IconSearchInput'
+import { SearchDropdown } from '../../../../components/settings/SearchDropdown'
 import { Input } from '../../../../components/ui/input'
 import {
   Select,
@@ -11,6 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../../../components/ui/select'
+import type { IMesibaIcon } from '../../../../hooks/useMesiba'
+import { useSearchMesibaIcons } from '../../../../hooks/useMesiba'
 import { useUpdateWorkspaceSettings, useWorkspaceSettings } from '../../../../hooks/useWorkspaceSettings'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/general')({ component: SettingsGeneral })
@@ -32,6 +34,15 @@ interface FormState {
   emblem: string
 }
 
+function renderIconItem(icon: IMesibaIcon) {
+  return (
+    <IconItemRow>
+      <IconThumb src={icon.iconName} alt={icon.heb_name} />
+      <IconLabel>{icon.heb_name}</IconLabel>
+    </IconItemRow>
+  )
+}
+
 function SettingsGeneral() {
   const { urlName } = Route.useParams()
   const { data: settings } = useWorkspaceSettings(urlName)
@@ -42,6 +53,9 @@ function SettingsGeneral() {
     command: settings?.command ?? '',
     emblem: settings?.logoUrl ?? '',
   })
+
+  const [iconSearch, setIconSearch] = useState('')
+  const { data: icons = [], isFetching } = useSearchMesibaIcons(iconSearch)
 
   const setField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     const next = { ...form, [key]: value }
@@ -57,6 +71,19 @@ function SettingsGeneral() {
     setField('emblem', '')
   }
 
+  function handleNameChange(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) {
+    setField('name', e.target.value.slice(0, NAME_MAX_LENGTH))
+  }
+
+  function handleCommandChange(value: string) {
+    setField('command', value)
+  }
+
+  function handleImageNotFound(e: React.SyntheticEvent<HTMLImageElement, Event>) {
+    e.currentTarget.onerror = null
+    e.currentTarget.src = '/workspace-icon.png'
+  }
+
   return (
     <FormRoot>
       <FieldRow>
@@ -64,7 +91,7 @@ function SettingsGeneral() {
         <InputWrapper>
           <Input
             value={form.name}
-            onChange={(e) => setField('name', e.target.value.slice(0, NAME_MAX_LENGTH))}
+            onChange={handleNameChange}
             placeholder="הזן שם סביבה"
             maxLength={NAME_MAX_LENGTH}
           />
@@ -76,7 +103,7 @@ function SettingsGeneral() {
 
       <FieldRow>
         <FieldLabel>שיוך פיקודי ארגוני</FieldLabel>
-        <Select value={form.command} onValueChange={(v) => setField('command', v)}>
+        <Select value={form.command} onValueChange={handleCommandChange}>
           <StyledSelectTrigger>
             <SelectValue placeholder="בחר פיקוד" />
           </StyledSelectTrigger>
@@ -92,7 +119,16 @@ function SettingsGeneral() {
 
       <FieldRow>
         <FieldLabel>סמל</FieldLabel>
-        <IconSearchInput onChange={(v) => setField('emblem', v)} />
+        <SearchDropdown<IMesibaIcon>
+          items={icons}
+          value={iconSearch}
+          onChange={setIconSearch}
+          onSelect={(icon) => { setField('emblem', icon.iconName); setIconSearch('') }}
+          onClear={() => setIconSearch('')}
+          isLoading={isFetching}
+          placeholder="חפש סמל"
+          renderItem={renderIconItem}
+        />
         <EmblemPreview>
           <EmblemClearButton type="button" onClick={handleClearEmblem}>
             <X size={16} />
@@ -101,10 +137,7 @@ function SettingsGeneral() {
             <img
               src={form.emblem}
               alt='סמל לשכה'
-              onError={(e) => {
-                e.currentTarget.onerror = null
-                e.currentTarget.src = '/workspace-icon.png'
-              }}
+              onError={handleImageNotFound}
             />
           ) : (
             <EmblemPlaceholder>בחר סמל</EmblemPlaceholder>
@@ -204,4 +237,24 @@ const StyledSelectContent = styled(SelectContent)`
   & [data-slot="select-scroll-down-button"] {
     display: none;
   }
+`
+
+const IconItemRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+`
+
+const IconThumb = styled.img`
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 4px;
+  flex-shrink: 0;
+`
+
+const IconLabel = styled.span`
+  font-size: 14px;
+  color: var(--sea-ink);
 `

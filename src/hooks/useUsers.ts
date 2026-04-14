@@ -9,12 +9,23 @@ const usersUrl = 'users';
 
 export const userKeys = {
     all: [usersUrl] as const,
+    workspace: (urlName: string) => [usersUrl, 'workspace', urlName] as const,
     detail: (id: number) => [usersUrl, id] as const,
 };
 
 interface UpdateUserParams {
     userId: number;
     data: IUpdateUser;
+}
+
+interface DeleteUserParams {
+    userId: number;
+    urlName?: string;
+}
+
+interface AddUserToWorkspaceParams {
+    userId: number;
+    urlName: string;
 }
 
 export function useUsers(options?: QueryOptions<IUser[]>) {
@@ -24,6 +35,17 @@ export function useUsers(options?: QueryOptions<IUser[]>) {
             USE_MOCK_API
                 ? await usersApi.getAll()
                 : await sendRequest<IUser[]>({ method: 'GET', url: usersUrl }),
+        ...options,
+    });
+}
+
+export function useWorkspaceUsers(urlName: string, options?: QueryOptions<IUser[]>) {
+    return useQuery({
+        queryKey: userKeys.workspace(urlName),
+        queryFn: async (): Promise<IUser[]> =>
+            USE_MOCK_API
+                ? await usersApi.getAll(urlName)
+                : await sendRequest<IUser[]>({ method: 'GET', url: `${usersUrl}?workspace=${urlName}` }),
         ...options,
     });
 }
@@ -72,17 +94,39 @@ export function useUpdateUser(options?: MutationOptions<UpdateUserParams>) {
     });
 }
 
-export function useDeleteUser(options?: MutationOptions<number>) {
+export function useDeleteUser(options?: MutationOptions<DeleteUserParams>) {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (userId: number) =>
+        mutationFn: async ({ userId, urlName }: DeleteUserParams) =>
             USE_MOCK_API
-                ? await usersApi.delete(userId)
+                ? await usersApi.delete(userId, urlName)
                 : await sendRequest<void>({ method: 'DELETE', url: `${usersUrl}/${userId}` }),
         ...options,
         onSuccess: (...args) => {
-            queryClient.invalidateQueries({ queryKey: userKeys.all });
+            const { urlName } = args[1];
+            if (urlName) {
+                queryClient.invalidateQueries({ queryKey: userKeys.workspace(urlName) });
+            } else {
+                queryClient.invalidateQueries({ queryKey: userKeys.all });
+            }
+            options?.onSuccess?.(...args);
+        },
+    });
+}
+
+export function useAddUserToWorkspace(options?: MutationOptions<AddUserToWorkspaceParams>) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async ({ userId, urlName }: AddUserToWorkspaceParams) =>
+            USE_MOCK_API
+                ? await usersApi.addToWorkspace(userId, urlName)
+                : await sendRequest<void>({ method: 'POST', url: `${usersUrl}/${userId}/workspace/${urlName}` }),
+        ...options,
+        onSuccess: (...args) => {
+            const { urlName } = args[1];
+            queryClient.invalidateQueries({ queryKey: userKeys.workspace(urlName) });
             options?.onSuccess?.(...args);
         },
     });

@@ -27,12 +27,26 @@ function getInitials(name: string): string {
     .slice(0, 2)
 }
 
-interface AssigneeCardProps {
+interface IUserNameTagProps {
+  uid: number
+  userNames: Record<number, string>
+}
+
+function UserNameTag({ uid, userNames }: IUserNameTagProps) {
+  return (
+    <Badge variant="secondary">
+      {userNames[uid] ?? `#${uid}`}
+    </Badge>
+  )
+}
+
+interface IAssigneeCardProps {
   assignee: IAssignee
   userNames: Record<number, string>
 }
 
-function AssigneeCard({ assignee, userNames }: AssigneeCardProps) {
+
+function AssigneeCard({ assignee, userNames }: IAssigneeCardProps) {
   const userIds = assignee.userIds ?? []
   const visibleIds = userIds.slice(0, MAX_VISIBLE_TAGS)
   const remaining = userIds.length - MAX_VISIBLE_TAGS
@@ -65,9 +79,7 @@ function AssigneeCard({ assignee, userNames }: AssigneeCardProps) {
           <Separator />
           <TagRow>
             {visibleIds.map((uid) => (
-              <Badge key={uid} variant="secondary">
-                {userNames[uid] ?? `#${uid}`}
-              </Badge>
+              <UserNameTag key={uid} uid={uid} userNames={userNames} />
             ))}
             {remaining > 0 && <Badge variant="outline">+{remaining}</Badge>}
           </TagRow>
@@ -213,7 +225,7 @@ const CardMeta = styled.div`
   gap: 4px;
 `
 
-const ColoredFallback = styled(AvatarFallback)<{ $color: string }>`
+const ColoredFallback = styled(AvatarFallback) <{ $color: string }>`
   background: ${({ $color }) => $color};
   color: white;
   font-size: 11px;
