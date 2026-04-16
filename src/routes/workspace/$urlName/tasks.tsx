@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import TasksLayout, { type View } from '../../../components/Tasks/TasksLayout'
+import { TasksProvider } from '../../../providers/TasksProvider'
 
 export const Route = createFileRoute('/workspace/$urlName/tasks')({
   component: TasksPage,
@@ -20,5 +21,9 @@ function TasksPage() {
   const { view } = Route.useSearch()
   const { urlName } = Route.useParams()
 
-  return <TasksLayout view={view} urlName={urlName} />
+  return (
+    <TasksProvider>
+      <TasksLayout view={view} urlName={urlName} />
+    </TasksProvider>
+  )
 }

@@ -2,7 +2,8 @@ import { useState } from 'react'
 import styled from '@emotion/styled'
 import { type ColumnDef, type RowSelectionState } from '@tanstack/react-table'
 import { differenceInDays, format, startOfToday } from 'date-fns'
-import { AlertTriangle, Flag, MoreHorizontal, Paperclip } from 'lucide-react'
+import { AlertTriangle, MoreHorizontal, Paperclip } from 'lucide-react'
+import FlagIcon from '../ui/FlagIcon'
 import { Checkbox } from '../ui/checkbox'
 import { DataTable } from '../ui/data-table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
@@ -49,9 +50,9 @@ function TaskTable({
     .filter((key) => rowSelection[key])
     .map(Number)
 
-  function handleEnterSelectMode() {
+  function handleEnterSelectMode(taskId?: number) {
     setSelectMode(true)
-    setRowSelection({})
+    setRowSelection(taskId !== undefined ? { [String(taskId)]: true } : {})
   }
 
   function handleExitSelectMode() {
@@ -84,31 +85,31 @@ function TaskTable({
   const columns: ColumnDef<Task>[] = [
     selectMode
       ? {
-          id: 'select',
-          size: 61,
-          header: () => (
-            <CheckboxCenter>
-              <Checkbox
-                checked={tasks.length > 0 && selectedTaskIds.length === tasks.length}
-                onCheckedChange={(checked) => handleSelectAll(!!checked)}
-              />
-            </CheckboxCenter>
-          ),
-          cell: ({ row }) => (
-            <CheckboxCenter>
-              <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(checked) => row.toggleSelected(!!checked)}
-              />
-            </CheckboxCenter>
-          ),
-        }
+        id: 'select',
+        size: 61,
+        header: () => (
+          <CheckboxCenter>
+            <Checkbox
+              checked={tasks.length > 0 && selectedTaskIds.length === tasks.length}
+              onCheckedChange={(checked) => handleSelectAll(!!checked)}
+            />
+          </CheckboxCenter>
+        ),
+        cell: ({ row }) => (
+          <CheckboxCenter>
+            <Checkbox
+              checked={row.getIsSelected()}
+              onCheckedChange={(checked) => row.toggleSelected(!!checked)}
+            />
+          </CheckboxCenter>
+        ),
+      }
       : {
-          accessorKey: 'id',
-          header: 'מס"ד',
-          size: 61,
-          cell: ({ getValue }) => <IdCell>{getValue() as number}</IdCell>,
-        },
+        accessorKey: 'id',
+        header: 'מס"ד',
+        size: 61,
+        cell: ({ getValue }) => <IdCell>{getValue() as number}</IdCell>,
+      },
     {
       accessorKey: 'title',
       header: 'ההנחיה',
@@ -118,7 +119,7 @@ function TaskTable({
         const fullText = details ? `${title} – ${details}` : title
         return (
           <TitleCell>
-            {flagged && <Flag size={16} color="#FAAD14" />}
+            {flagged && <FlagIcon />}
             <span>{searchQuery ? highlightMatch(fullText, searchQuery) : fullText}</span>
           </TitleCell>
         )
@@ -230,7 +231,7 @@ function TaskTable({
             </ActionsButton>
           }
           onEdit={() => onEdit(row.original.id)}
-          onEnterSelect={handleEnterSelectMode}
+          onEnterSelect={() => handleEnterSelectMode(row.original.id)}
           onArchive={() => onArchive([row.original.id])}
           onDelete={() => onDelete([row.original.id])}
         />
@@ -322,8 +323,8 @@ const IdCell = styled.span`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 400;
   line-height: 24px;
   color:rgba(0, 0, 0, 0.65);
 `

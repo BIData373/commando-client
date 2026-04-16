@@ -12,7 +12,7 @@ import { TaskCardGrid } from './TaskCardGrid'
 import { exportTasksToExcel } from '../../functions/exportExcel'
 import { applyAllFilters } from '../../functions/filterUtils'
 import { useTitleBar } from '../../providers/TitleBarProvider'
-import { INITIAL_TASKS, type Task } from '../../data/Tasks'
+import { useTasks } from '../../providers/TasksProvider'
 
 export type View = 'TABLE' | 'CARDS'
 
@@ -23,7 +23,7 @@ interface TasksLayoutProps {
 
 function TasksLayout({ view, urlName }: TasksLayoutProps) {
   const navigate = useNavigate()
-  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS)
+  const { tasks, updateTaskStatus, removeTasks, bulkUpdateStatus } = useTasks()
   const [searchQuery, setSearchQuery] = useState('')
   const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set())
   const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(new Set())
@@ -52,20 +52,16 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
     [tasks, searchQuery, activeQuickFilters, activeTopicFilters],
   )
 
-  function updateTaskStatus(taskId: number, status: DirectiveStatus) {
-    setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status, updatedAt: new Date() } : t)))
-  }
-
   function handleEdit(taskId: number) {
     navigate({ to: '/workspace/$urlName/tasks/$taskId', params: { urlName, taskId: String(taskId) }, search: { view } })
   }
 
   function handleArchive(taskIds: number[]) {
-    setTasks((prev) => prev.filter((t) => !taskIds.includes(t.id)))
+    removeTasks(taskIds)
   }
 
   function handleDelete(taskIds: number[]) {
-    setTasks((prev) => prev.filter((t) => !taskIds.includes(t.id)))
+    removeTasks(taskIds)
   }
 
   function handleExport() {
@@ -73,9 +69,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   }
 
   function handleBulkChangeStatus(taskIds: number[], status: DirectiveStatus) {
-    setTasks((prev) =>
-      prev.map((t) => (taskIds.includes(t.id) ? { ...t, status, updatedAt: new Date() } : t)),
-    )
+    bulkUpdateStatus(taskIds, status)
   }
 
   function handleCreateDirective() {
