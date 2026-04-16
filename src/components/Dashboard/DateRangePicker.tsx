@@ -62,7 +62,7 @@ function DateRangePicker() {
     <Popover.Root open={state.open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild>
         <TriggerButton>
-          <ChevronDown size={18} />
+          <CalendarDays size={18} />
           {state.dateType && state.range?.from && state.range.to ? (
             <span>
               {state.dateType}:{" "}{format(state.range.from, "dd")}-{format(state.range.to, "dd/MM/y")}
@@ -70,7 +70,7 @@ function DateRangePicker() {
           ) : (
             <span>טווח תאריכים</span>
           )}
-          <CalendarDays size={18} />
+          <ChevronDown size={18} />
         </TriggerButton>
       </Popover.Trigger>
       <Popover.Portal>
@@ -113,12 +113,12 @@ const TriggerButton = styled.button`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
+  height: 32px;
   padding: 0 15px;
   border: 1px solid var(--purple-start);
   border-radius: 8px;
   background: var(--background);
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 400;
   cursor: pointer;
   white-space: nowrap;

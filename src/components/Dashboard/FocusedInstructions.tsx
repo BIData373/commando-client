@@ -80,8 +80,8 @@ export default function FocusedInstructions({ urlName }: IFocusedInstruction) {
             </EmptyIconWrapper>
             <EmptyTitle>{emptyMsg.title}</EmptyTitle>
             <EmptyDescription>
-              {emptyMsg.description.split('\n').map((line, index) => (
-                <span key={index}>{line}</span>
+              {emptyMsg.description.split('\n').map((line) => (
+                <span key={line}>{line}</span>
               ))}
             </EmptyDescription>
           </EmptyState>
@@ -97,12 +97,12 @@ const Section = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 8px;
 `
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 30px;
+  font-size: 20px;
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
@@ -119,6 +119,7 @@ const TabsHeader = styled.div`
   gap: 2px;
   position: relative;
   z-index: 2;
+  max-width: 700px;
 `
 
 const TabItem = styled.button<{ $active: boolean }>`
@@ -136,11 +137,12 @@ const TabItem = styled.button<{ $active: boolean }>`
   opacity: ${({ $active }) => $active ? 1 : 0.5};
   cursor: pointer;
   margin-bottom: -1px;
-  text-align: end;
+  align-items: flex-start;
+  flex: 1;
 `
 
 const TabTitle = styled.span<{ $active: boolean }>`
-  font-size: 24px;
+  font-size: 15px;
   font-weight: 400;
   ${({ $active }) => $active
     ? `
@@ -161,7 +163,7 @@ const TabBottom = styled.div`
 `
 
 const TabCount = styled.span<{ $active: boolean }>`
-  font-size: 38px;
+  font-size: 28px;
   font-weight: 400;
   line-height: 1.2;
   ${({ $active }) => $active
@@ -189,7 +191,7 @@ const ContentPanel = styled.div`
   border: 1px solid var(--border);
   border-radius: 8px;
   border-start-start-radius: 0;
-  min-height: 352px;
+  min-height: 280px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -208,8 +210,8 @@ const EmptyState = styled.div`
 `
 
 const EmptyIconWrapper = styled.div`
-  width: 100px;
-  height: 100px;
+  width: 72px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -219,7 +221,7 @@ const EmptyIconWrapper = styled.div`
 `
 
 const EmptyTitle = styled.p`
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--sea-ink);
   margin: 0;

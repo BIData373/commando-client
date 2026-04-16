@@ -32,12 +32,12 @@ const Section = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
 `
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 30px;
+  font-size: 20px;
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
@@ -48,7 +48,7 @@ const Card = styled.div`
   background: var(--background);
   border: 1px solid var(--border);
   border-radius: 8px;
-  min-height: 396px;
+  min-height: 320px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,8 +66,8 @@ const EmptyState = styled.div`
 `
 
 const EmptyIconWrapper = styled.div`
-  width: 100px;
-  height: 100px;
+  width: 72px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,7 +77,7 @@ const EmptyIconWrapper = styled.div`
 `
 
 const EmptyTitle = styled.p`
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--sea-ink);
   margin: 0;

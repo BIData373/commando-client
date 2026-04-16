@@ -81,15 +81,15 @@ export default function SystemDistribution({ onSetAssignees }: SystemDistributio
 const Section = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  width: 450px;
+  gap: 12px;
+  width: 360px;
   flex-shrink: 0;
-  align-self: stretch;
+  align-self: flex-start;
 `
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 30px;
+  font-size: 20px;
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
@@ -125,7 +125,7 @@ const TabItem = styled.button<{ $active: boolean }>`
 `
 
 const TabTitle = styled.span<{ $active: boolean }>`
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 400;
   color: var(--foreground);
 `
@@ -136,7 +136,7 @@ const ContentPanel = styled.div<{ $dashed?: boolean }>`
   border: 1px solid var(--border);
   border-radius: 8px;
   border-start-start-radius: 0;
-  min-height: 420px;
+  min-height: 320px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -155,8 +155,8 @@ const EmptyState = styled.div`
 `
 
 const EmptyIconWrapper = styled.div`
-  width: 100px;
-  height: 100px;
+  width: 72px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -166,7 +166,7 @@ const EmptyIconWrapper = styled.div`
 `
 
 const EmptyTitle = styled.p`
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--sea-ink);
   margin: 0;

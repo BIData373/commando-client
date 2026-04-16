@@ -1,7 +1,7 @@
-import type { HeaderConfig } from '#/router'
 import styled from '@emotion/styled'
-import { Link, useRouterState, type LinkComponentProps } from '@tanstack/react-router'
+import { Link, type LinkComponentProps, useRouterState } from '@tanstack/react-router'
 import { ChevronDown, User } from 'lucide-react'
+import type { HeaderConfig } from '#/router'
 import ThemeToggle from './ThemeToggle'
 import { Avatar, AvatarFallback } from './ui/avatar'
 import {
@@ -92,7 +92,7 @@ export default function Header() {
 }
 
 const HeaderContainer = styled.div`
-  margin: 20px 32px 28px 32px;
+  margin: 20px 32px 0 32px;
 `
 
 const HeaderRoot = styled.header`

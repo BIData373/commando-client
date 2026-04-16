@@ -15,8 +15,8 @@ export const ViewMoreInstructions = ({ urlName }: IViewInstruction) => {
 
     return (
         <ViewMoreButton onClick={handleViewMore}>
-            <ChevronLeft size={16} />
             צפה בעוד הנחיות
+            <ChevronLeft size={16} />
         </ViewMoreButton>
     )
 }
@@ -26,7 +26,7 @@ const ViewMoreButton = styled.button`
   align-items: center;
   gap: 8px;
   padding: 4px 15px;
-  font-size: 14px;
+  font-size: 12px;
   color: var(--foreground);
   background: transparent;
   border: none;
@@ -36,6 +36,5 @@ const ViewMoreButton = styled.button`
 
   &:hover {
     background: var(--chip-bg);
-    /* color: var(--background); */
   }
 `

@@ -102,7 +102,7 @@ const TitleGroup = styled.div`
 `
 
 const WorkspaceName = styled.span`
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 400;
   color: var(--sea-ink-soft);
   white-space: nowrap;
@@ -110,14 +110,14 @@ const WorkspaceName = styled.span`
 
 const TitleDivider = styled.div`
   width: 1px;
-  height: 38px;
+  height: 26px;
   background: var(--line);
   flex-shrink: 0;
 `
 
 const PageTitle = styled.h1`
   margin: 0;
-  font-size: 38px;
+  font-size: 26px;
   font-weight: 500;
   color: var(--foreground);
   white-space: nowrap;
@@ -176,14 +176,20 @@ const ContentArea = styled.div`
   flex-direction: column;
   padding-block-end: 32px;
   color: var(--sea-ink-soft);
-  gap: 72px;
-  
   margin-top: 32px;
+
+  & > *:nth-child(2) {
+    margin-block-start: 14px;
+  }
+
+  & > *:nth-child(3) {
+    margin-block-start: 54px;
+  }
 `
 
 
 const SectionsRow = styled.div`
   display: flex;
-  gap: 72px;
+  gap: 54px;
   align-items: flex-start;
 `
