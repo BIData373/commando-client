@@ -35,19 +35,16 @@ export default function StatusCard({ done = 0, inProgress = 0, pending = 0 }: St
       <SectionTitle>סטטוס הנחיות</SectionTitle>
       <Card>
         <ChartWrapper>
-          <PieChart width={250} height={200}>
+          <PieChart width={250} height={250}>
             <Pie
               data={chartData}
               cx={150}
-              cy={90}
+              cy={88}
               innerRadius={65}
-              outerRadius={95}
+              outerRadius={92}
               dataKey="value"
               startAngle={90}
               endAngle={-270}
-              strokeWidth={0}
-              paddingAngle={2}
-              cornerRadius={6}
             >
               {chartData.map((_, i) => (
                 <Cell key={i} fill={cellFills[i] ?? CHART_EMPTY_COLOR} />
@@ -90,7 +87,7 @@ const Section = styled.div`
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;

@@ -1,12 +1,11 @@
 import styled from '@emotion/styled'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ChevronDown, Plus, Users } from 'lucide-react'
-import DateRangePicker from '../../../components/Dashboard/DateRangePicker'
+import { DatePicker } from '#/components/Dashboard/DatePicker'
 import FocusedInstructions from '../../../components/Dashboard/FocusedInstructions'
 import RecentlyCompleted from '../../../components/Dashboard/RecentlyCompleted'
 import StatusCard from '../../../components/Dashboard/StatusCard'
 import SystemDistribution from '../../../components/Dashboard/SystemDistribution'
-
 
 
 const TitleSection = () => {
@@ -31,12 +30,12 @@ const TitleSection = () => {
       <ButtonGroup>
         <AssigneesButton onClick={handleSetAssignees}>
           הגדרת מקבלי הנחיות
-          <Users size={18} />
+          <Users size={16} />
         </AssigneesButton>
         <CreateButton onClick={handleCreateInstruction}>
-          <ChevronDown size={18} />
+          <Plus size={16} />
           צור הנחייה
-          <Plus size={18} />
+          <ChevronDown size={16} />
         </CreateButton>
       </ButtonGroup>
     </TitleSectionContainer>
@@ -55,6 +54,7 @@ export const Route = createFileRoute('/workspace/$urlName/dashboard')({
   },
 })
 
+
 function Dashboard() {
   const { urlName } = Route.useParams()
   const navigate = useNavigate()
@@ -67,7 +67,7 @@ function Dashboard() {
     <PageWrapper>
 
       <ContentArea>
-        <DateRangePicker />
+        <DatePicker />
 
         <SectionsRow>
           <FocusedInstructions urlName={urlName} />
@@ -133,13 +133,13 @@ const CreateButton = styled.button`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
+  height: 32px;
   padding: 0 15px;
   border: none;
   border-radius: 8px;
   background: linear-gradient(165deg, var(--purple-start) 0%, var(--purple-end) 100%);
   color: var(--primary-foreground);
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 400;
   cursor: pointer;
   white-space: nowrap;
@@ -154,13 +154,13 @@ const AssigneesButton = styled.button`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
+  height: 32px;
   padding: 0 15px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--background);
   color: var(--foreground);
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 400;
   cursor: pointer;
   white-space: nowrap;
@@ -176,7 +176,7 @@ const ContentArea = styled.div`
   flex-direction: column;
   padding-block-end: 32px;
   color: var(--sea-ink-soft);
-  margin-top: 32px;
+  margin-top: 24px;
 
   & > *:nth-child(2) {
     margin-block-start: 14px;

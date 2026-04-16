@@ -136,12 +136,12 @@ body,
   --z-dropdown: 1000;
 
   /* Status colors */
-  --status-done: oklch(61.799% 0.16176 353.499);
-  --status-done-bg: oklch(46.548% 0.30415 264.216);
-  --status-progress: oklch(0.72 0.16 58);
-  --status-progress-bg: oklch(47.123% 0.14917 259.588);
-  --status-pending: oklch(0.40 0 0);
-  --status-pending-bg: #fff;
+  --status-done: oklch(0.70 0.22 145);
+  --status-done-bg: oklch(0.98 0.04 145);
+  --status-progress: #2F54EB;
+  --status-progress-bg: #F0F5FF;
+  --status-pending: #FA541C;
+  --status-pending-bg: oklch(0.94 0 0);
 
   /* Purple accent */
   --purple-start: oklch(0.60 0.23 272);

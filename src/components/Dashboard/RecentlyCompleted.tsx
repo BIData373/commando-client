@@ -37,7 +37,7 @@ const Section = styled.div`
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
