@@ -2,92 +2,17 @@ import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
 import { Info, Plus, Search } from 'lucide-react'
 import { type ChangeEvent, useState } from 'react'
+import { AssigneeCard } from '#/components/settings/AssigneeCard'
 import { AssigneeDialog } from '../../../../components/settings/AssigneeDialog'
-import { Avatar, AvatarFallback } from '../../../../components/ui/avatar'
-import { Badge } from '../../../../components/ui/badge'
 import { Button } from '../../../../components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../components/ui/card'
 import { Checkbox } from '../../../../components/ui/checkbox'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../../../../components/ui/input-group'
-import { Separator } from '../../../../components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../../components/ui/tooltip'
 import { useAssignees } from '../../../../hooks/useAssignees'
 import { useUsers } from '../../../../hooks/useUsers'
-import type { IAssignee } from '../../../../types'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({ component: SettingsAssignees })
 
-const MAX_VISIBLE_TAGS = 3
-
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-}
-
-interface IUserNameTagProps {
-  uid: number
-  userNames: Record<number, string>
-}
-
-function UserNameTag({ uid, userNames }: IUserNameTagProps) {
-  return (
-    <Badge variant="secondary">
-      {userNames[uid] ?? `#${uid}`}
-    </Badge>
-  )
-}
-
-interface IAssigneeCardProps {
-  assignee: IAssignee
-  userNames: Record<number, string>
-}
-
-
-function AssigneeCard({ assignee, userNames }: IAssigneeCardProps) {
-  const userIds = assignee.userIds ?? []
-  const visibleIds = userIds.slice(0, MAX_VISIBLE_TAGS)
-  const remaining = userIds.length - MAX_VISIBLE_TAGS
-  const [isUpdateCardOpen, setIsUpdateCardOpen] = useState(false)
-
-  function onCardClick() {
-    setIsUpdateCardOpen(true)
-  }
-
-  return (
-    <>
-      <AssigneeDialog
-        assignee={assignee}
-        open={isUpdateCardOpen}
-        onOpenChange={setIsUpdateCardOpen}
-      />
-      <Card onClick={onCardClick}>
-        <CardHeader>
-          <CardHeaderRow>
-            <Avatar>
-              <ColoredFallback $color={assignee.color}>{getInitials(assignee.name)}</ColoredFallback>
-            </Avatar>
-            <CardMeta>
-              <CardTitle>{assignee.name}</CardTitle>
-              <CardDescription>{userIds.length} משתמשים</CardDescription>
-            </CardMeta>
-          </CardHeaderRow>
-        </CardHeader>
-        <CardContent>
-          <Separator />
-          <TagRow>
-            {visibleIds.map((uid) => (
-              <UserNameTag key={uid} uid={uid} userNames={userNames} />
-            ))}
-            {remaining > 0 && <Badge variant="outline">+{remaining}</Badge>}
-          </TagRow>
-        </CardContent>
-      </Card>
-    </>
-  )
-}
 
 function SettingsAssignees() {
   const [allowAssigneeStatusUpdate, setAllowAssigneeStatusUpdate] = useState(false)
@@ -211,30 +136,4 @@ const AssigneeCardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
-`
-
-const CardHeaderRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`
-
-const CardMeta = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`
-
-const ColoredFallback = styled(AvatarFallback) <{ $color: string }>`
-  background: ${({ $color }) => $color};
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-`
-
-const TagRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding-block-start: 12px;
 `
