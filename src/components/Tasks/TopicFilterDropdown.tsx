@@ -97,7 +97,7 @@ const TriggerPill = styled.button<{ $active: boolean }>`
   white-space: nowrap;
   transition: background 0.15s;
   border: 1px solid ${({ $active }) => ($active ? 'rgba(9, 88, 217, 0.6)' : '#D9D9D9')};
-  background: ${({ $active }) => ($active ? 'rgba(230, 244, 255, 0.5)' : '#FFF')};
+  background: #FFF;
   color: ${({ $active }) => ($active ? 'rgba(9, 88, 217, 1)' : 'var(--sea-ink)')};
 
   &:hover {
@@ -119,19 +119,20 @@ const DropdownPanel = styled.div`
 `
 
 const ItemList = styled.div`
-  direction: ltr;
   display: flex;
   flex-direction: column;
+  max-height: 160px;
+  overflow-y: auto;
 `
 
 const DropdownItem = styled.div<{ $selected: boolean }>`
+  direction: ltr;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
   height: 32px;
-  padding-inline: 12px;
-  border-radius: 4px;
+  padding: 5px 12px;
   cursor: pointer;
   background: ${({ $selected }) => ($selected ? 'rgba(0, 0, 0, 0.04)' : 'transparent')};
 

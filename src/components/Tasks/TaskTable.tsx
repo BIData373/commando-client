@@ -2,7 +2,7 @@ import { useState } from 'react'
 import styled from '@emotion/styled'
 import { type ColumnDef, type RowSelectionState } from '@tanstack/react-table'
 import { differenceInDays, format, startOfToday } from 'date-fns'
-import { AlertTriangle, Flag, MoreHorizontal, Paperclip } from 'lucide-react'
+import { AlertTriangle, Flag, MoreVertical, Paperclip } from 'lucide-react'
 import { Checkbox } from '../ui/checkbox'
 import { DataTable } from '../ui/data-table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
@@ -226,7 +226,7 @@ function TaskTable({
         <RowActionsMenu
           trigger={
             <ActionsButton>
-              <MoreHorizontal size={16} />
+              <MoreVertical size={16} />
             </ActionsButton>
           }
           onEdit={() => onEdit(row.original.id)}
@@ -274,11 +274,12 @@ export { TaskTable }
 
 const TableWrapper = styled.div`
   border: ${TABLE_BORDER};
-  overflow: auto;
+  overflow: hidden;
   border-radius: 4px;
   background: white;
 
   table {
+    width: 100%;
     table-layout: fixed;
   }
 
@@ -292,7 +293,6 @@ const TableWrapper = styled.div`
 
   th {
     border: ${TABLE_BORDER};
-    padding: 12px;
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
@@ -304,9 +304,11 @@ const TableWrapper = styled.div`
 
   td {
     border: ${TABLE_BORDER};
-    padding: 12px;
+    padding: 0 6px;
     height: 43px;
+    max-height: 43px;
     vertical-align: middle;
+    overflow: hidden;
   }
 `
 
@@ -441,10 +443,10 @@ const SourceText = styled.span`
 `
 
 const NotesText = styled.span`
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  display: block;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 14px;
   color: var(--sea-ink-soft);
 `
