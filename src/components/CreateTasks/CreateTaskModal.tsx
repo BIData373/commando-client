@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import styled from '@emotion/styled'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import { X, ChevronDown, ChevronUp } from 'lucide-react'
@@ -212,6 +212,19 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
     setField('notes', value)
   }
 
+  // ─── Scroll Shadow ─────────────────────────────────────────────────────────
+
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [scrollShadow, setScrollShadow] = useState({ top: false, bottom: false })
+
+  function handleScroll() {
+    const el = scrollRef.current
+    if (!el) return
+    const atTop = el.scrollTop <= 0
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
+    setScrollShadow({ top: !atTop, bottom: !atBottom })
+  }
+
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
@@ -224,11 +237,11 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
           </ModalCloseButton>
 
           <ModalBody>
-            <ModalHeader>
+            <ModalHeader $shadow={scrollShadow.top}>
               <ModalTitle>יצירת הנחיה</ModalTitle>
             </ModalHeader>
 
-            <ScrollableContent>
+            <ScrollableContent ref={scrollRef} onScroll={handleScroll}>
               <FormContainer>
                 {/* ─── Directive Name ──────────────────────────────────────── */}
                 <FormItem>
@@ -330,7 +343,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
             </ScrollableContent>
 
             {/* ─── Action Buttons ──────────────────────────────────────── */}
-            <ActionRow>
+            <ActionRow $shadow={scrollShadow.bottom}>
               <SaveButton onClick={handleSave} disabled={!form.title.trim()}>
                 שמור
               </SaveButton>
@@ -411,11 +424,16 @@ const ModalBody = styled.div`
   flex: 1;
 `
 
-const ModalHeader = styled.div`
+const ModalHeader = styled.div<{ $shadow: boolean }>`
   display: flex;
   justify-content: flex-end;
   padding-block-end: 24px;
   flex-shrink: 0;
+  transition: box-shadow 200ms ease;
+  position: relative;
+  z-index: 1;
+  clip-path: inset(0 0 -20px 0);
+  box-shadow: ${({ $shadow }) => ($shadow ? '0px 10px 20px 0px rgba(0, 0, 0, 0.06)' : 'none')};
 `
 
 const ScrollableContent = styled.div`
@@ -424,6 +442,7 @@ const ScrollableContent = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   padding-block-end: 24px;
+  padding-inline-end: 24px;
 `
 
 // ─── Form Layout ─────────────────────────────────────────────────────────────
@@ -620,10 +639,17 @@ const AdditionalDetails = styled.div`
 `
 
 // ─── Bottom Actions ──────────────────────────────────────────────────────────
-const ActionRow = styled.div`
+const ActionRow = styled.div<{ $shadow: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
+  padding-block-start: 16px;
+  position: relative;
+  z-index: 1;
+  clip-path: inset(-20px 0 0 0);
+  transition: box-shadow 200ms ease;
+  box-shadow: ${({ $shadow }) => ($shadow ? '0px -10px 20px 0px rgba(0, 0, 0, 0.06)' : 'none')};
 `
 
 const SaveButton = styled.button`
