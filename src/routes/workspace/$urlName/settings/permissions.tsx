@@ -4,34 +4,28 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { AddUserSection } from '#/components/settings/AddUserSection'
 import { SearchDropdown } from '#/components/settings/SearchDropdown'
+import { UserDropdownItem } from '#/components/settings/UserDropdownItem'
 import { UserPermissionList } from '#/components/settings/UsersPermissionList'
-import { userKeys, useAddUserToWorkspace, useDeleteUser, useUpdateUser, useUsers, useWorkspaceUsers } from '#/hooks/useUsers'
-import { UserRole } from '#/types'
+import { useAddUserToWorkspace, useDeleteUser, userKeys, useUpdateUser, useUsers, useWorkspaceUsers } from '#/hooks/useUsers'
 import type { IUser } from '#/types'
+import { UserRole } from '#/types'
+import { concatName } from '#/utils/userUtils'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../components/ui/tabs'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/permissions')({ component: SettingsPermissions })
 
-type PermissionsTab = 'all' | 'admins' | 'viewers'
 
-function concatName(user: IUser) {
-  return `${user.name} ${user.id} ${user.email} / ${user.role}`
-}
-
-function renderUserItem(user: IUser) {
-  return (
-    <>
-      <UserName>{user.name} - {user.id}</UserName>
-      <UserMeta>{user.email} / {user.role}</UserMeta>
-    </>
-  )
+enum PermissionsTab {
+  ALL = 'all',
+  ADMINS = 'admins',
+  VIEWERS = 'viewers'
 }
 
 function SettingsPermissions() {
   const { urlName } = Route.useParams()
   const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
-  const [activeTab, setActiveTab] = useState<PermissionsTab>('all')
+  const [activeTab, setActiveTab] = useState(PermissionsTab.ALL)
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
 
   const { data: permissionUsers = [] } = useWorkspaceUsers(urlName)
@@ -78,7 +72,7 @@ function SettingsPermissions() {
           onSelect={(user) => { setSearch(concatName(user)); setSelectedUser(user) }}
           onClear={() => { setSearch(''); setSelectedUser(null) }}
           placeholder="חפש קבוצת אחראים"
-          renderItem={renderUserItem}
+          renderItem={(item) => <UserDropdownItem user={item} />}
         />
         {selectedUser &&
           <AddUserSection onClick={handleUserAdd} />
@@ -86,17 +80,17 @@ function SettingsPermissions() {
       </SearchSection>
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <StyledTabsList variant="line">
-          <TabsTrigger value="all">כולם</TabsTrigger>
-          <TabsTrigger value="admins">מנהלים</TabsTrigger>
-          <TabsTrigger value="viewers">צופים</TabsTrigger>
+          <TabsTrigger value={PermissionsTab.ALL}>כולם</TabsTrigger>
+          <TabsTrigger value={PermissionsTab.ADMINS}>מנהלים</TabsTrigger>
+          <TabsTrigger value={PermissionsTab.VIEWERS}>צופים</TabsTrigger>
         </StyledTabsList>
-        <TabsContent value="all">
+        <TabsContent value={PermissionsTab.ALL}>
           <UserPermissionList users={permissionUsers} onDelete={handleDeletePermissionUser} onRoleChange={handleRoleChangePermissionUser} />
         </TabsContent>
-        <TabsContent value="admins">
+        <TabsContent value={PermissionsTab.ADMINS}>
           <UserPermissionList users={admins} onDelete={handleDeletePermissionUser} onRoleChange={handleRoleChangePermissionUser} />
         </TabsContent>
-        <TabsContent value="viewers">
+        <TabsContent value={PermissionsTab.VIEWERS}>
           <UserPermissionList users={viewers} onDelete={handleDeletePermissionUser} onRoleChange={handleRoleChangePermissionUser} />
         </TabsContent>
       </Tabs>
@@ -127,15 +121,4 @@ const SearchSection = styled.div`
   align-items: center;
   justify-content: center;
   gap: 4px;
-`
-
-const UserName = styled.span`
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--sea-ink);
-`
-
-const UserMeta = styled.span`
-  font-size: 12px;
-  color: var(--sea-ink-soft);
 `
