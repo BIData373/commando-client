@@ -18,7 +18,6 @@ export function DropdownIcons({
 }: DropdownIconsProps) {
     const [iconSearch, setIconSearch] = useState('')
 
-
     const { data: icons = [], isFetching } = useSearchMesibaIcons(iconSearch)
 
     function handleImageNotFound(e: React.SyntheticEvent<HTMLImageElement, Event>) {
@@ -48,15 +47,17 @@ export function DropdownIcons({
                 renderItem={(item) => <MesibaIcon icon={item} />}
             />
             <EmblemPreview>
-                <EmblemClearButton type="button" onClick={onClearEmblem}>
-                    <X size={16} />
-                </EmblemClearButton>
                 {emblemSrc ? (
-                    <img
-                        src={emblemSrc}
-                        alt='סמל לשכה'
-                        onError={handleImageNotFound}
-                    />
+                    <>
+                        <EmblemClearButton type="button" onClick={onClearEmblem}>
+                            <X size={16} />
+                        </EmblemClearButton>
+                        <img
+                            src={emblemSrc}
+                            alt='סמל לשכה'
+                            onError={handleImageNotFound}
+                        />
+                    </>
                 ) : (
                     <EmblemPlaceholder>בחר סמל</EmblemPlaceholder>
                 )}

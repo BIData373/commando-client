@@ -4,7 +4,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { AddUserSection } from '#/components/settings/AddUserSection'
 import { SearchDropdown } from '#/components/settings/SearchDropdown'
-import { UserDropdownItem } from '#/components/settings/UserDropdownItem'
+import { UserItem } from '#/components/settings/UserDropdownItem'
 import { UserPermissionList } from '#/components/settings/UsersPermissionList'
 import { useAddUserToWorkspace, useDeleteUser, userKeys, useUpdateUser, useUsers, useWorkspaceUsers } from '#/hooks/useUsers'
 import type { IUser } from '#/types'
@@ -72,7 +72,7 @@ function SettingsPermissions() {
           onSelect={(user) => { setSearch(concatName(user)); setSelectedUser(user) }}
           onClear={() => { setSearch(''); setSelectedUser(null) }}
           placeholder="חפש קבוצת אחראים"
-          renderItem={(item) => <UserDropdownItem user={item} />}
+          renderItem={(item) => <UserItem user={item} />}
         />
         {selectedUser &&
           <AddUserSection onClick={handleUserAdd} />

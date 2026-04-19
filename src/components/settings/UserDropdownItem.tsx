@@ -5,7 +5,7 @@ interface UserItemProps {
     user: IUser
 }
 
-export function UserDropdownItem({ user }: UserItemProps) {
+export function UserItem({ user }: UserItemProps) {
     return (
         <>
             <UserName>{user.name} - {user.id}</UserName>
