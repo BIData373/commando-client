@@ -40,13 +40,20 @@ export function DataTable<TData>({
   return (
     <Table>
       <colgroup>
-        {table.getAllColumns().map((column) => (
-          /* col width is a semantic HTML layout attribute, not an emotion style override */
-          <col
-            key={column.id}
-            style={column.columnDef.size !== undefined ? { width: column.columnDef.size } : undefined}
-          />
-        ))}
+        {(() => {
+          const allColumns = table.getAllColumns()
+          const totalSize = allColumns.reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
+          return allColumns.map((column) => (
+            <col
+              key={column.id}
+              style={
+                column.columnDef.size !== undefined && totalSize > 0
+                  ? { width: `${(column.columnDef.size / totalSize) * 100}%` }
+                  : undefined
+              }
+            />
+          ))
+        })()}
       </colgroup>
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (

@@ -18,8 +18,8 @@ export const STATUS_KEYS: DirectiveStatus[] = ['not_started', 'in_progress', 'co
 
 export function getStatusStyle(status: DirectiveStatus) {
   switch (status) {
-    case 'not_started': return { fontColor: '#595959', bgColor: '#f0f0f0' }
-    case 'in_progress': return { fontColor: '#fa8c16', bgColor: '#fff7e6' }
+    case 'not_started': return { fontColor: '#FA541C', bgColor: '#FFF2E8' }
+    case 'in_progress': return { fontColor: '#2F54EB', bgColor: '#F0F5FF' }
     case 'completed': return { fontColor: '#52c41a', bgColor: '#f6ffed' }
   }
 }
