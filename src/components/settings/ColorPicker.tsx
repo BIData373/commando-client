@@ -56,7 +56,7 @@ const StyledPopoverContent = styled(PopoverContent)`
 `
 
 const ColorSwatchContainer = styled.div`
-  background: var(--backround);
+  background: var(--background);
   border: 1px solid var(--card-border);
   border-radius: 100px;
   padding: 4px;
@@ -114,11 +114,11 @@ const OtherColorLabel = styled.label`
   height: 24px;
   padding-inline: 7px;
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--chip-bg);
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--sea-ink);
   cursor: pointer;
   white-space: nowrap;
   position: relative;

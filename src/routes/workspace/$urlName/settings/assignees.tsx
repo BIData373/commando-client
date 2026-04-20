@@ -3,13 +3,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Info, Plus, Search } from 'lucide-react'
 import { type ChangeEvent, useState } from 'react'
 import { AssigneeCard } from '#/components/settings/AssigneeCard'
-import { AssigneeDialog } from '../../../../components/settings/AssigneeDialog'
-import { Button } from '../../../../components/ui/button'
-import { Checkbox } from '../../../../components/ui/checkbox'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '../../../../components/ui/input-group'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../../components/ui/tooltip'
-import { useAssignees } from '../../../../hooks/useAssignees'
-import { useUsers } from '../../../../hooks/useUsers'
+import { AssigneeDialog } from '#/components/settings/AssigneeDialog'
+import { Button } from '#/components/ui/button'
+import { Checkbox } from '#/components/ui/checkbox'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '#/components/ui/input-group'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/components/ui/tooltip'
+import { useAssignees } from '#/hooks/useAssignees'
+import { useUsers } from '#/hooks/useUsers'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({ component: SettingsAssignees })
 
@@ -124,6 +124,9 @@ const CheckboxLabel = styled.label`
 const InfoIcon = styled.button`
   display: flex;
   align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
   color: var(--sea-ink-soft);
   cursor: pointer;
 

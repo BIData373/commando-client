@@ -1,24 +1,15 @@
 import styled from '@emotion/styled'
 import { Trash2 } from 'lucide-react'
-import { useUpdateUser } from '#/hooks/useUsers'
 import type { IUser, UserRole } from '#/types'
 import { DropdownPermission } from "./DropdownPermission"
 
-interface UserListProps {
+interface UserPermissionListProps {
     users: IUser[]
     onDelete: (userId: number) => void
     onRoleChange: (userId: number, role: UserRole) => void
 }
 
-
-export function UserPermissionList({ users, onDelete, onRoleChange }: UserListProps) {
-    const { mutate: userUpdate } = useUpdateUser()
-
-    function handleRoleChange(id: number, newRole: UserRole) {
-        userUpdate({ userId: id, data: { role: newRole } })
-        onRoleChange(id, newRole)
-    }
-
+export function UserPermissionList({ users, onDelete, onRoleChange }: UserPermissionListProps) {
     return (
         <UserListRoot>
             {users.map((user) => (
@@ -29,7 +20,7 @@ export function UserPermissionList({ users, onDelete, onRoleChange }: UserListPr
                     </UserInfo>
                     <DropdownPermission
                         value={user.role}
-                        onChange={(role) => handleRoleChange(user.id, role)}
+                        onChange={(role) => onRoleChange(user.id, role)}
                     />
                     <DeleteButton onClick={() => onDelete(user.id)}>
                         <Trash2 size={16} />

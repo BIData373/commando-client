@@ -3,14 +3,12 @@ import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { AddUserSection } from '#/components/settings/AddUserSection'
-import { SearchDropdown } from '#/components/settings/SearchDropdown'
-import { UserItem } from '#/components/settings/UserDropdownItem'
-import { UserPermissionList } from '#/components/settings/UsersPermissionList'
-import { useAddUserToWorkspace, useDeleteUser, userKeys, useUpdateUser, useUsers, useWorkspaceUsers } from '#/hooks/useUsers'
+import { DropdownUsers } from '#/components/settings/DropdownUsers'
+import { UserPermissionList } from '#/components/settings/UserPermissionList'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
+import { useAddUserToWorkspace, useDeleteUser, userKeys, useUpdateUser, useWorkspaceUsers } from '#/hooks/useUsers'
 import type { IUser } from '#/types'
 import { UserRole } from '#/types'
-import { concatName } from '#/utils/userUtils'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../components/ui/tabs'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/permissions')({ component: SettingsPermissions })
 
@@ -29,11 +27,6 @@ function SettingsPermissions() {
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
 
   const { data: permissionUsers = [] } = useWorkspaceUsers(urlName)
-  const { data: allUsers = [] } = useUsers()
-
-  const filteredUsers = search.trim()
-    ? allUsers.filter((u) => u.name.includes(search) || u.email.includes(search))
-    : []
   const { mutate: userUpdate } = useUpdateUser()
   const { mutate: addUserToWorkspace } = useAddUserToWorkspace()
   const { mutate: deleteUser } = useDeleteUser()
@@ -53,7 +46,8 @@ function SettingsPermissions() {
     deleteUser({ userId, urlName })
   }
 
-  function handleRoleChangePermissionUser(_userId: number, _role: UserRole) {
+  function handleRoleChangePermissionUser(userId: number, role: UserRole) {
+    userUpdate({ userId, data: { role } })
     queryClient.invalidateQueries({ queryKey: userKeys.workspace(urlName) })
   }
 
@@ -61,18 +55,30 @@ function SettingsPermissions() {
     setActiveTab(value as PermissionsTab)
   }
 
+  function handleSearchChange(v: string) {
+    setSearch(v)
+    if (!v) setSelectedUser(null)
+  }
+
+  function handleSearchSelect(user: IUser | null) {
+    setSelectedUser(user)
+  }
+
+  function handleSearchClear() {
+    setSearch('')
+    setSelectedUser(null)
+  }
+
   return (
     <PermissionsRoot>
       <Subtitle>מנהל סביבה יוצר הנחיות, מגדיר אחראיים ומבצע בקרה ומעקב אחר סטטוס ההנחיות בסביבה</Subtitle>
       <SearchSection>
-        <SearchDropdown<IUser>
-          items={filteredUsers}
+        <DropdownUsers
           value={search}
-          onChange={(v) => { setSearch(v); if (!v) setSelectedUser(null) }}
-          onSelect={(user) => { setSearch(concatName(user)); setSelectedUser(user) }}
-          onClear={() => { setSearch(''); setSelectedUser(null) }}
+          onChange={handleSearchChange}
+          onSelect={handleSearchSelect}
+          onClear={handleSearchClear}
           placeholder="חפש קבוצת אחראים"
-          renderItem={(item) => <UserItem user={item} />}
         />
         {selectedUser &&
           <AddUserSection onClick={handleUserAdd} />

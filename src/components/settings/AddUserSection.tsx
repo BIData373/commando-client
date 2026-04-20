@@ -49,7 +49,7 @@ const AddAvatarButton = styled.button`
   height: 32px;
   border-radius: 20px;
   background: var(--color-primary);
-  color: white;
+  color: var(--color-primary-foreground);
   border: none;
   cursor: pointer;
 `

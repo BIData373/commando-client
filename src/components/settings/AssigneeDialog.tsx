@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import { useForm } from '@tanstack/react-form'
+import { UserPlus } from 'lucide-react'
 import { useState } from 'react'
 import { useCreateAssignee, useUpdateAssignee } from '#/hooks/useAssignees'
 import { useUsers } from '#/hooks/useUsers'
@@ -45,7 +46,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
                 color: value.color,
                 userIds: localAssignees.map((u) => u.id),
             }
-            if (isUpdate && assignee) {
+            if (assignee) {
                 await updateAssignee.mutateAsync({ assigneeId: assignee.id, data: payload })
             } else {
                 await createAssignee.mutateAsync(payload)
@@ -62,10 +63,6 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
         }
         form.setFieldValue('userSearch', '')
         setSelectedUser(null)
-    }
-
-    async function handleSubmit() {
-        await form.handleSubmit()
     }
 
     function handleRemoveAssignee(id: number) {
@@ -89,7 +86,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
         form.setFieldValue('color', color)
     }
 
-    function handleOnBlur() {
+    function handleInteractOutside() {
         const savedAssignees = assignee
             ? users.filter(u => assignee.userIds.includes(u.id))
             : []
@@ -98,7 +95,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <WideDialogContent onInteractOutside={handleOnBlur}>
+            <WideDialogContent onInteractOutside={handleInteractOutside}>
                 <DialogTitleLarge>{isUpdate ? 'עריכת אחראי' : 'יצירת אחראי'}</DialogTitleLarge>
                 <StyledDialogDescription>
                     'אחראי' אליו ניתן לשייך הנחיות.
@@ -138,13 +135,22 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
                                 <FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
                                 <SearchRow>
                                     <DropdownUsers
-                                        selectedUser={selectedUser}
                                         value={field.state.value}
                                         onChange={field.handleChange}
                                         onSelect={handleSearchSelect}
                                         onClear={handleSearchClear}
-                                        onAdd={handleAddUserList}
+                                        placeholder='חפש שם/ תפקיד/ מספר אישי'
                                     />
+                                    {field.state.value.length > 0 && (
+                                        <AddUserButton
+                                            type="button"
+                                            $enabled={!!selectedUser}
+                                            disabled={!selectedUser}
+                                            onClick={handleAddUserList}
+                                        >
+                                            <UserPlus size={16} />
+                                        </AddUserButton>
+                                    )}
                                 </SearchRow>
                                 <UserLists users={localAssignees} onRemove={handleRemoveAssignee} />
                             </FieldGroup>
@@ -156,7 +162,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
                     <DialogClose asChild>
                         <Button variant="outline">ביטול</Button>
                     </DialogClose>
-                    <GradientButton type="button" onClick={handleSubmit}>{isUpdate ? 'שמור' : 'צור'}</GradientButton>
+                    <GradientButton type="button" onClick={form.handleSubmit}>{isUpdate ? 'שמור' : 'צור'}</GradientButton>
                 </DialogActions>
             </WideDialogContent>
         </Dialog>
@@ -250,4 +256,17 @@ const GradientButton = styled.button`
   font-weight: 400;
   line-height: 24px;
   flex-shrink: 0;
+`
+
+const AddUserButton = styled.button<{ $enabled: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  cursor: ${({ $enabled }) => ($enabled ? 'pointer' : 'default')};
+  background: ${({ $enabled }) => ($enabled ? 'linear-gradient(135deg, #615FFF 0%, #9810FA 100%)' : 'var(--chip-bg)')};
 `

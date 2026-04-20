@@ -93,7 +93,7 @@ const Dropdown = styled.ul`
   padding: 4px 0;
   margin: 0;
   list-style: none;
-  z-index: 1000;
+  z-index: var(--z-dropdown);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   max-height: 240px;
   overflow-y: auto;
