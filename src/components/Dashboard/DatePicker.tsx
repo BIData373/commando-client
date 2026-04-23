@@ -48,10 +48,14 @@ function DatePickerFooter({ onRangeChange, onClose }: DateRangePickerSlotProps) 
         onRangeChange(undefined)
     }
 
+    function handleConfirm() {
+        onClose()
+    }
+
     return (
         <PopupFooter>
             <ClearButton onClick={handleClear}>נקה בחירה</ClearButton>
-            <ConfirmButton onClick={onClose}>אישור</ConfirmButton>
+            <ConfirmButton onClick={handleConfirm}>אישור</ConfirmButton>
         </PopupFooter>
     )
 }
@@ -61,18 +65,26 @@ interface TriggerButtonProps {
     range: DateRange | undefined
 }
 
+function DateRangeLabel({ label, range }: TriggerButtonProps) {
+    return (
+        <>
+            {label && range?.from && range.to ? (
+                <span>
+                    {label}:{" "}{format(range.from, "dd")}-{format(range.to, "dd/MM/y")}
+                </span>
+            ) : (
+                <span>טווח תאריכים</span>
+            )}
+        </>
+    )
+}
+
 function DatePickerTriggerButton({ label, range }: TriggerButtonProps) {
     return (
         <Popover.Trigger asChild>
             <TriggerButton>
                 <CalendarDays size={16} />
-                {label && range?.from && range.to ? (
-                    <span>
-                        {label}:{" "}{format(range.from, "dd")}-{format(range.to, "dd/MM/y")}
-                    </span>
-                ) : (
-                    <span>טווח תאריכים</span>
-                )}
+                <DateRangeLabel label={label} range={range} />
                 <ChevronDown size={16} />
             </TriggerButton>
         </Popover.Trigger>
@@ -82,12 +94,11 @@ function DatePickerTriggerButton({ label, range }: TriggerButtonProps) {
 export function DatePicker() {
     const [dateType, setDateType] = useState<string>(DATE_TYPES[0])
 
-
     function handleDateTypeChange(type: string) {
         setDateType(type)
     }
 
-    function renderPickerHeader(_slotProps: DateRangePickerSlotProps) {
+    function renderPickerHeader(_slotsProps: DateRangePickerSlotProps) {
         return <DatePickerHeader dateType={dateType} onDateTypeChange={handleDateTypeChange} />
     }
 

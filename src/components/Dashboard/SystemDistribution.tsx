@@ -4,6 +4,7 @@ import { useState } from 'react'
 import addAssignee from '../../assets/icons/addPerson.svg'
 import subject from '../../assets/icons/subjects.svg'
 import { Button } from '../ui/button'
+import { EmptyCardState } from './EmptyCardState'
 
 enum DistributionTab {
   LOAD = 'load',
@@ -25,12 +26,27 @@ const TABS: DistributionTabConfig[] = [
   { id: DistributionTab.ATTENTION, label: 'חלוקת קשב' },
 ]
 
+const TabsDescription = {
+  [DistributionTab.LOAD]: {
+    imgSrc: addAssignee,
+    title: 'טרם הוגדרו אחראים',
+    description: 'לא נמצאו אחראים כדי להציג נתונים'
+  },
+  [DistributionTab.ATTENTION]: {
+    imgSrc: subject,
+    title: 'טרם הוגדרו נושאים',
+    description: 'ביצירת הנחיות ניתן לחלק אותם לנושאים,\nקטגוריות או מאמצים',
+  }
+}
+
 export default function SystemDistribution({ onSetAssignees }: SystemDistributionProps) {
   const [activeTab, setActiveTab] = useState<DistributionTab>(DistributionTab.LOAD)
 
   function handleTabClick(tabId: DistributionTab) {
     setActiveTab(tabId)
   }
+
+  const tabDescription = TabsDescription[activeTab];
 
   return (
     <Section>
@@ -48,30 +64,19 @@ export default function SystemDistribution({ onSetAssignees }: SystemDistributio
           ))}
         </TabsHeader>
         <ContentPanel>
-          <EmptyState>
-            {activeTab === DistributionTab.LOAD ? (
-              <>
-                <EmptyIconWrapper>
-                  <img src={addAssignee} alt="assignee" />
-                </EmptyIconWrapper>
-                <EmptyTitle>טרם הוגדרו אחראים</EmptyTitle>
-                <EmptyDescription>לא נמצאו אחראים כדי להציג נתונים</EmptyDescription>
+          <EmptyCardState
+            imgSrc={tabDescription.imgSrc}
+            title={tabDescription.title}
+            description={tabDescription.description}
+            childrens={
+              activeTab == DistributionTab.LOAD && (
                 <Button variant="outline" size="sm" onClick={onSetAssignees}>
                   הגדרת מקבלי הנחיות
                   <Users size={16} />
                 </Button>
-              </>
-            ) : (
-              <>
-                <img src={subject} alt="subjects" />
-                <EmptyTitle>טרם הוגדרו נושאים</EmptyTitle>
-                <EmptyDescription>
-                  <span>ביצירת הנחיות ניתן לחלק אותם לנושאים,</span>
-                  <span>קטגוריות או מאמצים</span>
-                </EmptyDescription>
-              </>
-            )}
-          </EmptyState>
+              )
+            }
+          />
         </ContentPanel>
       </TabsWrapper>
     </Section>
@@ -142,42 +147,4 @@ const ContentPanel = styled.div<{ $dashed?: boolean }>`
   justify-content: center;
   position: relative;
   z-index: 1;
-`
-
-const EmptyState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 24px;
-  max-width: max-content;
-  text-align: center;
-`
-
-const EmptyIconWrapper = styled.div`
-  width: 72px;
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--sea-ink-soft);
-  opacity: 0.6;
-  margin-bottom: 8px;
-`
-
-const EmptyTitle = styled.p`
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--sea-ink);
-  margin: 0;
-`
-
-const EmptyDescription = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 14px;
-  color: var(--sea-ink-soft);
-  margin: 0 0 12px;
-  line-height: 22px;
 `

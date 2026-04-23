@@ -1,46 +1,14 @@
 import styled from '@emotion/styled'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { ChevronDown, Plus, Users } from 'lucide-react'
 import { DatePicker } from '#/components/Dashboard/DatePicker'
 import FocusedInstructions from '../../../components/Dashboard/FocusedInstructions'
 import RecentlyCompleted from '../../../components/Dashboard/RecentlyCompleted'
 import StatusCard from '../../../components/Dashboard/StatusCard'
 import SystemDistribution from '../../../components/Dashboard/SystemDistribution'
+import { TitleSection } from '#/components/Dashboard/TileSection'
 
 
-const TitleSection = () => {
-  const { urlName } = Route.useParams()
-  const navigate = useNavigate()
 
-  function handleSetAssignees() {
-    navigate({ to: '/workspace/$urlName/settings/assignees', params: { urlName } })
-  }
-
-  function handleCreateInstruction() {
-    navigate({ to: '/workspace/$urlName/tasks/new', params: { urlName }, search: { view: 'TABLE' } })
-  }
-
-  return (
-    <TitleSectionContainer>
-      <TitleGroup>
-        <PageTitle>מסך המפקד</PageTitle>
-        <TitleDivider />
-        <WorkspaceName>לשכת מקשא&quot;פ</WorkspaceName>
-      </TitleGroup>
-      <ButtonGroup>
-        <AssigneesButton onClick={handleSetAssignees}>
-          הגדרת מקבלי הנחיות
-          <Users size={16} />
-        </AssigneesButton>
-        <CreateButton onClick={handleCreateInstruction}>
-          <Plus size={16} />
-          צור הנחייה
-          <ChevronDown size={16} />
-        </CreateButton>
-      </ButtonGroup>
-    </TitleSectionContainer>
-  )
-}
 
 export const Route = createFileRoute('/workspace/$urlName/dashboard')({
   component: Dashboard,
@@ -58,6 +26,7 @@ export const Route = createFileRoute('/workspace/$urlName/dashboard')({
 function Dashboard() {
   const { urlName } = Route.useParams()
   const navigate = useNavigate()
+
 
   function handleSetAssignees() {
     navigate({ to: '/workspace/$urlName/settings/assignees', params: { urlName } })
@@ -89,88 +58,6 @@ const PageWrapper = styled.div`
   min-height: 100%;
 `
 
-const TitleSectionContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`
-
-const TitleGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`
-
-const WorkspaceName = styled.span`
-  font-size: 18px;
-  font-weight: 400;
-  color: var(--sea-ink-soft);
-  white-space: nowrap;
-`
-
-const TitleDivider = styled.div`
-  width: 1px;
-  height: 26px;
-  background: var(--line);
-  flex-shrink: 0;
-`
-
-const PageTitle = styled.h1`
-  margin: 0;
-  font-size: 26px;
-  font-weight: 500;
-  color: var(--foreground);
-  white-space: nowrap;
-`
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 12px;
-  align-items: center;
-`
-
-const CreateButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 32px;
-  padding: 0 15px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(165deg, var(--purple-start) 0%, var(--purple-end) 100%);
-  color: var(--primary-foreground);
-  font-size: 12px;
-  font-weight: 400;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: opacity 0.15s;
-
-  &:hover {
-    opacity: 0.9;
-  }
-`
-
-const AssigneesButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 32px;
-  padding: 0 15px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--background);
-  color: var(--foreground);
-  font-size: 12px;
-  font-weight: 400;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s;
-
-  &:hover {
-    background: var(--chip-bg);
-  }
-`
-
 const ContentArea = styled.div`
   display: flex;
   flex-direction: column;
@@ -178,11 +65,11 @@ const ContentArea = styled.div`
   color: var(--sea-ink-soft);
   margin-top: 24px;
 
-  & > *:nth-child(2) {
+  & > *:nth-of-type(1) {
     margin-block-start: 14px;
   }
 
-  & > *:nth-child(3) {
+  & > *:nth-of-type(2) {
     margin-block-start: 54px;
   }
 `

@@ -1,12 +1,32 @@
 import styled from '@emotion/styled'
-import { format } from 'date-fns'
-import { CalendarDays, ChevronDown } from 'lucide-react'
 import { Popover } from 'radix-ui'
+import { createContext, useContext } from 'react'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
-import type { DateRange } from 'react-day-picker'
+import type { DateRange, WeekNumberProps } from 'react-day-picker'
 import { he as heDayPicker } from 'react-day-picker/locale'
 import { Calendar } from '../ui/calendar'
+
+const RangeContext = createContext<DateRange | undefined>(undefined)
+
+function isFullWeekSelected(week: WeekNumberProps['week'], range: DateRange | undefined): boolean {
+  if (!range?.from || !range?.to) return false
+  const firstDay = week.days[0].date
+  const lastDay = week.days[week.days.length - 1].date
+  return firstDay >= range.from && lastDay <= range.to
+}
+
+function WeekNumberCell({ week, ...props }: WeekNumberProps) {
+  const range = useContext(RangeContext)
+  const selected = isFullWeekSelected(week, range)
+  return (
+    <WeekNumber {...props}>
+      <WeekNumberBadge $selected={selected}>
+        {week.weekNumber}
+      </WeekNumberBadge>
+    </WeekNumber>
+  )
+}
 
 export interface DateRangePickerSlotProps {
   range: DateRange | undefined
@@ -54,21 +74,25 @@ function DateRangePicker({ triggerButton, header, footer }: DateRangePickerProps
   }
 
   return (
-    <Popover.Root open={state.open} onOpenChange={handleOpenChange}>
-      {triggerButton(slotProps)}
-      <Popover.Portal>
-        <PopupContent data-lang="he" align="end" sideOffset={8}>
-          {header?.(slotProps)}
-          <StyledCalendar
-            mode="range"
-            selected={state.range}
-            onSelect={handleRangeSelect}
-            locale={heDayPicker}
-          />
-          {footer?.(slotProps)}
-        </PopupContent>
-      </Popover.Portal>
-    </Popover.Root>
+    <RangeContext.Provider value={state.range}>
+      <Popover.Root open={state.open} onOpenChange={handleOpenChange}>
+        {triggerButton(slotProps)}
+        <Popover.Portal>
+          <PopupContent data-lang="he" align="end" sideOffset={8}>
+            {header?.(slotProps)}
+            <StyledCalendar
+              showWeekNumber
+              mode="range"
+              selected={state.range}
+              onSelect={handleRangeSelect}
+              locale={heDayPicker}
+              components={{ WeekNumber: WeekNumberCell }}
+            />
+            {footer?.(slotProps)}
+          </PopupContent>
+        </Popover.Portal>
+      </Popover.Root>
+    </RangeContext.Provider>
   )
 }
 
@@ -83,11 +107,40 @@ const PopupContent = styled(Popover.Content)`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 312px;
+  width: 340px;
 `
 
 const StyledCalendar = styled(Calendar)`
   width: 100%;
-      min-height: 0;
+  min-height: 0;
   box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+
+  td {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    button[data-range-start=true],
+    button[data-range-end=true] {
+      width: 15px;
+    }
+  }
+`
+
+const WeekNumber = styled.td`
+  display: flex;
+  align-items: center;
+`
+
+const WeekNumberBadge = styled.div<{ $selected: boolean }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  font-size: 10px;
+  margin-left: 2px;
+  color: ${({ $selected }) => $selected ? 'var(--primary-foreground)' : 'var(--muted-foreground)'};
+  background: ${({ $selected }) => $selected ? 'var(--primary)' : 'transparent'};
 `

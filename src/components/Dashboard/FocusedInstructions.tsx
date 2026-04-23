@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import { useState } from 'react'
 import searchInstruction from '../../assets/icons/searchInstruction.svg'
 import { ViewMoreInstructions } from './ViewMoreInstructions'
+import { EmptyCardState } from './EmptyCardState'
 
 type FocusedTab = 'deviation' | 'immediate' | 'important'
 
@@ -74,17 +75,11 @@ export default function FocusedInstructions({ urlName }: IFocusedInstruction) {
           ))}
         </TabsHeader>
         <ContentPanel>
-          <EmptyState>
-            <EmptyIconWrapper>
-              <img src={searchInstruction} alt='searchInstruction' />
-            </EmptyIconWrapper>
-            <EmptyTitle>{emptyMsg.title}</EmptyTitle>
-            <EmptyDescription>
-              {emptyMsg.description.split('\n').map((line) => (
-                <span key={line}>{line}</span>
-              ))}
-            </EmptyDescription>
-          </EmptyState>
+          <EmptyCardState
+            imgSrc={searchInstruction}
+            title={emptyMsg.title}
+            description={emptyMsg.description}
+          />
         </ContentPanel>
       </TabsWrapper>
       <ViewMoreInstructions urlName={urlName} />
@@ -197,42 +192,4 @@ const ContentPanel = styled.div`
   justify-content: center;
   position: relative;
   z-index: 1;
-`
-
-const EmptyState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 24px;
-  max-width: 260px;
-  text-align: center;
-`
-
-const EmptyIconWrapper = styled.div`
-  width: 72px;
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--purple-start);
-  opacity: 0.6;
-  margin-bottom: 8px;
-`
-
-const EmptyTitle = styled.p`
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--sea-ink);
-  margin: 0;
-`
-
-const EmptyDescription = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 14px;
-  flex: 1;
-  color: var(--sea-ink-soft);
-  line-height: 22px;
 `
