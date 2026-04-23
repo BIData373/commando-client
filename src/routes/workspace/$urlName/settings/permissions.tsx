@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { AddUserSection } from '#/components/settings/AddUserSection'
 import { DropdownUsers } from '#/components/settings/DropdownUsers'
 import { UserPermissionList } from '#/components/settings/UserPermissionList'
@@ -31,8 +31,11 @@ function SettingsPermissions() {
   const { mutate: addUserToWorkspace } = useAddUserToWorkspace()
   const { mutate: deleteUser } = useDeleteUser()
 
-  const admins = permissionUsers.filter(u => u.role === UserRole.ADMIN)
-  const viewers = permissionUsers.filter(u => u.role === UserRole.VIEWER)
+  const currentTabUsers = useMemo(() => {
+    const taggedRole = activeTab === PermissionsTab.ADMINS ? UserRole.ADMIN : UserRole.VIEWER
+    return activeTab === PermissionsTab.ALL ? permissionUsers : permissionUsers.filter(user => user.role === taggedRole)
+  }, [activeTab, permissionUsers])
+
 
   function handleUserAdd(role: UserRole) {
     if (!selectedUser) return
@@ -90,15 +93,11 @@ function SettingsPermissions() {
           <TabsTrigger value={PermissionsTab.ADMINS}>מנהלים</TabsTrigger>
           <TabsTrigger value={PermissionsTab.VIEWERS}>צופים</TabsTrigger>
         </StyledTabsList>
-        <TabsContent value={PermissionsTab.ALL}>
-          <UserPermissionList users={permissionUsers} onDelete={handleDeletePermissionUser} onRoleChange={handleRoleChangePermissionUser} />
-        </TabsContent>
-        <TabsContent value={PermissionsTab.ADMINS}>
-          <UserPermissionList users={admins} onDelete={handleDeletePermissionUser} onRoleChange={handleRoleChangePermissionUser} />
-        </TabsContent>
-        <TabsContent value={PermissionsTab.VIEWERS}>
-          <UserPermissionList users={viewers} onDelete={handleDeletePermissionUser} onRoleChange={handleRoleChangePermissionUser} />
-        </TabsContent>
+        {Object.values(PermissionsTab).map(tab => (
+          <TabsContent value={tab}>
+            <UserPermissionList users={currentTabUsers} onDelete={handleDeletePermissionUser} onRoleChange={handleRoleChangePermissionUser} />
+          </TabsContent>
+        ))}
       </Tabs>
     </PermissionsRoot>
   )
