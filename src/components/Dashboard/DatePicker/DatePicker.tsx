@@ -14,8 +14,8 @@ export function DatePicker() {
 
   return (
     <DateRangePicker
-      triggerButton={(slotProps) => <DatePickerTriggerButton label={dateType} range={slotProps.range} />}
-      header={(_slotProps) => <DatePickerHeader dateType={dateType} onDateTypeChange={handleDateTypeChange} />}
+      triggerButton={({ range }) => <DatePickerTriggerButton label={dateType} range={range} />}
+      header={() => <DatePickerHeader dateType={dateType} onDateTypeChange={handleDateTypeChange} />}
       footer={(slotProps) => <DatePickerFooter {...slotProps} />}
     />
   )

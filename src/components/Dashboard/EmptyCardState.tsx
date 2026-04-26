@@ -1,18 +1,18 @@
 import styled from '@emotion/styled'
+import type { PropsWithChildren } from 'react'
 
 
-interface EmptyCardStateProps {
+interface EmptyCardStateProps extends PropsWithChildren {
     imgSrc: string
     title: string
     description: string
-    childrens?: React.ReactNode
 }
 
 export const EmptyCardState = ({
     imgSrc,
     title,
     description,
-    childrens
+    children
 }: EmptyCardStateProps) => {
     return (
         <EmptyState>
@@ -25,7 +25,7 @@ export const EmptyCardState = ({
                     <span key={line}>{line}</span>
                 ))}
             </EmptyDescription>
-            {childrens}
+            {children}
         </EmptyState>
     )
 }
