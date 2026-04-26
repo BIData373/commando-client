@@ -63,14 +63,14 @@ const ContentArea = styled.div`
   flex-direction: column;
   padding-block-end: 32px;
   color: var(--sea-ink-soft);
-  margin-top: 24px;
+  margin-top: 16px;
 
   & > *:nth-of-type(1) {
     margin-block-start: 14px;
   }
 
   & > *:nth-of-type(2) {
-    margin-block-start: 54px;
+    margin-block-start: 46px;
   }
 `
 
