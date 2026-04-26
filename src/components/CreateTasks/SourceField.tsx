@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 import { he } from 'date-fns/locale'
 
+import HighlightMatch from '../HighlightMatch'
 import { MOCK_DISCUSSIONS } from '../../data/Discussions'
 import type { DiscussionSource } from '../../data/Discussions'
 export type { DiscussionSource }
@@ -50,19 +51,6 @@ function SourceField({
   function handleCreateNew() {
     setIsDropdownOpen(false)
     onSourceSelect(sourceQuery)
-  }
-
-  // Highlights the matching substring in the dropdown search results
-  function highlightMatch(text: string, query: string) {
-    const index = text.indexOf(query)
-    if (index === -1) return text
-    return (
-      <>
-        {text.slice(0, index)}
-        <HighlightedText>{query}</HighlightedText>
-        {text.slice(index + query.length)}
-      </>
-    )
   }
 
   const filteredDiscussions = MOCK_DISCUSSIONS.filter((d) =>
@@ -120,7 +108,7 @@ function SourceField({
                     >
                       <SourceOptionDate>{d.date}</SourceOptionDate>
                       <SourceOptionName>
-                        {sourceQuery ? highlightMatch(d.name, sourceQuery) : d.name}
+                        {sourceQuery ? <HighlightMatch text={d.name} query={sourceQuery} /> : d.name}
                       </SourceOptionName>
                     </SourceOption>
                   ))}

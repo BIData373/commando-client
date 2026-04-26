@@ -13,6 +13,7 @@ import { RowActionsMenu } from './RowActionsMenu'
 import { BulkActionsBar } from './BulkActionsBar'
 import type { Task } from '../../data/Tasks'
 import FlagIcon from '../ui/FlagIcon'
+import HighlightMatch from '../HighlightMatch'
 
 const TABLE_BORDER = '0.5px solid rgba(0, 0, 0, 0.15)'
 
@@ -74,18 +75,6 @@ function TaskTable({
     }
   }
 
-  function highlightMatch(text: string, query: string) {
-    const index = text.indexOf(query)
-    if (index === -1) return text
-    return (
-      <>
-        {text.slice(0, index)}
-        <HighlightMark>{text.slice(index, index + query.length)}</HighlightMark>
-        {text.slice(index + query.length)}
-      </>
-    )
-  }
-
   const firstColumn: ColumnDef<Task> = selectMode
     ? {
       id: 'select',
@@ -126,12 +115,12 @@ function TaskTable({
             {flagged && <FlagIcon />}
             {details ? (
               <>
-                <TitlePart>{searchQuery ? highlightMatch(title, searchQuery) : title}</TitlePart>
+                <TitlePart>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitlePart>
                 <TitleSeparator> - </TitleSeparator>
-                <DetailsPart>{searchQuery ? highlightMatch(details, searchQuery) : details}</DetailsPart>
+                <DetailsPart>{searchQuery ? <HighlightMatch text={details} query={searchQuery} variant="mark" /> : details}</DetailsPart>
               </>
             ) : (
-              <TitleFull>{searchQuery ? highlightMatch(title, searchQuery) : title}</TitleFull>
+              <TitleFull>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitleFull>
             )}
           </TitleCell>
         )
@@ -221,7 +210,7 @@ function TaskTable({
       cell: ({ getValue }) => {
         const notes = getValue() as string
         return (
-          <NotesText>{searchQuery ? highlightMatch(notes, searchQuery) : notes}</NotesText>
+          <NotesText>{searchQuery ? <HighlightMatch text={notes} query={searchQuery} variant="mark" /> : notes}</NotesText>
         )
       },
     },
@@ -414,12 +403,6 @@ const TitleFull = styled.span`
   white-space: nowrap;
 `
 
-const HighlightMark = styled.mark`
-  background: rgba(255, 235, 130, 0.7);
-  color: inherit;
-  border-radius: 2px;
-  padding: 0 1px;
-`
 
 const DeadlineCell = styled.div`
   display: flex;

@@ -132,22 +132,6 @@ const AvatarCircle = styled.button<{ $color: AvatarColor }>`
   }}
 `
 
-// const CountBadge = styled.button`
-//   display: inline-flex;
-//   align-items: center;
-//   justify-content: center;
-//   width: 28px;
-//   height: 28px;
-//   border-radius: 50%;
-//   font-size: 11px;
-//   font-weight: 500;
-//   background: var(--chip-bg);
-//   border: 1px solid var(--chip-line);
-//   color: var(--sea-ink-soft);
-//   cursor: pointer;
-//   padding: 0;
-// `
-
 // ─── Shared popover styles ─────────────────────────────────────────────────────
 
 const POPOVER_SHADOW = `

@@ -193,10 +193,14 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
     setScrollShadow({ top: !atTop, bottom: !atBottom })
   }
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) onClose()
+  }
+
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <DialogPrimitive.Root open onOpenChange={(open) => { if (!open) onClose() }}>
+    <DialogPrimitive.Root open onOpenChange={handleOpenChange}>
       <DialogPrimitive.Portal>
         <Overlay />
         <ModalCard>

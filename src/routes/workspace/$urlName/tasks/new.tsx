@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import type { View } from '../../../../components/Tasks/TasksLayout'
-import CreateDirectiveModal from '../../../../components/CreateTasks/CreateTaskModal'
+import CreateTaskModal from '../../../../components/CreateTasks/CreateTaskModal'
 
 export const Route = createFileRoute('/workspace/$urlName/tasks/new')({
   component: NewTask,
@@ -18,5 +18,5 @@ function NewTask() {
     navigate({ to: '/workspace/$urlName/tasks', params: { urlName }, search: { view } })
   }
 
-  return <CreateDirectiveModal onClose={handleClose} />
+  return <CreateTaskModal onClose={handleClose} />
 }

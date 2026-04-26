@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import styled from '@emotion/styled'
 import { ChevronDown, Tag, X } from 'lucide-react'
+import HighlightMatch from '../HighlightMatch'
 import { ALL_TOPICS } from '../../data/Topics'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -11,21 +12,6 @@ interface TopicFieldProps {
   onTopicSelect: (topic: string) => void
   onTopicRemove: (topic: string) => void
 }
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-  // Highlights the matching substring in the dropdown search results
-  function highlightMatch(text: string, query: string) {
-    const index = text.indexOf(query)
-    if (index === -1) return text
-    return (
-      <>
-        {text.slice(0, index)}
-        <HighlightedText>{query}</HighlightedText>
-        {text.slice(index + query.length)}
-      </>
-    )
-  }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -144,7 +130,7 @@ function TopicField({ topics, lockedTopics, onTopicSelect, onTopicRemove }: Topi
                 key={topic}
                 onMouseDown={(e) => handleSelectMouseDown(e, topic)}
               >
-                {topicQuery ? highlightMatch(topic, topicQuery) : topic}
+                {topicQuery ? <HighlightMatch text={topic} query={topicQuery} /> : topic}
               </TopicOption>
             ))}
             {isNewTopic && (

@@ -40,7 +40,7 @@ function TaskSearchBar({
           onChange={(e) => onSearchChange(e.target.value)}
         />
         <SearchIconBox>
-          <Search size={16} color="rgba(0, 0, 0, 0.25)" />
+          <SearchIcon size={16} />
         </SearchIconBox>
       </SearchInputWrapper>
     </ToolbarStart>
@@ -97,6 +97,10 @@ const SearchIconBox = styled.div`
   align-items: center;
   justify-content: center;
   margin-inline: 8px;
+`
+
+const SearchIcon = styled(Search)`
+color: rgba(0, 0, 0, 0.25);
 `
 
 const SearchField = styled.input`
