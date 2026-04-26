@@ -6,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
-import { StatusChip, STATUS_LABELS, type DirectiveStatus, STATUS_KEYS } from './StatusCell'
+import { StatusTag, type DirectiveStatus, STATUS_KEYS } from './StatusCell'
 import { DeletePopover } from './DeletePopover'
 
 interface BulkActionsBarProps {
@@ -49,7 +49,7 @@ export function BulkActionsBar({
           <StatusContent align="start" sideOffset={4}>
             {STATUS_KEYS.map((s) => (
               <StatusItem key={s} onSelect={() => onChangeStatus(s)}>
-                <StatusChip $status={s}>{STATUS_LABELS[s]}</StatusChip>
+                <StatusTag status={s} />
               </StatusItem>
             ))}
           </StatusContent>

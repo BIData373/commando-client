@@ -2,7 +2,7 @@ import { useState } from 'react'
 import styled from '@emotion/styled'
 import { type ColumnDef, type RowSelectionState } from '@tanstack/react-table'
 import { differenceInDays, format, startOfToday } from 'date-fns'
-import { AlertTriangle, Flag, MoreVertical, Paperclip } from 'lucide-react'
+import { AlertTriangle, MoreVertical, Paperclip } from 'lucide-react'
 import { Checkbox } from '../ui/checkbox'
 import { DataTable } from '../ui/data-table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
@@ -12,6 +12,7 @@ import { TopicCell } from './TopicCell'
 import { RowActionsMenu } from './RowActionsMenu'
 import { BulkActionsBar } from './BulkActionsBar'
 import type { Task } from '../../data/Tasks'
+import FlagIcon from '../ui/FlagIcon'
 
 const TABLE_BORDER = '0.5px solid rgba(0, 0, 0, 0.15)'
 
@@ -26,6 +27,8 @@ export const DEADLINE_LABELS: Record<DeadlineType, string> = {
 interface TaskTableProps {
   tasks: Task[]
   searchQuery: string
+  columnOrder: string[]
+  hiddenColumns: Set<string>
   onUpdateStatus: (taskId: number, status: DirectiveStatus) => void
   onEdit: (taskId: number) => void
   onArchive: (taskIds: number[]) => void
@@ -36,6 +39,8 @@ interface TaskTableProps {
 function TaskTable({
   tasks,
   searchQuery,
+  columnOrder,
+  hiddenColumns,
   onUpdateStatus,
   onEdit,
   onArchive,
@@ -81,50 +86,58 @@ function TaskTable({
     )
   }
 
-  const columns: ColumnDef<Task>[] = [
-    selectMode
-      ? {
-        id: 'select',
-        size: 61,
-        header: () => (
-          <CheckboxCenter>
-            <Checkbox
-              checked={tasks.length > 0 && selectedTaskIds.length === tasks.length}
-              onCheckedChange={(checked) => handleSelectAll(!!checked)}
-            />
-          </CheckboxCenter>
-        ),
-        cell: ({ row }) => (
-          <CheckboxCenter>
-            <Checkbox
-              checked={row.getIsSelected()}
-              onCheckedChange={(checked) => row.toggleSelected(!!checked)}
-            />
-          </CheckboxCenter>
-        ),
-      }
-      : {
-        accessorKey: 'id',
-        header: 'מס"ד',
-        size: 61,
-        cell: ({ getValue }) => <IdCell>{getValue() as number}</IdCell>,
-      },
-    {
+  const firstColumn: ColumnDef<Task> = selectMode
+    ? {
+      id: 'select',
+      size: 61,
+      header: () => (
+        <CheckboxCenter>
+          <Checkbox
+            checked={tasks.length > 0 && selectedTaskIds.length === tasks.length}
+            onCheckedChange={(checked) => handleSelectAll(!!checked)}
+          />
+        </CheckboxCenter>
+      ),
+      cell: ({ row }) => (
+        <CheckboxCenter>
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(checked) => row.toggleSelected(!!checked)}
+          />
+        </CheckboxCenter>
+      ),
+    }
+    : {
+      accessorKey: 'id',
+      header: 'מס"ד',
+      size: 61,
+      cell: ({ getValue }) => <IdCell>{getValue() as number}</IdCell>,
+    }
+
+  const columnMap: Record<string, ColumnDef<Task>> = {
+    title: {
       accessorKey: 'title',
       header: 'ההנחיה',
       size: 832,
       cell: ({ row }) => {
         const { title, details, flagged } = row.original
-        const fullText = details ? `${title} – ${details}` : title
         return (
           <TitleCell>
             {flagged && <FlagIcon />}
-            <span>{searchQuery ? highlightMatch(fullText, searchQuery) : fullText}</span>
+            {details ? (
+              <>
+                <TitlePart>{searchQuery ? highlightMatch(title, searchQuery) : title}</TitlePart>
+                <TitleSeparator> - </TitleSeparator>
+                <DetailsPart>{searchQuery ? highlightMatch(details, searchQuery) : details}</DetailsPart>
+              </>
+            ) : (
+              <TitleFull>{searchQuery ? highlightMatch(title, searchQuery) : title}</TitleFull>
+            )}
           </TitleCell>
         )
       },
     },
-    {
+    status: {
       accessorKey: 'status',
       header: 'סטטוס',
       size: 100,
@@ -136,7 +149,7 @@ function TaskTable({
         />
       ),
     },
-    {
+    responsible: {
       id: 'responsible',
       header: 'אחראי',
       size: 115,
@@ -147,7 +160,7 @@ function TaskTable({
         />
       ),
     },
-    {
+    deadlineType: {
       accessorKey: 'deadlineType',
       header: 'תג"ב',
       size: 160,
@@ -181,7 +194,7 @@ function TaskTable({
         )
       },
     },
-    {
+    discussionName: {
       accessorKey: 'discussionName',
       header: 'מקור',
       size: 280,
@@ -195,47 +208,63 @@ function TaskTable({
         )
       },
     },
-    {
+    tags: {
       accessorKey: 'tags',
       header: 'נושא',
       size: 160,
       cell: ({ getValue }) => <TopicCell tags={getValue() as string[]} />,
     },
-    {
+    notes: {
       accessorKey: 'notes',
       header: 'הערות',
       size: 220,
-      cell: ({ getValue }) => <NotesText>{getValue() as string}</NotesText>,
+      cell: ({ getValue }) => {
+        const notes = getValue() as string
+        return (
+          <NotesText>{searchQuery ? highlightMatch(notes, searchQuery) : notes}</NotesText>
+        )
+      },
     },
-    {
+    createdAt: {
       accessorKey: 'createdAt',
       header: 'תאריך יצירה',
       size: 132,
       cell: ({ getValue }) => <DateText>{format(getValue() as Date, 'dd/MM/yy')}</DateText>,
     },
-    {
+    updatedAt: {
       accessorKey: 'updatedAt',
       header: 'עודכן ב',
       size: 100,
       cell: ({ getValue }) => <DateText>{format(getValue() as Date, 'dd/MM/yy')}</DateText>,
     },
-    {
-      id: 'actions',
-      size: 43,
-      cell: ({ row }) => (
-        <RowActionsMenu
-          trigger={
-            <ActionsButton>
-              <MoreVertical size={16} />
-            </ActionsButton>
-          }
-          onEdit={() => onEdit(row.original.id)}
-          onEnterSelect={() => handleEnterSelectMode(row.original.id)}
-          onArchive={() => onArchive([row.original.id])}
-          onDelete={() => onDelete([row.original.id])}
-        />
-      ),
-    },
+  }
+
+  const actionsColumn: ColumnDef<Task> = {
+    id: 'actions',
+    size: 43,
+    cell: ({ row }) => (
+      <RowActionsMenu
+        trigger={
+          <ActionsButton>
+            <MoreVertical size={16} />
+          </ActionsButton>
+        }
+        onEdit={() => onEdit(row.original.id)}
+        onEnterSelect={() => handleEnterSelectMode(row.original.id)}
+        onArchive={() => onArchive([row.original.id])}
+        onDelete={() => onDelete([row.original.id])}
+      />
+    ),
+  }
+
+  const visibleOrderedColumns = columnOrder
+    .filter((id) => !hiddenColumns.has(id) && columnMap[id])
+    .map((id) => columnMap[id])
+
+  const columns: ColumnDef<Task>[] = [
+    firstColumn,
+    ...visibleOrderedColumns,
+    actionsColumn,
   ]
 
   return (
@@ -273,10 +302,10 @@ export { TaskTable }
 // ─── Table ────────────────────────────────────────────────────────────────────
 
 const TableWrapper = styled.div`
-  border: ${TABLE_BORDER};
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: 8px;
   background: white;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
 
   table {
     width: 100%;
@@ -310,6 +339,22 @@ const TableWrapper = styled.div`
     vertical-align: middle;
     overflow: hidden;
   }
+
+  thead tr:first-child th:first-child {
+    border-radius: 0 8px 0 0;
+  }
+
+  thead tr:first-child th:last-child {
+    border-radius: 8px 0 0 0;
+  }
+
+  tbody tr:last-child td:first-child {
+    border-radius: 0 0 8px 0;
+  }
+
+  tbody tr:last-child td:last-child {
+    border-radius: 0 0 0 8px;
+  }
 `
 
 // ─── Cell content ─────────────────────────────────────────────────────────────
@@ -337,13 +382,36 @@ const TitleCell = styled.div`
   color: var(--sea-ink);
   font-size: 14px;
   font-weight: 400;
-  line-height: 22px;
+  line-height: 20px;
+  overflow: hidden;
+`
 
-  span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+const TitlePart = styled.span`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 50%;
+  flex-shrink: 0;
+`
+
+const TitleSeparator = styled.span`
+  flex-shrink: 0;
+  white-space: nowrap;
+`
+
+const DetailsPart = styled.span`
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+`
+
+const TitleFull = styled.span`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 const HighlightMark = styled.mark`
@@ -442,13 +510,39 @@ const SourceText = styled.span`
   color: rgba(0, 0, 0, 0.65);
 `
 
-const NotesText = styled.span`
-  display: block;
+const NotesText = styled.div`
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  max-height: 40px;
+
   font-size: 14px;
+  line-height: 20px;
   color: var(--sea-ink-soft);
+
+  p {
+    margin: 0;
+  }
+
+  ol {
+    margin: 0;
+    padding-inline-start: 20px;
+    list-style-type: decimal;
+  }
+
+  li {
+    margin: 0;
+  }
+
+  li p {
+    display: inline;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+
+  u {
+    text-decoration: underline;
+  }
 `
 
 const DateText = styled.span`

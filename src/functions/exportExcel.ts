@@ -38,30 +38,46 @@ function getDeadlineDateStyle(task: Task) {
   return {}
 }
 
-export function exportTasksToExcel(tasks: Task[]) {
-  exportToExcel<Task>(tasks, [
-    { header: 'מס"ד', accessor: (t) => String(t.id) },
-    { header: 'ההנחיה', accessor: (t) => t.details ? `${t.title} – ${t.details}` : t.title },
-    { header: 'סטטוס', accessor: (t) => ({
-      value: STATUS_LABELS[t.status],
-      ...getStatusStyle(t.status),
-    }) },
-    { header: 'אחראי', accessor: (t) => t.responsible?.name ?? '' },
-    { header: 'תג"ב - סוג', accessor: (t) => DEADLINE_LABELS[t.deadlineType] },
-    { header: 'תג"ב - תאריך', accessor: (t) => ({
-      value: t.dueDate ? format(t.dueDate, 'dd/MM/yy') : '',
-      ...getDeadlineDateStyle(t),
-    }) },
-    { header: 'מקור', accessor: (t) => `${t.discussionName} | ${t.discussionDate}` },
-    { header: 'קובץ מצורף', accessor: (t) => t.attachmentUrl
-      ? { value: 'קובץ', link: t.attachmentUrl }
-      : 'אין'
-    },
-    { header: 'נושא', accessor: (t) => t.tags.join(', ') },
-    { header: 'הערות', accessor: (t) => t.notes },
-    { header: 'תאריך יצירה', accessor: (t) => format(t.createdAt, 'dd/MM/yy') },
-    { header: 'עודכן ב', accessor: (t) => format(t.updatedAt, 'dd/MM/yy') },
-  ], 'הנחיות')
+const COLUMN_DEFS: Record<string, ExportColumn<Task>> = {
+  title: { header: 'ההנחיה', accessor: (t) => t.details ? `${t.title} – ${t.details}` : t.title },
+  status: { header: 'סטטוס', accessor: (t) => ({
+    value: STATUS_LABELS[t.status],
+    ...getStatusStyle(t.status),
+  }) },
+  responsible: { header: 'אחראי', accessor: (t) => t.responsible?.name ?? '' },
+  deadlineType: { header: 'תג"ב', accessor: (t) => {
+    const typeStr = DEADLINE_LABELS[t.deadlineType]
+    const dateStr = t.dueDate ? format(t.dueDate, 'dd/MM/yy') : ''
+    const value = dateStr ? `${typeStr} | ${dateStr}` : typeStr
+    return { value, ...getDeadlineDateStyle(t) }
+  } },
+  discussionName: { header: 'מקור', accessor: (t) => {
+    const source = `${t.discussionName} | ${t.discussionDate}`
+    return t.attachmentUrl
+      ? { value: source, link: t.attachmentUrl }
+      : source
+  } },
+  tags: { header: 'נושא', accessor: (t) => t.tags.join(', ') },
+  notes: { header: 'הערות', accessor: (t) => t.notes },
+  createdAt: { header: 'תאריך יצירה', accessor: (t) => format(t.createdAt, 'dd/MM/yy') },
+  updatedAt: { header: 'עודכן ב', accessor: (t) => format(t.updatedAt, 'dd/MM/yy') },
+}
+
+interface ExportOptions {
+  columnOrder: string[]
+  hiddenColumns: Set<string>
+}
+
+export function exportTasksToExcel(tasks: Task[], options: ExportOptions) {
+  const { columnOrder, hiddenColumns } = options
+
+  const idColumn: ExportColumn<Task> = { header: 'מס"ד', accessor: (t) => String(t.id) }
+
+  const visibleColumns = columnOrder
+    .filter((id) => !hiddenColumns.has(id) && COLUMN_DEFS[id])
+    .map((id) => COLUMN_DEFS[id])
+
+  exportToExcel<Task>(tasks, [idColumn, ...visibleColumns], 'הנחיות')
 }
 
 function exportToExcel<T>(

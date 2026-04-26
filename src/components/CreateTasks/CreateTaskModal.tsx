@@ -12,43 +12,11 @@ import type { DiscussionSource } from './SourceField'
 import { Checkbox } from '../ui/checkbox'
 import { Tooltip, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 import { Tooltip as TooltipPrimitive } from 'radix-ui'
-import type { DeadlineType } from '../Tasks/TaskTable'
 import { useTasks } from '../../providers/TasksProvider'
 import { MOCK_ASSIGNEES } from '../../data/Assignees'
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-interface FormState {
-  title: string
-  deadlineType: DeadlineType
-  dueDate: Date | null
-  selectedAssignees: number[]
-  assigneeDetails: Record<number, string>
-  isImportant: boolean
-  source: string
-  sourceDate: string
-  topics: string[]
-  notes: string
-  isDetailsExpanded: boolean
-  linkedSource: DiscussionSource | null
-}
-
-// ─── Mock Data ───────────────────────────────────────────────────────────────
-
-const INITIAL_FORM: FormState = {
-  title: '',
-  deadlineType: 'date',
-  dueDate: null,
-  selectedAssignees: [],
-  assigneeDetails: {},
-  isImportant: false,
-  source: '',
-  sourceDate: '',
-  topics: [],
-  notes: '',
-  isDetailsExpanded: false,
-  linkedSource: null,
-}
+import { INITIAL_FORM } from '../../data/CreateTaskForm'
+import type { FormState } from '../../data/CreateTaskForm'
+import type { DeadlineType } from '../Tasks/TaskTable'
 
 // ─── Component ───────────────────────────────────────────────────────────────
 

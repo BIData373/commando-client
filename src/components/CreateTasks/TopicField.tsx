@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import styled from '@emotion/styled'
 import { ChevronDown, Tag, X } from 'lucide-react'
+import { ALL_TOPICS } from '../../data/Topics'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -10,10 +11,6 @@ interface TopicFieldProps {
   onTopicSelect: (topic: string) => void
   onTopicRemove: (topic: string) => void
 }
-
-// ─── Mock Data ───────────────────────────────────────────────────────────────
-
-const ALL_TOPICS = ['חרבות ברזל', 'חרבו דרבו', 'קפ"ק', 'עם כלביא', 'חרמונית', 'שאגת הארי', 'ביטחון', 'מבצעים', 'סיורים', 'לוגיסטיקה']
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

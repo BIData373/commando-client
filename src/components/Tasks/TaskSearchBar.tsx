@@ -1,19 +1,34 @@
 import styled from '@emotion/styled'
-import { Columns3, Download, Search } from 'lucide-react'
+import { Download, Search } from 'lucide-react'
+import { ColumnVisibilityDropdown } from './ColumnVisibilityDropdown'
 
 interface TaskSearchBarProps {
   searchQuery: string
   onSearchChange: (value: string) => void
   onExport: () => void
+  columnOrder: string[]
+  hiddenColumns: Set<string>
+  onColumnOrderChange: (order: string[]) => void
+  onToggleColumn: (columnId: string) => void
 }
 
-function TaskSearchBar({ searchQuery, onSearchChange, onExport }: TaskSearchBarProps) {
+function TaskSearchBar({
+  searchQuery,
+  onSearchChange,
+  onExport,
+  columnOrder,
+  hiddenColumns,
+  onColumnOrderChange,
+  onToggleColumn,
+}: TaskSearchBarProps) {
   return (
     <ToolbarStart>
-      <ActionButton>
-        <Columns3 size={16} />
-        תצוגת עמודות
-      </ActionButton>
+      <ColumnVisibilityDropdown
+        columnOrder={columnOrder}
+        hiddenColumns={hiddenColumns}
+        onColumnOrderChange={onColumnOrderChange}
+        onToggleColumn={onToggleColumn}
+      />
       <ActionButton onClick={onExport}>
         <Download size={16} />
         ייצוא

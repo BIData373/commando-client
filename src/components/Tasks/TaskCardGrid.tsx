@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { Flag } from 'lucide-react'
 import { format } from 'date-fns'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
-import { StatusChip, STATUS_LABELS } from './StatusCell'
+import { StatusTag } from './StatusCell'
 import type { Task } from '../../data/Tasks'
 import { DEADLINE_LABELS, type DeadlineType } from './TaskTable'
 
@@ -24,7 +24,7 @@ function TaskCardGrid({ tasks }: TaskCardGridProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <StatusChip $status={task.status}>{STATUS_LABELS[task.status]}</StatusChip>
+            <StatusTag status={task.status} />
           </CardContent>
           <CardFooter>
             {task.deadlineType !== 'date' && (

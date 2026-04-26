@@ -8,6 +8,7 @@ import { NoResultsFound } from './NoResultsFound'
 import { TaskSearchBar } from './TaskSearchBar'
 import { TaskFilters, type QuickFilter } from './TaskFilters'
 import { TaskTable } from './TaskTable'
+import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
 import { TaskCardGrid } from './TaskCardGrid'
 import { exportTasksToExcel } from '../../functions/exportExcel'
 import { applyAllFilters } from '../../functions/filterUtils'
@@ -27,6 +28,20 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set())
   const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(new Set())
+  const [columnOrder, setColumnOrder] = useState(DEFAULT_COLUMN_ORDER)
+  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set())
+
+  function handleToggleColumn(columnId: string) {
+    setHiddenColumns((prev) => {
+      const next = new Set(prev)
+      if (next.has(columnId)) {
+        next.delete(columnId)
+      } else {
+        next.add(columnId)
+      }
+      return next
+    })
+  }
 
   function toggleQuickFilter(filter: QuickFilter) {
     setActiveQuickFilters((prev) => {
@@ -65,7 +80,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   }
 
   function handleExport() {
-    exportTasksToExcel(filteredTasks)
+    exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns })
   }
 
   function handleBulkChangeStatus(taskIds: number[], status: DirectiveStatus) {
@@ -116,6 +131,10 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             onExport={handleExport}
+            columnOrder={columnOrder}
+            hiddenColumns={hiddenColumns}
+            onColumnOrderChange={setColumnOrder}
+            onToggleColumn={handleToggleColumn}
           />
           <TaskFilters
             activeQuickFilters={activeQuickFilters}
@@ -135,6 +154,8 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
           <TaskTable
             tasks={filteredTasks}
             searchQuery={searchQuery}
+            columnOrder={columnOrder}
+            hiddenColumns={hiddenColumns}
             onUpdateStatus={updateTaskStatus}
             onEdit={handleEdit}
             onArchive={handleArchive}

@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { X } from 'lucide-react'
 import { Popover as PopoverPrimitive } from 'radix-ui'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { StatusChip, STATUS_LABELS, type DirectiveStatus } from './StatusCell'
+import { StatusTag, type DirectiveStatus } from './StatusCell'
 
 export type AvatarColor = 'cyan' | 'blue' | 'green' | 'orange' | 'gray'
 
@@ -81,9 +81,7 @@ export function ResponsibleCell({ responsible, relatedDirectives }: ResponsibleC
             <CompactList>
               {relatedDirectives.map((d) => (
                 <CompactRow key={d.user.id}>
-                  <StatusChip $status={d.status}>
-                    {STATUS_LABELS[d.status]}
-                  </StatusChip>
+                  <StatusTag status={d.status} />
                   <CompactRole>{d.user.role}</CompactRole>
                   <AvatarCircle $color={d.user.colorToken}>
                     {d.user.initials}

@@ -6,15 +6,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 import { he } from 'date-fns/locale'
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+import { MOCK_DISCUSSIONS } from '../../data/Discussions'
+import type { DiscussionSource } from '../../data/Discussions'
+export type { DiscussionSource }
 
-export interface DiscussionSource {
-  id: number
-  name: string
-  date: string
-  tags: string[]
-  hasAttachment: boolean
-}
+// ─── Types ───────────────────────────────────────────────────────────────────
 
 interface SourceFieldProps {
   source: string
@@ -23,16 +19,6 @@ interface SourceFieldProps {
   onSourceSelect: (name: string, discussion?: DiscussionSource | null) => void
   onDateSelect: (date: Date | undefined) => void
 }
-
-// ─── Mock Data ───────────────────────────────────────────────────────────────
-
-const MOCK_DISCUSSIONS: DiscussionSource[] = [
-  { id: 1, name: 'חרבות ברזל', date: '14/02/2025', tags: ['ביטחון'], hasAttachment: false },
-  { id: 2, name: 'חרבות ברזל', date: '22/02/2025', tags: ['ביטחון', 'מבצעים'], hasAttachment: true },
-  { id: 3, name: 'חתמ"צ חודשי', date: '22/02/2025', tags: ['אימון'], hasAttachment: false },
-  { id: 4, name: 'קפ"ק 1- שגאת הארי', date: '22/03/2026', tags: ['דיווח', 'שבועי'], hasAttachment: false },
-  { id: 5, name: 'קפ"ק 2 - מרכבות גדעון', date: '28/03/2025', tags: ['לוגיסטיקה'], hasAttachment: false },
-]
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
