@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import { useState } from 'react'
 import searchInstruction from '../../assets/icons/searchInstruction.svg'
-import { ViewMoreInstructions } from './ViewMoreInstructions'
 import { EmptyCardState } from './EmptyCardState'
+import { ViewMoreInstructions } from './ViewMoreInstructions'
 
 type FocusedTab = 'deviation' | 'immediate' | 'important'
 

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import compleateInstruction from '../../assets/icons/completeInstruction.svg'
-import { ViewMoreInstructions } from './ViewMoreInstructions'
 import { EmptyCardState } from './EmptyCardState'
+import { ViewMoreInstructions } from './ViewMoreInstructions'
 
 interface RecentlyCompletedProps {
   urlName: string
@@ -13,7 +13,7 @@ const RecentlyCompletedDesc = {
 }
 
 export default function RecentlyCompleted({ urlName }: RecentlyCompletedProps) {
-  const { title, description } = RecentlyCompletedDesc;
+  const { title, description } = RecentlyCompletedDesc
 
   return (
     <Section>

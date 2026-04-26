@@ -69,7 +69,7 @@ export default function SystemDistribution({ onSetAssignees }: SystemDistributio
             title={tabDescription.title}
             description={tabDescription.description}
             childrens={
-              activeTab == DistributionTab.LOAD && (
+              activeTab === DistributionTab.LOAD && (
                 <Button variant="outline" size="sm" onClick={onSetAssignees}>
                   הגדרת מקבלי הנחיות
                   <Users size={16} />
