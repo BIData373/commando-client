@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { DatePicker } from '#/components/Dashboard/DatePicker'
+import { DatePicker } from '#/components/Dashboard/DatePicker/DatePicker'
+import { TitleSection } from '#/components/Dashboard/TileSection'
 import FocusedInstructions from '../../../components/Dashboard/FocusedInstructions'
 import RecentlyCompleted from '../../../components/Dashboard/RecentlyCompleted'
 import StatusCard from '../../../components/Dashboard/StatusCard'
 import SystemDistribution from '../../../components/Dashboard/SystemDistribution'
-import { TitleSection } from '#/components/Dashboard/TileSection'
 
 
 
