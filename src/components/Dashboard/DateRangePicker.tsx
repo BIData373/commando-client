@@ -4,9 +4,9 @@ import type { ReactNode } from 'react'
 import { useState } from 'react'
 import type { DateRange } from 'react-day-picker'
 import { he as heDayPicker } from 'react-day-picker/locale'
-import { RangeContext, WeekNumberCell } from '#/providers/RangeProvider'
+import { RangeContextProvider } from '#/providers/RangeProvider'
 import { Calendar } from '../ui/calendar'
-
+import { WeekNumberCell } from './WeekCellNumber'
 
 export interface DateRangePickerSlotProps {
   range: DateRange | undefined
@@ -54,7 +54,7 @@ function DateRangePicker({ triggerButton, header, footer }: DateRangePickerProps
   }
 
   return (
-    <RangeContext.Provider value={state.range}>
+    <RangeContextProvider range={state.range}>
       <Popover.Root open={state.open} onOpenChange={handleOpenChange}>
         {triggerButton(slotProps)}
         <Popover.Portal>
@@ -72,7 +72,7 @@ function DateRangePicker({ triggerButton, header, footer }: DateRangePickerProps
           </PopupContent>
         </Popover.Portal>
       </Popover.Root>
-    </RangeContext.Provider>
+    </RangeContextProvider>
   )
 }
 
