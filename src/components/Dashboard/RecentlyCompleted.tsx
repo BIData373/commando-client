@@ -7,22 +7,16 @@ interface RecentlyCompletedProps {
   urlName: string
 }
 
-const RecentlyCompletedDesc = {
-  title: 'טרם בוצעו הנחיות',
-  description: 'לאחר שהנחיות יבצעו,\nההנחיות האחרונות יופיעו כאן'
-}
 
 export default function RecentlyCompleted({ urlName }: RecentlyCompletedProps) {
-  const { title, description } = RecentlyCompletedDesc
-
   return (
     <Section>
       <SectionTitle>הנחיות שבוצעו לאחרונה</SectionTitle>
       <Card>
         <EmptyCardState
           imgSrc={compleateInstruction}
-          title={title}
-          description={description}
+          title='טרם בוצעו הנחיות'
+          description={'לאחר שהנחיות יבצעו,\nההנחיות האחרונות יופיעו כאן'}
         />
       </Card>
       <ViewMoreInstructions urlName={urlName} />
