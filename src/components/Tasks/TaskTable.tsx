@@ -6,7 +6,7 @@ import { AlertTriangle, MoreVertical, Paperclip } from 'lucide-react'
 import { Checkbox } from '../ui/checkbox'
 import { DataTable } from '../ui/data-table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
-import { StatusCell, type DirectiveStatus } from './StatusCell'
+import { StatusCell } from './StatusCell'
 import { ResponsibleCell } from './ResponsibleCell'
 import { TopicCell } from './TopicCell'
 import { RowActionsMenu } from './RowActionsMenu'
@@ -14,6 +14,7 @@ import { BulkActionsBar } from './BulkActionsBar'
 import type { Task } from '../../data/Tasks'
 import FlagIcon from '../shared/FlagIcon'
 import HighlightMatch from '../shared/HighlightMatch'
+import type { DirectiveStatus } from '../shared/StatusTag'
 
 export type DeadlineType = 'date' | 'immediate' | 'ongoing'
 
@@ -368,6 +369,7 @@ const TitleCell = styled.div`
 `
 
 const TitlePart = styled.span`
+  font-weight: 400;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -381,7 +383,7 @@ const TitleSeparator = styled.span`
 `
 
 const DetailsPart = styled.span`
-  font-weight: 400;
+  font-weight: 300;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

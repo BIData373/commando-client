@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx-js-style'
 import { differenceInDays, format, startOfToday } from 'date-fns'
-import { getStatusStyle, STATUS_LABELS } from '../components/Tasks/StatusCell'
+import { getStatusStyle, STATUS_LABELS } from '../components/shared/StatusTag'
 import { DEADLINE_LABELS } from '../components/Tasks/TaskTable'
 import type { Task } from '../data/Tasks'
 

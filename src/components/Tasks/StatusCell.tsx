@@ -39,9 +39,6 @@ export function StatusCell({ status, taskId, onUpdate }: StatusCellProps) {
   )
 }
 
-export { StatusTag, STATUS_KEYS, STATUS_LABELS, getStatusStyle } from '../shared/StatusTag'
-export type { DirectiveStatus } from '../shared/StatusTag'
-
 const CellCenter = styled.div`
   display: flex;
   justify-content: center;

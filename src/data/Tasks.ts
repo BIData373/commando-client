@@ -1,4 +1,4 @@
-import type { DirectiveStatus } from '../components/Tasks/StatusCell'
+import type { DirectiveStatus } from '../components/shared/StatusTag'
 import type { Assignee, RelatedDirective } from '../components/Tasks/ResponsibleCell'
 import { MOCK_ASSIGNEES } from './Assignees'
 

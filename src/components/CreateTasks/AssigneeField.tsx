@@ -116,26 +116,29 @@ function AssigneeField({
             onOpenAutoFocus={handlePreventAutoFocus}
             onWheel={handleStopWheel}
           >
-            {filteredAssignees.map((assignee) => {
-              const isSelected = selectedAssignees.includes(assignee.id)
-              return (
-                <AssigneeOption
-                  key={assignee.id}
-                  $selected={isSelected}
-                  onClick={() => handleAssigneeClick(assignee.id)}
-                >
-                  <AssigneeOptionEnd>
-                    <AvatarCircle $color={assignee.colorToken}>
-                      {assignee.initials}
-                    </AvatarCircle>
-                    <AssigneeOptionName $selected={isSelected}>
-                      {assignee.name}
-                    </AssigneeOptionName>
-                  </AssigneeOptionEnd>
-                  {isSelected && <StyleCheck size={18} />}
-                </AssigneeOption>
-              )
-            })}
+            {filteredAssignees.map((assignee) => (
+              <AssigneeOption
+                key={assignee.id}
+                $selected={selectedAssignees.includes(assignee.id)}
+                onClick={() => handleAssigneeClick(assignee.id)}
+              >
+                <AssigneeOptionEnd>
+                  <AvatarCircle $color={assignee.colorToken}>
+                    {assignee.initials}
+                  </AvatarCircle>
+
+                  <AssigneeOptionName
+                    $selected={selectedAssignees.includes(assignee.id)}
+                  >
+                    {assignee.name}
+                  </AssigneeOptionName>
+                </AssigneeOptionEnd>
+
+                {selectedAssignees.includes(assignee.id) && (
+                  <StyleCheck size={18} />
+                )}
+              </AssigneeOption>
+            ))}
             <CreateNewButton onClick={handleOpenCreateAssignee}>
               צור אחראי חדש
               <Plus size={14} />
@@ -149,34 +152,40 @@ function AssigneeField({
           </EmptyAssigneesBox>
         ) : (
           <AssigneeRowsList>
-            {selectedAssignees.map((id) => {
-              const assignee = MOCK_ASSIGNEES[id]
-              if (!assignee) return null
-              const showDetailTextarea = selectedAssignees.length > 1
-              return (
-                <AssigneeRowItem key={id}>
-                  <RemoveAssigneeButton onClick={() => handleRemoveClick(id)}>
+            {selectedAssignees
+              .map((id) => MOCK_ASSIGNEES[id])
+              .filter(Boolean)
+              .map((assignee) => (
+                <AssigneeRowItem key={assignee.id}>
+                  <RemoveAssigneeButton onClick={() => handleRemoveClick(assignee.id)}>
                     <X size={14} />
                   </RemoveAssigneeButton>
+
                   <AssigneeRowContainer>
-                    {showDetailTextarea && (
+                    {selectedAssignees.length > 1 && (
                       <TextareaWrapper
                         dir="rtl"
-                        onClick={() => handleWrapperClick(id)}
+                        onClick={() => handleWrapperClick(assignee.id)}
                       >
                         {directiveTitle && (
-                          <DirectiveTitleText>{directiveTitle} -&nbsp;</DirectiveTitleText>
+                          <DirectiveTitleText>
+                            {directiveTitle} -&nbsp;
+                          </DirectiveTitleText>
                         )}
+
                         <DetailEditable
-                          ref={(el) => handleDetailRef(id, el)}
+                          ref={(el) => handleDetailRef(assignee.id, el)}
                           contentEditable
                           suppressContentEditableWarning
-                          onInput={(e: React.FormEvent<HTMLSpanElement>) => handleDetailInput(id, e)}
+                          onInput={(e) =>
+                            handleDetailInput(assignee.id, e)
+                          }
                           onKeyDown={handleDetailKeyDown}
                           data-placeholder="פירוט נוסף לאחראי"
                         />
                       </TextareaWrapper>
                     )}
+
                     <AssigneeInfoBlock>
                       <AssigneeRoleText>{assignee.role}</AssigneeRoleText>
                       <AvatarCircle $color={assignee.colorToken} $size={29}>
@@ -185,8 +194,7 @@ function AssigneeField({
                     </AssigneeInfoBlock>
                   </AssigneeRowContainer>
                 </AssigneeRowItem>
-              )
-            })}
+              ))}
           </AssigneeRowsList>
         )}
       </AssigneeSection>

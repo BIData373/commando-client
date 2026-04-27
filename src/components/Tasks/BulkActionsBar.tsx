@@ -6,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
-import { StatusTag, type DirectiveStatus, STATUS_KEYS } from './StatusCell'
+import { StatusTag, type DirectiveStatus, STATUS_KEYS } from '../shared/StatusTag'
 import { DeletePopover } from './DeletePopover'
 
 interface BulkActionsBarProps {
