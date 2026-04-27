@@ -78,6 +78,7 @@ function TaskTable({
     ? {
       id: 'select',
       size: 61,
+
       header: () => (
         <CheckboxCenter>
           <Checkbox
@@ -99,6 +100,7 @@ function TaskTable({
       accessorKey: 'id',
       header: 'מס"ד',
       size: 61,
+
       cell: ({ getValue }) => <IdCell>{getValue<number>()}</IdCell>,
     }
 
@@ -283,7 +285,7 @@ export { TaskTable }
 // ─── Table ────────────────────────────────────────────────────────────────────
 
 const TableWrapper = styled.div`
-  overflow: hidden;
+  overflow-x: auto;
   border-radius: 8px;
   background: white;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);

@@ -47,7 +47,10 @@ export function DataTable<TData>({
           key={column.id}
           style={
             column.columnDef.size !== undefined && totalSize > 0
-              ? { width: `${(column.columnDef.size / totalSize) * 100}%` }
+              ? {
+                  width: `${(column.columnDef.size / totalSize) * 100}%`,
+                  minWidth: `${column.columnDef.size}px`,
+                }
               : undefined
           }
         />
