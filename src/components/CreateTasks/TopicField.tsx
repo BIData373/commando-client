@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import styled from '@emotion/styled'
 import { ChevronDown, Tag, X } from 'lucide-react'
-import HighlightMatch from '../HighlightMatch'
+import HighlightMatch from '../shared/HighlightMatch'
 import { ALL_TOPICS } from '../../data/Topics'
 
 // ─── Types ───────────────────────────────────────────────────────────────────

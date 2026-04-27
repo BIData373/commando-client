@@ -37,24 +37,27 @@ export function DataTable<TData>({
     ...(getRowId && { getRowId }),
   })
 
+  const allColumns = table.getAllColumns()
+  const totalSize = allColumns.reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
+
+  const colgroup = (
+    <colgroup>
+      {allColumns.map((column) => (
+        <col
+          key={column.id}
+          style={
+            column.columnDef.size !== undefined && totalSize > 0
+              ? { width: `${(column.columnDef.size / totalSize) * 100}%` }
+              : undefined
+          }
+        />
+      ))}
+    </colgroup>
+  )
+
   return (
     <Table>
-      <colgroup>
-        {(() => {
-          const allColumns = table.getAllColumns()
-          const totalSize = allColumns.reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
-          return allColumns.map((column) => (
-            <col
-              key={column.id}
-              style={
-                column.columnDef.size !== undefined && totalSize > 0
-                  ? { width: `${(column.columnDef.size / totalSize) * 100}%` }
-                  : undefined
-              }
-            />
-          ))
-        })()}
-      </colgroup>
+      {colgroup}
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>

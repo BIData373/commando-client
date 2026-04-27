@@ -12,10 +12,8 @@ import { TopicCell } from './TopicCell'
 import { RowActionsMenu } from './RowActionsMenu'
 import { BulkActionsBar } from './BulkActionsBar'
 import type { Task } from '../../data/Tasks'
-import FlagIcon from '../ui/FlagIcon'
-import HighlightMatch from '../HighlightMatch'
-
-const TABLE_BORDER = '0.5px solid rgba(0, 0, 0, 0.15)'
+import FlagIcon from '../shared/FlagIcon'
+import HighlightMatch from '../shared/HighlightMatch'
 
 export type DeadlineType = 'date' | 'immediate' | 'ongoing'
 
@@ -100,7 +98,7 @@ function TaskTable({
       accessorKey: 'id',
       header: 'מס"ד',
       size: 61,
-      cell: ({ getValue }) => <IdCell>{getValue() as number}</IdCell>,
+      cell: ({ getValue }) => <IdCell>{getValue<number>()}</IdCell>,
     }
 
   const columnMap: Record<string, ColumnDef<Task>> = {
@@ -108,9 +106,7 @@ function TaskTable({
       accessorKey: 'title',
       header: 'ההנחיה',
       size: 832,
-      cell: ({ row }) => {
-        const { title, details, flagged } = row.original
-        return (
+      cell: ({ row: { original :{ title, details, flagged } } }) => (
           <TitleCell>
             {flagged && <FlagIcon />}
             {details ? (
@@ -123,17 +119,16 @@ function TaskTable({
               <TitleFull>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitleFull>
             )}
           </TitleCell>
-        )
-      },
+        ),
     },
     status: {
       accessorKey: 'status',
       header: 'סטטוס',
       size: 100,
-      cell: ({ row }) => (
+      cell: ({ row: { original: { status, id } } }) => (
         <StatusCell
-          status={row.original.status}
-          taskId={row.original.id}
+          status={status}
+          taskId={id}
           onUpdate={onUpdateStatus}
         />
       ),
@@ -142,10 +137,10 @@ function TaskTable({
       id: 'responsible',
       header: 'אחראי',
       size: 115,
-      cell: ({ row }) => (
+      cell: ({ row: { original: { responsible, relatedDirectives } } }) => (
         <ResponsibleCell
-          responsible={row.original.responsible}
-          relatedDirectives={row.original.relatedDirectives}
+          responsible={responsible}
+          relatedDirectives={relatedDirectives}
         />
       ),
     },
@@ -153,8 +148,7 @@ function TaskTable({
       accessorKey: 'deadlineType',
       header: 'תג"ב',
       size: 160,
-      cell: ({ row }) => {
-        const { deadlineType, dueDate } = row.original
+      cell: ({ row: { original: { deadlineType, dueDate } } }) => {
         const today = startOfToday()
         const daysUntil = dueDate ? differenceInDays(dueDate, today) : null
         const isOverdue = daysUntil !== null && daysUntil < 0 && deadlineType !== 'immediate'
@@ -187,28 +181,25 @@ function TaskTable({
       accessorKey: 'discussionName',
       header: 'מקור',
       size: 280,
-      cell: ({ row }) => {
-        const { discussionName, discussionDate, hasAttachment } = row.original
-        return (
-          <SourceCell>
-            {hasAttachment && <Paperclip size={16} />}
-            <SourceText>{discussionName} | {discussionDate}</SourceText>
-          </SourceCell>
-        )
-      },
+      cell: ({ row: { original: { discussionName, discussionDate, hasAttachment } } }) => (
+        <SourceCell>
+          {hasAttachment && <Paperclip size={16} />}
+          <SourceText>{discussionName} | {discussionDate}</SourceText>
+        </SourceCell>
+      ),
     },
     tags: {
       accessorKey: 'tags',
       header: 'נושא',
       size: 160,
-      cell: ({ getValue }) => <TopicCell tags={getValue() as string[]} />,
+      cell: ({ getValue }) => <TopicCell tags={getValue<string[]>()} />,
     },
     notes: {
       accessorKey: 'notes',
       header: 'הערות',
       size: 220,
       cell: ({ getValue }) => {
-        const notes = getValue() as string
+        const notes = getValue<string>()
         return (
           <NotesText>{searchQuery ? <HighlightMatch text={notes} query={searchQuery} variant="mark" /> : notes}</NotesText>
         )
@@ -218,30 +209,30 @@ function TaskTable({
       accessorKey: 'createdAt',
       header: 'תאריך יצירה',
       size: 132,
-      cell: ({ getValue }) => <DateText>{format(getValue() as Date, 'dd/MM/yy')}</DateText>,
+      cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
     },
     updatedAt: {
       accessorKey: 'updatedAt',
       header: 'עודכן ב',
       size: 100,
-      cell: ({ getValue }) => <DateText>{format(getValue() as Date, 'dd/MM/yy')}</DateText>,
+      cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
     },
   }
 
   const actionsColumn: ColumnDef<Task> = {
     id: 'actions',
     size: 43,
-    cell: ({ row }) => (
+    cell: ({ row : { original: { id } } }) => (
       <RowActionsMenu
         trigger={
           <ActionsButton>
             <MoreVertical size={16} />
           </ActionsButton>
         }
-        onEdit={() => onEdit(row.original.id)}
-        onEnterSelect={() => handleEnterSelectMode(row.original.id)}
-        onArchive={() => onArchive([row.original.id])}
-        onDelete={() => onDelete([row.original.id])}
+        onEdit={() => onEdit(id)}
+        onEnterSelect={() => handleEnterSelectMode(id)}
+        onArchive={() => onArchive([id])}
+        onDelete={() => onDelete([id])}
       />
     ),
   }
@@ -308,9 +299,11 @@ const TableWrapper = styled.div`
       background: var(--link-bg-hover);
     }
   }
+  th, td {
+    border: 0.5px solid rgba(0, 0, 0, 0.15);
+  }
 
   th {
-    border: ${TABLE_BORDER};
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
@@ -321,7 +314,6 @@ const TableWrapper = styled.div`
   }
 
   td {
-    border: ${TABLE_BORDER};
     padding: 0 6px;
     height: 43px;
     max-height: 43px;

@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 import { he } from 'date-fns/locale'
 
-import HighlightMatch from '../HighlightMatch'
+import HighlightMatch from '../shared/HighlightMatch'
 import { MOCK_DISCUSSIONS } from '../../data/Discussions'
 import type { DiscussionSource } from '../../data/Discussions'
 export type { DiscussionSource }

@@ -5,8 +5,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from '../ui/dropdown-menu'
-import { StatusTag, STATUS_KEYS } from './StatusTag'
-import type { DirectiveStatus } from './StatusTag'
+import { StatusTag, STATUS_KEYS } from '../shared/StatusTag'
+import type { DirectiveStatus } from '../shared/StatusTag'
 
 interface StatusCellProps {
   status: DirectiveStatus
@@ -39,8 +39,8 @@ export function StatusCell({ status, taskId, onUpdate }: StatusCellProps) {
   )
 }
 
-export { StatusTag, STATUS_KEYS, STATUS_LABELS, getStatusStyle } from './StatusTag'
-export type { DirectiveStatus } from './StatusTag'
+export { StatusTag, STATUS_KEYS, STATUS_LABELS, getStatusStyle } from '../shared/StatusTag'
+export type { DirectiveStatus } from '../shared/StatusTag'
 
 const CellCenter = styled.div`
   display: flex;
