@@ -74,44 +74,81 @@ function SettingsPermissions() {
 
   return (
     <PermissionsRoot>
-      <Subtitle>מנהל סביבה יוצר הנחיות, מגדיר אחראיים ומבצע בקרה ומעקב אחר סטטוס ההנחיות בסביבה</Subtitle>
-      <SearchSection>
-        <DropdownUsers
-          value={search}
-          onChange={handleSearchChange}
-          onSelect={handleSearchSelect}
-          onClear={handleSearchClear}
-          placeholder="חפש קבוצת אחראים"
-        />
-        {selectedUser &&
-          <AddUserSection onClick={handleUserAdd} />
-        }
-      </SearchSection>
-      <Tabs value={activeTab} onValueChange={handleTabChange}>
-        <StyledTabsList variant="line">
-          <TabsTrigger value={PermissionsTab.ALL}>כולם</TabsTrigger>
-          <TabsTrigger value={PermissionsTab.ADMINS}>מנהלים</TabsTrigger>
-          <TabsTrigger value={PermissionsTab.VIEWERS}>צופים</TabsTrigger>
-        </StyledTabsList>
-        {Object.values(PermissionsTab).map(tab => (
-          <TabsContent value={tab}>
-            <UserPermissionList users={currentTabUsers} onDelete={handleDeletePermissionUser} onRoleChange={handleRoleChangePermissionUser} />
-          </TabsContent>
-        ))}
-      </Tabs>
+      <PermissionsInner>
+        <Subtitle>מנהל סביבה יוצר הנחיות, מגדיר אחראיים ומבצע בקרה ומעקב אחר סטטוס ההנחיות בסביבה</Subtitle>
+        <SearchSection>
+          <DropdownUsers
+            value={search}
+            onChange={handleSearchChange}
+            onSelect={handleSearchSelect}
+            onClear={handleSearchClear}
+            placeholder="חפש קבוצת אחראים"
+          />
+          {selectedUser &&
+            <AddUserSection onClick={handleUserAdd} />
+          }
+        </SearchSection>
+        <StyledTabs value={activeTab} onValueChange={handleTabChange}>
+          <StyledTabsList variant="line">
+            <TabsTrigger value={PermissionsTab.ALL}>כולם</TabsTrigger>
+            <TabsTrigger value={PermissionsTab.ADMINS}>מנהלים</TabsTrigger>
+            <TabsTrigger value={PermissionsTab.VIEWERS}>צופים</TabsTrigger>
+          </StyledTabsList>
+          {Object.values(PermissionsTab).map((tab, i) => (
+            <StyledTabsContent key={i} value={tab}>
+              <UserListScrollArea>
+                <UserListInner>
+                  <UserPermissionList users={currentTabUsers} onDelete={handleDeletePermissionUser} onRoleChange={handleRoleChangePermissionUser} />
+                </UserListInner>
+              </UserListScrollArea>
+            </StyledTabsContent>
+          ))}
+        </StyledTabs>
+      </PermissionsInner>
     </PermissionsRoot>
   )
 }
 
 const PermissionsRoot = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+`
+
+const PermissionsInner = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  width: 600px;
+  max-width: 600px;
+`
+
+const StyledTabs = styled(Tabs)`
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+`
+
+const UserListScrollArea = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  direction: ltr;
+  padding-inline-end: 8px;
+`
+
+const UserListInner = styled.div`
+  direction: rtl;
 `
 
 const Subtitle = styled.p`
-  font-size: 14px;
+  font-size: 0.75rem;
   color: var(--sea-ink-soft);
   margin: 0;
 `
@@ -119,6 +156,14 @@ const Subtitle = styled.p`
 const StyledTabsList = styled(TabsList)`
   align-self: flex-end;
   direction: rtl;
+`
+
+const StyledTabsContent = styled(TabsContent)`
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 `
 
 const SearchSection = styled.div`

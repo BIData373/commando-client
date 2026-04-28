@@ -83,16 +83,19 @@ function SettingsAssignees() {
         </TooltipProvider>
       </CheckboxRow>
 
-      <AssigneeCardGrid>
-        {filteredAssignees.map((assignee) => (
-          <AssigneeCard key={assignee.id} assignee={assignee} userNames={userNames} />
-        ))}
-      </AssigneeCardGrid>
+      <CardScrollArea>
+        <AssigneeCardGrid>
+          {filteredAssignees.map((assignee) => (
+            <AssigneeCard key={assignee.id} assignee={assignee} userNames={userNames} />
+          ))}
+        </AssigneeCardGrid>
+      </CardScrollArea>
     </AssigneesRoot>
   )
 }
 
 const SearchWrapper = styled.div`
+  max-width: 300px;
   flex: 1;
 `
 
@@ -103,9 +106,20 @@ const ToolbarRow = styled.div`
 `
 
 const AssigneesRoot = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 24px;
+`
+
+const CardScrollArea = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  direction: ltr;
 `
 
 const CheckboxRow = styled.div`
@@ -139,4 +153,5 @@ const AssigneeCardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
+  direction: rtl;
 `

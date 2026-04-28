@@ -4,36 +4,39 @@ import type { IUser, UserRole } from '#/types'
 import { DropdownPermission } from "./DropdownPermission"
 
 interface UserPermissionListProps {
-    users: IUser[]
-    onDelete: (userId: number) => void
-    onRoleChange: (userId: number, role: UserRole) => void
+  users: IUser[]
+  onDelete: (userId: number) => void
+  onRoleChange: (userId: number, role: UserRole) => void
 }
 
 export function UserPermissionList({ users, onDelete, onRoleChange }: UserPermissionListProps) {
-    return (
-        <UserListRoot>
-            {users.map((user) => (
-                <UserRow key={user.id}>
-                    <UserInfo>
-                        <UserName>{user.name} - {user.id}</UserName>
-                        <UserSubtext>{user.email}/{user.role}</UserSubtext>
-                    </UserInfo>
-                    <DropdownPermission
-                        value={user.role}
-                        onChange={(role) => onRoleChange(user.id, role)}
-                    />
-                    <DeleteButton onClick={() => onDelete(user.id)}>
-                        <Trash2 size={16} />
-                    </DeleteButton>
-                </UserRow>
-            ))}
-        </UserListRoot>
-    )
+  return (
+    <UserListRoot>
+      {users.map((user) => (
+        <UserRow key={user.id}>
+          <UserInfo>
+            <UserName>{user.name} - {user.id}</UserName>
+            <UserSubtext>{user.email}</UserSubtext>
+          </UserInfo>
+          <DropdownPermission
+            value={user.role}
+            onChange={(role) => onRoleChange(user.id, role)}
+          />
+          <DeleteButton onClick={() => onDelete(user.id)}>
+            <Trash2 size={16} />
+          </DeleteButton>
+        </UserRow>
+      ))}
+    </UserListRoot>
+  )
 }
 
 const UserListRoot = styled.div`
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+  overflow-y: auto;
 `
 
 const UserRow = styled.div`

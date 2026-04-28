@@ -1,4 +1,4 @@
-import styled from '@emotion/styled'
+import styled from '@emotion/styled';
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const PRESET_COLORS = [
@@ -11,7 +11,7 @@ const PRESET_COLORS = [
 ]
 
 interface ColorPickerProps {
-    selectedColor: string
+    selectedColor: string | undefined
     onChange(color: string): void
 }
 
@@ -22,7 +22,7 @@ export function ColorPicker({
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <ColorSwatchContainer>
+                <ColorSwatchContainer $color={selectedColor}>
                     <ColorSwatch $color={selectedColor} />
                 </ColorSwatchContainer>
             </PopoverTrigger>
@@ -55,7 +55,7 @@ const StyledPopoverContent = styled(PopoverContent)`
     max-width: max-content;
 `
 
-const ColorSwatchContainer = styled.div`
+const ColorSwatchContainer = styled.div<{ $color: string | undefined }>`
   background: var(--background);
   border: 1px solid var(--card-border);
   border-radius: 100px;
@@ -63,16 +63,29 @@ const ColorSwatchContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
 `
 
-const ColorSwatch = styled.div<{ $color: string }>`
-  width: 24px;
-  height: 24px;
+const ColorSwatch = styled.div<{ $color: string | undefined }>`
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: ${({ $color }) => $color};
+  background: ${({ $color }) => $color ? $color : '#F1F1F1'};
   cursor: pointer;
   flex-shrink: 0;
-  
+  position: relative;
+
+  ${({ $color }) => $color === undefined && `
+    &::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);;
+        height: 2px;
+        background-color: #333;
+    }`}
 `
 
 const ColorPickerPopup = styled.div`

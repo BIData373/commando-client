@@ -1,10 +1,9 @@
 import styled from '@emotion/styled'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import { Outlet, createRootRoute } from '@tanstack/react-router'
+import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import Header from '../components/Header'
-
 import { StrictMode } from 'react'
+import Header from '../components/Header'
 import '../styles.css'
 
 export const Route = createRootRoute({

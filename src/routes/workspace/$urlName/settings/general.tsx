@@ -55,48 +55,60 @@ function SettingsGeneral() {
   }
 
   return (
-    <FormRoot>
-      <FieldRow>
-        <FieldLabel>שם סביבה</FieldLabel>
-        <InputWrapper>
-          <Input
-            value={form.name}
-            onChange={handleNameChange}
-            placeholder="הזן שם סביבה"
-            maxLength={NAME_MAX_LENGTH}
+    <GeneralScrollArea>
+      <FormRoot>
+        <FieldRow>
+          <FieldLabel>שם סביבה</FieldLabel>
+          <InputWrapper>
+            <Input
+              value={form.name}
+              onChange={handleNameChange}
+              placeholder="הזן שם סביבה"
+              maxLength={NAME_MAX_LENGTH}
+            />
+            <CharCounter $atLimit={form.name.length >= NAME_MAX_LENGTH}>
+              {form.name.length}/{NAME_MAX_LENGTH}
+            </CharCounter>
+          </InputWrapper>
+        </FieldRow>
+
+        <FieldRow>
+          <FieldLabel>שיוך פיקודי ארגוני</FieldLabel>
+          <SelectCommand
+            command={form.command}
+            onChange={handleCommandChange}
           />
-          <CharCounter $atLimit={form.name.length >= NAME_MAX_LENGTH}>
-            {form.name.length}/{NAME_MAX_LENGTH}
-          </CharCounter>
-        </InputWrapper>
-      </FieldRow>
+        </FieldRow>
 
-
-      <FieldRow>
-        <FieldLabel>שיוך פיקודי ארגוני</FieldLabel>
-        <SelectCommand
-          command={form.command}
-          onChange={handleCommandChange}
-        />
-      </FieldRow>
-
-      <FieldRow>
-        <FieldLabel>סמל</FieldLabel>
-        <DropdownIcons
-          onSelect={handleIconSelect}
-          onClearEmblem={handleEmblemClear}
-          emblemSrc={form.emblem}
-        />
-      </FieldRow>
-    </FormRoot >
+        <FieldRow>
+          <FieldLabel>סמל</FieldLabel>
+          <DropdownIcons
+            onSelect={handleIconSelect}
+            onClearEmblem={handleEmblemClear}
+            emblemSrc={form.emblem}
+          />
+        </FieldRow>
+      </FormRoot>
+    </GeneralScrollArea>
   )
 }
+
+const GeneralScrollArea = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  direction: ltr;
+  padding-inline-end: 8px;
+  align-self: flex-start;
+`
 
 const FormRoot = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
   width: 400px;
+  direction: rtl;
 `
 
 const InputWrapper = styled.div`

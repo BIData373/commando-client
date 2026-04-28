@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import { Outlet, createFileRoute, useNavigate, useRouterState } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useNavigate, useRouterState } from '@tanstack/react-router'
 import { Tabs, TabsList, TabsTrigger } from '../../../components/ui/tabs'
 
 export const Route = createFileRoute('/workspace/$urlName/settings')({
@@ -57,9 +57,11 @@ function SettingsLayout() {
       </Tabs>
       <ContentWrapper>
         <SectionTitle>{activeTabLabel}</SectionTitle>
-        <Outlet />
+        <OutletContainer>
+          <Outlet />
+        </OutletContainer>
       </ContentWrapper>
-    </SettingsRoot>
+    </SettingsRoot >
   )
 }
 
@@ -67,6 +69,8 @@ const SettingsRoot = styled.div`
   padding-block: 24px;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  min-height: 0;
   gap: 24px;
 `
 
@@ -79,9 +83,20 @@ const FullWidthTabsList = styled(TabsList)`
 `
 
 const ContentWrapper = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 24px;
+`
+
+const OutletContainer = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 `
 
 const SectionTitle = styled.h2`

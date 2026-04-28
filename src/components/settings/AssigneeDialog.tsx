@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { useForm } from '@tanstack/react-form'
 import { UserPlus } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useCreateAssignee, useUpdateAssignee } from '#/hooks/useAssignees'
 import { useUsers } from '#/hooks/useUsers'
 import type { IAssignee, IUser } from '#/types'
@@ -12,8 +12,6 @@ import { Input } from '../ui/input'
 import { ColorPicker } from './ColorPicker'
 import { DropdownUsers } from './DropdownUsers'
 import { UserLists } from './UserLists'
-
-const DEFAULT_COLOR = '#3B82F6'
 
 interface AssigneeDialogProps {
     open: boolean
@@ -37,13 +35,13 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
     const form = useForm({
         defaultValues: {
             name: assignee ? assignee.name : '',
-            color: assignee?.color ?? DEFAULT_COLOR,
+            color: assignee?.color ?? undefined,
             userSearch: '',
         },
         onSubmit: async ({ value }) => {
             const payload = {
-                name: value.name,
-                color: value.color,
+                name: value.name.trim(),
+                color: value.color as string,
                 userIds: localAssignees.map((u) => u.id),
             }
             if (assignee) {
@@ -86,83 +84,105 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
         form.setFieldValue('color', color)
     }
 
-    function handleInteractOutside() {
-        const savedAssignees = assignee
-            ? users.filter(u => assignee.userIds.includes(u.id))
-            : []
+    useEffect(() => {
+        if (!open) return
+        const savedAssignees = assignee ? users.filter(u => assignee.userIds.includes(u.id)) : []
         setLocalAssignees(savedAssignees)
-    }
+        form.setFieldValue('color', assignee?.color ?? undefined)
+        form.setFieldValue('name', assignee?.name ?? '')
+        form.setFieldValue('userSearch', '')
+        form.resetField('name')
+        form.resetField('color')
+    }, [open, assignee, users, form.setFieldValue, form.resetField])
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <WideDialogContent onInteractOutside={handleInteractOutside}>
-                <DialogTitleLarge>{isUpdate ? 'עריכת אחראי' : 'יצירת אחראי'}</DialogTitleLarge>
-                <StyledDialogDescription>
-                    'אחראי' אליו ניתן לשייך הנחיות.
-                    <br />
-                    לכל אחראי ניתן לכתב מספר משתמשים, אשר יקבלו את ההנחיות לאזור האישי שלהם.
-                </StyledDialogDescription>
+            <WideDialogContent>
+                <ScrollableContent>
+                    <DialogTitleLarge>{isUpdate ? 'עריכת אחראי' : 'יצירת אחראי'}</DialogTitleLarge>
+                    <StyledDialogDescription>
+                        'אחראי' אליו ניתן לשייך הנחיות.
+                        <br />
+                        לכל אחראי ניתן לכתב מספר משתמשים, אשר יקבלו את ההנחיות לאזור האישי שלהם.
+                    </StyledDialogDescription>
 
-                <DialogBody>
-                    <form.Field name="name">
-                        {(field) => (
-                            <FieldGroup>
-                                <FieldLabel>שם אחראי</FieldLabel>
-                                <Input
-                                    value={field.state.value}
-                                    onChange={(e) => field.handleChange(e.target.value)}
-                                    placeholder='לדוגמה: מג"ד, רע"ן מפקדים, קמב"צ...'
-                                />
-                            </FieldGroup>
-                        )}
-                    </form.Field>
-
-                    <form.Field name="color">
-                        {(field) => (
-                            <ColorRow>
-                                <ColorPicker
-                                    selectedColor={field.state.value}
-                                    onChange={handleColorChange}
-                                />
-                                <ColorLabel>צבע לאחראי</ColorLabel>
-                            </ColorRow>
-                        )}
-                    </form.Field>
-
-                    <form.Field name="userSearch">
-                        {(field) => (
-                            <FieldGroup>
-                                <FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
-                                <SearchRow>
-                                    <DropdownUsers
+                    <DialogBody>
+                        <form.Field
+                            name="name"
+                            validators={{ onSubmit: ({ value }) => !value.trim() ? 'שם אחראי הוא שדה חובה' : undefined }}
+                        >
+                            {(field) => (
+                                <FieldGroup>
+                                    <FieldLabel>שם אחראי</FieldLabel>
+                                    <Input
                                         value={field.state.value}
-                                        onChange={field.handleChange}
-                                        onSelect={handleSearchSelect}
-                                        onClear={handleSearchClear}
-                                        placeholder='חפש שם/ תפקיד/ מספר אישי'
+                                        onChange={(e) => field.handleChange(e.target.value)}
+                                        placeholder='לדוגמה: מג"ד, רע"ן מפקדים, קמב"צ...'
                                     />
-                                    {field.state.value.length > 0 && (
-                                        <AddUserButton
-                                            type="button"
-                                            $enabled={!!selectedUser}
-                                            disabled={!selectedUser}
-                                            onClick={handleAddUserList}
-                                        >
-                                            <UserPlus size={16} />
-                                        </AddUserButton>
+                                    {field.state.meta.errors.length > 0 && (
+                                        <ErrorText>{field.state.meta.errors[0]}</ErrorText>
                                     )}
-                                </SearchRow>
-                                <UserLists users={localAssignees} onRemove={handleRemoveAssignee} />
-                            </FieldGroup>
-                        )}
-                    </form.Field>
-                </DialogBody>
+                                </FieldGroup>
+                            )}
+                        </form.Field>
+
+                        <form.Field
+                            name="color"
+                            validators={{ onSubmit: ({ value }) => !value ? 'יש לבחור צבע לאחראי' : undefined }}
+                        >
+                            {(field) => (
+                                <FieldGroup>
+                                    <ColorRow>
+                                        <ColorLabel>בחר צבע לאחראי</ColorLabel>
+                                        <ColorPicker
+                                            selectedColor={field.state.value}
+                                            onChange={handleColorChange}
+                                        />
+                                    </ColorRow>
+                                    {field.state.meta.errors.length > 0 && (
+                                        <ErrorText>{field.state.meta.errors[0]}</ErrorText>
+                                    )}
+                                </FieldGroup>
+                            )}
+                        </form.Field>
+
+                        <form.Field name="userSearch">
+                            {(field) => (
+                                <FieldGroup>
+                                    <FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
+                                    <SearchRow>
+                                        <DropdownUsers
+                                            value={field.state.value}
+                                            onChange={field.handleChange}
+                                            onSelect={handleSearchSelect}
+                                            onClear={handleSearchClear}
+                                            placeholder='חפש שם/ תפקיד/ מספר אישי'
+                                        />
+                                        {field.state.value.length > 0 && (
+                                            <AddUserButton
+                                                type="button"
+                                                $enabled={!!selectedUser}
+                                                disabled={!selectedUser}
+                                                onClick={handleAddUserList}
+                                            >
+                                                <UserPlus size={16} />
+                                            </AddUserButton>
+                                        )}
+                                    </SearchRow>
+                                    <UserLists users={localAssignees} onRemove={handleRemoveAssignee} />
+                                </FieldGroup>
+                            )}
+                        </form.Field>
+                    </DialogBody>
+                </ScrollableContent>
 
                 <DialogActions>
                     <DialogClose asChild>
                         <Button variant="outline">ביטול</Button>
                     </DialogClose>
-                    <GradientButton type="button" onClick={form.handleSubmit}>{isUpdate ? 'שמור' : 'צור'}</GradientButton>
+                    <GradientButton type="button" onClick={form.handleSubmit}>
+                        {isUpdate ? 'שמור' : 'צור'}
+                    </GradientButton>
                 </DialogActions>
             </WideDialogContent>
         </Dialog>
@@ -172,24 +192,37 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
 const StyledDialogDescription = styled(DialogDescription)`
   direction: rtl;
   text-align: start;
-  font-size: 18px;
+  font-size: clamp(13px, 1.6vw, 18px);
   color: var(--text-color);
-  line-height: 24px;
+  line-height: 1.4;
 `
 
 const WideDialogContent = styled(DialogContent)`
   max-width: 600px;
+  max-height: 70vh;
   padding: 36px 48px;
   text-align: end;
   justify-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 `
 
 const DialogTitleLarge = styled(DialogTitle)`
-  font-size: 42px;
+  text-align: right;
+  font-size: 3rem;
   font-weight: 600;
-  line-height: 50px;
+  line-height: 1.2;
   color: var(--sea-ink);
   margin-block-end: 4px;
+`
+
+const ScrollableContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 `
 
 const DialogBody = styled.div`
@@ -207,10 +240,10 @@ const FieldGroup = styled.div`
 `
 
 const FieldLabel = styled.span`
-  font-size: 20px;
+  font-size: clamp(14px, 1.8vw, 20px);
   font-weight: 400;
   color: var(--sea-ink);
-  line-height: 28px;
+  line-height: 1.4;
 `
 
 const ColorRow = styled.div`
@@ -256,6 +289,12 @@ const GradientButton = styled.button`
   font-weight: 400;
   line-height: 24px;
   flex-shrink: 0;
+`
+
+const ErrorText = styled.span`
+  font-size: 13px;
+  color: var(--color-error, #ef4444);
+  line-height: 18px;
 `
 
 const AddUserButton = styled.button<{ $enabled: boolean }>`
