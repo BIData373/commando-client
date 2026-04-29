@@ -379,6 +379,7 @@ const ModalCloseButton = styled.button`
   background: transparent;
   cursor: pointer;
   color: rgba(0, 0, 0, 0.45);
+  outline: none;
 
   &:hover {
     color: rgba(0, 0, 0, 0.88);
@@ -427,7 +428,6 @@ const FormContainer = styled.div`
 `
 
 const ModalTitle = styled.h1`
-  font-family: 'Assistant', sans-serif;
   font-weight: 600;
   font-size: 42px;
   line-height: 50px;
