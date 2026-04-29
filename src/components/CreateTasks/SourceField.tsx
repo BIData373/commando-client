@@ -19,6 +19,8 @@ interface SourceFieldProps {
   linkedSource: DiscussionSource | null
   onSourceSelect: (name: string, discussion?: DiscussionSource | null) => void
   onDateSelect: (date: Date | undefined) => void
+  label?: string
+  uniqueNames?: boolean
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -29,6 +31,8 @@ function SourceField({
   linkedSource,
   onSourceSelect,
   onDateSelect,
+  label = 'מקור',
+  uniqueNames = false,
 }: SourceFieldProps) {
   const [sourceQuery, setSourceQuery] = useState(source)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -53,9 +57,10 @@ function SourceField({
     onSourceSelect(sourceQuery)
   }
 
-  const filteredDiscussions = MOCK_DISCUSSIONS.filter((d) =>
-    d.name.includes(sourceQuery),
-  )
+  const allFiltered = MOCK_DISCUSSIONS.filter((d) => d.name.includes(sourceQuery))
+  const filteredDiscussions = uniqueNames
+    ? allFiltered.filter((d, i, arr) => arr.findIndex((x) => x.name === d.name) === i)
+    : allFiltered
 
   function openDropdown() {
     setIsDropdownOpen(true)
@@ -79,7 +84,7 @@ function SourceField({
     <SourceDateRow>
       <SourceFormItem>
         <FormLabelRow>
-          <LabelText>מקור</LabelText>
+          <LabelText>{label}</LabelText>
         </FormLabelRow>
         <SourceFieldWrapper>
           <SourceInputBox onFocus={openDropdown}>
@@ -103,10 +108,10 @@ function SourceField({
                   <DropdownGroupTitle>מקורות קיימים</DropdownGroupTitle>
                   {filteredDiscussions.map((d) => (
                     <SourceOption
-                      key={d.id}
+                      key={uniqueNames ? d.name : d.id}
                       onMouseDown={(e) => handleOptionMouseDown(e, d)}
                     >
-                      <SourceOptionDate>{d.date}</SourceOptionDate>
+                      {!uniqueNames && <SourceOptionDate>{d.date}</SourceOptionDate>}
                       <SourceOptionName>
                         {sourceQuery ? <HighlightMatch text={d.name} query={sourceQuery} /> : d.name}
                       </SourceOptionName>

@@ -109,7 +109,6 @@ const SearchField = styled.input`
   border: none;
   outline: none;
   background: transparent;
-  font-family: 'Rubik', sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;

@@ -2,6 +2,12 @@ import { useMemo, useState } from 'react'
 import styled from '@emotion/styled'
 import { Outlet, useNavigate } from '@tanstack/react-router'
 import { ChevronDown, Plus } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '../ui/dropdown-menu'
 import { TooltipProvider } from '../ui/tooltip'
 import { type DirectiveStatus } from '../shared/StatusTag'
 import { NoResultsFound } from './NoResultsFound'
@@ -87,8 +93,12 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
     bulkUpdateStatus(taskIds, status)
   }
 
-  function handleCreateDirective() {
-    navigate({ to: '/workspace/$urlName/tasks/new', params: { urlName }, search: { view } })
+  function handleCreateTaskFromDiscussion() {
+    navigate({ to: '/workspace/$urlName/tasks/new', params: { urlName }, search: { view, mode: 'discussion'} })
+  }
+
+  function handleCreateTask() {
+    navigate({ to: '/workspace/$urlName/tasks/new', params: { urlName }, search: { view, mode: 'single' } })
   }
 
   function handleViewChange(newView: View) {
@@ -98,11 +108,23 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   useTitleBar(
     () => (
       <ButtonGroup>
-        <CreateButton onClick={handleCreateDirective}>
-          <Plus size={18} color="white" />
-          <CreateButtonText>צור הנחייה</CreateButtonText>
-          <ChevronDown size={18} color="white" />
-        </CreateButton>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <CreateButton>
+              <Plus size={18} color="white" />
+              <CreateButtonText>צור הנחייה</CreateButtonText>
+              <ChevronDown size={18} color="white" />
+            </CreateButton>
+          </DropdownMenuTrigger>
+          <StyledDropdownContent align="end" sideOffset={6}>
+            <StyledDropdownItem onSelect={handleCreateTaskFromDiscussion}>
+              הנחיות מתוך דיון
+            </StyledDropdownItem>
+            <StyledDropdownItem onSelect={handleCreateTask}>
+              הנחייה בודדת
+            </StyledDropdownItem>
+          </StyledDropdownContent>
+        </DropdownMenu>
         <SectionDivider />
         <SegmentedControl>
           <SegmentedItem
@@ -203,13 +225,13 @@ const CreateButton = styled.button`
   border-radius: 8px;
   background: linear-gradient(165deg, #615FFF 0%, #9810FA 100%);
   color: white;
-  font-family: 'Rubik', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
   cursor: pointer;
   white-space: nowrap;
   position: relative;
+  outline: none;
 
   &::after {
     content: '';
@@ -259,7 +281,6 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   padding-inline: 12px;
   border: none;
   border-radius: 6px;
-  font-family: 'Rubik', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
@@ -272,10 +293,39 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
     $selected
       ? '0px 1px 2px 0px rgba(0, 0, 0, 0.03), 0px 1px 6px -1px rgba(0, 0, 0, 0.02), 0px 2px 4px 0px rgba(0, 0, 0, 0.02)'
       : 'none'};
-
   &:hover {
     background: ${({ $selected }) => ($selected ? 'white' : 'rgba(0, 0, 0, 0.06)')};
   }
+`
+
+// ─── Create Dropdown ─────────────────────────────────────────────────────────
+
+const StyledDropdownContent = styled(DropdownMenuContent)`
+  direction: rtl;
+  min-width: var(--radix-dropdown-menu-trigger-width);
+  padding: 4px;
+  border-radius: 8px;
+  box-shadow:
+    0px 9px 28px 0px rgba(0, 0, 0, 0.05),
+    0px 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0px 6px 16px 0px rgba(0, 0, 0, 0.08);
+`
+
+const StyledDropdownItem = styled(DropdownMenuItem)`
+  direction: rtl;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 32px;
+  padding-inline: 12px;
+  padding-block: 5px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: rgba(0, 0, 0, 0.88);
+  white-space: nowrap;
+  cursor: pointer;
 `
 
 // ─── Toolbar ──────────────────────────────────────────────────────────────────
