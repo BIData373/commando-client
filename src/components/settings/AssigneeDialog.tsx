@@ -311,5 +311,5 @@ const AddUserButton = styled.button<{ $enabled: boolean }>`
   border-radius: 6px;
   border: 1px solid var(--line);
   cursor: ${({ $enabled }) => ($enabled ? 'pointer' : 'default')};
-  background: ${({ $enabled }) => ($enabled ? 'linear-gradient(135deg, #615FFF 0%, #9810FA 100%)' : 'var(--chip-bg)')};
+  background: ${({ $enabled }) => ($enabled ? 'linear-gradient(135deg, #615FFF 0%, #9810FA 100%)' : 'rgba(0, 0, 0, 0.04)')};
 `

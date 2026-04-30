@@ -39,6 +39,7 @@ const StyledSelectTrigger = styled(SelectTrigger)`
     width: 100%;
     flex-direction: row-reverse;
     background: var(--background);
+    text-align: right;
 `
 
 const StyledSelectContent = styled(SelectContent)`

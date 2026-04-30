@@ -4,14 +4,18 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { AddUserSection } from '#/components/settings/AddUserSection'
 import { DropdownUsers } from '#/components/settings/DropdownUsers'
+import { SectionTitle } from '#/components/settings/SectionTitle'
 import { UserPermissionList } from '#/components/settings/UserPermissionList'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { useAddUserToWorkspace, useDeleteUser, userKeys, useUpdateUser, useWorkspaceUsers } from '#/hooks/useUsers'
 import type { IUser } from '#/types'
 import { UserRole } from '#/types'
+import { getActiveTabLabel } from '#/utils/settingsUtils'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/permissions')({ component: SettingsPermissions })
 
+
+const activeTabLabel = getActiveTabLabel('permissions')
 
 enum PermissionsTab {
   ALL = 'all',
@@ -74,6 +78,7 @@ function SettingsPermissions() {
 
   return (
     <PermissionsRoot>
+      <SectionTitle title={activeTabLabel} />
       <PermissionsInner>
         <Subtitle>מנהל סביבה יוצר הנחיות, מגדיר אחראיים ומבצע בקרה ומעקב אחר סטטוס ההנחיות בסביבה</Subtitle>
         <SearchSection>
@@ -115,6 +120,7 @@ const PermissionsRoot = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  gap: 4px;
 `
 
 const PermissionsInner = styled.div`
@@ -123,7 +129,7 @@ const PermissionsInner = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   max-width: 600px;
 `
 

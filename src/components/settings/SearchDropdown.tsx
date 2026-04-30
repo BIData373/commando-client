@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import { Loader2, Search, X } from 'lucide-react'
+import { Popover as PopoverPrimitive } from 'radix-ui'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../ui/input-group'
@@ -46,39 +47,48 @@ export function SearchDropdown<T extends { id: number | string }>({
     setIsOpen(false)
   }
 
+  function handleRootClick(e: React.MouseEvent) {
+    e.preventDefault()
+  }
+
   return (
-    <Root>
-      <StyledInputGroup>
-        <InputGroupAddon align="inline-start">
-          {isLoading ? <Loader2 size={16} /> : <Search size={16} />}
-        </InputGroupAddon>
-        <InputGroupInput
-          value={value}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          placeholder={placeholder}
-        />
-        {onClear && value.length > 0 && (
-          <InputGroupAddon align="inline-end">
-            <X size={16} cursor="pointer" onMouseDown={handleClear} />
-          </InputGroupAddon>
-        )}
-      </StyledInputGroup>
-      {isOpen && items.length > 0 && (
-        <Dropdown>
-          {items.map((item) => (
-            <DropdownItem key={item.id} onMouseDown={() => handleSelect(item)}>
-              {renderItem(item)}
-            </DropdownItem>
-          ))}
-        </Dropdown>
+    <PopoverPrimitive.Root open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverPrimitive.Trigger asChild>
+        <Root onClick={handleRootClick}>
+          <StyledInputGroup>
+            <InputGroupAddon align="inline-start">
+              {isLoading ? <Loader2 size={16} /> : <Search size={16} />}
+            </InputGroupAddon>
+            <InputGroupInput
+              value={value}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder={placeholder}
+            />
+            {onClear && value.length > 0 && (
+              <InputGroupAddon align="inline-end">
+                <X size={16} cursor="pointer" onMouseDown={handleClear} />
+              </InputGroupAddon>
+            )}
+          </StyledInputGroup>
+        </Root>
+      </PopoverPrimitive.Trigger>
+      {items.length > 0 && (
+        <PopoverPrimitive.Portal>
+          <DropdownContent align="start" sideOffset={4} onOpenAutoFocus={(e: Event) => e.preventDefault()}>
+            {items.map((item) => (
+              <DropdownItem key={item.id} onMouseDown={() => handleSelect(item)}>
+                {renderItem(item)}
+              </DropdownItem>
+            ))}
+          </DropdownContent>
+        </PopoverPrimitive.Portal>
       )}
-    </Root>
+    </PopoverPrimitive.Root>
   )
 }
 
 const Root = styled.div`
-  position: relative;
   width: 100%;
 `
 
@@ -86,24 +96,21 @@ const StyledInputGroup = styled(InputGroup)`
   background: var(--background);
 `
 
-const Dropdown = styled.ul`
-  position: absolute;
-  inset-block-start: calc(100% + 4px);
-  inset-inline-start: 0;
-  inset-inline-end: 0;
+const DropdownContent = styled(PopoverPrimitive.Content)`
+  width: var(--radix-popover-trigger-width);
   background: var(--background);
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 4px 0;
-  margin: 0;
-  list-style: none;
   z-index: var(--z-dropdown);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   max-height: 240px;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
 `
 
-const DropdownItem = styled.li`
+const DropdownItem = styled.div`
   padding: 8px 12px;
   cursor: pointer;
   direction: rtl;
