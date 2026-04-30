@@ -45,5 +45,5 @@ const PageContainer = styled.div`
   min-height: 0;
   overflow-y: auto;
   background: var(--primary-foreground);
-  padding-inline: 32px;
+  padding-inline: 24px;
 `

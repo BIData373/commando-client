@@ -53,6 +53,7 @@ export function ColorPicker({
 
 const StyledPopoverContent = styled(PopoverContent)`
     max-width: max-content;
+    z-index: 1000;
 `
 
 const ColorSwatchContainer = styled.div<{ $color: string | undefined }>`
@@ -84,7 +85,7 @@ const ColorSwatch = styled.div<{ $color: string | undefined }>`
         left: 50%;
         transform: translate(-50%, -50%) rotate(-45deg);;
         height: 2px;
-        background-color: #333;
+        background: #D9D9D9;
     }`}
 `
 

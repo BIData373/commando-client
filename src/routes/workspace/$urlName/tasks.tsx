@@ -1,11 +1,12 @@
 import styled from '@emotion/styled'
+import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router'
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router'
+import { LayoutGrid, Table2 } from 'lucide-react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../../components/ui/card'
 import {
   Table,
@@ -15,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from '../../../components/ui/table'
-import { LayoutGrid, Table2 } from 'lucide-react'
 
 type View = 'TABLE' | 'CARDS'
 
@@ -280,7 +280,7 @@ const ViewSwitcher = styled.div`
   gap: 2px;
   background: var(--chip-bg);
   border: 1px solid var(--chip-line);
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 3px;
 `
 

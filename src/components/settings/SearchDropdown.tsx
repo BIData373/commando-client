@@ -48,7 +48,7 @@ export function SearchDropdown<T extends { id: number | string }>({
 
   return (
     <Root>
-      <InputGroup>
+      <StyledInputGroup>
         <InputGroupAddon align="inline-start">
           {isLoading ? <Loader2 size={16} /> : <Search size={16} />}
         </InputGroupAddon>
@@ -63,7 +63,7 @@ export function SearchDropdown<T extends { id: number | string }>({
             <X size={16} cursor="pointer" onMouseDown={handleClear} />
           </InputGroupAddon>
         )}
-      </InputGroup>
+      </StyledInputGroup>
       {isOpen && items.length > 0 && (
         <Dropdown>
           {items.map((item) => (
@@ -82,6 +82,10 @@ const Root = styled.div`
   width: 100%;
 `
 
+const StyledInputGroup = styled(InputGroup)`
+  background: var(--background);
+`
+
 const Dropdown = styled.ul`
   position: absolute;
   inset-block-start: calc(100% + 4px);
@@ -89,7 +93,7 @@ const Dropdown = styled.ul`
   inset-inline-end: 0;
   background: var(--background);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 4px 0;
   margin: 0;
   list-style: none;

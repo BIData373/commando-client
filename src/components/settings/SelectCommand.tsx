@@ -36,8 +36,9 @@ export function SelectCommand({
 }
 
 const StyledSelectTrigger = styled(SelectTrigger)`
-  width: 100%;
-  flex-direction: row-reverse;
+    width: 100%;
+    flex-direction: row-reverse;
+    background: var(--background);
 `
 
 const StyledSelectContent = styled(SelectContent)`

@@ -176,8 +176,8 @@ const TitleBar = styled.div`
 
 const PageTitle = styled.h1`
   margin: 0;
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 38px;
+  font-weight: 500;
   color: var(--sea-ink);
 `
 

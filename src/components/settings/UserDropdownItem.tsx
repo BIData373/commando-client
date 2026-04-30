@@ -9,18 +9,20 @@ export function UserItem({ user }: UserItemProps) {
     return (
         <>
             <UserName>{user.name} - {user.id}</UserName>
-            <UserMeta>{user.email} / {user.role}</UserMeta>
+            <UserMeta>{user.email}</UserMeta>
         </>
     )
 }
 
 const UserName = styled.span`
   font-size: 14px;
-  font-weight: 600;
-  color: var(--sea-ink);
+  font-weight: 400;
+  color: var(--text-color);
 `
 
 const UserMeta = styled.span`
   font-size: 12px;
-  color: var(--sea-ink-soft);
+  font-weight: 400;
+  color: var(--text-color);
+  /* color: rgba(0, 0, 0, 0.45); */
 `

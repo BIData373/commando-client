@@ -74,7 +74,7 @@ const EmblemPreview = styled.div`
   justify-content: center;
 
   border: 1px dashed var(--card-border);
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 16px;
   height: 166px;
 

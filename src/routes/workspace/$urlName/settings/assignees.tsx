@@ -4,15 +4,18 @@ import { Info, Plus, Search } from 'lucide-react'
 import { type ChangeEvent, useState } from 'react'
 import { AssigneeCard } from '#/components/settings/AssigneeCard'
 import { AssigneeDialog } from '#/components/settings/AssigneeDialog'
+import { SectionTitle } from '#/components/settings/SectionTitle'
 import { Button } from '#/components/ui/button'
 import { Checkbox } from '#/components/ui/checkbox'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '#/components/ui/input-group'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/components/ui/tooltip'
 import { useAssignees } from '#/hooks/useAssignees'
 import { useUsers } from '#/hooks/useUsers'
+import { getActiveTabLabel } from '#/utils/settingsUtils'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({ component: SettingsAssignees })
 
+const activeTab = getActiveTabLabel("assignees")
 
 function SettingsAssignees() {
   const [allowAssigneeStatusUpdate, setAllowAssigneeStatusUpdate] = useState(false)
@@ -46,42 +49,46 @@ function SettingsAssignees() {
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
       />
-      <ToolbarRow>
-        <SearchWrapper>
-          <InputGroup>
-            <InputGroupAddon align="inline-start">
-              <Search size={16} />
-            </InputGroupAddon>
-            <InputGroupInput value={searchQuery} onChange={handleSearchChange} placeholder="חפש קבוצת אחראים" />
-          </InputGroup>
-        </SearchWrapper>
-        <Button variant="default" onClick={handleOpenCreateDialog}>
-          <Plus size={16} />
-          צור אחראי
-        </Button>
-      </ToolbarRow>
-      <CheckboxRow>
-        <Checkbox
-          id="allow-status-update"
-          checked={allowAssigneeStatusUpdate}
-          onCheckedChange={handleCheckboxChange}
-        />
-        <CheckboxLabel htmlFor="allow-status-update">
-          אפשר לאחראיים לעדכן סטטוס הנחיות
-        </CheckboxLabel>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <InfoIcon>
-                <Info size={16} />
-              </InfoIcon>
-            </TooltipTrigger>
-            <TooltipContent>
-              מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות כבויה – עדכון הסטטוס יתאפשר רק למנהלי הלשכה.
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </CheckboxRow>
+      <StyledSectionTitle title={`ניהול אחראים - ${activeTab}`} />
+      <StyledContent>
+        <CheckboxRow>
+          <Checkbox
+            id="allow-status-update"
+            checked={allowAssigneeStatusUpdate}
+            onCheckedChange={handleCheckboxChange}
+          />
+          <CheckboxLabel htmlFor="allow-status-update">
+            אפשר לאחראיים לעדכן סטטוס הנחיות
+          </CheckboxLabel>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <InfoIcon>
+                  <Info size={16} />
+                </InfoIcon>
+              </TooltipTrigger>
+              <StyledTooltipContent>
+                מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות כבויה – עדכון הסטטוס יתאפשר רק למנהלי הלשכה.
+              </StyledTooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </CheckboxRow>
+        <ToolbarRow>
+          <SearchWrapper>
+            <StyledInputGroup>
+              <InputGroupAddon align="inline-start">
+                <Search size={16} />
+              </InputGroupAddon>
+              <InputGroupInput value={searchQuery} onChange={handleSearchChange} placeholder="חפש קבוצת אחראים" />
+            </StyledInputGroup>
+          </SearchWrapper>
+          <Button variant="default" onClick={handleOpenCreateDialog}>
+            <Plus size={16} />
+            צור אחראי
+          </Button>
+        </ToolbarRow>
+      </StyledContent>
+
 
       <CardScrollArea>
         <AssigneeCardGrid>
@@ -102,6 +109,18 @@ const SearchWrapper = styled.div`
 const ToolbarRow = styled.div`
   display: flex;
   align-items: center;
+  margin-right: 20px;
+  gap: 12px;
+`
+
+const StyledTooltipContent = styled(TooltipContent)`
+  background: var(--background);
+  color: var(--text-color-2);
+`
+
+const StyledContent = styled.div`
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 `
 
@@ -111,7 +130,7 @@ const AssigneesRoot = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 8px;
 `
 
 const CardScrollArea = styled.div`
@@ -125,14 +144,24 @@ const CardScrollArea = styled.div`
 const CheckboxRow = styled.div`
   display: flex;
   align-items: center;
+  margin-right: 20px;
   gap: 8px;
 `
 
 const CheckboxLabel = styled.label`
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--sea-ink);
   cursor: pointer;
+`
+
+const StyledInputGroup = styled(InputGroup)`
+  background: var(--background);
+`
+
+
+const StyledSectionTitle = styled(SectionTitle)`
+  margin-right: 20px;
 `
 
 const InfoIcon = styled.button`
@@ -150,8 +179,9 @@ const InfoIcon = styled.button`
 `
 
 const AssigneeCardGrid = styled.div`
+  padding: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(275px, 1fr));
+  gap: 18px;
   direction: rtl;
 `

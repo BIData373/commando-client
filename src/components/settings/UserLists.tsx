@@ -35,16 +35,16 @@ const UserListArea = styled.div`
   width: 100%;
   overflow-y: auto;
   scrollbar-width: thin;
-  border-radius: 8px;
+  border-radius: 6px;
   background-color: var(--background-area);
   padding: 8px;
 `
 
 const UserCard = styled.div`
-    display: flex;
-    flex-wrap: wrap;
+    padding: 1px 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 10px;
-    justify-content: flex-start;
 `
 
 const UserCardItem = styled.div`
@@ -60,12 +60,12 @@ const UserCardItem = styled.div`
 const UserCardInfo = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
+    min-width: 0;
     overflow: hidden;
-    word-wrap: break-word;
-    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-overflow: clip;
     gap: 2px;
-    text-align: end;
 `
 
 const UserCardClose = styled.button`

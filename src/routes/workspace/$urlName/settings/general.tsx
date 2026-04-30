@@ -2,7 +2,9 @@ import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { DropdownIcons } from '#/components/settings/DropdownIcons'
+import { SectionTitle } from '#/components/settings/SectionTitle'
 import { SelectCommand } from '#/components/settings/SelectCommand'
+import { getActiveTabLabel } from '#/utils/settingsUtils'
 import { Input } from '../../../../components/ui/input'
 import type { IMesibaIcon } from '../../../../hooks/useMesiba'
 import { useUpdateWorkspaceSettings, useWorkspaceSettings } from '../../../../hooks/useWorkspaceSettings'
@@ -10,6 +12,7 @@ import { useUpdateWorkspaceSettings, useWorkspaceSettings } from '../../../../ho
 export const Route = createFileRoute('/workspace/$urlName/settings/general')({ component: SettingsGeneral })
 
 const NAME_MAX_LENGTH = 50
+const activeTabLabel = getActiveTabLabel('general')
 
 interface FormState {
   name: string
@@ -55,43 +58,53 @@ function SettingsGeneral() {
   }
 
   return (
-    <GeneralScrollArea>
-      <FormRoot>
-        <FieldRow>
-          <FieldLabel>שם סביבה</FieldLabel>
-          <InputWrapper>
-            <Input
-              value={form.name}
-              onChange={handleNameChange}
-              placeholder="הזן שם סביבה"
-              maxLength={NAME_MAX_LENGTH}
+    <GeneralRootPage>
+      <SectionTitle title={activeTabLabel} />
+      <GeneralScrollArea>
+        <FormRoot>
+          <FieldRow>
+            <FieldLabel>שם סביבה</FieldLabel>
+            <InputWrapper>
+              <StyledInput
+                value={form.name}
+                onChange={handleNameChange}
+                placeholder="הזן שם סביבה"
+                maxLength={NAME_MAX_LENGTH}
+              />
+              <CharCounter $atLimit={form.name.length >= NAME_MAX_LENGTH}>
+                {form.name.length}/{NAME_MAX_LENGTH}
+              </CharCounter>
+            </InputWrapper>
+          </FieldRow>
+
+          <FieldRow>
+            <FieldLabel>שיוך פיקודי ארגוני</FieldLabel>
+            <SelectCommand
+              command={form.command}
+              onChange={handleCommandChange}
             />
-            <CharCounter $atLimit={form.name.length >= NAME_MAX_LENGTH}>
-              {form.name.length}/{NAME_MAX_LENGTH}
-            </CharCounter>
-          </InputWrapper>
-        </FieldRow>
+          </FieldRow>
 
-        <FieldRow>
-          <FieldLabel>שיוך פיקודי ארגוני</FieldLabel>
-          <SelectCommand
-            command={form.command}
-            onChange={handleCommandChange}
-          />
-        </FieldRow>
-
-        <FieldRow>
-          <FieldLabel>סמל</FieldLabel>
-          <DropdownIcons
-            onSelect={handleIconSelect}
-            onClearEmblem={handleEmblemClear}
-            emblemSrc={form.emblem}
-          />
-        </FieldRow>
-      </FormRoot>
-    </GeneralScrollArea>
+          <FieldRow>
+            <FieldLabel>סמל</FieldLabel>
+            <DropdownIcons
+              onSelect={handleIconSelect}
+              onClearEmblem={handleEmblemClear}
+              emblemSrc={form.emblem}
+            />
+          </FieldRow>
+        </FormRoot>
+      </GeneralScrollArea>
+    </GeneralRootPage>
   )
 }
+
+const GeneralRootPage = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+`
 
 const GeneralScrollArea = styled.div`
   flex: 1;
@@ -106,7 +119,7 @@ const GeneralScrollArea = styled.div`
 const FormRoot = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   width: 400px;
   direction: rtl;
 `
@@ -115,6 +128,10 @@ const InputWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+`
+
+const StyledInput = styled(Input)`
+  background: var(--background);
 `
 
 const CharCounter = styled.span<{ $atLimit: boolean }>`
@@ -126,11 +143,11 @@ const CharCounter = styled.span<{ $atLimit: boolean }>`
 const FieldRow = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 `
 
 const FieldLabel = styled.label`
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--sea-ink);
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.65);
 `

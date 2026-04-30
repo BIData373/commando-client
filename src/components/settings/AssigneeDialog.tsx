@@ -189,37 +189,41 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
     )
 }
 
-const StyledDialogDescription = styled(DialogDescription)`
-  direction: rtl;
-  text-align: start;
-  font-size: clamp(13px, 1.6vw, 18px);
-  color: var(--text-color);
-  line-height: 1.4;
-`
-
 const WideDialogContent = styled(DialogContent)`
-  max-width: 600px;
+  max-width: 700px;
   max-height: 70vh;
-  padding: 36px 48px;
+  padding: 26px 38px;
   text-align: end;
   justify-items: flex-start;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-`
+  z-index: 500;
+  `
 
 const DialogTitleLarge = styled(DialogTitle)`
   text-align: right;
-  font-size: 3rem;
-  font-weight: 600;
+  font-size: 38px;
+  font-weight: 500;
   line-height: 1.2;
   color: var(--sea-ink);
-  margin-block-end: 4px;
+  margin-block-end: 16px;
+  `
+
+const StyledDialogDescription = styled(DialogDescription)`
+    direction: rtl;
+    text-align: start;
+    font-size: 16px;
+    color: var(--text-color);
+    font-weight: 400;
+    line-height: 1.4;
+    margin-block-end: 24px;
 `
 
 const ScrollableContent = styled.div`
   display: flex;
   flex-direction: column;
+  padding: 10px;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -240,7 +244,7 @@ const FieldGroup = styled.div`
 `
 
 const FieldLabel = styled.span`
-  font-size: clamp(14px, 1.8vw, 20px);
+  font-size: 20px;
   font-weight: 400;
   color: var(--sea-ink);
   line-height: 1.4;
@@ -280,7 +284,7 @@ const GradientButton = styled.button`
   height: 40px;
   min-width: 80px;
   padding-inline: 15px;
-  border-radius: 8px;
+  border-radius: 6px;
   border: none;
   cursor: pointer;
   background: linear-gradient(153deg, #615fff 0%, #9810fa 100%);
@@ -304,7 +308,7 @@ const AddUserButton = styled.button<{ $enabled: boolean }>`
   width: 32px;
   height: 32px;
   flex-shrink: 0;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid var(--line);
   cursor: ${({ $enabled }) => ($enabled ? 'pointer' : 'default')};
   background: ${({ $enabled }) => ($enabled ? 'linear-gradient(135deg, #615FFF 0%, #9810FA 100%)' : 'var(--chip-bg)')};

@@ -2,11 +2,12 @@ import styled from '@emotion/styled'
 import { createFileRoute, Outlet, useNavigate, useRouterState } from '@tanstack/react-router'
 import { Tabs, TabsList, TabsTrigger } from '../../../components/ui/tabs'
 
+
 export const Route = createFileRoute('/workspace/$urlName/settings')({
   component: SettingsLayout,
   staticData: {
     header: {
-      title: 'הגדרות לשכה',
+      title: 'הגדרות סביבת המפקד',
       user: true,
       navigation: true,
       workspace: true,
@@ -14,9 +15,9 @@ export const Route = createFileRoute('/workspace/$urlName/settings')({
   },
 })
 
-type SettingsTabPath = 'general' | 'assignees' | 'permissions'
+export type SettingsTabPath = 'general' | 'assignees' | 'permissions'
 
-const SETTINGS_TABS: { label: string; path: SettingsTabPath }[] = [
+export const SETTINGS_TABS: { label: string; path: SettingsTabPath }[] = [
   { label: 'פרטי הסביבה', path: 'general' },
   { label: 'מקבלי הנחיות', path: 'assignees' },
   { label: 'הרשאות ניהול וצפיה', path: 'permissions' },
@@ -37,8 +38,6 @@ function SettingsLayout() {
     location.pathname.endsWith(t.path)
   )?.path ?? 'general') as SettingsTabPath
 
-  const activeTabLabel = SETTINGS_TABS.find((t) => t.path === activeTab)?.label ?? ''
-
   function handleTabChange(value: string) {
     const path = SETTINGS_ROUTES[value as SettingsTabPath]
     navigate({ to: path, params: { urlName } })
@@ -49,14 +48,13 @@ function SettingsLayout() {
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <FullWidthTabsList variant="line">
           {SETTINGS_TABS.map((tab) => (
-            <TabsTrigger key={tab.path} value={tab.path}>
+            <StyledTabsTrigger key={tab.path} value={tab.path}>
               {tab.label}
-            </TabsTrigger>
+            </StyledTabsTrigger>
           ))}
         </FullWidthTabsList>
       </Tabs>
       <ContentWrapper>
-        <SectionTitle>{activeTabLabel}</SectionTitle>
         <OutletContainer>
           <Outlet />
         </OutletContainer>
@@ -66,20 +64,34 @@ function SettingsLayout() {
 }
 
 const SettingsRoot = styled.div`
-  padding-block: 24px;
+  padding-block: 32px;
   display: flex;
   flex-direction: column;
   height: 100%;
   min-height: 0;
-  gap: 24px;
+  gap: 32px;
 `
 
 const FullWidthTabsList = styled(TabsList)`
-  width: 100%;
+  width: 380px;
   border-bottom: 1px solid var(--line);
-  width: 400px;
   align-self: flex-end;
   direction: rtl;
+`
+
+const StyledTabsTrigger = styled(TabsTrigger)`
+  color: var(--text-color-2);
+  font-weight: 400;
+  font-size: 16px;
+
+  &[data-state="active"] {
+    color: #1677ff;
+    font-weight: 500;
+  }
+  
+  &[data-state="active"]::after {
+    background-color: #1677ff;
+  }
 `
 
 const ContentWrapper = styled.div`
@@ -97,11 +109,4 @@ const OutletContainer = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-`
-
-const SectionTitle = styled.h2`
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--sea-ink);
-  margin: 0;
 `
