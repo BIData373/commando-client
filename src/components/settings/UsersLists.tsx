@@ -3,12 +3,12 @@ import { X } from 'lucide-react'
 import type { IUser } from '#/types'
 import { UserItem } from './UserDropdownItem'
 
-interface UserListsProps {
+interface UsersListsProps {
     users: IUser[]
     onRemove: (id: number) => void
 }
 
-export function UsersLists({ users, onRemove }: UserListsProps) {
+export function UsersLists({ users, onRemove }: UsersListsProps) {
     return (
         <UserListArea>
             {users.length > 0 && (

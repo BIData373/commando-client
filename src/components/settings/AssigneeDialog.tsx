@@ -110,8 +110,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
         setIconSearch('')
     }
 
-    useEffect(() => {
-        if (!open) return
+    function resetForm() {
         const savedAssignees = assignee ? users.filter(u => assignee.userIds.includes(u.id)) : []
         setLocalAssignees(savedAssignees)
         setSubmitError(null)
@@ -120,10 +119,19 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
             setIconSearch('')
             setSelectedIcon(null)
         }
+    }
+
+    function handleOpenChange(open: boolean) {
+        resetForm()
+        onOpenChange(open)
+    }
+
+    useEffect(() => {
+        resetForm()
     }, [open, assignee, users, form, form.reset])
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <WideDialogContent>
                 <ScrollableContent>
                     <DialogTitleLarge>{isUpdate ? 'עריכת אחראי' : 'יצירת אחראי'}</DialogTitleLarge>

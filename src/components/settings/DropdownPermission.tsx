@@ -3,6 +3,11 @@ import { ChevronDown } from 'lucide-react'
 import { UserRole } from '#/types'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 
+const roleNames: Record<UserRole, string> = {
+    [UserRole.ADMIN]: 'ניהול',
+    [UserRole.VIEWER]: 'צפייה'
+}
+
 interface SelectDropdownPermissionProps {
     value: UserRole
     ghost?: boolean
@@ -23,7 +28,7 @@ export function DropdownPermission({ value, ghost, disabled, onChange }: SelectD
     return (
         <DropdownMenu>
             <RoleTrigger $ghost={ghost} disabled={disabled}>
-                {value === UserRole.VIEWER ? 'צפייה' : 'ניהול'}
+                {roleNames[value]}
                 <ChevronDown size={16} />
             </RoleTrigger>
             <DropdownMenuContent>

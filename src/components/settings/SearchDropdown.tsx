@@ -119,14 +119,6 @@ const DropdownContent = styled(PopoverPrimitive.Content)`
   scrollbar-width: thin;
 `
 
-const FallbackImage = styled.img`
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  border-radius: 4px;
-  flex-shrink: 0;
-`
-
 const SelectedDisplay = styled.div`
   display: flex;
   align-items: center;
