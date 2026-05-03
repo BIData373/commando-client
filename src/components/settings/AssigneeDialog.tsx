@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { useForm } from '@tanstack/react-form'
 import { UserPlus } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useCreateAssignee, useUpdateAssignee } from '#/hooks/useAssignees'
 import type { IMesibaIcon } from '#/hooks/useMesiba'
 import { useUsers } from '#/hooks/useUsers'
@@ -110,7 +110,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
         setIconSearch('')
     }
 
-    function resetForm() {
+    const resetForm = useCallback(() => {
         const savedAssignees = assignee ? users.filter(u => assignee.userIds.includes(u.id)) : []
         setLocalAssignees(savedAssignees)
         setSubmitError(null)
@@ -119,7 +119,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
             setIconSearch('')
             setSelectedIcon(null)
         }
-    }
+    }, [assignee, users, form.reset])
 
     function handleOpenChange(open: boolean) {
         resetForm()
@@ -128,7 +128,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
 
     useEffect(() => {
         resetForm()
-    }, [open, assignee, users, form, form.reset])
+    }, [resetForm])
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>

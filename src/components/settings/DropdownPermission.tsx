@@ -17,12 +17,8 @@ interface SelectDropdownPermissionProps {
 
 export function DropdownPermission({ value, ghost, disabled, onChange }: SelectDropdownPermissionProps) {
 
-    function onSelectViewer() {
-        onChange?.(UserRole.VIEWER)
-    }
-
-    function onSelectAdmin() {
-        onChange?.(UserRole.ADMIN)
+    function onSelectPermission(value: string) {
+        onChange?.(value as UserRole)
     }
 
     return (
@@ -32,10 +28,11 @@ export function DropdownPermission({ value, ghost, disabled, onChange }: SelectD
                 <ChevronDown size={16} />
             </RoleTrigger>
             <DropdownMenuContent>
-                <DropdownMenuItem onSelect={onSelectViewer}>צפייה</DropdownMenuItem>
-                <DropdownMenuItem onSelect={onSelectAdmin}>ניהול</DropdownMenuItem>
+                {Object.entries(roleNames).map(([key, value]) => (
+                    <DropdownMenuItem key={key} onSelect={() => onSelectPermission(key)}>{value}</DropdownMenuItem>
+                ))}
             </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu >
     )
 }
 
