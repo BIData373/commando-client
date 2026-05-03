@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import { createFileRoute, Outlet, useNavigate, useRouterState } from '@tanstack/react-router'
+import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
 import { Tabs, TabsList, TabsTrigger } from '../../../components/ui/tabs'
 
 
@@ -15,18 +16,11 @@ export const Route = createFileRoute('/workspace/$urlName/settings')({
   },
 })
 
-export type SettingsTabPath = 'general' | 'assignees' | 'permissions'
 
-export const SETTINGS_TABS: { label: string; path: SettingsTabPath }[] = [
-  { label: 'פרטי הסביבה', path: 'general' },
-  { label: 'מקבלי הנחיות', path: 'assignees' },
-  { label: 'הרשאות ניהול וצפיה', path: 'permissions' },
-]
-
-const SETTINGS_ROUTES = {
-  general: '/workspace/$urlName/settings/general',
-  assignees: '/workspace/$urlName/settings/assignees',
-  permissions: '/workspace/$urlName/settings/permissions',
+const SETTINGS_ROUTES: Record<SettingTabPath, string> = {
+  [SettingTabPath.GENERAL]: '/workspace/$urlName/settings/general',
+  [SettingTabPath.ASSIGNEES]: '/workspace/$urlName/settings/assignees',
+  [SettingTabPath.PERMISSIONS]: '/workspace/$urlName/settings/permissions',
 } as const
 
 function SettingsLayout() {
@@ -34,12 +28,12 @@ function SettingsLayout() {
   const { location } = useRouterState()
   const { urlName } = Route.useParams()
 
-  const activeTab = (SETTINGS_TABS.find((t) =>
-    location.pathname.endsWith(t.path)
-  )?.path ?? 'general') as SettingsTabPath
+  const activeTab = (Object.values(SettingTabPath).find((t) =>
+    location.pathname.endsWith(t)
+  ) ?? SettingTabPath.GENERAL)
 
   function handleTabChange(value: string) {
-    const path = SETTINGS_ROUTES[value as SettingsTabPath]
+    const path = SETTINGS_ROUTES[value as SettingTabPath]
     navigate({ to: path, params: { urlName } })
   }
 
@@ -47,9 +41,9 @@ function SettingsLayout() {
     <SettingsRoot>
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <FullWidthTabsList variant="line">
-          {SETTINGS_TABS.map((tab) => (
-            <StyledTabsTrigger key={tab.path} value={tab.path}>
-              {tab.label}
+          {Object.values(SettingTabPath).map((value) => (
+            <StyledTabsTrigger key={value} value={value}>
+              {SETTINGS_TABS[value]}
             </StyledTabsTrigger>
           ))}
         </FullWidthTabsList>

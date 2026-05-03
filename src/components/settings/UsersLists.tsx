@@ -8,7 +8,7 @@ interface UserListsProps {
     onRemove: (id: number) => void
 }
 
-export function UserLists({ users, onRemove }: UserListsProps) {
+export function UsersLists({ users, onRemove }: UserListsProps) {
     return (
         <UserListArea>
             {users.length > 0 && (

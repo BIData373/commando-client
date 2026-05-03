@@ -15,7 +15,10 @@ export function UserPermissionList({ users, onDelete, onRoleChange }: UserPermis
       {users.map((user) => (
         <UserRow key={user.id}>
           <UserInfo>
-            <UserName>{user.name} - {user.id}</UserName>
+            <UserHeader>
+              <UserName>{user.name}</UserName>
+              <UserPersonalId> - {user.id}</UserPersonalId>
+            </UserHeader>
             <UserSubtext>{user.email}</UserSubtext>
           </UserInfo>
           <DropdownPermission
@@ -23,7 +26,7 @@ export function UserPermissionList({ users, onDelete, onRoleChange }: UserPermis
             onChange={(role) => onRoleChange(user.id, role)}
           />
           <DeleteButton onClick={() => onDelete(user.id)}>
-            <Trash2 size={16} />
+            <StyledTrash2 size={22} />
           </DeleteButton>
         </UserRow>
       ))}
@@ -42,10 +45,15 @@ const UserListRoot = styled.div`
 const UserRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 0;
-  border-block-end: 1px solid var(--card-border);
+  gap: 8px;
+  padding: 16px 12px;
+  border-block-end: 1px solid rgba(0, 0, 0, 0.06);
   direction: rtl;
+`
+
+const UserHeader = styled.div`
+  display: flex;
+  gap: 4px;
 `
 
 const UserInfo = styled.div`
@@ -56,14 +64,18 @@ const UserInfo = styled.div`
 `
 
 const UserName = styled.span`
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--sea-ink);
 `
+const UserPersonalId = styled.span`
+  font-size: 16px;
+`
 
 const UserSubtext = styled.span`
-  font-size: 12px;
-  color: var(--sea-ink-soft);
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.65);
 `
 
 const DeleteButton = styled.button`
@@ -80,4 +92,8 @@ const DeleteButton = styled.button`
   &:hover {
     color: var(--sea-ink);
   }
+`
+
+const StyledTrash2 = styled(Trash2)`
+  color: rgba(0, 0, 0, 0.3);
 `

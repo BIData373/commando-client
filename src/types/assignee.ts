@@ -10,18 +10,21 @@ export interface MetaFields {
 
 export interface IAssignee extends MetaFields {
     name: string;
-    color: string;
+    color: string | null;
+    emblem: string | null;
     userIds: number[];
 }
 
 export interface ICreateAssignee {
     name: string;
-    color: string;
+    color?: string | null;
+    emblem?: string | null;
     userIds?: number[];
 }
 
 export interface IUpdateAssignee {
     name?: string;
-    color?: string;
+    color?: string | null;
+    emblem?: string | null;
     userIds?: number[];
 }

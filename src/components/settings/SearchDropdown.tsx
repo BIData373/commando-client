@@ -14,6 +14,7 @@ interface SearchDropdownProps<T extends { id: number | string }> {
   placeholder?: string
   isLoading?: boolean
   onClear?: () => void
+  selectedItem?: T
 }
 
 export function SearchDropdown<T extends { id: number | string }>({
@@ -25,6 +26,7 @@ export function SearchDropdown<T extends { id: number | string }>({
   placeholder,
   isLoading,
   onClear,
+  selectedItem,
 }: SearchDropdownProps<T>) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -59,17 +61,24 @@ export function SearchDropdown<T extends { id: number | string }>({
             <InputGroupAddon align="inline-start">
               {isLoading ? <Loader2 size={16} /> : <Search size={16} />}
             </InputGroupAddon>
-            <InputGroupInput
-              value={value}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              placeholder={placeholder}
-            />
-            {onClear && value.length > 0 && (
-              <InputGroupAddon align="inline-end">
+            {selectedItem ? (
+              <SelectedDisplay>
+                {renderItem(selectedItem)}
                 <X size={16} cursor="pointer" onMouseDown={handleClear} />
-              </InputGroupAddon>
-            )}
+              </SelectedDisplay>
+            ) : (<>
+              <InputGroupInput
+                value={value}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder={placeholder}
+              />
+              {onClear && value.length > 0 && (
+                <InputGroupAddon align="inline-end">
+                  <X size={16} cursor="pointer" onMouseDown={handleClear} />
+                </InputGroupAddon>
+              )}
+            </>)}
           </StyledInputGroup>
         </Root>
       </PopoverPrimitive.Trigger>
@@ -108,6 +117,23 @@ const DropdownContent = styled(PopoverPrimitive.Content)`
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
+`
+
+const FallbackImage = styled.img`
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 4px;
+  flex-shrink: 0;
+`
+
+const SelectedDisplay = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  flex: 1;
+  min-width: 0;
 `
 
 const DropdownItem = styled.div`

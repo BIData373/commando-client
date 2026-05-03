@@ -11,11 +11,11 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '#/components/ui/in
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/components/ui/tooltip'
 import { useAssignees } from '#/hooks/useAssignees'
 import { useUsers } from '#/hooks/useUsers'
-import { getActiveTabLabel } from '#/utils/settingsUtils'
+import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({ component: SettingsAssignees })
 
-const activeTab = getActiveTabLabel("assignees")
+const activeTab = SETTINGS_TABS[SettingTabPath.ASSIGNEES]
 
 function SettingsAssignees() {
   const [allowAssigneeStatusUpdate, setAllowAssigneeStatusUpdate] = useState(false)

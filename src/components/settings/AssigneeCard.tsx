@@ -47,7 +47,11 @@ export function AssigneeCard({ assignee, userNames }: IAssigneeCardProps) {
                 <StyledCardHeader>
                     <CardHeaderRow>
                         <Avatar>
-                            <ColoredFallback $color={assignee.color}>{getInitials(assignee.name)}</ColoredFallback>
+                            {assignee.emblem ? (
+                                <EmblemAvatarImg src={assignee.emblem} alt={assignee.name} />
+                            ) : (
+                                <ColoredFallback $color={assignee.color}>{getInitials(assignee.name)}</ColoredFallback>
+                            )}
                         </Avatar>
                         <CardWrapper>
                             <CardMeta>
@@ -112,11 +116,18 @@ const CardMeta = styled.div`
   gap: 4px;
 `
 
-const ColoredFallback = styled(AvatarFallback) <{ $color: string }>`
-  background: ${({ $color }) => $color};
+const ColoredFallback = styled(AvatarFallback) <{ $color: string | null }>`
+  background: ${({ $color }) => $color ?? 'var(--chip-bg)'};
   color: white;
   font-size: 11px;
   font-weight: 700;
+`
+
+const EmblemAvatarImg = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
 `
 
 const TagRow = styled.div`
