@@ -1,17 +1,19 @@
 import styled from '@emotion/styled'
 import { useForm } from '@tanstack/react-form'
 import { UserPlus } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useCreateAssignee, useUpdateAssignee } from '#/hooks/useAssignees'
+import type { IMesibaIcon } from '#/hooks/useMesiba'
 import { useUsers } from '#/hooks/useUsers'
 import type { IAssignee, IUser } from '#/types'
 import { concatName } from '#/utils/userUtils'
 import { Button } from '../ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'
-import { ColorPicker } from './ColorPicker'
+import { ColorPicker, PRESET_COLORS } from './ColorPicker'
 import { DropdownUsers } from './DropdownUsers'
-import { UserLists } from './UserLists'
+import { IconDropdown } from './IconDropdown'
+import { UsersLists } from './UsersLists'
 
 interface AssigneeDialogProps {
     open: boolean
@@ -26,30 +28,43 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
     const updateAssignee = useUpdateAssignee()
     const { data: users = [] } = useUsers()
 
-    const initialAssignees = assignee
-        ? users.filter(u => assignee.userIds.includes(u.id))
-        : []
     const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
-    const [localAssignees, setLocalAssignees] = useState<IUser[]>(initialAssignees)
+    const [localAssignees, setLocalAssignees] = useState<IUser[]>([])
+    const [submitError, setSubmitError] = useState<string | null>(null)
+
+    const [iconSearch, setIconSearch] = useState('')
+    const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
+
+    const randomColor = useMemo(() => {
+        if (!open) return
+        const randomColorIdx = Math.floor(Math.random() * (PRESET_COLORS.length - 1))
+        return PRESET_COLORS[randomColorIdx]
+    }, [open]) ?? ''
 
     const form = useForm({
         defaultValues: {
-            name: assignee ? assignee.name : '',
-            color: assignee?.color ?? undefined,
+            name: assignee?.name ?? '',
+            color: assignee?.color ?? randomColor,
+            emblem: assignee?.emblem ?? '',
             userSearch: '',
         },
         onSubmit: async ({ value }) => {
             const payload = {
                 name: value.name.trim(),
-                color: value.color as string,
+                color: value.color,
+                emblem: value.emblem || null,
                 userIds: localAssignees.map((u) => u.id),
             }
-            if (assignee) {
-                await updateAssignee.mutateAsync({ assigneeId: assignee.id, data: payload })
-            } else {
-                await createAssignee.mutateAsync(payload)
+            try {
+                if (assignee) {
+                    await updateAssignee.mutateAsync({ assigneeId: assignee.id, data: payload })
+                } else {
+                    await createAssignee.mutateAsync(payload)
+                }
+                onOpenChange(false)
+            } catch {
+                setSubmitError('אירעה שגיאה, נסה שנית')
             }
-            onOpenChange(false)
         },
     })
 
@@ -69,8 +84,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
 
     function handleSearchSelect(user: IUser | null) {
         if (user) {
-            const userConcatName = concatName(user)
-            form.setFieldValue('userSearch', userConcatName)
+            form.setFieldValue('userSearch', concatName(user))
         }
         setSelectedUser(user)
     }
@@ -84,16 +98,29 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
         form.setFieldValue('color', color)
     }
 
+    function handleIconSelect(icon: IMesibaIcon) {
+        form.setFieldValue('emblem', icon.iconName)
+        setSelectedIcon(icon)
+        setIconSearch('')
+    }
+
+    function handleIconClear() {
+        form.setFieldValue('emblem', '')
+        setSelectedIcon(null)
+        setIconSearch('')
+    }
+
     useEffect(() => {
         if (!open) return
         const savedAssignees = assignee ? users.filter(u => assignee.userIds.includes(u.id)) : []
         setLocalAssignees(savedAssignees)
-        form.setFieldValue('color', assignee?.color ?? undefined)
-        form.setFieldValue('name', assignee?.name ?? '')
-        form.setFieldValue('userSearch', '')
-        form.resetField('name')
-        form.resetField('color')
-    }, [open, assignee, users, form.setFieldValue, form.resetField])
+        setSubmitError(null)
+        form.reset()
+        if (!assignee?.emblem) {
+            setIconSearch('')
+            setSelectedIcon(null)
+        }
+    }, [open, assignee, users, form, form.reset])
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -126,25 +153,33 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
                             )}
                         </form.Field>
 
-                        <form.Field
-                            name="color"
-                            validators={{ onSubmit: ({ value }) => !value ? 'יש לבחור צבע לאחראי' : undefined }}
-                        >
-                            {(field) => (
-                                <FieldGroup>
-                                    <ColorRow>
-                                        <ColorLabel>בחר צבע לאחראי</ColorLabel>
-                                        <ColorPicker
-                                            selectedColor={field.state.value}
-                                            onChange={handleColorChange}
-                                        />
-                                    </ColorRow>
-                                    {field.state.meta.errors.length > 0 && (
-                                        <ErrorText>{field.state.meta.errors[0]}</ErrorText>
+                        <FieldGroup>
+                            <FieldLabel>סמל או צבע לאחראי</FieldLabel>
+                            <EitherOrRow>
+                                <form.Subscribe selector={(s) => s.values.color}>
+                                    {(color) => (
+                                        <ColorRow>
+                                            <ColorLabel>בחר צבע לאחראי</ColorLabel>
+                                            <ColorPicker
+                                                selectedColor={color}
+                                                onChange={handleColorChange}
+                                            />
+                                        </ColorRow>
                                     )}
-                                </FieldGroup>
-                            )}
-                        </form.Field>
+                                </form.Subscribe>
+                                <OrSeparator>או</OrSeparator>
+                                <EmblemSection>
+                                    <IconDropdown
+                                        value={iconSearch}
+                                        onChange={setIconSearch}
+                                        onSelect={handleIconSelect}
+                                        onClear={handleIconClear}
+                                        selectedItem={selectedIcon ?? undefined}
+                                    />
+                                </EmblemSection>
+                            </EitherOrRow>
+                            {submitError && <ErrorText>{submitError}</ErrorText>}
+                        </FieldGroup>
 
                         <form.Field name="userSearch">
                             {(field) => (
@@ -169,7 +204,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
                                             </AddUserButton>
                                         )}
                                     </SearchRow>
-                                    <UserLists users={localAssignees} onRemove={handleRemoveAssignee} />
+                                    <UsersLists users={localAssignees} onRemove={handleRemoveAssignee} />
                                 </FieldGroup>
                             )}
                         </form.Field>
@@ -185,7 +220,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
                     </GradientButton>
                 </DialogActions>
             </WideDialogContent>
-        </Dialog>
+        </Dialog >
     )
 }
 
@@ -199,7 +234,7 @@ const WideDialogContent = styled(DialogContent)`
   flex-direction: column;
   overflow: hidden;
   z-index: 500;
-  `
+`
 
 const DialogTitleLarge = styled(DialogTitle)`
   text-align: right;
@@ -208,16 +243,16 @@ const DialogTitleLarge = styled(DialogTitle)`
   line-height: 1.2;
   color: var(--sea-ink);
   margin-block-end: 16px;
-  `
+`
 
 const StyledDialogDescription = styled(DialogDescription)`
-    direction: rtl;
-    text-align: start;
-    font-size: 16px;
-    color: var(--text-color);
-    font-weight: 400;
-    line-height: 1.4;
-    margin-block-end: 24px;
+  direction: rtl;
+  text-align: start;
+  font-size: 16px;
+  color: var(--text-color);
+  font-weight: 400;
+  line-height: 1.4;
+  margin-block-end: 24px;
 `
 
 const ScrollableContent = styled.div`
@@ -250,18 +285,42 @@ const FieldLabel = styled.span`
   line-height: 1.4;
 `
 
+const EitherOrRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  direction: rtl;
+`
+
+const EmblemSection = styled.div`
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+`
+
+const OrSeparator = styled.span`
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+  line-height: 24px;
+`
+
 const ColorRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  justify-content: flex-start;
-  width: 100%;
+  flex-shrink: 0;
 `
 
 const ColorLabel = styled.span`
   font-size: 16px;
   color: var(--text-color);
   line-height: 22px;
+  white-space: nowrap;
 `
 
 const SearchRow = styled.div`

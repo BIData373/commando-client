@@ -1,18 +1,19 @@
 import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
+import { X } from 'lucide-react'
 import { useState } from 'react'
-import { DropdownIcons } from '#/components/settings/DropdownIcons'
+import { IconDropdown } from '#/components/settings/IconDropdown'
 import { SectionTitle } from '#/components/settings/SectionTitle'
 import { SelectCommand } from '#/components/settings/SelectCommand'
-import { getActiveTabLabel } from '#/utils/settingsUtils'
+import type { IMesibaIcon } from '#/hooks/useMesiba'
+import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
 import { Input } from '../../../../components/ui/input'
-import type { IMesibaIcon } from '../../../../hooks/useMesiba'
 import { useUpdateWorkspaceSettings, useWorkspaceSettings } from '../../../../hooks/useWorkspaceSettings'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/general')({ component: SettingsGeneral })
 
 const NAME_MAX_LENGTH = 50
-const activeTabLabel = getActiveTabLabel('general')
+const activeTabLabel = SETTINGS_TABS[SettingTabPath.GENERAL]
 
 interface FormState {
   name: string
@@ -30,6 +31,8 @@ function SettingsGeneral() {
     command: settings?.command ?? '',
     emblem: settings?.logoUrl ?? '',
   })
+  const [iconSearch, setIconSearch] = useState('')
+  const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
 
   const setField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     const next = { ...form, [key]: value }
@@ -43,6 +46,8 @@ function SettingsGeneral() {
 
   function handleIconSelect(icon: IMesibaIcon) {
     setField('emblem', icon.iconName)
+    setSelectedIcon(icon)
+    setIconSearch('')
   }
 
   function handleNameChange(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) {
@@ -53,8 +58,15 @@ function SettingsGeneral() {
     setField('command', value)
   }
 
-  function handleEmblemClear() {
+  function handleIconClear() {
     setField('emblem', '')
+    setSelectedIcon(null)
+    setIconSearch('')
+  }
+
+  function handleImageNotFound(e: React.SyntheticEvent<HTMLImageElement>) {
+    e.currentTarget.onerror = null
+    e.currentTarget.src = '/workspace-icon.png'
   }
 
   return (
@@ -87,11 +99,29 @@ function SettingsGeneral() {
 
           <FieldRow>
             <FieldLabel>סמל</FieldLabel>
-            <DropdownIcons
+            <IconDropdown
+              value={iconSearch}
+              onChange={setIconSearch}
+              onClear={handleIconClear}
               onSelect={handleIconSelect}
-              onClearEmblem={handleEmblemClear}
-              emblemSrc={form.emblem}
+              selectedItem={selectedIcon ?? undefined}
             />
+            <EmblemPreview>
+              {form.emblem ? (
+                <>
+                  <EmblemClearButton type="button" onClick={handleIconClear}>
+                    <X size={16} />
+                  </EmblemClearButton>
+                  <img
+                    src={form.emblem}
+                    alt="סמל לשכה"
+                    onError={handleImageNotFound}
+                  />
+                </>
+              ) : (
+                <EmblemPlaceholder>בחר סמל</EmblemPlaceholder>
+              )}
+            </EmblemPreview>
           </FieldRow>
         </FormRoot>
       </GeneralScrollArea>
@@ -150,4 +180,49 @@ const FieldLabel = styled.label`
   font-size: 16px;
   font-weight: 400;
   color: rgba(0, 0, 0, 0.65);
+`
+
+export const EmblemPreview = styled.div`
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px dashed var(--card-border);
+  border-radius: 6px;
+  padding: 16px;
+  height: 166px;
+
+  img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 50%;
+  }
+`
+
+export const EmblemPlaceholder = styled.span`
+  font-size: 13px;
+  color: var(--sea-ink-soft);
+`
+
+export const EmblemClearButton = styled.button`
+  position: absolute;
+  inset-block-start: 8px;
+  inset-inline-end: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--sea-ink-soft);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--link-bg-hover);
+    color: var(--sea-ink);
+  }
 `

@@ -1,6 +1,11 @@
-import { SETTINGS_TABS, type SettingsTabPath } from "#/routes/workspace/$urlName/settings";
+export enum SettingTabPath {
+    GENERAL = 'general',
+    ASSIGNEES = 'assignees',
+    PERMISSIONS = 'permissions'
+}
 
-
-export const getActiveTabLabel = (path: SettingsTabPath) => {
-    return SETTINGS_TABS.find((t) => t.path === path)?.label ?? ''
+export const SETTINGS_TABS: Record<SettingTabPath, string> = {
+    [SettingTabPath.GENERAL]: 'פרטי הסביבה',
+    [SettingTabPath.ASSIGNEES]: 'מקבלי הנחיות',
+    [SettingTabPath.PERMISSIONS]: 'הרשאות ניהול וצפיה',
 }

@@ -10,12 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { useAddUserToWorkspace, useDeleteUser, userKeys, useUpdateUser, useWorkspaceUsers } from '#/hooks/useUsers'
 import type { IUser } from '#/types'
 import { UserRole } from '#/types'
-import { getActiveTabLabel } from '#/utils/settingsUtils'
+import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/permissions')({ component: SettingsPermissions })
 
-
-const activeTabLabel = getActiveTabLabel('permissions')
+const activeTabLabel = SETTINGS_TABS[SettingTabPath.PERMISSIONS]
 
 enum PermissionsTab {
   ALL = 'all',
@@ -87,17 +86,17 @@ function SettingsPermissions() {
             onChange={handleSearchChange}
             onSelect={handleSearchSelect}
             onClear={handleSearchClear}
-            placeholder="חפש קבוצת אחראים"
+            placeholder='חפש שם/ תפקיד/ מספר אישי'
           />
-          {selectedUser &&
-            <AddUserSection onClick={handleUserAdd} />
-          }
+          {search.length > 0 && (
+            <AddUserSection onClick={handleUserAdd} disabled={!selectedUser} />
+          )}
         </SearchSection>
         <StyledTabs value={activeTab} onValueChange={handleTabChange}>
           <StyledTabsList variant="line">
-            <TabsTrigger value={PermissionsTab.ALL}>כולם</TabsTrigger>
-            <TabsTrigger value={PermissionsTab.ADMINS}>מנהלים</TabsTrigger>
-            <TabsTrigger value={PermissionsTab.VIEWERS}>צופים</TabsTrigger>
+            <StyledTabsTrigger value={PermissionsTab.ALL}>כולם</StyledTabsTrigger>
+            <StyledTabsTrigger value={PermissionsTab.ADMINS}>מנהלים</StyledTabsTrigger>
+            <StyledTabsTrigger value={PermissionsTab.VIEWERS}>צופים</StyledTabsTrigger>
           </StyledTabsList>
           {Object.values(PermissionsTab).map((tab, i) => (
             <StyledTabsContent key={i} value={tab}>
@@ -162,6 +161,8 @@ const Subtitle = styled.p`
 const StyledTabsList = styled(TabsList)`
   align-self: flex-end;
   direction: rtl;
+  border-bottom: 1px solid var(--line);
+  gap: 24px;
 `
 
 const StyledTabsContent = styled(TabsContent)`
@@ -170,6 +171,21 @@ const StyledTabsContent = styled(TabsContent)`
   overflow: hidden;
   display: flex;
   flex-direction: column;
+`
+
+const StyledTabsTrigger = styled(TabsTrigger)`
+  color: rgba(0, 0, 0, 0.88);
+  font-size: 14px;
+  font-weight: 400;
+
+  &[data-state="active"] {
+    color: #1677ff;
+    font-weight: 500;
+  }
+  
+  &[data-state="active"]::after {
+    background-color: #1677ff;
+  }
 `
 
 const SearchSection = styled.div`

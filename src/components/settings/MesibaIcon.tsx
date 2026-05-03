@@ -2,16 +2,16 @@ import styled from '@emotion/styled'
 import type { IMesibaIcon } from '#/hooks/useMesiba'
 
 interface MesibaIconProps {
-    icon: IMesibaIcon
+  icon: IMesibaIcon
 }
 
 export function MesibaIcon({ icon }: MesibaIconProps) {
-    return (
-        <IconItemRow>
-            <IconThumb src={icon.iconName} alt={icon.heb_name} />
-            <IconLabel>{icon.heb_name}</IconLabel>
-        </IconItemRow>
-    )
+  return (
+    <IconItemRow>
+      <IconLabel>{icon.heb_name}</IconLabel>
+      <IconThumb src={icon.iconName} alt={icon.heb_name} />
+    </IconItemRow>
+  )
 }
 
 const IconItemRow = styled.div`

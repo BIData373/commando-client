@@ -7,10 +7,11 @@ import { DropdownPermission } from './DropdownPermission';
 
 interface IAddUserWithPermissions {
     onClick(role: UserRole): void
+    disabled: boolean
 }
 
 
-export function AddUserSection({ onClick }: IAddUserWithPermissions) {
+export function AddUserSection({ onClick, disabled }: IAddUserWithPermissions) {
     const [role, setRole] = useState<UserRole>(UserRole.VIEWER);
 
     function handleAddUserClick() {
@@ -23,8 +24,9 @@ export function AddUserSection({ onClick }: IAddUserWithPermissions) {
                 ghost
                 value={role}
                 onChange={setRole}
+                disabled={disabled}
             />
-            <AddAvatarButton onClick={handleAddUserClick}>
+            <AddAvatarButton onClick={handleAddUserClick} $enabled={!disabled}>
                 <UserPlus size={16} />
             </AddAvatarButton>
         </AddUserRow>
@@ -40,16 +42,15 @@ const AddUserRow = styled.div`
 `
 
 
-const AddAvatarButton = styled.button`
+const AddAvatarButton = styled.button<{ $enabled: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   width: 32px;
   height: 32px;
-  border-radius: 20px;
-  background: var(--color-primary);
-  color: var(--color-primary-foreground);
-  border: none;
-  cursor: pointer;
+  border-radius: 8px;
+  color: ${({ $enabled }) => ($enabled ? 'var(--color-primary-foreground)' : 'var(--muted-foreground)')};
+  cursor: ${({ $enabled }) => ($enabled ? 'pointer' : 'default')};
+  background: ${({ $enabled }) => ($enabled ? 'linear-gradient(135deg, #615FFF 0%, #9810FA 100%)' : 'rgba(0, 0, 0, 0.04)')};
 `
