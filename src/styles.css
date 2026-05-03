@@ -5,7 +5,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
-html, body, #app {
+html,
+body,
+#app {
   width: 100%;
   height: 100%;
 }
@@ -25,6 +27,8 @@ html, body, #app {
 }
 
 :root {
+  --z-dropdown: 1000;
+
   --background: oklch(1.00 0 0);
   --foreground: oklch(0.14 0 0);
   --card: oklch(1.00 0 0);
@@ -56,13 +60,23 @@ html, body, #app {
   --sidebar-accent-foreground: oklch(0.20 0 0);
   --sidebar-border: oklch(0.92 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  ;
+
+  --text-color: rgba(0, 0, 0, 0.65);
+  --text-color-2: rgba(0, 0, 0, 0.88);
+  --card-background: rgba(0, 0, 0, 0.02);
+  --icon-background: rgba(0, 0, 0, 0.4);
+  --card-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+
+
+  --card-border: #d9d9d9;
+  --background-area: #fafafa;
 
   --font-sans: 'Rubik Variable', ui-sans-serif, sans-serif;
   --font-serif: 'Rubik Variable', ui-sans-serif, sans-serif;
   --font-mono: 'Rubik Variable', ui-sans-serif, sans-serif;
 
   --radius: 0.625rem;
+  --line: #F0F0F0;
 
   --shadow-2xs: 0 1px 3px 0px oklch(0.00 0 0 / 0.05);
   --shadow-xs: 0 1px 3px 0px oklch(0.00 0 0 / 0.05);
@@ -116,6 +130,12 @@ html, body, #app {
   --shadow-lg: 0 1px 3px 0px oklch(0.00 0 0 / 0.10), 0 4px 6px -1px oklch(0.00 0 0 / 0.10);
   --shadow-xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.10), 0 8px 10px -1px oklch(0.00 0 0 / 0.10);
   --shadow-2xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.25);
+
+  --background-area: #151414;
+  --text-color: rgba(234, 221, 221, 0.65);
+  --text-color-2: rgba(234, 221, 221, 0.65);
+  --icon-background: rgba(255, 218, 218, 0.4);
+  --card-shadow: 0 6px 16px 0 rgba(203, 200, 200, 0.08), 0 3px 6px -4px rgba(255, 255, 255, 0.185), 0 9px 28px 8px rgba(208, 199, 199, 0.05);
 }
 
 @theme inline {

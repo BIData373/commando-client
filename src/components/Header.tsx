@@ -1,7 +1,7 @@
-import type { HeaderConfig } from '#/router'
 import styled from '@emotion/styled'
-import { Link, useRouterState, type LinkComponentProps } from '@tanstack/react-router'
+import { Link, type LinkComponentProps, useRouterState } from '@tanstack/react-router'
 import { ChevronDown, User } from 'lucide-react'
+import type { HeaderConfig } from '#/router'
 import { useTitleBarActions } from '../providers/TitleBarProvider'
 import ThemeToggle from './ThemeToggle'
 import { Avatar, AvatarFallback } from './ui/avatar'
@@ -96,7 +96,7 @@ export default function Header() {
 }
 
 const HeaderContainer = styled.div`
-  padding: 20px 32px 28px 32px;
+  padding: 20px 32px 0 32px;
 `
 
 const HeaderRoot = styled.header`
@@ -181,10 +181,10 @@ const TitleBar = styled.div`
 `
 
 const PageTitle = styled.h1`
+  margin: 0;
   font-size: 38px;
   font-weight: 500;
-  line-height: 46px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--sea-ink);
 `
 
 const NavMenuLink = styled(NavigationMenuLink)`
