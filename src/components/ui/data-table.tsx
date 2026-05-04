@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import {
   flexRender,
   getCoreRowModel,
@@ -6,6 +7,7 @@ import {
   type Row,
   type RowSelectionState,
   type OnChangeFn,
+  type TableMeta,
 } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
@@ -18,6 +20,9 @@ interface DataTableProps<TData> {
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
   getRowId?: (row: TData) => string
   highlightedRowIds?: Set<string>
+  meta?: TableMeta<TData>
+  renderRowOverlay?: (row: Row<TData>) => React.ReactNode
+  renderRowExpansion?: (row: Row<TData>) => React.ReactNode
 }
 
 export function DataTable<TData>({
@@ -28,6 +33,9 @@ export function DataTable<TData>({
   onRowSelectionChange,
   getRowId,
   highlightedRowIds,
+  meta,
+  renderRowOverlay,
+  renderRowExpansion,
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -35,6 +43,7 @@ export function DataTable<TData>({
     getCoreRowModel: getCoreRowModel(),
     ...(rowSelection !== undefined && { state: { rowSelection }, onRowSelectionChange }),
     ...(getRowId && { getRowId }),
+    ...(meta && { meta }),
   })
 
   const allColumns = table.getAllColumns()
@@ -76,20 +85,35 @@ export function DataTable<TData>({
       </TableHeader>
       <TableBody>
         {table.getRowModel().rows.length ? (
-          table.getRowModel().rows.map((row) => (
-            <TableRow
-              key={row.id}
-              data-state={row.getIsSelected() ? 'selected' : undefined}
-              data-highlighted={highlightedRowIds?.has(row.id) ? '' : undefined}
-              onClick={onRowClick ? () => onRowClick(row) : undefined}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))
+          table.getRowModel().rows.map((row) => {
+            const expansionContent = renderRowExpansion?.(row)
+            return (
+              <Fragment key={row.id}>
+                <TableRow
+                  data-state={row.getIsSelected() ? 'selected' : undefined}
+                  data-highlighted={highlightedRowIds?.has(row.id) ? '' : undefined}
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                  {renderRowOverlay?.(row)}
+                </TableRow>
+                {expansionContent != null && (
+                  <tr data-expansion-row="">
+                    <td
+                      colSpan={columns.length}
+                      style={{ padding: 0, border: 'none', height: 'auto', background: '#f5f5f5' }}
+                    >
+                      {expansionContent}
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            )
+          })
         ) : (
           <TableRow>
             <TableCell colSpan={columns.length}>אין נתונים להצגה</TableCell>

@@ -1,4 +1,4 @@
-import type { DeadlineType } from '../components/Tasks/TaskTable'
+import type { DeadlineType } from '../components/shared/DeadlineTag'
 import type { DiscussionSource } from './Discussions'
 
 export interface FormState {
