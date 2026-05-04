@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import styled from '@emotion/styled'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import { X, ChevronDown, ChevronUp } from 'lucide-react'
-import FlagIcon from '../shared/FlagIcon'
+import ImportantFlagTooltip from '../shared/ImportantFlagTooltip'
 import DeadlineField from './DeadlineField'
 import AssigneeField from './AssigneeField'
 import SourceField from './SourceField'
@@ -10,13 +10,12 @@ import TopicField from './TopicField'
 import NotesField from './NotesField'
 import type { DiscussionSource } from './SourceField'
 import { Checkbox } from '../ui/checkbox'
-import { Tooltip, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
-import { Tooltip as TooltipPrimitive } from 'radix-ui'
 import { useTasks } from '../../providers/TasksProvider'
 import { MOCK_ASSIGNEES } from '../../data/Assignees'
 import { INITIAL_FORM } from '../../data/CreateTaskForm'
 import type { FormState } from '../../data/CreateTaskForm'
-import type { DeadlineType } from '../Tasks/TaskTable'
+import type { DeadlineType } from '../shared/DeadlineTag'
+import FlagIcon from '../shared/FlagIcon'
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -248,21 +247,8 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
                 {/* ─── Important Checkbox ──────────────────────────────────── */}
                 <ImportantRow>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <FlagIconWrapper>
-                          <FlagIcon />
-                        </FlagIconWrapper>
-                      </TooltipTrigger>
-                      <TooltipPrimitive.Portal>
-                        <ImportantTooltipContent side="left" sideOffset={8}>
-                          הנחיה חשובה תופיע עם סימון של דגל
-                          <FlagIcon />
-                        </ImportantTooltipContent>
-                      </TooltipPrimitive.Portal>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ImportantFlagTooltip side="left" />
+                  <FlagIcon/>
                   <CheckboxRow>
                     <CheckboxLabelText>הגדר כהנחיה חשובה</CheckboxLabelText>
                     <Checkbox
@@ -514,38 +500,6 @@ const CheckboxLabelText = styled.span`
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;
   cursor: pointer;
-`
-
-const FlagIconWrapper = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: rgba(0, 0, 0, 0.45);
-  padding: 0;
-
-  &:hover {
-    color: rgba(0, 0, 0, 0.88);
-  }
-`
-
-const ImportantTooltipContent = styled(TooltipPrimitive.Content)`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 12px;
-  background: white;
-  border-radius: 8px;
-  font-size: 14px;
-  line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
-  white-space: nowrap;
-  box-shadow:
-    0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px rgba(0, 0, 0, 0.12),
-    0px 9px 28px rgba(0, 0, 0, 0.05);
 `
 
 // ─── Divider ─────────────────────────────────────────────────────────────────

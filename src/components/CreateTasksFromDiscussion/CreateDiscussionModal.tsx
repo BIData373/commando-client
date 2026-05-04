@@ -1,12 +1,18 @@
 import { useState } from 'react'
 import styled from '@emotion/styled'
 import { Dialog as DialogPrimitive } from 'radix-ui'
-import { X } from 'lucide-react'
+import { Check, Paperclip, X } from 'lucide-react'
 import SourceField from '../CreateTasks/SourceField'
 import TopicField from '../CreateTasks/TopicField'
 import FileUploadField from './FileUploadField'
+import CreateTasksTable from './CreateTasksTable'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
+
+enum Steps {
+  Discussion = 1,
+  Tasks = 2,
+}
 
 interface DiscussionFormState {
   name: string
@@ -32,6 +38,7 @@ const INITIAL_FORM: DiscussionFormState = {
 
 function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
   const [form, setForm] = useState<DiscussionFormState>(INITIAL_FORM)
+  const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
   const setField = <K extends keyof DiscussionFormState>(key: K, value: DiscussionFormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }))
 
@@ -75,7 +82,16 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
   }
 
   function handleContinue() {
-    // Part 2 navigation will be added later
+    setCurrentStep(Steps.Tasks)
+  }
+
+  function handleBack() {
+    setCurrentStep(Steps.Discussion)
+  }
+
+  function handleSave() {
+    // TODO: persist directives
+    onClose()
   }
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -84,7 +100,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
     <DialogPrimitive.Root open onOpenChange={handleOpenChange}>
       <DialogPrimitive.Portal>
         <Overlay />
-        <ModalCard>
+        <ModalCard $step={currentStep}>
           <ModalCloseButton onClick={onClose}>
             <X size={16} />
           </ModalCloseButton>
@@ -96,49 +112,73 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
               <StepsRow>
                 <StepItem>
                   <StepLabel $active>פרטי הדיון</StepLabel>
-                  <StepCircle $active>1</StepCircle>
+                  {currentStep === Steps.Tasks ? (
+                    <StepCircleCompleted>
+                      <Check size={12} />
+                    </StepCircleCompleted>
+                  ) : (
+                    <StepCircleActive>1</StepCircleActive>
+                  )}
                 </StepItem>
-                <StepTail />
+
+                <StepTail $completed={currentStep === Steps.Tasks} />
+
                 <StepItem>
-                  <StepLabel $active={false}>יצירת הנחיות</StepLabel>
-                  <StepCircle $active={false}>2</StepCircle>
+                  <StepLabel $active={currentStep === Steps.Tasks}>יצירת הנחיות</StepLabel>
+                  <StepCircle $active={currentStep === Steps.Tasks}>2</StepCircle>
                 </StepItem>
               </StepsRow>
+
+              {currentStep === Steps.Tasks && (
+                <DiscussionInfoRow>
+                  <DiscussionInfoText>
+                    <DiscussionDate>{form.sourceDate}</DiscussionDate>
+                    <DiscussionName>{form.name}</DiscussionName>
+                  </DiscussionInfoText>
+                  {form.file && <Paperclip size={20} />}
+                </DiscussionInfoRow>
+              )}
             </HeaderSection>
 
-            <FormContainer>
-              {/* Discussion Name + Date Row */}
-              <SourceField
-                source={form.name}
-                sourceDate={form.sourceDate}
-                linkedSource={null}
-                onSourceSelect={handleSourceSelect}
-                onDateSelect={handleDateSelect}
-                label="שם הדיון"
-                uniqueNames
-              />
+            {currentStep === Steps.Discussion ? (
+              <>
+                <FormContainer>
+                  <SourceField
+                    source={form.name}
+                    sourceDate={form.sourceDate}
+                    linkedSource={null}
+                    onSourceSelect={handleSourceSelect}
+                    onDateSelect={handleDateSelect}
+                    label="שם הדיון"
+                    uniqueNames
+                  />
 
-              {/* Topic Field */}
-              <TopicField
-                topics={form.topics}
-                lockedTopics={[]}
-                onTopicSelect={handleTopicSelect}
-                onTopicRemove={handleTopicRemove}
-              />
+                  <TopicField
+                    topics={form.topics}
+                    lockedTopics={[]}
+                    onTopicSelect={handleTopicSelect}
+                    onTopicRemove={handleTopicRemove}
+                  />
 
-              {/* File Upload */}
-              <FileUploadField
-                file={form.file}
-                onFileChange={handleFileChange}
+                  <FileUploadField
+                    file={form.file}
+                    onFileChange={handleFileChange}
+                  />
+                </FormContainer>
+
+                <ModalFooter>
+                  <ContinueButton onClick={handleContinue} disabled={!form.name.trim()}>
+                    המשך
+                  </ContinueButton>
+                </ModalFooter>
+              </>
+            ) : (
+              <CreateTasksTable
+                onSave={handleSave}
+                onBack={handleBack}
               />
-            </FormContainer>
+            )}
           </ModalBody>
-
-          <ModalFooter>
-            <ContinueButton onClick={handleContinue} disabled={!form.name.trim()}>
-              המשך
-            </ContinueButton>
-          </ModalFooter>
         </ModalCard>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
@@ -157,12 +197,13 @@ const Overlay = styled(DialogPrimitive.Overlay)`
   z-index: var(--z-dropdown);
 `
 
-const ModalCard = styled(DialogPrimitive.Content)`
+const ModalCard = styled(DialogPrimitive.Content)<{ $step: Steps }>`
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 753px;
+  width: ${({ $step }) => ($step === Steps.Discussion ? '753px' : '1550px')};
+  transition: width 300ms ease;
   height: 796px;
   overflow: hidden;
   background: white;
@@ -175,8 +216,8 @@ const ModalCard = styled(DialogPrimitive.Content)`
   z-index: var(--z-dropdown);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   padding-block: 36px;
+  padding-inline: 48px;
   outline: none;
 `
 
@@ -207,7 +248,6 @@ const ModalBody = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding-inline: 48px;
   min-height: 0;
   flex: 1;
 `
@@ -216,7 +256,7 @@ const HeaderSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 24px;
+  gap: 12px;
 `
 
 const ModalTitle = styled.h1`
@@ -228,52 +268,35 @@ const ModalTitle = styled.h1`
   text-align: end;
 `
 
-// ─── Steps ──────────────────────────────────────────────────────────────────
+// ─── Discussion Info (Step 2 header) ────────────────────────────────────────
 
-const StepsRow = styled.div`
-  direction: rtl;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  height: 24px;
-`
-
-const StepItem = styled.div`
-  direction: ltr; 
+const DiscussionInfoRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-shrink: 0;
-`
-
-const StepCircle = styled.div<{ $active: boolean }>`
-  width: 24px;
-  height: 24px;
-  border-radius: 32px;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  background: ${({ $active }) => ($active ? '#6866ff' : 'rgba(0, 0, 0, 0.06)')};
-  color: ${({ $active }) => ($active ? 'white' : 'rgba(0, 0, 0, 0.45)')};
-  flex-shrink: 0;
+  color: rgba(0, 0, 0, 0.88);
 `
 
-const StepLabel = styled.span<{ $active: boolean }>`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  color: ${({ $active }) => ($active ? 'rgba(0, 0, 0, 0.88)' : 'rgba(0, 0, 0, 0.45)')};
+const DiscussionInfoText = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
   white-space: nowrap;
 `
 
-const StepTail = styled.div`
-  flex: 1;
-  height: 1px;
-  border-block-start: 1px dashed #d9d9d9;
+const DiscussionName = styled.span`
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  color: black;
+`
+
+const DiscussionDate = styled.span`
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: black;
 `
 
 // ─── Form Layout ────────────────────────────────────────────────────────────
@@ -283,6 +306,7 @@ const FormContainer = styled.div`
   flex-direction: column;
   gap: 24px;
   align-items: flex-end;
+  flex: 1;
 `
 
 // ─── Footer ─────────────────────────────────────────────────────────────────
@@ -291,7 +315,6 @@ const ModalFooter = styled.div`
   direction: ltr;
   display: flex;
   align-items: center;
-  padding-inline: 48px;
   flex-shrink: 0;
 `
 
@@ -329,4 +352,69 @@ const ContinueButton = styled.button`
   &:hover:not(:disabled) {
     opacity: 0.9;
   }
+`
+
+// ─── Steps Indicator ────────────────────────────────────────────────────────
+
+const StepsRow = styled.div`
+  direction: rtl;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 657px;
+  height: 24px;
+  align-self: flex-end;
+`
+
+const StepItem = styled.div`
+  direction: ltr;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+`
+
+const stepCircleBase = `
+  width: 24px;
+  height: 24px;
+  border-radius: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  flex-shrink: 0;
+`
+
+const StepCircleActive = styled.div`
+  ${stepCircleBase}
+  background: #6866ff;
+  color: white;
+`
+
+const StepCircleCompleted = styled.div`
+  ${stepCircleBase}
+  background: #e2e2ff;
+  color: #6866ff;
+`
+
+const StepCircle = styled.div<{ $active: boolean }>`
+  ${stepCircleBase}
+  background: ${({ $active }) => ($active ? '#6866ff' : 'rgba(0, 0, 0, 0.06)')};
+  color: ${({ $active }) => ($active ? 'white' : 'rgba(0, 0, 0, 0.45)')};
+`
+
+const StepLabel = styled.span<{ $active: boolean }>`
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: ${({ $active }) => ($active ? 'rgba(0, 0, 0, 0.88)' : 'rgba(0, 0, 0, 0.45)')};
+  white-space: nowrap;
+`
+
+const StepTail = styled.div<{ $completed: boolean }>`
+  flex: 1;
+  height: 1px;
+  border-block-start: 1px ${({ $completed }) => ($completed ? 'solid #6866ff' : 'dashed #d9d9d9')};
 `
