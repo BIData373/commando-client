@@ -88,7 +88,13 @@ const Section = styled.div`
   gap: 24px;
   width: 450px;
   flex-shrink: 0;
-  align-self: flex-start;
+  align-self: stretch;
+  justify-self: end;
+
+  @media (max-width: 1100px) {
+    grid-column: 2;
+    grid-row: 2;
+  }
 `
 
 const SectionTitle = styled.h2`
