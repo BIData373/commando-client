@@ -1,6 +1,11 @@
 import styled from '@emotion/styled'
+import { AlertTriangle } from 'lucide-react'
 import { useState } from 'react'
 import searchInstruction from '../../assets/icons/searchInstruction.svg'
+import { INITIAL_TASKS, type Task } from '../../data/Tasks'
+import FlagIcon from '../shared/FlagIcon'
+import { StatusTag } from '../shared/StatusTag'
+import { ResponsibleCell } from '../Tasks/ResponsibleCell'
 import { EmptyCardState } from './EmptyCardState'
 import { ViewMoreInstructions } from './ViewMoreInstructions'
 
@@ -43,6 +48,21 @@ const EMPTY_MESSAGES: Record<FocusedTab, EmptyMessage> = {
   },
 }
 
+function formatDeadlineDate(date: Date): string {
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const year = date.getFullYear().toString().slice(-2)
+  return `${day}/${month}/${year}`
+}
+
+function getFilteredTasks(tab: FocusedTab): Task[] {
+  switch (tab) {
+    case 'important': return INITIAL_TASKS
+    case 'immediate': return INITIAL_TASKS.filter((t) => t.deadlineType === 'immediate')
+    case 'deviation': return INITIAL_TASKS.filter((t) => t.isOverdue)
+  }
+}
+
 export default function FocusedInstructions({ urlName }: IFocusedInstruction) {
   const [activeTab, setActiveTab] = useState<FocusedTab>('important')
 
@@ -51,6 +71,7 @@ export default function FocusedInstructions({ urlName }: IFocusedInstruction) {
   }
 
   const emptyMsg = EMPTY_MESSAGES[activeTab]
+  const filteredTasks = getFilteredTasks(activeTab)
 
   return (
     <Section>
@@ -74,12 +95,49 @@ export default function FocusedInstructions({ urlName }: IFocusedInstruction) {
             </TabItem>
           ))}
         </TabsHeader>
-        <ContentPanel>
-          <EmptyCardState
-            imgSrc={searchInstruction}
-            title={emptyMsg.title}
-            description={emptyMsg.description}
-          />
+        <ContentPanel $hasContent={filteredTasks.length > 0}>
+          {filteredTasks.length === 0 ? (
+            <EmptyCardState
+              imgSrc={searchInstruction}
+              title={emptyMsg.title}
+              description={emptyMsg.description}
+            />
+          ) : (
+            <TaskList>
+              {filteredTasks.map((task) => (
+                <TaskRow key={task.id}>
+                  <TitleCellWrapper>
+                    {task.flagged && <FlagIcon />}
+                    <TitleText>
+                      {task.title}
+                      {task.details ? ` - ${task.details}` : ''}
+                    </TitleText>
+                  </TitleCellWrapper>
+                  <FixedCell $width={100}>
+                    <StatusTag status={task.status} />
+                  </FixedCell>
+                  <FixedCell $width={148}>
+                    <ResponsibleCell
+                      responsible={task.responsible}
+                      relatedDirectives={task.relatedDirectives}
+                    />
+                  </FixedCell>
+                  <FixedCell $width={160}>
+                    {task.isOverdue && <AlertTriangle size={18} color="#FA8C16" />}
+                    {task.deadlineType !== 'immediate' && task.dueDate && (
+                      <DateText>{formatDeadlineDate(task.dueDate)}</DateText>
+                    )}
+                    {task.deadlineType === 'ongoing' && (
+                      <DeadlineTag $type="ongoing">שוטף</DeadlineTag>
+                    )}
+                    {task.deadlineType === 'immediate' && (
+                      <DeadlineTag $type="immediate">מידי</DeadlineTag>
+                    )}
+                  </FixedCell>
+                </TaskRow>
+              ))}
+            </TaskList>
+          )}
         </ContentPanel>
       </TabsWrapper>
       <ViewMoreInstructions urlName={urlName} />
@@ -180,16 +238,114 @@ const TabWeek = styled.div<{ $active: boolean }>`
   color: ${({ $active }) => $active ? 'var(--purple-start)' : 'var(--foreground)'};
 `
 
-const ContentPanel = styled.div`
+const ContentPanel = styled.div<{ $hasContent: boolean }>`
   flex: 1;
   background: var(--background);
   border: 1px solid var(--border);
   border-radius: 8px;
   border-start-start-radius: 0;
-  min-height: 280px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
   z-index: 1;
+  display: flex;
+  ${({ $hasContent }) => $hasContent
+    ? `
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      overflow: hidden;
+    `
+    : `
+      align-items: center;
+      justify-content: center;
+    `
+  }
+`
+
+const TaskList = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`
+
+const TaskRow = styled.div`
+  display: flex;
+  align-items: center;
+  height: 44px;
+  background: rgba(0, 0, 0, 0.02);
+
+  &:nth-of-type(even) {
+    background: rgba(0, 0, 0, 0);
+  }
+`
+
+const TitleCellWrapper = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+  padding: 10px 12px;
+  background: var(--background);
+  direction: rtl;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+`
+
+const TitleText = styled.span`
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--sea-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: start;
+`
+
+const FixedCell = styled.div<{ $width: number }>`
+  width: ${({ $width }) => $width}px;
+  flex-shrink: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-inline: 12px;
+  background: var(--background);
+  direction: rtl;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+`
+
+const DateText = styled.span`
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: rgba(0, 0, 0, 0.65);
+  white-space: nowrap;
+`
+
+const DeadlineTag = styled.span<{ $type: 'ongoing' | 'immediate' }>`
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 20px;
+  white-space: nowrap;
+  border-width: 1px;
+  border-style: solid;
+  ${({ $type }) => $type === 'ongoing'
+    ? `
+      background: #e6f4ff;
+      color: #1677ff;
+      border-color: #91caff;
+    `
+    : `
+      background: #fff1f0;
+      color: #f5222d;
+      border-color: #ffa39e;
+    `
+  }
 `
