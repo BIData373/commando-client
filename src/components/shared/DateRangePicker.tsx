@@ -5,8 +5,8 @@ import { useState } from 'react'
 import type { DateRange } from 'react-day-picker'
 import { he as heDayPicker } from 'react-day-picker/locale'
 import { RangeContextProvider } from '#/providers/RangeProvider'
+import { WeekNumberCell } from '../Dashboard/WeekCellNumber'
 import { Calendar } from '../ui/calendar'
-import { WeekNumberCell } from './WeekCellNumber'
 
 export interface DateRangePickerSlotProps {
   range: DateRange | undefined

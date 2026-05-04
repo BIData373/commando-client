@@ -1,21 +1,21 @@
 import styled from '@emotion/styled'
-import type { DateRangePickerSlotProps } from '../DateRangePicker'
+import type { DateRangePickerSlotProps } from '../../shared/DateRangePicker'
 
 export function DatePickerFooter({ onRangeChange, onClose }: DateRangePickerSlotProps) {
-    function handleClear() {
-        onRangeChange(undefined)
-    }
+  function handleClear() {
+    onRangeChange(undefined)
+  }
 
-    function handleConfirm() {
-        onClose()
-    }
+  function handleConfirm() {
+    onClose()
+  }
 
-    return (
-        <PopupFooter>
-            <ClearButton onClick={handleClear}>נקה בחירה</ClearButton>
-            <ConfirmButton onClick={handleConfirm}>אישור</ConfirmButton>
-        </PopupFooter>
-    )
+  return (
+    <PopupFooter>
+      <ClearButton onClick={handleClear}>נקה בחירה</ClearButton>
+      <ConfirmButton onClick={handleConfirm}>אישור</ConfirmButton>
+    </PopupFooter>
+  )
 }
 
 const ClearButton = styled.button`

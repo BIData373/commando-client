@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import DateRangePicker from '../DateRangePicker'
+import DateRangePicker from '../../shared/DateRangePicker'
 import { DatePickerFooter } from './DatePickerFooter'
 import { DATE_TYPES, DatePickerHeader } from './DatePickerHeader'
 import { DatePickerTriggerButton } from './DatePickerTriggerButton'
