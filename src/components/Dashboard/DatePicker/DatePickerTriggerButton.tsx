@@ -14,11 +14,11 @@ function DateRangeLabel({ label, range }: TriggerButtonProps) {
     return (
         <>
             {label && range?.from && range.to ? (
-                <span>
+                <RangeLabel>
                     {label}:{" "}{format(range.from, "dd")}-{format(range.to, "dd/MM/y")}
-                </span>
+                </RangeLabel>
             ) : (
-                <span>טווח תאריכים</span>
+                <RangeLabel>טווח תאריכים</RangeLabel>
             )}
         </>
     )
@@ -36,17 +36,21 @@ export function DatePickerTriggerButton({ label, range }: TriggerButtonProps) {
     )
 }
 
+const RangeLabel = styled.span`
+    font-size: 16px;
+`
+
 const TriggerButton = styled.button`
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8px;
   height: 32px;
-  padding: 0 15px;
+  padding: 18px 15px;
   border: 1px solid var(--purple-start);
   color:var(--purple-start);
   border-radius: 8px;
   background: var(--background);
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 400;
   cursor: pointer;
   white-space: nowrap;

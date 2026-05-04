@@ -28,9 +28,9 @@ interface IFocusedInstruction {
 }
 
 const TABS: TabConfig[] = [
-  { id: 'deviation', label: 'חריגות מתג"ב', count: 0, weekDelta: 0 },
-  { id: 'immediate', label: 'הנחיות לביצוע מידיות', count: 0, weekDelta: 0 },
   { id: 'important', label: 'הנחיות חשובות', count: 0, weekDelta: 0 },
+  { id: 'immediate', label: 'הנחיות לביצוע מידיות', count: 0, weekDelta: 0 },
+  { id: 'deviation', label: 'חריגות מתג"ב', count: 0, weekDelta: 0 },
 ]
 
 const EMPTY_MESSAGES: Record<FocusedTab, EmptyMessage> = {
@@ -87,10 +87,6 @@ export default function FocusedInstructions({ urlName }: IFocusedInstruction) {
               <TabTitle $active={tab.id === activeTab}>{tab.label}</TabTitle>
               <TabBottom>
                 <TabCount $active={tab.id === activeTab}>{tab.count}</TabCount>
-                <TabWeek $active={tab.id === activeTab}>
-                  <span>השבוע</span>
-                  <span>+{tab.weekDelta}</span>
-                </TabWeek>
               </TabBottom>
             </TabItem>
           ))}
@@ -150,12 +146,12 @@ const Section = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 24px;
 `
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 24px;
+  font-size: 30px;
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
@@ -172,13 +168,14 @@ const TabsHeader = styled.div`
   gap: 2px;
   position: relative;
   z-index: 2;
-  max-width: 700px;
+  max-width: 840px;
 `
 
 const TabItem = styled.button<{ $active: boolean }>`
   word-wrap: break-word;
   min-width: 0;
   padding: 8px 16px;
+  width: 280px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -195,7 +192,7 @@ const TabItem = styled.button<{ $active: boolean }>`
 `
 
 const TabTitle = styled.span<{ $active: boolean }>`
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 400;
   ${({ $active }) => $active
     ? `
@@ -216,7 +213,7 @@ const TabBottom = styled.div`
 `
 
 const TabCount = styled.span<{ $active: boolean }>`
-  font-size: 28px;
+  font-size: 38px;
   font-weight: 400;
   line-height: 1.2;
   ${({ $active }) => $active
@@ -230,14 +227,6 @@ const TabCount = styled.span<{ $active: boolean }>`
   }
 `
 
-const TabWeek = styled.div<{ $active: boolean }>`
-  display: flex;
-  gap: 2px;
-  align-items: center;
-  font-size: 10.5px;
-  color: ${({ $active }) => $active ? 'var(--purple-start)' : 'var(--foreground)'};
-`
-
 const ContentPanel = styled.div<{ $hasContent: boolean }>`
   flex: 1;
   background: var(--background);
@@ -247,6 +236,8 @@ const ContentPanel = styled.div<{ $hasContent: boolean }>`
   position: relative;
   z-index: 1;
   display: flex;
+  min-height: 310px;
+  max-height: 310px;
   ${({ $hasContent }) => $hasContent
     ? `
       flex-direction: column;
@@ -288,7 +279,7 @@ const TitleCellWrapper = styled.div`
   padding: 10px 12px;
   background: var(--background);
   direction: rtl;
-  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  border: 0.5px solid rgba(0, 0, 0, 0.01);
 `
 
 const TitleText = styled.span`
@@ -310,12 +301,12 @@ const FixedCell = styled.div<{ $width: number }>`
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 8px;
   padding-inline: 12px;
   background: var(--background);
   direction: rtl;
-  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  border: 0.5px solid rgba(0, 0, 0, 0.01);
 `
 
 const DateText = styled.span`

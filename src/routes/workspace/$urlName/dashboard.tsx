@@ -70,13 +70,13 @@ const ContentArea = styled.div`
   }
 
   & > *:nth-of-type(2) {
-    margin-block-start: 46px;
+    margin-block-start: 72px;
   }
 `
 
 
 const SectionsRow = styled.div`
   display: flex;
-  gap: 54px;
+  gap: 72px;
   align-items: flex-start;
 `

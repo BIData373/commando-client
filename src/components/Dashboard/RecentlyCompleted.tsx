@@ -29,12 +29,12 @@ const Section = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 24px;
 `
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 24px;
+  font-size: 30px;
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
