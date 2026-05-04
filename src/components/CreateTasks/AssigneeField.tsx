@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import { ChevronDown } from 'lucide-react'
-// import { MOCK_ASSIGNEES } from '../../data/Assignees'
 import AssigneeRowList from '../shared/AssigneeRow'
 import AssigneePicker from '../shared/AssigneePicker'
 
@@ -23,56 +22,6 @@ function AssigneeField({
   onRemove,
   onDetailChange,
 }: AssigneeFieldProps) {
-  // const [isAssigneeOpen, setIsAssigneeOpen] = useState(false)
-  // // const [isCreateAssigneeOpen, setIsCreateAssigneeOpen] = useState(false)
-  // const [search, setSearch] = useState('')
-
-  // const assigneesList = Object.values(MOCK_ASSIGNEES)
-
-  // const filteredAssignees = assigneesList.filter((assignee) => {
-  //   if (!search.trim()) return true
-  //   return (
-  //     assignee.name.includes(search) ||
-  //     assignee.role.includes(search)
-  //   )
-  // })
-
-  // function handleOpenCreateAssignee() {
-  //   setIsAssigneeOpen(false)
-  //   // setIsCreateAssigneeOpen(true)
-  // }
-
-  // function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-  //   setSearch(e.target.value)
-  //   if (!isAssigneeOpen) setIsAssigneeOpen(true)
-  // }
-
-  // function handleOpenChange(open: boolean) {
-  //   setIsAssigneeOpen(open)
-  //   if (!open) setSearch('')
-  // }
-
-  // function handlePreventAutoFocus(e: Event) {
-  //   e.preventDefault()
-  // }
-
-  // function handleStopWheel(e: React.WheelEvent) {
-  //   e.stopPropagation()
-  // }
-
-  // function handleAssigneeClick(id: number) {
-  //   onToggle(id)
-  //   if (!compact && selectedAssignees.length === 0) {
-  //     setIsAssigneeOpen(false)
-  //     setSearch('')
-  //   }
-  // }
-
-  // const selectedAssignee = compact && selectedAssignees.length === 1
-  //   ? MOCK_ASSIGNEES[selectedAssignees[0]]
-  //   : null
-
-  // const hasMultipleSelected = compact && selectedAssignees.length > 1
 
   return (
     <>
