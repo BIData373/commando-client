@@ -181,6 +181,7 @@ const TitleBar = styled.div`
 `
 
 const PageTitle = styled.h1`
+  flex: 1;
   font-size: 38px;
   font-weight: 500;
   line-height: 46px;

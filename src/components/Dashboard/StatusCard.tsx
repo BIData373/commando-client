@@ -35,28 +35,26 @@ export default function StatusCard({ done = 0, inProgress = 0, pending = 0 }: St
       <SectionTitle>סטטוס הנחיות</SectionTitle>
       <Card>
         <ChartWrapper>
-          <PieChart width={250} height={250}>
+          <StyledPieChart width={250} height={300}>
             <Pie
+              style={{ outline: 'none' }}
               data={chartData}
-              cx={150}
-              cy={88}
-              innerRadius={65}
-              outerRadius={92}
+              innerRadius={88}
+              outerRadius={130}
               dataKey="value"
-              startAngle={90}
-              endAngle={-270}
+              startAngle={0}
+              endAngle={360}
             >
               {chartData.map((_, i) => (
                 <Cell key={i} fill={cellFills[i] ?? CHART_EMPTY_COLOR} />
               ))}
             </Pie>
-          </PieChart>
+          </StyledPieChart>
           <ChartCenter>
             <CenterCount>{total}</CenterCount>
             <CenterLabel>הנחיות בסביבה</CenterLabel>
           </ChartCenter>
         </ChartWrapper>
-
         <StatusRow>
           <StatusItem>
             <StatusCount>{pending}</StatusCount>
@@ -76,18 +74,22 @@ export default function StatusCard({ done = 0, inProgress = 0, pending = 0 }: St
   )
 }
 
+const StyledPieChart = styled(PieChart)`
+  width: 300px !important;
+`
+
 const Section = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  width: 360px;
+  gap: 24px;
+  width: 450px;
   flex-shrink: 0;
   align-self: stretch;
 `
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 24px;
+  font-size: 30px;
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
@@ -97,8 +99,6 @@ const Card = styled.div`
   flex: 1;
   background: var(--background);
   border: 0.5px solid var(--border);
-  border-radius: 8px;
-  padding: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -108,8 +108,8 @@ const Card = styled.div`
 
 const ChartWrapper = styled.div`
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 300px !important;
+  height: 300px !important;
   flex-shrink: 0;
 `
 
@@ -127,20 +127,21 @@ const ChartCenter = styled.div`
 `
 
 const CenterCount = styled.span`
-  font-size: 32px;
+  font-size: 38px;
   font-weight: 400;
   line-height: 1;
-  color: var(--sea-ink-soft);
+  color: var(--foreground);
 `
 
 const CenterLabel = styled.span`
-  font-size: 14px;
-  color: var(--sea-ink-soft);
+  white-space: nowrap;
+  font-size: 17px;
+  color: var(--foreground);
 `
 
 const StatusRow = styled.div`
   display: flex;
-  gap: 12px;
+  gap: 24px;
   align-items: center;
 `
 
@@ -154,7 +155,7 @@ const StatusItem = styled.div`
 `
 
 const StatusCount = styled.span`
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 400;
   color: var(--foreground);
 `
@@ -164,8 +165,8 @@ const StatusBadge = styled.span<{ $variant: keyof typeof VARIANT_STYLES }>`
   align-items: center;
   justify-content: center;
   padding: 1px 8px;
-  border-radius: 71px;
-  font-size: 14px;
+  border-radius: 35px;
+  font-size: 20px;
   font-weight: 400;
   white-space: nowrap;
   color: ${({ $variant }) => VARIANT_STYLES[$variant].color};

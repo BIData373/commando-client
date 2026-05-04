@@ -26,7 +26,7 @@ const ViewMoreButton = styled.button`
   align-items: center;
   gap: 8px;
   padding: 4px 15px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--foreground);
   background: transparent;
   border: none;

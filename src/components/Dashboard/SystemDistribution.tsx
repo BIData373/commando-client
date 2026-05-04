@@ -85,15 +85,15 @@ export default function SystemDistribution({ onSetAssignees }: SystemDistributio
 const Section = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  width: 360px;
+  gap: 24px;
+  width: 450px;
   flex-shrink: 0;
   align-self: flex-start;
 `
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 24px;
+  font-size: 30px;
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
