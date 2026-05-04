@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import { Link, type LinkComponentProps, useRouterState } from '@tanstack/react-router'
 import { ChevronDown, User } from 'lucide-react'
 import type { HeaderConfig } from '#/router'
+import { useTitleBarActions } from '../providers/TitleBarProvider'
 import ThemeToggle from './ThemeToggle'
 import { Avatar, AvatarFallback } from './ui/avatar'
 import {
@@ -24,6 +25,8 @@ export default function Header() {
   const { matches } = useRouterState()
   const headerConfig = matches.findLast(m => m.staticData.header)?.staticData.header as HeaderConfig | undefined
   const { title = '', navigation = true, user = true, workspace = false } = headerConfig ?? {}
+  const { actions } = useTitleBarActions()
+  const showTitleBar = title || actions
 
   return (
     <HeaderContainer>
@@ -82,9 +85,10 @@ export default function Header() {
         </HeaderInner>
       </HeaderRoot>
 
-      {title && (
+      {showTitleBar && (
         <TitleBar>
-          <PageTitle>{title}</PageTitle>
+          {title && <PageTitle>{title}</PageTitle>}
+          {actions}
         </TitleBar>
       )}
     </HeaderContainer>
@@ -170,15 +174,17 @@ const LogoImage = styled.img`
 `
 
 const TitleBar = styled.div`
-  padding-block: 16px 8px;
-  text-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 28px 8px;
 `
 
 const PageTitle = styled.h1`
-  margin: 0;
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--sea-ink);
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 46px;
+  color: rgba(0, 0, 0, 0.88);
 `
 
 const NavMenuLink = styled(NavigationMenuLink)`

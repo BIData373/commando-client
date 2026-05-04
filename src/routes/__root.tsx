@@ -3,6 +3,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { Outlet, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import Header from '../components/Header'
+import { TitleBarProvider } from '../providers/TitleBarProvider'
 
 import { StrictMode } from 'react'
 import '../styles.css'
@@ -14,12 +15,14 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <StrictMode>
-      <AppShell>
-        <Header />
-        <PageContainer>
-          <Outlet />
-        </PageContainer>
-      </AppShell>
+      <TitleBarProvider>
+        <AppShell>
+          <Header />
+          <PageContainer>
+            <Outlet />
+          </PageContainer>
+          </AppShell>
+      </TitleBarProvider>
       <TanStackDevtools
         config={{
           position: 'bottom-right',
