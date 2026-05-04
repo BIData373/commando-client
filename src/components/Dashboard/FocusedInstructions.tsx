@@ -120,14 +120,14 @@ export default function FocusedInstructions({ urlName }: IFocusedInstruction) {
                   </FixedCell>
                   <FixedCell $width={160}>
                     {task.isOverdue && <AlertTriangle size={18} color="#FA8C16" />}
-                    {task.deadlineType !== 'immediate' && task.dueDate && (
-                      <DateText>{formatDeadlineDate(task.dueDate)}</DateText>
-                    )}
                     {task.deadlineType === 'ongoing' && (
                       <DeadlineTag $type="ongoing">שוטף</DeadlineTag>
                     )}
                     {task.deadlineType === 'immediate' && (
                       <DeadlineTag $type="immediate">מידי</DeadlineTag>
+                    )}
+                    {task.deadlineType !== 'immediate' && task.dueDate && (
+                      <DateText>{formatDeadlineDate(task.dueDate)}</DateText>
                     )}
                   </FixedCell>
                 </TaskRow>
@@ -147,6 +147,11 @@ const Section = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+
+  @media (max-width: 1100px) {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
 `
 
 const SectionTitle = styled.h2`

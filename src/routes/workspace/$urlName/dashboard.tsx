@@ -38,15 +38,12 @@ function Dashboard() {
       <ContentArea>
         <DatePicker />
 
-        <SectionsRow>
+        <GridLayout>
           <FocusedInstructions urlName={urlName} />
           <StatusCard done={80} inProgress={20} pending={200} />
-        </SectionsRow>
-
-        <SectionsRow>
           <RecentlyCompleted urlName={urlName} />
           <SystemDistribution onSetAssignees={handleSetAssignees} />
-        </SectionsRow>
+        </GridLayout>
       </ContentArea>
     </PageWrapper>
   )
@@ -75,8 +72,14 @@ const ContentArea = styled.div`
 `
 
 
-const SectionsRow = styled.div`
-  display: flex;
+const GridLayout = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 450px;
   gap: 72px;
-  align-items: flex-start;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 48px 24px;
+  }
 `
+

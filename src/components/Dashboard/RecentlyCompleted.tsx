@@ -30,6 +30,11 @@ const Section = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+
+  @media (max-width: 1100px) {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
 `
 
 const SectionTitle = styled.h2`
