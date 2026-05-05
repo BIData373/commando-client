@@ -1,32 +1,33 @@
-import { useMemo, useState } from 'react'
 import styled from '@emotion/styled'
 import { Outlet, useNavigate } from '@tanstack/react-router'
 import { ChevronDown, Plus } from 'lucide-react'
-import { TooltipProvider } from '../ui/tooltip'
-import { type DirectiveStatus } from '../shared/StatusTag'
-import { NoResultsFound } from './NoResultsFound'
-import { TaskSearchBar } from './TaskSearchBar'
-import { TaskFilters, type QuickFilter } from './TaskFilters'
-import { TaskTable } from './TaskTable'
-import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
-import { TaskCardGrid } from './TaskCardGrid'
+import { useMemo, useState } from 'react'
 import { exportTasksToExcel } from '../../functions/exportExcel'
 import { applyAllFilters } from '../../functions/filterUtils'
-import { useTitleBar } from '../../providers/TitleBarProvider'
 import { useTasks } from '../../providers/TasksProvider'
+import { useTitleBar } from '../../providers/TitleBarProvider'
+import type { DirectiveStatus } from '../shared/StatusTag'
+import { TooltipProvider } from '../ui/tooltip'
+import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
+import { NoResultsFound } from './NoResultsFound'
+import { TaskCardGrid } from './TaskCardGrid'
+import { type QuickFilter, TaskFilters } from './TaskFilters'
+import { TaskSearchBar } from './TaskSearchBar'
+import { TaskTable } from './TaskTable'
 
 export type View = 'TABLE' | 'CARDS'
 
 interface TasksLayoutProps {
   view: View
   urlName: string
+  filter?: QuickFilter
 }
 
-function TasksLayout({ view, urlName }: TasksLayoutProps) {
+function TasksLayout({ view, urlName, filter }: TasksLayoutProps) {
   const navigate = useNavigate()
   const { tasks, updateTaskStatus, removeTasks, bulkUpdateStatus } = useTasks()
   const [searchQuery, setSearchQuery] = useState('')
-  const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set())
+  const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set(filter ? [filter] : []))
   const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(new Set())
   const [columnOrder, setColumnOrder] = useState(DEFAULT_COLUMN_ORDER)
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set())

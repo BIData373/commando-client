@@ -1,22 +1,25 @@
-import { useState } from 'react'
+import type { DateRange } from 'react-day-picker'
 import DateRangePicker from '../DateRangePicker'
 import { DatePickerFooter } from './DatePickerFooter'
-import { DATE_TYPES, DatePickerHeader } from './DatePickerHeader'
+import { DatePickerHeader } from './DatePickerHeader'
 import { DatePickerTriggerButton } from './DatePickerTriggerButton'
 
+interface DatePickerProps {
+  dateType: string
+  onDateTypeChange(value: string): void
+  setRange(range: DateRange | undefined): void
+}
 
-export function DatePicker() {
-  const [dateType, setDateType] = useState<string>(DATE_TYPES[0])
-
-  function handleDateTypeChange(type: string) {
-    setDateType(type)
-  }
-
+export function DatePicker({
+  dateType,
+  onDateTypeChange,
+  setRange
+}: DatePickerProps) {
   return (
     <DateRangePicker
       triggerButton={({ range }) => <DatePickerTriggerButton label={dateType} range={range} />}
-      header={() => <DatePickerHeader dateType={dateType} onDateTypeChange={handleDateTypeChange} />}
-      footer={(slotProps) => <DatePickerFooter {...slotProps} />}
+      header={() => <DatePickerHeader dateType={dateType} onDateTypeChange={onDateTypeChange} />}
+      footer={(slotProps) => <DatePickerFooter slots={slotProps} onConfirm={setRange} />}
     />
   )
 }

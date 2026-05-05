@@ -9,7 +9,7 @@ import { ResponsibleCell } from '../Tasks/ResponsibleCell'
 import { EmptyCardState } from './EmptyCardState'
 import { ViewMoreInstructions } from './ViewMoreInstructions'
 
-type FocusedTab = 'deviation' | 'immediate' | 'important'
+export type FocusedTab = 'deviation' | 'immediate' | 'important'
 
 interface TabConfig {
   id: FocusedTab
@@ -136,7 +136,7 @@ export default function FocusedInstructions({ urlName }: IFocusedInstruction) {
           )}
         </ContentPanel>
       </TabsWrapper>
-      <ViewMoreInstructions urlName={urlName} />
+      <ViewMoreInstructions urlName={urlName} filter={activeTab} />
     </Section>
   )
 }
@@ -239,7 +239,6 @@ const ContentPanel = styled.div<{ $hasContent: boolean }>`
   border-radius: 8px;
   border-start-start-radius: 0;
   position: relative;
-  z-index: 1;
   display: flex;
   min-height: 310px;
   max-height: 310px;

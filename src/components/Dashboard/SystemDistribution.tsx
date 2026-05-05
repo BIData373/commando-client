@@ -16,8 +16,14 @@ interface DistributionTabConfig {
   label: string
 }
 
+interface DistributionItem {
+  name: string
+  count: number
+}
+
 interface SystemDistributionProps {
   onSetAssignees?: () => void
+  distribution?: DistributionItem[]
 }
 
 
@@ -39,14 +45,16 @@ const TabsDescription = {
   }
 }
 
-export default function SystemDistribution({ onSetAssignees }: SystemDistributionProps) {
+export default function SystemDistribution({ onSetAssignees, distribution }: SystemDistributionProps) {
   const [activeTab, setActiveTab] = useState<DistributionTab>(DistributionTab.LOAD)
 
   function handleTabClick(tabId: DistributionTab) {
     setActiveTab(tabId)
   }
 
-  const tabDescription = TabsDescription[activeTab];
+  const tabDescription = TabsDescription[activeTab]
+  const hasData = activeTab === DistributionTab.LOAD && distribution && distribution.length > 0
+  const maxCount = hasData ? Math.max(...distribution.map((d) => d.count), 1) : 1
 
   return (
     <Section>
@@ -63,19 +71,39 @@ export default function SystemDistribution({ onSetAssignees }: SystemDistributio
             </TabItem>
           ))}
         </TabsHeader>
-        <ContentPanel>
-          <EmptyCardState
-            imgSrc={tabDescription.imgSrc}
-            title={tabDescription.title}
-            description={tabDescription.description}
-          >
-            {activeTab === DistributionTab.LOAD && (
-              <Button variant="outline" size="sm" onClick={onSetAssignees}>
-                הגדרת מקבלי הנחיות
-                <Users size={16} />
-              </Button>
-            )}
-          </EmptyCardState>
+        <ContentPanel $hasData={hasData}>
+          {hasData ? (
+            <ChartWrapper>
+              <ChartHeader>
+                <HeaderLabel>אחראי</HeaderLabel>
+                <HeaderLabel>כמות הנחיות</HeaderLabel>
+              </ChartHeader>
+              <BarList>
+                {distribution.map((item) => (
+                  <BarRow key={item.name}>
+                    <AssigneeName>{item.name}</AssigneeName>
+                    <BarTrack>
+                      <BarFill $pct={(item.count / maxCount) * 100} />
+                    </BarTrack>
+                    <CountLabel>{item.count}</CountLabel>
+                  </BarRow>
+                ))}
+              </BarList>
+            </ChartWrapper>
+          ) : (
+            <EmptyCardState
+              imgSrc={tabDescription.imgSrc}
+              title={tabDescription.title}
+              description={tabDescription.description}
+            >
+              {activeTab === DistributionTab.LOAD && (
+                <Button variant="outline" size="sm" onClick={onSetAssignees}>
+                  הגדרת מקבלי הנחיות
+                  <Users size={16} />
+                </Button>
+              )}
+            </EmptyCardState>
+          )}
         </ContentPanel>
       </TabsWrapper>
     </Section>
@@ -94,7 +122,9 @@ const Section = styled.div`
   @media (max-width: 1100px) {
     grid-column: 2;
     grid-row: 2;
-  }
+    width: 100%;
+    flex-shrink: 1;
+}
 `
 
 const SectionTitle = styled.h2`
@@ -140,16 +170,79 @@ const TabTitle = styled.span<{ $active: boolean }>`
   color: var(--foreground);
 `
 
-const ContentPanel = styled.div<{ $dashed?: boolean }>`
+const ContentPanel = styled.div<{ $hasData?: boolean }>`
   flex: 1;
   background: var(--background);
   border: 1px solid var(--border);
   border-radius: 8px;
   border-start-start-radius: 0;
-  min-height: 320px;
+  min-height: 390px;
+  max-height: 390px;
   display: flex;
-  align-items: center;
+  align-items: ${({ $hasData }) => ($hasData ? 'flex-start' : 'center')};
   justify-content: center;
   position: relative;
   z-index: 1;
+`
+
+const ChartWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 20px 20px;
+  width: 100%;
+`
+
+const ChartHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+
+const HeaderLabel = styled.span`
+  font-size: 16px;
+  color: var(--sea-ink-soft);
+`
+
+const BarList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 324px;
+  overflow-y: auto;
+`
+
+const BarRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 18px;
+`
+
+const AssigneeName = styled.span`
+  font-size: 16px;
+  color: var(--sea-ink);
+  white-space: nowrap;
+  flex-shrink: 0;
+`
+
+const CountLabel = styled.span`
+  font-size: 16px;
+  color: var(--sea-ink);
+  width: 24px;
+  text-align: end;
+  flex-shrink: 0;
+`
+
+const BarTrack = styled.div`
+  flex: 1;
+  height: 8px;
+  background: var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+`
+
+const BarFill = styled.div<{ $pct: number }>`
+  height: 100%;
+  width: ${({ $pct }) => $pct}%;
+  background: #bae0ff;
+  border-radius: 4px;
 `
