@@ -1,21 +1,28 @@
 import styled from '@emotion/styled'
+import type { DateRange } from 'react-day-picker'
 import type { DateRangePickerSlotProps } from '../DateRangePicker'
 
-export function DatePickerFooter({ onRangeChange, onClose }: DateRangePickerSlotProps) {
-    function handleClear() {
-        onRangeChange(undefined)
-    }
+interface DatePickerFooterProps {
+  slots: DateRangePickerSlotProps
+  onConfirm(range: DateRange | undefined): void
+}
 
-    function handleConfirm() {
-        onClose()
-    }
+export function DatePickerFooter({ slots: { onRangeChange, onClose, range }, onConfirm }: DatePickerFooterProps) {
+  function handleClear() {
+    onRangeChange(undefined)
+  }
 
-    return (
-        <PopupFooter>
-            <ClearButton onClick={handleClear}>נקה בחירה</ClearButton>
-            <ConfirmButton onClick={handleConfirm}>אישור</ConfirmButton>
-        </PopupFooter>
-    )
+  function handleConfirm() {
+    onConfirm(range)
+    onClose()
+  }
+
+  return (
+    <PopupFooter>
+      <ClearButton onClick={handleClear}>נקה בחירה</ClearButton>
+      <ConfirmButton onClick={handleConfirm}>אישור</ConfirmButton>
+    </PopupFooter>
+  )
 }
 
 const ClearButton = styled.button`
