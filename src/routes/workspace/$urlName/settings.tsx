@@ -1,12 +1,14 @@
 import styled from '@emotion/styled'
-import { Outlet, createFileRoute, useNavigate, useRouterState } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useNavigate, useRouterState } from '@tanstack/react-router'
+import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
 import { Tabs, TabsList, TabsTrigger } from '../../../components/ui/tabs'
+
 
 export const Route = createFileRoute('/workspace/$urlName/settings')({
   component: SettingsLayout,
   staticData: {
     header: {
-      title: 'הגדרות לשכה',
+      title: 'הגדרות סביבת המפקד',
       user: true,
       navigation: true,
       workspace: true,
@@ -14,18 +16,11 @@ export const Route = createFileRoute('/workspace/$urlName/settings')({
   },
 })
 
-type SettingsTabPath = 'general' | 'assignees' | 'permissions'
 
-const SETTINGS_TABS: { label: string; path: SettingsTabPath }[] = [
-  { label: 'פרטי הלשכה', path: 'general' },
-  { label: 'מקבלי הנחיות', path: 'assignees' },
-  { label: 'הרשאות ניהול צפיה', path: 'permissions' },
-]
-
-const SETTINGS_ROUTES = {
-  general: '/workspace/$urlName/settings/general',
-  assignees: '/workspace/$urlName/settings/assignees',
-  permissions: '/workspace/$urlName/settings/permissions',
+const SETTINGS_ROUTES: Record<SettingTabPath, string> = {
+  [SettingTabPath.GENERAL]: '/workspace/$urlName/settings/general',
+  [SettingTabPath.ASSIGNEES]: '/workspace/$urlName/settings/assignees',
+  [SettingTabPath.PERMISSIONS]: '/workspace/$urlName/settings/permissions',
 } as const
 
 function SettingsLayout() {
@@ -33,14 +28,12 @@ function SettingsLayout() {
   const { location } = useRouterState()
   const { urlName } = Route.useParams()
 
-  const activeTab = (SETTINGS_TABS.find((t) =>
-    location.pathname.endsWith(t.path)
-  )?.path ?? 'general') as SettingsTabPath
-
-  const activeTabLabel = SETTINGS_TABS.find((t) => t.path === activeTab)?.label ?? ''
+  const activeTab = (Object.values(SettingTabPath).find((t) =>
+    location.pathname.endsWith(t)
+  ) ?? SettingTabPath.GENERAL)
 
   function handleTabChange(value: string) {
-    const path = SETTINGS_ROUTES[value as SettingsTabPath]
+    const path = SETTINGS_ROUTES[value as SettingTabPath]
     navigate({ to: path, params: { urlName } })
   }
 
@@ -48,42 +41,66 @@ function SettingsLayout() {
     <SettingsRoot>
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <FullWidthTabsList variant="line">
-          {SETTINGS_TABS.map((tab) => (
-            <TabsTrigger key={tab.path} value={tab.path}>
-              {tab.label}
-            </TabsTrigger>
+          {Object.values(SettingTabPath).map((value) => (
+            <StyledTabsTrigger key={value} value={value}>
+              {SETTINGS_TABS[value]}
+            </StyledTabsTrigger>
           ))}
         </FullWidthTabsList>
       </Tabs>
       <ContentWrapper>
-        <SectionTitle>{activeTabLabel}</SectionTitle>
-        <Outlet />
+        <OutletContainer>
+          <Outlet />
+        </OutletContainer>
       </ContentWrapper>
-    </SettingsRoot>
+    </SettingsRoot >
   )
 }
 
 const SettingsRoot = styled.div`
-  padding-block: 24px;
+  padding-block: 32px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  height: 100%;
+  min-height: 0;
+  gap: 32px;
 `
 
 const FullWidthTabsList = styled(TabsList)`
-  width: 100%;
+  width: 380px;
   border-bottom: 1px solid var(--line);
+  align-self: flex-end;
+  direction: rtl;
+`
+
+const StyledTabsTrigger = styled(TabsTrigger)`
+  color: var(--text-color-2);
+  font-weight: 400;
+  font-size: 16px;
+
+  &[data-state="active"] {
+    color: #1677ff;
+    font-weight: 500;
+  }
+  
+  &[data-state="active"]::after {
+    background-color: #1677ff;
+  }
 `
 
 const ContentWrapper = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 24px;
 `
 
-const SectionTitle = styled.h2`
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--sea-ink);
-  margin: 0;
+const OutletContainer = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 `

@@ -27,6 +27,8 @@ body,
 }
 
 :root {
+  --z-dropdown: 1000;
+
   --background: oklch(1.00 0 0);
   --foreground: oklch(0.14 0 0);
   --card: oklch(1.00 0 0);
@@ -59,11 +61,22 @@ body,
   --sidebar-border: oklch(0.92 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
+  --text-color: rgba(0, 0, 0, 0.65);
+  --text-color-2: rgba(0, 0, 0, 0.88);
+  --card-background: rgba(0, 0, 0, 0.02);
+  --icon-background: rgba(0, 0, 0, 0.4);
+  --card-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+
+
+  --card-border: #d9d9d9;
+  --background-area: #fafafa;
+
   --font-sans: 'Rubik Variable', ui-sans-serif, sans-serif;
   --font-serif: 'Rubik Variable', ui-sans-serif, sans-serif;
   --font-mono: 'Rubik Variable', ui-sans-serif, sans-serif;
 
   --radius: 0.625rem;
+  --line: #F0F0F0;
 
   /* Semantic tokens */
   --sea-ink: oklch(0.12 0.028 254);
@@ -160,6 +173,11 @@ body,
   /* Purple accent */
   --purple-start: oklch(0.60 0.23 272);
   --purple-end: oklch(0.46 0.32 305);
+  --background-area: #151414;
+  --text-color: rgba(234, 221, 221, 0.65);
+  --text-color-2: rgba(234, 221, 221, 0.65);
+  --icon-background: rgba(255, 218, 218, 0.4);
+  --card-shadow: 0 6px 16px 0 rgba(203, 200, 200, 0.08), 0 3px 6px -4px rgba(255, 255, 255, 0.185), 0 9px 28px 8px rgba(208, 199, 199, 0.05);
 }
 
 @theme inline {
