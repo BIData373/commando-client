@@ -96,7 +96,7 @@ export default function Header() {
 }
 
 const HeaderContainer = styled.div`
-  margin: 20px 32px 0 32px;
+  padding: 20px 32px 0 32px;
 `
 
 const HeaderRoot = styled.header`
@@ -182,10 +182,10 @@ const TitleBar = styled.div`
 
 const PageTitle = styled.h1`
   flex: 1;
+  margin: 0;
   font-size: 38px;
   font-weight: 500;
-  line-height: 46px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--sea-ink);
 `
 
 const NavMenuLink = styled(NavigationMenuLink)`
