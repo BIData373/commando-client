@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import type { DateRange } from 'react-day-picker'
-import type { DateRangePickerSlotProps } from '../DateRangePicker'
+import type { DateRangePickerSlotProps } from '#/components/shared/DateRangePicker'
 
 interface DatePickerFooterProps {
   slots: DateRangePickerSlotProps

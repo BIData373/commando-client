@@ -43,6 +43,10 @@ function DateRangePicker({ triggerButton, header, footer }: DateRangePickerProps
     setField('range', range)
   }
 
+  function handleBlur() {
+    setField('range', undefined)
+  }
+
   function handleClose() {
     setField('open', false)
   }
@@ -54,11 +58,11 @@ function DateRangePicker({ triggerButton, header, footer }: DateRangePickerProps
   }
 
   return (
-    <RangeContextProvider range={state.range}>
+    <RangeContextProvider range={state.range} onRangeChange={handleRangeSelect}>
       <Popover.Root open={state.open} onOpenChange={handleOpenChange}>
         {triggerButton(slotProps)}
         <Popover.Portal>
-          <PopupContent data-lang="he" align="end" sideOffset={8}>
+          <PopupContent onInteractOutside={handleBlur} data-lang="he" align="end" sideOffset={8}>
             {header?.(slotProps)}
             <StyledCalendar
               showWeekNumber

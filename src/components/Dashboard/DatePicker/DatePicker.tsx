@@ -1,5 +1,5 @@
 import type { DateRange } from 'react-day-picker'
-import DateRangePicker from '../DateRangePicker'
+import DateRangePicker from '#/components/shared/DateRangePicker'
 import { DatePickerFooter } from './DatePickerFooter'
 import { DatePickerHeader } from './DatePickerHeader'
 import { DatePickerTriggerButton } from './DatePickerTriggerButton'
