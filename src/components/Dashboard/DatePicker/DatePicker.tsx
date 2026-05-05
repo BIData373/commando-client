@@ -1,12 +1,13 @@
 import type { DateRange } from 'react-day-picker'
 import DateRangePicker from '#/components/shared/DateRangePicker'
+import type { DATE_TYPE } from '#/utils/dataTypeUtils'
 import { DatePickerFooter } from './DatePickerFooter'
 import { DatePickerHeader } from './DatePickerHeader'
 import { DatePickerTriggerButton } from './DatePickerTriggerButton'
 
 interface DatePickerProps {
   dateType: string
-  onDateTypeChange(value: string): void
+  onDateTypeChange(value: DATE_TYPE): void
   setRange(range: DateRange | undefined): void
 }
 

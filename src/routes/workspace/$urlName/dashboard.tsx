@@ -4,9 +4,9 @@ import { isWithinInterval } from 'date-fns'
 import { useMemo, useState } from 'react'
 import type { DateRange } from 'react-day-picker'
 import { DatePicker } from '#/components/Dashboard/DatePicker/DatePicker'
-import { DATE_TYPES } from '#/components/Dashboard/DatePicker/DatePickerHeader'
 import { TitleSection } from '#/components/Dashboard/TileSection'
 import { INITIAL_TASKS, type Task } from '#/data/Tasks'
+import { DATE_TYPE } from '#/utils/dataTypeUtils'
 import FocusedInstructions from '../../../components/Dashboard/FocusedInstructions'
 import RecentlyCompleted from '../../../components/Dashboard/RecentlyCompleted'
 import StatusCard from '../../../components/Dashboard/StatusCard'
@@ -29,7 +29,7 @@ function Dashboard() {
   const { urlName } = Route.useParams()
   const navigate = useNavigate()
 
-  const [dataType, setDataType] = useState<string>(DATE_TYPES[0])
+  const [dataType, setDataType] = useState(DATE_TYPE.CREATION_DATE)
   const [range, setRange] = useState<DateRange | undefined>()
 
   const filteredTasks = useMemo(() => {
@@ -37,13 +37,13 @@ function Dashboard() {
 
     function getTaskDate(task: Task, year: number): Date | null {
       switch (dataType) {
-        case DATE_TYPES[0]: return task.createdAt
-        case DATE_TYPES[1]: return task.dueDate
-        case DATE_TYPES[2]: {
+        case DATE_TYPE.CREATION_DATE: return task.createdAt
+        case DATE_TYPE.EXPECTED_END: return task.dueDate
+        case DATE_TYPE.INSTRUCTION_DATE: {
           const [day, month] = task.discussionDate.split('/').map(Number)
           return new Date(year, month - 1, day)
         }
-        case DATE_TYPES[3]: return task.updatedAt
+        case DATE_TYPE.UPDATING_DATE: return task.updatedAt
         default: return task.createdAt
       }
     }
@@ -53,12 +53,12 @@ function Dashboard() {
 
     let tasks = from && to
       ? INITIAL_TASKS.filter((task) => {
-          const date = getTaskDate(task, refYear)
-          return date !== null && isWithinInterval(date, { start: from, end: to })
-        })
+        const date = getTaskDate(task, refYear)
+        return date !== null && isWithinInterval(date, { start: from, end: to })
+      })
       : [...INITIAL_TASKS]
 
-    if (dataType === DATE_TYPES[3]) {
+    if (dataType === DATE_TYPE.UPDATING_DATE) {
       tasks = tasks.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
     }
 

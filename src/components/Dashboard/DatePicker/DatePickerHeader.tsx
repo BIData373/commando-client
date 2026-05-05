@@ -1,18 +1,11 @@
 import styled from '@emotion/styled'
 import { ChevronDown } from 'lucide-react'
+import { DATE_TYPE } from '#/utils/dataTypeUtils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../../ui/dropdown-menu'
-
-
-export const DATE_TYPES = [
-    'תאריך יצירה',
-    'לפי תג"ב',
-    'תאריך מתן הנחייה',
-    'תאריך עדכון',
-] as const
 
 interface PickerHeaderProps {
     dateType: string
-    onDateTypeChange: (type: string) => void
+    onDateTypeChange: (type: DATE_TYPE) => void
 }
 
 export function DatePickerHeader({ dateType, onDateTypeChange }: PickerHeaderProps) {
@@ -25,7 +18,7 @@ export function DatePickerHeader({ dateType, onDateTypeChange }: PickerHeaderPro
                     <ChevronDown size={16} />
                 </DateTypeTrigger>
                 <DropdownMenuContent align="end">
-                    {DATE_TYPES.map((type) => (
+                    {Object.values(DATE_TYPE).map((type) => (
                         <DropdownMenuItem key={type} onSelect={() => onDateTypeChange(type)}>
                             {type}
                         </DropdownMenuItem>
