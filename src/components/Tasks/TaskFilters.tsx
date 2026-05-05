@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
 import { FilterX } from 'lucide-react'
+import { QuickFilter } from '#/utils/filterUtils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { TopicFilterDropdown } from './TopicFilterDropdown'
-
-type QuickFilter = 'overdue' | 'approaching' | 'flagged'
 
 interface TaskFiltersProps {
   activeQuickFilters: Set<QuickFilter>
@@ -38,18 +37,18 @@ function TaskFilters({
         onApply={onApplyTopicFilters}
         $active={activeTopicFilters.size > 0}
       />
-      <FilterPill $active={activeQuickFilters.has('flagged')} onClick={() => onToggleQuickFilter('flagged')}>
+      <FilterPill $active={activeQuickFilters.has(QuickFilter.FLAGGED)} onClick={() => onToggleQuickFilter(QuickFilter.FLAGGED)}>
         חשובות
       </FilterPill>
       <Tooltip>
         <WarningTrigger>
-          <FilterPill $active={activeQuickFilters.has('approaching')} onClick={() => onToggleQuickFilter('approaching')}>
+          <FilterPill $active={activeQuickFilters.has(QuickFilter.APPROACHING)} onClick={() => onToggleQuickFilter(QuickFilter.APPROACHING)}>
             תג"ב מתקרב
           </FilterPill>
         </WarningTrigger>
         <TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
       </Tooltip>
-      <FilterPill $active={activeQuickFilters.has('overdue')} onClick={() => onToggleQuickFilter('overdue')}>
+      <FilterPill $active={activeQuickFilters.has(QuickFilter.OVERDUE)} onClick={() => onToggleQuickFilter(QuickFilter.OVERDUE)}>
         חריגה מתג"ב
       </FilterPill>
       <FilterDivider />
@@ -61,7 +60,6 @@ function TaskFilters({
 }
 
 export { TaskFilters }
-export type { QuickFilter }
 
 const ToolbarEnd = styled.div`
   display: flex;
