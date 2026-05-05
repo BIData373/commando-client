@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { AlertTriangle } from 'lucide-react'
 import { useState } from 'react'
+import { QuickFilter as FocusedTab } from '#/utils/filterUtils'
 import searchInstruction from '../../assets/icons/searchInstruction.svg'
 import { INITIAL_TASKS, type Task } from '../../data/Tasks'
 import FlagIcon from '../shared/FlagIcon'
@@ -9,7 +10,6 @@ import { ResponsibleCell } from '../Tasks/ResponsibleCell'
 import { EmptyCardState } from './EmptyCardState'
 import { ViewMoreInstructions } from './ViewMoreInstructions'
 
-export type FocusedTab = 'deviation' | 'immediate' | 'important'
 
 interface TabConfig {
   id: FocusedTab
@@ -28,21 +28,21 @@ interface IFocusedInstruction {
 }
 
 const TABS: TabConfig[] = [
-  { id: 'important', label: 'הנחיות חשובות', count: 0, weekDelta: 0 },
-  { id: 'immediate', label: 'הנחיות לביצוע מידיות', count: 0, weekDelta: 0 },
-  { id: 'deviation', label: 'חריגות מתג"ב', count: 0, weekDelta: 0 },
+  { id: FocusedTab.FLAGGED, label: 'הנחיות חשובות', count: 0, weekDelta: 0 },
+  { id: FocusedTab.APPROACHING, label: 'הנחיות לביצוע מידיות', count: 0, weekDelta: 0 },
+  { id: FocusedTab.OVERDUE, label: 'חריגות מתג"ב', count: 0, weekDelta: 0 },
 ]
 
 const EMPTY_MESSAGES: Record<FocusedTab, EmptyMessage> = {
-  important: {
+  [FocusedTab.FLAGGED]: {
     title: 'לא נמצאו הנחיות חשובות',
     description: 'לאחר שהנחיות יוגדרו כחשובות,\nההנחיות האחרונות יופיעו כאן',
   },
-  immediate: {
+  [FocusedTab.APPROACHING]: {
     title: 'לא נמצאו הנחיות לביצוע מידיות',
     description: 'הנחיות לביצוע מידיות יופיעו כאן',
   },
-  deviation: {
+  [FocusedTab.OVERDUE]: {
     title: 'לא נמצאו חריגות מתג"ב',
     description: 'חריגות מתג"ב יופיעו כאן',
   },
@@ -57,14 +57,14 @@ function formatDeadlineDate(date: Date): string {
 
 function getFilteredTasks(tab: FocusedTab): Task[] {
   switch (tab) {
-    case 'important': return INITIAL_TASKS
-    case 'immediate': return INITIAL_TASKS.filter((t) => t.deadlineType === 'immediate')
-    case 'deviation': return INITIAL_TASKS.filter((t) => t.isOverdue)
+    case FocusedTab.FLAGGED: return INITIAL_TASKS
+    case FocusedTab.APPROACHING: return INITIAL_TASKS.filter((t) => t.deadlineType === 'immediate')
+    case FocusedTab.OVERDUE: return INITIAL_TASKS.filter((t) => t.isOverdue)
   }
 }
 
 export default function FocusedInstructions({ urlName }: IFocusedInstruction) {
-  const [activeTab, setActiveTab] = useState<FocusedTab>('important')
+  const [activeTab, setActiveTab] = useState<FocusedTab>(FocusedTab.FLAGGED)
 
   function handleTabClick(tabId: FocusedTab) {
     setActiveTab(tabId)

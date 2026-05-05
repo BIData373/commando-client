@@ -1,27 +1,18 @@
 import styled from '@emotion/styled'
 import { useNavigate } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
-import type { QuickFilter } from '../Tasks/TaskFilters'
-import type { FocusedTab } from './FocusedInstructions'
+import type { QuickFilter } from '#/utils/filterUtils'
 
 interface IViewInstruction {
     urlName: string
-    filter?: FocusedTab
-}
-
-const quickerFilterTab: Record<FocusedTab, QuickFilter> = {
-    'important': 'flagged',
-    'immediate': 'approaching',
-    'deviation': 'overdue',
+    filter?: QuickFilter
 }
 
 export const ViewMoreInstructions = ({ urlName, filter }: IViewInstruction) => {
     const navigate = useNavigate()
 
-    const quickerFilter = filter && quickerFilterTab[filter]
-
     function handleViewMore() {
-        navigate({ to: '/workspace/$urlName/tasks', params: { urlName }, search: { view: 'TABLE', filter: quickerFilter } })
+        navigate({ to: '/workspace/$urlName/tasks', params: { urlName }, search: { view: 'TABLE', filter: filter } })
     }
 
     return (
