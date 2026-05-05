@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import compleateInstruction from '../../assets/icons/completeInstruction.svg'
-import { INITIAL_TASKS } from '../../data/Tasks'
+import type { Task } from '../../data/Tasks'
 import FlagIcon from '../shared/FlagIcon'
 import { StatusTag } from '../shared/StatusTag'
 import { ResponsibleCell } from '../Tasks/ResponsibleCell'
@@ -9,10 +9,11 @@ import { ViewMoreInstructions } from './ViewMoreInstructions'
 
 interface RecentlyCompletedProps {
   urlName: string
+  tasks: Task[]
 }
 
-export default function RecentlyCompleted({ urlName }: RecentlyCompletedProps) {
-  const completedTasks = INITIAL_TASKS.filter((t) => t.status === 'completed')
+export default function RecentlyCompleted({ urlName, tasks }: RecentlyCompletedProps) {
+  const completedTasks = tasks.filter((t) => t.status === 'completed')
 
   return (
     <Section>

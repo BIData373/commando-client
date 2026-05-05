@@ -3,7 +3,7 @@ import { AlertTriangle } from 'lucide-react'
 import { useState } from 'react'
 import { QuickFilter as FocusedTab } from '#/utils/filterUtils'
 import searchInstruction from '../../assets/icons/searchInstruction.svg'
-import { INITIAL_TASKS, type Task } from '../../data/Tasks'
+import type { Task } from '../../data/Tasks'
 import FlagIcon from '../shared/FlagIcon'
 import { StatusTag } from '../shared/StatusTag'
 import { ResponsibleCell } from '../Tasks/ResponsibleCell'
@@ -25,12 +25,13 @@ interface EmptyMessage {
 
 interface IFocusedInstruction {
   urlName: string
+  tasks: Task[]
 }
 
-const TABS: TabConfig[] = [
-  { id: FocusedTab.FLAGGED, label: 'הנחיות חשובות', count: 0, weekDelta: 0 },
-  { id: FocusedTab.APPROACHING, label: 'הנחיות לביצוע מידיות', count: 0, weekDelta: 0 },
-  { id: FocusedTab.OVERDUE, label: 'חריגות מתג"ב', count: 0, weekDelta: 0 },
+const TAB_LABELS: Pick<TabConfig, 'id' | 'label' | 'weekDelta'>[] = [
+  { id: FocusedTab.FLAGGED, label: 'הנחיות חשובות', weekDelta: 0 },
+  { id: FocusedTab.APPROACHING, label: 'הנחיות לביצוע מידיות', weekDelta: 0 },
+  { id: FocusedTab.OVERDUE, label: 'חריגות מתג"ב', weekDelta: 0 },
 ]
 
 const EMPTY_MESSAGES: Record<FocusedTab, EmptyMessage> = {
@@ -55,30 +56,38 @@ function formatDeadlineDate(date: Date): string {
   return `${day}/${month}/${year}`
 }
 
-function getFilteredTasks(tab: FocusedTab): Task[] {
+function getFilteredTasks(tab: FocusedTab, tasks: Task[]): Task[] {
   switch (tab) {
-    case FocusedTab.FLAGGED: return INITIAL_TASKS
-    case FocusedTab.APPROACHING: return INITIAL_TASKS.filter((t) => t.deadlineType === 'immediate')
-    case FocusedTab.OVERDUE: return INITIAL_TASKS.filter((t) => t.isOverdue)
+    case FocusedTab.FLAGGED: return tasks
+    case FocusedTab.APPROACHING: return tasks.filter((t) => t.deadlineType === 'immediate')
+    case FocusedTab.OVERDUE: return tasks.filter((t) => t.isOverdue)
   }
 }
 
-export default function FocusedInstructions({ urlName }: IFocusedInstruction) {
+export default function FocusedInstructions({ urlName, tasks }: IFocusedInstruction) {
   const [activeTab, setActiveTab] = useState<FocusedTab>(FocusedTab.FLAGGED)
 
   function handleTabClick(tabId: FocusedTab) {
     setActiveTab(tabId)
   }
 
+  const tabs: TabConfig[] = TAB_LABELS.map((tab) => ({
+    ...tab,
+    count:
+      tab.id === FocusedTab.FLAGGED ? tasks.filter((t) => t.flagged).length
+        : tab.id === FocusedTab.APPROACHING ? tasks.filter((t) => t.deadlineType === 'immediate').length
+          : tasks.filter((t) => t.isOverdue).length,
+  }))
+
   const emptyMsg = EMPTY_MESSAGES[activeTab]
-  const filteredTasks = getFilteredTasks(activeTab)
+  const filteredTasks = getFilteredTasks(activeTab, tasks)
 
   return (
     <Section>
       <SectionTitle>הנחיות במיקוד</SectionTitle>
       <TabsWrapper>
         <TabsHeader>
-          {TABS.map((tab) => (
+          {tabs.map((tab) => (
             <TabItem
               key={tab.id}
               $active={tab.id === activeTab}
@@ -172,7 +181,6 @@ const TabsHeader = styled.div`
   display: flex;
   gap: 2px;
   position: relative;
-  z-index: 2;
   max-width: 840px;
 `
 

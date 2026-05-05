@@ -5,10 +5,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 export const DATE_TYPES = [
     'תאריך יצירה',
-    'לפי ת"ג',
+    'לפי תג"ב',
     'תאריך מתן הנחייה',
     'תאריך עדכון',
-    'תאריך סיום',
 ] as const
 
 interface PickerHeaderProps {

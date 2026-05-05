@@ -21,7 +21,6 @@ export const Route = createFileRoute('/workspace/$urlName/tasks')({
 
 function TasksPage() {
   const { view, filter } = Route.useSearch()
-  console.log(filter)
   const { urlName } = Route.useParams()
 
   return (
