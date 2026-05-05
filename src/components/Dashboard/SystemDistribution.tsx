@@ -24,6 +24,7 @@ interface DistributionItem {
 interface SystemDistributionProps {
   onSetAssignees?: () => void
   distribution?: DistributionItem[]
+  tagDistribution?: DistributionItem[]
 }
 
 
@@ -45,16 +46,23 @@ const TabsDescription = {
   }
 }
 
-export default function SystemDistribution({ onSetAssignees, distribution }: SystemDistributionProps) {
+const HEADER_LABELS = {
+  [DistributionTab.LOAD]: { name: 'אחראי', count: 'כמות הנחיות' },
+  [DistributionTab.ATTENTION]: { name: 'נושא', count: 'כמות הנחיות' },
+}
+
+export default function SystemDistribution({ onSetAssignees, distribution, tagDistribution }: SystemDistributionProps) {
   const [activeTab, setActiveTab] = useState<DistributionTab>(DistributionTab.LOAD)
 
   function handleTabClick(tabId: DistributionTab) {
     setActiveTab(tabId)
   }
 
+  const activeData = activeTab === DistributionTab.LOAD ? distribution : tagDistribution
   const tabDescription = TabsDescription[activeTab]
-  const hasData = activeTab === DistributionTab.LOAD && distribution && distribution.length > 0
-  const maxCount = hasData ? Math.max(...distribution.map((d) => d.count), 1) : 1
+  const hasData = !!(activeData && activeData.length > 0)
+  const maxCount = hasData && activeData ? Math.max(...activeData.map((d) => d.count), 1) : 1
+  const headerLabels = HEADER_LABELS[activeTab]
 
   return (
     <Section>
@@ -75,11 +83,11 @@ export default function SystemDistribution({ onSetAssignees, distribution }: Sys
           {hasData ? (
             <ChartWrapper>
               <ChartHeader>
-                <HeaderLabel>אחראי</HeaderLabel>
-                <HeaderLabel>כמות הנחיות</HeaderLabel>
+                <HeaderLabel>{headerLabels.name}</HeaderLabel>
+                <HeaderLabel>{headerLabels.count}</HeaderLabel>
               </ChartHeader>
               <BarList>
-                {distribution.map((item) => (
+                {activeData?.map((item) => (
                   <BarRow key={item.name}>
                     <AssigneeName>{item.name}</AssigneeName>
                     <BarTrack>
@@ -208,6 +216,7 @@ const BarList = styled.div`
   flex-direction: column;
   gap: 12px;
   max-height: 324px;
+  padding: 5px 15px;
   overflow-y: auto;
 `
 

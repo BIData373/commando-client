@@ -94,7 +94,7 @@ body,
   --status-progress: #2F54EB;
   --status-progress-bg: #F0F5FF;
   --status-pending: #FA541C;
-  --status-pending-bg: oklch(0.94 0 0);
+  --status-pending-bg: #FFF2E8;
 
   /* Purple accent */
   --purple-start: oklch(0.60 0.23 272);
@@ -166,7 +166,7 @@ body,
   --status-done: oklch(0.70 0.22 145);
   --status-done-bg: oklch(0.98 0.04 145);
   --status-progress: #2F54EB;
-  --status-progress-bg: #F0F5FF;
+  --status-progress-bg: #FFF2E8;
   --status-pending: #FA541C;
   --status-pending-bg: oklch(0.94 0 0);
 

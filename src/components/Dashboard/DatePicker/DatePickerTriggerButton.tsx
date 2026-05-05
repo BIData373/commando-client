@@ -9,27 +9,18 @@ interface TriggerButtonProps {
     range: DateRange | undefined
 }
 
-
-function DateRangeLabel({ label, range }: TriggerButtonProps) {
-    return (
-        <>
-            {label && range?.from && range.to ? (
-                <RangeLabel>
-                    {label}:{" "}{format(range.from, "dd")}-{format(range.to, "dd/MM/y")}
-                </RangeLabel>
-            ) : (
-                <RangeLabel>טווח תאריכים</RangeLabel>
-            )}
-        </>
-    )
-}
-
 export function DatePickerTriggerButton({ label, range }: TriggerButtonProps) {
     return (
         <Popover.Trigger asChild>
             <TriggerButton>
                 <CalendarDays size={16} />
-                <DateRangeLabel label={label} range={range} />
+                {label && range?.from && range.to ? (
+                    <RangeLabel>
+                        {label}:{" "}{format(range.from, "dd")}-{format(range.to, "dd/MM/y")}
+                    </RangeLabel>
+                ) : (
+                    <RangeLabel>טווח תאריכים</RangeLabel>
+                )}
                 <ChevronDown size={16} />
             </TriggerButton>
         </Popover.Trigger>

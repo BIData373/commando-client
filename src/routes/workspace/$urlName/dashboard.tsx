@@ -1,28 +1,16 @@
 import styled from '@emotion/styled'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
+import { isWithinInterval } from 'date-fns'
+import { useMemo, useState } from 'react'
 import type { DateRange } from 'react-day-picker'
 import { DatePicker } from '#/components/Dashboard/DatePicker/DatePicker'
 import { DATE_TYPES } from '#/components/Dashboard/DatePicker/DatePickerHeader'
 import { TitleSection } from '#/components/Dashboard/TileSection'
+import { INITIAL_TASKS, type Task } from '#/data/Tasks'
 import FocusedInstructions from '../../../components/Dashboard/FocusedInstructions'
 import RecentlyCompleted from '../../../components/Dashboard/RecentlyCompleted'
 import StatusCard from '../../../components/Dashboard/StatusCard'
 import SystemDistribution from '../../../components/Dashboard/SystemDistribution'
-
-
-const distributions = [
-  { name: 'ddsadsdasdasdasd', count: 7 },
-  { name: 'מג"ד 272', count: 7 },
-  { name: 'מג"ד 272', count: 8 },
-  { name: 'מג"ד 272', count: 12 },
-  { name: 'מג"ד 273', count: 13 },
-  { name: 'מג"ד 274', count: 14 },
-  { name: 'מג"ד 275', count: 15 },
-  { name: 'מג"ד 276', count: 16 },
-  { name: 'מג"ד 277', count: 17 },
-  { name: 'סא"ל דגן', count: 23 },
-]
 
 export const Route = createFileRoute('/workspace/$urlName/dashboard')({
   component: Dashboard,
@@ -42,10 +30,71 @@ function Dashboard() {
   const navigate = useNavigate()
 
   const [dataType, setDataType] = useState<string>(DATE_TYPES[0])
+  const [range, setRange] = useState<DateRange | undefined>()
 
-  function handleDatePickerConfirm(range: DateRange | undefined) {
-    console.log(`${dataType} ${range?.from}`)
-  }
+  const filteredTasks = useMemo(() => {
+    const refYear = range?.from?.getFullYear() ?? new Date().getFullYear()
+
+    function getTaskDate(task: Task, year: number): Date | null {
+      switch (dataType) {
+        case DATE_TYPES[0]: return task.createdAt
+        case DATE_TYPES[1]: return task.dueDate
+        case DATE_TYPES[2]: {
+          const [day, month] = task.discussionDate.split('/').map(Number)
+          return new Date(year, month - 1, day)
+        }
+        case DATE_TYPES[3]: return task.updatedAt
+        default: return task.createdAt
+      }
+    }
+
+    const from = range?.from
+    const to = range?.to
+
+    let tasks = from && to
+      ? INITIAL_TASKS.filter((task) => {
+          const date = getTaskDate(task, refYear)
+          return date !== null && isWithinInterval(date, { start: from, end: to })
+        })
+      : [...INITIAL_TASKS]
+
+    if (dataType === DATE_TYPES[3]) {
+      tasks = tasks.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    }
+
+    return tasks
+  }, [range, dataType])
+
+  const statusCounts = useMemo(() => ({
+    done: filteredTasks.filter((t) => t.status === 'completed').length,
+    inProgress: filteredTasks.filter((t) => t.status === 'in_progress').length,
+    pending: filteredTasks.filter((t) => t.status === 'not_started').length,
+  }), [filteredTasks])
+
+  const distribution = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const task of filteredTasks) {
+      if (task.responsible) {
+        const { name } = task.responsible
+        counts.set(name, (counts.get(name) ?? 0) + 1)
+      }
+    }
+    return Array.from(counts.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+  }, [filteredTasks])
+
+  const tagDistribution = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const task of filteredTasks) {
+      for (const tag of task.tags) {
+        counts.set(tag, (counts.get(tag) ?? 0) + 1)
+      }
+    }
+    return Array.from(counts.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+  }, [filteredTasks])
 
   function handleSetAssignees() {
     navigate({ to: '/workspace/$urlName/settings/assignees', params: { urlName } })
@@ -58,16 +107,17 @@ function Dashboard() {
         <DatePicker
           dateType={dataType}
           onDateTypeChange={setDataType}
-          setRange={handleDatePickerConfirm}
+          setRange={setRange}
         />
 
         <GridLayout>
-          <FocusedInstructions urlName={urlName} />
-          <StatusCard done={80} inProgress={20} pending={200} />
-          <RecentlyCompleted urlName={urlName} />
+          <FocusedInstructions urlName={urlName} tasks={filteredTasks} />
+          <StatusCard done={statusCounts.done} inProgress={statusCounts.inProgress} pending={statusCounts.pending} />
+          <RecentlyCompleted urlName={urlName} tasks={filteredTasks} />
           <SystemDistribution
             onSetAssignees={handleSetAssignees}
-            distribution={distributions}
+            distribution={distribution}
+            tagDistribution={tagDistribution}
           />
         </GridLayout>
       </ContentArea>
