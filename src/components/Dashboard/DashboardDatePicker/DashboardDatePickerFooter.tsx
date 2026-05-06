@@ -7,7 +7,7 @@ interface DatePickerFooterProps {
   onConfirm(range: DateRange | undefined): void
 }
 
-export function DatePickerFooter({ slots: { onRangeChange, onClose, range }, onConfirm }: DatePickerFooterProps) {
+export function DashboardDatePickerFooter({ slots: { onRangeChange, onClose, range }, onConfirm }: DatePickerFooterProps) {
   function handleClear() {
     onRangeChange(undefined)
   }

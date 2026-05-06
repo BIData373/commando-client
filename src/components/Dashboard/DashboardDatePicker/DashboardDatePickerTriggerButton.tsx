@@ -9,7 +9,7 @@ interface TriggerButtonProps {
     range: DateRange | undefined
 }
 
-export function DatePickerTriggerButton({ label, range }: TriggerButtonProps) {
+export function DashboardDatePickerTriggerButton({ label, range }: TriggerButtonProps) {
     return (
         <Popover.Trigger asChild>
             <TriggerButton>

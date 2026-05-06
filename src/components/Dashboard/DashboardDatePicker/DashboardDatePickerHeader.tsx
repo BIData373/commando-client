@@ -8,7 +8,7 @@ interface PickerHeaderProps {
     onDateTypeChange: (type: DATE_TYPE) => void
 }
 
-export function DatePickerHeader({ dateType, onDateTypeChange }: PickerHeaderProps) {
+export function DashboardDatePickerHeader({ dateType, onDateTypeChange }: PickerHeaderProps) {
     return (
         <PopupHeader>
             <FilterLabel>סנן לפי:</FilterLabel>
