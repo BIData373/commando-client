@@ -127,7 +127,7 @@ const Section = styled.div`
   align-self: stretch;
   justify-self: end;
 
-  @media (max-width: 1100px) {
+  @media (max-width: 1300px) {
     grid-column: 2;
     grid-row: 2;
     width: 100%;

@@ -63,7 +63,7 @@ const Section = styled.div`
   flex-direction: column;
   gap: 24px;
 
-  @media (max-width: 1100px) {
+  @media (max-width: 1300px) {
     grid-column: 1 / -1;
     grid-row: 3;
   }

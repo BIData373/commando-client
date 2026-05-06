@@ -153,7 +153,7 @@ const GridLayout = styled.div`
   grid-template-columns: 1fr 450px;
   gap: 72px;
 
-  @media (max-width: 1100px) {
+  @media (max-width: 1300px) {
     grid-template-columns: 1fr 1fr;
     gap: 48px 24px;
   }
