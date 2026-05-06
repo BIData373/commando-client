@@ -89,8 +89,8 @@ body,
   --header-bg: oklch(0.14 0.035 258);
 
   /* Status colors */
-  --status-done: oklch(0.70 0.22 145);
-  --status-done-bg: oklch(0.98 0.04 145);
+  --status-done: #52c41a;
+  --status-done-bg: #f6ffed;
   --status-progress: #2F54EB;
   --status-progress-bg: #F0F5FF;
   --status-pending: #FA541C;

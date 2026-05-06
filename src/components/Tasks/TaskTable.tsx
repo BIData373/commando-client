@@ -1,20 +1,20 @@
-import { useState } from 'react'
 import styled from '@emotion/styled'
 import { type ColumnDef, type RowSelectionState } from '@tanstack/react-table'
 import { differenceInDays, format, startOfToday } from 'date-fns'
 import { AlertTriangle, MoreVertical, Paperclip } from 'lucide-react'
-import { Checkbox } from '../ui/checkbox'
-import { DataTable } from '../ui/data-table'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
-import { StatusCell } from './StatusCell'
-import { ResponsibleCell } from './ResponsibleCell'
-import { TopicCell } from './TopicCell'
-import { RowActionsMenu } from './RowActionsMenu'
-import { BulkActionsBar } from './BulkActionsBar'
+import { useState } from 'react'
+import type { DirectiveStatus } from '#/utils/statusUtils'
 import type { Task } from '../../data/Tasks'
 import FlagIcon from '../shared/FlagIcon'
 import HighlightMatch from '../shared/HighlightMatch'
-import type { DirectiveStatus } from '../shared/StatusTag'
+import { Checkbox } from '../ui/checkbox'
+import { DataTable } from '../ui/data-table'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+import { BulkActionsBar } from './BulkActionsBar'
+import { ResponsibleCell } from './ResponsibleCell'
+import { RowActionsMenu } from './RowActionsMenu'
+import { StatusCell } from './StatusCell'
+import { TopicCell } from './TopicCell'
 
 export type DeadlineType = 'date' | 'immediate' | 'ongoing'
 
@@ -109,20 +109,20 @@ function TaskTable({
       accessorKey: 'title',
       header: 'ההנחיה',
       size: 832,
-      cell: ({ row: { original :{ title, details, flagged } } }) => (
-          <TitleCell>
-            {flagged && <FlagIcon />}
-            {details ? (
-              <>
-                <TitlePart>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitlePart>
-                <TitleSeparator> - </TitleSeparator>
-                <DetailsPart>{searchQuery ? <HighlightMatch text={details} query={searchQuery} variant="mark" /> : details}</DetailsPart>
-              </>
-            ) : (
-              <TitleFull>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitleFull>
-            )}
-          </TitleCell>
-        ),
+      cell: ({ row: { original: { title, details, flagged } } }) => (
+        <TitleCell>
+          {flagged && <FlagIcon />}
+          {details ? (
+            <>
+              <TitlePart>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitlePart>
+              <TitleSeparator> - </TitleSeparator>
+              <DetailsPart>{searchQuery ? <HighlightMatch text={details} query={searchQuery} variant="mark" /> : details}</DetailsPart>
+            </>
+          ) : (
+            <TitleFull>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitleFull>
+          )}
+        </TitleCell>
+      ),
     },
     status: {
       accessorKey: 'status',
@@ -225,7 +225,7 @@ function TaskTable({
   const actionsColumn: ColumnDef<Task> = {
     id: 'actions',
     size: 43,
-    cell: ({ row : { original: { id } } }) => (
+    cell: ({ row: { original: { id } } }) => (
       <RowActionsMenu
         trigger={
           <ActionsButton>

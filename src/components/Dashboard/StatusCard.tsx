@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import { Cell, Pie, PieChart } from 'recharts'
+import { DirectiveStatus, statusColors } from '#/utils/statusUtils'
 
 interface StatusCardProps {
   done?: number
@@ -9,18 +10,6 @@ interface StatusCardProps {
 
 const CHART_EMPTY_COLOR = 'var(--chip-bg)'
 
-const colors = {
-  done: '#D9F7BE',
-  progress: '#D6E4FF',
-  pending: '#FFF2E8'
-}
-
-const VARIANT_STYLES = {
-  done: { color: 'var(--status-done)', bg: 'var(--status-done-bg)' },
-  progress: { color: 'var(--status-progress)', bg: 'var(--status-progress-bg)' },
-  pending: { color: 'var(--status-pending)', bg: 'var(--status-pending-bg)' },
-} as const
-
 export default function StatusCard({ done = 0, inProgress = 0, pending = 0 }: StatusCardProps) {
   const total = done + inProgress + pending
 
@@ -28,7 +17,7 @@ export default function StatusCard({ done = 0, inProgress = 0, pending = 0 }: St
     ? [{ value: 1 }]
     : [{ value: done }, { value: inProgress }, { value: pending }]
 
-  const cellFills = total === 0 ? [CHART_EMPTY_COLOR] : Object.values(colors)
+  const cellFills = total === 0 ? [CHART_EMPTY_COLOR] : Object.values(statusColors).map(color => color.bgColor)
 
   return (
     <Section>
@@ -58,15 +47,15 @@ export default function StatusCard({ done = 0, inProgress = 0, pending = 0 }: St
         <StatusRow>
           <StatusItem>
             <StatusCount>{pending}</StatusCount>
-            <StatusBadge $variant="pending">טרם בוצע</StatusBadge>
+            <StatusBadge $variant={DirectiveStatus.NOT_STARTED}>טרם בוצע</StatusBadge>
           </StatusItem>
           <StatusItem>
             <StatusCount>{inProgress}</StatusCount>
-            <StatusBadge $variant="progress">בעבודה</StatusBadge>
+            <StatusBadge $variant={DirectiveStatus.IN_PROGRESS}>בעבודה</StatusBadge>
           </StatusItem>
           <StatusItem>
             <StatusCount>{done}</StatusCount>
-            <StatusBadge $variant="done">בוצע</StatusBadge>
+            <StatusBadge $variant={DirectiveStatus.COMPLETED}>בוצע</StatusBadge>
           </StatusItem>
         </StatusRow>
       </Card>
@@ -165,7 +154,7 @@ const StatusCount = styled.span`
   color: var(--foreground);
 `
 
-const StatusBadge = styled.span<{ $variant: keyof typeof VARIANT_STYLES }>`
+const StatusBadge = styled.span<{ $variant: DirectiveStatus }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -174,6 +163,6 @@ const StatusBadge = styled.span<{ $variant: keyof typeof VARIANT_STYLES }>`
   font-size: 20px;
   font-weight: 400;
   white-space: nowrap;
-  color: ${({ $variant }) => VARIANT_STYLES[$variant].color};
-  background: ${({ $variant }) => VARIANT_STYLES[$variant].bg};
+  color: ${({ $variant }) => statusColors[$variant].fontColor};
+  background: ${({ $variant }) => statusColors[$variant].bgColor};
 `
