@@ -19,9 +19,9 @@ function TaskAssigneeExpansion({ row, onUpdateRow, onCollapse }: TaskAssigneeExp
 
   function handleRemoveAssignee(assigneeId: number) {
     const nextIds = row.assigneeIds.filter((id) => id !== assigneeId)
-    const nextDetails = { ...row.assigneeDetails }
-
-    delete nextDetails[assigneeId]
+    const nextDetails = Object.fromEntries(
+      Object.entries(row.assigneeDetails).filter(([id]) => Number(id) !== assigneeId)
+    )
 
     onUpdateRow({
       assigneeIds: nextIds,

@@ -27,9 +27,9 @@ function NewTask() {
     navigate({ to: '/workspace/$urlName/tasks', params: { urlName }, search: { view } })
   }
 
-  if (mode === 'discussion') {
-    return <CreateDiscussionModal onClose={handleClose} />
-  }
-
-  return <CreateTaskModal onClose={handleClose} />
+  return mode === 'discussion' ? (
+    <CreateDiscussionModal onClose={handleClose} />
+  ) : (
+    <CreateTaskModal onClose={handleClose} />
+  )
 }

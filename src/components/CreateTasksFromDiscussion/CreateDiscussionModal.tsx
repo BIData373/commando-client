@@ -42,6 +42,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
   const setField = <K extends keyof DiscussionFormState>(key: K, value: DiscussionFormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }))
 
+  const isCurrentStepTasks = currentStep === Steps.Tasks;
   // ─── Source / Name Handlers ───────────────────────────────────────────────
 
   function handleSourceSelect(name: string) {
@@ -112,7 +113,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
               <StepsRow>
                 <StepItem>
                   <StepLabel $active>פרטי הדיון</StepLabel>
-                  {currentStep === Steps.Tasks ? (
+                  {isCurrentStepTasks ? (
                     <StepCircleCompleted>
                       <Check size={12} />
                     </StepCircleCompleted>
@@ -121,15 +122,15 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
                   )}
                 </StepItem>
 
-                <StepTail $completed={currentStep === Steps.Tasks} />
+                <StepTail $completed={isCurrentStepTasks} />
 
                 <StepItem>
-                  <StepLabel $active={currentStep === Steps.Tasks}>יצירת הנחיות</StepLabel>
-                  <StepCircle $active={currentStep === Steps.Tasks}>2</StepCircle>
+                  <StepLabel $active={isCurrentStepTasks}>יצירת הנחיות</StepLabel>
+                  <StepCircle $active={isCurrentStepTasks}>2</StepCircle>
                 </StepItem>
               </StepsRow>
 
-              {currentStep === Steps.Tasks && (
+              {isCurrentStepTasks && (
                 <DiscussionInfoRow>
                   <DiscussionInfoText>
                     <DiscussionDate>{form.sourceDate}</DiscussionDate>

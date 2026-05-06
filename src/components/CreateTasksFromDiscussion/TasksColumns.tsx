@@ -8,6 +8,10 @@ import DeadlineCell from './DeadlineCell'
 import AssigneeTableCell from './AssigneeTableCell'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
+export enum TaskColumnId {
+  Title = 'title',
+  Notes = 'notes',
+}
 
 export interface TaskRow {
   id: string
@@ -33,7 +37,7 @@ const MAX_HEIGHT = 40
 function handleTextareaChange(
   e: React.ChangeEvent<HTMLTextAreaElement>,
   id: string,
-  field: 'title' | 'notes',
+  field: TaskColumnId,
   updateRow: TaskTableMeta['updateRow'],
 ) {
   const textarea = e.target
@@ -96,7 +100,7 @@ const columns: ColumnDef<TaskRow>[] = [
           <CellTextarea
             $color="rgba(0, 0, 0, 0.88)"
             value={title}
-            onChange={(e) => handleTextareaChange(e, id, 'title', updateRow)}
+            onChange={(e) => handleTextareaChange(e, id, TaskColumnId.Title, updateRow)}
             onKeyDown={handleCellKeyDown}
             placeholder="הנחיה"
             dir="rtl"
@@ -143,7 +147,7 @@ const columns: ColumnDef<TaskRow>[] = [
         <TextareaCellWrapper>
           <CellTextarea
             value={notes}
-            onChange={(e) => handleTextareaChange(e, id, 'notes', updateRow)}
+            onChange={(e) => handleTextareaChange(e, id, TaskColumnId.Notes, updateRow)}
             onKeyDown={handleCellKeyDown}
             placeholder=""
             dir="rtl"

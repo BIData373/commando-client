@@ -12,13 +12,11 @@ interface TaskRowDeleteButtonProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function TaskRowDeleteButton({ hasTitle, isLast, onDelete }: TaskRowDeleteButtonProps) {
-  if (!hasTitle || isLast) return null
-
-  return (
+  return hasTitle && !isLast ? (
     <DeleteButton onClick={onDelete}>
       <Trash2 size={14} />
     </DeleteButton>
-  )
+  ) : null
 }
 
 export default TaskRowDeleteButton
