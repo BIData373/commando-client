@@ -198,14 +198,17 @@ const Overlay = styled(DialogPrimitive.Overlay)`
   z-index: var(--z-dropdown);
 `
 
-const ModalCard = styled(DialogPrimitive.Content)<{ $step: Steps }>`
+const ModalCard = styled(DialogPrimitive.Content) <{ $step: Steps }>`
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: ${({ $step }) => ($step === Steps.Discussion ? '753px' : '1550px')};
+  width: 100%;
+  max-width: ${({ $step }) =>
+    $step === Steps.Discussion ? '753px' : '1550px'};
   transition: width 300ms ease;
-  height: 796px;
+  height: min(796px, calc(100vh - 48px));
+  overflow-y: auto;
   overflow: hidden;
   background: white;
   border: 1px solid #d9d9d9;
