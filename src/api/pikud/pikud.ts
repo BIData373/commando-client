@@ -28,7 +28,8 @@ import type {
 
 import type {
   CreatePikudDto,
-  PikudDto
+  PikudDto,
+  UpdatePikudDto
 } from '.././model';
 
 
@@ -36,97 +37,96 @@ import type {
 
 
 export const createPikud = (
-  createPikudDto: CreatePikudDto, options?: AxiosRequestConfig
-): Promise<AxiosResponse<PikudDto>> => {
-
-
-  return axios.default.post(
-    `/pikud`,
-    createPikudDto, options
-  );
-}
+    createPikudDto: CreatePikudDto, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<PikudDto>> => {
+    
+    
+    return axios.default.post(
+      `/pikud`,
+      createPikudDto,options
+    );
+  }
 
 
 
 export const getCreatePikudMutationOptions = <TError = AxiosError<unknown>,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof createPikud>>, TError, { data: CreatePikudDto }, TContext>, axios?: AxiosRequestConfig }
-  ): UseMutationOptions<Awaited<ReturnType<typeof createPikud>>, TError, { data: CreatePikudDto }, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPikud>>, TError,{data: CreatePikudDto}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof createPikud>>, TError,{data: CreatePikudDto}, TContext> => {
 
-  const mutationKey = ['createPikud'];
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?
-    options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+const mutationKey = ['createPikud'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey, }, axios: undefined };
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
 
 
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPikud>>, {data: CreatePikudDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPikud(data,axiosOptions)
+        }
+
+        
 
 
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPikud>>, { data: CreatePikudDto }> = (props) => {
-    const { data } = props ?? {};
+  return  { mutationFn, ...mutationOptions }}
 
-    return createPikud(data, axiosOptions)
+    export type CreatePikudMutationResult = NonNullable<Awaited<ReturnType<typeof createPikud>>>
+    export type CreatePikudMutationBody = CreatePikudDto
+    export type CreatePikudMutationError = AxiosError<unknown>
+
+    export const useCreatePikud = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPikud>>, TError,{data: CreatePikudDto}, TContext>, axios?: AxiosRequestConfig}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createPikud>>,
+        TError,
+        {data: CreatePikudDto},
+        TContext
+      > => {
+
+      const mutationOptions = getCreatePikudMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    export const listPikuds = (
+     options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<PikudDto[]>> => {
+    
+    
+    return axios.default.get(
+      `/pikud`,options
+    );
   }
 
 
 
 
-  return { mutationFn, ...mutationOptions }
-}
+export const getListPikudsQueryKey = () => {
+    return [
+    `/pikud`
+    ] as const;
+    }
 
-export type CreatePikudMutationResult = NonNullable<Awaited<ReturnType<typeof createPikud>>>
-export type CreatePikudMutationBody = CreatePikudDto
-export type CreatePikudMutationError = AxiosError<unknown>
-
-export const useCreatePikud = <TError = AxiosError<unknown>,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof createPikud>>, TError, { data: CreatePikudDto }, TContext>, axios?: AxiosRequestConfig }
-  ): UseMutationResult<
-    Awaited<ReturnType<typeof createPikud>>,
-    TError,
-    { data: CreatePikudDto },
-    TContext
-  > => {
-
-  const mutationOptions = getCreatePikudMutationOptions(options);
-
-  return useMutation(mutationOptions);
-}
-export const listPikuds = (
-  createPikudDto: CreatePikudDto[], options?: AxiosRequestConfig
-): Promise<AxiosResponse<void>> => {
-
-
-  return axios.default.get(
-    `/pikud`, options
-  );
-}
-
-
-
-
-export const getListPikudsQueryKey = (createPikudDto?: CreatePikudDto[],) => {
-  return [
-    `/pikud`, createPikudDto
-  ] as const;
-}
-
-
-export const getListPikudsQueryOptions = <TData = Awaited<ReturnType<typeof listPikuds>>, TError = AxiosError<unknown>>(createPikudDto: CreatePikudDto[], options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof listPikuds>>, TError, TData>, axios?: AxiosRequestConfig }
+    
+export const getListPikudsQueryOptions = <TData = Awaited<ReturnType<typeof listPikuds>>, TError = AxiosError<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPikuds>>, TError, TData>, axios?: AxiosRequestConfig}
 ) => {
 
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getListPikudsQueryKey(createPikudDto);
+  const queryKey =  queryOptions?.queryKey ?? getListPikudsQueryKey();
 
+  
 
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPikuds>>> = ({ signal }) => listPikuds({ signal, ...axiosOptions });
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof listPikuds>>> = ({ signal }) => listPikuds(createPikudDto, { signal, ...axiosOptions });
+      
 
+      
 
-
-
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof listPikuds>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPikuds>>, TError, TData> & { queryKey: QueryKey }
 }
 
 export type ListPikudsQueryResult = NonNullable<Awaited<ReturnType<typeof listPikuds>>>
@@ -135,73 +135,188 @@ export type ListPikudsQueryError = AxiosError<unknown>
 
 
 export function useListPikuds<TData = Awaited<ReturnType<typeof listPikuds>>, TError = AxiosError<unknown>>(
-  createPikudDto: CreatePikudDto[], options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof listPikuds>>, TError, TData>, axios?: AxiosRequestConfig }
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPikuds>>, TError, TData>, axios?: AxiosRequestConfig}
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListPikudsQueryOptions(options)
 
-  const queryOptions = getListPikudsQueryOptions(createPikudDto, options)
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey;
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
 
 
-export const pikudController = (
-  id: number, options?: AxiosRequestConfig
-): Promise<AxiosResponse<void>> => {
-
-
-  return axios.default.delete(
-    `/pikud/${id}`, options
-  );
-}
-
-
-
-export const getPikudControllerMutationOptions = <TError = AxiosError<unknown>,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof pikudController>>, TError, { id: number }, TContext>, axios?: AxiosRequestConfig }
-  ): UseMutationOptions<Awaited<ReturnType<typeof pikudController>>, TError, { id: number }, TContext> => {
-
-  const mutationKey = ['pikudController'];
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?
-    options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey, }, axios: undefined };
-
-
-
-
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof pikudController>>, { id: number }> = (props) => {
-    const { id } = props ?? {};
-
-    return pikudController(id, axiosOptions)
+export const getPikud = (
+    id: number, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<PikudDto>> => {
+    
+    
+    return axios.default.get(
+      `/pikud/${id}`,options
+    );
   }
 
 
 
 
-  return { mutationFn, ...mutationOptions }
+export const getGetPikudQueryKey = (id?: number,) => {
+    return [
+    `/pikud/${id}`
+    ] as const;
+    }
+
+    
+export const getGetPikudQueryOptions = <TData = Awaited<ReturnType<typeof getPikud>>, TError = AxiosError<unknown>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPikud>>, TError, TData>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPikudQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPikud>>> = ({ signal }) => getPikud(id, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPikud>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type PikudControllerMutationResult = NonNullable<Awaited<ReturnType<typeof pikudController>>>
+export type GetPikudQueryResult = NonNullable<Awaited<ReturnType<typeof getPikud>>>
+export type GetPikudQueryError = AxiosError<unknown>
 
-export type PikudControllerMutationError = AxiosError<unknown>
 
-export const usePikudController = <TError = AxiosError<unknown>,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof pikudController>>, TError, { id: number }, TContext>, axios?: AxiosRequestConfig }
-  ): UseMutationResult<
-    Awaited<ReturnType<typeof pikudController>>,
-    TError,
-    { id: number },
-    TContext
-  > => {
 
-  const mutationOptions = getPikudControllerMutationOptions(options);
+export function useGetPikud<TData = Awaited<ReturnType<typeof getPikud>>, TError = AxiosError<unknown>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPikud>>, TError, TData>, axios?: AxiosRequestConfig}
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  return useMutation(mutationOptions);
+  const queryOptions = getGetPikudQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
 }
+
+
+
+export const updatePikud = (
+    id: number,
+    updatePikudDto: UpdatePikudDto, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<PikudDto>> => {
+    
+    
+    return axios.default.patch(
+      `/pikud/${id}`,
+      updatePikudDto,options
+    );
+  }
+
+
+
+export const getUpdatePikudMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePikud>>, TError,{id: number;data: UpdatePikudDto}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePikud>>, TError,{id: number;data: UpdatePikudDto}, TContext> => {
+
+const mutationKey = ['updatePikud'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePikud>>, {id: number;data: UpdatePikudDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updatePikud(id,data,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePikudMutationResult = NonNullable<Awaited<ReturnType<typeof updatePikud>>>
+    export type UpdatePikudMutationBody = UpdatePikudDto
+    export type UpdatePikudMutationError = AxiosError<unknown>
+
+    export const useUpdatePikud = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePikud>>, TError,{id: number;data: UpdatePikudDto}, TContext>, axios?: AxiosRequestConfig}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePikud>>,
+        TError,
+        {id: number;data: UpdatePikudDto},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdatePikudMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    export const deletePikud = (
+    id: number, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<PikudDto>> => {
+    
+    
+    return axios.default.delete(
+      `/pikud/${id}`,options
+    );
+  }
+
+
+
+export const getDeletePikudMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePikud>>, TError,{id: number}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof deletePikud>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deletePikud'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deletePikud>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deletePikud(id,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeletePikudMutationResult = NonNullable<Awaited<ReturnType<typeof deletePikud>>>
+    
+    export type DeletePikudMutationError = AxiosError<unknown>
+
+    export const useDeletePikud = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePikud>>, TError,{id: number}, TContext>, axios?: AxiosRequestConfig}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deletePikud>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getDeletePikudMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    

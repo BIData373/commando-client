@@ -5,9 +5,20 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { PikudDtoIcon } from './pikudDtoIcon';
+import type { PikudDtoDeletedAt } from './pikudDtoDeletedAt';
+import type { PikudDtoDeletedBy } from './pikudDtoDeletedBy';
 
 export interface PikudDto {
+  createdAt: string;
+  createdBy: number;
+  updatedAt: string;
+  updatedBy: number;
+  /** @nullable */
+  deletedAt: PikudDtoDeletedAt;
+  /** @nullable */
+  deletedBy: PikudDtoDeletedBy;
+  id: number;
   name: string;
-  icon: PikudDtoIcon;
+  /** @nullable */
+  icon: string | null;
 }
