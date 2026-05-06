@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { Users } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import type { Task } from '#/data/Tasks'
 import addAssignee from '../../assets/icons/addPerson.svg'
 import subject from '../../assets/icons/subjects.svg'
 import { Button } from '../ui/button'
@@ -16,15 +17,9 @@ interface DistributionTabConfig {
   label: string
 }
 
-interface DistributionItem {
-  name: string
-  count: number
-}
-
 interface SystemDistributionProps {
   onSetAssignees?: () => void
-  distribution?: DistributionItem[]
-  tagDistribution?: DistributionItem[]
+  tasks: Task[]
 }
 
 
@@ -51,8 +46,33 @@ const HEADER_LABELS = {
   [DistributionTab.ATTENTION]: { name: 'נושא', count: 'כמות הנחיות' },
 }
 
-export default function SystemDistribution({ onSetAssignees, distribution, tagDistribution }: SystemDistributionProps) {
+export default function SystemDistribution({ onSetAssignees, tasks }: SystemDistributionProps) {
   const [activeTab, setActiveTab] = useState<DistributionTab>(DistributionTab.LOAD)
+
+  const countDistribution = useMemo(() => {
+    const responsibles = new Map<string, number>()
+    const tags = new Map<string, number>()
+    for (const task of tasks) {
+      for (const tag of task.tags) {
+        tags.set(tag, (tags.get(tag) ?? 0) + 1)
+      }
+      if (task.responsible) {
+        const { name } = task.responsible
+        responsibles.set(name, (responsibles.get(name) ?? 0) + 1)
+      }
+    }
+    return {
+      distribution: Array.from(responsibles.entries())
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count),
+      tagDistribution: Array.from(tags.entries())
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count)
+    }
+  }, [tasks])
+
+  const { distribution, tagDistribution } = countDistribution
+
 
   function handleTabClick(tabId: DistributionTab) {
     setActiveTab(tabId)

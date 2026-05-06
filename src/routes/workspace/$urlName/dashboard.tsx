@@ -3,10 +3,11 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { isWithinInterval } from 'date-fns'
 import { useMemo, useState } from 'react'
 import type { DateRange } from 'react-day-picker'
-import { DatePicker } from '#/components/Dashboard/DatePicker/DatePicker'
+import { DashboardDatePicker } from '#/components/Dashboard/DashboardDatePicker/DashboardDatePicker'
 import { TitleSection } from '#/components/Dashboard/TileSection'
 import { INITIAL_TASKS, type Task } from '#/data/Tasks'
 import { DATE_TYPE } from '#/utils/dataTypeUtils'
+import { DirectiveStatus } from '#/utils/statusUtils'
 import FocusedInstructions from '../../../components/Dashboard/FocusedInstructions'
 import RecentlyCompleted from '../../../components/Dashboard/RecentlyCompleted'
 import StatusCard from '../../../components/Dashboard/StatusCard'
@@ -65,37 +66,6 @@ function Dashboard() {
     return tasks
   }, [range, dataType])
 
-  const statusCounts = useMemo(() => ({
-    done: filteredTasks.filter((t) => t.status === 'completed').length,
-    inProgress: filteredTasks.filter((t) => t.status === 'in_progress').length,
-    pending: filteredTasks.filter((t) => t.status === 'not_started').length,
-  }), [filteredTasks])
-
-  const distribution = useMemo(() => {
-    const counts = new Map<string, number>()
-    for (const task of filteredTasks) {
-      if (task.responsible) {
-        const { name } = task.responsible
-        counts.set(name, (counts.get(name) ?? 0) + 1)
-      }
-    }
-    return Array.from(counts.entries())
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count)
-  }, [filteredTasks])
-
-  const tagDistribution = useMemo(() => {
-    const counts = new Map<string, number>()
-    for (const task of filteredTasks) {
-      for (const tag of task.tags) {
-        counts.set(tag, (counts.get(tag) ?? 0) + 1)
-      }
-    }
-    return Array.from(counts.entries())
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count)
-  }, [filteredTasks])
-
   function handleSetAssignees() {
     navigate({ to: '/workspace/$urlName/settings/assignees', params: { urlName } })
   }
@@ -104,7 +74,7 @@ function Dashboard() {
     <PageWrapper>
 
       <ContentArea>
-        <DatePicker
+        <DashboardDatePicker
           dateType={dataType}
           onDateTypeChange={setDataType}
           setRange={setRange}
@@ -112,12 +82,11 @@ function Dashboard() {
 
         <GridLayout>
           <FocusedInstructions urlName={urlName} tasks={filteredTasks} />
-          <StatusCard done={statusCounts.done} inProgress={statusCounts.inProgress} pending={statusCounts.pending} />
+          <StatusCard tasks={filteredTasks} />
           <RecentlyCompleted urlName={urlName} tasks={filteredTasks} />
           <SystemDistribution
             onSetAssignees={handleSetAssignees}
-            distribution={distribution}
-            tagDistribution={tagDistribution}
+            tasks={filteredTasks}
           />
         </GridLayout>
       </ContentArea>

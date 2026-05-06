@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import { DirectiveStatus } from '#/utils/statusUtils'
 import compleateInstruction from '../../assets/icons/completeInstruction.svg'
 import type { Task } from '../../data/Tasks'
 import FlagIcon from '../shared/FlagIcon'
@@ -13,7 +14,7 @@ interface RecentlyCompletedProps {
 }
 
 export default function RecentlyCompleted({ urlName, tasks }: RecentlyCompletedProps) {
-  const completedTasks = tasks.filter((t) => t.status === 'completed')
+  const completedTasks = tasks.filter((t) => t.status === DirectiveStatus.COMPLETED)
 
   return (
     <Section>

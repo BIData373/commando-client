@@ -1,16 +1,23 @@
 import styled from '@emotion/styled'
+import { useMemo } from 'react'
 import { Cell, Pie, PieChart } from 'recharts'
+import type { Task } from '#/data/Tasks'
 import { DirectiveStatus, statusColors } from '#/utils/statusUtils'
 
 interface StatusCardProps {
-  done?: number
-  inProgress?: number
-  pending?: number
+  tasks: Task[]
 }
 
 const CHART_EMPTY_COLOR = 'var(--chip-bg)'
 
-export default function StatusCard({ done = 0, inProgress = 0, pending = 0 }: StatusCardProps) {
+export default function StatusCard({ tasks }: StatusCardProps) {
+  const statusCounts = useMemo(() => ({
+    done: tasks.filter((t) => t.status === DirectiveStatus.COMPLETED).length,
+    inProgress: tasks.filter((t) => t.status === DirectiveStatus.IN_PROGRESS).length,
+    pending: tasks.filter((t) => t.status === DirectiveStatus.NOT_STARTED).length,
+  }), [tasks])
+
+  const { done, inProgress, pending } = statusCounts
   const total = done + inProgress + pending
 
   const chartData = total === 0

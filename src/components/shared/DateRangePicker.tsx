@@ -58,10 +58,10 @@ function DateRangePicker({ triggerButton, header, footer }: DateRangePickerProps
   }
 
   return (
-    <RangeContextProvider range={state.range} onRangeChange={handleRangeSelect}>
-      <Popover.Root open={state.open} onOpenChange={handleOpenChange}>
+    <RangeContextProvider onRangeChange={handleRangeSelect}>
+      < Popover.Root open={state.open} onOpenChange={handleOpenChange} >
         {triggerButton(slotProps)}
-        <Popover.Portal>
+        < Popover.Portal >
           <PopupContent onInteractOutside={handleBlur} data-lang="he" align="end" sideOffset={8}>
             {header?.(slotProps)}
             <StyledCalendar
@@ -74,9 +74,9 @@ function DateRangePicker({ triggerButton, header, footer }: DateRangePickerProps
             />
             {footer?.(slotProps)}
           </PopupContent>
-        </Popover.Portal>
-      </Popover.Root>
-    </RangeContextProvider>
+        </Popover.Portal >
+      </Popover.Root >
+    </RangeContextProvider >
   )
 }
 
