@@ -29,6 +29,10 @@ function AssigneeRowList({
 }: AssigneeRowListProps) {
   const detailRefs = useRef<Record<number, HTMLSpanElement | null>>({})
 
+  const assignees = assigneeIds
+    .map((id) => MOCK_ASSIGNEES[id])
+    .filter(Boolean)
+
   function handleDetailInput(id: number, e: React.FormEvent<HTMLSpanElement>) {
     onDetailChange(id, e.currentTarget.textContent ?? '')
   }
@@ -52,46 +56,43 @@ function AssigneeRowList({
 
   return (
     <RowsList>
-      {assigneeIds
-        .map((id) => MOCK_ASSIGNEES[id])
-        .filter(Boolean)
-        .map((assignee) => (
-          <RowItem key={assignee.id}>
-            <RemoveButton onClick={() => onRemove(assignee.id)}>
-              <X size={14} />
-            </RemoveButton>
+      {assignees.map((assignee) => (
+        <RowItem key={assignee.id}>
+          <RemoveButton onClick={() => onRemove(assignee.id)}>
+            <X size={14} />
+          </RemoveButton>
 
-            <RowContainer>
-              {showDetail && (
-                <TextareaWrapper
-                  dir="rtl"
-                  onClick={() => handleWrapperClick(assignee.id)}
-                >
-                  {directiveTitle && (
-                    <DirectiveTitleText>
-                      {directiveTitle} -&nbsp;
-                    </DirectiveTitleText>
-                  )}
-                  <DetailEditable
-                    ref={(el) => handleDetailRef(assignee.id, el)}
-                    contentEditable
-                    suppressContentEditableWarning
-                    onInput={(e) => handleDetailInput(assignee.id, e)}
-                    onKeyDown={handleDetailKeyDown}
-                    data-placeholder={detailPlaceholder}
-                  />
-                </TextareaWrapper>
-              )}
+          <RowContainer>
+            {showDetail && (
+              <TextareaWrapper
+                dir="rtl"
+                onClick={() => handleWrapperClick(assignee.id)}
+              >
+                {directiveTitle && (
+                  <DirectiveTitleText>
+                    {directiveTitle} -&nbsp;
+                  </DirectiveTitleText>
+                )}
+                <DetailEditable
+                  ref={(el) => handleDetailRef(assignee.id, el)}
+                  contentEditable
+                  suppressContentEditableWarning
+                  onInput={(e) => handleDetailInput(assignee.id, e)}
+                  onKeyDown={handleDetailKeyDown}
+                  data-placeholder={detailPlaceholder}
+                />
+              </TextareaWrapper>
+            )}
 
-              <InfoBlock>
-                <RoleText>{assignee.role}</RoleText>
-                <AvatarCircle $color={assignee.colorToken}>
-                  {assignee.initials}
-                </AvatarCircle>
-              </InfoBlock>
-            </RowContainer>
-          </RowItem>
-        ))}
+            <InfoBlock>
+              <RoleText>{assignee.role}</RoleText>
+              <AvatarCircle $color={assignee.colorToken}>
+                {assignee.initials}
+              </AvatarCircle>
+            </InfoBlock>
+          </RowContainer>
+        </RowItem>
+      ))}
     </RowsList>
   )
 }

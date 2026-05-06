@@ -53,47 +53,45 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
     if (!open) setCalendarFor(null)
   }
 
-  function renderDisplay() {
-    if (!deadlineType) return <PlaceholderText>תג&quot;ב</PlaceholderText>
-    if (deadlineType === 'immediate') {
-      return <DeadlineTag $type="immediate">מיידי</DeadlineTag>
-    }
-    if (deadlineType === 'ongoing') {
-      return (
-        <DisplayRow>
-          <DeadlineTag $type="ongoing">שוטף</DeadlineTag>
-          {dueDate && <DateText>{formatDate(dueDate)}</DateText>}
-        </DisplayRow>
-      )
-    }
-    if (dueDate) {
-      return <DateText>{formatDate(dueDate)}</DateText>
-    }
-    return <DeadlineValueText>{DEADLINE_LABELS[deadlineType]}</DeadlineValueText>
-  }
-
   return (
     <DeadlineCellWrapper $open={isOpen}>
       <Popover open={isOpen} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
-          <DeadlineTrigger>{renderDisplay()}</DeadlineTrigger>
+          <DeadlineTrigger>
+            {!deadlineType ? (
+              <PlaceholderText>תג&quot;ב</PlaceholderText>
+            ) : deadlineType === 'immediate' ? (
+              <DeadlineTag $type="immediate">מיידי</DeadlineTag>
+            ) : deadlineType === 'ongoing' ? (
+              <DisplayRow>
+                <DeadlineTag $type="ongoing">שוטף</DeadlineTag>
+                {dueDate && <DateText>{formatDate(dueDate)}</DateText>}
+              </DisplayRow>
+            ) : dueDate ? (
+              <DateText>{formatDate(dueDate)}</DateText>
+            ) : (
+              <DeadlineValueText>
+                {DEADLINE_LABELS[deadlineType]}
+              </DeadlineValueText>
+            )}
+          </DeadlineTrigger>
         </PopoverTrigger>
         <DeadlineDropdownContent align="start" sideOffset={1}>
           <DropdownRow>
             <DropdownHeader>תג&quot;ב</DropdownHeader>
-            {DEADLINE_TYPES.map((type) => {
-              const hasArrow = type === 'date' || type === 'ongoing'
-              return (
-                <DeadlineOption
-                  key={type}
-                  $active={calendarFor === type}
-                  onClick={() => handleOptionClick(type)}
-                >
-                  <DeadlineOptionText>{DEADLINE_LABELS[type]}</DeadlineOptionText>
-                  {hasArrow && <ChevronLeft size={12} />}
-                </DeadlineOption>
-              )
-            })}
+            {DEADLINE_TYPES.map((type) => (
+              <DeadlineOption
+                key={type}
+                $active={calendarFor === type}
+                onClick={() => handleOptionClick(type)}
+              >
+                <DeadlineOptionText>{DEADLINE_LABELS[type]}</DeadlineOptionText>
+
+                {(type === 'date' || type === 'ongoing') && (
+                  <ChevronLeft size={12} />
+                )}
+              </DeadlineOption>
+            ))}
             {calendarFor && (
               <CalendarPanel>
                 <Calendar

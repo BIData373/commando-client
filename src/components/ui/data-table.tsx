@@ -1,4 +1,5 @@
 import { Fragment } from 'react'
+import styled from '@emotion/styled'
 import {
   flexRender,
   getCoreRowModel,
@@ -67,6 +68,11 @@ export function DataTable<TData>({
     </colgroup>
   )
 
+  const rows = table.getRowModel().rows.map((row) => ({
+    row,
+    expansionContent: renderRowExpansion?.(row),
+  }))
+
   return (
     <Table>
       {colgroup}
@@ -84,36 +90,30 @@ export function DataTable<TData>({
         ))}
       </TableHeader>
       <TableBody>
-        {table.getRowModel().rows.length ? (
-          table.getRowModel().rows.map((row) => {
-            const expansionContent = renderRowExpansion?.(row)
-            return (
-              <Fragment key={row.id}>
-                <TableRow
-                  data-state={row.getIsSelected() ? 'selected' : undefined}
-                  data-highlighted={highlightedRowIds?.has(row.id) ? '' : undefined}
-                  onClick={onRowClick ? () => onRowClick(row) : undefined}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                  {renderRowOverlay?.(row)}
-                </TableRow>
-                {expansionContent != null && (
-                  <tr data-expansion-row="">
-                    <td
-                      colSpan={columns.length}
-                      style={{ padding: 0, border: 'none', height: 'auto', background: '#f5f5f5' }}
-                    >
-                      {expansionContent}
-                    </td>
-                  </tr>
-                )}
-              </Fragment>
-            )
-          })
+        {rows.length ? (
+          rows.map(({ row, expansionContent }) => (
+            <Fragment key={row.id}>
+              <TableRow
+                data-state={row.getIsSelected() ? 'selected' : undefined}
+                data-highlighted={highlightedRowIds?.has(row.id) ? '' : undefined}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+                {renderRowOverlay?.(row)}
+              </TableRow>
+              {expansionContent != null && (
+                <tr data-expansion-row="">
+                  <ExpansionCell colSpan={columns.length}>
+                    {expansionContent}
+                  </ExpansionCell>
+                </tr>
+              )}
+            </Fragment>
+          ))
         ) : (
           <TableRow>
             <TableCell colSpan={columns.length}>אין נתונים להצגה</TableCell>
@@ -123,3 +123,12 @@ export function DataTable<TData>({
     </Table>
   )
 }
+
+// ─── Styled Components ─────────────────────────────────────────────────────
+
+const ExpansionCell = styled.td`
+  padding: 0;
+  border: none;
+  height: auto;
+  background: #f5f5f5;
+`

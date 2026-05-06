@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import styled from '@emotion/styled'
-import { type Row } from '@tanstack/react-table'
 import { DataTable } from '../ui/data-table'
 import columns, { type TaskRow, type TaskTableMeta } from './TasksColumns'
 import TaskAssigneeExpansion from './TaskAssigneeExpansion'
@@ -32,6 +31,14 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
   const [rows, setRows] = useState<TaskRow[]>([createEmptyRow()])
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
 
+  function removeExpandedRow(id: string) {
+    setExpandedRows((prev) => {
+      const next = new Set(prev)
+      next.delete(id)
+      return next
+    })
+  }
+
   function updateRow(id: string, updates: Partial<TaskRow>) {
     setRows((prev) => {
       const next = prev.map((r) => (r.id === id ? { ...r, ...updates } : r))
@@ -47,11 +54,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
       if (newIds.length > 1) {
         setExpandedRows((prev) => new Set(prev).add(id))
       } else {
-        setExpandedRows((prev) => {
-          const next = new Set(prev)
-          next.delete(id)
-          return next
-        })
+        removeExpandedRow(id)
       }
     }
   }
@@ -71,11 +74,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
       if (next.length === 0) return [createEmptyRow()]
       return next
     })
-    setExpandedRows((prev) => {
-      const next = new Set(prev)
-      next.delete(id)
-      return next
-    })
+    removeExpandedRow(id)
   }
 
   function handleSave() {
@@ -87,31 +86,6 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
 
   const meta: TaskTableMeta = { updateRow, expandedRows, toggleRowExpansion }
 
-  function renderRowOverlay(row: Row<TaskRow>) {
-    return (
-      <TaskRowDeleteButton
-        hasTitle={row.original.title.trim().length > 0}
-        isLast={row.index === rows.length - 1}
-        onDelete={() => deleteRow(row.original.id)}
-      />
-    )
-  }
-
-  function renderRowExpansion(row: Row<TaskRow>) {
-    const task = row.original
-    const shouldShowExpansion =
-      task.assigneeIds.length > 1 && expandedRows.has(task.id)
-
-    if (!shouldShowExpansion) return null
-
-    return (
-      <TaskAssigneeExpansion
-        row={task}
-        onUpdateRow={(updates) => updateRow(task.id, updates)}
-        onCollapse={() => toggleRowExpansion(task.id)}
-      />
-    )
-  }
 
   return (
     <TableWrapper>
@@ -121,8 +95,22 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
           data={rows}
           getRowId={(row) => row.id}
           meta={meta}
-          renderRowOverlay={renderRowOverlay}
-          renderRowExpansion={renderRowExpansion}
+          renderRowOverlay={(row) => (
+            <TaskRowDeleteButton
+              hasTitle={row.original.title.trim().length > 0}
+              isLast={row.index === rows.length - 1}
+              onDelete={() => deleteRow(row.original.id)}
+            />
+          )}
+          renderRowExpansion={(row) =>
+            row.original.assigneeIds.length > 1 && expandedRows.has(row.original.id) ? (
+              <TaskAssigneeExpansion
+                row={row.original}
+                onUpdateRow={(updates) => updateRow(row.original.id, updates)}
+                onCollapse={() => toggleRowExpansion(row.original.id)}
+              />
+            ) : null
+          }
         />
       </TableOuterContainer>
 

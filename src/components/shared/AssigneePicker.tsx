@@ -21,10 +21,15 @@ function AssigneePicker({
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
 
-  const filteredAssignees = Object.values(MOCK_ASSIGNEES).filter((assignee) => {
-    if (!search.trim()) return true
-    return assignee.name.includes(search) || assignee.role.includes(search)
-  })
+  const filteredAssignees = Object.values(MOCK_ASSIGNEES)
+    .filter((assignee) => {
+      if (!search.trim()) return true
+      return assignee.name.includes(search) || assignee.role.includes(search)
+    })
+    .map((assignee) => ({
+      ...assignee,
+      selected: selectedAssignees.includes(assignee.id),
+    }))
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearch(e.target.value)
@@ -63,29 +68,26 @@ function AssigneePicker({
         onOpenAutoFocus={(e) => e.preventDefault()}
         onWheel={(e) => e.stopPropagation()}
       >
-        {filteredAssignees.map((assignee) => {
-          const selected = selectedAssignees.includes(assignee.id)
+        {filteredAssignees.map((assignee) => (
+          <AssigneeOption
+            key={assignee.id}
+            $selected={assignee.selected}
+            type="button"
+            onClick={() => handleAssigneeClick(assignee.id)}
+          >
+            <AssigneeOptionEnd>
+              <AvatarCircle $color={assignee.colorToken}>
+                {assignee.initials}
+              </AvatarCircle>
 
-          return (
-            <AssigneeOption
-              key={assignee.id}
-              $selected={selected}
-              type="button"
-              onClick={() => handleAssigneeClick(assignee.id)}
-            >
-              <AssigneeOptionEnd>
-                <AvatarCircle $color={assignee.colorToken}>
-                  {assignee.initials}
-                </AvatarCircle>
-                <AssigneeOptionName $selected={selected}>
-                  {assignee.name}
-                </AssigneeOptionName>
-              </AssigneeOptionEnd>
+              <AssigneeOptionName $selected={assignee.selected}>
+                {assignee.name}
+              </AssigneeOptionName>
+            </AssigneeOptionEnd>
 
-              {selected && <StyleCheck size={18} />}
-            </AssigneeOption>
-          )
-        })}
+            {assignee.selected && <StyleCheck size={18} />}
+          </AssigneeOption>
+        ))}
 
         <CreateNewButton type="button" onClick={handleCreateNew}>
           צור אחראי חדש

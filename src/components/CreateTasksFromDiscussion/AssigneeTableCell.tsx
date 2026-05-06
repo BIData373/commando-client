@@ -21,28 +21,26 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
       ? assigneeIds.filter((id) => id !== assigneeId)
       : [...assigneeIds, assigneeId]
 
-    const nextDetails = { ...row.assigneeDetails }
-
-    if (isRemoving) {
-      delete nextDetails[assigneeId]
-    }
-
+    const nextDetails = isRemoving
+      ? Object.fromEntries(
+        Object.entries(row.assigneeDetails).filter(
+          ([id]) => Number(id) !== assigneeId,
+        ),
+      )
+      : row.assigneeDetails
+      
     meta.updateRow(row.id, {
       assigneeIds: nextIds,
       assigneeDetails: nextDetails,
     })
   }
 
-  if (hasMultiple && !isExpanded) {
-    return (
-      <CollapsedAssigneeButton type="button" onClick={() => meta.toggleRowExpansion(row.id)}>
-        <ChevronDown size={16} />
-        <CollapsedAssigneeLabel>{assigneeIds.length} אחראים</CollapsedAssigneeLabel>
-      </CollapsedAssigneeButton>
-    )
-  }
-
-  return (
+  return hasMultiple && !isExpanded ? (
+    <CollapsedAssigneeButton type="button" onClick={() => meta.toggleRowExpansion(row.id)}>
+      <ChevronDown size={16} />
+      <CollapsedAssigneeLabel>{assigneeIds.length} אחראים</CollapsedAssigneeLabel>
+    </CollapsedAssigneeButton>
+  ) : (
     <AssigneeCellOuter $highlighted={hasMultiple && isExpanded}>
       <AssigneePicker
         selectedAssignees={assigneeIds}
@@ -53,16 +51,16 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 
             {hasMultiple ? (
               <CompactAvatarStack>
-                {assigneeIds.map((id) => {
-                  const assignee = MOCK_ASSIGNEES[id]
-                  if (!assignee) return null
-
-                  return (
-                    <CompactStackedAvatar key={id} $color={assignee.colorToken}>
-                      {assignee.initials}
+                {assigneeIds.map((id) => (
+                  MOCK_ASSIGNEES[id] ? (
+                    <CompactStackedAvatar
+                      key={id}
+                      $color={MOCK_ASSIGNEES[id].colorToken}
+                    >
+                      {MOCK_ASSIGNEES[id].initials}
                     </CompactStackedAvatar>
-                  )
-                })}
+                  ) : null
+                ))}
               </CompactAvatarStack>
             ) : assigneeIds.length === 1 ? (
               <AssigneeTag>

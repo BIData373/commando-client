@@ -161,17 +161,6 @@ const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
 - `TitleBar` renders below bar when `title` is non-empty. `PageTitle` is an `h1`.
 - Image paths: `/logo.svg` and `/workspace-icon.png` (no `/public/` prefix).
 
-## CreateFromDiscussion Feature
-
-**DiscussionDetailsModal.tsx** — Part 1 of a 2-step wizard for creating directives from discussions. Rendered via `/workspace/:urlName/tasks/new?mode=discussion`.
-- **Step 1 (active):** Discussion details form — name (autocomplete from `MOCK_DISCUSSIONS` unique names), date (Calendar + Popover), topics (multi-select tag input from `ALL_TOPICS`), file upload (drag & drop, `.doc/.docx/.pdf` only, 30MB max).
-- **Step 2 (pending):** "יצירת הנחיות" — not yet implemented; "המשך" button is a no-op.
-- Uses same modal shell pattern as `CreateTaskModal` (Radix Dialog primitives + Emotion styled).
-- Form state: `DiscussionFormState { name, date, topics, file }` with `setField` pattern.
-- File validation: checks both extension and MIME type, displays Hebrew error messages.
-
----
-
 # Workflow (MANDATORY — follow for every file)
 
 1. **INGEST** — Review the provided file/component.
