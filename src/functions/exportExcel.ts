@@ -1,6 +1,7 @@
-import * as XLSX from 'xlsx-js-style'
 import { differenceInDays, format, startOfToday } from 'date-fns'
-import { getStatusStyle, STATUS_LABELS } from '../components/shared/StatusTag'
+import * as XLSX from 'xlsx-js-style'
+import { statusColors } from '#/utils/statusUtils'
+import { STATUS_LABELS } from '../components/shared/StatusTag'
 import { DEADLINE_LABELS } from '../components/Tasks/TaskTable'
 import type { Task } from '../data/Tasks'
 
@@ -40,23 +41,29 @@ function getDeadlineDateStyle(task: Task) {
 
 const COLUMN_DEFS: Record<string, ExportColumn<Task>> = {
   title: { header: 'ההנחיה', accessor: (t) => t.details ? `${t.title} – ${t.details}` : t.title },
-  status: { header: 'סטטוס', accessor: (t) => ({
-    value: STATUS_LABELS[t.status],
-    ...getStatusStyle(t.status),
-  }) },
+  status: {
+    header: 'סטטוס', accessor: (t) => ({
+      value: STATUS_LABELS[t.status],
+      ...statusColors[t.status],
+    })
+  },
   responsible: { header: 'אחראי', accessor: (t) => t.responsible?.name ?? '' },
-  deadlineType: { header: 'תג"ב', accessor: (t) => {
-    const typeStr = DEADLINE_LABELS[t.deadlineType]
-    const dateStr = t.dueDate ? format(t.dueDate, 'dd/MM/yy') : ''
-    const value = dateStr ? `${typeStr} | ${dateStr}` : typeStr
-    return { value, ...getDeadlineDateStyle(t) }
-  } },
-  discussionName: { header: 'מקור', accessor: (t) => {
-    const source = `${t.discussionName} | ${t.discussionDate}`
-    return t.attachmentUrl
-      ? { value: source, link: t.attachmentUrl }
-      : source
-  } },
+  deadlineType: {
+    header: 'תג"ב', accessor: (t) => {
+      const typeStr = DEADLINE_LABELS[t.deadlineType]
+      const dateStr = t.dueDate ? format(t.dueDate, 'dd/MM/yy') : ''
+      const value = dateStr ? `${typeStr} | ${dateStr}` : typeStr
+      return { value, ...getDeadlineDateStyle(t) }
+    }
+  },
+  discussionName: {
+    header: 'מקור', accessor: (t) => {
+      const source = `${t.discussionName} | ${t.discussionDate}`
+      return t.attachmentUrl
+        ? { value: source, link: t.attachmentUrl }
+        : source
+    }
+  },
   tags: { header: 'נושא', accessor: (t) => t.tags.join(', ') },
   notes: { header: 'הערות', accessor: (t) => t.notes },
   createdAt: { header: 'תאריך יצירה', accessor: (t) => format(t.createdAt, 'dd/MM/yy') },

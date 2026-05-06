@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
-import type { DirectiveStatus } from '../components/Tasks/StatusCell'
+import { createContext, type ReactNode, useContext, useState } from 'react'
+import type { DirectiveStatus } from '#/utils/statusUtils'
 import { INITIAL_TASKS, type Task } from '../data/Tasks'
 
 type NewTaskInput = Omit<Task, 'id' | 'createdAt' | 'updatedAt'>
@@ -74,8 +74,8 @@ export function TasksProvider({ children }: TasksProviderProps) {
           ...(isTarget ? { status, updatedAt: new Date() } : {}),
           relatedDirectives: updatedRelated
             ? t.relatedDirectives.map((d) =>
-                updatedResponsibleIds.has(d.user.id) ? { ...d, status } : d,
-              )
+              updatedResponsibleIds.has(d.user.id) ? { ...d, status } : d,
+            )
             : t.relatedDirectives,
         }
       })

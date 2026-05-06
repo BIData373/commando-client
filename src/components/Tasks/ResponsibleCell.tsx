@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import { X } from 'lucide-react'
 import { Popover as PopoverPrimitive } from 'radix-ui'
+import type { DirectiveStatus } from '#/utils/statusUtils'
+import { StatusTag } from '../shared/StatusTag'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { StatusTag, type DirectiveStatus } from '../shared/StatusTag'
 
 export type AvatarColor = 'cyan' | 'blue' | 'green' | 'orange' | 'gray'
 
