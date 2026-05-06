@@ -6,4 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface CreatePikudDto { [key: string]: unknown }
+export interface CreatePikudDto {
+  name: string;
+  icon?: string;
+}
