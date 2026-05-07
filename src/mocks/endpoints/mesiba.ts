@@ -9,4 +9,8 @@ export const mesibaApi = {
         if (!query.trim()) return []
         return mockMesibaIcons.filter((icon) => icon.heb_name.includes(query))
     },
+    async getByIconName(iconName: string): Promise<IMesibaIcon | null> {
+        await delay()
+        return mockMesibaIcons.find((icon) => icon.iconName === iconName) ?? null
+    },
 }

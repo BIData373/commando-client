@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { User } from 'lucide-react'
 import { useState } from 'react'
 import type { IAssignee } from '#/types'
-import { Avatar, AvatarFallback } from '../ui/avatar'
+import { AssigneeAvatar } from '../shared/AssigneeAvatar'
 import { Badge } from '../ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Separator } from '../ui/separator'
@@ -12,13 +12,6 @@ import { DeleteAssigneePopconfirm } from './DeleteAssigneePopconfirm'
 
 const MAX_VISIBLE_TAGS = 2
 
-function getInitials(name: string): string {
-    return name
-        .split(' ')
-        .map((part) => part[0])
-        .join('')
-        .slice(0, 2)
-}
 
 interface IAssigneeCardProps {
     assignee: IAssignee
@@ -46,13 +39,7 @@ export function AssigneeCard({ assignee, userNames }: IAssigneeCardProps) {
             <StyledCard onClick={onCardClick}>
                 <StyledCardHeader>
                     <CardHeaderRow>
-                        <Avatar>
-                            {assignee.emblem ? (
-                                <EmblemAvatarImg src={assignee.emblem} alt={assignee.name} />
-                            ) : (
-                                <ColoredFallback $color={assignee.color}>{getInitials(assignee.name)}</ColoredFallback>
-                            )}
-                        </Avatar>
+                        <AssigneeAvatar assignee={assignee} />
                         <CardWrapper>
                             <CardMeta>
                                 <CardTitle>{assignee.name}</CardTitle>
@@ -80,15 +67,22 @@ export function AssigneeCard({ assignee, userNames }: IAssigneeCardProps) {
 }
 
 const StyledCard = styled(Card)`
-  border-radius: 6px;
-  box-shadow: var(--card-shadow);
+  border-radius: 8px;
+  border: 1px solid #F0F0F0;
+  box-shadow: var(--card-shadow-default);
   gap: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease-in-out;
+  width: 275px;
+
+  &:hover {
+    box-shadow: var(--card-shadow-hover);
+  }
 `
 
 const StyledCardHeader = styled(CardHeader)`
     padding: 0 8px;
 `
-
 
 const StyledCardDescription = styled(CardDescription)`
   color: #BFBFBF;
@@ -116,27 +110,12 @@ const CardMeta = styled.div`
   gap: 4px;
 `
 
-const ColoredFallback = styled(AvatarFallback) <{ $color: string | null }>`
-  background: ${({ $color }) => $color ?? 'var(--chip-bg)'};
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-`
-
-const EmblemAvatarImg = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 50%;
-`
-
 const TagRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding-block-start: 12px;
+  padding-block-start: 6px;
 `
-
 
 const StyledBadge = styled(Badge)`
     border-radius: 9999px;
