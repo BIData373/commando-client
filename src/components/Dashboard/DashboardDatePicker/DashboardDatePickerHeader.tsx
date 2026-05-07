@@ -3,12 +3,12 @@ import { ChevronDown } from 'lucide-react'
 import { DATE_TYPE } from '#/utils/dataTypeUtils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../../ui/dropdown-menu'
 
-interface PickerHeaderProps {
+interface DashboardDatePickerHeaderProps {
     dateType: string
     onDateTypeChange: (type: DATE_TYPE) => void
 }
 
-export function DashboardDatePickerHeader({ dateType, onDateTypeChange }: PickerHeaderProps) {
+export function DashboardDatePickerHeader({ dateType, onDateTypeChange }: DashboardDatePickerHeaderProps) {
     return (
         <PopupHeader>
             <FilterLabel>סנן לפי:</FilterLabel>

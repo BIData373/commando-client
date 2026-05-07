@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import type { DateRange } from 'react-day-picker'
 import type { DateRangePickerSlotProps } from '#/components/shared/DateRangePicker'
 
-interface DatePickerFooterProps {
+interface DashboardDatePickerFooterProps {
   slots: DateRangePickerSlotProps
   onConfirm(range: DateRange | undefined): void
 }
 
-export function DashboardDatePickerFooter({ slots: { onRangeChange, onClose, range }, onConfirm }: DatePickerFooterProps) {
+export function DashboardDatePickerFooter({ slots: { onRangeChange, onClose, range }, onConfirm }: DashboardDatePickerFooterProps) {
   function handleClear() {
     onRangeChange(undefined)
   }

@@ -5,7 +5,7 @@ import { DashboardDatePickerFooter } from './DashboardDatePickerFooter'
 import { DashboardDatePickerHeader } from './DashboardDatePickerHeader'
 import { DashboardDatePickerTriggerButton } from './DashboardDatePickerTriggerButton'
 
-interface DatePickerProps {
+interface DashboardDatePickerProps {
   dateType: string
   onDateTypeChange(value: DATE_TYPE): void
   setRange(range: DateRange | undefined): void
@@ -15,7 +15,7 @@ export function DashboardDatePicker({
   dateType,
   onDateTypeChange,
   setRange
-}: DatePickerProps) {
+}: DashboardDatePickerProps) {
   return (
     <DateRangePicker
       triggerButton={({ range }) => <DashboardDatePickerTriggerButton label={dateType} range={range} />}
