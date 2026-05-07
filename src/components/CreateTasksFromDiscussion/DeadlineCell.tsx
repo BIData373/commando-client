@@ -76,7 +76,7 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
             )}
           </DeadlineTrigger>
         </PopoverTrigger>
-        <DeadlineDropdownContent align="start" sideOffset={1}>
+        <DeadlineDropdownContent sideOffset={1}>
           <DropdownRow>
             <DropdownHeader>תג&quot;ב</DropdownHeader>
             {DEADLINE_TYPES.map((type) => (

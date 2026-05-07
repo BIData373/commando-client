@@ -95,6 +95,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
           data={rows}
           getRowId={(row) => row.id}
           meta={meta}
+          containerClassName="overflow-x-hidden"
           renderRowOverlay={(row) => (
             <TaskRowDeleteButton
               hasTitle={row.original.title.trim().length > 0}
@@ -143,6 +144,7 @@ const TableWrapper = styled.div`
 const TableOuterContainer = styled.div`
   direction: rtl;
   border-radius: 8px;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
   overflow-x: hidden;
   overflow-y: auto;
   box-shadow:
@@ -159,16 +161,13 @@ const TableOuterContainer = styled.div`
     height: 48px;
     padding: 12px;
     background: white;
-    border: 0.5px solid rgba(0, 0, 0, 0.15);
+    border-right: 0.5px solid rgba(0, 0, 0, 0.15);
     text-align: start;
     vertical-align: middle;
     white-space: nowrap;
 
     &:first-of-type {
-      border-start-start-radius: 8px;
-    }
-    &:last-of-type {
-      border-start-end-radius: 8px;
+      border-right: none;
     }
   }
 
@@ -178,6 +177,10 @@ const TableOuterContainer = styled.div`
     &:hover td {
       background: #fafafa;
     }
+
+    &:last-of-type td{
+    border-bottom: none;
+    }
   }
 
   td {
@@ -186,6 +189,10 @@ const TableOuterContainer = styled.div`
     background: white;
     border: 0.5px solid rgba(0, 0, 0, 0.15);
     vertical-align: middle;
+
+    &:first-of-type {
+      border-right: none;
+    }
 
     &:focus-within {
       outline: 1px solid #4096ff;
