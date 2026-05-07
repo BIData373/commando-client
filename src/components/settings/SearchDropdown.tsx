@@ -30,6 +30,7 @@ export function SearchDropdown<T extends { id: number | string }>({
   selectedItem,
 }: SearchDropdownProps<T>) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
   const wheelCleanupRef = useRef<(() => void) | null>(null)
 
   function handleContentRef(el: HTMLDivElement | null) {
@@ -46,8 +47,13 @@ export function SearchDropdown<T extends { id: number | string }>({
     setIsOpen(e.target.value.trim().length > 0)
   }
 
+  function handleFocus() {
+    setIsFocused(true)
+  }
+
   function handleBlur() {
     setIsOpen(false)
+    setIsFocused(false)
   }
 
   function handleSelect(item: T) {
@@ -70,7 +76,7 @@ export function SearchDropdown<T extends { id: number | string }>({
         <Root onClick={handleRootClick}>
           <StyledInputGroup>
             <InputGroupAddon align="inline-start">
-              {isLoading ? <Spinner /> : <Search size={16} />}
+              {isLoading && isFocused ? <Spinner /> : <Search size={16} />}
             </InputGroupAddon>
             {selectedItem ? (
               <SelectedDisplay>
@@ -81,6 +87,7 @@ export function SearchDropdown<T extends { id: number | string }>({
               <InputGroupInput
                 value={value}
                 onChange={handleChange}
+                onFocus={handleFocus}
                 onBlur={handleBlur}
                 placeholder={placeholder}
               />
