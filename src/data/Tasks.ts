@@ -5,6 +5,7 @@ import type { DeadlineType } from '../components/shared/DeadlineTag'
 
 export interface Task {
   id: number
+  serialNumber: number
   title: string
   details?: string
   flagged: boolean
@@ -27,6 +28,7 @@ export interface Task {
 export const INITIAL_TASKS: Task[] = [
   {
     id: 56,
+    serialNumber: 56,
     title: 'בדיקת כשירות רכבים מבצעיים',
     details: 'בדיקת רכבי פלוגה א׳',
     flagged: false,
@@ -52,6 +54,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 1,
+    serialNumber: 1,
     title: 'סיור ביטחוני - מחסום צפון',
     flagged: true,
     status: 'in_progress',
@@ -71,6 +74,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 8,
+    serialNumber: 8,
     title: 'הכנת ציוד לאימון שטח',
     details: 'הקצאת ערכת מגא"ס מול ענף כשירויות',
     flagged: true,
@@ -93,6 +97,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 10,
+    serialNumber: 10,
     title: 'דוח מצב שבועי',
     flagged: false,
     status: 'completed',
@@ -112,6 +117,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 21,
+    serialNumber: 21,
     title: 'הערכות לחורף',
     flagged: false,
     status: 'in_progress',
@@ -135,6 +141,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 89,
+    serialNumber: 89,
     title: 'בדיקת ציוד - מחסן 4',
     flagged: true,
     status: 'not_started',

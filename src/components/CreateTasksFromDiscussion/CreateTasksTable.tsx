@@ -82,7 +82,8 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
     onSave(filled)
   }
 
-  const hasAnyTask = rows.some((r) => r.title.trim())
+  const filledCount = rows.filter((r) => r.title.trim()).length
+  const hasAnyTask = filledCount > 0
 
   const meta: TaskTableMeta = { updateRow, expandedRows, toggleRowExpansion }
 
@@ -117,7 +118,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
 
       <FooterRow>
         <SaveButton onClick={handleSave} disabled={!hasAnyTask}>
-          שמור
+          שמור {hasAnyTask && `(${filledCount})`}
         </SaveButton>
         <BackButton onClick={onBack}>
           חזור

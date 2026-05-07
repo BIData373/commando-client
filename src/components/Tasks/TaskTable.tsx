@@ -90,7 +90,7 @@ function TaskTable({
       ),
     }
     : {
-      accessorKey: 'id',
+      accessorKey: 'serialNumber',
       header: 'מס"ד',
       size: 61,
 

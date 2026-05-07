@@ -10,8 +10,7 @@ import TopicField from './TopicField'
 import NotesField from './NotesField'
 import type { DiscussionSource } from './SourceField'
 import { Checkbox } from '../ui/checkbox'
-import { useTasks } from '../../providers/TasksProvider'
-import { MOCK_ASSIGNEES } from '../../data/Assignees'
+import { useSaveTasks } from '../../hooks/useSaveTasks'
 import { INITIAL_FORM } from '../../data/CreateTaskForm'
 import type { FormState } from '../../data/CreateTaskForm'
 import type { DeadlineType } from '../shared/DeadlineTag'
@@ -24,7 +23,7 @@ interface CreateTaskModalProps {
 }
 
 function CreateTaskModal({ onClose }: CreateTaskModalProps) {
-  const { addTasks } = useTasks()
+  const saveTasks = useSaveTasks()
   const [form, setForm] = useState<FormState>(INITIAL_FORM)
   const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -132,46 +131,23 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
   }
 
   function handleSave() {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const isOverdue =
-      form.deadlineType === 'date' && form.dueDate ? form.dueDate < today : false
-
-    const baseTitle = form.title.trim()
-    const sharedFields = {
-      flagged: form.isImportant,
-      status: 'not_started' as const,
-      deadlineType: form.deadlineType,
-      dueDate: form.deadlineType === 'immediate' ? null : form.dueDate,
-      isOverdue,
-      discussionName: form.source.trim(),
-      discussionDate: form.sourceDate,
-      hasAttachment: form.linkedSource?.hasAttachment ?? false,
-      attachmentUrl: null,
-      tags: form.topics,
-      notes: form.notes,
-    }
-
-    if (form.selectedAssignees.length === 0) {
-      addTasks([{ ...sharedFields, title: baseTitle, details: undefined, responsible: null, relatedDirectives: [] }])
-      onClose()
-      return
-    }
-
-    const groupAssignees = form.selectedAssignees.flatMap((id) => {
-      const user = MOCK_ASSIGNEES[id]
-      return user ? [user] : []
-    })
-
-    const newTasks = groupAssignees.map((responsible) => {
-      const perAssigneeDetail = form.assigneeDetails[responsible.id]?.trim() || undefined
-      const relatedDirectives = groupAssignees
-        .filter((u) => u.id !== responsible.id)
-        .map((user) => ({ user, status: 'not_started' as const }))
-      return { ...sharedFields, title: baseTitle, details: perAssigneeDetail, responsible, relatedDirectives }
-    })
-
-    addTasks(newTasks)
+    saveTasks(
+      [{
+        title: form.title,
+        assigneeIds: form.selectedAssignees,
+        assigneeDetails: form.assigneeDetails,
+        deadlineType: form.deadlineType,
+        dueDate: form.dueDate,
+        isImportant: form.isImportant,
+        notes: form.notes,
+      }],
+      {
+        discussionName: form.source.trim(),
+        discussionDate: form.sourceDate,
+        hasAttachment: form.linkedSource?.hasAttachment ?? false,
+        tags: form.topics,
+      },
+    )
     onClose()
   }
 
