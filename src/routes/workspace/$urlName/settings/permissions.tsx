@@ -11,6 +11,7 @@ import { useAddUserToWorkspace, useDeleteUser, userKeys, useUpdateUser, useWorks
 import type { IUser } from '#/types'
 import { UserRole } from '#/types'
 import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
+import { concatName } from '#/utils/userUtils'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/permissions')({ component: SettingsPermissions })
 
@@ -68,6 +69,9 @@ function SettingsPermissions() {
 
   function handleSearchSelect(user: IUser | null) {
     setSelectedUser(user)
+    if (user) {
+      setSearch(concatName(user))
+    }
   }
 
   function handleSearchClear() {
@@ -129,7 +133,7 @@ const PermissionsInner = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-width: 600px;
+  max-width: 550px;
 `
 
 const StyledTabs = styled(Tabs)`
@@ -163,7 +167,7 @@ const StyledTabsList = styled(TabsList)`
   direction: rtl;
   border-bottom: 1px solid var(--line);
   gap: 24px;
-`
+  `
 
 const StyledTabsContent = styled(TabsContent)`
   flex: 1;
@@ -171,12 +175,13 @@ const StyledTabsContent = styled(TabsContent)`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-`
+  `
 
 const StyledTabsTrigger = styled(TabsTrigger)`
   color: rgba(0, 0, 0, 0.88);
   font-size: 14px;
   font-weight: 400;
+  cursor: pointer;  
 
   &[data-state="active"] {
     color: #1677ff;

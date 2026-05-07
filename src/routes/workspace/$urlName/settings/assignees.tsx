@@ -82,13 +82,12 @@ function SettingsAssignees() {
               <InputGroupInput value={searchQuery} onChange={handleSearchChange} placeholder="חפש קבוצת אחראים" />
             </StyledInputGroup>
           </SearchWrapper>
-          <Button variant="default" onClick={handleOpenCreateDialog}>
+          <StyledButton variant="default" onClick={handleOpenCreateDialog}>
             <Plus size={16} />
             צור אחראי
-          </Button>
+          </StyledButton>
         </ToolbarRow>
       </StyledContent>
-
 
       <CardScrollArea>
         <AssigneeCardGrid>
@@ -139,6 +138,14 @@ const CardScrollArea = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   direction: ltr;
+  margin-block-start: 22px;
+`
+
+const StyledButton = styled(Button)`
+  &:hover {
+    cursor: pointer;
+    opacity: 0.9;
+  }
 `
 
 const CheckboxRow = styled.div`
@@ -159,7 +166,6 @@ const StyledInputGroup = styled(InputGroup)`
   background: var(--background);
 `
 
-
 const StyledSectionTitle = styled(SectionTitle)`
   margin-right: 20px;
 `
@@ -179,9 +185,11 @@ const InfoIcon = styled.button`
 `
 
 const AssigneeCardGrid = styled.div`
-  padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(275px, 1fr));
+  padding: 0 10px;
+  /* display: grid; */
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
   gap: 18px;
   direction: rtl;
 `

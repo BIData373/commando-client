@@ -77,6 +77,7 @@ const StyledTabsTrigger = styled(TabsTrigger)`
   color: var(--text-color-2);
   font-weight: 400;
   font-size: 16px;
+  cursor: pointer;
 
   &[data-state="active"] {
     color: #1677ff;
