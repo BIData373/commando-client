@@ -27,7 +27,7 @@ function applyTopicFilters(tasks: Task[], activeTopicFilters: Set<string>): Task
 
 function applySearch(tasks: Task[], searchQuery: string): Task[] {
   if (!searchQuery) return tasks
-  return tasks.filter((t) => t.title.includes(searchQuery) || t.notes.includes(searchQuery))
+  return tasks.filter((t) => t.title.includes(searchQuery) || t.details?.includes(searchQuery) || t.notes.includes(searchQuery))
 }
 
 function applyAllFilters(
@@ -50,7 +50,7 @@ function applyAllFilters(
   }
 
   if (searchQuery) {
-    result = result.filter((t) => t.title.includes(searchQuery) || t.notes.includes(searchQuery))
+    result = result.filter((t) => t.title.includes(searchQuery) || t.details?.includes(searchQuery) || t.notes.includes(searchQuery))
   }
 
   return result

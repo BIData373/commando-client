@@ -93,10 +93,12 @@ const SearchInputWrapper = styled.div`
 `
 
 const SearchIconBox = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-inline: 8px;
+display: flex;
+width: 32px;
+height: 32px;
+justify-content: center;
+align-items: center;
+gap: 8px;
 `
 
 const SearchIcon = styled(Search)`

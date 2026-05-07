@@ -2,7 +2,8 @@ import { useState } from 'react'
 import styled from '@emotion/styled'
 import { type ColumnDef, type RowSelectionState } from '@tanstack/react-table'
 import { differenceInDays, format, startOfToday } from 'date-fns'
-import { AlertTriangle, MoreVertical, Paperclip } from 'lucide-react'
+import { AlertTriangle, MoreVertical } from 'lucide-react'
+import { BsPaperclip as Paperclip } from 'react-icons/bs'
 import { Checkbox } from '../ui/checkbox'
 import { DataTable } from '../ui/data-table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
@@ -109,20 +110,21 @@ function TaskTable({
       accessorKey: 'title',
       header: 'ההנחיה',
       size: 832,
-      cell: ({ row: { original :{ title, details, flagged } } }) => (
-          <TitleCell>
-            {flagged && <FlagIcon />}
-            {details ? (
-              <>
-                <TitlePart>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitlePart>
-                <TitleSeparator> - </TitleSeparator>
-                <DetailsPart>{searchQuery ? <HighlightMatch text={details} query={searchQuery} variant="mark" /> : details}</DetailsPart>
-              </>
-            ) : (
-              <TitleFull>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitleFull>
-            )}
-          </TitleCell>
-        ),
+      meta: { grow: true },
+      cell: ({ row: { original: { title, details, flagged } } }) => (
+        <TitleCell>
+          {flagged && <FlagIcon />}
+          {details ? (
+            <>
+              <TitlePart>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitlePart>
+              <TitleSeparator> - </TitleSeparator>
+              <DetailsPart>{searchQuery ? <HighlightMatch text={details} query={searchQuery} variant="mark" /> : details}</DetailsPart>
+            </>
+          ) : (
+            <TitleFull>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitleFull>
+          )}
+        </TitleCell>
+      ),
     },
     status: {
       accessorKey: 'status',
@@ -184,12 +186,15 @@ function TaskTable({
       accessorKey: 'discussionName',
       header: 'מקור',
       size: 280,
-      cell: ({ row: { original: { discussionName, discussionDate, hasAttachment } } }) => (
-        <SourceCell>
-          {hasAttachment && <Paperclip size={16} />}
-          <SourceText>{discussionName} | {discussionDate}</SourceText>
-        </SourceCell>
-      ),
+      cell: ({ row: { original: { discussionName, discussionDate, hasAttachment } } }) => {
+        const parts = [discussionName, discussionDate].filter(Boolean)
+        return (
+          <SourceCell>
+            {hasAttachment && <SourceIcon size={18} />}
+            {parts.length > 0 && <SourceText>{parts.join(' | ')}</SourceText>}
+          </SourceCell>
+        )
+      },
     },
     tags: {
       accessorKey: 'tags',
@@ -225,7 +230,7 @@ function TaskTable({
   const actionsColumn: ColumnDef<Task> = {
     id: 'actions',
     size: 43,
-    cell: ({ row : { original: { id } } }) => (
+    cell: ({ row: { original: { id } } }) => (
       <RowActionsMenu
         trigger={
           <ActionsButton>
@@ -287,6 +292,7 @@ export { TaskTable }
 const TableWrapper = styled.div`
   overflow-x: auto;
   border-radius: 8px;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
   background: white;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
 
@@ -296,14 +302,13 @@ const TableWrapper = styled.div`
   }
 
   tr {
-    border: none;
-
     &:hover {
       background: var(--link-bg-hover);
     }
-  }
-  th, td {
-    border: 0.5px solid rgba(0, 0, 0, 0.15);
+
+    &:last-of-type td{
+      border-bottom: none;
+    }
   }
 
   th {
@@ -314,6 +319,11 @@ const TableWrapper = styled.div`
     height: 48px;
     white-space: nowrap;
     background: white;
+    border-right: 0.5px solid rgba(0, 0, 0, 0.15);
+
+    &:first-of-type {
+      border-right: none;
+    }
   }
 
   td {
@@ -322,22 +332,15 @@ const TableWrapper = styled.div`
     max-height: 43px;
     vertical-align: middle;
     overflow: hidden;
-  }
+    border: 0.5px solid rgba(0, 0, 0, 0.15);
 
-  thead tr:first-child th:first-child {
-    border-radius: 0 8px 0 0;
-  }
+    &:first-of-type {
+      border-right: none;
+    }
 
-  thead tr:first-child th:last-child {
-    border-radius: 8px 0 0 0;
-  }
-
-  tbody tr:last-child td:first-child {
-    border-radius: 0 0 8px 0;
-  }
-
-  tbody tr:last-child td:last-child {
-    border-radius: 0 0 0 8px;
+    &:last-of-type {
+      border-left: none;
+    }
   }
 `
 
@@ -478,6 +481,10 @@ const SourceCell = styled.div`
   gap: 6px;
   color: var(--sea-ink-soft);
 `
+
+const SourceIcon = styled(Paperclip)`
+  color: rgba(0, 0, 0, 0.45);
+` 
 
 const SourceText = styled.span`
   overflow: hidden;
