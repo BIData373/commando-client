@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useUsers } from "#/hooks/useUsers";
 import type { IUser } from "#/types";
 import { SearchDropdown } from "./SearchDropdown";
@@ -18,7 +19,9 @@ export function DropdownUsers({
     onClear,
     placeholder,
 }: DropdownUsersProps) {
-    const { data: users = [], isFetching } = useUsers()
+    const { data: users = [] } = useUsers()
+    const hasLoadedRef = useRef(users.length > 0)
+    if (users.length > 0) hasLoadedRef.current = true
 
     function filterUsers(query: string) {
         return query.trim()
@@ -43,7 +46,7 @@ export function DropdownUsers({
             onSelect={onSelect}
             onClear={onClear}
             placeholder={placeholder}
-            isLoading={isFetching}
+            isLoading={!hasLoadedRef.current}
             renderItem={(item) => <UserItem user={item} />}
         />
     )
