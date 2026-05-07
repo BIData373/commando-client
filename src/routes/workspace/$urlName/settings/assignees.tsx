@@ -49,7 +49,7 @@ function SettingsAssignees() {
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
       />
-      <StyledSectionTitle title={`ניהול אחראים - ${activeTab}`} />
+      <SectionTitle title={`ניהול אחראים - ${activeTab}`} />
       <StyledContent>
         <CheckboxRow>
           <Checkbox
@@ -108,7 +108,7 @@ const SearchWrapper = styled.div`
 const ToolbarRow = styled.div`
   display: flex;
   align-items: center;
-  margin-right: 20px;
+  margin-right: 12px;
   gap: 12px;
 `
 
@@ -138,7 +138,6 @@ const CardScrollArea = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   direction: ltr;
-  margin-block-start: 22px;
 `
 
 const StyledButton = styled(Button)`
@@ -151,7 +150,7 @@ const StyledButton = styled(Button)`
 const CheckboxRow = styled.div`
   display: flex;
   align-items: center;
-  margin-right: 20px;
+  margin-right: 12px;
   gap: 8px;
 `
 
@@ -164,10 +163,6 @@ const CheckboxLabel = styled.label`
 
 const StyledInputGroup = styled(InputGroup)`
   background: var(--background);
-`
-
-const StyledSectionTitle = styled(SectionTitle)`
-  margin-right: 20px;
 `
 
 const InfoIcon = styled.button`
@@ -185,8 +180,7 @@ const InfoIcon = styled.button`
 `
 
 const AssigneeCardGrid = styled.div`
-  padding: 0 10px;
-  /* display: grid; */
+  padding: 20px 10px;
   display: flex;
   flex-wrap: wrap;
   flex: 1;

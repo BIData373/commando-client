@@ -60,4 +60,5 @@ const StyledDropdownMenuContent = styled(DropdownMenuContent)`
     display: flex;
     min-width: 0;
     flex-direction: column;
+    direction: rtl;
 `
