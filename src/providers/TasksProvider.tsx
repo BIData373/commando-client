@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
-import type { DirectiveStatus } from '../components/Tasks/StatusCell'
+import type { DirectiveStatus } from '../components/shared/StatusTag'
 import { INITIAL_TASKS, type Task } from '../data/Tasks'
 
 type NewTaskInput = Omit<Task, 'id' | 'serialNumber' | 'createdAt' | 'updatedAt'> & { groupKey?: string }
