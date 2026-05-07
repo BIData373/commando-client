@@ -4,12 +4,12 @@ import { CalendarDays, ChevronDown } from 'lucide-react'
 import { Popover } from 'radix-ui'
 import type { DateRange } from "react-day-picker"
 
-interface TriggerButtonProps {
+interface DashboardDatePickerTriggerButtonProps {
     label: string
     range: DateRange | undefined
 }
 
-export function DashboardDatePickerTriggerButton({ label, range }: TriggerButtonProps) {
+export function DashboardDatePickerTriggerButton({ label, range }: DashboardDatePickerTriggerButtonProps) {
     return (
         <Popover.Trigger asChild>
             <TriggerButton>
