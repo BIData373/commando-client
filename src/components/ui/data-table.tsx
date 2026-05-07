@@ -24,6 +24,7 @@ interface DataTableProps<TData> {
   meta?: TableMeta<TData>
   renderRowOverlay?: (row: Row<TData>) => React.ReactNode
   renderRowExpansion?: (row: Row<TData>) => React.ReactNode
+  containerClassName?: string
 }
 
 export function DataTable<TData>({
@@ -37,6 +38,7 @@ export function DataTable<TData>({
   meta,
   renderRowOverlay,
   renderRowExpansion,
+  containerClassName,
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -74,7 +76,7 @@ export function DataTable<TData>({
   }))
 
   return (
-    <Table>
+    <Table containerClassName={containerClassName}>
       {colgroup}
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
@@ -130,5 +132,5 @@ const ExpansionCell = styled.td`
   padding: 0;
   border: none;
   height: auto;
-  background: #f5f5f5;
+  background: #f5f5f5 !important;
 `

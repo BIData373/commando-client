@@ -63,7 +63,6 @@ function AssigneePicker({
       </PopoverTrigger>
 
       <AssigneeDropdown
-        align="end"
         sideOffset={4}
         onOpenAutoFocus={(e) => e.preventDefault()}
         onWheel={(e) => e.stopPropagation()}
