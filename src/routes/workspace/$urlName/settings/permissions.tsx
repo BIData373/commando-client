@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { AddUserSection } from '#/components/settings/AddUserSection'
@@ -7,7 +6,7 @@ import { DropdownUsers } from '#/components/settings/DropdownUsers'
 import { SectionTitle } from '#/components/settings/SectionTitle'
 import { UserPermissionList } from '#/components/settings/UserPermissionList'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
-import { useAddUserToWorkspace, useDeleteUser, userKeys, useUpdateUser, useWorkspaceUsers } from '#/hooks/useUsers'
+import { useAddUserToWorkspace, useDeleteUser, useUpdateUser, useWorkspaceUsers } from '#/hooks/useUsers'
 import type { IUser } from '#/types'
 import { UserRole } from '#/types'
 import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
@@ -25,7 +24,6 @@ enum PermissionsTab {
 
 function SettingsPermissions() {
   const { urlName } = Route.useParams()
-  const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState(PermissionsTab.ALL)
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
@@ -55,7 +53,6 @@ function SettingsPermissions() {
 
   function handleRoleChangePermissionUser(userId: number, role: UserRole) {
     userUpdate({ userId, data: { role } })
-    queryClient.invalidateQueries({ queryKey: userKeys.workspace(urlName) })
   }
 
   function handleTabChange(value: string) {
@@ -134,6 +131,7 @@ const PermissionsInner = styled.div`
   flex-direction: column;
   gap: 24px;
   max-width: 550px;
+  padding: 0 12px;
 `
 
 const StyledTabs = styled(Tabs)`
@@ -157,8 +155,9 @@ const UserListInner = styled.div`
 `
 
 const Subtitle = styled.p`
-  font-size: 0.75rem;
-  color: var(--sea-ink-soft);
+  font-size: 14px;
+  font-weight: 400;
+  color: #8C8C8C;
   margin: 0;
 `
 
