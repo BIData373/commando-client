@@ -22,3 +22,14 @@ export function useSearchMesibaIcons(search: string) {
                     : Promise.resolve([]),
     })
 }
+
+export function useMesibaIconByName(iconName?: string) {
+    return useQuery<IMesibaIcon | null>({
+        queryKey: ['mesiba-by-name', iconName],
+        queryFn: () =>
+            USE_MOCK_API
+                ? mesibaApi.getByIconName(iconName as string)
+                : axios.get<IMesibaIcon>(`${mesibaBaseApiUrl}by-name/${iconName}`).then((r) => r.data),
+        enabled: !!iconName,
+    })
+}
