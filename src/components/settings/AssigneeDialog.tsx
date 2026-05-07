@@ -1,13 +1,12 @@
 import styled from '@emotion/styled'
 import { useForm } from '@tanstack/react-form'
 import { UserPlus } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useCreateAssignee, useUpdateAssignee } from '#/hooks/useAssignees'
-import type { IMesibaIcon } from '#/hooks/useMesiba'
+import { type IMesibaIcon, useMesibaIconByName } from '#/hooks/useMesiba'
 import { useUsers } from '#/hooks/useUsers'
 import type { IAssignee, IUser } from '#/types'
 import { concatName } from '#/utils/userUtils'
-import { Button } from '../ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'
 import { ColorPicker, PRESET_COLORS } from './ColorPicker'
@@ -34,6 +33,12 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
 
     const [iconSearch, setIconSearch] = useState('')
     const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
+
+    const { data: existingIcon } = useMesibaIconByName(assignee?.emblem ?? '')
+
+    useEffect(() => {
+        if (existingIcon) setSelectedIcon(existingIcon)
+    }, [existingIcon])
 
     const randomColor = useMemo(() => {
         if (!open) return
@@ -82,7 +87,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
         setLocalAssignees(prev => prev.filter(u => u.id !== id))
     }
 
-    function handleSearchSelect(user: IUser | null) {
+    function handleSearchSelect(user: IUser) {
         if (user) {
             form.setFieldValue('userSearch', concatName(user))
         }
@@ -114,12 +119,21 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
         const savedAssignees = assignee ? users.filter(u => assignee.userIds.includes(u.id)) : []
         setLocalAssignees(savedAssignees)
         setSubmitError(null)
+        setIconSearch('')
+        setSelectedIcon(existingIcon ?? null)
         form.reset()
-        if (!assignee?.emblem) {
-            setIconSearch('')
-            setSelectedIcon(null)
-        }
-    }, [assignee, users, form.reset])
+    }, [assignee, users, form.reset, existingIcon])
+
+    const scrollRef = useRef<HTMLDivElement>(null)
+    const [scrollShadow, setScrollShadow] = useState({ top: false, bottom: false })
+
+    function handleScroll() {
+        const el = scrollRef.current
+        if (!el) return
+        const atTop = el.scrollTop <= 0
+        const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
+        setScrollShadow({ top: !atTop, bottom: !atBottom })
+    }
 
     function handleOpenChange(open: boolean) {
         resetForm()
@@ -133,14 +147,16 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <WideDialogContent>
-                <ScrollableContent>
+                <DialogHeader $shadow={scrollShadow.top}>
                     <DialogTitleLarge>{isUpdate ? 'עריכת אחראי' : 'יצירת אחראי'}</DialogTitleLarge>
                     <StyledDialogDescription>
                         'אחראי' אליו ניתן לשייך הנחיות.
                         <br />
                         לכל אחראי ניתן לכתב מספר משתמשים, אשר יקבלו את ההנחיות לאזור האישי שלהם.
                     </StyledDialogDescription>
+                </DialogHeader>
 
+                <ScrollableContent ref={scrollRef} onScroll={handleScroll}>
                     <DialogBody>
                         <form.Field
                             name="name"
@@ -219,13 +235,13 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
                     </DialogBody>
                 </ScrollableContent>
 
-                <DialogActions>
+                <DialogActions $shadow={scrollShadow.bottom}>
                     <DialogClose asChild>
-                        <Button variant="outline">ביטול</Button>
+                        <StyledButton>ביטול</StyledButton>
                     </DialogClose>
-                    <GradientButton type="button" onClick={form.handleSubmit}>
+                    <StyledButton type="button" $gradient onClick={form.handleSubmit}>
                         {isUpdate ? 'שמור' : 'צור'}
-                    </GradientButton>
+                    </StyledButton>
                 </DialogActions>
             </WideDialogContent>
         </Dialog >
@@ -338,28 +354,49 @@ const SearchRow = styled.div`
   width: 100%;
 `
 
-const DialogActions = styled.div`
+const DialogHeader = styled.div<{ $shadow: boolean }>`
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  clip-path: inset(0 0 -20px 0);
+  transition: box-shadow 200ms ease;
+  box-shadow: ${({ $shadow }) => ($shadow ? '0px 10px 20px 0px rgba(0, 0, 0, 0.06)' : 'none')};
+`
+
+const DialogActions = styled.div<{ $shadow: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-block-start: 4px;
   padding-inline-end: 4px;
   justify-self: stretch;
+  position: relative;
+  z-index: 1;
+  clip-path: inset(-20px 0 0 0);
+  transition: box-shadow 200ms ease;
+  box-shadow: ${({ $shadow }) => ($shadow ? '0px -10px 20px 0px rgba(0, 0, 0, 0.06)' : 'none')};
 `
 
-const GradientButton = styled.button`
+const StyledButton = styled.button<{ $gradient?: boolean }>`
   height: 40px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  flex-shrink: 0;
+
   min-width: 80px;
   padding-inline: 15px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
-  background: linear-gradient(153deg, #615fff 0%, #9810fa 100%);
-  color: white;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  flex-shrink: 0;
+  background: ${({ $gradient }) => $gradient ? 'linear-gradient(153deg, #615fff 0%, #9810fa 100%)' : 'var(--background)'};
+  border: ${({ $gradient }) => $gradient ? 'none' : '1px solid #D9D9D9'};
+  color: ${({ $gradient }) => $gradient ? 'var(--background)' : 'var(--foreground)'};
+
+  &:hover { 
+    opacity: 0.9;
+    background: ${({ $gradient }) => !$gradient && 'rgba(0, 0, 0, 0.45)'};
+  }
 `
 
 const ErrorText = styled.span`

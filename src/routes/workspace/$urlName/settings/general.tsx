@@ -71,7 +71,7 @@ function SettingsGeneral() {
 
   return (
     <GeneralRootPage>
-      <SectionTitle title={activeTabLabel} />
+      <StyledSectionTitle title={activeTabLabel} />
       <GeneralScrollArea>
         <FormRoot>
           <FieldRow>
@@ -129,7 +129,14 @@ function SettingsGeneral() {
   )
 }
 
+const StyledSectionTitle = styled(SectionTitle)`
+  margin-right: 8px;
+`
+
 const GeneralRootPage = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -143,7 +150,6 @@ const GeneralScrollArea = styled.div`
   overflow-x: hidden;
   direction: ltr;
   padding-inline-end: 8px;
-  align-self: flex-start;
 `
 
 const FormRoot = styled.div`
