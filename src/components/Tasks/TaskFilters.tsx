@@ -1,11 +1,14 @@
 import styled from '@emotion/styled'
 import { FilterX } from 'lucide-react'
+import type { Task } from '../../data/Tasks'
+import { matchesQuickFilter } from '../../functions/filterUtils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { TopicFilterDropdown } from './TopicFilterDropdown'
 
 type QuickFilter = 'overdue' | 'approaching' | 'flagged'
 
 interface TaskFiltersProps {
+  tasks: Task[]
   activeQuickFilters: Set<QuickFilter>
   activeTopicFilters: Set<string>
   allTopics: string[]
@@ -15,6 +18,7 @@ interface TaskFiltersProps {
 }
 
 function TaskFilters({
+  tasks,
   activeQuickFilters,
   activeTopicFilters,
   allTopics,
@@ -23,6 +27,10 @@ function TaskFilters({
   onClearAllFilters,
 }: TaskFiltersProps) {
   const hasActiveFilters = activeQuickFilters.size > 0 || activeTopicFilters.size > 0
+
+  const overdueCount = tasks.filter((t) => matchesQuickFilter(t, 'overdue')).length
+  const approachingCount = tasks.filter((t) => matchesQuickFilter(t, 'approaching')).length
+  const flaggedCount = tasks.filter((t) => matchesQuickFilter(t, 'flagged')).length
 
   return (
     <ToolbarEnd>
@@ -39,22 +47,22 @@ function TaskFilters({
         $active={activeTopicFilters.size > 0}
       />
       <FilterPill $active={activeQuickFilters.has('flagged')} onClick={() => onToggleQuickFilter('flagged')}>
-        חשובות
+        חשובות ({flaggedCount})
       </FilterPill>
       <Tooltip>
         <WarningTrigger>
           <FilterPill $active={activeQuickFilters.has('approaching')} onClick={() => onToggleQuickFilter('approaching')}>
-            תג"ב מתקרב
+            תג"ב מתקרב ({approachingCount})
           </FilterPill>
         </WarningTrigger>
         <TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
       </Tooltip>
       <FilterPill $active={activeQuickFilters.has('overdue')} onClick={() => onToggleQuickFilter('overdue')}>
-        חריגה מתג"ב
+        חריגה מתג"ב ({overdueCount})
       </FilterPill>
       <FilterDivider />
       <FilterPill $active={!hasActiveFilters} onClick={onClearAllFilters}>
-        הכל
+        הכל ({tasks.length})
       </FilterPill>
     </ToolbarEnd>
   )

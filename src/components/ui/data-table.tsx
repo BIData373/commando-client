@@ -38,23 +38,29 @@ export function DataTable<TData>({
   })
 
   const allColumns = table.getAllColumns()
-  const totalSize = allColumns.reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
+  const fixedTotal = allColumns.reduce((sum, col) => {
+    const grow = (col.columnDef.meta as { grow?: boolean } | undefined)?.grow
+    return grow ? sum : sum + (col.columnDef.size ?? 0)
+  }, 0)
 
   const colgroup = (
     <colgroup>
-      {allColumns.map((column) => (
-        <col
-          key={column.id}
-          style={
-            column.columnDef.size !== undefined && totalSize > 0
-              ? {
-                  width: `${(column.columnDef.size / totalSize) * 100}%`,
-                  minWidth: `${column.columnDef.size}px`,
-                }
-              : undefined
-          }
-        />
-      ))}
+      {allColumns.map((column) => {
+        const grow = (column.columnDef.meta as { grow?: boolean } | undefined)?.grow
+        const size = column.columnDef.size
+
+      return grow && size !== undefined ? (
+            <col
+              key={column.id}
+              style={{ width: `calc(100% - ${fixedTotal}px)`, minWidth: `${size}px` }}
+            />
+          ) : (
+          <col
+            key={column.id}
+            style={size !== undefined ? { width: `${size}px` } : undefined}
+          />
+        )
+      })}
     </colgroup>
   )
 
