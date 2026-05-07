@@ -6,6 +6,8 @@ import SourceField from '../CreateTasks/SourceField'
 import TopicField from '../CreateTasks/TopicField'
 import FileUploadField from './FileUploadField'
 import CreateTasksTable from './CreateTasksTable'
+import type { TaskRow } from './TasksColumns'
+import { useSaveTasks } from '../../hooks/useSaveTasks'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -37,6 +39,7 @@ const INITIAL_FORM: DiscussionFormState = {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
+  const saveTasks = useSaveTasks()
   const [form, setForm] = useState<DiscussionFormState>(INITIAL_FORM)
   const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
   const setField = <K extends keyof DiscussionFormState>(key: K, value: DiscussionFormState[K]) =>
@@ -90,8 +93,24 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
     setCurrentStep(Steps.Discussion)
   }
 
-  function handleSave() {
-    // TODO: persist directives
+  function handleSave(taskRows: TaskRow[]) {
+    const inputs = taskRows.map((row) => ({
+      title: row.title,
+      assigneeIds: row.assigneeIds,
+      assigneeDetails: row.assigneeDetails,
+      deadlineType: row.deadlineType,
+      dueDate: row.dueDate,
+      isImportant: row.isImportant,
+      notes: row.notes,
+      groupKey: row.id,
+    }))
+
+    saveTasks(inputs, {
+      discussionName: form.name.trim(),
+      discussionDate: form.sourceDate,
+      hasAttachment: form.file !== null,
+      tags: form.topics,
+    })
     onClose()
   }
 
