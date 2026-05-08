@@ -11,7 +11,7 @@ import { TaskTable } from './TaskTable'
 import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
 import { TaskCardGrid } from './TaskCardGrid'
 import { exportTasksToExcel } from '../../functions/exportExcel'
-import { applyAllFilters } from '../../functions/filterUtils'
+import { applyAllFilters, buildFilterOptionsMap, type ColumnSort } from '../../functions/filterUtils'
 import { useTitleBar } from '../../providers/TitleBarProvider'
 import { useTasks } from '../../providers/TasksProvider'
 
@@ -30,6 +30,8 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(new Set())
   const [columnOrder, setColumnOrder] = useState(DEFAULT_COLUMN_ORDER)
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set(['notes', 'updatedAt']))
+  const [columnFilters, setColumnFilters] = useState<Record<string, Set<string>>>({})
+  const [columnSort, setColumnSort] = useState<ColumnSort | null>(null)
 
   function handleToggleColumn(columnId: string) {
     setHiddenColumns((prev) => {
@@ -60,11 +62,25 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
     setActiveTopicFilters(new Set())
   }
 
+  function handleApplyColumnFilter(columnId: string, values: Set<string>) {
+    setColumnFilters((prev) => ({ ...prev, [columnId]: values }))
+  }
+
+  function handleToggleColumnSort(columnId: string) {
+    setColumnSort((prev) => {
+      if (!prev || prev.columnId !== columnId) return { columnId, direction: 'asc' }
+      if (prev.direction === 'asc') return { columnId, direction: 'desc' }
+      return null
+    })
+  }
+
   const allTopics = [...new Set(tasks.flatMap((t) => t.tags))]
 
+  const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
+
   const filteredTasks = useMemo(
-    () => applyAllFilters(tasks, activeQuickFilters, activeTopicFilters, searchQuery),
-    [tasks, searchQuery, activeQuickFilters, activeTopicFilters],
+    () => applyAllFilters(tasks, activeQuickFilters, activeTopicFilters, searchQuery, columnFilters, columnSort),
+    [tasks, searchQuery, activeQuickFilters, activeTopicFilters, columnFilters, columnSort],
   )
 
   function handleEdit(taskId: number) {
@@ -157,6 +173,11 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
             searchQuery={searchQuery}
             columnOrder={columnOrder}
             hiddenColumns={hiddenColumns}
+            columnFilters={columnFilters}
+            columnSort={columnSort}
+            filterOptionsMap={filterOptionsMap}
+            onApplyColumnFilter={handleApplyColumnFilter}
+            onToggleColumnSort={handleToggleColumnSort}
             onUpdateStatus={updateTaskStatus}
             onEdit={handleEdit}
             onArchive={handleArchive}
@@ -204,7 +225,6 @@ const CreateButton = styled.button`
   border-radius: 8px;
   background: linear-gradient(165deg, #615FFF 0%, #9810FA 100%);
   color: white;
-  font-family: 'Rubik', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
@@ -260,7 +280,6 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   padding-inline: 12px;
   border: none;
   border-radius: 6px;
-  font-family: 'Rubik', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;

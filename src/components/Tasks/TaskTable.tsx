@@ -12,24 +12,23 @@ import { ResponsibleCell } from './ResponsibleCell'
 import { TopicCell } from './TopicCell'
 import { RowActionsMenu } from './RowActionsMenu'
 import { BulkActionsBar } from './BulkActionsBar'
+import { ColumnHeaderWithActions } from './ColumnHeaderWithActions'
 import type { Task } from '../../data/Tasks'
 import FlagIcon from '../shared/FlagIcon'
 import HighlightMatch from '../shared/HighlightMatch'
 import type { DirectiveStatus } from '../shared/StatusTag'
-
-export type DeadlineType = 'date' | 'immediate' | 'ongoing'
-
-export const DEADLINE_LABELS: Record<DeadlineType, string> = {
-  date: 'תאריך',
-  immediate: 'מיידי',
-  ongoing: 'שוטף',
-}
+import { DEADLINE_LABELS, type DeadlineType, type ColumnSort, type FilterOption } from '../../functions/filterUtils'
 
 interface TaskTableProps {
   tasks: Task[]
   searchQuery: string
   columnOrder: string[]
   hiddenColumns: Set<string>
+  columnFilters: Record<string, Set<string>>
+  columnSort: ColumnSort | null
+  filterOptionsMap: Record<string, FilterOption[]>
+  onApplyColumnFilter: (columnId: string, values: Set<string>) => void
+  onToggleColumnSort: (columnId: string) => void
   onUpdateStatus: (taskId: number, status: DirectiveStatus) => void
   onEdit: (taskId: number) => void
   onArchive: (taskIds: number[]) => void
@@ -37,11 +36,19 @@ interface TaskTableProps {
   onBulkChangeStatus: (taskIds: number[], status: DirectiveStatus) => void
 }
 
+const FILTERABLE_COLUMNS = new Set(['status', 'responsible', 'deadlineType', 'discussionName', 'tags'])
+const SORTABLE_COLUMNS = new Set(['id', 'status', 'responsible', 'deadlineType', 'discussionName', 'createdAt', 'updatedAt'])
+
 function TaskTable({
   tasks,
   searchQuery,
   columnOrder,
   hiddenColumns,
+  columnFilters,
+  columnSort,
+  filterOptionsMap,
+  onApplyColumnFilter,
+  onToggleColumnSort,
   onUpdateStatus,
   onEdit,
   onArchive,
@@ -75,10 +82,30 @@ function TaskTable({
     }
   }
 
+  function renderColumnHeader(columnId: string, label: string) {
+    const canFilter = FILTERABLE_COLUMNS.has(columnId)
+    const canSort = SORTABLE_COLUMNS.has(columnId)
+    if (!canFilter && !canSort) return label
+
+    return (
+      <ColumnHeaderWithActions
+        label={label}
+        canFilter={canFilter}
+        canSort={canSort}
+        filterOptions={filterOptionsMap[columnId]}
+        activeFilterValues={columnFilters[columnId]}
+        onApplyFilter={(values) => onApplyColumnFilter(columnId, values)}
+        isSortActive={columnSort?.columnId === columnId}
+        sortDirection={columnSort?.columnId === columnId ? columnSort.direction : undefined}
+        onToggleSort={() => onToggleColumnSort(columnId)}
+      />
+    )
+  }
+
   const firstColumn: ColumnDef<Task> = selectMode
     ? {
       id: 'select',
-      size: 61,
+      size: 70,
 
       header: () => (
         <CheckboxCenter>
@@ -99,8 +126,8 @@ function TaskTable({
     }
     : {
       accessorKey: 'id',
-      header: 'מס"ד',
-      size: 61,
+      header: () => renderColumnHeader('id', 'מס"ד'),
+      size: 70,
 
       cell: ({ getValue }) => <IdCell>{getValue<number>()}</IdCell>,
     }
@@ -108,7 +135,7 @@ function TaskTable({
   const columnMap: Record<string, ColumnDef<Task>> = {
     title: {
       accessorKey: 'title',
-      header: 'ההנחיה',
+      header: () => renderColumnHeader('title', 'ההנחיה'),
       size: 832,
       meta: { grow: true },
       cell: ({ row: { original: { title, details, flagged } } }) => (
@@ -128,7 +155,7 @@ function TaskTable({
     },
     status: {
       accessorKey: 'status',
-      header: 'סטטוס',
+      header: () => renderColumnHeader('status', 'סטטוס'),
       size: 100,
       cell: ({ row: { original: { status, id } } }) => (
         <StatusCell
@@ -140,7 +167,7 @@ function TaskTable({
     },
     responsible: {
       id: 'responsible',
-      header: 'אחראי',
+      header: () => renderColumnHeader('responsible', 'אחראי'),
       size: 115,
       cell: ({ row: { original: { responsible, relatedDirectives } } }) => (
         <ResponsibleCell
@@ -151,7 +178,7 @@ function TaskTable({
     },
     deadlineType: {
       accessorKey: 'deadlineType',
-      header: 'תג"ב',
+      header: () => renderColumnHeader('deadlineType', 'תג"ב'),
       size: 160,
       cell: ({ row: { original: { deadlineType, dueDate } } }) => {
         const today = startOfToday()
@@ -184,7 +211,7 @@ function TaskTable({
     },
     discussionName: {
       accessorKey: 'discussionName',
-      header: 'מקור',
+      header: () => renderColumnHeader('discussionName', 'מקור'),
       size: 280,
       cell: ({ row: { original: { discussionName, discussionDate, hasAttachment } } }) => {
         const parts = [discussionName, discussionDate].filter(Boolean)
@@ -198,13 +225,13 @@ function TaskTable({
     },
     tags: {
       accessorKey: 'tags',
-      header: 'נושא',
+      header: () => renderColumnHeader('tags', 'נושא'),
       size: 160,
       cell: ({ getValue }) => <TopicCell tags={getValue<string[]>()} />,
     },
     notes: {
       accessorKey: 'notes',
-      header: 'הערות',
+      header: () => renderColumnHeader('notes', 'הערות'),
       size: 220,
       cell: ({ getValue }) => {
         const notes = getValue<string>()
@@ -215,13 +242,13 @@ function TaskTable({
     },
     createdAt: {
       accessorKey: 'createdAt',
-      header: 'תאריך יצירה',
+      header: () => renderColumnHeader('createdAt', 'תאריך יצירה'),
       size: 132,
       cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
     },
     updatedAt: {
       accessorKey: 'updatedAt',
-      header: 'עודכן ב',
+      header: () => renderColumnHeader('updatedAt', 'עודכן ב'),
       size: 100,
       cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
     },
