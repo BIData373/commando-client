@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx-js-style'
 import { differenceInDays, format, startOfToday } from 'date-fns'
 import { getStatusStyle, STATUS_LABELS } from '../components/shared/StatusTag'
-import { DEADLINE_LABELS } from '../components/Tasks/TaskTable'
+import { DEADLINE_LABELS } from './filterUtils'
 import type { Task } from '../data/Tasks'
 
 interface CellValue {

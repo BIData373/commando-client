@@ -4,7 +4,7 @@ import { format } from 'date-fns'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { StatusTag } from '../shared/StatusTag'
 import type { Task } from '../../data/Tasks'
-import { DEADLINE_LABELS, type DeadlineType } from './TaskTable'
+import { DEADLINE_LABELS, type DeadlineType } from '../../functions/filterUtils'
 
 interface TaskCardGridProps {
   tasks: Task[]
