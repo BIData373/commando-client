@@ -19,9 +19,7 @@ export function DropdownUsers({
     onClear,
     placeholder,
 }: DropdownUsersProps) {
-    const { data: users = [] } = useUsers()
-    const hasLoadedRef = useRef(users.length > 0)
-    if (users.length > 0) hasLoadedRef.current = true
+    const { data: users = [], isLoading } = useUsers()
 
     function filterUsers(query: string) {
         return query.trim()
@@ -46,7 +44,7 @@ export function DropdownUsers({
             onSelect={onSelect}
             onClear={onClear}
             placeholder={placeholder}
-            isLoading={!hasLoadedRef.current}
+            isLoading={isLoading}
             renderItem={(item) => <UserItem user={item} />}
         />
     )

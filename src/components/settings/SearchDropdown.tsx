@@ -74,7 +74,7 @@ export function SearchDropdown<T extends { id: number | string }>({
     <PopoverPrimitive.Root open={isOpen} onOpenChange={setIsOpen}>
       <PopoverPrimitive.Trigger asChild>
         <Root onClick={handleRootClick}>
-          <StyledInputGroup>
+          <StyledInputGroup onFocus={handleFocus}>
             <InputGroupAddon align="inline-start">
               {isLoading && isFocused ? <Spinner /> : <Search size={16} />}
             </InputGroupAddon>
@@ -87,7 +87,6 @@ export function SearchDropdown<T extends { id: number | string }>({
               <InputGroupInput
                 value={value}
                 onChange={handleChange}
-                onFocus={handleFocus}
                 onBlur={handleBlur}
                 placeholder={placeholder}
               />
