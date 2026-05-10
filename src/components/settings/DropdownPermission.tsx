@@ -23,7 +23,7 @@ export function DropdownPermission({ value, ghost, disabled, onChange }: SelectD
 
     return (
         <DropdownMenu>
-            <RoleTrigger $ghost={ghost} disabled={disabled}>
+            <RoleTrigger $ghost={ghost} disabled={disabled} $enabled={!disabled}>
                 {roleNames[value]}
                 <ChevronDown size={16} />
             </RoleTrigger>
@@ -36,7 +36,7 @@ export function DropdownPermission({ value, ghost, disabled, onChange }: SelectD
     )
 }
 
-const RoleTrigger = styled(DropdownMenuTrigger) <{ $ghost?: boolean }>`
+const RoleTrigger = styled(DropdownMenuTrigger) <{ $ghost?: boolean, $enabled: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,8 +46,8 @@ const RoleTrigger = styled(DropdownMenuTrigger) <{ $ghost?: boolean }>`
   outline: none;
   font-size: 16px;
   font-weight: 400;
-  color: rgba(0, 0, 0, 0.65);
-  cursor: pointer;
+  color: ${({ $enabled }) => $enabled ? 'rgba(0, 0, 0, 0.65);' : 'rgba(0, 0, 0, 0.25);'};
+  cursor: ${({ $enabled }) => $enabled ? 'pointer' : 'default'};
 
    ${({ $ghost }) => $ghost && `
     border-radius: 6px;

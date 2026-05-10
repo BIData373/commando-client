@@ -7,6 +7,7 @@ import { type IMesibaIcon, useMesibaIconByName } from '#/hooks/useMesiba'
 import { useUsers } from '#/hooks/useUsers'
 import type { IAssignee, IUser } from '#/types'
 import { concatName } from '#/utils/userUtils'
+import { PrimaryButton } from '../shared/PrimaryButton'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'
 import { ColorPicker, PRESET_COLORS } from './ColorPicker'
@@ -178,7 +179,6 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
                         </form.Field>
 
                         <FieldGroup>
-                            <FieldLabel>סמל או צבע לאחראי</FieldLabel>
                             <EitherOrRow>
                                 <form.Subscribe selector={(s) => s.values.color}>
                                     {(color) => (
@@ -237,11 +237,12 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
 
                 <DialogActions $shadow={scrollShadow.bottom}>
                     <DialogClose asChild>
-                        <StyledButton>ביטול</StyledButton>
+                        <CancelButton>ביטול</CancelButton>
                     </DialogClose>
-                    <StyledButton type="button" $gradient onClick={form.handleSubmit}>
-                        {isUpdate ? 'שמור' : 'צור'}
-                    </StyledButton>
+                    <PrimaryButton
+                        title={isUpdate ? 'שמור' : 'צור'}
+                        onClick={form.handleSubmit}
+                    />
                 </DialogActions>
             </WideDialogContent>
         </Dialog >
@@ -266,7 +267,6 @@ const DialogTitleLarge = styled(DialogTitle)`
   font-weight: 500;
   line-height: 1.2;
   color: var(--sea-ink);
-  margin-block-end: 16px;
 `
 
 const StyledDialogDescription = styled(DialogDescription)`
@@ -276,7 +276,6 @@ const StyledDialogDescription = styled(DialogDescription)`
   color: var(--text-color);
   font-weight: 400;
   line-height: 1.4;
-  margin-block-end: 24px;
 `
 
 const ScrollableContent = styled.div`
@@ -286,6 +285,23 @@ const ScrollableContent = styled.div`
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+`
+
+const CancelButton = styled.button`
+  min-width: 80px;
+  height: 40px;
+  padding: 0 15px;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  border: 1px solid #D9D9D9;
+  border-radius: 8px;
+  transition: color, border  0.2s ease-in-out;
+
+  &:hover {
+    color: #4096FF;
+    border: 1px solid #4096FF;
+  }
 `
 
 const DialogBody = styled.div`
@@ -377,27 +393,6 @@ const DialogActions = styled.div<{ $shadow: boolean }>`
   box-shadow: ${({ $shadow }) => ($shadow ? '0px -10px 20px 0px rgba(0, 0, 0, 0.06)' : 'none')};
 `
 
-const StyledButton = styled.button<{ $gradient?: boolean }>`
-  height: 40px;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  flex-shrink: 0;
-
-  min-width: 80px;
-  padding-inline: 15px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  background: ${({ $gradient }) => $gradient ? 'linear-gradient(153deg, #615fff 0%, #9810fa 100%)' : 'var(--background)'};
-  border: ${({ $gradient }) => $gradient ? 'none' : '1px solid #D9D9D9'};
-  color: ${({ $gradient }) => $gradient ? 'var(--background)' : 'var(--foreground)'};
-
-  &:hover { 
-    opacity: 0.9;
-    background: ${({ $gradient }) => !$gradient && 'rgba(0, 0, 0, 0.45)'};
-  }
-`
 
 const ErrorText = styled.span`
   font-size: 13px;
