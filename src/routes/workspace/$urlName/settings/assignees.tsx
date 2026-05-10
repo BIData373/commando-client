@@ -5,6 +5,7 @@ import { type ChangeEvent, useState } from 'react'
 import { AssigneeCard } from '#/components/settings/AssigneeCard'
 import { AssigneeDialog } from '#/components/settings/AssigneeDialog'
 import { SectionTitle } from '#/components/settings/SectionTitle'
+import { PrimaryButton } from '#/components/shared/PrimaryButton'
 import { Button } from '#/components/ui/button'
 import { Checkbox } from '#/components/ui/checkbox'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '#/components/ui/input-group'
@@ -82,10 +83,12 @@ function SettingsAssignees() {
               <InputGroupInput value={searchQuery} onChange={handleSearchChange} placeholder="חפש קבוצת אחראים" />
             </StyledInputGroup>
           </SearchWrapper>
-          <StyledButton variant="default" onClick={handleOpenCreateDialog}>
-            <Plus size={16} />
-            צור אחראי
-          </StyledButton>
+          <PrimaryButton
+            title='צור אחרי'
+            onClick={handleOpenCreateDialog}
+            headerIcon={<Plus size={16} />}
+            height={32}
+          />
         </ToolbarRow>
       </StyledContent>
 
@@ -138,13 +141,6 @@ const CardScrollArea = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   direction: ltr;
-`
-
-const StyledButton = styled(Button)`
-  &:hover {
-    cursor: pointer;
-    opacity: 0.9;
-  }
 `
 
 const CheckboxRow = styled.div`

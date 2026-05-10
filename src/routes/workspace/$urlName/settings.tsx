@@ -81,7 +81,6 @@ const StyledTabsTrigger = styled(TabsTrigger)`
 
   &[data-state="active"] {
     color: #1677ff;
-    font-weight: 500;
   }
   
   &[data-state="active"]::after {
