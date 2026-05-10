@@ -55,29 +55,27 @@ function handleImportantChange(
 }
 
 function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+  const target = e.target as HTMLElement
+  const row = Number(target.dataset.row)
+  const col = Number(target.dataset.col)
+  if (isNaN(row) || isNaN(col)) return
+
+  const container = target.closest('table')
+  if (!container) return
+
   if (e.key === 'Enter') {
     e.preventDefault()
-    const currentRow = (e.target as HTMLElement).closest('tr')
-    if (!currentRow) return
-    let next = currentRow.nextElementSibling
-    while (next && next.hasAttribute('data-expansion-row')) {
-      next = next.nextElementSibling
-    }
-    if (!next) return
-    const titleTextarea = next.querySelector<HTMLTextAreaElement>('td:first-child textarea')
-    titleTextarea?.focus()
+    const next = container.querySelector<HTMLElement>(`[data-row="${row + 1}"][data-col="0"]`)
+    next?.focus()
     return
   }
 
   if (e.key === 'Tab') {
-    const currentTd = (e.target as HTMLElement).closest('td')
-    if (!currentTd) return
-    const nextTd = e.shiftKey ? currentTd.previousElementSibling : currentTd.nextElementSibling
-    if (!nextTd) return
-    const focusable = nextTd.querySelector<HTMLElement>('textarea, button, input, [tabindex]')
-    if (!focusable) return
+    const nextCol = e.shiftKey ? col - 1 : col + 1
+    const next = container.querySelector<HTMLElement>(`[data-row="${row}"][data-col="${nextCol}"]`)
+    if (!next) return
     e.preventDefault()
-    focusable.focus()
+    next.focus()
   }
 }
 
@@ -93,12 +91,15 @@ const columns: ColumnDef<TaskRow>[] = [
         <HeaderLabel>הנחיה</HeaderLabel>
       </HeaderLabelGroup>
     ),
-    cell: ({ row: { original: { id, title } }, table }) => {
+    cell: ({ row, table }) => {
+      const { id, title } = row.original
       const { updateRow } = table.options.meta as TaskTableMeta
       return (
         <TextareaCellWrapper>
           <CellTextarea
             $color="rgba(0, 0, 0, 0.88)"
+            data-row={row.index}
+            data-col={0}
             value={title}
             onChange={(e) => handleTextareaChange(e, id, TaskColumnId.Title, updateRow)}
             onKeyDown={handleCellKeyDown}
@@ -141,11 +142,14 @@ const columns: ColumnDef<TaskRow>[] = [
     id: 'notes',
     size: 350,
     header: () => <HeaderLabel>הערות הנחיה</HeaderLabel>,
-    cell: ({ row: { original: { id, notes } }, table }) => {
+    cell: ({ row, table }) => {
+      const { id, notes } = row.original
       const { updateRow } = table.options.meta as TaskTableMeta
       return (
         <TextareaCellWrapper>
           <CellTextarea
+            data-row={row.index}
+            data-col={1}
             value={notes}
             onChange={(e) => handleTextareaChange(e, id, TaskColumnId.Notes, updateRow)}
             onKeyDown={handleCellKeyDown}
