@@ -3,10 +3,8 @@ import { Popover } from 'radix-ui'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import type { DateRange } from 'react-day-picker'
-import { he as heDayPicker } from 'react-day-picker/locale'
 import { RangeContextProvider } from '#/providers/RangeProvider'
-import { Calendar } from '../ui/calendar'
-import { WeekNumberCell } from './WeekCellNumber'
+import DatePicker, { CalendarMode } from './DatePicker'
 
 export interface DateRangePickerSlotProps {
   range: DateRange | undefined
@@ -60,13 +58,10 @@ function DateRangePicker({ triggerButton, header, footer }: DateRangePickerProps
         <Popover.Portal>
           <PopupContent data-lang="he" align="end" sideOffset={8}>
             {header?.(slotProps)}
-            <StyledCalendar
-              showWeekNumber
-              mode="range"
+            <DatePicker
+              mode={CalendarMode.Range}
               selected={state.range}
               onSelect={handleRangeSelect}
-              locale={heDayPicker}
-              components={{ WeekNumber: WeekNumberCell }}
             />
             {footer?.(slotProps)}
           </PopupContent>
@@ -90,19 +85,3 @@ const PopupContent = styled(Popover.Content)`
   width: 340px;
 `
 
-const StyledCalendar = styled(Calendar)`
-  width: 100%;
-  min-height: 0;
-  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
-
-  td {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    button[data-range-start=true],
-    button[data-range-end=true] {
-      width: 15px;
-    }
-  }
-`

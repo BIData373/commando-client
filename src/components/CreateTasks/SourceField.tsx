@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import styled from '@emotion/styled'
 import { ChevronDown, Paperclip, Calendar as CalendarIcon } from 'lucide-react'
-import { Calendar } from '../ui/calendar'
+import DatePicker, { CalendarMode } from '../shared/DatePicker'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
-import { he } from 'date-fns/locale'
 
 import HighlightMatch from '../shared/HighlightMatch'
 import { MOCK_DISCUSSIONS } from '../../data/Discussions'
@@ -56,6 +55,14 @@ function SourceField({
     setIsDropdownOpen(false)
     onSourceSelect(sourceQuery)
   }
+
+  function parseDate(dateStr: string): Date | undefined {
+    const [day, month, year] = dateStr.split('/')
+    if (!day || !month || !year) return undefined
+    return new Date(Number(year), Number(month) - 1, Number(day))
+  }
+
+  const selectedDate = sourceDate ? parseDate(sourceDate) : undefined
 
   const allFiltered = MOCK_DISCUSSIONS.filter((d) => d.name.includes(sourceQuery))
   const filteredDiscussions = uniqueNames
@@ -160,9 +167,9 @@ function SourceField({
           </TooltipProvider>
           {!isSourceLinked && (
             <DatePopoverContent align="start" sideOffset={4}>
-              <Calendar
-                mode="single"
-                locale={he}
+              <DatePicker
+                mode={CalendarMode.Single}
+                selected={selectedDate}
                 onSelect={onDateSelect}
               />
             </DatePopoverContent>
