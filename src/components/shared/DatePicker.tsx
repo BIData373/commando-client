@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import type { DateRange } from 'react-day-picker'
+import type { ComponentProps } from 'react'
 import { he as heDayPicker } from 'react-day-picker/locale'
 import { Calendar } from '../ui/calendar'
 import CalendarNav from './CalendarNav'
@@ -10,23 +10,11 @@ export enum CalendarMode {
   Single = 'single',
 }
 
-interface RangeDatePickerProps {
-  mode: CalendarMode.Range
-  selected: DateRange | undefined
-  onSelect: (value: DateRange | undefined) => void
-}
-
-interface SingleDatePickerProps {
-  mode: CalendarMode.Single
-  selected: Date | undefined
-  onSelect: (value: Date | undefined) => void
-}
-
-type DatePickerProps = RangeDatePickerProps | SingleDatePickerProps
+type DatePickerProps = ComponentProps<typeof Calendar>
 
 function getDefaultMonth(props: DatePickerProps): Date | undefined {
-  if (props.mode === CalendarMode.Single) return props.selected
-  return props.selected?.from
+  return props.mode === 'range' ? props.selected?.from :
+    props.mode === 'single' ? props.selected : undefined
 }
 
 function DatePicker(props: DatePickerProps) {
