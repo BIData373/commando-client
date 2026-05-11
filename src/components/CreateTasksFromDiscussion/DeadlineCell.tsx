@@ -2,8 +2,7 @@ import { useState } from 'react'
 import styled from '@emotion/styled'
 import { ChevronLeft } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { Calendar } from '../ui/calendar'
-import { he } from 'date-fns/locale'
+import DatePicker, { CalendarMode } from '../shared/DatePicker'
 import DeadlineTag, { type DeadlineType, DEADLINE_LABELS } from '../shared/DeadlineTag'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -94,9 +93,8 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
             ))}
             {calendarFor && (
               <CalendarPanel>
-                <Calendar
-                  mode="single"
-                  locale={he}
+                <DatePicker
+                  mode={CalendarMode.Single}
                   selected={dueDate ?? undefined}
                   onSelect={handleDateSelect}
                 />
