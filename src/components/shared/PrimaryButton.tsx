@@ -1,24 +1,24 @@
 import styled from '@emotion/styled'
 
 interface PrimaryButtonProps {
-    onClick?(): void
-    title: string
-    headerIcon?: React.ReactNode
-    tailIcon?: React.ReactNode
-    height?: number
+  onClick?(): void
+  title: string
+  header?: React.ReactNode
+  tail?: React.ReactNode
+  height?: number
 }
 
-export const PrimaryButton = ({ onClick, title, headerIcon, tailIcon, height }: PrimaryButtonProps) => {
-    return (
-        <Button onClick={onClick} $height={height}>
-            {headerIcon}
-            {title}
-            {tailIcon}
-        </Button>
-    )
+export const PrimaryButton = ({ onClick, title, header, tail, height }: PrimaryButtonProps) => {
+  return (
+    <Button onClick={onClick} $height={height}>
+      {header}
+      {title}
+      {tail}
+    </Button>
+  )
 }
 
-const Button = styled.button<{ $height: number }>`
+const Button = styled.button<{ $height: number | undefined }>`
   direction: rtl;
   display: flex;
   align-items: center;

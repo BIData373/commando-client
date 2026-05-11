@@ -102,8 +102,8 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
         <PrimaryButton
           title='צור הנחייה'
           onClick={handleCreateDirective}
-          headerIcon={<Plus size={18} color="white" />}
-          tailIcon={<ChevronDown size={18} color="white" />}
+          header={<Plus size={18} color="white" />}
+          tail={<ChevronDown size={18} color="white" />}
         />
         {/* <CreateButton onClick={handleCreateDirective}> */}
         {/* <Plus size={18} color="white" /> */}
