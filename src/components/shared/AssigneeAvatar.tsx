@@ -30,8 +30,8 @@ export const AssigneeAvatar = ({ assignee, size }: AssigneeAvatarProps) => {
 const ColoredFallback = styled(AvatarFallback) <{ $color: string | null, $size?: number }>`
   background: ${({ $color }) => $color ?? 'var(--chip-bg)'};
   color: white;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 400;
   width: ${({ $size }) => $size ? `${$size}px` : 'none'};
   height: ${({ $size }) => $size ? `${$size}px` : 'none'};
 `
