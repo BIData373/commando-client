@@ -170,12 +170,8 @@ const QuestionIcon = styled.button`
   background: none;
   border: none;
   padding: 0;
-  color: var(--sea-ink-soft);
+  color: rgba(0, 0, 0, 0.25);
   cursor: pointer;
-
-  &:hover {
-    color: var(--sea-ink);
-  }
 `
 
 const AssigneeCardGrid = styled.div`
