@@ -24,9 +24,18 @@ export function AssigneeCard({ assignee, userNames }: IAssigneeCardProps) {
     const visibleIds = userIds.slice(0, MAX_VISIBLE_TAGS)
     const remaining = userIds.length - MAX_VISIBLE_TAGS
     const [isUpdateCardOpen, setIsUpdateCardOpen] = useState(false)
+    const [isHover, setIsHover] = useState(false)
 
     function onCardClick() {
         setIsUpdateCardOpen(true)
+    }
+
+    function onMouseEnter() {
+        setIsHover(true)
+    }
+
+    function onMouseLeave() {
+        setIsHover(false)
     }
 
     return (
@@ -36,14 +45,18 @@ export function AssigneeCard({ assignee, userNames }: IAssigneeCardProps) {
                 open={isUpdateCardOpen}
                 onOpenChange={setIsUpdateCardOpen}
             />
-            <StyledCard onClick={onCardClick}>
+            <StyledCard
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+                onClick={onCardClick}
+            >
                 <StyledCardHeader>
                     <CardHeaderRow>
                         <AssigneeAvatar assignee={assignee} />
                         <CardWrapper>
                             <CardMeta>
                                 <CardTitle>{assignee.name}</CardTitle>
-                                <DeleteAssigneePopconfirm assigneeId={assignee.id} />
+                                <DeleteAssigneePopconfirm assigneeId={assignee.id} isHover={isHover}/>
                             </CardMeta>
                             <StyledCardDescription>{userIds.length} משתמשים</StyledCardDescription>
                         </CardWrapper>
