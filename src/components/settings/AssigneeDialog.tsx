@@ -288,7 +288,6 @@ const ScrollableContent = styled.div`
 `
 
 const CancelButton = styled.button`
-  min-width: 80px;
   height: 40px;
   padding: 0 15px;
   font-size: 16px;
@@ -409,6 +408,7 @@ const AddUserButton = styled.button<{ $enabled: boolean }>`
   flex-shrink: 0;
   border-radius: 6px;
   border: 1px solid var(--line);
+  color: ${({ $enabled }) => $enabled ? 'var(--background)' : 'rgba(0, 0, 0, 0.25)'};
   cursor: ${({ $enabled }) => ($enabled ? 'pointer' : 'default')};
   background: ${({ $enabled }) => ($enabled ? 'linear-gradient(135deg, #615FFF 0%, #9810FA 100%)' : 'rgba(0, 0, 0, 0.04)')};
 `

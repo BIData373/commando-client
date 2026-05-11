@@ -76,7 +76,7 @@ const UserCardClose = styled.button`
     border: none;
     cursor: pointer;
     padding: 2px;
-    color: var(--sea-ink-soft);
+    color: rgba(0, 0, 0, 0.45);
     flex-shrink: 0;
     align-self: flex-start;
 
