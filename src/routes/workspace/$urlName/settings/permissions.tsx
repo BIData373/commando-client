@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
+import { UserPlus } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { AddUserSection } from '#/components/settings/AddUserSection'
+import { DropdownPermission } from '#/components/settings/DropdownPermission'
 import { DropdownUsers } from '#/components/settings/DropdownUsers'
 import { SectionTitle } from '#/components/settings/SectionTitle'
 import { UserPermissionList } from '#/components/settings/UserPermissionList'
@@ -27,6 +28,7 @@ function SettingsPermissions() {
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState(PermissionsTab.ALL)
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
+  const [role, setRole] = useState<UserRole>(UserRole.VIEWER);
 
   const { data: permissionUsers = [] } = useWorkspaceUsers(urlName)
   const { mutate: userUpdate } = useUpdateUser()
@@ -89,9 +91,21 @@ function SettingsPermissions() {
             onClear={handleSearchClear}
             placeholder='חפש שם/ תפקיד/ מספר אישי'
           />
-          {search.length > 0 && (
-            <AddUserSection onClick={handleUserAdd} disabled={!selectedUser} />
-          )}
+          <AddUserRow>
+            {search.length > 0 && (
+              <DropdownPermission
+                ghost
+                value={role}
+                onChange={setRole}
+                disabled={!selectedUser}
+              />
+            )}
+            {selectedUser && (
+              <AddAvatarButton onClick={() => handleUserAdd(role)} >
+                <UserPlus size={16} />
+              </AddAvatarButton>
+            )}
+          </AddUserRow>
         </SearchSection>
         <StyledTabs value={activeTab} onValueChange={handleTabChange}>
           <StyledTabsList variant="line">
@@ -133,6 +147,29 @@ const PermissionsInner = styled.div`
   max-width: 550px;
   padding: 0 12px;
 `
+
+const AddUserRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+`
+
+
+const AddAvatarButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--color-primary-foreground);
+  cursor: pointer;
+  background: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
+`
+
 
 const StyledTabs = styled(Tabs)`
   flex: 1;
