@@ -7,9 +7,10 @@ import { TrashButton } from './TrashButton'
 
 interface DeleteAssigneePopconfirmProps {
     assigneeId: number
+    isHover: boolean
 }
 
-export function DeleteAssigneePopconfirm({ assigneeId }: DeleteAssigneePopconfirmProps) {
+export function DeleteAssigneePopconfirm({ assigneeId, isHover }: DeleteAssigneePopconfirmProps) {
     const [open, setOpen] = useState(false)
     const deleteAssignee = useDeleteAssignee()
 
@@ -37,6 +38,7 @@ export function DeleteAssigneePopconfirm({ assigneeId }: DeleteAssigneePopconfir
             <PopoverTrigger asChild onClick={handleTriggerClick}>
                 <TrashButton
                     onClick={handleTriggerClick}
+                    isVisible={isHover}
                 />
             </PopoverTrigger>
             <StyledPopoverContent
