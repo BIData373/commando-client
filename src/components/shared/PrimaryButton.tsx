@@ -24,7 +24,6 @@ const Button = styled.button<{ $height: number | undefined }>`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 80px;
   height: ${({ $height }) => $height ?? '40'}px;
   padding: 0 15px;
   border: none;
