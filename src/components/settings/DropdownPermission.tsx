@@ -29,7 +29,7 @@ export function DropdownPermission({ value, ghost, disabled, onChange }: SelectD
             </RoleTrigger>
             <StyledDropdownMenuContent>
                 {Object.entries(roleNames).map(([key, value]) => (
-                    <DropdownMenuItem key={key} onSelect={() => onSelectPermission(key)}>{value}</DropdownMenuItem>
+                    <StyledDropdownMenuItem key={key} onSelect={() => onSelectPermission(key)}>{value}</StyledDropdownMenuItem>
                 ))}
             </StyledDropdownMenuContent>
         </DropdownMenu>
@@ -54,6 +54,12 @@ const RoleTrigger = styled(DropdownMenuTrigger) <{ $ghost?: boolean, $enabled: b
     border: 1px solid var(--card-border);
     background: rgba(0, 0, 0, 0.04);
   `}
+
+  ${({ $ghost }) => !$ghost && `
+    &:hover {
+        color: #4096FF
+    }
+  `}
 `;
 
 const StyledDropdownMenuContent = styled(DropdownMenuContent)`
@@ -61,4 +67,14 @@ const StyledDropdownMenuContent = styled(DropdownMenuContent)`
     min-width: 0;
     flex-direction: column;
     direction: rtl;
+    width: 82px;
+    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+`
+
+const StyledDropdownMenuItem = styled(DropdownMenuItem)`
+    &:hover {
+      color: #1677FF;
+      background: #e2eeff;
+    }
 `
