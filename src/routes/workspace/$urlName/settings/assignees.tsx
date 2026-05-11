@@ -1,12 +1,11 @@
 import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
-import { Info, Plus, Search } from 'lucide-react'
+import { CircleQuestionMarkIcon, Info, Plus, Search } from 'lucide-react'
 import { type ChangeEvent, useState } from 'react'
 import { AssigneeCard } from '#/components/settings/AssigneeCard'
 import { AssigneeDialog } from '#/components/settings/AssigneeDialog'
 import { SectionTitle } from '#/components/settings/SectionTitle'
 import { PrimaryButton } from '#/components/shared/PrimaryButton'
-import { Button } from '#/components/ui/button'
 import { Checkbox } from '#/components/ui/checkbox'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '#/components/ui/input-group'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/components/ui/tooltip'
@@ -64,9 +63,9 @@ function SettingsAssignees() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <InfoIcon>
-                  <Info size={16} />
-                </InfoIcon>
+                <QuestionIcon>
+                  <CircleQuestionMarkIcon size={16} />
+                </QuestionIcon>
               </TooltipTrigger>
               <StyledTooltipContent>
                 מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות כבויה – עדכון הסטטוס יתאפשר רק למנהלי הלשכה.
@@ -86,7 +85,7 @@ function SettingsAssignees() {
           <PrimaryButton
             title='צור אחרי'
             onClick={handleOpenCreateDialog}
-            headerIcon={<Plus size={16} />}
+            header={<Plus size={16} />}
             height={32}
           />
         </ToolbarRow>
@@ -118,6 +117,10 @@ const ToolbarRow = styled.div`
 const StyledTooltipContent = styled(TooltipContent)`
   background: var(--background);
   color: var(--text-color-2);
+
+  svg {
+    opacity: 0;
+  } 
 `
 
 const StyledContent = styled.div`
@@ -161,7 +164,7 @@ const StyledInputGroup = styled(InputGroup)`
   background: var(--background);
 `
 
-const InfoIcon = styled.button`
+const QuestionIcon = styled.button`
   display: flex;
   align-items: center;
   background: none;
