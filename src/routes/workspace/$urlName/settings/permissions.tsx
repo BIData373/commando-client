@@ -214,7 +214,7 @@ const StyledTabsContent = styled(TabsContent)`
   `
 
 const StyledTabsTrigger = styled(TabsTrigger)`
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   font-size: 14px;
   font-weight: 400;
   cursor: pointer;  
