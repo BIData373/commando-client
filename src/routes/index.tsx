@@ -1,5 +1,7 @@
+import type { WorkspaceDto } from '#/api/model'
+import { useListWorkspaces } from '#/api/workspace/workspace'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
-import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card'
+import { Card, CardAction, CardFooter, CardHeader, CardTitle } from '#/components/ui/card'
 import styled from '@emotion/styled'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
@@ -29,7 +31,7 @@ const PLACEHOLDER_WORKSPACES: Workspace[] = [
 ]
 
 interface WorkspaceCardProps {
-  workspace: Workspace
+  workspace: WorkspaceDto
 }
 
 function WorkspaceCard({ workspace }: WorkspaceCardProps) {
@@ -42,8 +44,7 @@ function WorkspaceCard({ workspace }: WorkspaceCardProps) {
   return (
     <Card onClick={handleWorkspaceClick}>
       <CardHeader>
-        <CardTitle>{workspace.displayName}</CardTitle>
-        <CardDescription>{workspace.description}</CardDescription>
+        <CardTitle>{workspace.title}</CardTitle>
 
         <CardAction>
           <Avatar>
@@ -57,21 +58,19 @@ function WorkspaceCard({ workspace }: WorkspaceCardProps) {
         </CardAction>
       </CardHeader>
       <CardFooter>
-        {workspace.memberCount} משתמשים
+        {/* TODO - dont have this info */}
+        {/* {workspace.memberCount} משתמשים */}
       </CardFooter>
     </Card>
   )
 }
 
 function RouteComponent() {
+  const { data: workspaces = [] } = useListWorkspaces()
   const navigate = useNavigate()
 
   function handlePersonalClick() {
     navigate({ to: '/personal' })
-  }
-
-  function handleWorkspaceClick(urlName: string) {
-    navigate({ to: '/workspace/$urlName', params: { urlName } })
   }
 
   return (
@@ -84,7 +83,7 @@ function RouteComponent() {
       <SectionTitle>סביבות עבודה</SectionTitle>
 
       <WorkspaceGrid>
-        {PLACEHOLDER_WORKSPACES.map((ws) => (
+        {workspaces.map((ws) => (
           <WorkspaceCard key={ws.urlName} workspace={ws} />
         ))}
       </WorkspaceGrid>

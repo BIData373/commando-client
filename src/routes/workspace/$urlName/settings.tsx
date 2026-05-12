@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import { createFileRoute, Outlet, useNavigate, useRouterState } from '@tanstack/react-router'
 import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
 import { Tabs, TabsList, TabsTrigger } from '../../../components/ui/tabs'
+import { useGetWorkspace } from '#/api/workspace/workspace'
 
 
 export const Route = createFileRoute('/workspace/$urlName/settings')({
@@ -27,6 +28,11 @@ function SettingsLayout() {
   const navigate = useNavigate()
   const { location } = useRouterState()
   const { urlName } = Route.useParams()
+
+  const { data: workspace } = useGetWorkspace({
+    id: 2
+  })
+  console.log(workspace);
 
   const activeTab = (Object.values(SettingTabPath).find((t) =>
     location.pathname.endsWith(t)
