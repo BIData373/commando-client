@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
-import { AlertCircle, Trash2 } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 import { useState } from 'react'
 import { useDeleteAssignee } from '#/hooks/useAssignees'
-import { Button } from '../ui/button'
+import { TrashButton } from '../shared/TrashButton'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 
 interface DeleteAssigneePopconfirmProps {
@@ -35,9 +35,9 @@ export function DeleteAssigneePopconfirm({ assigneeId }: DeleteAssigneePopconfir
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild onClick={handleTriggerClick}>
-                <TrashButton type="button">
-                    <Trash2 size={16} />
-                </TrashButton>
+                <TrashButton
+                    onClick={handleTriggerClick}
+                />
             </PopoverTrigger>
             <StyledPopoverContent
                 side="bottom"
@@ -63,31 +63,11 @@ export function DeleteAssigneePopconfirm({ assigneeId }: DeleteAssigneePopconfir
                     <DeleteButton type="button" onClick={handleDelete} disabled={deleteAssignee.isPending}>
                         מחק
                     </DeleteButton>
-
                 </ButtonsRow>
             </StyledPopoverContent>
         </Popover>
     )
 }
-
-const TrashButton = styled(Button)`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    color: rgba(0, 0, 0, 0.45);
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-
-    :hover {
-        background: rgba(0, 0, 0, 0.06);
-        color: rgba(0, 0, 0, 0.88);
-    }
-`
 
 const StyledPopoverContent = styled(PopoverContent)`
     background: var(--background);

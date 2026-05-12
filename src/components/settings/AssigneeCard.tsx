@@ -75,8 +75,16 @@ const StyledCard = styled(Card)`
   transition: box-shadow 0.3s ease-in-out;
   width: 275px;
 
+  button {
+    opacity: 0;
+  }
+
   &:hover {
     box-shadow: var(--card-shadow-hover);
+
+    button {
+        opacity: 1;
+    }
   }
 `
 
