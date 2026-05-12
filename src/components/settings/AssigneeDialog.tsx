@@ -298,8 +298,8 @@ const CancelButton = styled.button`
   transition: color, border  0.2s ease-in-out;
 
   &:hover {
-    color: #4096FF;
-    border: 1px solid #4096FF;
+    color: var(--button-color-hover);
+    border: 1px solid var(--button-color-hover);
   }
 `
 
