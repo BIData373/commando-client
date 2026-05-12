@@ -1,13 +1,12 @@
 import styled from '@emotion/styled'
 import type { IUser, UserRole } from '#/types'
-import { TrashButtona'.edsha'.edshared/TrashButton'
-import {
-  DropdownPermissionmissionm"siDropdownPermission"ssion"ssion"
+import { TrashButton } from '../shared/TrashButton'
+import { DropdownPermission } from "./DropdownPermission"
 
 interface UserPermissionListProps {
-    users: IUser[]
+  users: IUser[]
   onDelete: (userId: number) => void
-      onRoleChange: (userId: number, role: UserRole) => void
+  onRoleChange: (userId: number, role: UserRole) => void
 }
 
 export function UserPermissionList({ users, onDelete, onRoleChange }: UserPermissionListProps) {
