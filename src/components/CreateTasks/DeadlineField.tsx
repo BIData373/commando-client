@@ -129,7 +129,7 @@ const SegmentedControl = styled.div`
   align-items: center;
   height: 40px;
   padding: 2px;
-  background: #f5f5f5;
+  background: var(--colors-base-neutral-3);
   border-radius: 8px;
   overflow: hidden;
 `

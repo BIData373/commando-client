@@ -144,7 +144,7 @@ const RowContainer = styled.div`
   gap: 24px;
   padding: 7px 12px;
   background: #fafafa;
-  border: 0.8px solid #f5f5f5;
+  border: 0.8px solid var(--colors-base-neutral-3);
   border-radius: 8px;
 `
 
@@ -232,7 +232,7 @@ const AvatarCircle = styled.div<{ $color: AvatarColor }>`
       case 'blue': return 'background: #91caff;'
       case 'green': return 'background: #b7eb8f;'
       case 'orange': return 'background: #ffd591;'
-      case 'gray': return 'background: #f5f5f5;'
+      case 'gray': return 'background: var(--colors-base-neutral-3);'
     }
   }}
 `

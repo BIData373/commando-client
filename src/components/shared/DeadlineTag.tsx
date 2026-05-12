@@ -19,15 +19,15 @@ const DeadlineTag = styled.span<{ $type: DeadlineType }>`
     switch ($type) {
       case 'ongoing':
         return `
-          background: rgba(230, 244, 255, 0.8);
-          border: 1px solid rgba(145, 202, 255, 0.8);
-          color: rgba(22, 119, 255, 0.9);
+          background: var(--Colors-Base-Blue-1);
+          border: 1px solid var(--Colors-Base-Blue-3);
+          color: var(--Colors-Base-Blue-6);
         `
       case 'immediate':
         return `
-          background: #FFF1F0;
-          border: 1px solid #FFA39E;
-          color: #F5222D;
+          background: var(--Colors-Base-Red-1);
+          border: 1px solid var(--Colors-Base-Red-3);
+          color: var(--Colors-Base-Red-6);
         `
       case 'date':
         return `

@@ -45,7 +45,7 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
       <AssigneePicker
         selectedAssignees={assigneeIds}
         onToggle={handleToggleAssignee}
-        trigger={() => (
+        trigger={
           <CompactTriggerButton type="button">
             <CompactChevron size={16} />
 
@@ -77,7 +77,7 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
               <CompactLabel>בחר אחראי</CompactLabel>
             )}
           </CompactTriggerButton>
-        )}
+        }
       />
     </AssigneeCellOuter>
   )
@@ -205,8 +205,8 @@ function getAvatarBackground(color?: AvatarColor) {
     case 'orange':
       return 'background: #ffd591;'
     case 'gray':
-      return 'background: #f5f5f5;'
+      return 'background: var(--colors-base-neutral-3);'
     default:
-      return 'background: #f5f5f5;'
+      return 'background: var(--colors-base-neutral-3);'
   }
 }
