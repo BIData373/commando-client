@@ -194,7 +194,7 @@ const UserListInner = styled.div`
 const Subtitle = styled.p`
   font-size: 14px;
   font-weight: 400;
-  color: #8C8C8C;
+  color: var(--text-subtitle-color);
   margin: 0;
 `
 
@@ -220,11 +220,11 @@ const StyledTabsTrigger = styled(TabsTrigger)`
   cursor: pointer;  
 
   &[data-state="active"] {
-    color: #1677ff;
+    color: var(--tab-active-color);
   }
   
   &[data-state="active"]::after {
-    background-color: #1677ff;
+    background-color: var(--tab-active-color);
   }
 `
 

@@ -6,11 +6,13 @@ interface PrimaryButtonProps {
   header?: React.ReactNode
   tail?: React.ReactNode
   height?: number
+  width?: number
+  disabled?: boolean
 }
 
-export const PrimaryButton = ({ onClick, title, header, tail, height }: PrimaryButtonProps) => {
+export const PrimaryButton = ({ onClick, title, header, tail, height, width, disabled }: PrimaryButtonProps) => {
   return (
-    <Button onClick={onClick} $height={height}>
+    <Button onClick={onClick} $height={height} $width={width} disabled={disabled}>
       {header}
       {title}
       {tail}
@@ -18,17 +20,18 @@ export const PrimaryButton = ({ onClick, title, header, tail, height }: PrimaryB
   )
 }
 
-const Button = styled.button<{ $height: number | undefined }>`
+const Button = styled.button<{ $height?: number, $width?: number }>`
   direction: rtl;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   height: ${({ $height }) => $height ?? '40'}px;
+  width: ${({ $width }) => $width}px;
   padding: 0 15px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(165deg, #615FFF 0%, #9810FA 100%);
+  background: var(--button-gradient);
   color: white;
   font-family: 'Rubik', sans-serif;
   font-size: 16px;
@@ -47,10 +50,15 @@ const Button = styled.button<{ $height: number | undefined }>`
     pointer-events: none;
   }
 
-  &:hover {
-    opacity: 0.9;
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+  
   &:active {
     opacity: 0.85;
   }

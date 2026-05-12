@@ -24,18 +24,9 @@ export function AssigneeCard({ assignee, userNames }: IAssigneeCardProps) {
     const visibleIds = userIds.slice(0, MAX_VISIBLE_TAGS)
     const remaining = userIds.length - MAX_VISIBLE_TAGS
     const [isUpdateCardOpen, setIsUpdateCardOpen] = useState(false)
-    const [isHover, setIsHover] = useState(false)
 
     function onCardClick() {
         setIsUpdateCardOpen(true)
-    }
-
-    function onMouseEnter() {
-        setIsHover(true)
-    }
-
-    function onMouseLeave() {
-        setIsHover(false)
     }
 
     return (
@@ -45,18 +36,14 @@ export function AssigneeCard({ assignee, userNames }: IAssigneeCardProps) {
                 open={isUpdateCardOpen}
                 onOpenChange={setIsUpdateCardOpen}
             />
-            <StyledCard
-                onMouseEnter={onMouseEnter}
-                onMouseLeave={onMouseLeave}
-                onClick={onCardClick}
-            >
+            <StyledCard onClick={onCardClick}>
                 <StyledCardHeader>
                     <CardHeaderRow>
                         <AssigneeAvatar assignee={assignee} />
                         <CardWrapper>
                             <CardMeta>
                                 <CardTitle>{assignee.name}</CardTitle>
-                                <DeleteAssigneePopconfirm assigneeId={assignee.id} isHover={isHover}/>
+                                <DeleteAssigneePopconfirm assigneeId={assignee.id} />
                             </CardMeta>
                             <StyledCardDescription>{userIds.length} משתמשים</StyledCardDescription>
                         </CardWrapper>
@@ -88,8 +75,16 @@ const StyledCard = styled(Card)`
   transition: box-shadow 0.3s ease-in-out;
   width: 275px;
 
+  button {
+    opacity: 0;
+  }
+
   &:hover {
     box-shadow: var(--card-shadow-hover);
+
+    button {
+        opacity: 1;
+    }
   }
 `
 

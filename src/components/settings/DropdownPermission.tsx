@@ -57,7 +57,7 @@ const RoleTrigger = styled(DropdownMenuTrigger) <{ $ghost?: boolean, $enabled: b
 
   ${({ $ghost }) => !$ghost && `
     &:hover {
-        color: #4096FF
+        color: var(--button-color-hover)
     }
   `}
 `;
