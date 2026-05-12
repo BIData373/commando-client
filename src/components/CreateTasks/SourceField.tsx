@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { parse } from 'date-fns'
 import styled from '@emotion/styled'
 import { ChevronDown, Paperclip, Calendar as CalendarIcon } from 'lucide-react'
 import DatePicker, { CalendarMode } from '../shared/DatePicker'
@@ -56,13 +57,9 @@ function SourceField({
     onSourceSelect(sourceQuery)
   }
 
-  function parseDate(dateStr: string): Date | undefined {
-    const [day, month, year] = dateStr.split('/')
-    if (!day || !month || !year) return undefined
-    return new Date(Number(year), Number(month) - 1, Number(day))
-  }
-
-  const selectedDate = sourceDate ? parseDate(sourceDate) : undefined
+  const selectedDate = sourceDate
+    ? parse(sourceDate, 'dd/MM/yyyy', new Date())
+    : undefined
 
   const allFiltered = MOCK_DISCUSSIONS.filter((d) => d.name.includes(sourceQuery))
   const filteredDiscussions = uniqueNames

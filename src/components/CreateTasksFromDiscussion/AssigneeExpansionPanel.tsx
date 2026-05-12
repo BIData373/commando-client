@@ -73,7 +73,7 @@ const CollapseCell = styled.button`
   width: 62px;
   height: 100%;
   padding: 12px;
-  background: #f5f5f5;
+  background: var(--colors-base-neutral-3);
   border: none;
   cursor: pointer;
   color: rgba(0, 0, 0, 0.65);
@@ -91,7 +91,7 @@ const DetailHeaderCell = styled.div`
   align-items: center;
   justify-content: flex-end;
   padding: 4px 12px;
-  background: #f5f5f5;
+  background: var(--colors-base-neutral-3);
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
@@ -106,7 +106,7 @@ const AssigneeHeaderCell = styled.div`
   justify-content: flex-end;
   padding: 4px 12px;
   padding-inline-end: 64px;
-  background: #f5f5f5;
+  background: var(--colors-base-neutral-3);
   font-size: 14px;
   font-weight: 500;
   line-height: 22px;

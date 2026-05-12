@@ -1,3 +1,4 @@
+import { startOfDay } from 'date-fns'
 import { useTasks } from '../providers/TasksProvider'
 import { MOCK_ASSIGNEES } from '../data/Assignees'
 import type { DeadlineType } from '../components/shared/DeadlineTag'
@@ -24,8 +25,7 @@ export function useSaveTasks() {
   const { addTasks } = useTasks()
 
   function saveTasks(inputs: TaskInput[], discussion: DiscussionFields) {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    const today = startOfDay(new Date())
 
     const newTasks: Parameters<typeof addTasks>[0] = []
 

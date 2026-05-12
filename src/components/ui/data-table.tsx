@@ -132,5 +132,5 @@ const ExpansionCell = styled.td`
   padding: 0;
   border: none;
   height: auto;
-  background: #f5f5f5 !important;
+  background: var(--colors-base-neutral-3) !important;
 `
