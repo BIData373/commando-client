@@ -6,7 +6,7 @@ interface CancleButtonProps {
     ref?: React.Ref<HTMLButtonElement>
 }
 
-export const CancleButton = ({ title, onClick, ref }: CancleButtonProps) => {
+export const CancelButton = ({ title, onClick, ref }: CancleButtonProps) => {
     return (
         <Button onClick={onClick} ref={ref}>
             {title}

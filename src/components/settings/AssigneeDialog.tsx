@@ -7,7 +7,7 @@ import { type IMesibaIcon, useMesibaIconByName } from '#/hooks/useMesiba'
 import { useUsers } from '#/hooks/useUsers'
 import type { IAssignee, IUser } from '#/types'
 import { concatName } from '#/utils/userUtils'
-import { CancleButton } from '../shared/CancleButton'
+import { CancelButton } from '../shared/CancelButton'
 import { PrimaryButton } from '../shared/PrimaryButton'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'
@@ -238,7 +238,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
 
                 <DialogActions $shadow={scrollShadow.bottom}>
                     <DialogClose asChild>
-                        <CancleButton
+                        <CancelButton
                             title='ביטול'
                         />
                     </DialogClose>
