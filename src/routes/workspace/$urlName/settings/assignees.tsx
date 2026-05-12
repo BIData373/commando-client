@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
-import { CircleQuestionMarkIcon, Info, Plus, Search } from 'lucide-react'
+import { CircleQuestionMarkIcon, Plus, Search } from 'lucide-react'
 import { type ChangeEvent, useState } from 'react'
 import { AssigneeCard } from '#/components/settings/AssigneeCard'
 import { AssigneeDialog } from '#/components/settings/AssigneeDialog'
