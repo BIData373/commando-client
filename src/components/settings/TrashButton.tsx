@@ -5,12 +5,11 @@ interface TrashButtonProps {
   onClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void
   size?: number
   ref?: React.Ref<HTMLButtonElement>
-  isVisible?: boolean
 }
 
-export const TrashButton = ({ onClick, ref, size, isVisible }: TrashButtonProps) => {
+export const TrashButton = ({ onClick, ref, size }: TrashButtonProps) => {
   return (
-    <DeleteButton ref={ref} onClick={onClick} $visible={isVisible}>
+    <DeleteButton ref={ref} onClick={onClick}>
       <Trash2 size={size ?? 16} />
     </DeleteButton>
   )
