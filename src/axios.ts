@@ -8,6 +8,8 @@ export const axiosInstance = axios.create({
 });
 
 // FIX Add cookie removing for sso
-export async function sendRequest<T>(config: AxiosRequestConfig) {
-  return (await axiosInstance<T>(config)).data;
+export async function apiRequest<T>(config: AxiosRequestConfig) {
+  const { data } = await axiosInstance<T>(config);
+
+  return data;
 }
