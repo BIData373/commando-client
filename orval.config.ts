@@ -1,16 +1,31 @@
+import { config } from 'dotenv'
 import { defineConfig } from 'orval';
+
+config()
+
+const API_URL = process.env.VITE_API_BASE_URL ?? 'http://localhost:3000'
 
 export default defineConfig({
   vector: {
     output: {
       mode: 'tags-split',
       target: 'src/api/',
-      schemas: 'src/api/model',
       client: 'react-query',
-      mock: false
+      mock: true,
+      httpClient: 'axios',
+      schemas: {
+        path: 'src/api/model',
+        type: 'typescript'
+      },
+      override: {
+        mutator: {
+          path: 'src/axios.ts',
+          name: 'apiRequest'
+        }
+      }
     },
     input: {
-      target: 'http://localhost:3000/open-api/json',
-    },
-  },
+      target: `${API_URL}/open-api/json`,
+    }
+  }
 });
