@@ -31,7 +31,7 @@ const Button = styled.button<{ $height?: number, $width?: number }>`
   padding: 0 15px;
   border: none;
   border-radius: 8px;
-  background: var(--button-gradient);
+  background: var(--gradient);
   color: white;
   font-family: 'Rubik', sans-serif;
   font-size: 16px;
@@ -58,7 +58,7 @@ const Button = styled.button<{ $height?: number, $width?: number }>`
   &:hover:not(:disabled) {
     opacity: 0.9;
   }
-  
+
   &:active {
     opacity: 0.85;
   }
