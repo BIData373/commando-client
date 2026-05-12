@@ -7,6 +7,7 @@ import { type IMesibaIcon, useMesibaIconByName } from '#/hooks/useMesiba'
 import { useUsers } from '#/hooks/useUsers'
 import type { IAssignee, IUser } from '#/types'
 import { concatName } from '#/utils/userUtils'
+import { CancleButton } from '../shared/CancleButton'
 import { PrimaryButton } from '../shared/PrimaryButton'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'
@@ -237,7 +238,9 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
 
                 <DialogActions $shadow={scrollShadow.bottom}>
                     <DialogClose asChild>
-                        <CancelButton>ביטול</CancelButton>
+                        <CancleButton
+                            title='ביטול'
+                        />
                     </DialogClose>
                     <PrimaryButton
                         title={isUpdate ? 'שמור' : 'צור'}
@@ -287,21 +290,6 @@ const ScrollableContent = styled.div`
   overflow-y: auto;
 `
 
-const CancelButton = styled.button`
-  height: 40px;
-  padding: 0 15px;
-  font-size: 16px;
-  font-weight: 400;
-  cursor: pointer;
-  border: 1px solid #D9D9D9;
-  border-radius: 8px;
-  transition: color, border  0.2s ease-in-out;
-
-  &:hover {
-    color: var(--button-color-hover);
-    border: 1px solid var(--button-color-hover);
-  }
-`
 
 const DialogBody = styled.div`
   display: flex;
@@ -410,5 +398,5 @@ const AddUserButton = styled.button<{ $enabled: boolean }>`
   border: 1px solid var(--line);
   color: ${({ $enabled }) => $enabled ? 'var(--background)' : 'rgba(0, 0, 0, 0.25)'};
   cursor: ${({ $enabled }) => ($enabled ? 'pointer' : 'default')};
-  background: ${({ $enabled }) => ($enabled ? 'linear-gradient(135deg, #615FFF 0%, #9810FA 100%)' : 'rgba(0, 0, 0, 0.04)')};
+  background: ${({ $enabled }) => ($enabled ? 'va(--gradient)' : 'rgba(0, 0, 0, 0.04)')};
 `

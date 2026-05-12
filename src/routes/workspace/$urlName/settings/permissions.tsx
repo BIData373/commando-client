@@ -167,7 +167,7 @@ const AddAvatarButton = styled.button`
   border-radius: 8px;
   color: var(--color-primary-foreground);
   cursor: pointer;
-  background: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
+  background: var(--gradient);
 `
 
 

@@ -6,6 +6,7 @@ import { MOCK_ASSIGNEES } from '../../data/Assignees'
 import type { FormState } from '../../data/CreateTaskForm'
 import { INITIAL_FORM } from '../../data/CreateTaskForm'
 import { useTasks } from '../../providers/TasksProvider'
+import { CancleButton } from '../shared/CancleButton'
 import FlagIcon from '../shared/FlagIcon'
 import { PrimaryButton } from '../shared/PrimaryButton'
 import type { DeadlineType } from '../Tasks/TaskTable'
@@ -322,7 +323,10 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
                 disabled={!form.title.trim()}
                 width={133}
               />
-              <CancelButton onClick={onClose}>ביטול</CancelButton>
+              <CancleButton
+                title='ביטול'
+                onClick={onClose}
+              />
             </ActionRow>
           </ModalBody>
         </ModalCard>
@@ -625,36 +629,4 @@ const ActionRow = styled.div<{ $shadow: boolean }>`
   clip-path: inset(-20px 0 0 0);
   transition: box-shadow 200ms ease;
   box-shadow: ${({ $shadow }) => ($shadow ? '0px -10px 20px 0px rgba(0, 0, 0, 0.06)' : 'none')};
-`
-
-const CancelButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 40px;
-  padding-inline: 16px;
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
-  background: white;
-  color: rgba(0, 0, 0, 0.88);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  cursor: pointer;
-  white-space: nowrap;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
-    pointer-events: none;
-  }
-
-  &:hover {
-    border-color: #4096ff;
-    color: #4096ff;
-  }
 `

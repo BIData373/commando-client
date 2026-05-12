@@ -72,7 +72,7 @@ body,
   --card-border: #d9d9d9;
   --background-area: #fafafa;
   --button-color-hover: #4096FF;
-  --button-gradient: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
+  --gradient: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
   --text-subtitle-color: #8C8C8C;
   --tab-active-color: #1677ff;
 
