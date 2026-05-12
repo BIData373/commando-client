@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import { Trash2 } from 'lucide-react'
 import type { IUser, UserRole } from '#/types'
+import { TrashButton } from '../shared/TrashButton'
 import { DropdownPermission } from "./DropdownPermission"
 
 interface UserPermissionListProps {
@@ -25,9 +25,10 @@ export function UserPermissionList({ users, onDelete, onRoleChange }: UserPermis
             value={user.role}
             onChange={(role) => onRoleChange(user.id, role)}
           />
-          <DeleteButton onClick={() => onDelete(user.id)}>
-            <Trash2 size={22} />
-          </DeleteButton>
+          <TrashButton
+            onClick={() => onDelete(user.id)}
+            size={22}
+          />
         </UserRow>
       ))}
     </UserListRoot>
@@ -80,28 +81,4 @@ const UserSubtext = styled.span`
   font-size: 14px;
   font-weight: 400;
   color: rgba(0, 0, 0, 0.65);
-`
-
-const DeleteButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--sea-ink-soft);
-  padding: 4px;
-  flex-shrink: 0;
-  border-radius: 2px;
-  color: rgba(0, 0, 0, 0.45);
-
-  &:hover {
-    color: rgba(0, 0, 0, 0.88);
-    background: rgba(0, 0, 0, 0.15);
-  }
-
-  &:active {
-    color: rgba(0, 0, 0, 0.88);
-    background: rgba(0, 0, 0, 0.4);
-  }
 `

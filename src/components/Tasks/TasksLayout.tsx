@@ -1,19 +1,20 @@
-import { useMemo, useState } from 'react'
 import styled from '@emotion/styled'
 import { Outlet, useNavigate } from '@tanstack/react-router'
 import { ChevronDown, Plus } from 'lucide-react'
-import { TooltipProvider } from '../ui/tooltip'
-import { type DirectiveStatus } from '../shared/StatusTag'
-import { NoResultsFound } from './NoResultsFound'
-import { TaskSearchBar } from './TaskSearchBar'
-import { TaskFilters, type QuickFilter } from './TaskFilters'
-import { TaskTable } from './TaskTable'
-import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
-import { TaskCardGrid } from './TaskCardGrid'
+import { useMemo, useState } from 'react'
 import { exportTasksToExcel } from '../../functions/exportExcel'
 import { applyAllFilters } from '../../functions/filterUtils'
-import { useTitleBar } from '../../providers/TitleBarProvider'
 import { useTasks } from '../../providers/TasksProvider'
+import { useTitleBar } from '../../providers/TitleBarProvider'
+import { PrimaryButton } from '../shared/PrimaryButton'
+import { type DirectiveStatus } from '../shared/StatusTag'
+import { TooltipProvider } from '../ui/tooltip'
+import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
+import { NoResultsFound } from './NoResultsFound'
+import { TaskCardGrid } from './TaskCardGrid'
+import { type QuickFilter, TaskFilters } from './TaskFilters'
+import { TaskSearchBar } from './TaskSearchBar'
+import { TaskTable } from './TaskTable'
 
 export type View = 'TABLE' | 'CARDS'
 
@@ -98,11 +99,12 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   useTitleBar(
     () => (
       <ButtonGroup>
-        <CreateButton onClick={handleCreateDirective}>
-          <Plus size={18} color="white" />
-          <CreateButtonText>צור הנחייה</CreateButtonText>
-          <ChevronDown size={18} color="white" />
-        </CreateButton>
+        <PrimaryButton
+          title='צור הנחייה'
+          onClick={handleCreateDirective}
+          header={<Plus size={18} color="white" />}
+          tail={<ChevronDown size={18} color="white" />}
+        />
         <SectionDivider />
         <SegmentedControl>
           <SegmentedItem
@@ -189,48 +191,6 @@ const ButtonGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-`
-
-const CreateButton = styled.button`
-  direction: rtl;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 40px;
-  padding-inline: 15px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(165deg, #615FFF 0%, #9810FA 100%);
-  color: white;
-  font-family: 'Rubik', sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  cursor: pointer;
-  white-space: nowrap;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: inset 0px 2px 4px 0px rgba(0, 0, 0, 0.05);
-    pointer-events: none;
-  }
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:active {
-    opacity: 0.85;
-  }
-`
-
-const CreateButtonText = styled.span`
-  direction: rtl;
 `
 
 const SectionDivider = styled.div`

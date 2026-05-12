@@ -26,9 +26,9 @@ export function SelectCommand({
             </StyledSelectTrigger>
             <StyledSelectContent position="popper" side="bottom">
                 {COMMAND_OPTIONS.map((option) => (
-                    <SelectItem key={option} value={option}>
+                    <StyledSelectItem key={option} value={option}>
                         {option}
-                    </SelectItem>
+                    </StyledSelectItem>
                 ))}
             </StyledSelectContent>
         </Select>
@@ -39,7 +39,6 @@ const StyledSelectTrigger = styled(SelectTrigger)`
     width: 100%;
     flex-direction: row-reverse;
     background: var(--background);
-    text-align: right;
 `
 
 const StyledSelectContent = styled(SelectContent)`
@@ -47,4 +46,9 @@ const StyledSelectContent = styled(SelectContent)`
   & [data-slot="select-scroll-down-button"] {
     display: none;
   }
+`
+
+
+const StyledSelectItem = styled(SelectItem)`
+    flex-direction: row-reverse;
 `
