@@ -1,5 +1,4 @@
-import { config } from 'dotenv'
-import { Factory } from 'lucide-react';
+import { config } from 'dotenv';
 import { defineConfig } from 'orval';
 
 config()
