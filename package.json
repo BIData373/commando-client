@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "lint:js": "biome check --max-diagnostics=10000",
-    "lint:js:fix": "biome check --write --diagnostics-level=error",
+    "lint:js:fix": "biome check --write --diagnostic-level=error",
     "api:generate": "orval"
   },
   "dependencies": {
