@@ -2,10 +2,8 @@ import styled from '@emotion/styled'
 import { AlertCircle } from 'lucide-react'
 import { useState } from 'react'
 import { useDeleteAssignee } from '#/hooks/useAssignees'
-import {
-    TrashButtonhsharedTrashButton
-import {
-        Popover, PopoverContent, PopoverTriggerpoverContentuivpopoververContentuivpopover from '../ui/popover'
+import { TrashButton } from '../shared/TrashButton'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 
 interface DeleteAssigneePopconfirmProps {
     assigneeId: number
