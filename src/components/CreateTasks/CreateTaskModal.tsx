@@ -1,22 +1,22 @@
-import { useRef, useState } from 'react'
 import styled from '@emotion/styled'
-import { Dialog as DialogPrimitive } from 'radix-ui'
-import { X, ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, X } from 'lucide-react'
+import { Dialog as DialogPrimitive, Tooltip as TooltipPrimitive } from 'radix-ui'
+import { useRef, useState } from 'react'
+import { MOCK_ASSIGNEES } from '../../data/Assignees'
+import type { FormState } from '../../data/CreateTaskForm'
+import { INITIAL_FORM } from '../../data/CreateTaskForm'
+import { useTasks } from '../../providers/TasksProvider'
 import FlagIcon from '../shared/FlagIcon'
-import DeadlineField from './DeadlineField'
-import AssigneeField from './AssigneeField'
-import SourceField from './SourceField'
-import TopicField from './TopicField'
-import NotesField from './NotesField'
-import type { DiscussionSource } from './SourceField'
+import { PrimaryButton } from '../shared/PrimaryButton'
+import type { DeadlineType } from '../Tasks/TaskTable'
 import { Checkbox } from '../ui/checkbox'
 import { Tooltip, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
-import { Tooltip as TooltipPrimitive } from 'radix-ui'
-import { useTasks } from '../../providers/TasksProvider'
-import { MOCK_ASSIGNEES } from '../../data/Assignees'
-import { INITIAL_FORM } from '../../data/CreateTaskForm'
-import type { FormState } from '../../data/CreateTaskForm'
-import type { DeadlineType } from '../Tasks/TaskTable'
+import AssigneeField from './AssigneeField'
+import DeadlineField from './DeadlineField'
+import NotesField from './NotesField'
+import type { DiscussionSource } from './SourceField'
+import SourceField from './SourceField'
+import TopicField from './TopicField'
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -316,9 +316,12 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
             {/* ─── Action Buttons ──────────────────────────────────────── */}
             <ActionRow $shadow={scrollShadow.bottom}>
-              <SaveButton onClick={handleSave} disabled={!form.title.trim()}>
-                שמור
-              </SaveButton>
+              <PrimaryButton
+                title='שמור'
+                onClick={handleSave}
+                disabled={!form.title.trim()}
+                width={133}
+              />
               <CancelButton onClick={onClose}>ביטול</CancelButton>
             </ActionRow>
           </ModalBody>
@@ -622,42 +625,6 @@ const ActionRow = styled.div<{ $shadow: boolean }>`
   clip-path: inset(-20px 0 0 0);
   transition: box-shadow 200ms ease;
   box-shadow: ${({ $shadow }) => ($shadow ? '0px -10px 20px 0px rgba(0, 0, 0, 0.06)' : 'none')};
-`
-
-const SaveButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 133px;
-  height: 40px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(165deg, #615FFF 0%, #9810FA 100%);
-  color: white;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  cursor: pointer;
-  white-space: nowrap;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
-    pointer-events: none;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &:hover:not(:disabled) {
-    opacity: 0.9;
-  }
 `
 
 const CancelButton = styled.button`
