@@ -1,51 +1,48 @@
 import { useState } from 'react'
 import styled from '@emotion/styled'
+import { type Column } from '@tanstack/react-table'
 import { TbArrowsSort } from 'react-icons/tb'
 import { ColumnFilterDropdown } from './ColumnFilterDropdown'
-import type { FilterOption, SortDirection } from '../../functions/filterUtils'
+import type { FilterOption } from '../../functions/filter-utils'
 
-interface ColumnHeaderWithActionsProps {
+interface ColumnHeaderWithActionsProps<TData> {
   label: string
-  canFilter?: boolean
-  canSort?: boolean
+  column: Column<TData, unknown>
   filterOptions?: FilterOption[]
-  activeFilterValues?: Set<string>
-  onApplyFilter?: (values: Set<string>) => void
-  isSortActive?: boolean
-  sortDirection?: SortDirection
-  onToggleSort?: () => void
 }
 
-function ColumnHeaderWithActions({
+function ColumnHeaderWithActions<TData>({
   label,
-  canFilter,
-  canSort,
+  column,
   filterOptions = [],
-  activeFilterValues,
-  onApplyFilter,
-  isSortActive = false,
-  onToggleSort,
-}: ColumnHeaderWithActionsProps) {
+}: ColumnHeaderWithActionsProps<TData>) {
   const [filterOpen, setFilterOpen] = useState(false)
-  const isFilterActive = (activeFilterValues?.size ?? 0) > 0
+  const canFilter = column.getCanFilter()
+  const canSort = column.getCanSort()
+  const filterValue = (column.getFilterValue() as string[] | undefined) ?? []
+  const isFilterActive = filterValue.length > 0
+  const isSortActive = column.getIsSorted() !== false
   const alwaysShow = isFilterActive || isSortActive || filterOpen
+
+  function handleApplyFilter(values: Set<string>) {
+    column.setFilterValue(values.size > 0 ? [...values] : undefined)
+  }
 
   return (
     <HeaderWrapper $alwaysShow={alwaysShow}>
       <span>{label}</span>
       <ActionsArea data-slot="actions-area" $show={alwaysShow}>
-        {canFilter && onApplyFilter && (
+        {canFilter && (
           <ColumnFilterDropdown
             options={filterOptions}
-            activeValues={activeFilterValues ?? emptySet}
-            onApply={onApplyFilter}
+            activeValues={new Set(filterValue)}
+            onApply={handleApplyFilter}
             isActive={isFilterActive}
-            open={filterOpen}
             onOpenChange={setFilterOpen}
           />
         )}
         {canSort && (
-          <SortIconButton $active={isSortActive} onClick={onToggleSort}>
+          <SortIconButton $active={isSortActive} onClick={() => column.toggleSorting()}>
             <TbArrowsSort size={16} />
             {isSortActive && <ActiveBadge />}
           </SortIconButton>
@@ -56,8 +53,6 @@ function ColumnHeaderWithActions({
 }
 
 export { ColumnHeaderWithActions }
-
-const emptySet = new Set<string>()
 
 // ─── Styled ──────────────────────────────────────────────────────────────────
 

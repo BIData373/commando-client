@@ -1,14 +1,25 @@
 import {
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
   useReactTable,
   type ColumnDef,
-  type Row,
-  type RowSelectionState,
+  type ColumnFiltersState,
   type OnChangeFn,
+  type Row,
+  type RowData,
+  type RowSelectionState,
+  type SortingState,
 } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
+
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    grow?: boolean
+  }
+}
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
@@ -16,6 +27,10 @@ interface DataTableProps<TData> {
   onRowClick?: (row: Row<TData>) => void
   rowSelection?: RowSelectionState
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
+  columnFilters?: ColumnFiltersState
+  onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>
+  sorting?: SortingState
+  onSortingChange?: OnChangeFn<SortingState>
   getRowId?: (row: TData) => string
   highlightedRowIds?: Set<string>
 }
@@ -26,6 +41,10 @@ export function DataTable<TData>({
   onRowClick,
   rowSelection,
   onRowSelectionChange,
+  columnFilters,
+  onColumnFiltersChange,
+  sorting,
+  onSortingChange,
   getRowId,
   highlightedRowIds,
 }: DataTableProps<TData>) {
@@ -33,20 +52,29 @@ export function DataTable<TData>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    ...(rowSelection !== undefined && { state: { rowSelection }, onRowSelectionChange }),
-    ...(getRowId && { getRowId }),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      ...(rowSelection !== undefined && { rowSelection }),
+      ...(columnFilters !== undefined && { columnFilters }),
+      ...(sorting !== undefined && { sorting }),
+    },
+    onRowSelectionChange,
+    onColumnFiltersChange,
+    onSortingChange,
+    getRowId,
   })
 
   const allColumns = table.getAllColumns()
   const fixedTotal = allColumns.reduce((sum, col) => {
-    const grow = (col.columnDef.meta as { grow?: boolean } | undefined)?.grow
+    const grow = col.columnDef.meta?.grow
     return grow ? sum : sum + (col.columnDef.size ?? 0)
   }, 0)
 
   const colgroup = (
     <colgroup>
       {allColumns.map((column) => {
-        const grow = (column.columnDef.meta as { grow?: boolean } | undefined)?.grow
+        const grow = column.columnDef.meta?.grow
         const size = column.columnDef.size
 
       return grow && size !== undefined ? (
