@@ -16,7 +16,7 @@ import { useTasks } from '../../providers/TasksProvider'
 import { MOCK_ASSIGNEES } from '../../data/Assignees'
 import { INITIAL_FORM } from '../../data/CreateTaskForm'
 import type { FormState } from '../../data/CreateTaskForm'
-import type { DeadlineType } from '../../functions/filterUtils'
+import type { DeadlineType } from '../../functions/filter-utils'
 
 // ─── Component ───────────────────────────────────────────────────────────────
 

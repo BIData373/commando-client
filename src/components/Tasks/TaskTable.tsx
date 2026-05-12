@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import styled from '@emotion/styled'
-import { type ColumnDef, type RowSelectionState } from '@tanstack/react-table'
+import { type ColumnDef, type ColumnFiltersState, type FilterFn, type RowSelectionState, type SortingState } from '@tanstack/react-table'
 import { differenceInDays, format, startOfToday } from 'date-fns'
 import { AlertTriangle, MoreVertical } from 'lucide-react'
 import { BsPaperclip as Paperclip } from 'react-icons/bs'
@@ -17,18 +17,27 @@ import type { Task } from '../../data/Tasks'
 import FlagIcon from '../shared/FlagIcon'
 import HighlightMatch from '../shared/HighlightMatch'
 import type { DirectiveStatus } from '../shared/StatusTag'
-import { DEADLINE_LABELS, type DeadlineType, type ColumnSort, type FilterOption } from '../../functions/filterUtils'
+import { DEADLINE_LABELS, type DeadlineType, type FilterOption } from '../../functions/filter-utils'
+
+const STATUS_SORT_ORDER: Record<DirectiveStatus, number> = {
+  not_started: 0,
+  in_progress: 1,
+  completed: 2,
+}
+
+const multiSelectFilter: FilterFn<Task> = (row, columnId, filterValue: string[]) => {
+  if (!filterValue?.length) return true
+  const value = row.getValue(columnId)
+  if (Array.isArray(value)) return value.some((v: string) => filterValue.includes(v))
+  return filterValue.includes(value as string)
+}
 
 interface TaskTableProps {
   tasks: Task[]
   searchQuery: string
   columnOrder: string[]
   hiddenColumns: Set<string>
-  columnFilters: Record<string, Set<string>>
-  columnSort: ColumnSort | null
   filterOptionsMap: Record<string, FilterOption[]>
-  onApplyColumnFilter: (columnId: string, values: Set<string>) => void
-  onToggleColumnSort: (columnId: string) => void
   onUpdateStatus: (taskId: number, status: DirectiveStatus) => void
   onEdit: (taskId: number) => void
   onArchive: (taskIds: number[]) => void
@@ -36,19 +45,12 @@ interface TaskTableProps {
   onBulkChangeStatus: (taskIds: number[], status: DirectiveStatus) => void
 }
 
-const FILTERABLE_COLUMNS = new Set(['status', 'responsible', 'deadlineType', 'discussionName', 'tags'])
-const SORTABLE_COLUMNS = new Set(['id', 'status', 'responsible', 'deadlineType', 'discussionName', 'createdAt', 'updatedAt'])
-
 function TaskTable({
   tasks,
   searchQuery,
   columnOrder,
   hiddenColumns,
-  columnFilters,
-  columnSort,
   filterOptionsMap,
-  onApplyColumnFilter,
-  onToggleColumnSort,
   onUpdateStatus,
   onEdit,
   onArchive,
@@ -57,6 +59,8 @@ function TaskTable({
 }: TaskTableProps) {
   const [selectMode, setSelectMode] = useState(false)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const selectedTaskIds = Object.keys(rowSelection)
     .filter((key) => rowSelection[key])
@@ -82,31 +86,12 @@ function TaskTable({
     }
   }
 
-  function renderColumnHeader(columnId: string, label: string) {
-    const canFilter = FILTERABLE_COLUMNS.has(columnId)
-    const canSort = SORTABLE_COLUMNS.has(columnId)
-    if (!canFilter && !canSort) return label
-
-    return (
-      <ColumnHeaderWithActions
-        label={label}
-        canFilter={canFilter}
-        canSort={canSort}
-        filterOptions={filterOptionsMap[columnId]}
-        activeFilterValues={columnFilters[columnId]}
-        onApplyFilter={(values) => onApplyColumnFilter(columnId, values)}
-        isSortActive={columnSort?.columnId === columnId}
-        sortDirection={columnSort?.columnId === columnId ? columnSort.direction : undefined}
-        onToggleSort={() => onToggleColumnSort(columnId)}
-      />
-    )
-  }
-
   const firstColumn: ColumnDef<Task> = selectMode
     ? {
       id: 'select',
       size: 70,
-
+      enableSorting: false,
+      enableColumnFilter: false,
       header: () => (
         <CheckboxCenter>
           <Checkbox
@@ -126,18 +111,20 @@ function TaskTable({
     }
     : {
       accessorKey: 'id',
-      header: () => renderColumnHeader('id', 'מס"ד'),
+      header: ({ column }) => <ColumnHeaderWithActions label='מס"ד' column={column} />,
       size: 70,
-
+      enableColumnFilter: false,
       cell: ({ getValue }) => <IdCell>{getValue<number>()}</IdCell>,
     }
 
   const columnMap: Record<string, ColumnDef<Task>> = {
     title: {
       accessorKey: 'title',
-      header: () => renderColumnHeader('title', 'ההנחיה'),
+      header: 'ההנחיה',
       size: 832,
       meta: { grow: true },
+      enableSorting: false,
+      enableColumnFilter: false,
       cell: ({ row: { original: { title, details, flagged } } }) => (
         <TitleCell>
           {flagged && <FlagIcon />}
@@ -155,8 +142,11 @@ function TaskTable({
     },
     status: {
       accessorKey: 'status',
-      header: () => renderColumnHeader('status', 'סטטוס'),
+      header: ({ column }) => <ColumnHeaderWithActions label="סטטוס" column={column} filterOptions={filterOptionsMap['status']} />,
       size: 100,
+      filterFn: multiSelectFilter,
+      sortingFn: (rowA, rowB) =>
+        (STATUS_SORT_ORDER[rowA.original.status] ?? 0) - (STATUS_SORT_ORDER[rowB.original.status] ?? 0),
       cell: ({ row: { original: { status, id } } }) => (
         <StatusCell
           status={status}
@@ -167,8 +157,12 @@ function TaskTable({
     },
     responsible: {
       id: 'responsible',
-      header: () => renderColumnHeader('responsible', 'אחראי'),
+      accessorFn: (row) => row.responsible?.name ?? 'ללא אחראי',
+      header: ({ column }) => <ColumnHeaderWithActions label="אחראי" column={column} filterOptions={filterOptionsMap['responsible']} />,
       size: 115,
+      filterFn: multiSelectFilter,
+      sortingFn: (rowA, rowB) =>
+        (rowA.original.responsible?.name ?? '').localeCompare(rowB.original.responsible?.name ?? '', 'he'),
       cell: ({ row: { original: { responsible, relatedDirectives } } }) => (
         <ResponsibleCell
           responsible={responsible}
@@ -178,8 +172,14 @@ function TaskTable({
     },
     deadlineType: {
       accessorKey: 'deadlineType',
-      header: () => renderColumnHeader('deadlineType', 'תג"ב'),
+      header: ({ column }) => <ColumnHeaderWithActions label='תג"ב' column={column} filterOptions={filterOptionsMap['deadlineType']} />,
       size: 160,
+      filterFn: multiSelectFilter,
+      sortingFn: (rowA, rowB) => {
+        const dateA = rowA.original.dueDate?.getTime() ?? Infinity
+        const dateB = rowB.original.dueDate?.getTime() ?? Infinity
+        return dateA - dateB
+      },
       cell: ({ row: { original: { deadlineType, dueDate } } }) => {
         const today = startOfToday()
         const daysUntil = dueDate ? differenceInDays(dueDate, today) : null
@@ -211,8 +211,11 @@ function TaskTable({
     },
     discussionName: {
       accessorKey: 'discussionName',
-      header: () => renderColumnHeader('discussionName', 'מקור'),
+      header: ({ column }) => <ColumnHeaderWithActions label="מקור" column={column} filterOptions={filterOptionsMap['discussionName']} />,
       size: 280,
+      filterFn: multiSelectFilter,
+      sortingFn: (rowA, rowB) =>
+        rowA.original.discussionName.localeCompare(rowB.original.discussionName, 'he'),
       cell: ({ row: { original: { discussionName, discussionDate, hasAttachment } } }) => {
         const parts = [discussionName, discussionDate].filter(Boolean)
         return (
@@ -225,14 +228,18 @@ function TaskTable({
     },
     tags: {
       accessorKey: 'tags',
-      header: () => renderColumnHeader('tags', 'נושא'),
+      header: ({ column }) => <ColumnHeaderWithActions label="נושא" column={column} filterOptions={filterOptionsMap['tags']} />,
       size: 160,
+      enableSorting: false,
+      filterFn: multiSelectFilter,
       cell: ({ getValue }) => <TopicCell tags={getValue<string[]>()} />,
     },
     notes: {
       accessorKey: 'notes',
-      header: () => renderColumnHeader('notes', 'הערות'),
+      header: 'הערות',
       size: 220,
+      enableSorting: false,
+      enableColumnFilter: false,
       cell: ({ getValue }) => {
         const notes = getValue<string>()
         return (
@@ -242,14 +249,18 @@ function TaskTable({
     },
     createdAt: {
       accessorKey: 'createdAt',
-      header: () => renderColumnHeader('createdAt', 'תאריך יצירה'),
+      header: ({ column }) => <ColumnHeaderWithActions label="תאריך יצירה" column={column} />,
       size: 132,
+      enableColumnFilter: false,
+      sortingFn: 'datetime',
       cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
     },
     updatedAt: {
       accessorKey: 'updatedAt',
-      header: () => renderColumnHeader('updatedAt', 'עודכן ב'),
+      header: ({ column }) => <ColumnHeaderWithActions label="עודכן ב" column={column} />,
       size: 100,
+      enableColumnFilter: false,
+      sortingFn: 'datetime',
       cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
     },
   }
@@ -257,6 +268,8 @@ function TaskTable({
   const actionsColumn: ColumnDef<Task> = {
     id: 'actions',
     size: 43,
+    enableSorting: false,
+    enableColumnFilter: false,
     cell: ({ row: { original: { id } } }) => (
       <RowActionsMenu
         trigger={
@@ -290,6 +303,10 @@ function TaskTable({
           data={tasks}
           rowSelection={selectMode ? rowSelection : undefined}
           onRowSelectionChange={selectMode ? setRowSelection : undefined}
+          columnFilters={columnFilters}
+          onColumnFiltersChange={setColumnFilters}
+          sorting={sorting}
+          onSortingChange={setSorting}
           getRowId={(row) => String(row.id)}
         />
       </TableWrapper>

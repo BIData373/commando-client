@@ -4,7 +4,7 @@ import { Calendar as CalendarIcon } from 'lucide-react'
 import { Calendar } from '../ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { he } from 'date-fns/locale'
-import type { DeadlineType } from '../../functions/filterUtils'
+import type { DeadlineType } from '../../functions/filter-utils'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

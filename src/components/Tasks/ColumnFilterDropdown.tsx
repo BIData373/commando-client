@@ -3,14 +3,13 @@ import styled from '@emotion/styled'
 import { TbFilter } from 'react-icons/tb'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Checkbox } from '../ui/checkbox'
-import type { FilterOption } from '../../functions/filterUtils'
+import type { FilterOption } from '../../functions/filter-utils'
 
 interface ColumnFilterDropdownProps {
   options: FilterOption[]
   activeValues: Set<string>
   onApply: (values: Set<string>) => void
   isActive: boolean
-  open: boolean
   onOpenChange: (open: boolean) => void
 }
 
@@ -19,20 +18,19 @@ function ColumnFilterDropdown({
   activeValues,
   onApply,
   isActive,
-  open,
   onOpenChange,
 }: ColumnFilterDropdownProps) {
-  const [pending, setPending] = useState<Set<string>>(new Set(activeValues))
+  const [selectedValues, setSelectedValues] = useState<Set<string>>(new Set(activeValues))
 
-  function handleOpenChange(nextOpen: boolean) {
-    if (nextOpen) {
-      setPending(new Set(activeValues))
+  function handleOpenChange(open: boolean) {
+    if (open) {
+      setSelectedValues(new Set(activeValues))
     }
-    onOpenChange(nextOpen)
+    onOpenChange(open)
   }
 
   function toggleOption(value: string) {
-    setPending((prev) => {
+    setSelectedValues((prev) => {
       const next = new Set(prev)
       if (next.has(value)) {
         next.delete(value)
@@ -44,7 +42,7 @@ function ColumnFilterDropdown({
   }
 
   function handleApply() {
-    onApply(pending)
+    onApply(selectedValues)
     onOpenChange(false)
   }
 
@@ -54,7 +52,7 @@ function ColumnFilterDropdown({
   }
 
   return (
-    <Popover open={open} onOpenChange={handleOpenChange}>
+    <Popover onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <IconButton
           $active={isActive}
@@ -70,11 +68,11 @@ function ColumnFilterDropdown({
             {options.map((option) => (
               <DropdownItem
                 key={option.value}
-                $selected={pending.has(option.value)}
+                $selected={selectedValues.has(option.value)}
                 onClick={() => toggleOption(option.value)}
               >
                 <OptionLabel>{option.label}</OptionLabel>
-                <Checkbox checked={pending.has(option.value)} />
+                <Checkbox checked={selectedValues.has(option.value)} />
               </DropdownItem>
             ))}
           </ItemList>
@@ -83,8 +81,8 @@ function ColumnFilterDropdown({
             <ResetButton onClick={handleReset}>
               אפס
             </ResetButton>
-            <ApplyButton onClick={handleApply} disabled={pending.size === 0}>
-              החל ({pending.size})
+            <ApplyButton onClick={handleApply} disabled={selectedValues.size === 0}>
+              החל ({selectedValues.size})
             </ApplyButton>
           </FooterRow>
         </DropdownPanel>

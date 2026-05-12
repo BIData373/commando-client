@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { FilterX } from 'lucide-react'
 import type { Task } from '../../data/Tasks'
-import { matchesQuickFilter } from '../../functions/filterUtils'
+import { matchesQuickFilter } from '../../functions/filter-utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { TopicFilterDropdown } from './TopicFilterDropdown'
 
