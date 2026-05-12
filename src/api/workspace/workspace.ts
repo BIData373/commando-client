@@ -26,6 +26,7 @@ import type {
 	CreateWorkspaceDto,
 	DeleteWorkspacePathParameters,
 	GetWorkspacePathParameters,
+	ListWorkspacesParams,
 	UpdateWorkspaceDto,
 	UpdateWorkspacePathParameters,
 	WorkspaceDto,
@@ -105,33 +106,40 @@ export const useCreateWorkspace = <TError = unknown, TContext = unknown>(
 > => {
 	return useMutation(getCreateWorkspaceMutationOptions(options), queryClient);
 };
-export const listWorkspaces = (signal?: AbortSignal) => {
+export const listWorkspaces = (
+	params?: ListWorkspacesParams,
+	signal?: AbortSignal,
+) => {
 	return apiRequest<WorkspaceDto[]>({
 		url: `/workspace`,
 		method: "GET",
+		params,
 		signal,
 	});
 };
 
-export const getListWorkspacesQueryKey = () => {
-	return [`/workspace`] as const;
+export const getListWorkspacesQueryKey = (params?: ListWorkspacesParams) => {
+	return [`/workspace`, ...(params ? [params] : [])] as const;
 };
 
 export const getListWorkspacesQueryOptions = <
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
 	TError = unknown,
->(options?: {
-	query?: Partial<
-		UseQueryOptions<Awaited<ReturnType<typeof listWorkspaces>>, TError, TData>
-	>;
-}) => {
+>(
+	params?: ListWorkspacesParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof listWorkspaces>>, TError, TData>
+		>;
+	},
+) => {
 	const { query: queryOptions } = options ?? {};
 
-	const queryKey = queryOptions?.queryKey ?? getListWorkspacesQueryKey();
+	const queryKey = queryOptions?.queryKey ?? getListWorkspacesQueryKey(params);
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof listWorkspaces>>> = ({
 		signal,
-	}) => listWorkspaces(signal);
+	}) => listWorkspaces(params, signal);
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listWorkspaces>>,
@@ -149,6 +157,7 @@ export function useListWorkspaces<
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
 	TError = unknown,
 >(
+	params: undefined | ListWorkspacesParams,
 	options: {
 		query: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listWorkspaces>>, TError, TData>
@@ -170,6 +179,7 @@ export function useListWorkspaces<
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
 	TError = unknown,
 >(
+	params?: ListWorkspacesParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listWorkspaces>>, TError, TData>
@@ -191,6 +201,7 @@ export function useListWorkspaces<
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
 	TError = unknown,
 >(
+	params?: ListWorkspacesParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listWorkspaces>>, TError, TData>
@@ -205,6 +216,7 @@ export function useListWorkspaces<
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
 	TError = unknown,
 >(
+	params?: ListWorkspacesParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listWorkspaces>>, TError, TData>
@@ -214,7 +226,7 @@ export function useListWorkspaces<
 ): UseQueryResult<TData, TError> & {
 	queryKey: DataTag<QueryKey, TData, TError>;
 } {
-	const queryOptions = getListWorkspacesQueryOptions(options);
+	const queryOptions = getListWorkspacesQueryOptions(params, options);
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,

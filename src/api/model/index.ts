@@ -55,6 +55,7 @@ export * from "./list-sources-params";
 export * from "./list-tags-params";
 export * from "./list-tasks-params";
 export * from "./list-workspace-statuses-params";
+export * from "./list-workspaces-params";
 export * from "./message-dto";
 export * from "./message-dto-deleted-at";
 export * from "./message-dto-deleted-by";
