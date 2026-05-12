@@ -6,7 +6,7 @@ import { MOCK_ASSIGNEES } from '../../data/Assignees'
 import type { FormState } from '../../data/CreateTaskForm'
 import { INITIAL_FORM } from '../../data/CreateTaskForm'
 import { useTasks } from '../../providers/TasksProvider'
-import { CancleButton } from '../shared/CancleButton'
+import { CancelButton } from '../shared/CancelButton'
 import FlagIcon from '../shared/FlagIcon'
 import { PrimaryButton } from '../shared/PrimaryButton'
 import type { DeadlineType } from '../Tasks/TaskTable'
@@ -323,7 +323,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
                 disabled={!form.title.trim()}
                 width={133}
               />
-              <CancleButton
+              <CancelButton
                 title='ביטול'
                 onClick={onClose}
               />
