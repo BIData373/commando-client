@@ -1,7 +1,3 @@
-import styled from '@emotion/styled'
-import { createFileRoute } from '@tanstack/react-router'
-import { CircleQuestionMarkIcon, Plus, Search } from 'lucide-react'
-import { type ChangeEvent, useState } from 'react'
 import { AssigneeCard } from '#/components/settings/AssigneeCard'
 import { AssigneeDialog } from '#/components/settings/AssigneeDialog'
 import { SectionTitle } from '#/components/settings/SectionTitle'
@@ -12,6 +8,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/comp
 import { useAssignees } from '#/hooks/useAssignees'
 import { useUsers } from '#/hooks/useUsers'
 import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
+import styled from '@emotion/styled'
+import { createFileRoute } from '@tanstack/react-router'
+import { CircleQuestionMarkIcon, Plus, Search } from 'lucide-react'
+import { type ChangeEvent, useState } from 'react'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({ component: SettingsAssignees })
 

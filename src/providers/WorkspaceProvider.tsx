@@ -1,0 +1,46 @@
+import styled from '@emotion/styled'
+import { useParams } from '@tanstack/react-router'
+import { createContext, useContext, type PropsWithChildren, type ReactNode } from 'react'
+import { useListWorkspaces } from '../api/workspace/workspace'
+import type { WorkspaceDto } from '../api/model/workspace-dto'
+import { Spinner } from '../components/ui/spinner'
+
+
+const WorkspaceContext = createContext<WorkspaceDto | null>(null)
+
+export function WorkspaceProvider({ children }: PropsWithChildren) {
+  const { urlName } = useParams({ from: '/workspace/$urlName' })
+  const { data, isLoading } = useListWorkspaces({ urlName })
+
+  const workspace = data?.[0]
+
+  if (isLoading) {
+    return (
+      <LoadingContainer>
+        <Spinner />
+      </LoadingContainer>
+    )
+  }
+
+  return workspace && (
+    <WorkspaceContext.Provider value={workspace}>
+      {children}
+    </WorkspaceContext.Provider>
+  )
+}
+
+export function useWorkspace() {
+  const context = useContext(WorkspaceContext)
+  if (!context) {
+    throw new Error('useWorkspace must be used inside a WorkspaceProvider')
+  }
+  return context
+}
+
+const LoadingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+`
