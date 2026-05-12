@@ -62,7 +62,7 @@ const SettingsRoot = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 100vh;
+  min-height: 0;
   gap: 32px;
 `
 
@@ -81,7 +81,6 @@ const StyledTabsTrigger = styled(TabsTrigger)`
 
   &[data-state="active"] {
     color: #1677ff;
-    font-weight: 500;
   }
   
   &[data-state="active"]::after {

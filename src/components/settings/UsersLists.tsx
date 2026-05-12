@@ -51,7 +51,7 @@ const UserCardItem = styled.div`
     align-items: center;
     max-width: 224px;
     gap: 6px;
-    padding: 1px 8px;
+    padding-right: 8px;
     background: rgba(0, 0, 0, 0.02);
     border: 1px solid var(--card-border);
     border-radius: 4px;
@@ -76,7 +76,7 @@ const UserCardClose = styled.button`
     border: none;
     cursor: pointer;
     padding: 2px;
-    color: var(--sea-ink-soft);
+    color: rgba(0, 0, 0, 0.45);
     flex-shrink: 0;
     align-self: flex-start;
 
