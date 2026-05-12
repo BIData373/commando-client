@@ -9,6 +9,7 @@ import type { IMesibaIcon } from '#/hooks/useMesiba'
 import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
 import { Input } from '../../../../components/ui/input'
 import { useUpdateWorkspaceSettings, useWorkspaceSettings } from '../../../../hooks/useWorkspaceSettings'
+import { useWorkspace } from '#/providers/WorkspaceProvider'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/general')({ component: SettingsGeneral })
 
@@ -22,14 +23,16 @@ interface FormState {
 }
 
 function SettingsGeneral() {
-  const { urlName } = Route.useParams()
-  const { data: settings } = useWorkspaceSettings(urlName)
-  const { mutate: updateSettings } = useUpdateWorkspaceSettings(urlName)
+  const workspace = useWorkspace()
+
+  const { data: settings } = useWorkspaceSettings(workspace.urlName)
+  const { mutate: updateSettings } = useUpdateWorkspaceSettings(workspace.urlName)
+
 
   const [form, setForm] = useState<FormState>({
-    name: settings?.name ?? '',
-    command: settings?.command ?? '',
-    emblem: settings?.logoUrl ?? '',
+    name: workspace.title ?? '',
+    command: workspace.pikudId.toString() ?? '',
+    emblem: workspace.icon ?? '',
   })
   const [iconSearch, setIconSearch] = useState('')
   const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
