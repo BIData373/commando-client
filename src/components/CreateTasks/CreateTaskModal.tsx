@@ -1,4 +1,3 @@
-import { useRef, useState } from 'react'
 import styled from '@emotion/styled'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import { X, ChevronDown, ChevronUp } from 'lucide-react'
@@ -15,6 +14,9 @@ import { INITIAL_FORM } from '../../data/CreateTaskForm'
 import type { FormState } from '../../data/CreateTaskForm'
 import type { DeadlineType } from '../shared/DeadlineTag'
 import FlagIcon from '../shared/FlagIcon'
+import { useRef, useState } from 'react'
+import { CancelButton } from '../shared/CancelButton'
+import { PrimaryButton } from '../shared/PrimaryButton'
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -278,10 +280,16 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
             {/* ─── Action Buttons ──────────────────────────────────────── */}
             <ActionRow $shadow={scrollShadow.bottom}>
-              <SaveButton onClick={handleSave} disabled={!form.title.trim()}>
-                שמור
-              </SaveButton>
-              <CancelButton onClick={onClose}>ביטול</CancelButton>
+              <PrimaryButton
+                title='שמור'
+                onClick={handleSave}
+                disabled={!form.title.trim()}
+                width={133}
+              />
+              <CancelButton
+                title='ביטול'
+                onClick={onClose}
+              />
             </ActionRow>
           </ModalBody>
         </ModalCard>
@@ -552,72 +560,4 @@ const ActionRow = styled.div<{ $shadow: boolean }>`
   clip-path: inset(-20px 0 0 0);
   transition: box-shadow 200ms ease;
   box-shadow: ${({ $shadow }) => ($shadow ? '0px -10px 20px 0px rgba(0, 0, 0, 0.06)' : 'none')};
-`
-
-const SaveButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 133px;
-  height: 40px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(165deg, #615FFF 0%, #9810FA 100%);
-  color: white;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  cursor: pointer;
-  white-space: nowrap;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
-    pointer-events: none;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &:hover:not(:disabled) {
-    opacity: 0.9;
-  }
-`
-
-const CancelButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 40px;
-  padding-inline: 16px;
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
-  background: white;
-  color: rgba(0, 0, 0, 0.88);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  cursor: pointer;
-  white-space: nowrap;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
-    pointer-events: none;
-  }
-
-  &:hover {
-    border-color: #4096ff;
-    color: #4096ff;
-  }
 `

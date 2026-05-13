@@ -13,16 +13,12 @@ interface IconDropdownProps {
 export function IconDropdown({ value, onSelect, onChange, onClear, selectedItem }: IconDropdownProps) {
   const { data: icons = [], isFetching } = useSearchMesibaIcons(value)
 
-  function handleIconSearchSelect(icon: IMesibaIcon) {
-    onSelect(icon)
-  }
-
   return (
     <SearchDropdown<IMesibaIcon>
       items={icons}
       value={value}
       onChange={onChange}
-      onSelect={handleIconSearchSelect}
+      onSelect={onSelect}
       onClear={onClear}
       isLoading={isFetching}
       placeholder="חפש סמל"

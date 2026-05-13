@@ -1,4 +1,3 @@
-import { useMemo, useState } from 'react'
 import styled from '@emotion/styled'
 import { Outlet, useNavigate } from '@tanstack/react-router'
 import { ChevronDown, Plus } from 'lucide-react'
@@ -16,10 +15,11 @@ import { TaskFilters, type QuickFilter } from './TaskFilters'
 import { TaskTable } from './TaskTable'
 import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
 import { TaskCardGrid } from './TaskCardGrid'
+import { useMemo, useState } from 'react'
 import { exportTasksToExcel } from '../../functions/exportExcel'
 import { applyAllFilters } from '../../functions/filterUtils'
-import { useTitleBar } from '../../providers/TitleBarProvider'
 import { useTasks } from '../../providers/TasksProvider'
+import { useTitleBar } from '../../providers/TitleBarProvider'
 
 export type View = 'TABLE' | 'CARDS'
 

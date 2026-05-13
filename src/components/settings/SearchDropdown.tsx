@@ -1,9 +1,10 @@
 import styled from '@emotion/styled'
-import { Loader2, Search, X } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { Popover as PopoverPrimitive } from 'radix-ui'
 import type { ReactNode } from 'react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../ui/input-group'
+import { Spinner } from '../ui/spinner'
 
 interface SearchDropdownProps<T extends { id: number | string }> {
   items: T[]
@@ -29,14 +30,30 @@ export function SearchDropdown<T extends { id: number | string }>({
   selectedItem,
 }: SearchDropdownProps<T>) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
+  const wheelCleanupRef = useRef<(() => void) | null>(null)
+
+  function handleContentRef(el: HTMLDivElement | null) {
+    wheelCleanupRef.current?.()
+    wheelCleanupRef.current = null
+    if (!el) return
+    const stop = (e: WheelEvent) => e.stopPropagation()
+    el.addEventListener('wheel', stop)
+    wheelCleanupRef.current = () => el.removeEventListener('wheel', stop)
+  }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     onChange(e.target.value)
     setIsOpen(e.target.value.trim().length > 0)
   }
 
+  function handleFocus() {
+    setIsFocused(true)
+  }
+
   function handleBlur() {
     setIsOpen(false)
+    setIsFocused(false)
   }
 
   function handleSelect(item: T) {
@@ -57,9 +74,9 @@ export function SearchDropdown<T extends { id: number | string }>({
     <PopoverPrimitive.Root open={isOpen} onOpenChange={setIsOpen}>
       <PopoverPrimitive.Trigger asChild>
         <Root onClick={handleRootClick}>
-          <StyledInputGroup>
+          <StyledInputGroup onFocus={handleFocus}>
             <InputGroupAddon align="inline-start">
-              {isLoading ? <Loader2 size={16} /> : <Search size={16} />}
+              {isLoading && isFocused ? <Spinner /> : <Search size={16} />}
             </InputGroupAddon>
             {selectedItem ? (
               <SelectedDisplay>
@@ -84,7 +101,7 @@ export function SearchDropdown<T extends { id: number | string }>({
       </PopoverPrimitive.Trigger>
       {items.length > 0 && (
         <PopoverPrimitive.Portal>
-          <DropdownContent align="start" sideOffset={4} onOpenAutoFocus={(e: Event) => e.preventDefault()}>
+          <DropdownContent ref={handleContentRef} align="start" sideOffset={4} onOpenAutoFocus={(e: Event) => e.preventDefault()} onMouseDown={(e: React.MouseEvent) => e.preventDefault()}>
             {items.map((item) => (
               <DropdownItem key={item.id} onMouseDown={() => handleSelect(item)}>
                 {renderItem(item)}
@@ -116,7 +133,6 @@ const DropdownContent = styled(PopoverPrimitive.Content)`
   max-height: 240px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
 `
 
 const SelectedDisplay = styled.div`
