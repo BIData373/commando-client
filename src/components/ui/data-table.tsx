@@ -40,6 +40,7 @@ interface DataTableProps<TData> {
   renderRowOverlay?: (row: Row<TData>) => React.ReactNode
   renderRowExpansion?: (row: Row<TData>) => React.ReactNode
   containerClassName?: string
+  showHeader?: boolean
 }
 
 export function DataTable<TData>({
@@ -58,6 +59,7 @@ export function DataTable<TData>({
   renderRowOverlay,
   renderRowExpansion,
   containerClassName,
+  showHeader = true,
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -112,19 +114,21 @@ export function DataTable<TData>({
   return (
     <Table containerClassName={containerClassName}>
       {colgroup}
-      <TableHeader>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <TableHead key={header.id}>
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(header.column.columnDef.header, header.getContext())}
-              </TableHead>
-            ))}
-          </TableRow>
-        ))}
-      </TableHeader>
+      {showHeader && (
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(header.column.columnDef.header, header.getContext())}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+      )}
       <TableBody>
         {rows.length ? (
           rows.map(({ row, expansionContent }) => (

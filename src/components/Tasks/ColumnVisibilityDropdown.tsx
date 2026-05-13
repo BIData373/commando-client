@@ -18,23 +18,9 @@ import {
 } from '@dnd-kit/sortable'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { SortableColumnItem } from './SortableColumnItem'
+import { TASK_COLUMNS_META, TaskColumnId } from '../../hooks/useTaskColumns'
 
-export interface ColumnConfig {
-  id: string
-  label: string
-}
-
-export const CONFIGURABLE_COLUMNS: ColumnConfig[] = [
-  { id: 'title', label: 'שם הנחיה' },
-  { id: 'status', label: 'סטטוס' },
-  { id: 'responsible', label: 'אחראי' },
-  { id: 'deadlineType', label: 'תג"ב' },
-  { id: 'discussionName', label: 'מקור' },
-  { id: 'tags', label: 'נושא' },
-  { id: 'notes', label: 'הערות' },
-  { id: 'updatedAt', label: 'עודכן ב' },
-  { id: 'createdAt', label: 'תאריך יצירה' },
-]
+export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter((c) => c.id !== TaskColumnId.SerialNumber)
 
 export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id)
 
@@ -67,9 +53,9 @@ function ColumnVisibilityDropdown({
     }
   }
 
-  const orderedColumns = columnOrder.map(
-    (id) => CONFIGURABLE_COLUMNS.find((c) => c.id === id)!,
-  )
+  const orderedColumns = columnOrder
+    .map((id) => CONFIGURABLE_COLUMNS.find((c) => c.id === id))
+    .filter((c) => c != null)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

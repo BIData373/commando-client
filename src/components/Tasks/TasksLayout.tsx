@@ -34,7 +34,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set())
   const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(new Set())
-  const [columnOrder, setColumnOrder] = useState(DEFAULT_COLUMN_ORDER)
+  const [columnOrder, setColumnOrder] = useState(['serialNumber', ...DEFAULT_COLUMN_ORDER])
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set(['notes', 'updatedAt']))
   function handleToggleColumn(columnId: string) {
     setHiddenColumns((prev) => {
