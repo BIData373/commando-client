@@ -16,8 +16,9 @@ import { ColumnHeaderWithActions } from './ColumnHeaderWithActions'
 import type { Task } from '../../data/Tasks'
 import FlagIcon from '../shared/FlagIcon'
 import HighlightMatch from '../shared/HighlightMatch'
+import DeadlineTag, { DEADLINE_LABELS } from '../shared/DeadlineTag'
 import type { DirectiveStatus } from '../shared/StatusTag'
-import { DEADLINE_LABELS, type DeadlineType, type FilterOption } from '../../functions/filter-utils'
+import { type FilterOption } from '../../functions/filter-utils'
 
 const STATUS_SORT_ORDER: Record<DirectiveStatus, number> = {
   not_started: 0,
@@ -110,7 +111,7 @@ function TaskTable({
       ),
     }
     : {
-      accessorKey: 'id',
+      accessorKey: 'serialNumber',
       header: ({ column }) => <ColumnHeaderWithActions label='מס"ד' column={column} />,
       size: 70,
       enableColumnFilter: false,
@@ -486,37 +487,6 @@ const OverdueIcon = styled(AlertTriangle)`
 const ApproachingIcon = styled(AlertTriangle)`
   color: rgba(212, 107, 8, 0.9);
   flex-shrink: 0;
-`
-
-const DeadlineTag = styled.span<{ $type: DeadlineType }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  ${({ $type }) => {
-    switch ($type) {
-      case 'ongoing':
-        return `
-          background: rgba(230, 244, 255, 0.8);
-          border: 1px solid rgba(145, 202, 255, 0.8);
-          color: rgba(22, 119, 255, 0.9);
-        `
-      case 'immediate':
-        return `
-          background: #FFF1F0;
-          border: 1px solid #FFA39E;
-          color: #F5222D;
-        `
-      case 'date':
-        return `
-          background: var(--chip-bg);
-          border: 1px solid var(--chip-line);
-          color: var(--sea-ink-soft);
-        `
-    }
-  }}
 `
 
 const SourceCell = styled.div`

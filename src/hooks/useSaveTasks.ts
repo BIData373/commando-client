@@ -1,0 +1,75 @@
+import { startOfDay } from 'date-fns'
+import { useTasks } from '../providers/TasksProvider'
+import { MOCK_ASSIGNEES } from '../data/Assignees'
+import type { DeadlineType } from '../components/shared/DeadlineTag'
+
+interface TaskInput {
+  title: string
+  assigneeIds: number[]
+  assigneeDetails: Record<number, string>
+  deadlineType: DeadlineType | null
+  dueDate: Date | null
+  isImportant: boolean
+  notes: string
+  groupKey?: string
+}
+
+interface DiscussionFields {
+  discussionName: string
+  discussionDate: string
+  hasAttachment: boolean
+  tags: string[]
+}
+
+export function useSaveTasks() {
+  const { addTasks } = useTasks()
+
+  function saveTasks(inputs: TaskInput[], discussion: DiscussionFields) {
+    const today = startOfDay(new Date())
+
+    const newTasks: Parameters<typeof addTasks>[0] = []
+
+    for (const input of inputs) {
+      const isOverdue =
+        input.deadlineType === 'date' && input.dueDate ? input.dueDate < today : false
+
+      const sharedFields = {
+        title: input.title.trim(),
+        flagged: input.isImportant,
+        status: 'not_started' as const,
+        deadlineType: input.deadlineType ?? ('ongoing' as const),
+        dueDate: input.deadlineType === 'immediate' ? null : input.dueDate,
+        isOverdue,
+        discussionName: discussion.discussionName,
+        discussionDate: discussion.discussionDate,
+        hasAttachment: discussion.hasAttachment,
+        attachmentUrl: null,
+        tags: discussion.tags,
+        notes: input.notes,
+      }
+
+      const groupAssignees = input.assigneeIds.flatMap((id) => {
+        const user = MOCK_ASSIGNEES[id]
+        return user ? [user] : []
+      })
+
+      if (groupAssignees.length === 0) {
+        newTasks.push({ ...sharedFields, details: undefined, responsible: null, relatedDirectives: [] })
+        continue
+      }
+
+      const groupKey = groupAssignees.length > 1 ? (input.groupKey ?? crypto.randomUUID()) : undefined
+      for (const responsible of groupAssignees) {
+        const perAssigneeDetail = input.assigneeDetails[responsible.id]?.trim() || undefined
+        const relatedDirectives = groupAssignees
+          .filter((u) => u.id !== responsible.id)
+          .map((user) => ({ user, status: 'not_started' as const }))
+        newTasks.push({ ...sharedFields, groupKey, details: perAssigneeDetail, responsible, relatedDirectives })
+      }
+    }
+
+    addTasks(newTasks)
+  }
+
+  return saveTasks
+}

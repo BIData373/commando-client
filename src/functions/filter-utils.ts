@@ -2,16 +2,9 @@ import { differenceInDays, startOfToday } from 'date-fns'
 import type { Task } from '../data/Tasks'
 import type { QuickFilter } from '../components/Tasks/TaskFilters'
 import { STATUS_LABELS } from '../components/shared/StatusTag'
+import { DEADLINE_LABELS, type DeadlineType } from '#/components/shared/DeadlineTag'
 
 // ─── Shared Types ────────────────────────────────────────────────────────────
-
-export type DeadlineType = 'date' | 'immediate' | 'ongoing'
-
-export const DEADLINE_LABELS: Record<DeadlineType, string> = {
-  date: 'תאריך',
-  immediate: 'מיידי',
-  ongoing: 'שוטף',
-}
 
 export interface FilterOption {
   value: string

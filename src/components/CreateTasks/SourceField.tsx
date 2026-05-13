@@ -1,10 +1,10 @@
 import { useState } from 'react'
+import { parse } from 'date-fns'
 import styled from '@emotion/styled'
 import { ChevronDown, Paperclip, Calendar as CalendarIcon } from 'lucide-react'
-import { Calendar } from '../ui/calendar'
+import DatePicker, { CalendarMode } from '../shared/DatePicker'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
-import { he } from 'date-fns/locale'
 
 import HighlightMatch from '../shared/HighlightMatch'
 import { MOCK_DISCUSSIONS } from '../../data/Discussions'
@@ -19,6 +19,8 @@ interface SourceFieldProps {
   linkedSource: DiscussionSource | null
   onSourceSelect: (name: string, discussion?: DiscussionSource | null) => void
   onDateSelect: (date: Date | undefined) => void
+  label?: string
+  uniqueNames?: boolean
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -29,9 +31,12 @@ function SourceField({
   linkedSource,
   onSourceSelect,
   onDateSelect,
+  label = 'מקור',
+  uniqueNames = false,
 }: SourceFieldProps) {
   const [sourceQuery, setSourceQuery] = useState(source)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isDateOpen, setIsDateOpen] = useState(false)
   const isSourceLinked = linkedSource !== null;
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -53,9 +58,14 @@ function SourceField({
     onSourceSelect(sourceQuery)
   }
 
-  const filteredDiscussions = MOCK_DISCUSSIONS.filter((d) =>
-    d.name.includes(sourceQuery),
-  )
+  const selectedDate = sourceDate
+    ? parse(sourceDate, 'dd/MM/yyyy', new Date())
+    : undefined
+
+  const allFiltered = MOCK_DISCUSSIONS.filter((d) => d.name.includes(sourceQuery))
+  const filteredDiscussions = uniqueNames
+    ? allFiltered.filter((d, i, arr) => arr.findIndex((x) => x.name === d.name) === i)
+    : allFiltered
 
   function openDropdown() {
     setIsDropdownOpen(true)
@@ -75,11 +85,16 @@ function SourceField({
     handleCreateNew()
   }
 
+  function handleDateSelect(date: Date | undefined) {
+    onDateSelect(date)
+    setIsDateOpen(false)
+  }
+
   return (
     <SourceDateRow>
       <SourceFormItem>
         <FormLabelRow>
-          <LabelText>מקור</LabelText>
+          <LabelText>{label}</LabelText>
         </FormLabelRow>
         <SourceFieldWrapper>
           <SourceInputBox onFocus={openDropdown}>
@@ -103,10 +118,10 @@ function SourceField({
                   <DropdownGroupTitle>מקורות קיימים</DropdownGroupTitle>
                   {filteredDiscussions.map((d) => (
                     <SourceOption
-                      key={d.id}
+                      key={uniqueNames ? d.name : d.id}
                       onMouseDown={(e) => handleOptionMouseDown(e, d)}
                     >
-                      <SourceOptionDate>{d.date}</SourceOptionDate>
+                      {!uniqueNames && <SourceOptionDate>{d.date}</SourceOptionDate>}
                       <SourceOptionName>
                         {sourceQuery ? <HighlightMatch text={d.name} query={sourceQuery} /> : d.name}
                       </SourceOptionName>
@@ -133,7 +148,7 @@ function SourceField({
         <FormLabelRow>
           <LabelText>תאריך</LabelText>
         </FormLabelRow>
-        <Popover>
+        <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -155,10 +170,10 @@ function SourceField({
           </TooltipProvider>
           {!isSourceLinked && (
             <DatePopoverContent align="start" sideOffset={4}>
-              <Calendar
-                mode="single"
-                locale={he}
-                onSelect={onDateSelect}
+              <DatePicker
+                mode={CalendarMode.Single}
+                selected={selectedDate}
+                onSelect={handleDateSelect}
               />
             </DatePopoverContent>
           )}

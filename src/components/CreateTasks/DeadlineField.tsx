@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import styled from '@emotion/styled'
 import { Calendar as CalendarIcon } from 'lucide-react'
-import { Calendar } from '../ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { he } from 'date-fns/locale'
-import type { DeadlineType } from '../../functions/filter-utils'
+import DatePicker, { CalendarMode } from '../shared/DatePicker'
+import type { DeadlineType } from '../shared/DeadlineTag'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -77,9 +76,8 @@ function DeadlineField({ deadlineType, dueDate, onDeadlineTypeChange, onDateChan
               </DatePickerButton>
             </PopoverTrigger>
             <DatePopoverContent align="start" sideOffset={4}>
-              <Calendar
-                mode="single"
-                locale={he}
+              <DatePicker
+                mode={CalendarMode.Single}
                 selected={dueDate ?? undefined}
                 onSelect={handleDateSelect}
               />
@@ -131,7 +129,7 @@ const SegmentedControl = styled.div`
   align-items: center;
   height: 40px;
   padding: 2px;
-  background: #f5f5f5;
+  background: var(--colors-base-neutral-3);
   border-radius: 8px;
   overflow: hidden;
 `

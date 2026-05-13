@@ -39,7 +39,7 @@ workspace/
     tasks.tsx                                 /workspace/:urlName/tasks  (layout: renders list + Outlet for modals)
     tasks/
       index.tsx                               /workspace/:urlName/tasks/  (search: view: TABLE|CARDS)
-      new.tsx                                 /workspace/:urlName/tasks/new  (modal overlay)
+      new.tsx                                 /workspace/:urlName/tasks/new  (modal overlay; search: view, mode: 'single'|'discussion')
       $taskId.tsx                             /workspace/:urlName/tasks/:taskId  (modal overlay)
     settings.tsx                              /workspace/:urlName/settings  (layout → Outlet)
     settings/
@@ -160,8 +160,6 @@ const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
 - **Col 3 – `EndSection`** (visual LEFT in RTL, `justify-content: flex-end`): `UserTrigger` pill (52px tall, Avatar + ChevronDown); shown when `user` is true.
 - `TitleBar` renders below bar when `title` is non-empty. `PageTitle` is an `h1`.
 - Image paths: `/logo.svg` and `/workspace-icon.png` (no `/public/` prefix).
-
----
 
 # Workflow (MANDATORY — follow for every file)
 
