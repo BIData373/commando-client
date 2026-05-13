@@ -37,6 +37,7 @@ body,
   --popover: oklch(1.00 0 0);
   --popover-foreground: oklch(0.14 0 0);
   --primary: oklch(59.95% 0.22 277.99);
+  --primary-foreground: oklch(97.58% 0.01 264.67);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.20 0 0);
   --muted: oklch(0.97 0 0);
@@ -89,7 +90,7 @@ body,
   --Colors-Base-Blue-6: oklch(52.19% 0.23 241.5);
 
   --Colors-Brand-Warning-colorWarningText: oklch(80.16% 0.17 76);
-  
+
   --button-color-hover: #4096FF;
   --gradient: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
   --text-subtitle-color: #8C8C8C;
