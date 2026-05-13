@@ -36,6 +36,7 @@ function SourceField({
 }: SourceFieldProps) {
   const [sourceQuery, setSourceQuery] = useState(source)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isDateOpen, setIsDateOpen] = useState(false)
   const isSourceLinked = linkedSource !== null;
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -82,6 +83,11 @@ function SourceField({
   function handleCreateNewMouseDown(e: React.MouseEvent) {
     e.preventDefault()
     handleCreateNew()
+  }
+
+  function handleDateSelect(date: Date | undefined) {
+    onDateSelect(date)
+    setIsDateOpen(false)
   }
 
   return (
@@ -142,7 +148,7 @@ function SourceField({
         <FormLabelRow>
           <LabelText>תאריך</LabelText>
         </FormLabelRow>
-        <Popover>
+        <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -167,7 +173,7 @@ function SourceField({
               <DatePicker
                 mode={CalendarMode.Single}
                 selected={selectedDate}
-                onSelect={onDateSelect}
+                onSelect={handleDateSelect}
               />
             </DatePopoverContent>
           )}
