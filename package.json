@@ -9,6 +9,7 @@
     "dev": "vite dev --port 8080",
     "build": "vite build",
     "preview": "vite preview",
+    "start": "vite preview --port 8080 --host",
     "test": "vitest run",
     "lint:js": "biome check --max-diagnostics=10000",
     "lint:js:fix": "biome check --write --diagnostics-level=error"
