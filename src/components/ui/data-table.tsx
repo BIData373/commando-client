@@ -1,3 +1,5 @@
+import { Fragment } from 'react'
+import styled from '@emotion/styled'
 import {
   flexRender,
   getCoreRowModel,
@@ -11,6 +13,7 @@ import {
   type RowData,
   type RowSelectionState,
   type SortingState,
+  type TableMeta,
 } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
@@ -33,6 +36,10 @@ interface DataTableProps<TData> {
   onSortingChange?: OnChangeFn<SortingState>
   getRowId?: (row: TData) => string
   highlightedRowIds?: Set<string>
+  meta?: TableMeta<TData>
+  renderRowOverlay?: (row: Row<TData>) => React.ReactNode
+  renderRowExpansion?: (row: Row<TData>) => React.ReactNode
+  containerClassName?: string
 }
 
 export function DataTable<TData>({
@@ -47,6 +54,10 @@ export function DataTable<TData>({
   onSortingChange,
   getRowId,
   highlightedRowIds,
+  meta,
+  renderRowOverlay,
+  renderRowExpansion,
+  containerClassName,
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -63,6 +74,7 @@ export function DataTable<TData>({
     onColumnFiltersChange,
     onSortingChange,
     getRowId,
+    meta,
   })
 
   const allColumns = table.getAllColumns()
@@ -92,8 +104,13 @@ export function DataTable<TData>({
     </colgroup>
   )
 
+  const rows = table.getRowModel().rows.map((row) => ({
+    row,
+    expansionContent: renderRowExpansion?.(row),
+  }))
+
   return (
-    <Table>
+    <Table containerClassName={containerClassName}>
       {colgroup}
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
@@ -109,20 +126,29 @@ export function DataTable<TData>({
         ))}
       </TableHeader>
       <TableBody>
-        {table.getRowModel().rows.length ? (
-          table.getRowModel().rows.map((row) => (
-            <TableRow
-              key={row.id}
-              data-state={row.getIsSelected() ? 'selected' : undefined}
-              data-highlighted={highlightedRowIds?.has(row.id) ? '' : undefined}
-              onClick={onRowClick ? () => onRowClick(row) : undefined}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
+        {rows.length ? (
+          rows.map(({ row, expansionContent }) => (
+            <Fragment key={row.id}>
+              <TableRow
+                data-state={row.getIsSelected() ? 'selected' : undefined}
+                data-highlighted={highlightedRowIds?.has(row.id) ? '' : undefined}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+                {renderRowOverlay?.(row)}
+              </TableRow>
+              {expansionContent != null && (
+                <tr data-expansion-row="">
+                  <ExpansionCell colSpan={columns.length}>
+                    {expansionContent}
+                  </ExpansionCell>
+                </tr>
+              )}
+            </Fragment>
           ))
         ) : (
           <TableRow>
@@ -133,3 +159,13 @@ export function DataTable<TData>({
     </Table>
   )
 }
+
+// ─── Styled Components ─────────────────────────────────────────────────────
+
+const ExpansionCell = styled.td`
+  padding: 0;
+  border: none;
+  height: auto;
+  background: var(--colors-base-neutral-3) !important;
+  outline: none !important;
+`

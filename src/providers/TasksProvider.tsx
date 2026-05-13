@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
-import type { DirectiveStatus } from '../components/Tasks/StatusCell'
+import type { DirectiveStatus } from '../components/shared/StatusTag'
 import { INITIAL_TASKS, type Task } from '../data/Tasks'
 
-type NewTaskInput = Omit<Task, 'id' | 'createdAt' | 'updatedAt'>
+type NewTaskInput = Omit<Task, 'id' | 'serialNumber' | 'createdAt' | 'updatedAt'> & { groupKey?: string }
 
 interface TasksContextValue {
   tasks: Task[]
@@ -25,13 +25,31 @@ export function TasksProvider({ children }: TasksProviderProps) {
     if (inputs.length === 0) return
     setTasks((prev) => {
       const baseId = prev.reduce((max, t) => (t.id > max ? t.id : max), 0)
+      const baseSerial = prev.reduce((max, t) => (t.serialNumber > max ? t.serialNumber : max), 0)
+      let nextSerial = baseSerial
+      const groupSerials = new Map<string, number>()
       const now = new Date()
-      const newTasks: Task[] = inputs.map((input, index) => ({
-        ...input,
-        id: baseId + index + 1,
-        createdAt: now,
-        updatedAt: now,
-      }))
+      const newTasks: Task[] = inputs.map(({ groupKey, ...input }, index) => {
+        let serial: number
+        if (groupKey) {
+          const existing = groupSerials.get(groupKey)
+          if (existing) {
+            serial = existing
+          } else {
+            serial = ++nextSerial
+            groupSerials.set(groupKey, serial)
+          }
+        } else {
+          serial = ++nextSerial
+        }
+        return {
+          ...input,
+          id: baseId + index + 1,
+          serialNumber: serial,
+          createdAt: now,
+          updatedAt: now,
+        }
+      })
       return [...newTasks, ...prev]
     })
   }

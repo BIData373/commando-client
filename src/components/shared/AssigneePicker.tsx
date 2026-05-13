@@ -1,0 +1,187 @@
+import { useState, type ReactNode } from 'react'
+import styled from '@emotion/styled'
+import { Plus, Check } from 'lucide-react'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { MOCK_ASSIGNEES } from '../../data/Assignees'
+import type { AvatarColor } from '../Tasks/ResponsibleCell'
+
+interface AssigneePickerProps {
+  selectedAssignees: number[]
+  trigger: ReactNode | ((props: { search: string; onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => ReactNode)
+  onToggle: (id: number) => void
+  closeOnFirstSelect?: boolean
+}
+
+function AssigneePicker({
+  selectedAssignees,
+  trigger,
+  onToggle,
+  closeOnFirstSelect = false,
+}: AssigneePickerProps) {
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
+
+  const filteredAssignees = Object.values(MOCK_ASSIGNEES)
+    .filter((assignee) => {
+      if (!search.trim()) return true
+      return assignee.name.includes(search) || assignee.role.includes(search)
+    })
+    .map((assignee) => ({
+      ...assignee,
+      selected: selectedAssignees.includes(assignee.id),
+    }))
+
+  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setSearch(e.target.value)
+    if (!open) setOpen(true)
+  }
+
+  function handleOpenChange(nextOpen: boolean) {
+    setOpen(nextOpen)
+    if (!nextOpen) setSearch('')
+  }
+
+  function handleAssigneeClick(id: number) {
+    onToggle(id)
+
+    if (closeOnFirstSelect && selectedAssignees.length === 0) {
+      setOpen(false)
+      setSearch('')
+    }
+  }
+
+  function handleCreateNew() {
+    setOpen(false)
+    setSearch('')
+
+  }
+
+  return (
+    <Popover open={open} onOpenChange={handleOpenChange}>
+      <PopoverTrigger asChild>
+        {typeof trigger === 'function' ? trigger({ search, onSearchChange: handleSearchChange }) : trigger}
+      </PopoverTrigger>
+
+      <AssigneeDropdown
+        sideOffset={4}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        onWheel={(e) => e.stopPropagation()}
+      >
+        {filteredAssignees.map((assignee) => (
+          <AssigneeOption
+            key={assignee.id}
+            $selected={assignee.selected}
+            type="button"
+            onClick={() => handleAssigneeClick(assignee.id)}
+          >
+            <AssigneeOptionEnd>
+              <AvatarCircle $color={assignee.colorToken}>
+                {assignee.initials}
+              </AvatarCircle>
+
+              <AssigneeOptionName $selected={assignee.selected}>
+                {assignee.name}
+              </AssigneeOptionName>
+            </AssigneeOptionEnd>
+
+            {assignee.selected && <StyleCheck size={18} />}
+          </AssigneeOption>
+        ))}
+
+        <CreateNewButton type="button" onClick={handleCreateNew}>
+          צור אחראי חדש
+          <Plus size={14} />
+        </CreateNewButton>
+      </AssigneeDropdown>
+    </Popover>
+  )
+}
+
+export default AssigneePicker
+
+const AssigneeDropdown = styled(PopoverContent)`
+  width: var(--radix-popover-trigger-width);
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px;
+  gap: 1.5px;
+`
+
+const AssigneeOption = styled.button<{ $selected: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border: none;
+  background: ${({ $selected }) => ($selected ? '#e6f4ff' : 'transparent')};
+  cursor: pointer;
+  border-radius: 2px;
+
+  &:hover {
+    background: ${({ $selected }) => ($selected ? '#e6f4ff' : 'rgba(0, 0, 0, 0.04)')};
+  }
+`
+
+const AssigneeOptionEnd = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 32px;
+`
+
+const AssigneeOptionName = styled.span<{ $selected: boolean }>`
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: ${({ $selected }) => ($selected ? '#1677ff' : 'rgba(0, 0, 0, 0.88)')};
+  white-space: nowrap;
+`
+
+const CreateNewButton = styled.button`
+  direction: ltr;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+  padding: 0 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 6px;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  line-height: 32px;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+`
+
+const AvatarCircle = styled.div<{ $color: AvatarColor }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--sea-ink);
+  flex-shrink: 0;
+  ${({ $color }) => {
+    switch ($color) {
+      case 'cyan': return 'background: #87e8de;'
+      case 'blue': return 'background: #91caff;'
+      case 'green': return 'background: #b7eb8f;'
+      case 'orange': return 'background: #ffd591;'
+      case 'gray': return 'background: var(--colors-base-neutral-3);'
+    }
+  }}
+`
+
+const StyleCheck = styled(Check)`
+  color: #1677ff;
+`

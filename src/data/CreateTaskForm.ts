@@ -1,4 +1,4 @@
-import type { DeadlineType } from '../functions/filter-utils'
+import type { DeadlineType } from '../components/shared/DeadlineTag'
 import type { DiscussionSource } from './Discussions'
 
 export interface FormState {
