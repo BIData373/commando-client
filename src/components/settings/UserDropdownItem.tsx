@@ -17,12 +17,12 @@ export function UserItem({ user }: UserItemProps) {
 const UserName = styled.span`
   font-size: 14px;
   font-weight: 400;
-  color: var(--text-color);
+  color: rgba(0, 0, 0, 0.88);
 `
 
 const UserMeta = styled.span`
   font-size: 12px;
   font-weight: 400;
   color: var(--text-color);
-  /* color: rgba(0, 0, 0, 0.45); */
+  color: rgba(0, 0, 0, 0.45);
 `

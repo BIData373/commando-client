@@ -34,7 +34,6 @@ const UserListArea = styled.div`
   max-height: 127px;
   width: 100%;
   overflow-y: auto;
-  scrollbar-width: thin;
   border-radius: 6px;
   background-color: var(--background-area);
   padding: 8px;
@@ -42,16 +41,17 @@ const UserListArea = styled.div`
 
 const UserCard = styled.div`
     padding: 1px 8px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 10px;
 `
 
 const UserCardItem = styled.div`
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 1px 8px;
+    max-width: 224px;
+    gap: 6px;
+    padding-right: 8px;
     background: rgba(0, 0, 0, 0.02);
     border: 1px solid var(--card-border);
     border-radius: 4px;
@@ -76,8 +76,9 @@ const UserCardClose = styled.button`
     border: none;
     cursor: pointer;
     padding: 2px;
-    color: var(--sea-ink-soft);
+    color: rgba(0, 0, 0, 0.45);
     flex-shrink: 0;
+    align-self: flex-start;
 
     &:hover {
         color: var(--sea-ink);

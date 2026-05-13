@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
-import { Info, Plus, Search } from 'lucide-react'
+import { CircleQuestionMarkIcon, Plus, Search } from 'lucide-react'
 import { type ChangeEvent, useState } from 'react'
 import { AssigneeCard } from '#/components/settings/AssigneeCard'
 import { AssigneeDialog } from '#/components/settings/AssigneeDialog'
 import { SectionTitle } from '#/components/settings/SectionTitle'
-import { Button } from '#/components/ui/button'
+import { PrimaryButton } from '#/components/shared/PrimaryButton'
 import { Checkbox } from '#/components/ui/checkbox'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '#/components/ui/input-group'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/components/ui/tooltip'
@@ -49,7 +49,7 @@ function SettingsAssignees() {
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
       />
-      <StyledSectionTitle title={`ניהול אחראים - ${activeTab}`} />
+      <SectionTitle title={`ניהול אחראים - ${activeTab}`} />
       <StyledContent>
         <CheckboxRow>
           <Checkbox
@@ -63,9 +63,9 @@ function SettingsAssignees() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <InfoIcon>
-                  <Info size={16} />
-                </InfoIcon>
+                <QuestionIcon>
+                  <CircleQuestionMarkIcon size={16} />
+                </QuestionIcon>
               </TooltipTrigger>
               <StyledTooltipContent>
                 מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות כבויה – עדכון הסטטוס יתאפשר רק למנהלי הלשכה.
@@ -82,13 +82,14 @@ function SettingsAssignees() {
               <InputGroupInput value={searchQuery} onChange={handleSearchChange} placeholder="חפש קבוצת אחראים" />
             </StyledInputGroup>
           </SearchWrapper>
-          <Button variant="default" onClick={handleOpenCreateDialog}>
-            <Plus size={16} />
-            צור אחראי
-          </Button>
+          <PrimaryButton
+            title='צור אחרי'
+            onClick={handleOpenCreateDialog}
+            header={<Plus size={16} />}
+            height={32}
+          />
         </ToolbarRow>
       </StyledContent>
-
 
       <CardScrollArea>
         <AssigneeCardGrid>
@@ -109,13 +110,17 @@ const SearchWrapper = styled.div`
 const ToolbarRow = styled.div`
   display: flex;
   align-items: center;
-  margin-right: 20px;
+  margin-right: 12px;
   gap: 12px;
 `
 
 const StyledTooltipContent = styled(TooltipContent)`
   background: var(--background);
   color: var(--text-color-2);
+
+  svg {
+    opacity: 0;
+  } 
 `
 
 const StyledContent = styled.div`
@@ -144,7 +149,7 @@ const CardScrollArea = styled.div`
 const CheckboxRow = styled.div`
   display: flex;
   align-items: center;
-  margin-right: 20px;
+  margin-right: 12px;
   gap: 8px;
 `
 
@@ -159,29 +164,21 @@ const StyledInputGroup = styled(InputGroup)`
   background: var(--background);
 `
 
-
-const StyledSectionTitle = styled(SectionTitle)`
-  margin-right: 20px;
-`
-
-const InfoIcon = styled.button`
+const QuestionIcon = styled.button`
   display: flex;
   align-items: center;
   background: none;
   border: none;
   padding: 0;
-  color: var(--sea-ink-soft);
+  color: rgba(0, 0, 0, 0.25);
   cursor: pointer;
-
-  &:hover {
-    color: var(--sea-ink);
-  }
 `
 
 const AssigneeCardGrid = styled.div`
-  padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(275px, 1fr));
+  padding: 20px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
   gap: 18px;
   direction: rtl;
 `

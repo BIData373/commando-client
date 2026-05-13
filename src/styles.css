@@ -66,7 +66,8 @@ body,
   --card-background: rgba(0, 0, 0, 0.02);
   --icon-background: rgba(0, 0, 0, 0.4);
   --card-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
-
+  --card-shadow-default: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  --card-shadow-hover: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
 
   --card-border: #d9d9d9;
   --background-area: #fafafa;
@@ -88,6 +89,11 @@ body,
   --Colors-Base-Blue-6: oklch(52.19% 0.23 241.5);
 
   --Colors-Brand-Warning-colorWarningText: oklch(80.16% 0.17 76);
+  
+  --button-color-hover: #4096FF;
+  --gradient: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
+  --text-subtitle-color: #8C8C8C;
+  --tab-active-color: #1677ff;
 
   --font-sans: 'Rubik Variable', ui-sans-serif, sans-serif;
   --font-serif: 'Rubik Variable', ui-sans-serif, sans-serif;
@@ -153,7 +159,9 @@ body,
   --text-color: rgba(234, 221, 221, 0.65);
   --text-color-2: rgba(234, 221, 221, 0.65);
   --icon-background: rgba(255, 218, 218, 0.4);
-  --card-shadow: 0 6px 16px 0 rgba(203, 200, 200, 0.08), 0 3px 6px -4px rgba(255, 255, 255, 0.185), 0 9px 28px 8px rgba(208, 199, 199, 0.05);
+  --card-shadow-default: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  --card-shadow-hover: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+
 }
 
 @theme inline {
