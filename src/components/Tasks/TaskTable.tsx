@@ -17,7 +17,8 @@ import type { Task } from '../../data/Tasks'
 import FlagIcon from '../shared/FlagIcon'
 import HighlightMatch from '../shared/HighlightMatch'
 import type { DirectiveStatus } from '../shared/StatusTag'
-import { DEADLINE_LABELS, type DeadlineType, type FilterOption } from '../../functions/filter-utils'
+import { DEADLINE_LABELS, type DeadlineType } from '../../functions/filter-utils'
+import { STATUS_LABELS } from '../shared/StatusTag'
 
 const STATUS_SORT_ORDER: Record<DirectiveStatus, number> = {
   not_started: 0,
@@ -37,7 +38,6 @@ interface TaskTableProps {
   searchQuery: string
   columnOrder: string[]
   hiddenColumns: Set<string>
-  filterOptionsMap: Record<string, FilterOption[]>
   onUpdateStatus: (taskId: number, status: DirectiveStatus) => void
   onEdit: (taskId: number) => void
   onArchive: (taskIds: number[]) => void
@@ -50,7 +50,6 @@ function TaskTable({
   searchQuery,
   columnOrder,
   hiddenColumns,
-  filterOptionsMap,
   onUpdateStatus,
   onEdit,
   onArchive,
@@ -142,7 +141,7 @@ function TaskTable({
     },
     status: {
       accessorKey: 'status',
-      header: ({ column }) => <ColumnHeaderWithActions label="סטטוס" column={column} filterOptions={filterOptionsMap['status']} />,
+      header: ({ column }) => <ColumnHeaderWithActions label="סטטוס" column={column} labelMap={STATUS_LABELS} />,
       size: 100,
       filterFn: multiSelectFilter,
       sortingFn: (rowA, rowB) =>
@@ -158,7 +157,7 @@ function TaskTable({
     responsible: {
       id: 'responsible',
       accessorFn: (row) => row.responsible?.name ?? 'ללא אחראי',
-      header: ({ column }) => <ColumnHeaderWithActions label="אחראי" column={column} filterOptions={filterOptionsMap['responsible']} />,
+      header: ({ column }) => <ColumnHeaderWithActions label="אחראי" column={column} />,
       size: 115,
       filterFn: multiSelectFilter,
       sortingFn: (rowA, rowB) =>
@@ -172,7 +171,7 @@ function TaskTable({
     },
     deadlineType: {
       accessorKey: 'deadlineType',
-      header: ({ column }) => <ColumnHeaderWithActions label='תג"ב' column={column} filterOptions={filterOptionsMap['deadlineType']} />,
+      header: ({ column }) => <ColumnHeaderWithActions label='תג"ב' column={column} labelMap={DEADLINE_LABELS} />,
       size: 160,
       filterFn: multiSelectFilter,
       sortingFn: (rowA, rowB) => {
@@ -211,7 +210,7 @@ function TaskTable({
     },
     discussionName: {
       accessorKey: 'discussionName',
-      header: ({ column }) => <ColumnHeaderWithActions label="מקור" column={column} filterOptions={filterOptionsMap['discussionName']} />,
+      header: ({ column }) => <ColumnHeaderWithActions label="מקור" column={column} />,
       size: 280,
       filterFn: multiSelectFilter,
       sortingFn: (rowA, rowB) =>
@@ -228,7 +227,7 @@ function TaskTable({
     },
     tags: {
       accessorKey: 'tags',
-      header: ({ column }) => <ColumnHeaderWithActions label="נושא" column={column} filterOptions={filterOptionsMap['tags']} />,
+      header: ({ column }) => <ColumnHeaderWithActions label="נושא" column={column} />,
       size: 160,
       enableSorting: false,
       filterFn: multiSelectFilter,

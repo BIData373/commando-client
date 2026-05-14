@@ -1,7 +1,6 @@
 import { differenceInDays, startOfToday } from 'date-fns'
 import type { Task } from '../data/Tasks'
 import type { QuickFilter } from '../components/Tasks/TaskFilters'
-import { STATUS_LABELS } from '../components/shared/StatusTag'
 
 // ─── Shared Types ────────────────────────────────────────────────────────────
 
@@ -30,20 +29,6 @@ function matchesQuickFilter(task: Task, filter: QuickFilter): boolean {
       return daysUntil !== null && daysUntil >= 0 && daysUntil < 2 && !(daysUntil < 0 && task.deadlineType !== 'immediate')
     case 'flagged':
       return task.flagged
-  }
-}
-
-// ─── Build Filter Options ────────────────────────────────────────────────────
-
-function buildFilterOptionsMap(tasks: Task[]): Record<string, FilterOption[]> {
-  const unique = <T>(arr: T[]): T[] => [...new Set(arr)]
-
-  return {
-    status: unique(tasks.map((t) => t.status)).map((v) => ({ value: v, label: STATUS_LABELS[v] })),
-    responsible: unique(tasks.map((t) => t.responsible?.name ?? 'ללא אחראי')).map((v) => ({ value: v, label: v })),
-    deadlineType: unique(tasks.map((t) => t.deadlineType)).map((v) => ({ value: v, label: DEADLINE_LABELS[v as DeadlineType] })),
-    discussionName: unique(tasks.map((t) => t.discussionName)).filter(Boolean).map((v) => ({ value: v, label: v })),
-    tags: unique(tasks.flatMap((t) => t.tags)).map((v) => ({ value: v, label: v })),
   }
 }
 
@@ -77,6 +62,5 @@ function applyAllFilters(
 
 export {
   matchesQuickFilter,
-  buildFilterOptionsMap,
   applyAllFilters,
 }
