@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
-import type { IAssignee } from '#/types'
+import type { Assignee } from '#/types'
 import { Avatar, AvatarFallback } from '../ui/avatar'
 
 interface AssigneeAvatarProps {
-    assignee: IAssignee
+    assignee: Assignee
     size?: number
 }
 

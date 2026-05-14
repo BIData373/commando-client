@@ -1,20 +1,21 @@
-import { useState } from 'react'
 import styled from '@emotion/styled'
 import { type ColumnDef, type RowSelectionState } from '@tanstack/react-table'
 import { differenceInDays, format, startOfToday } from 'date-fns'
 import { AlertTriangle, MoreVertical, Paperclip } from 'lucide-react'
-import { Checkbox } from '../ui/checkbox'
-import { DataTable } from '../ui/data-table'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
-import { StatusCell } from './StatusCell'
-import { ResponsibleCell } from './ResponsibleCell'
-import { TopicCell } from './TopicCell'
-import { RowActionsMenu } from './RowActionsMenu'
-import { BulkActionsBar } from './BulkActionsBar'
+import { useState } from 'react'
 import type { Task } from '../../data/Tasks'
+import { DeadlineTag } from '../shared/DeadlineTag'
 import FlagIcon from '../shared/FlagIcon'
 import HighlightMatch from '../shared/HighlightMatch'
 import type { DirectiveStatus } from '../shared/StatusTag'
+import { Checkbox } from '../ui/checkbox'
+import { DataTable } from '../ui/data-table'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+import { BulkActionsBar } from './BulkActionsBar'
+import { ResponsibleCell } from './ResponsibleCell'
+import { RowActionsMenu } from './RowActionsMenu'
+import { StatusCell } from './StatusCell'
+import { TopicCell } from './TopicCell'
 
 export type DeadlineType = 'date' | 'immediate' | 'ongoing'
 
@@ -109,20 +110,20 @@ function TaskTable({
       accessorKey: 'title',
       header: 'ההנחיה',
       size: 832,
-      cell: ({ row: { original :{ title, details, flagged } } }) => (
-          <TitleCell>
-            {flagged && <FlagIcon />}
-            {details ? (
-              <>
-                <TitlePart>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitlePart>
-                <TitleSeparator> - </TitleSeparator>
-                <DetailsPart>{searchQuery ? <HighlightMatch text={details} query={searchQuery} variant="mark" /> : details}</DetailsPart>
-              </>
-            ) : (
-              <TitleFull>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitleFull>
-            )}
-          </TitleCell>
-        ),
+      cell: ({ row: { original: { id, title, details, flagged } } }) => (
+        <TitleCell onDoubleClick={() => onEdit(id)}>
+          {flagged && <FlagIcon />}
+          {details ? (
+            <>
+              <TitlePart>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitlePart>
+              <TitleSeparator> - </TitleSeparator>
+              <DetailsPart>{searchQuery ? <HighlightMatch text={details} query={searchQuery} variant="mark" /> : details}</DetailsPart>
+            </>
+          ) : (
+            <TitleFull>{searchQuery ? <HighlightMatch text={title} query={searchQuery} variant="mark" /> : title}</TitleFull>
+          )}
+        </TitleCell>
+      ),
     },
     status: {
       accessorKey: 'status',
@@ -163,7 +164,7 @@ function TaskTable({
         return (
           <DeadlineCell>
             {deadlineType !== 'date' && (
-              <DeadlineTag $type={deadlineType}>{DEADLINE_LABELS[deadlineType]}</DeadlineTag>
+              <DeadlineTag deadlineType={deadlineType} />
             )}
             {dueDate && <DeadlineDateText>{format(dueDate, 'dd/MM/yy')}</DeadlineDateText>}
             {(isOverdue || isApproaching) && (
@@ -188,7 +189,7 @@ function TaskTable({
         <SourceCell>
           {hasAttachment && <Paperclip size={16} />}
           <SourceText>{discussionName} | {discussionDate}</SourceText>
-        </SourceCell>
+        </SourceCell> 
       ),
     },
     tags: {
@@ -225,7 +226,7 @@ function TaskTable({
   const actionsColumn: ColumnDef<Task> = {
     id: 'actions',
     size: 43,
-    cell: ({ row : { original: { id } } }) => (
+    cell: ({ row: { original: { id } } }) => (
       <RowActionsMenu
         trigger={
           <ActionsButton>
@@ -439,37 +440,6 @@ const OverdueIcon = styled(AlertTriangle)`
 const ApproachingIcon = styled(AlertTriangle)`
   color: rgba(212, 107, 8, 0.9);
   flex-shrink: 0;
-`
-
-const DeadlineTag = styled.span<{ $type: DeadlineType }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  ${({ $type }) => {
-    switch ($type) {
-      case 'ongoing':
-        return `
-          background: rgba(230, 244, 255, 0.8);
-          border: 1px solid rgba(145, 202, 255, 0.8);
-          color: rgba(22, 119, 255, 0.9);
-        `
-      case 'immediate':
-        return `
-          background: #FFF1F0;
-          border: 1px solid #FFA39E;
-          color: #F5222D;
-        `
-      case 'date':
-        return `
-          background: var(--chip-bg);
-          border: 1px solid var(--chip-line);
-          color: var(--sea-ink-soft);
-        `
-    }
-  }}
 `
 
 const SourceCell = styled.div`

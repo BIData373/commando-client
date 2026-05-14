@@ -1,5 +1,6 @@
+import type { Assignee } from '#/types'
 import type { DirectiveStatus } from '../components/shared/StatusTag'
-import type { Assignee, RelatedDirective } from '../components/Tasks/ResponsibleCell'
+import type { RelatedDirective } from '../components/Tasks/ResponsibleCell'
 import { MOCK_ASSIGNEES } from './Assignees'
 
 type DeadlineType = 'date' | 'immediate' | 'ongoing'
@@ -34,10 +35,10 @@ export const INITIAL_TASKS: Task[] = [
     status: 'not_started',
     responsible: MOCK_ASSIGNEES[1],
     relatedDirectives: [
-      { user: MOCK_ASSIGNEES[7], status: 'not_started' },
-      { user: MOCK_ASSIGNEES[8], status: 'in_progress' },
-      { user: MOCK_ASSIGNEES[8], status: 'in_progress' },
-      { user: MOCK_ASSIGNEES[8], status: 'in_progress' },
+      { user: MOCK_ASSIGNEES[2], status: 'not_started' },
+      { user: MOCK_ASSIGNEES[3], status: 'in_progress' },
+      { user: MOCK_ASSIGNEES[4], status: 'in_progress' },
+      { user: MOCK_ASSIGNEES[5], status: 'in_progress' },
     ],
     deadlineType: 'ongoing',
     dueDate: new Date('2026-12-03'),
@@ -118,9 +119,9 @@ export const INITIAL_TASKS: Task[] = [
     status: 'in_progress',
     responsible: MOCK_ASSIGNEES[6],
     relatedDirectives: [
-      { user: MOCK_ASSIGNEES[7], status: 'not_started' },
-      { user: MOCK_ASSIGNEES[8], status: 'in_progress' },
-      { user: MOCK_ASSIGNEES[9], status: 'not_started' },
+      { user: MOCK_ASSIGNEES[1], status: 'not_started' },
+      { user: MOCK_ASSIGNEES[2], status: 'in_progress' },
+      { user: MOCK_ASSIGNEES[3], status: 'not_started' },
     ],
     deadlineType: 'ongoing',
     dueDate: new Date('2026-12-01'),
