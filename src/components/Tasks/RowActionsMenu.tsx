@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
 import styled from '@emotion/styled'
 import { Archive, CheckCircle2, Pencil, Trash2 } from 'lucide-react'
+import type { ReactNode } from 'react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +13,7 @@ import { DeletePopover } from './DeletePopover'
 interface RowActionsMenuProps {
   trigger: ReactNode
   onEdit: () => void
-  onEnterSelect: () => void
+  onEnterSelect?: () => void
   onArchive: () => void
   onDelete: () => void
 }
@@ -27,10 +27,12 @@ export function RowActionsMenu({ trigger, onEdit, onEnterSelect, onArchive, onDe
           <Pencil size={16} />
           עריכה
         </MenuItem>
-        <MenuItem onSelect={onEnterSelect}>
-          <CheckCircle2 size={16} />
-          סמן
-        </MenuItem>
+        {onEnterSelect && (
+          <MenuItem onSelect={onEnterSelect}>
+            <CheckCircle2 size={16} />
+            סמן
+          </MenuItem>
+        )}
         <MenuSeparator />
         <MenuItem onSelect={onArchive}>
           <Archive size={16} />
@@ -58,6 +60,7 @@ const MenuContent = styled(DropdownMenuContent)`
   min-width: 160px;
   padding: 4px;
   border-radius: 8px;
+  z-index: calc(var(--z-dropdown) + 1);
   box-shadow:
     0px 6px 16px rgba(0, 0, 0, 0.08),
     0px 3px 6px rgba(0, 0, 0, 0.12),

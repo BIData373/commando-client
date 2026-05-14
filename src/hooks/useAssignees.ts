@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { sendRequest } from '../axios';
 import { assigneesApi } from '../mocks/endpoints';
 import type { MutationOptions, QueryOptions } from '../queryClient';
-import type { IAssignee, ICreateAssignee, IUpdateAssignee } from '../types';
+import type { Assignee, ICreateAssignee, IUpdateAssignee } from '../types';
 import { USE_MOCK_API } from '../utils/envUtils';
 
 const assigneesUrl = 'assignees';
@@ -17,13 +17,13 @@ interface UpdateAssigneeParams {
     data: IUpdateAssignee;
 }
 
-export function useAssignees(options?: QueryOptions<IAssignee[]>) {
+export function useAssignees(options?: QueryOptions<Assignee[]>) {
     return useQuery({
         queryKey: assigneeKeys.all,
-        queryFn: async (): Promise<IAssignee[]> =>
+        queryFn: async (): Promise<Assignee[]> =>
             USE_MOCK_API
                 ? await assigneesApi.getAll()
-                : await sendRequest<IAssignee[]>({ method: 'GET', url: assigneesUrl }),
+                : await sendRequest<Assignee[]>({ method: 'GET', url: assigneesUrl }),
         ...options,
     });
 }
@@ -35,7 +35,7 @@ export function useCreateAssignee(options?: MutationOptions<ICreateAssignee>) {
         mutationFn: async (data: ICreateAssignee) =>
             USE_MOCK_API
                 ? await assigneesApi.create(data)
-                : await sendRequest<IAssignee>({ method: 'POST', url: assigneesUrl, data }),
+                : await sendRequest<Assignee>({ method: 'POST', url: assigneesUrl, data }),
         ...options,
         onSuccess: (...args) => {
             queryClient.invalidateQueries({ queryKey: assigneeKeys.all });
@@ -51,7 +51,7 @@ export function useUpdateAssignee(options?: MutationOptions<UpdateAssigneeParams
         mutationFn: async ({ assigneeId, data }: UpdateAssigneeParams) =>
             USE_MOCK_API
                 ? await assigneesApi.update(assigneeId, data)
-                : await sendRequest<IAssignee>({ method: 'PATCH', url: `${assigneesUrl}/${assigneeId}`, data }),
+                : await sendRequest<Assignee>({ method: 'PATCH', url: `${assigneesUrl}/${assigneeId}`, data }),
         ...options,
         onSuccess: (...args) => {
             queryClient.invalidateQueries({ queryKey: assigneeKeys.all });

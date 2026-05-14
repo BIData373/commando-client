@@ -8,23 +8,30 @@ export interface MetaFields {
     deletedBy: number | null;
 }
 
-export interface IAssignee extends MetaFields {
-    name: string;
-    color: string | null;
-    emblem: string | null;
-    userIds: number[];
+export interface Assignee extends MetaFields {
+    id: number
+    emblem: string | null
+    color: string
+    name: string
+    role: string
+    email: string
+    userIds: number[]
 }
 
 export interface ICreateAssignee {
     name: string;
-    color?: string | null;
+    role: string;
+    email: string;
+    color?: string;
     emblem?: string | null;
     userIds?: number[];
 }
 
 export interface IUpdateAssignee {
     name?: string;
-    color?: string | null;
+    role?: string;
+    email?: string;
+    color?: string;
     emblem?: string | null;
     userIds?: number[];
 }

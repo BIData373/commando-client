@@ -1,9 +1,9 @@
-import { useRef, useState } from 'react'
 import styled from '@emotion/styled'
-import { X, ChevronDown, Plus, Check } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { Check, ChevronDown, Plus, X } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { MOCK_ASSIGNEES } from '../../data/Assignees'
-import type { AvatarColor } from '../Tasks/ResponsibleCell'
+import { AssigneeAvatar } from '../shared/AssigneeAvatar'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -123,10 +123,9 @@ function AssigneeField({
                 onClick={() => handleAssigneeClick(assignee.id)}
               >
                 <AssigneeOptionEnd>
-                  <AvatarCircle $color={assignee.colorToken}>
-                    {assignee.initials}
-                  </AvatarCircle>
-
+                  <AssigneeAvatar
+                    assignee={assignee}
+                  />
                   <AssigneeOptionName
                     $selected={selectedAssignees.includes(assignee.id)}
                   >
@@ -188,9 +187,9 @@ function AssigneeField({
 
                     <AssigneeInfoBlock>
                       <AssigneeRoleText>{assignee.role}</AssigneeRoleText>
-                      <AvatarCircle $color={assignee.colorToken} $size={29}>
-                        {assignee.initials}
-                      </AvatarCircle>
+                      <AssigneeAvatar
+                        assignee={assignee}
+                      />
                     </AssigneeInfoBlock>
                   </AssigneeRowContainer>
                 </AssigneeRowItem>
@@ -310,28 +309,6 @@ padding: 0 12px;
 height: 32px;
 `
 
-const AvatarCircle = styled.div<{ $color: AvatarColor; $size?: number }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: ${({ $size }) => $size ?? 16}px;
-  height: ${({ $size }) => $size ?? 16}px;
-  border-radius: 50%;
- font-size: 12px;
-  font-weight: 400;
-  line-height: 20px;
-  color: var(--sea-ink);
-  flex-shrink: 0;
-  ${({ $color }) => {
-    switch ($color) {
-      case 'cyan': return 'background: #87e8de;'
-      case 'blue': return 'background: #91caff;'
-      case 'green': return 'background: #b7eb8f;'
-      case 'orange': return 'background: #ffd591;'
-      case 'gray': return 'background: #f5f5f5;'
-    }
-  }}
-`
 
 const AssigneeOptionName = styled.span<{ $selected: boolean }>`
   font-size: 14px;

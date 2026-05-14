@@ -1,26 +1,28 @@
-import type { IAssignee, ICreateAssignee, IUpdateAssignee } from '../../types';
+import type { Assignee, ICreateAssignee, IUpdateAssignee } from '../../types';
 import { mockAssignees } from '../data';
 
 const delay = (ms = 200) => new Promise((r) => setTimeout(r, ms));
 
 export const assigneesApi = {
-    async getAll(): Promise<IAssignee[]> {
+    async getAll(): Promise<Assignee[]> {
         await delay();
         return [...mockAssignees];
     },
 
-    async getById(assigneeId: number): Promise<IAssignee> {
+    async getById(assigneeId: number): Promise<Assignee> {
         await delay();
         const assignee = mockAssignees.find((a) => a.id === assigneeId);
         if (!assignee) throw new Error('Assignee not found');
         return { ...assignee };
     },
 
-    async create(data: ICreateAssignee): Promise<IAssignee> {
+    async create(data: ICreateAssignee): Promise<Assignee> {
         await delay();
         const now = new Date().toISOString();
-        const newAssignee: IAssignee = {
+        const newAssignee: Assignee = {
             id: Math.max(...mockAssignees.map((a) => a.id), 0) + 1,
+            color: '',
+            emblem: null,
             userIds: data.userIds ?? [],
             createdAt: now,
             createdBy: 1,
@@ -34,7 +36,7 @@ export const assigneesApi = {
         return { ...newAssignee };
     },
 
-    async update(assigneeId: number, data: IUpdateAssignee): Promise<IAssignee> {
+    async update(assigneeId: number, data: IUpdateAssignee): Promise<Assignee> {
         await delay();
         const index = mockAssignees.findIndex((a) => a.id === assigneeId);
         if (index === -1) throw new Error('Assignee not found');

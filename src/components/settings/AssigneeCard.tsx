@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { User } from 'lucide-react'
 import { useState } from 'react'
-import type { IAssignee } from '#/types'
+import type { Assignee } from '#/types'
 import { AssigneeAvatar } from '../shared/AssigneeAvatar'
 import { Badge } from '../ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
@@ -14,7 +14,7 @@ const MAX_VISIBLE_TAGS = 2
 
 
 interface IAssigneeCardProps {
-    assignee: IAssignee
+    assignee: Assignee
     userNames: Record<number, string>
 }
 
