@@ -134,7 +134,7 @@ function useTaskColumns({
     [TaskColumnId.Title]: {
       accessorKey: 'title',
       header: 'ההנחיה',
-      size: 832,
+      size: 830,
       meta: { grow: true },
       enableSorting: false,
       enableColumnFilter: false,
@@ -225,7 +225,7 @@ function useTaskColumns({
     [TaskColumnId.DiscussionName]: {
       accessorKey: 'discussionName',
       header: ({ column }) => <ColumnHeaderWithActions label="מקור" column={column} filterOptions={filterOptionsMap['discussionName']} />,
-      size: 280,
+      size: 260,
       filterFn: multiSelectFilter,
       sortingFn: (rowA, rowB) =>
         rowA.original.discussionName.localeCompare(rowB.original.discussionName, 'he'),

@@ -1,9 +1,9 @@
+import type { ReactNode } from 'react'
 import styled from '@emotion/styled'
-import { FilterX } from 'lucide-react'
 import type { Task } from '../../data/Tasks'
 import { matchesQuickFilter } from '../../functions/filter-utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
-import { TopicFilterDropdown } from './TopicFilterDropdown'
+import { FilterBar, FilterPill, FilterDivider } from '../shared/FilterBar'
 
 type QuickFilter = 'overdue' | 'approaching' | 'flagged'
 
@@ -11,41 +11,54 @@ interface TaskFiltersProps {
   tasks: Task[]
   activeQuickFilters: Set<QuickFilter>
   activeTopicFilters: Set<string>
-  allTopics: string[]
   onToggleQuickFilter: (filter: QuickFilter) => void
-  onApplyTopicFilters: (topics: Set<string>) => void
   onClearAllFilters: () => void
+  searchQuery: string
+  onSearchChange: (value: string) => void
+  onExport: () => void
+  columnOrder: string[]
+  hiddenColumns: Set<string>
+  onColumnOrderChange: (order: string[]) => void
+  onToggleColumn: (columnId: string) => void
+  hasExtraActiveFilters?: boolean
+  extraFilters?: ReactNode
 }
 
 function TaskFilters({
   tasks,
   activeQuickFilters,
   activeTopicFilters,
-  allTopics,
   onToggleQuickFilter,
-  onApplyTopicFilters,
   onClearAllFilters,
+  searchQuery,
+  onSearchChange,
+  onExport,
+  columnOrder,
+  hiddenColumns,
+  onColumnOrderChange,
+  onToggleColumn,
+  hasExtraActiveFilters,
+  extraFilters,
 }: TaskFiltersProps) {
-  const hasActiveFilters = activeQuickFilters.size > 0 || activeTopicFilters.size > 0
+  const hasActiveFilters = activeQuickFilters.size > 0 || activeTopicFilters.size > 0 || !!hasExtraActiveFilters
 
   const overdueCount = tasks.filter((t) => matchesQuickFilter(t, 'overdue')).length
   const approachingCount = tasks.filter((t) => matchesQuickFilter(t, 'approaching')).length
   const flaggedCount = tasks.filter((t) => matchesQuickFilter(t, 'flagged')).length
 
   return (
-    <ToolbarEnd>
-      {hasActiveFilters && (
-        <ClearFiltersButton onClick={onClearAllFilters}>
-          <FilterX size={16} />
-          נקה סננים
-        </ClearFiltersButton>
-      )}
-      <TopicFilterDropdown
-        topics={allTopics}
-        activeTopics={activeTopicFilters}
-        onApply={onApplyTopicFilters}
-        $active={activeTopicFilters.size > 0}
-      />
+    <FilterBar
+      hasActiveFilters={hasActiveFilters}
+      onClearAll={onClearAllFilters}
+      searchQuery={searchQuery}
+      onSearchChange={onSearchChange}
+      onExport={onExport}
+      columnOrder={columnOrder}
+      hiddenColumns={hiddenColumns}
+      onColumnOrderChange={onColumnOrderChange}
+      onToggleColumn={onToggleColumn}
+    >
+      {extraFilters} 
       <FilterPill $active={activeQuickFilters.has('flagged')} onClick={() => onToggleQuickFilter('flagged')}>
         חשובות ({flaggedCount})
       </FilterPill>
@@ -64,63 +77,12 @@ function TaskFilters({
       <FilterPill $active={!hasActiveFilters} onClick={onClearAllFilters}>
         הכל ({tasks.length})
       </FilterPill>
-    </ToolbarEnd>
+    </FilterBar>
   )
 }
 
 export { TaskFilters }
 export type { QuickFilter }
-
-const ToolbarEnd = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`
-
-const ClearFiltersButton = styled.button`
-  direction: rtl;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-inline: 15px;
-  height: 32px;
-  border-radius: 999px;
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.88);
-  cursor: pointer;
-  background: transparent;
-  white-space: nowrap;
-
-  &:hover {
-    background: var(--link-bg-hover);
-  }
-`
-
-const FilterPill = styled.button<{ $active: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding-inline: 12px;
-  height: 32px;
-  border-radius: 999px;
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s;
-  border: 1px solid ${({ $active }) => ($active ? 'rgba(9, 88, 217, 0.6)' : '#D9D9D9')};
-  background: #FFF;
-  color: ${({ $active }) => ($active ? 'rgba(9, 88, 217, 1)' : 'var(--sea-ink)')};
-
-  &:hover {
-    background: var(--link-bg-hover);
-  }
-`
-
-const FilterDivider = styled.div`
-  width: 1px;
-  height: 25px;
-  background: var(--Colors-Neutral-Text-colorTextQuaternary, rgba(0, 0, 0, 0.25));
-`
 
 const WarningTrigger = styled(TooltipTrigger)`
   display: inline-flex;

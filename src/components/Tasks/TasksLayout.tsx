@@ -10,7 +10,6 @@ import {
 import { TooltipProvider } from '../ui/tooltip'
 import { type DirectiveStatus } from '../shared/StatusTag'
 import { NoResultsFound } from './NoResultsFound'
-import { TaskSearchBar } from './TaskSearchBar'
 import { TaskFilters, type QuickFilter } from './TaskFilters'
 import { TaskTable } from './TaskTable'
 import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
@@ -20,10 +19,11 @@ import { applyAllFilters, buildFilterOptionsMap } from '../../functions/filter-u
 import { useTitleBar } from '../../providers/TitleBarProvider'
 import { useMemo, useState } from 'react'
 import { useTasks } from '../../providers/TasksProvider'
+import { MultiSelectFilterDropdown } from '../shared/MultiSelectFilterDropdown'
 
 export type View = 'TABLE' | 'CARDS'
 
-interface TasksLayoutProps {
+export interface TasksLayoutProps {
   view: View
   urlName: string
 }
@@ -95,7 +95,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   }
 
   function handleCreateTaskFromDiscussion() {
-    navigate({ to: '/workspace/$urlName/tasks/new', params: { urlName }, search: { view, mode: 'discussion'} })
+    navigate({ to: '/workspace/$urlName/tasks/new', params: { urlName }, search: { view, mode: 'discussion' } })
   }
 
   function handleCreateTask() {
@@ -149,26 +149,27 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   return (
     <TooltipProvider>
       <TasksRoot>
-        <Toolbar>
-          <TaskSearchBar
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            onExport={handleExport}
-            columnOrder={columnOrder}
-            hiddenColumns={hiddenColumns}
-            onColumnOrderChange={setColumnOrder}
-            onToggleColumn={handleToggleColumn}
-          />
-          <TaskFilters
-            tasks={tasks}
-            activeQuickFilters={activeQuickFilters}
-            activeTopicFilters={activeTopicFilters}
-            allTopics={allTopics}
-            onToggleQuickFilter={toggleQuickFilter}
-            onApplyTopicFilters={setActiveTopicFilters}
-            onClearAllFilters={clearAllFilters}
-          />
-        </Toolbar>
+        <TaskFilters
+          tasks={tasks}
+          activeQuickFilters={activeQuickFilters}
+          onToggleQuickFilter={toggleQuickFilter}
+          onClearAllFilters={clearAllFilters}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onExport={handleExport}
+          columnOrder={columnOrder}
+          hiddenColumns={hiddenColumns}
+          onColumnOrderChange={setColumnOrder}
+          onToggleColumn={handleToggleColumn}
+          activeTopicFilters={activeTopicFilters}
+          extraFilters={<MultiSelectFilterDropdown
+            label="נושא"
+            options={allTopics.map((t) => ({ value: t, label: t }))}
+            activeValues={activeTopicFilters}
+            onApply={setActiveTopicFilters}
+            $active={activeTopicFilters.size > 0}
+          />}
+        />
 
         {tasks.length === 0 ? (
           <NoResultsFound variant="empty" />
@@ -331,12 +332,3 @@ const StyledDropdownItem = styled(DropdownMenuItem)`
   cursor: pointer;
 `
 
-// ─── Toolbar ──────────────────────────────────────────────────────────────────
-
-const Toolbar = styled.div`
-  direction: ltr;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 40px;
-`
