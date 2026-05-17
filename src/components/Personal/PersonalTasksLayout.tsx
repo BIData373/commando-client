@@ -149,7 +149,6 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
         <TaskFilters
           tasks={tasks}
           activeQuickFilters={activeQuickFilters}
-          activeTopicFilters={new Set<string>()}
           onToggleQuickFilter={toggleQuickFilter}
           onClearAllFilters={clearAllFilters}
           searchQuery={searchQuery}
