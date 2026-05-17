@@ -132,14 +132,14 @@ const DropdownPanel = styled.div`
     0px 9px 28px 0px rgba(0, 0, 0, 0.05);
   width: auto;
   min-width: 180px;
-`
+  `
 
 const ItemList = styled.div`
   display: flex;
   flex-direction: column;
   max-height: 160px;
   overflow-y: auto;
-`
+  `
 
 const DropdownItem = styled.div<{ $selected: boolean }>`
   direction: ltr;
@@ -158,11 +158,12 @@ const DropdownItem = styled.div<{ $selected: boolean }>`
 `
 
 const OptionLabel = styled.div`
+  direction: rtl;
   flex: 1;
   display: flex;
   align-items: center;
   gap: 8px;
-  justify-content: flex-end;
+  justify-content: flex-start;
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;

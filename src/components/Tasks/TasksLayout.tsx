@@ -161,7 +161,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
           hiddenColumns={hiddenColumns}
           onColumnOrderChange={setColumnOrder}
           onToggleColumn={handleToggleColumn}
-          activeTopicFilters={activeTopicFilters}
+          hasExtraActiveFilters={activeTopicFilters.size > 0}
           extraFilters={<MultiSelectFilterDropdown
             label="נושא"
             options={allTopics.map((t) => ({ value: t, label: t }))}

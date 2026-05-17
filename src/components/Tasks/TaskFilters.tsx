@@ -10,7 +10,6 @@ type QuickFilter = 'overdue' | 'approaching' | 'flagged'
 interface TaskFiltersProps {
   tasks: Task[]
   activeQuickFilters: Set<QuickFilter>
-  activeTopicFilters: Set<string>
   onToggleQuickFilter: (filter: QuickFilter) => void
   onClearAllFilters: () => void
   searchQuery: string
@@ -27,7 +26,6 @@ interface TaskFiltersProps {
 function TaskFilters({
   tasks,
   activeQuickFilters,
-  activeTopicFilters,
   onToggleQuickFilter,
   onClearAllFilters,
   searchQuery,
@@ -40,7 +38,7 @@ function TaskFilters({
   hasExtraActiveFilters,
   extraFilters,
 }: TaskFiltersProps) {
-  const hasActiveFilters = activeQuickFilters.size > 0 || activeTopicFilters.size > 0 || !!hasExtraActiveFilters
+  const hasActiveFilters = activeQuickFilters.size > 0 || !!hasExtraActiveFilters
 
   const overdueCount = tasks.filter((t) => matchesQuickFilter(t, 'overdue')).length
   const approachingCount = tasks.filter((t) => matchesQuickFilter(t, 'approaching')).length
@@ -60,18 +58,18 @@ function TaskFilters({
     >
       {extraFilters} 
       <FilterPill $active={activeQuickFilters.has('flagged')} onClick={() => onToggleQuickFilter('flagged')}>
-        חשובות ({flaggedCount})
+        חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
       </FilterPill>
       <Tooltip>
         <WarningTrigger>
           <FilterPill $active={activeQuickFilters.has('approaching')} onClick={() => onToggleQuickFilter('approaching')}>
-            תג"ב מתקרב ({approachingCount})
+            תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
           </FilterPill>
         </WarningTrigger>
         <TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
       </Tooltip>
       <FilterPill $active={activeQuickFilters.has('overdue')} onClick={() => onToggleQuickFilter('overdue')}>
-        חריגה מתג"ב ({overdueCount})
+        חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
       </FilterPill>
       <FilterDivider />
       <FilterPill $active={!hasActiveFilters} onClick={onClearAllFilters}>
