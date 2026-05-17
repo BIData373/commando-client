@@ -8,6 +8,7 @@ import FileUploadField from './FileUploadField'
 import CreateTasksTable from './CreateTasksTable'
 import type { TaskRow } from './TasksColumns'
 import { useSaveTasks } from '../../hooks/useSaveTasks'
+import { formatDate } from '../../functions/date-utils'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -54,10 +55,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 
   function handleDateSelect(date: Date | undefined) {
     if (date) {
-      const d = date.getDate().toString().padStart(2, '0')
-      const m = (date.getMonth() + 1).toString().padStart(2, '0')
-      const y = date.getFullYear()
-      setField('sourceDate', `${d}/${m}/${y}`)
+      setField('sourceDate', formatDate(date))
     }
   }
 

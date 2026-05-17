@@ -4,6 +4,7 @@ import { ChevronLeft } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import DatePicker, { CalendarMode } from '../shared/DatePicker'
 import DeadlineTag, { type DeadlineType, DEADLINE_LABELS } from '../shared/DeadlineTag'
+import { formatDateShort } from '../../functions/date-utils'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -18,12 +19,6 @@ interface DeadlineCellProps {
 
 const DEADLINE_TYPES = Object.keys(DEADLINE_LABELS) as DeadlineType[]
 
-function formatDate(date: Date) {
-  const day = date.getDate().toString().padStart(2, '0')
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const year = date.getFullYear().toString().slice(-2)
-  return `${day}/${month}/${year}`
-}
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
@@ -64,10 +59,10 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
             ) : deadlineType === 'ongoing' ? (
               <DisplayRow>
                 <DeadlineTag $type="ongoing">שוטף</DeadlineTag>
-                {dueDate && <DateText>{formatDate(dueDate)}</DateText>}
+                {dueDate && <DateText>{formatDateShort(dueDate)}</DateText>}
               </DisplayRow>
             ) : dueDate ? (
-              <DateText>{formatDate(dueDate)}</DateText>
+              <DateText>{formatDateShort(dueDate)}</DateText>
             ) : (
               <DeadlineValueText>
                 {DEADLINE_LABELS[deadlineType]}

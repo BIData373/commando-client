@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import styled from '@emotion/styled'
+import { formatDate } from '../../functions/date-utils'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import DatePicker, { CalendarMode } from '../shared/DatePicker'
@@ -22,13 +23,6 @@ function DeadlineField({ deadlineType, dueDate, onDeadlineTypeChange, onDateChan
   function handleDateSelect(date: Date | undefined) {
     onDateChange(date ?? null)
     setIsDateOpen(false)
-  }
-
-  const formatDate = (date: Date) => {
-    const day = date.getDate().toString().padStart(2, '0')
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const year = date.getFullYear()
-    return `${day}/${month}/${year}`
   }
 
   const showDatePicker = deadlineType !== 'immediate'
