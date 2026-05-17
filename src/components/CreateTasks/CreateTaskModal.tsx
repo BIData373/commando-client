@@ -13,6 +13,7 @@ import { useSaveTasks } from '../../hooks/useSaveTasks'
 import { INITIAL_FORM } from '../../data/CreateTaskForm'
 import type { FormState } from '../../data/CreateTaskForm'
 import type { DeadlineType } from '../shared/DeadlineTag'
+import { formatDate } from '../../functions/date-utils'
 import FlagIcon from '../shared/FlagIcon'
 import { useRef, useState } from 'react'
 import { CancelButton } from '../shared/CancelButton'
@@ -111,10 +112,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
   function handleSourceDateSelect(date: Date | undefined) {
     if (date) {
-      const day = date.getDate().toString().padStart(2, '0')
-      const month = (date.getMonth() + 1).toString().padStart(2, '0')
-      const year = date.getFullYear().toString().padStart(2, '0')
-      setField('sourceDate', `${day}/${month}/${year}`)
+      setField('sourceDate', formatDate(date))
     }
   }
 
