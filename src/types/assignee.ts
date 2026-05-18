@@ -16,6 +16,7 @@ export interface Assignee extends MetaFields {
     role: string
     email: string
     userIds: number[]
+    canEdit: boolean
 }
 
 export interface ICreateAssignee {
@@ -25,6 +26,7 @@ export interface ICreateAssignee {
     color?: string;
     emblem?: string | null;
     userIds?: number[];
+    canEdit?: boolean;
 }
 
 export interface IUpdateAssignee {
@@ -34,4 +36,5 @@ export interface IUpdateAssignee {
     color?: string;
     emblem?: string | null;
     userIds?: number[];
+    canEdit?: boolean;
 }

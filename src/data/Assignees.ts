@@ -8,4 +8,5 @@ export const MOCK_ASSIGNEES: Record<number, Assignee> = {
   4: mockAssignees[3],
   5: mockAssignees[4],
   6: mockAssignees[5],
+  7: mockAssignees[6],
 }

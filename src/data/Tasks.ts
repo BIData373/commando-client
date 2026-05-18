@@ -80,6 +80,8 @@ export const INITIAL_TASKS: Task[] = [
     responsible: MOCK_ASSIGNEES[3],
     relatedDirectives: [
       { user: MOCK_ASSIGNEES[4], status: 'not_started' },
+      { user: MOCK_ASSIGNEES[2], status: 'not_started' },
+      { user: MOCK_ASSIGNEES[3], status: 'not_started' },
     ],
     deadlineType: 'immediate',
     dueDate: null,
@@ -119,7 +121,8 @@ export const INITIAL_TASKS: Task[] = [
     status: 'in_progress',
     responsible: MOCK_ASSIGNEES[6],
     relatedDirectives: [
-      { user: MOCK_ASSIGNEES[1], status: 'not_started' },
+      { user: MOCK_ASSIGNEES[1], status: 'in_progress' },
+      { user: MOCK_ASSIGNEES[7], status: 'in_progress' },
       { user: MOCK_ASSIGNEES[2], status: 'in_progress' },
       { user: MOCK_ASSIGNEES[3], status: 'not_started' },
     ],
