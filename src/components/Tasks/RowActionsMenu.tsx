@@ -12,44 +12,50 @@ import { DeletePopover } from './DeletePopover'
 
 interface RowActionsMenuProps {
   trigger: ReactNode
-  onEdit: () => void
+  onEdit?: () => void
   onEnterSelect?: () => void
   onArchive: () => void
-  onDelete: () => void
+  onDelete?: () => void
 }
 
 export function RowActionsMenu({ trigger, onEdit, onEnterSelect, onArchive, onDelete }: RowActionsMenuProps) {
+  const hasMoreThanTwo = [onEdit, onEnterSelect, onDelete].filter(Boolean).length >= 2
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
       <MenuContent align="start" sideOffset={4}>
-        <MenuItem onSelect={onEdit}>
-          <Pencil size={16} />
-          עריכה
-        </MenuItem>
+        {onEdit && (
+          <MenuItem onSelect={onEdit}>
+            <Pencil size={16} />
+            עריכה
+          </MenuItem>
+        )}
         {onEnterSelect && (
           <MenuItem onSelect={onEnterSelect}>
             <CheckCircle2 size={16} />
             סמן
           </MenuItem>
         )}
-        <MenuSeparator />
+        {hasMoreThanTwo && <MenuSeparator />}
         <MenuItem onSelect={onArchive}>
           <Archive size={16} />
           העבר לארכיון
         </MenuItem>
-        <DeletePopover
-          count={1}
-          side="bottom"
-          align="start"
-          onConfirm={onDelete}
-          trigger={
-            <DestructiveMenuItem onSelect={(e) => e.preventDefault()}>
-              <Trash2 size={16} />
-              מחק
-            </DestructiveMenuItem>
-          }
-        />
+        {onDelete && (
+          <DeletePopover
+            count={1}
+            side="bottom"
+            align="start"
+            onConfirm={onDelete}
+            trigger={
+              <DestructiveMenuItem onSelect={(e) => e.preventDefault()}>
+                <Trash2 size={16} />
+                מחק
+              </DestructiveMenuItem>
+            }
+          />
+        )}
       </MenuContent>
     </DropdownMenu>
   )

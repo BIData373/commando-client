@@ -8,6 +8,7 @@ interface TasksContextValue {
   tasks: Task[]
   addTasks: (inputs: NewTaskInput[]) => void
   updateTaskStatus: (taskId: number, status: DirectiveStatus) => void
+  updateDirectiveStatus: (taskId: number, assigneeId: number, status: DirectiveStatus) => void
   removeTasks: (taskIds: number[]) => void
   bulkUpdateStatus: (taskIds: number[], status: DirectiveStatus) => void
 }
@@ -56,6 +57,20 @@ export function TasksProvider({ children }: TasksProviderProps) {
     })
   }
 
+  function updateDirectiveStatus(taskId: number, assigneeId: number, status: DirectiveStatus) {
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id !== taskId) return t
+        return {
+          ...t,
+          relatedDirectives: t.relatedDirectives.map((d) =>
+            d.user.id === assigneeId ? { ...d, status } : d,
+          ),
+        }
+      }),
+    )
+  }
+
   function removeTasks(taskIds: number[]) {
     setTasks((prev) => prev.filter((t) => !taskIds.includes(t.id)))
   }
@@ -83,7 +98,7 @@ export function TasksProvider({ children }: TasksProviderProps) {
   }
 
   return (
-    <TasksContext.Provider value={{ tasks, addTasks, updateTaskStatus, removeTasks, bulkUpdateStatus }}>
+    <TasksContext.Provider value={{ tasks, addTasks, updateTaskStatus, updateDirectiveStatus, removeTasks, bulkUpdateStatus }}>
       {children}
     </TasksContext.Provider>
   )

@@ -1,21 +1,26 @@
 import styled from "@emotion/styled";
+import { EditorContent, useEditor } from "@tiptap/react";
 import { format } from "date-fns";
 import {
   Calendar,
   ChevronUp,
   History,
-  MoreVertical,
   Paperclip,
-  X,
+  X
 } from "lucide-react";
 import { useState } from "react";
-import { useUser } from "#/hooks/useUsers";
 import type { Task } from "../../data/Tasks";
+import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { MOCK_TASK_HISTORY } from "../../mocks/data/history";
-import { AssigneeAvatar } from "../shared/AssigneeAvatar";
+import { MOCK_TASK_MESSAGES } from "../../mocks/data/messages";
+import { useTasks } from "../../providers/TasksProvider";
+import { EditorExtensions } from "../CreateTasks/NotesField";
 import { DeadlineTag } from "../shared/DeadlineTag";
 import FlagIcon from "../shared/FlagIcon";
-import { RowActionsMenu } from "../Tasks/RowActionsMenu";
+import type { DirectiveStatus } from "../shared/StatusTag";
+import { AssigneeSection } from "./AssigneeSection";
+import { DropdownOptions } from "./DropdownOptions";
+import TaskConversationPanel from "./TaskConversationPanel";
 import TaskHistoryPanel from "./TaskHistoryPanel";
 
 interface TaskDetailPanelProps {
@@ -25,15 +30,23 @@ interface TaskDetailPanelProps {
   onDelete: () => void;
 }
 
-async function TaskDetailPanel({
+function TaskDetailPanel({
   task,
   onClose,
   onArchive,
   onDelete,
 }: TaskDetailPanelProps) {
-  const [showHistory, setShowHistory] = useState(false);
+  const { data: loggedInUser } = useCurrentUser();
+  const { updateDirectiveStatus } = useTasks();
 
-  if (!task) return null;
+  const [showHistory, setShowHistory] = useState(false);
+  const [showConversation, setShowConversation] = useState(false);
+
+  const editor = useEditor({
+    ...EditorExtensions,
+  });
+
+  if (!task || !loggedInUser) return null;
 
   const {
     id,
@@ -53,16 +66,23 @@ async function TaskDetailPanel({
     notes,
   } = task;
 
-  const allAssignees = [
-    ...(responsible ? [responsible] : []),
-    ...relatedDirectives.map((d) => d.user),
-  ].filter(
-    (assignee, pos, arr) => arr.findIndex((a) => a.id === assignee.id) === pos,
-  );
-  const isMultiple = allAssignees.length >= 2;
+  const hasTagOrAttacment = tags.length > 0 || hasAttachment;
+
+  editor.commands.setContent(notes);
+
+  const taskMessages = MOCK_TASK_MESSAGES[id] ?? [];
 
   function handlePanelClick(e: React.MouseEvent) {
     e.stopPropagation();
+  }
+
+  function handleDirectiveStatusChange(assigneeId: number, newStatus: DirectiveStatus) {
+    updateDirectiveStatus(id, assigneeId, newStatus);
+  }
+
+  function handleBottomBarClick() {
+    setShowConversation(true);
+    setShowHistory(false);
   }
 
   return (
@@ -73,25 +93,21 @@ async function TaskDetailPanel({
           <X size={16} />
         </CloseBtn>
 
-        <ScrollContent>
           <HeaderRow>
             {flagged && <FlagIcon />}
             <TitleText>
               {title}
               {details ? ` - ${details}` : ""}
             </TitleText>
-            <RowActionsMenu
-              trigger={
-                <DotsButton>
-                  <MoreVertical size={16} />
-                </DotsButton>
-              }
+            <DropdownOptions
+              currentUser={loggedInUser}
               onEdit={onClose}
               onArchive={onArchive}
               onDelete={onDelete}
             />
           </HeaderRow>
 
+        <ScrollContent $noScroll={showConversation}>
           <DeadlineSection>
             <SectionLabel>תג"ב</SectionLabel>
             <MetaRow>
@@ -118,66 +134,60 @@ async function TaskDetailPanel({
             </MetaRow>
           </DeadlineSection>
 
-          <AssigneeSection>
-            <SectionLabel>
-              {isMultiple ? "אחראים לביצוע" : "אחראי לביצוע"}
-            </SectionLabel>
-            {allAssignees.length === 0 ? (
-              <SectionValue>לא הוגדר</SectionValue>
-            ) : (
-              <AssigneesScroll $scrollable={isMultiple}>
-                <AssigneeRowsList>
-                  {allAssignees.map((assignee) => (
-                    <AssigneeRowContainer key={assignee.id}>
-                      <AssigneeInfoBlock>
-                        <AssigneeAvatar assignee={assignee} />
-                        <AssigneeRoleText>{assignee.role} </AssigneeRoleText>
-                      </AssigneeInfoBlock>
-                    </AssigneeRowContainer>
-                  ))}
-                </AssigneeRowsList>
-              </AssigneesScroll>
-            )}
-          </AssigneeSection>
+          <AssigneeSection
+            currentUser={loggedInUser}
+            relatedDirectives={relatedDirectives}
+            responsible={responsible}
+            status={status}
+            onDirectiveStatusChange={handleDirectiveStatusChange}
+          />
 
-          <DividerRow>
-            <DividerLine />
-            <DividerText>פרטים נוספים</DividerText>
-            <DividerLine />
-          </DividerRow>
+          {hasTagOrAttacment && (
+            <>
+              <DividerRow>
+                <DividerLine />
+                <DividerText>פרטים נוספים</DividerText>
+                <DividerLine />
+              </DividerRow>
 
-          <InfoGrid>
-            <InfoBlock>
-              <SectionLabel>מקור</SectionLabel>
-              <SourceRow>
-                <SourceName>{discussionName}</SourceName>
-                <SourceDate>{discussionDate}</SourceDate>
-              </SourceRow>
-              <InfoAttachment>
-                {hasAttachment && <Paperclip size={16} />}
-              </InfoAttachment>
-            </InfoBlock>
-            <InfoBlock>
-              <SectionLabel>נושא</SectionLabel>
-              <TagsRow>
-                {tags.map((tag) => (
-                  <TagChip key={tag}>{tag}</TagChip>
-                ))}
-              </TagsRow>
-            </InfoBlock>
-          </InfoGrid>
+              <InfoGrid>
+                {discussionName && (
+                  <InfoBlock>
+                    <SectionLabel>מקור</SectionLabel>
+                    <SourceRow>
+                      <SourceName>{discussionName}</SourceName>
+                      <SourceDate>{discussionDate}</SourceDate>
+                    </SourceRow>
+                    <InfoAttachment>
+                      {hasAttachment && <Paperclip size={16} />}
+                    </InfoAttachment>
+                  </InfoBlock>
+                )}
+                <InfoBlock>
+                  <SectionLabel>נושא</SectionLabel>
+                  <TagsRow>
+                    {tags.map((tag) => (
+                      <TagChip key={tag}>{tag}</TagChip>
+                    ))}
+                  </TagsRow>
+                </InfoBlock>
+              </InfoGrid>
 
-          {notes && (
-            <NotesSection>
-              <SectionLabel>הערות הנחיה</SectionLabel>
-              <NotesText>{notes}</NotesText>
-            </NotesSection>
+              {notes && (
+                <NotesSection>
+                  <SectionLabel>הערות הנחיה</SectionLabel>
+                  <NotesText>
+                    <EditorContent editor={editor} />
+                  </NotesText>
+                </NotesSection>
+              )}
+            </>
           )}
         </ScrollContent>
 
-        <BottomBar>
+        <BottomBar onClick={handleBottomBarClick} $hidden={showConversation}>
           <ChatGroup>
-            <ChatBadge>1</ChatBadge>
+            <ChatBadge>{taskMessages.length}</ChatBadge>
             <ChatLabel>שיחה ועדכונים</ChatLabel>
           </ChatGroup>
           <ChevronUp size={20} />
@@ -187,6 +197,14 @@ async function TaskDetailPanel({
           <TaskHistoryPanel
             history={MOCK_TASK_HISTORY[id] ?? []}
             onClose={() => setShowHistory(false)}
+          />
+        )}
+        {showConversation && <HistoryOverlay />}
+        {showConversation && (
+          <TaskConversationPanel
+            messages={taskMessages}
+            currentUser={loggedInUser}
+            onClose={() => setShowConversation(false)}
           />
         )}
       </Panel>
@@ -215,6 +233,7 @@ const Panel = styled.div`
   background: white;
   border-radius: 8px;
   width: 1094px;
+  height: 850px;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
@@ -252,56 +271,50 @@ const CloseBtn = styled.button`
   }
 `;
 
-const ScrollContent = styled.div`
+const ScrollContent = styled.div<{ $noScroll: boolean }>`
   flex: 1;
-  overflow-y: auto;
+  overflow-y: ${({ $noScroll }) => ($noScroll ? "hidden" : "auto")};
   overflow-x: hidden;
-  padding: 36px 48px 20px;
   display: flex;
   flex-direction: column;
   gap: 32px;
+  padding: 36px 48px 20px;
   align-items: flex-end;
 `;
 
-const BottomBar = styled.div`
+const BottomBar = styled.div<{ $hidden?: boolean }>`
   flex-shrink: 0;
   background: #fafafa;
   border-top: 1px solid var(--line);
   height: 53px;
-  display: flex;
+  display: ${({ $hidden }) => ($hidden ? "none" : "flex")};
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
   border-radius: 0 0 8px 8px;
   color: var(--sea-ink-soft);
+  cursor: pointer;
+`;
+
+const SectionLabel = styled.p`
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--sea-ink);
+  text-align: end;
+  white-space: nowrap;
 `;
 
 // ─── Header ────────────────────────────────────────────────────────────────────
 
 const HeaderRow = styled.div`
   display: flex;
+  padding: 36px 48px 20px;
   align-items: flex-start;
   align-items: center;
   min-width: 0;
   width: 100%;
-`;
-
-const DotsButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  flex-shrink: 0;
-  color: var(--sea-ink-soft);
-  cursor: pointer;
-  outline: none;
-
-  &:hover {
-    background: var(--link-bg-hover);
-    color: var(--sea-ink);
-  }
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
 `;
 
 const TitleText = styled.p`
@@ -394,78 +407,6 @@ const HistoryButton = styled.button`
   }
 `;
 
-// ─── Assignee ──────────────────────────────────────────────────────────────────
-
-const AssigneeSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  align-items: flex-start;
-`;
-
-const SectionLabel = styled.p`
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 24px;
-  color: var(--sea-ink);
-  text-align: end;
-  white-space: nowrap;
-`;
-
-const SectionValue = styled.p`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  color: rgba(0, 0, 0, 0.65);
-  text-align: end;
-`;
-
-const AssigneesScroll = styled.div<{ $scrollable: boolean }>`
-  width: 100%;
-  ${({ $scrollable }) =>
-    $scrollable &&
-    `
-    max-height: 200px;
-    overflow-y: auto;
-  `}
-`;
-
-const AssigneeRowsList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
-`;
-
-const AssigneeRowContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 24px;
-  padding: 7px 12px;
-  background: #fafafa;
-  border: 0.8px solid #f5f5f5;
-  border-radius: 8px;
-  width: 100%;
-`;
-
-const AssigneeInfoBlock = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  justify-content: flex-end;
-`;
-
-const AssigneeRoleText = styled.span`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
-  white-space: nowrap;
-`;
-
 // ─── Divider ───────────────────────────────────────────────────────────────────
 const DividerRow = styled.div`
   display: flex;
@@ -511,7 +452,6 @@ const TagsRow = styled.div`
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  justify-content: flex-end;
 `;
 
 const TagChip = styled.span`
@@ -562,13 +502,13 @@ const NotesSection = styled.div`
   align-items: flex-start;
 `;
 
-const NotesText = styled.p`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--sea-ink);
-  width: 100%;
-`;
+// const NotesText = styled.p`
+//   font-size: 14px;
+//   font-weight: 400;
+//   line-height: 22px;
+//   color: var(--sea-ink);
+//   width: 100%;
+// `;
 
 const HistoryOverlay = styled.div`
   position: absolute;
@@ -606,4 +546,36 @@ const ChatBadge = styled.span`
   background: linear-gradient(135deg, rgb(104, 102, 255) 0%, rgb(118, 4, 200) 100%);
   box-shadow: 0 0 0 1px white;
   flex-shrink: 0;
+`;
+
+const NotesText = styled.div`
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--sea-ink-soft);
+
+  p {
+    margin: 0;
+  }
+
+  ol {
+    margin: 0;
+    padding-inline-start: 20px;
+    list-style-type: decimal;
+  }
+
+  li {
+    margin: 0;
+  }
+
+  li p {
+    display: inline;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+
+  u {
+    text-decoration: underline;
+  }
 `;
