@@ -154,8 +154,8 @@ const AssigneesScroll = styled.div<{ $scrollable: boolean }>`
   ${({ $scrollable }) =>
         $scrollable &&
         `
-    max-height: 200px;
-    overflow-y: auto;
+    // max-height: 200px;
+    // overflow-y: auto;
   `}
 `;
 
