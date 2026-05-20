@@ -1,6 +1,6 @@
+import { useRef } from "react";
 import { useUsers } from "#/hooks/useUsers";
 import type { IUser } from "#/types";
-import { concatName } from "#/utils/userUtils";
 import { SearchDropdown } from "./SearchDropdown";
 import { UserItem } from "./UserDropdownItem";
 
@@ -19,8 +19,7 @@ export function DropdownUsers({
     onClear,
     placeholder,
 }: DropdownUsersProps) {
-
-    const { data: users = [] } = useUsers()
+    const { data: users = [], isLoading } = useUsers()
 
     function filterUsers(query: string) {
         return query.trim()
@@ -37,25 +36,15 @@ export function DropdownUsers({
         }
     }
 
-    function handleUserSelect(user: IUser) {
-        const userConcatName = concatName(user)
-        onSelect(user)
-        onChange(userConcatName)
-    }
-
-    function handleUserClear() {
-        onClear()
-        onChange('')
-    }
-
     return (
         <SearchDropdown<IUser>
             items={filteredUsers}
             value={value}
             onChange={handleUserSearch}
-            onSelect={handleUserSelect}
-            onClear={handleUserClear}
+            onSelect={onSelect}
+            onClear={onClear}
             placeholder={placeholder}
+            isLoading={isLoading}
             renderItem={(item) => <UserItem user={item} />}
         />
     )

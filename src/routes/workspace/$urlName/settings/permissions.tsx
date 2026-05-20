@@ -1,16 +1,17 @@
 import styled from '@emotion/styled'
-import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { UserPlus } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { AddUserSection } from '#/components/settings/AddUserSection'
+import { DropdownPermission } from '#/components/settings/DropdownPermission'
 import { DropdownUsers } from '#/components/settings/DropdownUsers'
 import { SectionTitle } from '#/components/settings/SectionTitle'
 import { UserPermissionList } from '#/components/settings/UserPermissionList'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
-import { useAddUserToWorkspace, useDeleteUser, userKeys, useUpdateUser, useWorkspaceUsers } from '#/hooks/useUsers'
+import { useAddUserToWorkspace, useDeleteUser, useUpdateUser, useWorkspaceUsers } from '#/hooks/useUsers'
 import type { IUser } from '#/types'
 import { UserRole } from '#/types'
 import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
+import { concatName } from '#/utils/userUtils'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/permissions')({ component: SettingsPermissions })
 
@@ -24,10 +25,10 @@ enum PermissionsTab {
 
 function SettingsPermissions() {
   const { urlName } = Route.useParams()
-  const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState(PermissionsTab.ALL)
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
+  const [role, setRole] = useState<UserRole>(UserRole.VIEWER);
 
   const { data: permissionUsers = [] } = useWorkspaceUsers(urlName)
   const { mutate: userUpdate } = useUpdateUser()
@@ -54,7 +55,6 @@ function SettingsPermissions() {
 
   function handleRoleChangePermissionUser(userId: number, role: UserRole) {
     userUpdate({ userId, data: { role } })
-    queryClient.invalidateQueries({ queryKey: userKeys.workspace(urlName) })
   }
 
   function handleTabChange(value: string) {
@@ -68,6 +68,9 @@ function SettingsPermissions() {
 
   function handleSearchSelect(user: IUser | null) {
     setSelectedUser(user)
+    if (user) {
+      setSearch(concatName(user))
+    }
   }
 
   function handleSearchClear() {
@@ -88,9 +91,21 @@ function SettingsPermissions() {
             onClear={handleSearchClear}
             placeholder='חפש שם/ תפקיד/ מספר אישי'
           />
-          {search.length > 0 && (
-            <AddUserSection onClick={handleUserAdd} disabled={!selectedUser} />
-          )}
+          <AddUserRow>
+            {search.length > 0 && (
+              <DropdownPermission
+                ghost
+                value={role}
+                onChange={setRole}
+                disabled={!selectedUser}
+              />
+            )}
+            {selectedUser && (
+              <AddAvatarButton onClick={() => handleUserAdd(role)} >
+                <UserPlus size={16} />
+              </AddAvatarButton>
+            )}
+          </AddUserRow>
         </SearchSection>
         <StyledTabs value={activeTab} onValueChange={handleTabChange}>
           <StyledTabsList variant="line">
@@ -129,8 +144,32 @@ const PermissionsInner = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-width: 600px;
+  max-width: 550px;
+  padding: 0 12px;
 `
+
+const AddUserRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+`
+
+
+const AddAvatarButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--color-primary-foreground);
+  cursor: pointer;
+  background: var(--gradient);
+`
+
 
 const StyledTabs = styled(Tabs)`
   flex: 1;
@@ -153,8 +192,9 @@ const UserListInner = styled.div`
 `
 
 const Subtitle = styled.p`
-  font-size: 0.75rem;
-  color: var(--sea-ink-soft);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-subtitle-color);
   margin: 0;
 `
 
@@ -163,7 +203,7 @@ const StyledTabsList = styled(TabsList)`
   direction: rtl;
   border-bottom: 1px solid var(--line);
   gap: 24px;
-`
+  `
 
 const StyledTabsContent = styled(TabsContent)`
   flex: 1;
@@ -171,20 +211,20 @@ const StyledTabsContent = styled(TabsContent)`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-`
+  `
 
 const StyledTabsTrigger = styled(TabsTrigger)`
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   font-size: 14px;
   font-weight: 400;
+  cursor: pointer;  
 
   &[data-state="active"] {
-    color: #1677ff;
-    font-weight: 500;
+    color: var(--tab-active-color);
   }
   
   &[data-state="active"]::after {
-    background-color: #1677ff;
+    background-color: var(--tab-active-color);
   }
 `
 

@@ -17,5 +17,5 @@ const StyledTitle = styled.h2`
   font-size: 24px;
   font-weight: 500;
   color: var(--sea-ink);
-  margin: 0;
+  margin: 0 12px;
 `

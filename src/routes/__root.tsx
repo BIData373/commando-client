@@ -45,8 +45,8 @@ const AppShell = styled.div`
 
 const PageContainer = styled.div`
   flex: 1;
-  min-height: 0;
   overflow-y: auto;
+  min-height: 0;
   background: var(--primary-foreground);
   padding-inline: 24px;
 `
