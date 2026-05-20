@@ -1,34 +1,43 @@
 import styled from '@emotion/styled'
-import { type ColumnDef, type RowSelectionState } from '@tanstack/react-table'
+import { type ColumnDef, type ColumnFiltersState, type FilterFn, type RowSelectionState, type SortingState } from '@tanstack/react-table'
 import { differenceInDays, format, startOfToday } from 'date-fns'
-import { AlertTriangle, MoreVertical, Paperclip } from 'lucide-react'
+import { AlertTriangle, MoreVertical } from 'lucide-react'
 import { useState } from 'react'
-import type { DirectiveStatus } from '#/utils/statusUtils'
+import { BsPaperclip as Paperclip } from 'react-icons/bs'
 import type { Task } from '../../data/Tasks'
 import FlagIcon from '../shared/FlagIcon'
 import HighlightMatch from '../shared/HighlightMatch'
+import { STATUS_LABELS } from '../shared/StatusTag'
 import { Checkbox } from '../ui/checkbox'
 import { DataTable } from '../ui/data-table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { BulkActionsBar } from './BulkActionsBar'
+import { ColumnHeaderWithActions } from './ColumnHeaderWithActions'
+import type { TaskColumn } from './ColumnVisibilityDropdown'
 import { ResponsibleCell } from './ResponsibleCell'
 import { RowActionsMenu } from './RowActionsMenu'
 import { StatusCell } from './StatusCell'
 import { TopicCell } from './TopicCell'
+import { DirectiveStatus } from '#/utils/statusUtils'
 
-export type DeadlineType = 'date' | 'immediate' | 'ongoing'
+const STATUS_SORT_ORDER: Record<DirectiveStatus, number> = {
+  [DirectiveStatus.NOT_STARTED]: 0,
+  [DirectiveStatus.IN_PROGRESS]: 1,
+  [DirectiveStatus.COMPLETED]: 2,
+}
 
-export const DEADLINE_LABELS: Record<DeadlineType, string> = {
-  date: 'תאריך',
-  immediate: 'מיידי',
-  ongoing: 'שוטף',
+const multiSelectFilter: FilterFn<Task> = (row, columnId, filterValue: string[]) => {
+  if (!filterValue?.length) return true
+  const value = row.getValue(columnId)
+  if (Array.isArray(value)) return value.some((v: string) => filterValue.includes(v))
+  return filterValue.includes(value as string)
 }
 
 interface TaskTableProps {
   tasks: Task[]
   searchQuery: string
-  columnOrder: string[]
-  hiddenColumns: Set<string>
+  columnOrder: TaskColumn[]
+  hiddenColumns: Set<TaskColumn>
   onUpdateStatus: (taskId: number, status: DirectiveStatus) => void
   onEdit: (taskId: number) => void
   onArchive: (taskIds: number[]) => void
@@ -49,6 +58,8 @@ function TaskTable({
 }: TaskTableProps) {
   const [selectMode, setSelectMode] = useState(false)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const selectedTaskIds = Object.keys(rowSelection)
     .filter((key) => rowSelection[key])
@@ -77,8 +88,9 @@ function TaskTable({
   const firstColumn: ColumnDef<Task> = selectMode
     ? {
       id: 'select',
-      size: 61,
-
+      size: 70,
+      enableSorting: false,
+      enableColumnFilter: false,
       header: () => (
         <CheckboxCenter>
           <Checkbox
@@ -98,9 +110,9 @@ function TaskTable({
     }
     : {
       accessorKey: 'id',
-      header: 'מס"ד',
-      size: 61,
-
+      header: ({ column }) => <ColumnHeaderWithActions label='מס"ד' column={column} />,
+      size: 70,
+      enableColumnFilter: false,
       cell: ({ getValue }) => <IdCell>{getValue<number>()}</IdCell>,
     }
 
@@ -109,6 +121,9 @@ function TaskTable({
       accessorKey: 'title',
       header: 'ההנחיה',
       size: 832,
+      meta: { grow: true },
+      enableSorting: false,
+      enableColumnFilter: false,
       cell: ({ row: { original: { title, details, flagged } } }) => (
         <TitleCell>
           {flagged && <FlagIcon />}
@@ -126,8 +141,11 @@ function TaskTable({
     },
     status: {
       accessorKey: 'status',
-      header: 'סטטוס',
+      header: ({ column }) => <ColumnHeaderWithActions label="סטטוס" column={column} labelMap={STATUS_LABELS} />,
       size: 100,
+      filterFn: multiSelectFilter,
+      sortingFn: (rowA, rowB) =>
+        (STATUS_SORT_ORDER[rowA.original.status] ?? 0) - (STATUS_SORT_ORDER[rowB.original.status] ?? 0),
       cell: ({ row: { original: { status, id } } }) => (
         <StatusCell
           status={status}
@@ -138,8 +156,11 @@ function TaskTable({
     },
     responsible: {
       id: 'responsible',
-      header: 'אחראי',
+      accessorFn: (row) => row.responsible?.name ?? 'ללא אחראי',
+      header: ({ column }) => <ColumnHeaderWithActions label="אחראי" column={column} />,
       size: 115,
+      filterFn: multiSelectFilter,
+      sortingFn: 'text',
       cell: ({ row: { original: { responsible, relatedDirectives } } }) => (
         <ResponsibleCell
           responsible={responsible}
@@ -149,8 +170,14 @@ function TaskTable({
     },
     deadlineType: {
       accessorKey: 'deadlineType',
-      header: 'תג"ב',
+      header: ({ column }) => <ColumnHeaderWithActions label='תג"ב' column={column} labelMap={DEADLINE_LABELS} />,
       size: 160,
+      filterFn: multiSelectFilter,
+      sortingFn: (rowA, rowB) => {
+        const a = rowA.original.dueDate?.getTime() ?? Infinity
+        const b = rowB.original.dueDate?.getTime() ?? Infinity
+        return a > b ? 1 : a < b ? -1 : 0
+      },
       cell: ({ row: { original: { deadlineType, dueDate } } }) => {
         const today = startOfToday()
         const daysUntil = dueDate ? differenceInDays(dueDate, today) : null
@@ -182,25 +209,34 @@ function TaskTable({
     },
     discussionName: {
       accessorKey: 'discussionName',
-      header: 'מקור',
+      header: ({ column }) => <ColumnHeaderWithActions label="מקור" column={column} />,
       size: 280,
-      cell: ({ row: { original: { discussionName, discussionDate, hasAttachment } } }) => (
-        <SourceCell>
-          {hasAttachment && <Paperclip size={16} />}
-          <SourceText>{discussionName} | {discussionDate}</SourceText>
-        </SourceCell>
-      ),
+      filterFn: multiSelectFilter,
+      sortingFn: 'text',
+      cell: ({ row: { original: { discussionName, discussionDate, hasAttachment } } }) => {
+        const parts = [discussionName, discussionDate].filter(Boolean)
+        return (
+          <SourceCell>
+            {hasAttachment && <SourceIcon size={18} />}
+            {parts.length > 0 && <SourceText>{parts.join(' | ')}</SourceText>}
+          </SourceCell>
+        )
+      },
     },
     tags: {
       accessorKey: 'tags',
-      header: 'נושא',
+      header: ({ column }) => <ColumnHeaderWithActions label="נושא" column={column} />,
       size: 160,
+      enableSorting: false,
+      filterFn: multiSelectFilter,
       cell: ({ getValue }) => <TopicCell tags={getValue<string[]>()} />,
     },
     notes: {
       accessorKey: 'notes',
       header: 'הערות',
       size: 220,
+      enableSorting: false,
+      enableColumnFilter: false,
       cell: ({ getValue }) => {
         const notes = getValue<string>()
         return (
@@ -210,14 +246,18 @@ function TaskTable({
     },
     createdAt: {
       accessorKey: 'createdAt',
-      header: 'תאריך יצירה',
+      header: ({ column }) => <ColumnHeaderWithActions label="תאריך יצירה" column={column} />,
       size: 132,
+      enableColumnFilter: false,
+      sortingFn: 'datetime',
       cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
     },
     updatedAt: {
       accessorKey: 'updatedAt',
-      header: 'עודכן ב',
+      header: ({ column }) => <ColumnHeaderWithActions label="עודכן ב" column={column} />,
       size: 100,
+      enableColumnFilter: false,
+      sortingFn: 'datetime',
       cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
     },
   }
@@ -225,6 +265,8 @@ function TaskTable({
   const actionsColumn: ColumnDef<Task> = {
     id: 'actions',
     size: 43,
+    enableSorting: false,
+    enableColumnFilter: false,
     cell: ({ row: { original: { id } } }) => (
       <RowActionsMenu
         trigger={
@@ -258,6 +300,10 @@ function TaskTable({
           data={tasks}
           rowSelection={selectMode ? rowSelection : undefined}
           onRowSelectionChange={selectMode ? setRowSelection : undefined}
+          columnFilters={columnFilters}
+          onColumnFiltersChange={setColumnFilters}
+          sorting={sorting}
+          onSortingChange={setSorting}
           getRowId={(row) => String(row.id)}
         />
       </TableWrapper>
@@ -287,6 +333,7 @@ export { TaskTable }
 const TableWrapper = styled.div`
   overflow-x: auto;
   border-radius: 8px;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
   background: white;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
 
@@ -296,14 +343,13 @@ const TableWrapper = styled.div`
   }
 
   tr {
-    border: none;
-
     &:hover {
       background: var(--link-bg-hover);
     }
-  }
-  th, td {
-    border: 0.5px solid rgba(0, 0, 0, 0.15);
+
+    &:last-of-type td{
+      border-bottom: none;
+    }
   }
 
   th {
@@ -314,6 +360,11 @@ const TableWrapper = styled.div`
     height: 48px;
     white-space: nowrap;
     background: white;
+    border-right: 0.5px solid rgba(0, 0, 0, 0.15);
+
+    &:first-of-type {
+      border-right: none;
+    }
   }
 
   td {
@@ -322,22 +373,15 @@ const TableWrapper = styled.div`
     max-height: 43px;
     vertical-align: middle;
     overflow: hidden;
-  }
+    border: 0.5px solid rgba(0, 0, 0, 0.15);
 
-  thead tr:first-child th:first-child {
-    border-radius: 0 8px 0 0;
-  }
+    &:first-of-type {
+      border-right: none;
+    }
 
-  thead tr:first-child th:last-child {
-    border-radius: 8px 0 0 0;
-  }
-
-  tbody tr:last-child td:first-child {
-    border-radius: 0 0 8px 0;
-  }
-
-  tbody tr:last-child td:last-child {
-    border-radius: 0 0 0 8px;
+    &:last-of-type {
+      border-left: none;
+    }
   }
 `
 
@@ -477,6 +521,10 @@ const SourceCell = styled.div`
   align-items: center;
   gap: 6px;
   color: var(--sea-ink-soft);
+`
+
+const SourceIcon = styled(Paperclip)`
+  color: rgba(0, 0, 0, 0.45);
 `
 
 const SourceText = styled.span`

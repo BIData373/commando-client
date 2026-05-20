@@ -1,14 +1,27 @@
 import {
   flexRender,
   getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
+  getSortedRowModel,
   useReactTable,
   type ColumnDef,
-  type Row,
-  type RowSelectionState,
+  type ColumnFiltersState,
   type OnChangeFn,
+  type Row,
+  type RowData,
+  type RowSelectionState,
+  type SortingState,
 } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
+
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    grow?: boolean
+  }
+}
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
@@ -16,6 +29,10 @@ interface DataTableProps<TData> {
   onRowClick?: (row: Row<TData>) => void
   rowSelection?: RowSelectionState
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
+  columnFilters?: ColumnFiltersState
+  onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>
+  sorting?: SortingState
+  onSortingChange?: OnChangeFn<SortingState>
   getRowId?: (row: TData) => string
   highlightedRowIds?: Set<string>
 }
@@ -26,6 +43,10 @@ export function DataTable<TData>({
   onRowClick,
   rowSelection,
   onRowSelectionChange,
+  columnFilters,
+  onColumnFiltersChange,
+  sorting,
+  onSortingChange,
   getRowId,
   highlightedRowIds,
 }: DataTableProps<TData>) {
@@ -33,28 +54,45 @@ export function DataTable<TData>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    ...(rowSelection !== undefined && { state: { rowSelection }, onRowSelectionChange }),
-    ...(getRowId && { getRowId }),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    state: {
+      ...(rowSelection !== undefined && { rowSelection }),
+      ...(columnFilters !== undefined && { columnFilters }),
+      ...(sorting !== undefined && { sorting }),
+    },
+    onRowSelectionChange,
+    onColumnFiltersChange,
+    onSortingChange,
+    getRowId,
   })
 
   const allColumns = table.getAllColumns()
-  const totalSize = allColumns.reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
+  const fixedTotal = allColumns.reduce((sum, col) => {
+    const grow = col.columnDef.meta?.grow
+    return grow ? sum : sum + (col.columnDef.size ?? 0)
+  }, 0)
 
   const colgroup = (
     <colgroup>
-      {allColumns.map((column) => (
-        <col
-          key={column.id}
-          style={
-            column.columnDef.size !== undefined && totalSize > 0
-              ? {
-                  width: `${(column.columnDef.size / totalSize) * 100}%`,
-                  minWidth: `${column.columnDef.size}px`,
-                }
-              : undefined
-          }
-        />
-      ))}
+      {allColumns.map((column) => {
+        const grow = column.columnDef.meta?.grow
+        const size = column.columnDef.size
+
+      return grow && size !== undefined ? (
+            <col
+              key={column.id}
+              style={{ width: `calc(100% - ${fixedTotal}px)`, minWidth: `${size}px` }}
+            />
+          ) : (
+          <col
+            key={column.id}
+            style={size !== undefined ? { width: `${size}px` } : undefined}
+          />
+        )
+      })}
     </colgroup>
   )
 

@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
-import { AlertCircle, Trash2 } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 import { useState } from 'react'
 import { useDeleteAssignee } from '#/hooks/useAssignees'
+import { TrashButton } from '../shared/TrashButton'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 
 interface DeleteAssigneePopconfirmProps {
@@ -34,9 +35,9 @@ export function DeleteAssigneePopconfirm({ assigneeId }: DeleteAssigneePopconfir
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild onClick={handleTriggerClick}>
-                <TrashButton type="button">
-                    <StyledTrash2 size={16} />
-                </TrashButton>
+                <TrashButton
+                    onClick={handleTriggerClick}
+                />
             </PopoverTrigger>
             <StyledPopoverContent
                 side="bottom"
@@ -67,20 +68,6 @@ export function DeleteAssigneePopconfirm({ assigneeId }: DeleteAssigneePopconfir
         </Popover>
     )
 }
-
-const TrashButton = styled.button`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-`
-
-const StyledTrash2 = styled(Trash2)`
-    color: var(--icon-backround);
-`
 
 const StyledPopoverContent = styled(PopoverContent)`
     background: var(--background);

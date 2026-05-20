@@ -1,20 +1,20 @@
 import styled from '@emotion/styled'
 import { Outlet, useNavigate } from '@tanstack/react-router'
 import { ChevronDown, Plus } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import type { QuickFilter } from '#/utils/filterUtils'
-import type { DirectiveStatus } from '#/utils/statusUtils'
-import { exportTasksToExcel } from '../../functions/exportExcel'
-import { applyAllFilters } from '../../functions/filterUtils'
-import { useTasks } from '../../providers/TasksProvider'
-import { useTitleBar } from '../../providers/TitleBarProvider'
 import { TooltipProvider } from '../ui/tooltip'
-import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
 import { NoResultsFound } from './NoResultsFound'
-import { TaskCardGrid } from './TaskCardGrid'
-import { TaskFilters } from './TaskFilters'
 import { TaskSearchBar } from './TaskSearchBar'
+import { TaskFilters } from './TaskFilters'
 import { TaskTable } from './TaskTable'
+import { DEFAULT_COLUMN_ORDER, type TaskColumn } from './ColumnVisibilityDropdown'
+import { TaskCardGrid } from './TaskCardGrid'
+import { exportTasksToExcel } from '../../functions/export-excel'
+import { applyAllFilters } from '../../functions/filter-utils'
+import { useTitleBar } from '../../providers/TitleBarProvider'
+import { useMemo, useState } from 'react'
+import { useTasks } from '../../providers/TasksProvider'
+import { PrimaryButton } from '../shared/PrimaryButton'
+import type { QuickFilter } from '#/utils/filterUtils'
 
 export type View = 'TABLE' | 'CARDS'
 
@@ -31,9 +31,8 @@ function TasksLayout({ view, urlName, filter }: TasksLayoutProps) {
   const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set(filter ? [filter] : []))
   const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(new Set())
   const [columnOrder, setColumnOrder] = useState(DEFAULT_COLUMN_ORDER)
-  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set())
-
-  function handleToggleColumn(columnId: string) {
+  const [hiddenColumns, setHiddenColumns] = useState<Set<TaskColumn>>(new Set(['notes', 'updatedAt']))
+  function handleToggleColumn(columnId: TaskColumn) {
     setHiddenColumns((prev) => {
       const next = new Set(prev)
       if (next.has(columnId)) {
@@ -100,11 +99,12 @@ function TasksLayout({ view, urlName, filter }: TasksLayoutProps) {
   useTitleBar(
     () => (
       <ButtonGroup>
-        <CreateButton onClick={handleCreateDirective}>
-          <Plus size={18} color="white" />
-          <CreateButtonText>צור הנחייה</CreateButtonText>
-          <ChevronDown size={18} color="white" />
-        </CreateButton>
+        <PrimaryButton
+          title='צור הנחייה'
+          onClick={handleCreateDirective}
+          header={<Plus size={18} color="white" />}
+          tail={<ChevronDown size={18} color="white" />}
+        />
         <SectionDivider />
         <SegmentedControl>
           <SegmentedItem
@@ -139,6 +139,7 @@ function TasksLayout({ view, urlName, filter }: TasksLayoutProps) {
             onToggleColumn={handleToggleColumn}
           />
           <TaskFilters
+            tasks={tasks}
             activeQuickFilters={activeQuickFilters}
             activeTopicFilters={activeTopicFilters}
             allTopics={allTopics}
@@ -193,48 +194,6 @@ const ButtonGroup = styled.div`
   gap: 12px;
 `
 
-const CreateButton = styled.button`
-  direction: rtl;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 40px;
-  padding-inline: 15px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(165deg, #615FFF 0%, #9810FA 100%);
-  color: white;
-  font-family: 'Rubik', sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  cursor: pointer;
-  white-space: nowrap;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: inset 0px 2px 4px 0px rgba(0, 0, 0, 0.05);
-    pointer-events: none;
-  }
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:active {
-    opacity: 0.85;
-  }
-`
-
-const CreateButtonText = styled.span`
-  direction: rtl;
-`
-
 const SectionDivider = styled.div`
   width: 1px;
   height: 39px;
@@ -261,7 +220,6 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   padding-inline: 12px;
   border: none;
   border-radius: 6px;
-  font-family: 'Rubik', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
