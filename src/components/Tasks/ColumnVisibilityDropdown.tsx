@@ -1,3 +1,4 @@
+import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
   closestCenter,
   DndContext,
@@ -87,6 +88,7 @@ function ColumnVisibilityDropdown({
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
+          modifiers={[restrictToParentElement, restrictToVerticalAxis]}
         >
           <SortableContext
             items={columnOrder}
