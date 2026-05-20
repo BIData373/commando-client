@@ -8,7 +8,7 @@ import {
   Paperclip,
   X
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { Task } from "../../data/Tasks";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { MOCK_TASK_HISTORY } from "../../mocks/data/history";
@@ -42,6 +42,9 @@ function TaskDetailPanel({
   const [showHistory, setShowHistory] = useState(false);
   const [showConversation, setShowConversation] = useState(false);
 
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [scrollShadow, setScrollShadow] = useState({ top: false, bottom: false })
+
   const editor = useEditor({
     ...EditorExtensions,
   });
@@ -57,14 +60,24 @@ function TaskDetailPanel({
     dueDate,
     createdAt,
     status,
-    responsible,
     relatedDirectives,
     tags,
     discussionName,
     discussionDate,
     hasAttachment,
+    attachmentUrl,
     notes,
   } = task;
+
+  const attacmentFile = attachmentUrl?.split('/').pop()?.split('.')[0]
+
+  function handleScroll() {
+    const el = scrollRef.current
+    if (!el) return
+    const atTop = el.scrollTop <= 0
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
+    setScrollShadow({ top: !atTop, bottom: !atBottom })
+  }
 
   const hasTagOrAttacment = tags.length > 0 || hasAttachment;
 
@@ -93,21 +106,23 @@ function TaskDetailPanel({
           <X size={16} />
         </CloseBtn>
 
-          <HeaderRow>
+        <HeaderRow $shadow={scrollShadow.top}>
+          <TextWrapper>
             {flagged && <FlagIcon />}
             <TitleText>
               {title}
               {details ? ` - ${details}` : ""}
             </TitleText>
-            <DropdownOptions
-              currentUser={loggedInUser}
-              onEdit={onClose}
-              onArchive={onArchive}
-              onDelete={onDelete}
-            />
-          </HeaderRow>
+          </TextWrapper>
+          <DropdownOptions
+            currentUser={loggedInUser}
+            onEdit={onClose}
+            onArchive={onArchive}
+            onDelete={onDelete}
+          />
+        </HeaderRow>
 
-        <ScrollContent $noScroll={showConversation}>
+        <ScrollContent $noScroll={showConversation} ref={scrollRef} onScroll={handleScroll}>
           <DeadlineSection>
             <SectionLabel>תג"ב</SectionLabel>
             <MetaRow>
@@ -137,7 +152,6 @@ function TaskDetailPanel({
           <AssigneeSection
             currentUser={loggedInUser}
             relatedDirectives={relatedDirectives}
-            responsible={responsible}
             status={status}
             onDirectiveStatusChange={handleDirectiveStatusChange}
           />
@@ -159,7 +173,12 @@ function TaskDetailPanel({
                       <SourceDate>{discussionDate}</SourceDate>
                     </SourceRow>
                     <InfoAttachment>
-                      {hasAttachment && <Paperclip size={16} />}
+                      {hasAttachment && (
+                        <>
+                          <Paperclip size={16} />
+                          {attacmentFile}
+                        </>
+                      )}
                     </InfoAttachment>
                   </InfoBlock>
                 )}
@@ -185,7 +204,7 @@ function TaskDetailPanel({
           )}
         </ScrollContent>
 
-        <BottomBar onClick={handleBottomBarClick} $hidden={showConversation}>
+        <BottomBar onClick={handleBottomBarClick} $hidden={showConversation} $shadow={scrollShadow.bottom}>
           <ChatGroup>
             <ChatBadge>{taskMessages.length}</ChatBadge>
             <ChatLabel>שיחה ועדכונים</ChatLabel>
@@ -248,7 +267,7 @@ const TaskIdLabel = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
 `;
 
 const CloseBtn = styled.button`
@@ -264,6 +283,7 @@ const CloseBtn = styled.button`
   color: var(--sea-ink-soft);
   cursor: pointer;
   transition: background 0.15s;
+  z-index: 2;
 
   &:hover {
     background: var(--link-bg-hover);
@@ -273,6 +293,7 @@ const CloseBtn = styled.button`
 
 const ScrollContent = styled.div<{ $noScroll: boolean }>`
   flex: 1;
+  min-height: 0;
   overflow-y: ${({ $noScroll }) => ($noScroll ? "hidden" : "auto")};
   overflow-x: hidden;
   display: flex;
@@ -282,11 +303,11 @@ const ScrollContent = styled.div<{ $noScroll: boolean }>`
   align-items: flex-end;
 `;
 
-const BottomBar = styled.div<{ $hidden?: boolean }>`
+const BottomBar = styled.div<{ $hidden?: boolean; $shadow: boolean }>`
   flex-shrink: 0;
   background: #fafafa;
-  border-top: 1px solid var(--line);
   height: 53px;
+  border-top: 10px solid rgba(0, 0, 0, 0.0);
   display: ${({ $hidden }) => ($hidden ? "none" : "flex")};
   align-items: center;
   justify-content: space-between;
@@ -294,6 +315,11 @@ const BottomBar = styled.div<{ $hidden?: boolean }>`
   border-radius: 0 0 8px 8px;
   color: var(--sea-ink-soft);
   cursor: pointer;
+  position: relative;
+  z-index: 1;
+  clip-path: inset(-20px 0 0 0);
+  transition: box-shadow 200ms ease;
+  box-shadow: ${({ $shadow }) => ($shadow ? "0px -10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
 `;
 
 const SectionLabel = styled.p`
@@ -307,22 +333,33 @@ const SectionLabel = styled.p`
 
 // ─── Header ────────────────────────────────────────────────────────────────────
 
-const HeaderRow = styled.div`
+const HeaderRow = styled.div<{ $shadow: boolean }>`
   display: flex;
   padding: 36px 48px 20px;
-  align-items: flex-start;
   align-items: center;
+  justify-content: space-between;
   min-width: 0;
   width: 100%;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  clip-path: inset(0 0 -20px 0);
+  transition: box-shadow 200ms ease;
+  box-shadow: ${({ $shadow }) => ($shadow ? "0px 10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
 `;
+
+const TextWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`
 
 const TitleText = styled.p`
   margin: 0 auto;
   font-size: 24px;
   font-weight: 500;
   line-height: 32px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   text-align: end;
 `;
 
@@ -347,14 +384,14 @@ const DueDateGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
 `;
 
 const DueDateText = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
 `;
 
 const DateContainer = styled.div`
@@ -367,7 +404,7 @@ const MetaLabel = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
 `;
 
 const CreatedGroup = styled.span`
@@ -392,7 +429,7 @@ const HistoryButton = styled.button`
   height: 32px;
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.04);
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
   flex-shrink: 0;
   cursor: pointer;
 
@@ -475,7 +512,11 @@ const SourceRow = styled.div`
 `;
 
 const InfoAttachment = styled.div`
-  color: #1677FF;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--active-color);
+  cursor: pointer;
 `;
 
 const SourceName = styled.span`
@@ -501,14 +542,6 @@ const NotesSection = styled.div`
   width: 100%;
   align-items: flex-start;
 `;
-
-// const NotesText = styled.p`
-//   font-size: 14px;
-//   font-weight: 400;
-//   line-height: 22px;
-//   color: var(--sea-ink);
-//   width: 100%;
-// `;
 
 const HistoryOverlay = styled.div`
   position: absolute;
@@ -542,8 +575,8 @@ const ChatBadge = styled.span`
   border-radius: 10px;
   font-size: 12px;
   font-weight: 400;
-  color: white;
-  background: linear-gradient(135deg, rgb(104, 102, 255) 0%, rgb(118, 4, 200) 100%);
+  color: var(--background);
+  background: var(--chat-gradient);
   box-shadow: 0 0 0 1px white;
   flex-shrink: 0;
 `;

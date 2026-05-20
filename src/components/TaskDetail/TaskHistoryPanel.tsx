@@ -160,8 +160,14 @@ const CloseBtn = styled.button`
   cursor: pointer;
   flex-shrink: 0;
 
+  
   &:hover {
-    background: var(--link-bg-hover);
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--sea-ink);
+  }
+  
+  &:active {
+    background: rgba(0, 0, 0, 0.2);
     color: var(--sea-ink);
   }
 `
@@ -241,7 +247,7 @@ const TimeText = styled.span`
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
   white-space: nowrap;
 `
 
@@ -255,7 +261,7 @@ const DateText = styled.span`
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
   white-space: nowrap;
 `
 
@@ -269,7 +275,7 @@ const UserName = styled.span`
   font-size: 12px;
   font-weight: 500;
   line-height: 20px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   white-space: nowrap;
 `
 
@@ -281,7 +287,7 @@ const UserId = styled.span`
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   white-space: nowrap;
 `
 
@@ -308,7 +314,7 @@ const ChangeLabel = styled.span`
   font-size: 12px;
   font-weight: 500;
   line-height: 20px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   white-space: nowrap;
   flex-shrink: 0;
 `
@@ -317,7 +323,7 @@ const ChangeValue = styled.p`
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   text-align: end;
   flex: 1;
   min-width: 0;

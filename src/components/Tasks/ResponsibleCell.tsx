@@ -25,6 +25,7 @@ export function ResponsibleCell({ responsible, relatedDirectives }: ResponsibleC
           <PopoverTrigger asChild>
             <AssigneeAvatar
               assignee={responsible}
+              cursor
             />
           </PopoverTrigger>
           <DetailedContent side="top" sideOffset={10} align="center">

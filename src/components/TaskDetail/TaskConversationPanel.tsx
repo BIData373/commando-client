@@ -2,7 +2,7 @@ import { keyframes } from '@emotion/react'
 import styled from '@emotion/styled'
 import { format, isSameDay } from 'date-fns'
 import { ChevronUp, Send } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { IUserSummary } from '../../types'
 import type { TaskMessage } from '../../types/message'
 
@@ -52,6 +52,12 @@ function TaskConversationPanel({
 }: TaskConversationPanelProps) {
   const [localMessages, setLocalMessages] = useState<TaskMessage[]>(messages)
   const [inputValue, setInputValue] = useState('')
+  const messagesAreaRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = messagesAreaRef.current
+    if (el && localMessages.length >= 0) el.scrollTop = el.scrollHeight
+  }, [localMessages])
 
   const dateGroups = groupMessagesByDate(localMessages)
 
@@ -91,7 +97,7 @@ function TaskConversationPanel({
 
       <ConverstaionContainer>
 
-        <MessagesArea>
+        <MessagesArea ref={messagesAreaRef}>
           {dateGroups.map((group) => (
             <DateSection key={group.dateLabel}>
               <DateLabel>{group.dateLabel}</DateLabel>
@@ -153,7 +159,7 @@ const ConversationWrapper = styled.div`
   bottom: 0;
   height: 741px;
   z-index: 2;
-  background: white;
+  background: var(--background);
   border-radius: 8px;
   border: 1px solid #eef2f6;
   box-shadow: 0 -10px 25.9px rgba(0, 0, 0, 0.25);
@@ -219,8 +225,8 @@ const ChatBadge = styled.span`
   border-radius: 10px;
   font-size: 12px;
   font-weight: 400;
-  color: white;
-  background: linear-gradient(135deg, rgb(104, 102, 255) 0%, rgb(118, 4, 200) 100%);
+  color: var(--background);
+  background: var(--chat-gradient);
   box-shadow: 0 0 0 1px white;
   flex-shrink: 0;
 `
@@ -243,7 +249,7 @@ const DateLabel = styled.p`
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
   text-align: center;
   width: 100%;
   margin: 0;
@@ -254,7 +260,7 @@ const MessageOuter = styled.div<{ $isOwn: boolean }>`
   flex-direction: column;
   align-self: ${({ $isOwn }) => $isOwn ? 'flex-end' : 'flex-start'};
 background: ${({ $isOwn }) =>
-    $isOwn ? 'rgba(104, 102, 255, 0.1)' : 'white'};
+    $isOwn ? 'rgba(104, 102, 255, 0.1)' : 'var(--background)'};
   width: 686px;
 `
 
@@ -281,7 +287,7 @@ const TimeText = styled.p`
   font-size: 10px;
   font-weight: 400;
   line-height: 15px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   margin: 0;
   flex-shrink: 0;
 `
@@ -290,7 +296,7 @@ const AuthorText = styled.p`
   font-size: 14px;
   font-weight: 500;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   text-align: end;
   margin: 0;
   min-width: 0;
@@ -302,28 +308,28 @@ const AuthorName = styled.span`
   font-size: 14px;
   font-weight: 500;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
 `
 
 const AuthorUpn = styled.span`
   font-size: 12px;
   font-weight: 500;
   line-height: 20px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
 `
 
 const AuthorEmail = styled.span`
   font-size: 14px;
   font-weight: 500;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
 `
 
 const MessageText = styled.p`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   margin: 0;
 `
 
@@ -352,7 +358,7 @@ const SendButton = styled.button`
   height: 32px;
   border-radius: 6px;
   flex-shrink: 0;
-  background: linear-gradient(135deg, #6866ff 0%, #7604c8 100%);
+  background: var(--send-button-gradient);
   cursor: pointer;
   transition: opacity 0.15s;
 
@@ -365,14 +371,14 @@ const StyledInput = styled.input`
   flex: 1;
   min-width: 0;
   height: 32px;
-  background: white;
+  background: var(--background);
   border: 0.8px solid #d9d9d9;
   border-radius: 8px;
   padding: 4px 12px;
   font-size: 14px;
   font-weight: 400;
   line-height: normal;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   text-align: end;
   outline: none;
 

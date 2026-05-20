@@ -63,6 +63,7 @@ body,
 
   --text-color: rgba(0, 0, 0, 0.65);
   --text-color-2: rgba(0, 0, 0, 0.88);
+  --text-color-400: rgba(0, 0, 0, 0.45);
   --card-background: rgba(0, 0, 0, 0.02);
   --icon-background: rgba(0, 0, 0, 0.4);
   --card-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
@@ -73,8 +74,10 @@ body,
   --background-area: #fafafa;
   --button-color-hover: #4096FF;
   --gradient: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
+  --chat-gradient: linear-gradient(135deg, rgb(104, 102, 255) 0%, rgb(118, 4, 200) 100%);
+  --send-button-gradient: linear-gradient(135deg, #6866ff 0%, #7604c8 100%);
   --text-subtitle-color: #8C8C8C;
-  --tab-active-color: #1677ff;
+  --active-color: #1677ff;
 
   --font-sans: 'Rubik Variable', ui-sans-serif, sans-serif;
   --font-serif: 'Rubik Variable', ui-sans-serif, sans-serif;

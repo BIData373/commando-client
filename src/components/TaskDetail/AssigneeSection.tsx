@@ -87,11 +87,11 @@ export const AssigneeSection = ({
                 {relatedDirectives.length === 0 ? (
                     <SectionValue>לא הוגדר</SectionValue>
                 ) : (
-                    <AssigneesScroll $scrollable={isMultiple}>
+                    <AssigneesContainer>
                         <AssigneeRowsList>
                             {relatedDirectives.map((item) => renderRow(item, true))}
                         </AssigneeRowsList>
-                    </AssigneesScroll>
+                    </AssigneesContainer>
                 )}
             </Section>
         );
@@ -103,21 +103,21 @@ export const AssigneeSection = ({
             {myGroups.length === 0 ? (
                 <SectionValue>לא הוגדר</SectionValue>
             ) : (
-                <AssigneesScroll $scrollable={myGroups.length >= 2}>
+                <AssigneesContainer>
                     <AssigneeRowsList>
                         {myGroups.map((item) => renderRow(item, true))}
                     </AssigneeRowsList>
-                </AssigneesScroll>
+                </AssigneesContainer>
             )}
 
             {otherGroups.length > 0 && (
                 <>
                     <SectionLabel>אחראים נוספים לביצוע</SectionLabel>
-                    <AssigneesScroll $scrollable={otherGroups.length >= 2}>
+                    <AssigneesContainer>
                         <AssigneeRowsList>
                             {otherGroups.map((item) => renderRow(item, false))}
                         </AssigneeRowsList>
-                    </AssigneesScroll>
+                    </AssigneesContainer>
                 </>
             )}
         </Section>
@@ -145,18 +145,12 @@ const SectionValue = styled.p`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   text-align: end;
 `;
 
-const AssigneesScroll = styled.div<{ $scrollable: boolean }>`
+const AssigneesContainer = styled.div`
   width: 100%;
-  ${({ $scrollable }) =>
-        $scrollable &&
-        `
-    // max-height: 200px;
-    // overflow-y: auto;
-  `}
 `;
 
 const AssigneeRowsList = styled.div`
@@ -229,8 +223,8 @@ const AssigneeRowContainer = styled.div<{ $white?: boolean }>`
   justify-content: flex-start;
   gap: 24px;
   padding: 7px 12px;
-  background: ${({ $white }) => ($white ? "white" : "#fafafa")};
-  border: 0.8px solid #f5f5f5;
+  background: ${({ $white }) => ($white ? "var(--background)" : "#fcfcfc")};
+  border: 0.5px solid #F0F0F0;
   border-radius: 8px;
   width: 100%;
 `;
@@ -248,6 +242,6 @@ const AssigneeRoleText = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   white-space: nowrap;
 `;
