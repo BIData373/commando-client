@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { useMemo } from 'react'
 import { DirectiveStatus } from '#/utils/statusUtils'
 import compleateInstruction from '../../assets/icons/completeInstruction.svg'
 import type { Task } from '../../data/Tasks'
-import FlagIcon from '../shared/FlagIcon'
-import { StatusTag } from '../shared/StatusTag'
-import { ResponsibleCell } from '../Tasks/ResponsibleCell'
+import { TaskColumnId, useTaskColumns } from '../../hooks/useTaskColumns'
 import { EmptyCardState } from './EmptyCardState'
 import { ViewMoreInstructions } from './ViewMoreInstructions'
 
@@ -13,8 +13,28 @@ interface RecentlyCompletedProps {
   tasks: Task[]
 }
 
+const VISIBLE_COLUMNS = [TaskColumnId.Title, TaskColumnId.Status, TaskColumnId.Responsible]
+
+const coreRowModel = getCoreRowModel()
+
 export default function RecentlyCompleted({ urlName, tasks }: RecentlyCompletedProps) {
-  const completedTasks = tasks.filter((t) => t.status === DirectiveStatus.COMPLETED)
+  const completedTasks = useMemo(
+    () => tasks.filter((t) => t.status === DirectiveStatus.COMPLETED),
+    [tasks],
+  )
+
+  const { columns } = useTaskColumns({
+    visibleColumns: VISIBLE_COLUMNS,
+    searchQuery: '',
+    filterOptionsMap: {},
+    onUpdateStatus: () => {},
+  })
+
+  const table = useReactTable({
+    data: completedTasks,
+    columns,
+    getCoreRowModel: coreRowModel,
+  })
 
   return (
     <Section>
@@ -28,24 +48,19 @@ export default function RecentlyCompleted({ urlName, tasks }: RecentlyCompletedP
           />
         ) : (
           <TaskList>
-            {completedTasks.map((task) => (
-              <TaskRow key={task.id}>
-                <TitleCellWrapper>
-                  {task.flagged && <FlagIcon />}
-                  <TitleText>
-                    {task.title}
-                    {task.details ? ` - ${task.details}` : ''}
-                  </TitleText>
-                </TitleCellWrapper>
-                <FixedCell $width={100}>
-                  <StatusTag status={task.status} />
-                </FixedCell>
-                <FixedCell $width={148}>
-                  <ResponsibleCell
-                    responsible={task.responsible}
-                    relatedDirectives={task.relatedDirectives}
-                  />
-                </FixedCell>
+            {table.getRowModel().rows.map((row) => (
+              <TaskRow key={row.id}>
+                {row.getVisibleCells().map((cell) =>
+                  cell.column.id === 'title' ? (
+                    <TitleCellWrapper key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TitleCellWrapper>
+                  ) : (
+                    <FixedCell key={cell.id} $width={cell.column.getSize()}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </FixedCell>
+                  )
+                )}
               </TaskRow>
             ))}
           </TaskList>
@@ -129,19 +144,6 @@ const TitleCellWrapper = styled.div`
   background: var(--background);
   direction: rtl;
   border: 0.5px solid rgba(0, 0, 0, 0.01);
-`
-
-const TitleText = styled.span`
-  flex: 1;
-  min-width: 0;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--sea-ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: start;
 `
 
 const FixedCell = styled.div<{ $width: number }>`
