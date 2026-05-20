@@ -6,13 +6,16 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 const config = defineConfig({
-	plugins: [
-		devtools(),
-		tsconfigPaths({ projects: ["./tsconfig.json"] }),
-		tailwindcss(),
-		tanstackRouter({ target: "react", autoCodeSplitting: true }),
-		viteReact(),
-	],
-});
+  preview: {
+    allowedHosts: ['np.vector.idf.cts', 'pp.vector.idf.cts', 'vector.idf.cts'],
+  },
+  plugins: [
+    devtools(),
+    tsconfigPaths({ projects: ['./tsconfig.json'] }),
+    tailwindcss(),
+    tanstackRouter({ target: 'react', autoCodeSplitting: true }),
+    viteReact(),
+  ],
+})
 
 export default config;
