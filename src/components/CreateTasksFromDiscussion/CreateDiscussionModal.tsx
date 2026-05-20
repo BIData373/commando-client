@@ -19,7 +19,7 @@ enum Steps {
 
 interface DiscussionFormState {
   name: string
-  sourceDate: string
+  sourceDate: Date | null
   topics: string[]
   file: File | null
 }
@@ -32,7 +32,7 @@ interface CreateDiscussionModalProps {
 
 const INITIAL_FORM: DiscussionFormState = {
   name: '',
-  sourceDate: '',
+  sourceDate: null,
   topics: [],
   file: null,
 }
@@ -55,7 +55,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 
   function handleDateSelect(date: Date | undefined) {
     if (date) {
-      setField('sourceDate', formatDate(date))
+      setField('sourceDate', date)
     }
   }
 
@@ -105,7 +105,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 
     saveTasks(inputs, {
       discussionName: form.name.trim(),
-      discussionDate: form.sourceDate,
+      discussionDate: form.sourceDate ? formatDate(form.sourceDate) : '',
       hasAttachment: form.file !== null,
       tags: form.topics,
     })
@@ -150,7 +150,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
               {isCurrentStepTasks && (
                 <DiscussionInfoRow>
                   <DiscussionInfoText>
-                    <DiscussionDate>{form.sourceDate}</DiscussionDate>
+                    <DiscussionDate>{form.sourceDate ? formatDate(form.sourceDate) : ''}</DiscussionDate>
                     <DiscussionName>{form.name}</DiscussionName>
                   </DiscussionInfoText>
                   {form.file && <Paperclip size={20} />}

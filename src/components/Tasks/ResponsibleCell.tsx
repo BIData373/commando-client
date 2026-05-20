@@ -105,7 +105,7 @@ const CellRoot = styled.div`
 `
 
 // ─── Avatar ───────────────────────────────────────────────────────────────────
-
+//TO-DO
 const AvatarCircle = styled.button<{ $color: AvatarColor }>`
   display: inline-flex;
   align-items: center;

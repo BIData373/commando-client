@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { parseDate } from '../../functions/date-utils'
+import { formatDate } from '../../functions/date-utils'
 import styled from '@emotion/styled'
 import { ChevronDown, Paperclip, Calendar as CalendarIcon } from 'lucide-react'
 import DatePicker, { CalendarMode } from '../shared/DatePicker'
@@ -15,7 +15,7 @@ export type { DiscussionSource }
 
 interface SourceFieldProps {
   source: string
-  sourceDate: string
+  sourceDate: Date | null
   linkedSource: DiscussionSource | null
   onSourceSelect: (name: string, discussion?: DiscussionSource | null) => void
   onDateSelect: (date: Date | undefined) => void
@@ -58,9 +58,7 @@ function SourceField({
     onSourceSelect(sourceQuery)
   }
 
-  const selectedDate = sourceDate
-    ? parseDate(sourceDate)
-    : undefined
+  const selectedDate = sourceDate ?? undefined
 
   const allFiltered = MOCK_DISCUSSIONS.filter((d) => d.name.includes(sourceQuery))
   const filteredDiscussions = uniqueNames
@@ -156,7 +154,7 @@ function SourceField({
                   <DatePickerButton $disabled={isSourceLinked}>
                     <CalendarIcon size={18} />
                     <DatePickerText $hasValue={!!sourceDate}>
-                      {sourceDate || 'בחר תאריך'}
+                      {sourceDate ? formatDate(sourceDate) : 'בחר תאריך'}
                     </DatePickerText>
                   </DatePickerButton>
                 </PopoverTrigger>

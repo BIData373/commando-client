@@ -4,6 +4,7 @@ import { Plus, Check } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { MOCK_ASSIGNEES } from '../../data/Assignees'
 import type { AvatarColor } from '../Tasks/ResponsibleCell'
+import { AssigneeDialog } from '../settings/AssigneeDialog'
 
 interface AssigneePickerProps {
   selectedAssignees: number[]
@@ -20,6 +21,7 @@ function AssigneePicker({
 }: AssigneePickerProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const [dialogOpen, setDialogOpen] = useState(false)
 
   const filteredAssignees = Object.values(MOCK_ASSIGNEES)
     .filter((assignee) => {
@@ -53,10 +55,11 @@ function AssigneePicker({
   function handleCreateNew() {
     setOpen(false)
     setSearch('')
-
+    setDialogOpen(true)
   }
 
   return (
+    <>
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         {typeof trigger === 'function' ? trigger({ search, onSearchChange: handleSearchChange }) : trigger}
@@ -94,6 +97,9 @@ function AssigneePicker({
         </CreateNewButton>
       </AssigneeDropdown>
     </Popover>
+
+    <AssigneeDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+    </>
   )
 }
 
@@ -158,7 +164,7 @@ const CreateNewButton = styled.button`
     background: rgba(0, 0, 0, 0.04);
   }
 `
-
+//TO-DO
 const AvatarCircle = styled.div<{ $color: AvatarColor }>`
   display: inline-flex;
   align-items: center;
