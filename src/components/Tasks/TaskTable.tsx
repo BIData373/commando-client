@@ -1,25 +1,25 @@
-import { useState } from 'react'
 import styled from '@emotion/styled'
 import { type ColumnDef, type ColumnFiltersState, type FilterFn, type RowSelectionState, type SortingState } from '@tanstack/react-table'
 import { differenceInDays, format, startOfToday } from 'date-fns'
 import { AlertTriangle, MoreVertical } from 'lucide-react'
+import { useState } from 'react'
 import { BsPaperclip as Paperclip } from 'react-icons/bs'
-import { Checkbox } from '../ui/checkbox'
-import { DataTable } from '../ui/data-table'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
-import { StatusCell } from './StatusCell'
-import { ResponsibleCell } from './ResponsibleCell'
-import { TopicCell } from './TopicCell'
-import { RowActionsMenu } from './RowActionsMenu'
-import { BulkActionsBar } from './BulkActionsBar'
-import { ColumnHeaderWithActions } from './ColumnHeaderWithActions'
-import type { TaskColumn } from './ColumnVisibilityDropdown'
 import type { Task } from '../../data/Tasks'
+import { DEADLINE_LABELS, type DeadlineType } from '../../functions/filter-utils'
 import FlagIcon from '../shared/FlagIcon'
 import HighlightMatch from '../shared/HighlightMatch'
 import type { DirectiveStatus } from '../shared/StatusTag'
-import { DEADLINE_LABELS, type DeadlineType } from '../../functions/filter-utils'
 import { STATUS_LABELS } from '../shared/StatusTag'
+import { Checkbox } from '../ui/checkbox'
+import { DataTable } from '../ui/data-table'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+import { BulkActionsBar } from './BulkActionsBar'
+import { ColumnHeaderWithActions } from './ColumnHeaderWithActions'
+import type { TaskColumn } from './ColumnVisibilityDropdown'
+import { ResponsibleCell } from './ResponsibleCell'
+import { RowActionsMenu } from './RowActionsMenu'
+import { StatusCell } from './StatusCell'
+import { TopicCell } from './TopicCell'
 
 const STATUS_SORT_ORDER: Record<DirectiveStatus, number> = {
   not_started: 0,
@@ -161,8 +161,7 @@ function TaskTable({
       header: ({ column }) => <ColumnHeaderWithActions label="אחראי" column={column} />,
       size: 115,
       filterFn: multiSelectFilter,
-      sortingFn: (rowA, rowB) =>
-        (rowA.original.responsible?.name ?? '').localeCompare(rowB.original.responsible?.name ?? '', 'he'),
+      sortingFn: 'text',
       cell: ({ row: { original: { responsible, relatedDirectives } } }) => (
         <ResponsibleCell
           responsible={responsible}
@@ -214,8 +213,7 @@ function TaskTable({
       header: ({ column }) => <ColumnHeaderWithActions label="מקור" column={column} />,
       size: 280,
       filterFn: multiSelectFilter,
-      sortingFn: (rowA, rowB) =>
-        rowA.original.discussionName.localeCompare(rowB.original.discussionName, 'he'),
+      sortingFn: 'text',
       cell: ({ row: { original: { discussionName, discussionDate, hasAttachment } } }) => {
         const parts = [discussionName, discussionDate].filter(Boolean)
         return (
@@ -528,7 +526,7 @@ const SourceCell = styled.div`
 
 const SourceIcon = styled(Paperclip)`
   color: rgba(0, 0, 0, 0.45);
-` 
+`
 
 const SourceText = styled.span`
   overflow: hidden;
