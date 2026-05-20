@@ -134,7 +134,7 @@ function useTaskColumns({
     [TaskColumnId.Title]: {
       accessorKey: 'title',
       header: 'ההנחיה',
-      size: 830,
+      size: 400,
       meta: { grow: true },
       enableSorting: false,
       enableColumnFilter: false,
