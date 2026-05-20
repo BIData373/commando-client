@@ -3,15 +3,26 @@ import styled from '@emotion/styled'
 import {
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
   useReactTable,
   type ColumnDef,
-  type Row,
-  type RowSelectionState,
+  type ColumnFiltersState,
   type OnChangeFn,
+  type Row,
+  type RowData,
+  type RowSelectionState,
+  type SortingState,
   type TableMeta,
 } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
+
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    grow?: boolean
+  }
+}
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
@@ -19,12 +30,17 @@ interface DataTableProps<TData> {
   onRowClick?: (row: Row<TData>) => void
   rowSelection?: RowSelectionState
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
+  columnFilters?: ColumnFiltersState
+  onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>
+  sorting?: SortingState
+  onSortingChange?: OnChangeFn<SortingState>
   getRowId?: (row: TData) => string
   highlightedRowIds?: Set<string>
   meta?: TableMeta<TData>
   renderRowOverlay?: (row: Row<TData>) => React.ReactNode
   renderRowExpansion?: (row: Row<TData>) => React.ReactNode
   containerClassName?: string
+  showHeader?: boolean
 }
 
 export function DataTable<TData>({
@@ -33,40 +49,60 @@ export function DataTable<TData>({
   onRowClick,
   rowSelection,
   onRowSelectionChange,
+  columnFilters,
+  onColumnFiltersChange,
+  sorting,
+  onSortingChange,
   getRowId,
   highlightedRowIds,
   meta,
   renderRowOverlay,
   renderRowExpansion,
   containerClassName,
+  showHeader = true,
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    ...(rowSelection !== undefined && { state: { rowSelection }, onRowSelectionChange }),
-    ...(getRowId && { getRowId }),
-    ...(meta && { meta }),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      ...(rowSelection !== undefined && { rowSelection }),
+      ...(columnFilters !== undefined && { columnFilters }),
+      ...(sorting !== undefined && { sorting }),
+    },
+    onRowSelectionChange,
+    onColumnFiltersChange,
+    onSortingChange,
+    getRowId,
+    meta,
   })
 
   const allColumns = table.getAllColumns()
-  const totalSize = allColumns.reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
+  const fixedTotal = allColumns.reduce((sum, col) => {
+    const grow = col.columnDef.meta?.grow
+    return grow ? sum : sum + (col.columnDef.size ?? 0)
+  }, 0)
 
   const colgroup = (
     <colgroup>
-      {allColumns.map((column) => (
-        <col
-          key={column.id}
-          style={
-            column.columnDef.size !== undefined && totalSize > 0
-              ? {
-                  width: `${(column.columnDef.size / totalSize) * 100}%`,
-                  minWidth: `${column.columnDef.size}px`,
-                }
-              : undefined
-          }
-        />
-      ))}
+      {allColumns.map((column) => {
+        const grow = column.columnDef.meta?.grow
+        const size = column.columnDef.size
+
+      return grow && size !== undefined ? (
+            <col
+              key={column.id}
+              style={{ width: `calc(100% - ${fixedTotal}px)`, minWidth: `${size}px` }}
+            />
+          ) : (
+          <col
+            key={column.id}
+            style={size !== undefined ? { width: `${size}px` } : undefined}
+          />
+        )
+      })}
     </colgroup>
   )
 
@@ -78,19 +114,21 @@ export function DataTable<TData>({
   return (
     <Table containerClassName={containerClassName}>
       {colgroup}
-      <TableHeader>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <TableHead key={header.id}>
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(header.column.columnDef.header, header.getContext())}
-              </TableHead>
-            ))}
-          </TableRow>
-        ))}
-      </TableHeader>
+      {showHeader && (
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(header.column.columnDef.header, header.getContext())}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+      )}
       <TableBody>
         {rows.length ? (
           rows.map(({ row, expansionContent }) => (
