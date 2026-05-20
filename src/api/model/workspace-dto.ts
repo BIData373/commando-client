@@ -7,7 +7,6 @@
  */
 import type { WorkspaceDtoDeletedAt } from "./workspace-dto-deleted-at";
 import type { WorkspaceDtoDeletedBy } from "./workspace-dto-deleted-by";
-import type { WorkspaceDtoIcon } from "./workspace-dto-icon";
 
 export interface WorkspaceDto {
 	createdAt: string;
@@ -22,7 +21,7 @@ export interface WorkspaceDto {
 	title: string;
 	urlName: string;
 	/** @nullable */
-	icon: WorkspaceDtoIcon;
+	icon: string | null;
 	assigneeStatusEditable: boolean;
 	pikudId: number;
 }

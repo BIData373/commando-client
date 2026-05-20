@@ -10,5 +10,7 @@ export interface UpdateAssigneeDto {
 	workspaceId?: number;
 	name?: string;
 	color?: string;
-	icon?: string;
+	/** @nullable */
+	icon?: string | null;
+	userIds?: number[];
 }
