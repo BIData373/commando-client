@@ -1,12 +1,10 @@
 import styled from '@emotion/styled'
-import { AlertTriangle } from 'lucide-react'
-import { useState } from 'react'
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { useMemo, useState } from 'react'
 import { QuickFilter as FocusedTab } from '#/utils/filterUtils'
 import searchInstruction from '../../assets/icons/searchInstruction.svg'
 import type { Task } from '../../data/Tasks'
-import FlagIcon from '../shared/FlagIcon'
-import { StatusTag } from '../shared/StatusTag'
-import { ResponsibleCell } from '../Tasks/ResponsibleCell'
+import { TaskColumnId, useTaskColumns } from '../../hooks/useTaskColumns'
 import { EmptyCardState } from './EmptyCardState'
 import { ViewMoreInstructions } from './ViewMoreInstructions'
 
@@ -49,12 +47,14 @@ const EMPTY_MESSAGES: Record<FocusedTab, EmptyMessage> = {
   },
 }
 
-function formatDeadlineDate(date: Date): string {
-  const day = date.getDate().toString().padStart(2, '0')
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const year = date.getFullYear().toString().slice(-2)
-  return `${day}/${month}/${year}`
-}
+const VISIBLE_COLUMNS = [
+  TaskColumnId.Title,
+  TaskColumnId.Status,
+  TaskColumnId.Responsible,
+  TaskColumnId.DeadlineType,
+]
+
+const coreRowModel = getCoreRowModel()
 
 function getFilteredTasks(tab: FocusedTab, tasks: Task[]): Task[] {
   switch (tab) {
@@ -80,7 +80,20 @@ export default function FocusedInstructions({ urlName, tasks }: IFocusedInstruct
   }))
 
   const emptyMsg = EMPTY_MESSAGES[activeTab]
-  const filteredTasks = getFilteredTasks(activeTab, tasks)
+  const filteredTasks = useMemo(() => getFilteredTasks(activeTab, tasks), [activeTab, tasks])
+
+  const { columns } = useTaskColumns({
+    visibleColumns: VISIBLE_COLUMNS,
+    searchQuery: '',
+    filterOptionsMap: {},
+    onUpdateStatus: () => {},
+  })
+
+  const table = useReactTable({
+    data: filteredTasks,
+    columns,
+    getCoreRowModel: coreRowModel,
+  })
 
   return (
     <Section>
@@ -109,36 +122,19 @@ export default function FocusedInstructions({ urlName, tasks }: IFocusedInstruct
             />
           ) : (
             <TaskList>
-              {filteredTasks.map((task) => (
-                <TaskRow key={task.id}>
-                  <TitleCellWrapper>
-                    {task.flagged && <FlagIcon />}
-                    <TitleText>
-                      {task.title}
-                      {task.details ? ` - ${task.details}` : ''}
-                    </TitleText>
-                  </TitleCellWrapper>
-                  <FixedCell $width={100}>
-                    <StatusTag status={task.status} />
-                  </FixedCell>
-                  <FixedCell $width={148}>
-                    <ResponsibleCell
-                      responsible={task.responsible}
-                      relatedDirectives={task.relatedDirectives}
-                    />
-                  </FixedCell>
-                  <FixedCell $width={160}>
-                    {task.isOverdue && <AlertTriangle size={18} color="#FA8C16" />}
-                    {task.deadlineType === 'ongoing' && (
-                      <DeadlineTag $type="ongoing">שוטף</DeadlineTag>
-                    )}
-                    {task.deadlineType === 'immediate' && (
-                      <DeadlineTag $type="immediate">מידי</DeadlineTag>
-                    )}
-                    {task.deadlineType !== 'immediate' && task.dueDate && (
-                      <DateText>{formatDeadlineDate(task.dueDate)}</DateText>
-                    )}
-                  </FixedCell>
+              {table.getRowModel().rows.map((row) => (
+                <TaskRow key={row.id}>
+                  {row.getVisibleCells().map((cell) =>
+                    cell.column.id === 'title' ? (
+                      <TitleCellWrapper key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TitleCellWrapper>
+                    ) : (
+                      <FixedCell key={cell.id} $width={cell.column.getSize()}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </FixedCell>
+                    )
+                  )}
                 </TaskRow>
               ))}
             </TaskList>
@@ -294,19 +290,6 @@ const TitleCellWrapper = styled.div`
   border: 0.5px solid rgba(0, 0, 0, 0.01);
 `
 
-const TitleText = styled.span`
-  flex: 1;
-  min-width: 0;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--sea-ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: start;
-`
-
 const FixedCell = styled.div<{ $width: number }>`
   width: ${({ $width }) => $width}px;
   flex-shrink: 0;
@@ -319,36 +302,4 @@ const FixedCell = styled.div<{ $width: number }>`
   background: var(--background);
   direction: rtl;
   border: 0.5px solid rgba(0, 0, 0, 0.01);
-`
-
-const DateText = styled.span`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  color: rgba(0, 0, 0, 0.65);
-  white-space: nowrap;
-`
-
-const DeadlineTag = styled.span<{ $type: 'ongoing' | 'immediate' }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  line-height: 20px;
-  white-space: nowrap;
-  border-width: 1px;
-  border-style: solid;
-  ${({ $type }) => $type === 'ongoing'
-    ? `
-      background: #e6f4ff;
-      color: #1677ff;
-      border-color: #91caff;
-    `
-    : `
-      background: #fff1f0;
-      color: #f5222d;
-      border-color: #ffa39e;
-    `
-  }
 `

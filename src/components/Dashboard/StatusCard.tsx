@@ -142,7 +142,7 @@ const CenterLabel = styled.span`
 
 const StatusRow = styled.div`
   display: flex;
-  gap: 24px;
+  gap: 30px;
   align-items: center;
 `
 
@@ -166,6 +166,7 @@ const StatusBadge = styled.span<{ $variant: DirectiveStatus }>`
   align-items: center;
   justify-content: center;
   padding: 1px 8px;
+  width: 100px;
   border-radius: 35px;
   font-size: 20px;
   font-weight: 400;
