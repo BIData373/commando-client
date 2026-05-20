@@ -7,7 +7,7 @@
  */
 import type { AssigneeDtoDeletedAt } from "./assignee-dto-deleted-at";
 import type { AssigneeDtoDeletedBy } from "./assignee-dto-deleted-by";
-import type { AssigneeDtoIcon } from "./assignee-dto-icon";
+import type { UserDto } from "./user-dto";
 
 export interface AssigneeDto {
 	createdAt: string;
@@ -22,6 +22,7 @@ export interface AssigneeDto {
 	name: string;
 	color: string;
 	/** @nullable */
-	icon: AssigneeDtoIcon;
+	icon: string | null;
 	workspaceId: number;
+	users: UserDto[];
 }

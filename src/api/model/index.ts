@@ -9,7 +9,6 @@
 export * from "./assignee-dto";
 export * from "./assignee-dto-deleted-at";
 export * from "./assignee-dto-deleted-by";
-export * from "./assignee-dto-icon";
 export * from "./assignee-task-status-dto";
 export * from "./assignee-user-dto";
 export * from "./create-assignee-dto";
@@ -105,5 +104,4 @@ export * from "./user-info-dto";
 export * from "./workspace-dto";
 export * from "./workspace-dto-deleted-at";
 export * from "./workspace-dto-deleted-by";
-export * from "./workspace-dto-icon";
 export * from "./workspace-status-dto";

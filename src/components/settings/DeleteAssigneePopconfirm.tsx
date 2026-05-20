@@ -1,72 +1,72 @@
 import styled from '@emotion/styled'
 import { AlertCircle } from 'lucide-react'
 import { useState } from 'react'
-import { useDeleteAssignee } from '#/hooks/useAssignees'
 import { TrashButton } from '../shared/TrashButton'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { useDeleteAssignee } from '#/api/assignee/assignee'
 
 interface DeleteAssigneePopconfirmProps {
-    assigneeId: number
+  assigneeId: number
 }
 
 export function DeleteAssigneePopconfirm({ assigneeId }: DeleteAssigneePopconfirmProps) {
-    const [open, setOpen] = useState(false)
-    const deleteAssignee = useDeleteAssignee()
+  const [open, setOpen] = useState(false)
+  const { mutateAsync: deleteAssignee, isPending: isDeletePending } = useDeleteAssignee()
 
-    function handleTriggerClick(e: React.MouseEvent) {
-        e.stopPropagation()
-    }
+  function handleTriggerClick(e: React.MouseEvent) {
+    e.stopPropagation()
+  }
 
-    function handleCloseAutoFocus(e: Event) {
-        e.preventDefault()
-    }
+  function handleCloseAutoFocus(e: Event) {
+    e.preventDefault()
+  }
 
-    function handleDelete(e: React.MouseEvent) {
-        e.stopPropagation()
-        deleteAssignee.mutate(assigneeId)
-        setOpen(false)
-    }
+  async function handleDelete(e: React.MouseEvent) {
+    e.stopPropagation()
+    await deleteAssignee({ pathParams: { id: assigneeId } })
+    setOpen(false)
+  }
 
-    function handleCancel(e: React.MouseEvent) {
-        e.stopPropagation()
-        setOpen(false)
-    }
+  function handleCancel(e: React.MouseEvent) {
+    e.stopPropagation()
+    setOpen(false)
+  }
 
-    return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild onClick={handleTriggerClick}>
-                <TrashButton
-                    onClick={handleTriggerClick}
-                />
-            </PopoverTrigger>
-            <StyledPopoverContent
-                side="bottom"
-                align='start'
-                sideOffset={8}
-                onCloseAutoFocus={handleCloseAutoFocus}
-            >
-                <HeadRow>
-                    <TextWrapper>
-                        <Title>למחוק את האחראי</Title>
-                        <Description>
-                            האם אתה בטוח? מחיקת האחראי תבטל את שיוך ההנחיות שהוא קיבל
-                            <br />
-                            הנחיות אלו ימשיכו להופיע בלשכה
-                        </Description>
-                    </TextWrapper>
-                    <WarningIcon size={16} />
-                </HeadRow>
-                <ButtonsRow>
-                    <CancelButton type="button" onClick={handleCancel}>
-                        לא
-                    </CancelButton>
-                    <DeleteButton type="button" onClick={handleDelete} disabled={deleteAssignee.isPending}>
-                        מחק
-                    </DeleteButton>
-                </ButtonsRow>
-            </StyledPopoverContent>
-        </Popover>
-    )
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild onClick={handleTriggerClick}>
+        <TrashButton
+          onClick={handleTriggerClick}
+        />
+      </PopoverTrigger>
+      <StyledPopoverContent
+        side="bottom"
+        align='start'
+        sideOffset={8}
+        onCloseAutoFocus={handleCloseAutoFocus}
+      >
+        <HeadRow>
+          <TextWrapper>
+            <Title>למחוק את האחראי</Title>
+            <Description>
+              האם אתה בטוח? מחיקת האחראי תבטל את שיוך ההנחיות שהוא קיבל
+              <br />
+              הנחיות אלו ימשיכו להופיע בלשכה
+            </Description>
+          </TextWrapper>
+          <WarningIcon size={16} />
+        </HeadRow>
+        <ButtonsRow>
+          <CancelButton type="button" onClick={handleCancel}>
+            לא
+          </CancelButton>
+          <DeleteButton type="button" onClick={handleDelete} disabled={isDeletePending} >
+            מחק
+          </DeleteButton>
+        </ButtonsRow>
+      </StyledPopoverContent>
+    </Popover>
+  )
 }
 
 const StyledPopoverContent = styled(PopoverContent)`
