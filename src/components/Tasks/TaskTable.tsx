@@ -13,6 +13,7 @@ import { TopicCell } from './TopicCell'
 import { RowActionsMenu } from './RowActionsMenu'
 import { BulkActionsBar } from './BulkActionsBar'
 import { ColumnHeaderWithActions } from './ColumnHeaderWithActions'
+import type { TaskColumn } from './ColumnVisibilityDropdown'
 import type { Task } from '../../data/Tasks'
 import FlagIcon from '../shared/FlagIcon'
 import HighlightMatch from '../shared/HighlightMatch'
@@ -36,8 +37,8 @@ const multiSelectFilter: FilterFn<Task> = (row, columnId, filterValue: string[])
 interface TaskTableProps {
   tasks: Task[]
   searchQuery: string
-  columnOrder: string[]
-  hiddenColumns: Set<string>
+  columnOrder: TaskColumn[]
+  hiddenColumns: Set<TaskColumn>
   onUpdateStatus: (taskId: number, status: DirectiveStatus) => void
   onEdit: (taskId: number) => void
   onArchive: (taskIds: number[]) => void
@@ -175,9 +176,9 @@ function TaskTable({
       size: 160,
       filterFn: multiSelectFilter,
       sortingFn: (rowA, rowB) => {
-        const dateA = rowA.original.dueDate?.getTime() ?? Infinity
-        const dateB = rowB.original.dueDate?.getTime() ?? Infinity
-        return dateA - dateB
+        const a = rowA.original.dueDate?.getTime() ?? Infinity
+        const b = rowB.original.dueDate?.getTime() ?? Infinity
+        return a > b ? 1 : a < b ? -1 : 0
       },
       cell: ({ row: { original: { deadlineType, dueDate } } }) => {
         const today = startOfToday()
