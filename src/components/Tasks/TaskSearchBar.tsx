@@ -1,15 +1,15 @@
 import styled from '@emotion/styled'
 import { Download, Search } from 'lucide-react'
-import { ColumnVisibilityDropdown } from './ColumnVisibilityDropdown'
+import { ColumnVisibilityDropdown, type TaskColumn } from './ColumnVisibilityDropdown'
 
 interface TaskSearchBarProps {
   searchQuery: string
   onSearchChange: (value: string) => void
   onExport: () => void
-  columnOrder: string[]
-  hiddenColumns: Set<string>
-  onColumnOrderChange: (order: string[]) => void
-  onToggleColumn: (columnId: string) => void
+  columnOrder: TaskColumn[]
+  hiddenColumns: Set<TaskColumn>
+  onColumnOrderChange: (order: TaskColumn[]) => void
+  onToggleColumn: (columnId: TaskColumn) => void
 }
 
 function TaskSearchBar({
