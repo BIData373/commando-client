@@ -17,17 +17,6 @@ interface UpdateAssigneeParams {
   data: IUpdateAssignee;
 }
 
-export function useAssignees(options?: QueryOptions<IAssignee[]>) {
-  return useQuery({
-    queryKey: assigneeKeys.all,
-    queryFn: async (): Promise<IAssignee[]> =>
-      USE_MOCK_API
-        ? await assigneesApi.getAll()
-        : await apiRequest<IAssignee[]>({ method: 'GET', url: assigneesUrl }),
-    ...options,
-  });
-}
-
 export function useCreateAssignee(options?: MutationOptions<ICreateAssignee>) {
   const queryClient = useQueryClient();
 
