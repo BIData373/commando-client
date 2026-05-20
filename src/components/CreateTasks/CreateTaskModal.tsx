@@ -1,26 +1,25 @@
 import styled from '@emotion/styled'
+import { ChevronDown, ChevronUp, X } from 'lucide-react'
+import { useRef, useState } from 'react'
+import type { FormState } from '../../data/CreateTaskForm'
+import { INITIAL_FORM } from '../../data/CreateTaskForm'
+import { CancelButton } from '../shared/CancelButton'
+import FlagIcon from '../shared/FlagIcon'
+import { PrimaryButton } from '../shared/PrimaryButton'
+import { Checkbox } from '../ui/checkbox'
+import AssigneeField from './AssigneeField'
 import { Dialog as DialogPrimitive } from 'radix-ui'
-import { X, ChevronDown, ChevronUp } from 'lucide-react'
 import ImportantFlagTooltip from '../shared/ImportantFlagTooltip'
 import DeadlineField from './DeadlineField'
-import AssigneeField from './AssigneeField'
 import SourceField from './SourceField'
 import TopicField from './TopicField'
 import NotesField from './NotesField'
 import type { DiscussionSource } from './SourceField'
-import { Checkbox } from '../ui/checkbox'
 import { useSaveTasks } from '../../hooks/useSaveTasks'
-import { INITIAL_FORM } from '../../data/CreateTaskForm'
-import type { FormState } from '../../data/CreateTaskForm'
 import type { DeadlineType } from '../shared/DeadlineTag'
 import { formatDate } from '../../functions/date-utils'
-import FlagIcon from '../shared/FlagIcon'
-import { useRef, useState } from 'react'
-import { CancelButton } from '../shared/CancelButton'
-import { PrimaryButton } from '../shared/PrimaryButton'
 
 // ─── Component ───────────────────────────────────────────────────────────────
-
 interface CreateTaskModalProps {
   onClose: () => void
 }
