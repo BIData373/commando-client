@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { useForm } from '@tanstack/react-form'
 import { UserPlus } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useCreateAssignee, useUpdateAssignee } from '#/hooks/useAssignees'
 import { type IMesibaIcon, useMesibaIconByName } from '#/hooks/useMesiba'
 import { useUsers } from '#/hooks/useUsers'
@@ -124,13 +124,7 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
         setIconSearch('')
         setSelectedIcon(existingIcon ?? null)
         form.reset()
-    }
-
-    useEffect(() => {
-        if (open) {
-          resetForm()
-        }
-    }, [open])
+    }, [assignee, users, form.reset, existingIcon])
 
     const scrollRef = useRef<HTMLDivElement>(null)
     const [scrollShadow, setScrollShadow] = useState({ top: false, bottom: false })

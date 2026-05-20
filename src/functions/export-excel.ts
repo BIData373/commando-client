@@ -1,8 +1,9 @@
 import * as XLSX from 'xlsx-js-style'
 import { differenceInDays, format, startOfToday } from 'date-fns'
 import { getStatusStyle, STATUS_LABELS } from '../components/shared/StatusTag'
-import { DEADLINE_LABELS } from '../components/Tasks/TaskTable'
+import { DEADLINE_LABELS } from './filter-utils'
 import type { Task } from '../data/Tasks'
+import type { TaskColumn } from '../components/Tasks/ColumnVisibilityDropdown'
 
 interface CellValue {
   value: string
@@ -64,8 +65,8 @@ const COLUMN_DEFS: Record<string, ExportColumn<Task>> = {
 }
 
 interface ExportOptions {
-  columnOrder: string[]
-  hiddenColumns: Set<string>
+  columnOrder: TaskColumn[]
+  hiddenColumns: Set<TaskColumn>
 }
 
 export function exportTasksToExcel(tasks: Task[], options: ExportOptions) {
