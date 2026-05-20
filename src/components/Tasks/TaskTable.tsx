@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { type ColumnDef, type ColumnFiltersState, type FilterFn, type RowSelectionState, type SortingState } from '@tanstack/react-table'
-import { differenceInDays, format, startOfToday } from 'date-fns'
+import { differenceInDays, startOfToday } from 'date-fns'
+import { formatDateShort } from '../../functions/date-utils'
 import { AlertTriangle, MoreVertical } from 'lucide-react'
 import { useState } from 'react'
 import { BsPaperclip as Paperclip } from 'react-icons/bs'
@@ -193,7 +194,7 @@ function TaskTable({
             {deadlineType !== 'date' && (
               <DeadlineTag $type={deadlineType}>{DEADLINE_LABELS[deadlineType]}</DeadlineTag>
             )}
-            {dueDate && <DeadlineDateText>{format(dueDate, 'dd/MM/yy')}</DeadlineDateText>}
+            {dueDate && <DeadlineDateText>{formatDateShort(dueDate)}</DeadlineDateText>}
             {(isOverdue || isApproaching) && (
               <DeadlineWarning>
                 <Tooltip>
@@ -251,7 +252,7 @@ function TaskTable({
       size: 132,
       enableColumnFilter: false,
       sortingFn: 'datetime',
-      cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
+      cell: ({ getValue }) => <DateText>{formatDateShort(getValue<Date>())}</DateText>,
     },
     updatedAt: {
       accessorKey: 'updatedAt',
@@ -259,7 +260,7 @@ function TaskTable({
       size: 100,
       enableColumnFilter: false,
       sortingFn: 'datetime',
-      cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
+      cell: ({ getValue }) => <DateText>{formatDateShort(getValue<Date>())}</DateText>,
     },
   }
 

@@ -145,13 +145,10 @@ const TableWrapper = styled.div`
 const TableOuterContainer = styled.div`
   direction: rtl;
   border-radius: 8px;
-  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border: 0.5px solid var(--Background-color-bg-text-active);
   overflow-x: hidden;
   overflow-y: auto;
-  box-shadow:
-    0px 1px 2px rgba(0, 0, 0, 0.03),
-    0px 1px 6px -1px rgba(0, 0, 0, 0.02),
-    0px 2px 4px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--card-shadow-default);
 
   table {
     border-collapse: collapse;
@@ -162,7 +159,7 @@ const TableOuterContainer = styled.div`
     height: 48px;
     padding: 12px;
     background: white;
-    border-right: 0.5px solid rgba(0, 0, 0, 0.15);
+    border-right: 0.5px solid var(--Background-color-bg-text-active);
     text-align: start;
     vertical-align: middle;
     white-space: nowrap;
@@ -176,7 +173,7 @@ const TableOuterContainer = styled.div`
     position: relative;
 
     &:hover td {
-      background: #fafafa;
+      background: var(--background-area);
     }
 
     &:last-of-type td{
@@ -188,7 +185,7 @@ const TableOuterContainer = styled.div`
     height: 44px;
     padding: 0px 12px;
     background: white;
-    border: 0.5px solid rgba(0, 0, 0, 0.15);
+    border: 0.5px solid var(--Background-color-bg-text-active);
     vertical-align: middle;
 
     &:first-of-type {
@@ -196,7 +193,7 @@ const TableOuterContainer = styled.div`
     }
 
     &:focus-within {
-      outline: 1px solid #4096ff;
+      outline: 1px solid var(--button-color-hover);
       outline-offset: -2px;
     }
   }
@@ -220,8 +217,8 @@ const SaveButton = styled.button`
   height: 40px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(162deg, #6866ff 0%, #7604c8 100%);
-  color: white;
+  background: var(--gradient);
+  color: var(--background);
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
@@ -234,7 +231,7 @@ const SaveButton = styled.button`
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-inset);
     pointer-events: none;
   }
 
@@ -254,10 +251,10 @@ const BackButton = styled.button`
   justify-content: center;
   width: 133px;
   height: 40px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--Background-color-bg-text-active);
   border-radius: 8px;
   background: white;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
@@ -270,12 +267,12 @@ const BackButton = styled.button`
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-inset);
     pointer-events: none;
   }
 
   &:hover {
-    border-color: #4096ff;
-    color: #4096ff;
+    border-color: var(--button-color-hover);
+    color: var(--button-color-hover);
   }
 `
