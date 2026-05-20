@@ -6,7 +6,11 @@ import type { WorkspaceDto } from '../api/model/workspace-dto'
 import { Spinner } from '../components/ui/spinner'
 
 
-const WorkspaceContext = createContext<WorkspaceDto | null>(null)
+export interface WorkspaceContext extends WorkspaceDto {
+  workspaceId: number
+}
+
+const WorkspaceContext = createContext<WorkspaceContext | null>(null)
 
 export function WorkspaceProvider({ children }: PropsWithChildren) {
   const { urlName } = useParams({ from: '/workspace/$urlName' })
@@ -23,7 +27,7 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
   }
 
   return workspace && (
-    <WorkspaceContext.Provider value={workspace}>
+    <WorkspaceContext.Provider value={{ ...workspace, workspaceId: workspace.id }}>
       {children}
     </WorkspaceContext.Provider>
   )

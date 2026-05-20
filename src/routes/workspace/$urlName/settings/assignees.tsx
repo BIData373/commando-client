@@ -1,3 +1,5 @@
+import { useListAssignees } from '#/api/assignee/assignee'
+import { useListUsers } from '#/api/user/user'
 import { AssigneeCard } from '#/components/settings/AssigneeCard'
 import { AssigneeDialog } from '#/components/settings/AssigneeDialog'
 import { SectionTitle } from '#/components/settings/SectionTitle'
@@ -5,8 +7,7 @@ import { PrimaryButton } from '#/components/shared/PrimaryButton'
 import { Checkbox } from '#/components/ui/checkbox'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '#/components/ui/input-group'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/components/ui/tooltip'
-import { useAssignees } from '#/hooks/useAssignees'
-import { useUsers } from '#/hooks/useUsers'
+import { useWorkspace } from '#/providers/WorkspaceProvider'
 import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
 import styled from '@emotion/styled'
 import { createFileRoute } from '@tanstack/react-router'
@@ -18,14 +19,16 @@ export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({
 const activeTab = SETTINGS_TABS[SettingTabPath.ASSIGNEES]
 
 function SettingsAssignees() {
-  const [allowAssigneeStatusUpdate, setAllowAssigneeStatusUpdate] = useState(false)
+  const { workspaceId, assigneeStatusEditable } = useWorkspace()
+
+  const { data: assignees = [] } = useListAssignees({ workspaceId })
+  const { data: users = [] } = useListUsers()
+
+  const [allowAssigneeStatusUpdate, setAllowAssigneeStatusUpdate] = useState(assigneeStatusEditable)
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
-  const { data: assignees = [] } = useAssignees()
-  const { data: users = [] } = useUsers()
-
-  const userNames: Record<number, string> = Object.fromEntries(users.map((u) => [u.id, u.name]))
+  const userNames: Record<number, string> = Object.fromEntries(users.map((u) => [u.id, u.upn]))
 
   const filteredAssignees = searchQuery.trim()
     ? assignees.filter((a) => a.name.includes(searchQuery))
@@ -55,6 +58,7 @@ function SettingsAssignees() {
           <Checkbox
             id="allow-status-update"
             checked={allowAssigneeStatusUpdate}
+            defaultChecked={assigneeStatusEditable}
             onCheckedChange={handleCheckboxChange}
           />
           <CheckboxLabel htmlFor="allow-status-update">
