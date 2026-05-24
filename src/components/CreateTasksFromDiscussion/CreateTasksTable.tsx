@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import { DataTable } from '../ui/data-table'
 import columns, { type TaskRow, type TaskTableMeta } from './TasksColumns'
 import TaskAssigneeExpansion from './TaskAssigneeExpansion'
-import TaskRowDeleteButton from './TaskRowDeleteButton'
+import { TrashButton } from '../shared/TrashButton'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -97,13 +97,12 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
           getRowId={(row) => row.id}
           meta={meta}
           containerClassName="overflow-x-hidden"
-          renderRowOverlay={(row) => (
-            <TaskRowDeleteButton
-              hasTitle={row.original.title.trim().length > 0}
-              isLast={row.index === rows.length - 1}
-              onDelete={() => deleteRow(row.original.id)}
-            />
-          )}
+          renderRowOverlay={(row) => {
+            const canDelete = row.original.title.trim().length > 0 && row.index !== rows.length - 1
+            return canDelete ? (
+              <RowDeleteButton size={14} onClick={() => deleteRow(row.original.id)} />
+            ) : null
+          }}
           renderRowExpansion={(row) =>
             row.original.assigneeIds.length > 1 && expandedRows.has(row.original.id) ? (
               <TaskAssigneeExpansion
@@ -196,6 +195,28 @@ const TableOuterContainer = styled.div`
       outline: 1px solid var(--button-color-hover);
       outline-offset: -2px;
     }
+  }
+`
+
+const RowDeleteButton = styled(TrashButton)`
+  position: absolute;
+  inset-inline-start: -32px;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  display: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  padding: 0;
+  opacity: 1;
+
+  &:hover {
+    color: #ff4d4f;
+    background: rgba(255, 77, 79, 0.06);
+  }
+
+  tr:hover > & {
+    display: flex;
   }
 `
 

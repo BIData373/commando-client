@@ -65,7 +65,6 @@ function AssigneeRowList({
           <RowContainer>
             {showDetail && (
               <TextareaWrapper
-                dir="rtl"
                 onClick={() => handleWrapperClick(assignee.id)}
               >
                 {directiveTitle && (
@@ -149,6 +148,7 @@ const RowContainer = styled.div`
 `
 
 const TextareaWrapper = styled.div`
+  direction: rtl;
   flex: 1;
   min-width: 0;
   height: 52px;
