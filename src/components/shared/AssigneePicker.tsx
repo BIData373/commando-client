@@ -140,7 +140,7 @@ const AssigneeOptionName = styled.span<{ $selected: boolean }>`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: ${({ $selected }) => ($selected ? '#1677ff' : 'rgba(0, 0, 0, 0.88)')};
+  color: ${({ $selected }) => ($selected ? 'var(--tab-active-color)' : 'var(--text-color-2)')};
   white-space: nowrap;
 `
 
@@ -189,5 +189,5 @@ const AvatarCircle = styled.div<{ $color: AvatarColor }>`
 `
 
 const StyleCheck = styled(Check)`
-  color: #1677ff;
+  color: var(--tab-active-color);
 `
