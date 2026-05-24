@@ -52,7 +52,7 @@ function handleImportantChange(
   id: number,
   updateRow: TaskTableMeta['updateRow'],
 ) {
-  updateRow(id, { isImportant: checked === true })
+  updateRow(id, { isImportant: checked })
 }
 
 function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -105,7 +105,6 @@ const columns: ColumnDef<TaskRow>[] = [
             onChange={(e) => handleTextareaChange(e, id, TaskColumnId.Title, updateRow)}
             onKeyDown={handleCellKeyDown}
             placeholder="הנחיה"
-            dir="rtl"
             rows={1}
           />
         </TextareaCellWrapper>
@@ -155,7 +154,6 @@ const columns: ColumnDef<TaskRow>[] = [
             onChange={(e) => handleTextareaChange(e, id, TaskColumnId.Notes, updateRow)}
             onKeyDown={handleCellKeyDown}
             placeholder=""
-            dir="rtl"
             rows={1}
           />
         </TextareaCellWrapper>
