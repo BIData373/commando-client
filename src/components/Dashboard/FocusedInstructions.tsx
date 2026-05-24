@@ -58,7 +58,7 @@ const coreRowModel = getCoreRowModel()
 
 function getFilteredTasks(tab: FocusedTab, tasks: Task[]): Task[] {
   switch (tab) {
-    case FocusedTab.FLAGGED: return tasks
+    case FocusedTab.FLAGGED: return tasks.filter((t) => t.flagged)
     case FocusedTab.APPROACHING: return tasks.filter((t) => t.deadlineType === 'immediate')
     case FocusedTab.OVERDUE: return tasks.filter((t) => t.isOverdue)
   }

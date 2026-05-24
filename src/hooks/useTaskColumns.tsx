@@ -155,7 +155,7 @@ function useTaskColumns({
     },
     [TaskColumnId.Status]: {
       accessorKey: 'status',
-      header: ({ column }) => <ColumnHeaderWithActions label="סטטוס" column={column} filterOptions={filterOptionsMap['status']} />,
+      header: ({ column }) => <ColumnHeaderWithActions label="סטטוס" column={column} />,
       size: 100,
       filterFn: multiSelectFilter,
       sortingFn: (rowA, rowB) =>
@@ -171,7 +171,7 @@ function useTaskColumns({
     [TaskColumnId.Responsible]: {
       id: 'responsible',
       accessorFn: (row) => row.responsible?.name ?? 'ללא אחראי',
-      header: ({ column }) => <ColumnHeaderWithActions label="אחראי" column={column} filterOptions={filterOptionsMap['responsible']} />,
+      header: ({ column }) => <ColumnHeaderWithActions label="אחראי" column={column}  />,
       size: 115,
       filterFn: multiSelectFilter,
       sortingFn: (rowA, rowB) =>
@@ -185,7 +185,7 @@ function useTaskColumns({
     },
     [TaskColumnId.DeadlineType]: {
       accessorKey: 'deadlineType',
-      header: ({ column }) => <ColumnHeaderWithActions label='תג"ב' column={column} filterOptions={filterOptionsMap['deadlineType']} />,
+      header: ({ column }) => <ColumnHeaderWithActions label='תג"ב' column={column} />,
       size: 160,
       filterFn: multiSelectFilter,
       sortingFn: (rowA, rowB) => {
@@ -226,7 +226,7 @@ function useTaskColumns({
     },
     [TaskColumnId.DiscussionName]: {
       accessorKey: 'discussionName',
-      header: ({ column }) => <ColumnHeaderWithActions label="מקור" column={column} filterOptions={filterOptionsMap['discussionName']} />,
+      header: ({ column }) => <ColumnHeaderWithActions label="מקור" column={column}  />,
       size: 260,
       filterFn: multiSelectFilter,
       sortingFn: (rowA, rowB) =>
@@ -243,7 +243,7 @@ function useTaskColumns({
     },
     [TaskColumnId.Tags]: {
       accessorKey: 'tags',
-      header: ({ column }) => <ColumnHeaderWithActions label="נושא" column={column} filterOptions={filterOptionsMap['tags']} />,
+      header: ({ column }) => <ColumnHeaderWithActions label="נושא" column={column}  />,
       size: 160,
       enableSorting: false,
       filterFn: multiSelectFilter,

@@ -7,7 +7,6 @@ import { DashboardDatePicker } from '#/components/Dashboard/DashboardDatePicker/
 import { TitleSection } from '#/components/Dashboard/TileSection'
 import { INITIAL_TASKS, type Task } from '#/data/Tasks'
 import { DATE_TYPE } from '#/utils/dataTypeUtils'
-import { DirectiveStatus } from '#/utils/statusUtils'
 import FocusedInstructions from '../../../components/Dashboard/FocusedInstructions'
 import RecentlyCompleted from '../../../components/Dashboard/RecentlyCompleted'
 import StatusCard from '../../../components/Dashboard/StatusCard'

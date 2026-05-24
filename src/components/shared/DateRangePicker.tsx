@@ -18,6 +18,7 @@ interface DateRangePickerProps {
   triggerButton: (props: DateRangePickerSlotProps) => ReactNode
   header?: (props: DateRangePickerSlotProps) => ReactNode
   footer?: (props: DateRangePickerSlotProps) => ReactNode
+  onBlur?: () => void
 }
 
 interface PickerState {
@@ -25,7 +26,7 @@ interface PickerState {
   range: DateRange | undefined
 }
 
-function DateRangePicker({ triggerButton, header, footer }: DateRangePickerProps) {
+function DateRangePicker({ triggerButton, header, footer, onBlur }: DateRangePickerProps) {
   const [state, setState] = useState<PickerState>({
     open: false,
     range: undefined,
@@ -45,6 +46,7 @@ function DateRangePicker({ triggerButton, header, footer }: DateRangePickerProps
 
   function handleBlur() {
     setField('range', undefined)
+    onBlur?.()
   }
 
   function handleClose() {

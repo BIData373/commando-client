@@ -27,9 +27,9 @@ function TaskFilters({
 }: TaskFiltersProps) {
   const hasActiveFilters = activeQuickFilters.size > 0 || activeTopicFilters.size > 0
 
-  const overdueCount = tasks.filter((t) => matchesQuickFilter(t, 'overdue')).length
-  const approachingCount = tasks.filter((t) => matchesQuickFilter(t, 'approaching')).length
-  const flaggedCount = tasks.filter((t) => matchesQuickFilter(t, 'flagged')).length
+  const overdueCount = tasks.filter((t) => matchesQuickFilter(t,QuickFilter.OVERDUE)).length
+  const approachingCount = tasks.filter((t) => matchesQuickFilter(t, QuickFilter.APPROACHING)).length
+  const flaggedCount = tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED)).length
 
   return (
     <ToolbarEnd>
