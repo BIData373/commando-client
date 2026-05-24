@@ -1,13 +1,14 @@
 import styled from '@emotion/styled'
 import { type ColumnDef, type ColumnFiltersState, type FilterFn, type RowSelectionState, type SortingState } from '@tanstack/react-table'
-import { differenceInDays, format, startOfToday } from 'date-fns'
+import { differenceInDays, startOfToday } from 'date-fns'
+import { formatDateShort } from '../../functions/date-utils'
 import { AlertTriangle, MoreVertical } from 'lucide-react'
 import { useState } from 'react'
 import { BsPaperclip as Paperclip } from 'react-icons/bs'
 import type { Task } from '../../data/Tasks'
-import { DEADLINE_LABELS, type DeadlineType } from '../../functions/filter-utils'
 import FlagIcon from '../shared/FlagIcon'
 import HighlightMatch from '../shared/HighlightMatch'
+import DeadlineTag, { DeadlineType, DEADLINE_LABELS } from '../shared/DeadlineTag'
 import type { DirectiveStatus } from '../shared/StatusTag'
 import { STATUS_LABELS } from '../shared/StatusTag'
 import { Checkbox } from '../ui/checkbox'
@@ -182,7 +183,7 @@ function TaskTable({
       cell: ({ row: { original: { deadlineType, dueDate } } }) => {
         const today = startOfToday()
         const daysUntil = dueDate ? differenceInDays(dueDate, today) : null
-        const isOverdue = daysUntil !== null && daysUntil < 0 && deadlineType !== 'immediate'
+        const isOverdue = daysUntil !== null && daysUntil < 0 && deadlineType !== DeadlineType.Immediate
         const isApproaching = !isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
 
         const overdueTooltip = `חריגה של ${Math.abs(daysUntil!)} ימים`
@@ -190,10 +191,10 @@ function TaskTable({
 
         return (
           <DeadlineCell>
-            {deadlineType !== 'date' && (
+            {deadlineType !== DeadlineType.Date && (
               <DeadlineTag $type={deadlineType}>{DEADLINE_LABELS[deadlineType]}</DeadlineTag>
             )}
-            {dueDate && <DeadlineDateText>{format(dueDate, 'dd/MM/yy')}</DeadlineDateText>}
+            {dueDate && <DeadlineDateText>{formatDateShort(dueDate)}</DeadlineDateText>}
             {(isOverdue || isApproaching) && (
               <DeadlineWarning>
                 <Tooltip>
@@ -251,7 +252,7 @@ function TaskTable({
       size: 132,
       enableColumnFilter: false,
       sortingFn: 'datetime',
-      cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
+      cell: ({ getValue }) => <DateText>{formatDateShort(getValue<Date>())}</DateText>,
     },
     updatedAt: {
       accessorKey: 'updatedAt',
@@ -259,7 +260,7 @@ function TaskTable({
       size: 100,
       enableColumnFilter: false,
       sortingFn: 'datetime',
-      cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
+      cell: ({ getValue }) => <DateText>{formatDateShort(getValue<Date>())}</DateText>,
     },
   }
 
@@ -484,37 +485,6 @@ const OverdueIcon = styled(AlertTriangle)`
 const ApproachingIcon = styled(AlertTriangle)`
   color: rgba(212, 107, 8, 0.9);
   flex-shrink: 0;
-`
-
-const DeadlineTag = styled.span<{ $type: DeadlineType }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  ${({ $type }) => {
-    switch ($type) {
-      case 'ongoing':
-        return `
-          background: rgba(230, 244, 255, 0.8);
-          border: 1px solid rgba(145, 202, 255, 0.8);
-          color: rgba(22, 119, 255, 0.9);
-        `
-      case 'immediate':
-        return `
-          background: #FFF1F0;
-          border: 1px solid #FFA39E;
-          color: #F5222D;
-        `
-      case 'date':
-        return `
-          background: var(--chip-bg);
-          border: 1px solid var(--chip-line);
-          color: var(--sea-ink-soft);
-        `
-    }
-  }}
 `
 
 const SourceCell = styled.div`
