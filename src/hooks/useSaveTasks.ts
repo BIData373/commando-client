@@ -1,7 +1,7 @@
 import { startOfDay } from 'date-fns'
-import { useTasks } from '../providers/TasksProvider'
+import { useTasks, type NewTaskInput } from '../providers/TasksProvider'
 import { MOCK_ASSIGNEES } from '../data/Assignees'
-import type { DeadlineType } from '../components/shared/DeadlineTag'
+import { DeadlineType } from '../components/shared/DeadlineTag'
 
 interface TaskInput {
   title: string
@@ -27,18 +27,18 @@ export function useSaveTasks() {
   function saveTasks(inputs: TaskInput[], discussion: DiscussionFields) {
     const today = startOfDay(new Date())
 
-    const newTasks: Parameters<typeof addTasks>[0] = []
+    const newTasks: NewTaskInput[] = []
 
     for (const input of inputs) {
       const isOverdue =
-        input.deadlineType === 'date' && input.dueDate ? input.dueDate < today : false
+        input.deadlineType === DeadlineType.Date && input.dueDate ? input.dueDate < today : false
 
       const sharedFields = {
         title: input.title.trim(),
         flagged: input.isImportant,
         status: 'not_started' as const,
-        deadlineType: input.deadlineType ?? ('ongoing' as const),
-        dueDate: input.deadlineType === 'immediate' ? null : input.dueDate,
+        deadlineType: input.deadlineType ?? DeadlineType.Ongoing,
+        dueDate: input.deadlineType === DeadlineType.Immediate ? null : input.dueDate,
         isOverdue,
         discussionName: discussion.discussionName,
         discussionDate: discussion.discussionDate,

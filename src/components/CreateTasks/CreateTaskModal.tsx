@@ -16,7 +16,7 @@ import TopicField from './TopicField'
 import NotesField from './NotesField'
 import type { DiscussionSource } from './SourceField'
 import { useSaveTasks } from '../../hooks/useSaveTasks'
-import type { DeadlineType } from '../shared/DeadlineTag'
+import { DeadlineType } from '../shared/DeadlineTag'
 import { formatDate, parseDate } from '../../functions/date-utils'
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -38,7 +38,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
   function handleDeadlineTypeChange(type: DeadlineType) {
     setField('deadlineType', type)
-    if (type === 'immediate') {
+    if (type === DeadlineType.Immediate) {
       setField('dueDate', null)
     }
   }

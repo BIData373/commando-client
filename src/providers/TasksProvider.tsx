@@ -2,7 +2,7 @@ import { createContext, useContext, useState, type ReactNode } from 'react'
 import type { DirectiveStatus } from '../components/shared/StatusTag'
 import { INITIAL_TASKS, type Task } from '../data/Tasks'
 
-type NewTaskInput = Omit<Task, 'id' | 'createdAt' | 'updatedAt'> & { groupKey?: string }
+export type NewTaskInput = Omit<Task, 'id' | 'createdAt' | 'updatedAt'> & { groupKey?: string }
 
 interface TasksContextValue {
   tasks: Task[]

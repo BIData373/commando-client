@@ -26,10 +26,10 @@ export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter((c) => c.id !== 'id
 export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id)
 
 interface ColumnVisibilityDropdownProps {
-  columnOrder: string[]
-  hiddenColumns: Set<string>
-  onColumnOrderChange: (order: string[]) => void
-  onToggleColumn: (columnId: string) => void
+  columnOrder: TaskColumn[]
+  hiddenColumns: Set<TaskColumn>
+  onColumnOrderChange: (order: TaskColumn[]) => void
+  onToggleColumn: (columnId: TaskColumn) => void
 }
 
 function ColumnVisibilityDropdown({
