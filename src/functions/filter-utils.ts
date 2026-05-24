@@ -2,6 +2,23 @@ import { differenceInDays, startOfToday } from 'date-fns'
 import type { Task } from '../data/Tasks'
 import type { QuickFilter } from '../components/Tasks/TaskFilters'
 
+// ─── Shared Types ────────────────────────────────────────────────────────────
+
+export type DeadlineType = 'date' | 'immediate' | 'ongoing'
+
+export const DEADLINE_LABELS: Record<DeadlineType, string> = {
+  date: 'תאריך',
+  immediate: 'מיידי',
+  ongoing: 'שוטף',
+}
+
+export interface FilterOption {
+  value: string
+  label: string
+}
+
+// ─── Quick Filters ───────────────────────────────────────────────────────────
+
 function matchesQuickFilter(task: Task, filter: QuickFilter): boolean {
   const today = startOfToday()
   const daysUntil = task.dueDate ? differenceInDays(task.dueDate, today) : null
@@ -15,20 +32,7 @@ function matchesQuickFilter(task: Task, filter: QuickFilter): boolean {
   }
 }
 
-function applyQuickFilters(tasks: Task[], activeQuickFilters: Set<QuickFilter>): Task[] {
-  if (activeQuickFilters.size === 0) return tasks
-  return tasks.filter((t) => Array.from(activeQuickFilters).some((f) => matchesQuickFilter(t, f)))
-}
-
-function applyTopicFilters(tasks: Task[], activeTopicFilters: Set<string>): Task[] {
-  if (activeTopicFilters.size === 0) return tasks
-  return tasks.filter((t) => t.tags.some((tag) => activeTopicFilters.has(tag)))
-}
-
-function applySearch(tasks: Task[], searchQuery: string): Task[] {
-  if (!searchQuery) return tasks
-  return tasks.filter((t) => t.title.includes(searchQuery) || t.notes.includes(searchQuery))
-}
+// ─── Combined ────────────────────────────────────────────────────────────────
 
 function applyAllFilters(
   tasks: Task[],
@@ -50,10 +54,13 @@ function applyAllFilters(
   }
 
   if (searchQuery) {
-    result = result.filter((t) => t.title.includes(searchQuery) || t.notes.includes(searchQuery))
+    result = result.filter((t) => t.title.includes(searchQuery) || t.details?.includes(searchQuery) || t.notes.includes(searchQuery))
   }
 
   return result
 }
 
-export { matchesQuickFilter, applyQuickFilters, applyTopicFilters, applySearch, applyAllFilters }
+export {
+  matchesQuickFilter,
+  applyAllFilters,
+}

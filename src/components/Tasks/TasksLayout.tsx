@@ -1,20 +1,20 @@
 import styled from '@emotion/styled'
 import { Outlet, useNavigate } from '@tanstack/react-router'
 import { ChevronDown, Plus } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { exportTasksToExcel } from '../../functions/exportExcel'
-import { applyAllFilters } from '../../functions/filterUtils'
-import { useTasks } from '../../providers/TasksProvider'
-import { useTitleBar } from '../../providers/TitleBarProvider'
-import { PrimaryButton } from '../shared/PrimaryButton'
-import { type DirectiveStatus } from '../shared/StatusTag'
 import { TooltipProvider } from '../ui/tooltip'
-import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
+import { type DirectiveStatus } from '../shared/StatusTag'
 import { NoResultsFound } from './NoResultsFound'
-import { TaskCardGrid } from './TaskCardGrid'
-import { type QuickFilter, TaskFilters } from './TaskFilters'
 import { TaskSearchBar } from './TaskSearchBar'
+import { TaskFilters, type QuickFilter } from './TaskFilters'
 import { TaskTable } from './TaskTable'
+import { DEFAULT_COLUMN_ORDER, type TaskColumn } from './ColumnVisibilityDropdown'
+import { TaskCardGrid } from './TaskCardGrid'
+import { exportTasksToExcel } from '../../functions/export-excel'
+import { applyAllFilters } from '../../functions/filter-utils'
+import { useTitleBar } from '../../providers/TitleBarProvider'
+import { useMemo, useState } from 'react'
+import { useTasks } from '../../providers/TasksProvider'
+import { PrimaryButton } from '../shared/PrimaryButton'
 
 export type View = 'TABLE' | 'CARDS'
 
@@ -30,9 +30,8 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set())
   const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(new Set())
   const [columnOrder, setColumnOrder] = useState(DEFAULT_COLUMN_ORDER)
-  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set())
-
-  function handleToggleColumn(columnId: string) {
+  const [hiddenColumns, setHiddenColumns] = useState<Set<TaskColumn>>(new Set(['notes', 'updatedAt']))
+  function handleToggleColumn(columnId: TaskColumn) {
     setHiddenColumns((prev) => {
       const next = new Set(prev)
       if (next.has(columnId)) {
@@ -139,6 +138,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
             onToggleColumn={handleToggleColumn}
           />
           <TaskFilters
+            tasks={tasks}
             activeQuickFilters={activeQuickFilters}
             activeTopicFilters={activeTopicFilters}
             allTopics={allTopics}
@@ -219,7 +219,6 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   padding-inline: 12px;
   border: none;
   border-radius: 6px;
-  font-family: 'Rubik', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
