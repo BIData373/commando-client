@@ -56,10 +56,10 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
             {!deadlineType ? (
               <PlaceholderText>תג&quot;ב</PlaceholderText>
             ) : deadlineType === DeadlineType.Immediate ? (
-              <DeadlineTag $type={DeadlineType.Immediate}>מיידי</DeadlineTag>
+              <DeadlineTag $type={DeadlineType.Immediate}>{DEADLINE_LABELS[DeadlineType.Immediate]}</DeadlineTag>
             ) : deadlineType === DeadlineType.Ongoing ? (
               <DisplayRow>
-                <DeadlineTag $type={DeadlineType.Ongoing}>שוטף</DeadlineTag>
+                <DeadlineTag $type={DeadlineType.Ongoing}>{DEADLINE_LABELS[DeadlineType.Ongoing]}</DeadlineTag>
                 {dueDate && <DateText>{formatDateShort(dueDate)}</DateText>}
               </DisplayRow>
             ) : dueDate ? (
