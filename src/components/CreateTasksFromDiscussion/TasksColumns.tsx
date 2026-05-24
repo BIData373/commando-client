@@ -114,7 +114,7 @@ const columns: ColumnDef<TaskRow>[] = [
   {
     id: 'deadline',
     size: 138,
-    header: () => <HeaderLabel>תג&quot;ב</HeaderLabel>,
+    header: () => <HeaderLabel>{`תג"ב`}</HeaderLabel>,
     cell: ({ row: { original: { id, dueDate, deadlineType } }, table }) => {
       const { updateRow } = table.options.meta as TaskTableMeta
       return (
