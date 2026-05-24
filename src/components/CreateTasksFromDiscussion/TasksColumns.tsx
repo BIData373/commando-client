@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Checkbox } from '../ui/checkbox'
-import { type DeadlineType } from '../shared/DeadlineTag'
+import { DeadlineType } from '../shared/DeadlineTag'
 import FlagIcon from '../shared/FlagIcon'
 import ImportantFlagTooltip from '../shared/ImportantFlagTooltip'
 import DeadlineCell from './DeadlineCell'
@@ -14,7 +14,7 @@ export enum TaskColumnId {
 }
 
 export interface TaskRow {
-  id: string
+  id: number
   title: string
   deadlineType: DeadlineType | null
   dueDate: Date | null
@@ -25,9 +25,9 @@ export interface TaskRow {
 }
 
 export interface TaskTableMeta {
-  updateRow: (id: string, updates: Partial<TaskRow>) => void
-  expandedRows: Set<string>
-  toggleRowExpansion: (id: string) => void
+  updateRow: (id: number, updates: Partial<TaskRow>) => void
+  expandedRows: Set<number>
+  toggleRowExpansion: (id: number) => void
 }
 
 // ─── Cell Handlers ─────────────────────────────────────────────────────────
@@ -36,7 +36,7 @@ const MAX_HEIGHT = 40
 
 function handleTextareaChange(
   e: React.ChangeEvent<HTMLTextAreaElement>,
-  id: string,
+  id: number,
   field: TaskColumnId,
   updateRow: TaskTableMeta['updateRow'],
 ) {
@@ -48,7 +48,7 @@ function handleTextareaChange(
 
 function handleImportantChange(
   checked: boolean,
-  id: string,
+  id: number,
   updateRow: TaskTableMeta['updateRow'],
 ) {
   updateRow(id, { isImportant: checked === true })

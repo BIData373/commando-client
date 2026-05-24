@@ -12,9 +12,11 @@ interface CreateTasksTableProps {
   onBack: () => void
 }
 
+let nextRowId = 1
+
 function createEmptyRow(): TaskRow {
   return {
-    id: crypto.randomUUID(),
+    id: nextRowId++,
     title: '',
     deadlineType: null,
     dueDate: null,
@@ -29,9 +31,9 @@ function createEmptyRow(): TaskRow {
 
 function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
   const [rows, setRows] = useState<TaskRow[]>([createEmptyRow()])
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set())
 
-  function removeExpandedRow(id: string) {
+  function removeExpandedRow(id: number) {
     setExpandedRows((prev) => {
       const next = new Set(prev)
       next.delete(id)
@@ -39,7 +41,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
     })
   }
 
-  function updateRow(id: string, updates: Partial<TaskRow>) {
+  function updateRow(id: number, updates: Partial<TaskRow>) {
     setRows((prev) => {
       const next = prev.map((r) => (r.id === id ? { ...r, ...updates } : r))
       const last = next[next.length - 1]
@@ -59,7 +61,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
     }
   }
 
-  function toggleRowExpansion(id: string) {
+  function toggleRowExpansion(id: number) {
     setExpandedRows((prev) => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id)
@@ -68,7 +70,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
     })
   }
 
-  function deleteRow(id: string) {
+  function deleteRow(id: number) {
     setRows((prev) => {
       const next = prev.filter((r) => r.id !== id)
       if (next.length === 0) return [createEmptyRow()]
@@ -94,7 +96,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
         <DataTable
           columns={columns}
           data={rows}
-          getRowId={(row) => row.id}
+          getRowId={(row) => String(row.id)}
           meta={meta}
           containerClassName="overflow-x-hidden"
           renderRowOverlay={(row) => {

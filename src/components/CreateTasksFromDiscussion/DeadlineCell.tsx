@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import { ChevronLeft } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import DatePicker, { CalendarMode } from '../shared/DatePicker'
-import DeadlineTag, { type DeadlineType, DEADLINE_LABELS } from '../shared/DeadlineTag'
+import DeadlineTag, { DeadlineType, DEADLINE_LABELS } from '../shared/DeadlineTag'
 import { formatDateShort } from '../../functions/date-utils'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -18,18 +18,19 @@ interface DeadlineCellProps {
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 const DEADLINE_TYPES = Object.keys(DEADLINE_LABELS) as DeadlineType[]
+const TYPES_WITH_CALENDAR: DeadlineType[] = [DeadlineType.Date, DeadlineType.Ongoing]
 
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChange }: DeadlineCellProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [calendarFor, setCalendarFor] = useState<'date' | 'ongoing' | null>(null)
+  const [calendarFor, setCalendarFor] = useState<DeadlineType.Date | DeadlineType.Ongoing | null>(null)
 
   function handleOptionClick(type: DeadlineType) {
     onDeadlineTypeChange(type)
-    if (type === 'date' || type === 'ongoing') {
-      setCalendarFor(type)
+    if (TYPES_WITH_CALENDAR.includes(type)) {
+      setCalendarFor(type as DeadlineType.Date | DeadlineType.Ongoing)
     } else {
       setCalendarFor(null)
       setIsOpen(false)
@@ -54,11 +55,11 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
           <DeadlineTrigger>
             {!deadlineType ? (
               <PlaceholderText>תג&quot;ב</PlaceholderText>
-            ) : deadlineType === 'immediate' ? (
-              <DeadlineTag $type="immediate">מיידי</DeadlineTag>
-            ) : deadlineType === 'ongoing' ? (
+            ) : deadlineType === DeadlineType.Immediate ? (
+              <DeadlineTag $type={DeadlineType.Immediate}>מיידי</DeadlineTag>
+            ) : deadlineType === DeadlineType.Ongoing ? (
               <DisplayRow>
-                <DeadlineTag $type="ongoing">שוטף</DeadlineTag>
+                <DeadlineTag $type={DeadlineType.Ongoing}>שוטף</DeadlineTag>
                 {dueDate && <DateText>{formatDateShort(dueDate)}</DateText>}
               </DisplayRow>
             ) : dueDate ? (
@@ -81,7 +82,7 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
               >
                 <DeadlineOptionText>{DEADLINE_LABELS[type]}</DeadlineOptionText>
 
-                {(type === 'date' || type === 'ongoing') && (
+                {TYPES_WITH_CALENDAR.includes(type) && (
                   <ChevronLeft size={12} />
                 )}
               </DeadlineOption>

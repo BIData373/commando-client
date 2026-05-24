@@ -4,7 +4,7 @@ import { formatDateShort } from '../../functions/date-utils'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { StatusTag } from '../shared/StatusTag'
 import type { Task } from '../../data/Tasks'
-import DeadlineTag, { DEADLINE_LABELS } from '../shared/DeadlineTag'
+import DeadlineTag, { DeadlineType, DEADLINE_LABELS } from '../shared/DeadlineTag'
 
 interface TaskCardGridProps {
   tasks: Task[]
@@ -27,7 +27,7 @@ function TaskCardGrid({ tasks }: TaskCardGridProps) {
             <StatusTag status={task.status} />
           </CardContent>
           <CardFooter>
-            {task.deadlineType !== 'date' && (
+            {task.deadlineType !== DeadlineType.Date && (
               <DeadlineTag $type={task.deadlineType}>{DEADLINE_LABELS[task.deadlineType]}</DeadlineTag>
             )}
             {task.dueDate && (
