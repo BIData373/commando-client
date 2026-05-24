@@ -41,6 +41,7 @@ function handleTextareaChange(
   updateRow: TaskTableMeta['updateRow'],
 ) {
   const textarea = e.target
+  // Reset height to recalculate scrollHeight, then set to actual content height
   textarea.style.height = 'auto'
   textarea.style.height = `${Math.min(textarea.scrollHeight, MAX_HEIGHT)}px`
   updateRow(id, { [field]: textarea.value })
