@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import DatePicker, { CalendarMode } from '../shared/DatePicker'
-import type { DeadlineType } from '../shared/DeadlineTag'
+import { DeadlineType } from '../shared/DeadlineTag'
 import { formatDate } from '#/functions/date-utils'
 
 
@@ -26,7 +26,7 @@ function DeadlineField({ deadlineType, dueDate, onDeadlineTypeChange, onDateChan
     setIsDateOpen(false)
   }
 
-  const showDatePicker = deadlineType !== 'immediate'
+  const showDatePicker = deadlineType !== DeadlineType.Immediate
 
   return (
     <FormItem>
@@ -36,28 +36,28 @@ function DeadlineField({ deadlineType, dueDate, onDeadlineTypeChange, onDateChan
       <DeadlineRow>
         <SegmentedControl>
           <SegmentedItem
-            $selected={deadlineType === 'date'}
-            onClick={() => onDeadlineTypeChange('date')}
+            $selected={deadlineType === DeadlineType.Date}
+            onClick={() => onDeadlineTypeChange(DeadlineType.Date)}
           >
             תאריך
           </SegmentedItem>
           <SegmentedItem
-            $selected={deadlineType === 'immediate'}
-            onClick={() => onDeadlineTypeChange('immediate')}
+            $selected={deadlineType === DeadlineType.Immediate}
+            onClick={() => onDeadlineTypeChange(DeadlineType.Immediate)}
           >
             מיידי
           </SegmentedItem>
           <SegmentedItem
-            $selected={deadlineType === 'ongoing'}
-            onClick={() => onDeadlineTypeChange('ongoing')}
+            $selected={deadlineType === DeadlineType.Ongoing}
+            onClick={() => onDeadlineTypeChange(DeadlineType.Ongoing)}
           >
             שוטף
           </SegmentedItem>
         </SegmentedControl>
-        {deadlineType === 'immediate' && (
+        {deadlineType === DeadlineType.Immediate && (
           <HintText>לביצוע בהקדם</HintText>
         )}
-        {deadlineType === 'ongoing' && (
+        {deadlineType === DeadlineType.Ongoing && (
           <HintText>עד (אופציונלי)</HintText>
         )}
         {showDatePicker && (

@@ -8,7 +8,7 @@ import { BsPaperclip as Paperclip } from 'react-icons/bs'
 import type { Task } from '../../data/Tasks'
 import FlagIcon from '../shared/FlagIcon'
 import HighlightMatch from '../shared/HighlightMatch'
-import DeadlineTag, { DEADLINE_LABELS } from '../shared/DeadlineTag'
+import DeadlineTag, { DeadlineType, DEADLINE_LABELS } from '../shared/DeadlineTag'
 import type { DirectiveStatus } from '../shared/StatusTag'
 import { STATUS_LABELS } from '../shared/StatusTag'
 import { Checkbox } from '../ui/checkbox'
@@ -183,7 +183,7 @@ function TaskTable({
       cell: ({ row: { original: { deadlineType, dueDate } } }) => {
         const today = startOfToday()
         const daysUntil = dueDate ? differenceInDays(dueDate, today) : null
-        const isOverdue = daysUntil !== null && daysUntil < 0 && deadlineType !== 'immediate'
+        const isOverdue = daysUntil !== null && daysUntil < 0 && deadlineType !== DeadlineType.Immediate
         const isApproaching = !isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
 
         const overdueTooltip = `חריגה של ${Math.abs(daysUntil!)} ימים`
@@ -191,7 +191,7 @@ function TaskTable({
 
         return (
           <DeadlineCell>
-            {deadlineType !== 'date' && (
+            {deadlineType !== DeadlineType.Date && (
               <DeadlineTag $type={deadlineType}>{DEADLINE_LABELS[deadlineType]}</DeadlineTag>
             )}
             {dueDate && <DeadlineDateText>{formatDateShort(dueDate)}</DeadlineDateText>}
