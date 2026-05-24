@@ -1,5 +1,5 @@
 import { startOfDay } from 'date-fns'
-import { useTasks } from '../providers/TasksProvider'
+import { useTasks, type NewTaskInput } from '../providers/TasksProvider'
 import { MOCK_ASSIGNEES } from '../data/Assignees'
 import { DeadlineType } from '../components/shared/DeadlineTag'
 
@@ -27,7 +27,7 @@ export function useSaveTasks() {
   function saveTasks(inputs: TaskInput[], discussion: DiscussionFields) {
     const today = startOfDay(new Date())
 
-    const newTasks: Parameters<typeof addTasks>[0] = []
+    const newTasks: NewTaskInput[] = []
 
     for (const input of inputs) {
       const isOverdue =
