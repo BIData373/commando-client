@@ -9,30 +9,29 @@ import { NoResultsFound } from '../Tasks/NoResultsFound'
 import { useTitleBar } from '../../providers/TitleBarProvider'
 import { PERSONAL_TASKS, type PersonalTask, type Workspace } from '../../data/PersonalTasks'
 import { applyAllFilters, buildFilterOptionsMap } from '../../functions/filter-utils'
-import { TaskColumnId } from '../../hooks/useTaskColumns'
 import type { DirectiveStatus } from '../shared/StatusTag'
 import { isThisWeek } from 'date-fns'
 import type { TasksLayoutProps, View } from '../Tasks/TasksLayout'
 
-const PERSONAL_DEFAULT_COLUMN_ORDER = [
-  TaskColumnId.Title,
-  TaskColumnId.Status,
-  TaskColumnId.Responsible,
-  TaskColumnId.DeadlineType,
-  TaskColumnId.DiscussionName,
-  TaskColumnId.Notes,
+const PERSONAL_DEFAULT_COLUMN_ORDER: string[] = [
+  'title',
+  'status',
+  'responsible',
+  'deadlineType',
+  'discussionName',
+  'notes',
   'workspace',
-  TaskColumnId.CreatedAt,
+  'createdAt',
 ]
 
-const PERSONAL_DEFAULT_HIDDEN = new Set(['notes'])
+const PERSONAL_DEFAULT_HIDDEN = new Set<string>(['notes'])
 
 function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
   const [tasks, setTasks] = useState<PersonalTask[]>(PERSONAL_TASKS)
   const [searchQuery, setSearchQuery] = useState('')
   const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set())
   const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<Set<number>>(new Set())
-  const [columnOrder, setColumnOrder] = useState([TaskColumnId.SerialNumber, ...PERSONAL_DEFAULT_COLUMN_ORDER])
+  const [columnOrder, setColumnOrder] = useState(['id', ...PERSONAL_DEFAULT_COLUMN_ORDER])
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set(PERSONAL_DEFAULT_HIDDEN))
 
   const workspaces = useMemo(() => {

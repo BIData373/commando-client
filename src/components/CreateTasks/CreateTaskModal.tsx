@@ -17,9 +17,9 @@ import NotesField from './NotesField'
 import type { DiscussionSource } from './SourceField'
 import { useSaveTasks } from '../../hooks/useSaveTasks'
 import type { DeadlineType } from '../shared/DeadlineTag'
+import { formatDate, parseDate } from '../../functions/date-utils'
 
 // ─── Component ───────────────────────────────────────────────────────────────
-
 interface CreateTaskModalProps {
   onClose: () => void
 }
@@ -91,7 +91,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
         return {
           ...prev,
           source: discussion.name,
-          sourceDate: discussion.date,
+          sourceDate: parseDate(discussion.date),
           topics: mergedTopics,
           linkedSource: discussion,
         }
@@ -102,7 +102,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
       return {
         ...prev,
         source: name,
-        sourceDate: '',
+        sourceDate: null,
         topics: topicsWithoutPrevSource,
         linkedSource: null,
       }
@@ -111,10 +111,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
   function handleSourceDateSelect(date: Date | undefined) {
     if (date) {
-      const day = date.getDate().toString().padStart(2, '0')
-      const month = (date.getMonth() + 1).toString().padStart(2, '0')
-      const year = date.getFullYear().toString().padStart(2, '0')
-      setField('sourceDate', `${day}/${month}/${year}`)
+      setField('sourceDate', date)
     }
   }
 
@@ -145,7 +142,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
       }],
       {
         discussionName: form.source.trim(),
-        discussionDate: form.sourceDate,
+        discussionDate: form.sourceDate ? formatDate(form.sourceDate) : '',
         hasAttachment: form.linkedSource?.hasAttachment ?? false,
         tags: form.topics,
       },

@@ -31,7 +31,7 @@ const Button = styled.button<{ $height?: number, $width?: number }>`
   padding: 0 15px;
   border: none;
   border-radius: 8px;
-  background: var(--gradient);
+  background: var(--default-linear);
   color: white;
   font-family: 'Rubik', sans-serif;
   font-size: 16px;

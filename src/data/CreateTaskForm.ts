@@ -9,7 +9,7 @@ export interface FormState {
   assigneeDetails: Record<number, string>
   isImportant: boolean
   source: string
-  sourceDate: string
+  sourceDate: Date | null
   topics: string[]
   notes: string
   isDetailsExpanded: boolean
@@ -24,7 +24,7 @@ export const INITIAL_FORM: FormState = {
   assigneeDetails: {},
   isImportant: false,
   source: '',
-  sourceDate: '',
+  sourceDate: null,
   topics: [],
   notes: '',
   isDetailsExpanded: false,

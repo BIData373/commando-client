@@ -1,19 +1,18 @@
-import { useState } from 'react'
 import styled from '@emotion/styled'
 import { type ColumnFiltersState, type RowSelectionState, type SortingState } from '@tanstack/react-table'
+import { useMemo, useState } from 'react'
 import { DataTable } from '../ui/data-table'
 import { BulkActionsBar } from './BulkActionsBar'
 import type { Task } from '../../data/Tasks'
 import type { DirectiveStatus } from '../shared/StatusTag'
-import { type FilterOption } from '../../functions/filter-utils'
-import { useTaskColumns, type TaskColumnId } from '../../hooks/useTaskColumns'
+import { useTaskColumns, type TaskColumn } from '../../hooks/useTaskColumns'
+import { buildFilterOptionsMap } from '../../functions/filter-utils'
 
 interface TaskTableProps {
   tasks: Task[]
   searchQuery: string
   columnOrder: string[]
   hiddenColumns: Set<string>
-  filterOptionsMap: Record<string, FilterOption[]>
   onUpdateStatus: (taskId: number, status: DirectiveStatus) => void
   onEdit: (taskId: number) => void
   onArchive: (taskIds: number[]) => void
@@ -27,7 +26,6 @@ function TaskTable({
   searchQuery,
   columnOrder,
   hiddenColumns,
-  filterOptionsMap,
   onUpdateStatus,
   onEdit,
   onArchive,
@@ -64,8 +62,10 @@ function TaskTable({
     }
   }
 
+  const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
+
   const visibleColumns = columnOrder
-    .filter((id) => !hiddenColumns.has(id)) as TaskColumnId[]
+    .filter((id) => !hiddenColumns.has(id)) as TaskColumn[]
 
   const { columns } = useTaskColumns({
     visibleColumns,

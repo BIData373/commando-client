@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import { Download, FilterX, Search } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { ColumnVisibilityDropdown } from '../Tasks/ColumnVisibilityDropdown'
-
 interface FilterBarProps {
   children: ReactNode
   hasActiveFilters: boolean

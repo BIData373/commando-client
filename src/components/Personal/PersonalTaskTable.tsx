@@ -7,7 +7,7 @@ import { ColumnHeaderWithActions } from '../Tasks/ColumnHeaderWithActions'
 import type { PersonalTask } from '../../data/PersonalTasks'
 import type { DirectiveStatus } from '../shared/StatusTag'
 import { type FilterOption } from '../../functions/filter-utils'
-import { useTaskColumns, type TaskColumnId } from '../../hooks/useTaskColumns'
+import { useTaskColumns, type TaskColumn } from '../../hooks/useTaskColumns'
 import type { Task } from '../../data/Tasks'
 
 interface PersonalTaskTableProps {
@@ -63,7 +63,7 @@ function PersonalTaskTable({
   }
 
   const visibleColumns = columnOrder
-    .filter((id) => !hiddenColumns.has(id) && id !== 'workspace') as TaskColumnId[]
+    .filter((id) => !hiddenColumns.has(id) && id !== 'workspace') as TaskColumn[]
 
   const { columns: baseColumns } = useTaskColumns({
     visibleColumns,

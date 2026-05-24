@@ -29,7 +29,6 @@ body,
 
 :root {
   --z-dropdown: 10;
-  --x:oklch(88.531% 0.0001 271.152);
   --background: oklch(1.00 0 0);
   --foreground: oklch(0.14 0 0);
   --card: oklch(1.00 0 0);
@@ -61,6 +60,8 @@ body,
   --sidebar-accent-foreground: oklch(0.20 0 0);
   --sidebar-border: oklch(0.92 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  --Background-color-bg-text-active: rgba(0, 0, 0, 0.15);
 
   --text-color: rgba(0, 0, 0, 0.65);
   --text-color-2: rgba(0, 0, 0, 0.88);
@@ -94,7 +95,7 @@ body,
   --Colors-Brand-Warning-colorWarningText: oklch(80.16% 0.17 76);
 
   --button-color-hover: #4096FF;
-  --gradient: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
+  --default-linear: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
   --text-subtitle-color: #8C8C8C;
   --tab-active-color: #1677ff;
 
@@ -113,7 +114,7 @@ body,
   --shadow-lg: 0 1px 3px 0px oklch(0.00 0 0 / 0.10), 0 4px 6px -1px oklch(0.00 0 0 / 0.10);
   --shadow-xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.10), 0 8px 10px -1px oklch(0.00 0 0 / 0.10);
   --shadow-2xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.25);
-
+  --shadow-inset: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .dark {

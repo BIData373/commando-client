@@ -1,9 +1,7 @@
-import { useState } from 'react'
-import styled from '@emotion/styled'
-import { Columns3 } from 'lucide-react'
+import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
-  DndContext,
   closestCenter,
+  DndContext,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -16,11 +14,14 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
+import styled from '@emotion/styled'
+import { Columns3 } from 'lucide-react'
+import { useState } from 'react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { SortableColumnItem } from './SortableColumnItem'
-import { TASK_COLUMNS_META, TaskColumnId } from '../../hooks/useTaskColumns'
+import { TASK_COLUMNS_META, type TaskColumn } from '../../hooks/useTaskColumns'
 
-export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter((c) => c.id !== TaskColumnId.SerialNumber)
+export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter((c) => c.id !== 'id')
 
 export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id)
 
@@ -47,8 +48,8 @@ function ColumnVisibilityDropdown({
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     if (over && active.id !== over.id) {
-      const oldIndex = columnOrder.indexOf(String(active.id))
-      const newIndex = columnOrder.indexOf(String(over.id))
+      const oldIndex = columnOrder.indexOf(active.id as TaskColumn)
+      const newIndex = columnOrder.indexOf(over.id as TaskColumn)
       onColumnOrderChange(arrayMove(columnOrder, oldIndex, newIndex))
     }
   }
@@ -70,6 +71,7 @@ function ColumnVisibilityDropdown({
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
+          modifiers={[restrictToParentElement, restrictToVerticalAxis]}
         >
           <SortableContext
             items={columnOrder}

@@ -17,35 +17,24 @@ import DeadlineTag, { DEADLINE_LABELS } from '../components/shared/DeadlineTag'
 import type { DirectiveStatus } from '../components/shared/StatusTag'
 import { type FilterOption } from '../functions/filter-utils'
 
-export enum TaskColumnId {
-  SerialNumber = 'serialNumber',
-  Title = 'title',
-  Status = 'status',
-  Responsible = 'responsible',
-  DeadlineType = 'deadlineType',
-  DiscussionName = 'discussionName',
-  Tags = 'tags',
-  Notes = 'notes',
-  CreatedAt = 'createdAt',
-  UpdatedAt = 'updatedAt',
-}
+export type TaskColumn = keyof Task
 
 export interface TaskColumnMeta {
-  id: TaskColumnId
+  id: TaskColumn
   label: string
 }
 
 export const TASK_COLUMNS_META: TaskColumnMeta[] = [
-  { id: TaskColumnId.SerialNumber, label: 'מס"ד' },
-  { id: TaskColumnId.Title, label: 'ההנחיה' },
-  { id: TaskColumnId.Status, label: 'סטטוס' },
-  { id: TaskColumnId.Responsible, label: 'אחראי' },
-  { id: TaskColumnId.DeadlineType, label: 'תג"ב' },
-  { id: TaskColumnId.DiscussionName, label: 'מקור' },
-  { id: TaskColumnId.Tags, label: 'נושא' },
-  { id: TaskColumnId.Notes, label: 'הערות' },
-  { id: TaskColumnId.CreatedAt, label: 'תאריך יצירה' },
-  { id: TaskColumnId.UpdatedAt, label: 'עודכן ב' },
+  { id: 'id', label: 'מס"ד' },
+  { id: 'title', label: 'ההנחיה' },
+  { id: 'status', label: 'סטטוס' },
+  { id: 'responsible', label: 'אחראי' },
+  { id: 'deadlineType', label: 'תג"ב' },
+  { id: 'discussionName', label: 'מקור' },
+  { id: 'tags', label: 'נושא' },
+  { id: 'notes', label: 'הערות' },
+  { id: 'createdAt', label: 'תאריך יצירה' },
+  { id: 'updatedAt', label: 'עודכן ב' },
 ]
 
 const STATUS_SORT_ORDER: Record<DirectiveStatus, number> = {
@@ -76,7 +65,7 @@ interface ActionsConfig {
 }
 
 interface UseTaskColumnsOptions {
-  visibleColumns: TaskColumnId[]
+  visibleColumns: TaskColumn[]
   searchQuery: string
   filterOptionsMap: Record<string, FilterOption[]>
   onUpdateStatus: (taskId: number, status: DirectiveStatus) => void
@@ -123,15 +112,15 @@ function useTaskColumns({
     }
     : null
 
-  const columnMap: Record<TaskColumnId, ColumnDef<Task>> = {
-    [TaskColumnId.SerialNumber]: {
-      accessorKey: 'serialNumber',
+  const columnMap: Record<TaskColumn, ColumnDef<Task>> = {
+    ['id']: {
+      accessorKey: 'id',
       header: ({ column }) => <ColumnHeaderWithActions label='מס"ד' column={column} />,
       size: 70,
       enableColumnFilter: false,
       cell: ({ getValue }) => <IdCell>{getValue<number>()}</IdCell>,
     },
-    [TaskColumnId.Title]: {
+    ['title']: {
       accessorKey: 'title',
       header: 'ההנחיה',
       size: 400,
@@ -153,7 +142,7 @@ function useTaskColumns({
         </TitleCell>
       ),
     },
-    [TaskColumnId.Status]: {
+    ['status']: {
       accessorKey: 'status',
       header: ({ column }) => <ColumnHeaderWithActions label="סטטוס" column={column} filterOptions={filterOptionsMap['status']} />,
       size: 100,
@@ -168,7 +157,7 @@ function useTaskColumns({
         />
       ),
     },
-    [TaskColumnId.Responsible]: {
+    ['responsible']: {
       id: 'responsible',
       accessorFn: (row) => row.responsible?.name ?? 'ללא אחראי',
       header: ({ column }) => <ColumnHeaderWithActions label="אחראי" column={column} filterOptions={filterOptionsMap['responsible']} />,
@@ -183,7 +172,7 @@ function useTaskColumns({
         />
       ),
     },
-    [TaskColumnId.DeadlineType]: {
+    ['deadlineType']: {
       accessorKey: 'deadlineType',
       header: ({ column }) => <ColumnHeaderWithActions label='תג"ב' column={column} filterOptions={filterOptionsMap['deadlineType']} />,
       size: 160,
@@ -222,7 +211,7 @@ function useTaskColumns({
         )
       },
     },
-    [TaskColumnId.DiscussionName]: {
+    ['discussionName']: {
       accessorKey: 'discussionName',
       header: ({ column }) => <ColumnHeaderWithActions label="מקור" column={column} filterOptions={filterOptionsMap['discussionName']} />,
       size: 260,
@@ -239,7 +228,7 @@ function useTaskColumns({
         )
       },
     },
-    [TaskColumnId.Tags]: {
+    ['tags']: {
       accessorKey: 'tags',
       header: ({ column }) => <ColumnHeaderWithActions label="נושא" column={column} filterOptions={filterOptionsMap['tags']} />,
       size: 160,
@@ -247,7 +236,7 @@ function useTaskColumns({
       filterFn: multiSelectFilter,
       cell: ({ getValue }) => <TopicCell tags={getValue<string[]>()} />,
     },
-    [TaskColumnId.Notes]: {
+    ['notes']: {
       accessorKey: 'notes',
       header: 'הערות',
       size: 220,
@@ -260,7 +249,7 @@ function useTaskColumns({
         )
       },
     },
-    [TaskColumnId.CreatedAt]: {
+    ['createdAt']: {
       accessorKey: 'createdAt',
       header: ({ column }) => <ColumnHeaderWithActions label="תאריך יצירה" column={column} />,
       size: 132,
@@ -268,7 +257,7 @@ function useTaskColumns({
       sortingFn: 'datetime',
       cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
     },
-    [TaskColumnId.UpdatedAt]: {
+    ['updatedAt']: {
       accessorKey: 'updatedAt',
       header: ({ column }) => <ColumnHeaderWithActions label="עודכן ב" column={column} />,
       size: 100,
@@ -302,7 +291,7 @@ function useTaskColumns({
 
   const visibleOrderedColumns = visibleColumns
     .filter((id) => columnMap[id])
-    .map((id) => (selectColumn && id === TaskColumnId.SerialNumber) ? selectColumn : columnMap[id])
+    .map((id) => (selectColumn && id === 'id') ? selectColumn : columnMap[id])
 
   const columns: ColumnDef<Task>[] = [
     ...visibleOrderedColumns,
