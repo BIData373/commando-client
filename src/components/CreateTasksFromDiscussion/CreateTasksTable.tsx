@@ -157,7 +157,7 @@ const TableOuterContainer = styled.div`
   th {
     height: 48px;
     padding: 12px;
-    background: white;
+    background: var(--background);
     border-right: 0.5px solid var(--Background-color-bg-text-active);
     text-align: start;
     vertical-align: middle;
@@ -183,7 +183,7 @@ const TableOuterContainer = styled.div`
   td {
     height: 44px;
     padding: 0px 12px;
-    background: white;
+    background: var(--background);
     border: 0.5px solid var(--Background-color-bg-text-active);
     vertical-align: middle;
 

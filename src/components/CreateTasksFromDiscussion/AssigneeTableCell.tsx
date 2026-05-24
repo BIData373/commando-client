@@ -92,7 +92,7 @@ const AssigneeCellOuter = styled.div<{ $highlighted: boolean }>`
   margin: 0 -12px;
   padding: 0 12px;
   ${({ $highlighted }) =>
-    $highlighted ? 'outline: 1px solid #4096ff; outline-offset: -1px;' : ''}
+    $highlighted ? 'outline: 1px solid var(--button-color-hover); outline-offset: -1px;' : ''}
 `
 
 const CollapsedAssigneeButton = styled.button`
@@ -111,7 +111,7 @@ const CollapsedAssigneeLabel = styled.span`
   direction: rtl;
   font-size: 14px;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   white-space: nowrap;
 `
 
@@ -155,8 +155,8 @@ const CompactStackedAvatar = styled.div<{ $color?: AvatarColor }>`
   height: 22px;
   border-radius: 50%;
   font-size: 10px;
-  color: rgba(0, 0, 0, 0.88);
-  border: 1.5px solid white;
+  color: var(--text-color-2);
+  border: 1.5px solid var(--background);
   margin-inline-start: -6px;
 
   &:last-of-type {
@@ -176,7 +176,7 @@ const AssigneeTag = styled.div`
 const AssigneeTagRole = styled.span`
   font-size: 12px;
   line-height: 20px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   white-space: nowrap;
 `
 
@@ -188,7 +188,7 @@ const AssigneeTagAvatar = styled.div<{ $color?: AvatarColor }>`
   height: 16px;
   border-radius: 50%;
   font-size: 9.5px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   flex-shrink: 0;
 
   ${({ $color }) => getAvatarBackground($color)}
