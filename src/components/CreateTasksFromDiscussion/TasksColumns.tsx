@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Checkbox } from '../ui/checkbox'
-import { type DeadlineType } from '../shared/DeadlineTag'
+import { DeadlineType } from '../shared/DeadlineTag'
 import FlagIcon from '../shared/FlagIcon'
 import ImportantFlagTooltip from '../shared/ImportantFlagTooltip'
 import DeadlineCell from './DeadlineCell'
@@ -14,7 +14,7 @@ export enum TaskColumnId {
 }
 
 export interface TaskRow {
-  id: string
+  id: number
   title: string
   deadlineType: DeadlineType | null
   dueDate: Date | null
@@ -25,9 +25,9 @@ export interface TaskRow {
 }
 
 export interface TaskTableMeta {
-  updateRow: (id: string, updates: Partial<TaskRow>) => void
-  expandedRows: Set<string>
-  toggleRowExpansion: (id: string) => void
+  updateRow: (id: number, updates: Partial<TaskRow>) => void
+  expandedRows: Set<number>
+  toggleRowExpansion: (id: number) => void
 }
 
 // ─── Cell Handlers ─────────────────────────────────────────────────────────
@@ -36,11 +36,12 @@ const MAX_HEIGHT = 40
 
 function handleTextareaChange(
   e: React.ChangeEvent<HTMLTextAreaElement>,
-  id: string,
+  id: number,
   field: TaskColumnId,
   updateRow: TaskTableMeta['updateRow'],
 ) {
   const textarea = e.target
+  // Reset height to recalculate scrollHeight, then set to actual content height
   textarea.style.height = 'auto'
   textarea.style.height = `${Math.min(textarea.scrollHeight, MAX_HEIGHT)}px`
   updateRow(id, { [field]: textarea.value })
@@ -48,10 +49,10 @@ function handleTextareaChange(
 
 function handleImportantChange(
   checked: boolean,
-  id: string,
+  id: number,
   updateRow: TaskTableMeta['updateRow'],
 ) {
-  updateRow(id, { isImportant: checked === true })
+  updateRow(id, { isImportant: checked })
 }
 
 function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -104,7 +105,6 @@ const columns: ColumnDef<TaskRow>[] = [
             onChange={(e) => handleTextareaChange(e, id, TaskColumnId.Title, updateRow)}
             onKeyDown={handleCellKeyDown}
             placeholder="הנחיה"
-            dir="rtl"
             rows={1}
           />
         </TextareaCellWrapper>
@@ -114,7 +114,7 @@ const columns: ColumnDef<TaskRow>[] = [
   {
     id: 'deadline',
     size: 138,
-    header: () => <HeaderLabel>תג&quot;ב</HeaderLabel>,
+    header: () => <HeaderLabel>{`תג"ב`}</HeaderLabel>,
     cell: ({ row: { original: { id, dueDate, deadlineType } }, table }) => {
       const { updateRow } = table.options.meta as TaskTableMeta
       return (
@@ -154,7 +154,6 @@ const columns: ColumnDef<TaskRow>[] = [
             onChange={(e) => handleTextareaChange(e, id, TaskColumnId.Notes, updateRow)}
             onKeyDown={handleCellKeyDown}
             placeholder=""
-            dir="rtl"
             rows={1}
           />
         </TextareaCellWrapper>
