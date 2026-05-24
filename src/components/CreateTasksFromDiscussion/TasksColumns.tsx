@@ -97,7 +97,7 @@ const columns: ColumnDef<TaskRow>[] = [
       return (
         <TextareaCellWrapper>
           <CellTextarea
-            $color="rgba(0, 0, 0, 0.88)"
+            $color="var(--text-color-2)"
             data-row={row.index}
             data-col={0}
             value={title}
@@ -192,7 +192,7 @@ const HeaderLabel = styled.span`
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   white-space: nowrap;
 `
 
@@ -227,7 +227,7 @@ const CellTextarea = styled.textarea<{ $color?: string }>`
   font-size: 14px;
   font-weight: 400;
   line-height: 18px;
-  color: ${({ $color }) => $color ?? 'rgba(0, 0, 0, 0.65)'};
+  color: ${({ $color }) => $color ?? 'var(--text-color)'};
   text-align: right;
   outline: none;
   resize: none;

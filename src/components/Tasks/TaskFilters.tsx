@@ -4,7 +4,6 @@ import type { Task } from '../../data/Tasks'
 import { matchesQuickFilter } from '../../functions/filter-utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { FilterBar, FilterPill, FilterDivider } from '../shared/FilterBar'
-
 type QuickFilter = 'overdue' | 'approaching' | 'flagged'
 
 interface TaskFiltersProps {

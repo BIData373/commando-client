@@ -2,7 +2,7 @@ import { createContext, useContext, useState, type ReactNode } from 'react'
 import type { DirectiveStatus } from '../components/shared/StatusTag'
 import { INITIAL_TASKS, type Task } from '../data/Tasks'
 
-type NewTaskInput = Omit<Task, 'id' | 'serialNumber' | 'createdAt' | 'updatedAt'> & { groupKey?: string }
+type NewTaskInput = Omit<Task, 'id' | 'createdAt' | 'updatedAt'> & { groupKey?: string }
 
 interface TasksContextValue {
   tasks: Task[]
@@ -24,31 +24,23 @@ export function TasksProvider({ children }: TasksProviderProps) {
   function addTasks(inputs: NewTaskInput[]) {
     if (inputs.length === 0) return
     setTasks((prev) => {
-      const baseId = prev.reduce((max, t) => (t.id > max ? t.id : max), 0)
-      const baseSerial = prev.reduce((max, t) => (t.serialNumber > max ? t.serialNumber : max), 0)
-      let nextSerial = baseSerial
-      const groupSerials = new Map<string, number>()
+      let nextId = prev.reduce((max, t) => (t.id > max ? t.id : max), 0)
+      const groupIds = new Map<string, number>()
       const now = new Date()
-      const newTasks: Task[] = inputs.map(({ groupKey, ...input }, index) => {
-        let serial: number
+      const newTasks: Task[] = inputs.map(({ groupKey, ...input }) => {
+        let id: number
         if (groupKey) {
-          const existing = groupSerials.get(groupKey)
+          const existing = groupIds.get(groupKey)
           if (existing) {
-            serial = existing
+            id = existing
           } else {
-            serial = ++nextSerial
-            groupSerials.set(groupKey, serial)
+            id = ++nextId
+            groupIds.set(groupKey, id)
           }
         } else {
-          serial = ++nextSerial
+          id = ++nextId
         }
-        return {
-          ...input,
-          id: baseId + index + 1,
-          serialNumber: serial,
-          createdAt: now,
-          updatedAt: now,
-        }
+        return { ...input, id, createdAt: now, updatedAt: now }
       })
       return [...newTasks, ...prev]
     })

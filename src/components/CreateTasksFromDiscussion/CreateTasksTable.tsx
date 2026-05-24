@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import { DataTable } from '../ui/data-table'
 import columns, { type TaskRow, type TaskTableMeta } from './TasksColumns'
 import TaskAssigneeExpansion from './TaskAssigneeExpansion'
-import TaskRowDeleteButton from './TaskRowDeleteButton'
+import { TrashButton } from '../shared/TrashButton'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -97,13 +97,12 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
           getRowId={(row) => row.id}
           meta={meta}
           containerClassName="overflow-x-hidden"
-          renderRowOverlay={(row) => (
-            <TaskRowDeleteButton
-              hasTitle={row.original.title.trim().length > 0}
-              isLast={row.index === rows.length - 1}
-              onDelete={() => deleteRow(row.original.id)}
-            />
-          )}
+          renderRowOverlay={(row) => {
+            const canDelete = row.original.title.trim().length > 0 && row.index !== rows.length - 1
+            return canDelete ? (
+              <RowDeleteButton size={14} onClick={() => deleteRow(row.original.id)} />
+            ) : null
+          }}
           renderRowExpansion={(row) =>
             row.original.assigneeIds.length > 1 && expandedRows.has(row.original.id) ? (
               <TaskAssigneeExpansion
@@ -145,13 +144,10 @@ const TableWrapper = styled.div`
 const TableOuterContainer = styled.div`
   direction: rtl;
   border-radius: 8px;
-  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border: 0.5px solid var(--Background-color-bg-text-active);
   overflow-x: hidden;
   overflow-y: auto;
-  box-shadow:
-    0px 1px 2px rgba(0, 0, 0, 0.03),
-    0px 1px 6px -1px rgba(0, 0, 0, 0.02),
-    0px 2px 4px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--card-shadow-default);
 
   table {
     border-collapse: collapse;
@@ -161,8 +157,8 @@ const TableOuterContainer = styled.div`
   th {
     height: 48px;
     padding: 12px;
-    background: white;
-    border-right: 0.5px solid rgba(0, 0, 0, 0.15);
+    background: var(--background);
+    border-right: 0.5px solid var(--Background-color-bg-text-active);
     text-align: start;
     vertical-align: middle;
     white-space: nowrap;
@@ -176,7 +172,7 @@ const TableOuterContainer = styled.div`
     position: relative;
 
     &:hover td {
-      background: #fafafa;
+      background: var(--background-area);
     }
 
     &:last-of-type td{
@@ -187,8 +183,8 @@ const TableOuterContainer = styled.div`
   td {
     height: 44px;
     padding: 0px 12px;
-    background: white;
-    border: 0.5px solid rgba(0, 0, 0, 0.15);
+    background: var(--background);
+    border: 0.5px solid var(--Background-color-bg-text-active);
     vertical-align: middle;
 
     &:first-of-type {
@@ -196,9 +192,31 @@ const TableOuterContainer = styled.div`
     }
 
     &:focus-within {
-      outline: 1px solid #4096ff;
+      outline: 1px solid var(--button-color-hover);
       outline-offset: -2px;
     }
+  }
+`
+
+const RowDeleteButton = styled(TrashButton)`
+  position: absolute;
+  inset-inline-start: -32px;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  display: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  padding: 0;
+  opacity: 1;
+
+  &:hover {
+    color: #ff4d4f;
+    background: rgba(255, 77, 79, 0.06);
+  }
+
+  tr:hover > & {
+    display: flex;
   }
 `
 
@@ -220,8 +238,8 @@ const SaveButton = styled.button`
   height: 40px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(162deg, #6866ff 0%, #7604c8 100%);
-  color: white;
+  background: var(--default-linear);
+  color: var(--background);
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
@@ -234,7 +252,7 @@ const SaveButton = styled.button`
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-inset);
     pointer-events: none;
   }
 
@@ -254,10 +272,10 @@ const BackButton = styled.button`
   justify-content: center;
   width: 133px;
   height: 40px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--Background-color-bg-text-active);
   border-radius: 8px;
   background: white;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
@@ -270,12 +288,12 @@ const BackButton = styled.button`
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-inset);
     pointer-events: none;
   }
 
   &:hover {
-    border-color: #4096ff;
-    color: #4096ff;
+    border-color: var(--button-color-hover);
+    color: var(--button-color-hover);
   }
 `

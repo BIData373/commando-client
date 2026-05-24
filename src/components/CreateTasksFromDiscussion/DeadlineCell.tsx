@@ -4,6 +4,7 @@ import { ChevronLeft } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import DatePicker, { CalendarMode } from '../shared/DatePicker'
 import DeadlineTag, { type DeadlineType, DEADLINE_LABELS } from '../shared/DeadlineTag'
+import { formatDateShort } from '../../functions/date-utils'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -18,12 +19,6 @@ interface DeadlineCellProps {
 
 const DEADLINE_TYPES = Object.keys(DEADLINE_LABELS) as DeadlineType[]
 
-function formatDate(date: Date) {
-  const day = date.getDate().toString().padStart(2, '0')
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const year = date.getFullYear().toString().slice(-2)
-  return `${day}/${month}/${year}`
-}
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
@@ -64,10 +59,10 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
             ) : deadlineType === 'ongoing' ? (
               <DisplayRow>
                 <DeadlineTag $type="ongoing">שוטף</DeadlineTag>
-                {dueDate && <DateText>{formatDate(dueDate)}</DateText>}
+                {dueDate && <DateText>{formatDateShort(dueDate)}</DateText>}
               </DisplayRow>
             ) : dueDate ? (
-              <DateText>{formatDate(dueDate)}</DateText>
+              <DateText>{formatDateShort(dueDate)}</DateText>
             ) : (
               <DeadlineValueText>
                 {DEADLINE_LABELS[deadlineType]}
@@ -119,7 +114,7 @@ const DeadlineCellWrapper = styled.div<{ $open: boolean }>`
   margin: 0 -12px;
   padding: 0 12px;
   background: transparent;
-  outline: ${({ $open }) => ($open ? '1px solid #1677ff' : 'none')};
+  outline: ${({ $open }) => ($open ? '1px solid var(--tab-active-color)' : 'none')};
 `
 
 const DeadlineTrigger = styled.button`
@@ -148,7 +143,7 @@ const DeadlineValueText = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   white-space: nowrap;
 `
 
@@ -162,7 +157,7 @@ const DateText = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   white-space: nowrap;
 `
 
@@ -198,7 +193,7 @@ const DeadlineOption = styled.button<{ $active: boolean }>`
   background: ${({ $active }) => ($active ? 'rgba(0, 0, 0, 0.04)' : 'transparent')};
   border-radius: 4px;
   cursor: pointer;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
 
   &:hover {
     background: rgba(0, 0, 0, 0.04);
@@ -210,7 +205,7 @@ const DeadlineOptionText = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   text-align: start;
 `
 
@@ -218,10 +213,7 @@ const CalendarPanel = styled.div`
   position: absolute;
   inset-block-start: 0;
   inset-inline-start: calc(100% + 4px);
-  background: white;
+  background: var(--background);
   border-radius: 8px;
-  box-shadow:
-    0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px rgba(0, 0, 0, 0.12),
-    0px 9px 28px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--card-shadow);
 `

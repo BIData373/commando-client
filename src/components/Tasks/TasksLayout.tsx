@@ -15,7 +15,7 @@ import { TaskTable } from './TaskTable'
 import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
 import { TaskCardGrid } from './TaskCardGrid'
 import { exportTasksToExcel } from '../../functions/export-excel'
-import { applyAllFilters, buildFilterOptionsMap } from '../../functions/filter-utils'
+import { applyAllFilters } from '../../functions/filter-utils'
 import { useTitleBar } from '../../providers/TitleBarProvider'
 import { useMemo, useState } from 'react'
 import { useTasks } from '../../providers/TasksProvider'
@@ -34,7 +34,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set())
   const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(new Set())
-  const [columnOrder, setColumnOrder] = useState(['serialNumber', ...DEFAULT_COLUMN_ORDER])
+  const [columnOrder, setColumnOrder] = useState<string[]>(['id', ...DEFAULT_COLUMN_ORDER])
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set(['notes', 'updatedAt']))
   function handleToggleColumn(columnId: string) {
     setHiddenColumns((prev) => {
@@ -66,8 +66,6 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   }
 
   const allTopics = [...new Set(tasks.flatMap((t) => t.tags))]
-
-  const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
 
   const filteredTasks = useMemo(
     () => applyAllFilters(tasks, activeQuickFilters, activeTopicFilters, searchQuery),
@@ -181,7 +179,6 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
             searchQuery={searchQuery}
             columnOrder={columnOrder}
             hiddenColumns={hiddenColumns}
-            filterOptionsMap={filterOptionsMap}
             onUpdateStatus={updateTaskStatus}
             onEdit={handleEdit}
             onArchive={handleArchive}

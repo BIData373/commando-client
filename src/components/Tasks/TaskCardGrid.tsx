@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { Flag } from 'lucide-react'
-import { format } from 'date-fns'
+import { formatDateShort } from '../../functions/date-utils'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { StatusTag } from '../shared/StatusTag'
 import type { Task } from '../../data/Tasks'
@@ -31,7 +31,7 @@ function TaskCardGrid({ tasks }: TaskCardGridProps) {
               <DeadlineTag $type={task.deadlineType}>{DEADLINE_LABELS[task.deadlineType]}</DeadlineTag>
             )}
             {task.dueDate && (
-              <CardDateText>{format(task.dueDate, 'dd/MM/yy')}</CardDateText>
+              <CardDateText>{formatDateShort(task.dueDate)}</CardDateText>
             )}
           </CardFooter>
         </Card>
