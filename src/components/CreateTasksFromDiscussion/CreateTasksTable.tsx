@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import styled from '@emotion/styled'
 import { DataTable } from '../ui/data-table'
 import columns, { type TaskRow, type TaskTableMeta } from './TasksColumns'
@@ -12,24 +12,24 @@ interface CreateTasksTableProps {
   onBack: () => void
 }
 
-let nextRowId = 1
-
-function createEmptyRow(): TaskRow {
-  return {
-    id: nextRowId++,
-    title: '',
-    deadlineType: null,
-    dueDate: null,
-    assigneeIds: [],
-    assigneeDetails: {},
-    notes: '',
-    isImportant: false,
-  }
-}
-
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
+  const nextRowId = useRef(1)
+
+  function createEmptyRow(): TaskRow {
+    return {
+      id: nextRowId.current++,
+      title: '',
+      deadlineType: null,
+      dueDate: null,
+      assigneeIds: [],
+      assigneeDetails: {},
+      notes: '',
+      isImportant: false,
+    }
+  }
+
   const [rows, setRows] = useState<TaskRow[]>([createEmptyRow()])
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set())
 
