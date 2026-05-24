@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { DateRange } from 'react-day-picker'
 import DateRangePicker from '#/components/shared/DateRangePicker'
 import type { DATE_TYPE } from '#/utils/dataTypeUtils'
@@ -6,7 +7,7 @@ import { DashboardDatePickerHeader } from './DashboardDatePickerHeader'
 import { DashboardDatePickerTriggerButton } from './DashboardDatePickerTriggerButton'
 
 interface DashboardDatePickerProps {
-  dateType: string
+  dateType: DATE_TYPE
   onDateTypeChange(value: DATE_TYPE): void
   setRange(range: DateRange | undefined): void
 }
@@ -16,11 +17,23 @@ export function DashboardDatePicker({
   onDateTypeChange,
   setRange
 }: DashboardDatePickerProps) {
+  const [pendingDataType, setPendingDataType] = useState(dateType)
+
+  function handleBlur() {
+    setPendingDataType(dateType)
+  }
+
+  function handleConfirm(range: DateRange | undefined) {
+    onDateTypeChange(pendingDataType)
+    setRange(range)
+  }
+
   return (
     <DateRangePicker
+      onBlur={handleBlur}
       triggerButton={({ range }) => <DashboardDatePickerTriggerButton label={dateType} range={range} />}
-      header={() => <DashboardDatePickerHeader dateType={dateType} onDateTypeChange={onDateTypeChange} />}
-      footer={(slotProps) => <DashboardDatePickerFooter slots={slotProps} onConfirm={setRange} />}
+      header={() => <DashboardDatePickerHeader dateType={pendingDataType} onDateTypeChange={setPendingDataType} />}
+      footer={(slotProps) => <DashboardDatePickerFooter slots={slotProps} onConfirm={handleConfirm} />}
     />
   )
 }

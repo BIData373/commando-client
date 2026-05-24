@@ -15,6 +15,7 @@ import { useMemo, useState } from 'react'
 import { useTasks } from '../../providers/TasksProvider'
 import { PrimaryButton } from '../shared/PrimaryButton'
 import type { QuickFilter } from '#/utils/filterUtils'
+import type { DirectiveStatus } from '#/utils/statusUtils'
 
 export type View = 'TABLE' | 'CARDS'
 
