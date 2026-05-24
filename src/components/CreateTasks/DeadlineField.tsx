@@ -31,7 +31,7 @@ function DeadlineField({ deadlineType, dueDate, onDeadlineTypeChange, onDateChan
   return (
     <FormItem>
       <FormLabelRow>
-        <LabelText>תג&quot;ב</LabelText>
+        <LabelText>{`תג"ב`}</LabelText>
       </FormLabelRow>
       <DeadlineRow>
         <SegmentedControl>

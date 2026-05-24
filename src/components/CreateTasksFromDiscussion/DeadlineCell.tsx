@@ -54,7 +54,7 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
         <PopoverTrigger asChild>
           <DeadlineTrigger>
             {!deadlineType ? (
-              <PlaceholderText>תג&quot;ב</PlaceholderText>
+              <PlaceholderText>{`תג"ב`}</PlaceholderText>
             ) : deadlineType === DeadlineType.Immediate ? (
               <DeadlineTag $type={DeadlineType.Immediate}>{DEADLINE_LABELS[DeadlineType.Immediate]}</DeadlineTag>
             ) : deadlineType === DeadlineType.Ongoing ? (
@@ -73,7 +73,7 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
         </PopoverTrigger>
         <DeadlineDropdownContent sideOffset={1}>
           <DropdownRow>
-            <DropdownHeader>תג&quot;ב</DropdownHeader>
+            <DropdownHeader>{`תג"ב`}</DropdownHeader>
             {DEADLINE_TYPES.map((type) => (
               <DeadlineOption
                 key={type}
