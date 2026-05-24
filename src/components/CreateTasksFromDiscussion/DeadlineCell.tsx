@@ -114,7 +114,7 @@ const DeadlineCellWrapper = styled.div<{ $open: boolean }>`
   margin: 0 -12px;
   padding: 0 12px;
   background: transparent;
-  outline: ${({ $open }) => ($open ? '1px solid #1677ff' : 'none')};
+  outline: ${({ $open }) => ($open ? '1px solid var(--tab-active-color)' : 'none')};
 `
 
 const DeadlineTrigger = styled.button`
@@ -143,7 +143,7 @@ const DeadlineValueText = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   white-space: nowrap;
 `
 
@@ -157,7 +157,7 @@ const DateText = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   white-space: nowrap;
 `
 
@@ -193,7 +193,7 @@ const DeadlineOption = styled.button<{ $active: boolean }>`
   background: ${({ $active }) => ($active ? 'rgba(0, 0, 0, 0.04)' : 'transparent')};
   border-radius: 4px;
   cursor: pointer;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
 
   &:hover {
     background: rgba(0, 0, 0, 0.04);
@@ -205,7 +205,7 @@ const DeadlineOptionText = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   text-align: start;
 `
 
@@ -213,10 +213,7 @@ const CalendarPanel = styled.div`
   position: absolute;
   inset-block-start: 0;
   inset-inline-start: calc(100% + 4px);
-  background: white;
+  background: var(--background);
   border-radius: 8px;
-  box-shadow:
-    0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px rgba(0, 0, 0, 0.12),
-    0px 9px 28px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--card-shadow);
 `

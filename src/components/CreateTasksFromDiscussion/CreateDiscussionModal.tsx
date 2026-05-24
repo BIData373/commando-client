@@ -227,13 +227,10 @@ const ModalCard = styled(DialogPrimitive.Content) <{ $step: Steps }>`
   height: min(796px, calc(100vh - 48px));
   overflow-y: auto;
   overflow: hidden;
-  background: white;
-  border: 1px solid #d9d9d9;
+  background: var(--background);
+  border: 1px solid var(--card-border);
   border-radius: 8px;
-  box-shadow:
-    0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px rgba(0, 0, 0, 0.12),
-    0px 9px 28px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--card-shadow);
   z-index: var(--z-dropdown);
   display: flex;
   flex-direction: column;
@@ -259,7 +256,7 @@ const ModalCloseButton = styled.button`
   outline: none;
 
   &:hover {
-    color: rgba(0, 0, 0, 0.88);
+    color: var(--text-color-2);
     background: rgba(0, 0, 0, 0.04);
   }
 `
@@ -284,7 +281,7 @@ const ModalTitle = styled.h1`
   font-weight: 500;
   font-size: 42px;
   line-height: 50px;
-  color: black;
+  color: var(--foreground);
   margin: 0;
   text-align: end;
 `
@@ -296,7 +293,7 @@ const DiscussionInfoRow = styled.div`
   align-items: center;
   gap: 8px;
   justify-content: center;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
 `
 
 const DiscussionInfoText = styled.div`
@@ -310,14 +307,14 @@ const DiscussionName = styled.span`
   font-size: 20px;
   font-weight: 400;
   line-height: 28px;
-  color: black;
+  color: var(--foreground);
 `
 
 const DiscussionDate = styled.span`
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
-  color: black;
+  color: var(--foreground);
 `
 
 // ─── Form Layout ────────────────────────────────────────────────────────────
@@ -361,7 +358,7 @@ const ContinueButton = styled.button`
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-inset);
     pointer-events: none;
   }
 
@@ -430,12 +427,12 @@ const StepLabel = styled.span<{ $active: boolean }>`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: ${({ $active }) => ($active ? 'rgba(0, 0, 0, 0.88)' : 'rgba(0, 0, 0, 0.45)')};
+  color: ${({ $active }) => ($active ? 'var(--text-color-2)' : 'rgba(0, 0, 0, 0.45)')};
   white-space: nowrap;
 `
 
 const StepTail = styled.div<{ $completed: boolean }>`
   flex: 1;
   height: 1px;
-  border-block-start: 1px ${({ $completed }) => ($completed ? 'solid #6866ff' : 'dashed #d9d9d9')};
+  border-block-start: 1px ${({ $completed }) => ($completed ? 'solid #6866ff' : 'dashed var(--card-border)')};
 `

@@ -147,7 +147,7 @@ const LabelText = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   white-space: nowrap;
 `
 
@@ -158,15 +158,15 @@ const UploadDropZone = styled.div<{ $isDragOver: boolean }>`
   gap: 16px;
   width: 100%;
   padding: 16px;
-  background: ${({ $isDragOver }) => ($isDragOver ? 'rgba(5, 145, 255, 0.04)' : 'rgba(0, 0, 0, 0.02)')};
-  border: 1px dashed ${({ $isDragOver }) => ($isDragOver ? '#4096ff' : '#d9d9d9')};
+  background: ${({ $isDragOver }) => ($isDragOver ? 'rgba(5, 145, 255, 0.04)' : 'var(--card-background)')};
+  border: 1px dashed ${({ $isDragOver }) => ($isDragOver ? 'var(--button-color-hover)' : 'var(--card-border)')};
   border-radius: 8px;
   cursor: pointer;
   transition: border-color 200ms ease, background 200ms ease;
   color: rgba(0, 0, 0, 0.45);
 
   &:hover {
-    border-color: #4096ff;
+    border-color: var(--button-color-hover);
   }
 `
 
@@ -186,7 +186,7 @@ const UploadMainText = styled.p`
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   text-align: center;
   margin: 0;
 `
@@ -207,14 +207,14 @@ const FilePreview = styled.div`
   align-items: center;
   width: 100%;
   padding: 8px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--card-border);
   border-radius: 8px;
 `
 
 const FileThumbnail = styled.div`
   width: 48px;
   height: 48px;
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -229,7 +229,7 @@ const FileName = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: #1677ff;
+  color: var(--tab-active-color);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -251,7 +251,7 @@ const FileRemoveButton = styled.button`
   flex-shrink: 0;
 
   &:hover {
-    color: rgba(0, 0, 0, 0.88);
+    color: var(--text-color-2);
   }
 `
 
