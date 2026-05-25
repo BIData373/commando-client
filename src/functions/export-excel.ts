@@ -3,6 +3,7 @@ import { differenceInDays, startOfToday } from 'date-fns'
 import { formatDateShort } from './date-utils'
 import { getStatusStyle, STATUS_LABELS } from '../components/shared/StatusTag'
 import { DEADLINE_LABELS } from '../components/shared/DeadlineTag'
+import type { TaskColumn } from '../hooks/useTaskColumns'
 import type { Task } from '../data/Tasks'
 
 interface CellValue {
@@ -65,8 +66,8 @@ const COLUMN_DEFS: Record<string, ExportColumn<Task>> = {
 }
 
 interface ExportOptions {
-  columnOrder: string[]
-  hiddenColumns: Set<string>
+  columnOrder: TaskColumn[]
+  hiddenColumns: Set<TaskColumn>
 }
 
 export function exportTasksToExcel(tasks: Task[], options: ExportOptions) {

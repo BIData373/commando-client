@@ -4,6 +4,8 @@ import type { Task } from '../../data/Tasks'
 import { matchesQuickFilter } from '../../functions/filter-utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { FilterBar, FilterPill, FilterDivider } from '../shared/FilterBar'
+import type { TaskColumn, TaskColumnMeta } from '../../hooks/useTaskColumns'
+
 type QuickFilter = 'overdue' | 'approaching' | 'flagged'
 
 interface TaskFiltersProps {
@@ -14,12 +16,13 @@ interface TaskFiltersProps {
   searchQuery: string
   onSearchChange: (value: string) => void
   onExport: () => void
-  columnOrder: string[]
-  hiddenColumns: Set<string>
-  onColumnOrderChange: (order: string[]) => void
-  onToggleColumn: (columnId: string) => void
+  columnOrder: TaskColumn[]
+  hiddenColumns: Set<TaskColumn>
+  onColumnOrderChange: (order: TaskColumn[]) => void
+  onToggleColumn: (columnId: TaskColumn) => void
   hasExtraActiveFilters?: boolean
   extraFilters?: ReactNode
+  extraColumnsMeta?: TaskColumnMeta[]
 }
 
 function TaskFilters({
@@ -36,6 +39,7 @@ function TaskFilters({
   onToggleColumn,
   hasExtraActiveFilters,
   extraFilters,
+  extraColumnsMeta,
 }: TaskFiltersProps) {
   const hasActiveFilters = activeQuickFilters.size > 0 || !!hasExtraActiveFilters
 
@@ -54,6 +58,7 @@ function TaskFilters({
       hiddenColumns={hiddenColumns}
       onColumnOrderChange={onColumnOrderChange}
       onToggleColumn={onToggleColumn}
+      extraColumnsMeta={extraColumnsMeta}
     >
       {extraFilters} 
       <FilterPill $active={activeQuickFilters.has('flagged')} onClick={() => onToggleQuickFilter('flagged')}>

@@ -19,7 +19,7 @@ import { Columns3 } from 'lucide-react'
 import { useState } from 'react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { SortableColumnItem } from './SortableColumnItem'
-import { TASK_COLUMNS_META, type TaskColumn } from '../../hooks/useTaskColumns'
+import { TASK_COLUMNS_META, type TaskColumn, type TaskColumnMeta } from '../../hooks/useTaskColumns'
 
 export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter((c) => c.id !== 'id')
 
@@ -30,6 +30,7 @@ interface ColumnVisibilityDropdownProps {
   hiddenColumns: Set<TaskColumn>
   onColumnOrderChange: (order: TaskColumn[]) => void
   onToggleColumn: (columnId: TaskColumn) => void
+  extraColumnsMeta?: TaskColumnMeta[]
 }
 
 function ColumnVisibilityDropdown({
@@ -37,8 +38,13 @@ function ColumnVisibilityDropdown({
   hiddenColumns,
   onColumnOrderChange,
   onToggleColumn,
+  extraColumnsMeta,
 }: ColumnVisibilityDropdownProps) {
   const [open, setOpen] = useState(false)
+
+  const allColumns = extraColumnsMeta
+    ? [...CONFIGURABLE_COLUMNS, ...extraColumnsMeta]
+    : CONFIGURABLE_COLUMNS
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -55,7 +61,7 @@ function ColumnVisibilityDropdown({
   }
 
   const orderedColumns = columnOrder
-    .map((id) => CONFIGURABLE_COLUMNS.find((c) => c.id === id))
+    .map((id) => allColumns.find((c) => c.id === id))
     .filter((c) => c != null)
 
   return (

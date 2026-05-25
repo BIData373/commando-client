@@ -2,6 +2,8 @@ import styled from '@emotion/styled'
 import { Download, FilterX, Search } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { ColumnVisibilityDropdown } from '../Tasks/ColumnVisibilityDropdown'
+import type { TaskColumn, TaskColumnMeta } from '../../hooks/useTaskColumns'
+
 interface FilterBarProps {
   children: ReactNode
   hasActiveFilters: boolean
@@ -9,10 +11,11 @@ interface FilterBarProps {
   searchQuery: string
   onSearchChange: (value: string) => void
   onExport: () => void
-  columnOrder: string[]
-  hiddenColumns: Set<string>
-  onColumnOrderChange: (order: string[]) => void
-  onToggleColumn: (columnId: string) => void
+  columnOrder: TaskColumn[]
+  hiddenColumns: Set<TaskColumn>
+  onColumnOrderChange: (order: TaskColumn[]) => void
+  onToggleColumn: (columnId: TaskColumn) => void
+  extraColumnsMeta?: TaskColumnMeta[]
 }
 
 function FilterBar({
@@ -26,6 +29,7 @@ function FilterBar({
   hiddenColumns,
   onColumnOrderChange,
   onToggleColumn,
+  extraColumnsMeta,
 }: FilterBarProps) {
   return (
     <BarRoot>
@@ -35,6 +39,7 @@ function FilterBar({
           hiddenColumns={hiddenColumns}
           onColumnOrderChange={onColumnOrderChange}
           onToggleColumn={onToggleColumn}
+          extraColumnsMeta={extraColumnsMeta}
         />
         <ActionButton onClick={onExport}>
           <Download size={16} />
