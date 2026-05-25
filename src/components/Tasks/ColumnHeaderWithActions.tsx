@@ -8,23 +8,16 @@ import type { FilterOption } from '../../functions/filter-utils'
 interface ColumnHeaderWithActionsProps<TData> {
   label: string
   column: Column<TData, unknown>
-  labelMap?: Record<string, string>
+  filterOptions?: FilterOption[]
 }
 
 function ColumnHeaderWithActions<TData>({
   label,
   column,
-  labelMap,
+  filterOptions = [],
 }: ColumnHeaderWithActionsProps<TData>) {
   const [filterOpen, setFilterOpen] = useState(false)
-  const canFilter = column.getCanFilter()
-
-  const facetedValues = column.getFacetedUniqueValues()
-  const filterOptions: FilterOption[] = Array.from(facetedValues.keys())
-    .filter(Boolean)
-    .flatMap((v) => (Array.isArray(v) ? v : [v]))
-    .filter((v, i, arr) => arr.indexOf(v) === i)
-    .map((v) => ({ value: String(v), label: labelMap?.[String(v)] ?? String(v) }))
+  const canFilter = column.getCanFilter() && filterOptions.length > 0
   const canSort = column.getCanSort()
   const filterValue = (column.getFilterValue() as string[] | undefined) ?? []
   const isFilterActive = filterValue.length > 0

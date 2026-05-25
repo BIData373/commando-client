@@ -3,10 +3,10 @@ import { Eye, EyeOff, GripVertical } from 'lucide-react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-import { type ColumnConfig } from './ColumnVisibilityDropdown'
+import { type TaskColumnMeta } from '../../hooks/useTaskColumns'
 
 interface SortableColumnItemProps {
-  column: ColumnConfig
+  column: TaskColumnMeta
   isHidden: boolean
   isLocked: boolean
   onToggle: () => void
