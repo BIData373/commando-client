@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Checkbox } from '../ui/checkbox'
+import { TrashButton } from '../shared/TrashButton'
 import { DeadlineType } from '../shared/DeadlineTag'
 import FlagIcon from '../shared/FlagIcon'
 import ImportantFlagTooltip from '../shared/ImportantFlagTooltip'
@@ -28,6 +29,8 @@ export interface TaskTableMeta {
   updateRow: (id: number, updates: Partial<TaskRow>) => void
   expandedRows: Set<number>
   toggleRowExpansion: (id: number) => void
+  deleteRow: (id: number) => void
+  isLastRow: (index: number) => boolean
 }
 
 // ─── Cell Handlers ─────────────────────────────────────────────────────────
@@ -85,7 +88,7 @@ function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
 const columns: ColumnDef<TaskRow>[] = [
   {
     id: 'title',
-    size: 695,
+    size: 655,
     header: () => (
       <HeaderLabelGroup>
         <RequiredMark>*</RequiredMark>
@@ -181,6 +184,25 @@ const columns: ColumnDef<TaskRow>[] = [
       )
     },
   },
+  {
+    id: 'delete',
+    size: 35,
+    header: () => null,
+    cell: ({ row, table }) => {
+      const { deleteRow, isLastRow } = table.options.meta as TaskTableMeta
+      const canDelete = row.original.title.trim().length > 0 && !isLastRow(row.index)
+
+      function handleDelete() {
+        deleteRow(row.original.id)
+      }
+
+      if (!canDelete) return null
+
+      return (
+        <StyledTrashButton onClick={handleDelete} size={14} />
+      )
+    },
+  },
 ]
 
 export default columns
@@ -202,7 +224,7 @@ const HeaderLabelGroup = styled.div`
 `
 
 const RequiredMark = styled.span`
-  color: #ff4d4f;
+  color: var(--Components-Form-Component-labelRequiredMarkColor);
   font-size: 14px;
   line-height: 22px;
 `
@@ -234,7 +256,7 @@ const CellTextarea = styled.textarea<{ $color?: string }>`
   overflow-x: hidden;
 
   &::placeholder {
-    color: rgba(0, 0, 0, 0.25);
+    color: var(--Text-color-text-placeholder);
   }
 `
 
@@ -243,4 +265,13 @@ const CheckboxWrapper = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
+`
+
+const StyledTrashButton = styled(TrashButton)`
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+
+  tr:hover & {
+    opacity: 1;
+  }
 `
