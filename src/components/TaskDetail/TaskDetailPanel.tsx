@@ -13,7 +13,6 @@ import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { MOCK_TASK_HISTORY } from "../../mocks/data/history";
 import { MOCK_TASK_MESSAGES } from "../../mocks/data/messages";
 import { useTasks } from "../../providers/TasksProvider";
-import { DeadlineTag } from "../shared/DeadlineTag";
 import FlagIcon from "../shared/FlagIcon";
 import type { DirectiveStatus } from "../shared/StatusTag";
 import { AssigneeSection } from "./AssigneeSection";
@@ -22,6 +21,7 @@ import TaskConversationPanel from "./TaskConversationPanel";
 import TaskHistoryPanel from "./TaskHistoryPanel";
 import { EditorExtensions } from "#/utils/tiptapExtensions";
 import { formatDateToDateMonthYear, formatDateToMinutesHours } from "#/utils/timeFormat";
+import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag";
 
 interface TaskDetailPanelProps {
   task: Task;
@@ -123,7 +123,7 @@ function TaskDetailPanel({
             <MetaRow>
               <DueDateGroup>
                 {deadlineType !== "date" && (
-                  <DeadlineTag deadlineType={deadlineType} />
+                   <DeadlineTag $type={deadlineType}>{DEADLINE_LABELS[deadlineType]}</DeadlineTag>
                 )}
                 {dueDate && (
                   <DateContainer>

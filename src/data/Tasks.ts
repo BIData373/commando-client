@@ -2,11 +2,11 @@ import type { IAssignee } from '#/types'
 import type { DirectiveStatus } from '../components/shared/StatusTag'
 import type { RelatedDirective } from '../components/Tasks/ResponsibleCell'
 import { MOCK_ASSIGNEES } from './Assignees'
-
-type DeadlineType = 'date' | 'immediate' | 'ongoing'
+import type { DeadlineType } from '../components/shared/DeadlineTag'
 
 export interface Task {
   id: number
+
   title: string
   details?: string
   flagged: boolean

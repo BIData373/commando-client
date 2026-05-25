@@ -1,10 +1,15 @@
 import styled from '@emotion/styled'
 import { Outlet, useNavigate } from '@tanstack/react-router'
 import { ChevronDown, Plus } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '../ui/dropdown-menu'
 import { TooltipProvider } from '../ui/tooltip'
 import { type DirectiveStatus } from '../shared/StatusTag'
 import { NoResultsFound } from './NoResultsFound'
-import { TaskSearchBar } from './TaskSearchBar'
 import { TaskFilters, type QuickFilter } from './TaskFilters'
 import { TaskTable } from './TaskTable'
 import { DEFAULT_COLUMN_ORDER, type TaskColumn } from './ColumnVisibilityDropdown'
@@ -14,7 +19,7 @@ import { applyAllFilters } from '../../functions/filter-utils'
 import { useTitleBar } from '../../providers/TitleBarProvider'
 import { useMemo, useState } from 'react'
 import { useTasks } from '../../providers/TasksProvider'
-import { PrimaryButton } from '../shared/PrimaryButton'
+import { TaskSearchBar } from './TaskSearchBar'
 
 export type View = 'TABLE' | 'CARDS'
 
@@ -87,8 +92,12 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
     bulkUpdateStatus(taskIds, status)
   }
 
-  function handleCreateDirective() {
-    navigate({ to: '/workspace/$urlName/tasks/new', params: { urlName }, search: { view } })
+  function handleCreateTaskFromDiscussion() {
+    navigate({ to: '/workspace/$urlName/tasks/new', params: { urlName }, search: { view, mode: 'discussion'} })
+  }
+
+  function handleCreateTask() {
+    navigate({ to: '/workspace/$urlName/tasks/new', params: { urlName }, search: { view, mode: 'single' } })
   }
 
   function handleViewChange(newView: View) {
@@ -98,12 +107,23 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   useTitleBar(
     () => (
       <ButtonGroup>
-        <PrimaryButton
-          title='צור הנחייה'
-          onClick={handleCreateDirective}
-          header={<Plus size={18} color="white" />}
-          tail={<ChevronDown size={18} color="white" />}
-        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <CreateButton>
+              <Plus size={18} color="white" />
+              <CreateButtonText>צור הנחייה</CreateButtonText>
+              <ChevronDown size={18} color="white" />
+            </CreateButton>
+          </DropdownMenuTrigger>
+          <StyledDropdownContent align="end" sideOffset={6}>
+            <StyledDropdownItem onSelect={handleCreateTaskFromDiscussion}>
+              הנחיות מתוך דיון
+            </StyledDropdownItem>
+            <StyledDropdownItem onSelect={handleCreateTask}>
+              הנחייה בודדת
+            </StyledDropdownItem>
+          </StyledDropdownContent>
+        </DropdownMenu>
         <SectionDivider />
         <SegmentedControl>
           <SegmentedItem
@@ -194,6 +214,48 @@ const ButtonGroup = styled.div`
   gap: 12px;
 `
 
+const CreateButton = styled.button`
+  direction: rtl;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding-inline: 15px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #615FFF 0%, #9810FA 100%);
+  color: white;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  outline: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0px 2px 4px 0px rgba(0, 0, 0, 0.05);
+    pointer-events: none;
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:active {
+    opacity: 0.85;
+  }
+`
+
+const CreateButtonText = styled.span`
+  direction: rtl;
+`
+
 const SectionDivider = styled.div`
   width: 1px;
   height: 39px;
@@ -205,7 +267,7 @@ const SegmentedControl = styled.div`
   align-items: center;
   height: 40px;
   padding: 2px;
-  background: #f5f5f5;
+  background: var(--colors-base-neutral-3);
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
@@ -232,10 +294,39 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
     $selected
       ? '0px 1px 2px 0px rgba(0, 0, 0, 0.03), 0px 1px 6px -1px rgba(0, 0, 0, 0.02), 0px 2px 4px 0px rgba(0, 0, 0, 0.02)'
       : 'none'};
-
   &:hover {
     background: ${({ $selected }) => ($selected ? 'white' : 'rgba(0, 0, 0, 0.06)')};
   }
+`
+
+// ─── Create Dropdown ─────────────────────────────────────────────────────────
+
+const StyledDropdownContent = styled(DropdownMenuContent)`
+  direction: rtl;
+  min-width: var(--radix-dropdown-menu-trigger-width);
+  padding: 4px;
+  border-radius: 8px;
+  box-shadow:
+    0px 9px 28px 0px rgba(0, 0, 0, 0.05),
+    0px 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0px 6px 16px 0px rgba(0, 0, 0, 0.08);
+`
+
+const StyledDropdownItem = styled(DropdownMenuItem)`
+  direction: rtl;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 32px;
+  padding-inline: 12px;
+  padding-block: 5px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: rgba(0, 0, 0, 0.88);
+  white-space: nowrap;
+  cursor: pointer;
 `
 
 // ─── Toolbar ──────────────────────────────────────────────────────────────────

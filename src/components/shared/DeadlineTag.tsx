@@ -1,46 +1,46 @@
-import { DEADLINE_LABELS, type DeadlineType } from '#/functions/filter-utils'
 import styled from '@emotion/styled'
 
-interface DeadlineTagProps {
-    deadlineType: DeadlineType
+export enum DeadlineType {
+  Date = 'date',
+  Immediate = 'immediate',
+  Ongoing = 'ongoing',
 }
 
-export const DeadlineTag = ({ deadlineType }: DeadlineTagProps) => {
-    return (
-        <Tag $type={deadlineType}>
-            {DEADLINE_LABELS[deadlineType]}
-        </Tag>
-    )
+export const DEADLINE_LABELS: Record<DeadlineType, string> = {
+  [DeadlineType.Date]: 'תאריך',
+  [DeadlineType.Ongoing]: 'שוטף',
+  [DeadlineType.Immediate]: 'מיידי',
 }
 
-const Tag = styled.span<{ $type: DeadlineType }>`
+const DeadlineTag = styled.span<{ $type: DeadlineType }>`
   display: inline-flex;
   align-items: center;
-  padding: 1px 8px;
+  padding: 1px 6px;
   border-radius: 4px;
   font-size: 12px;
-  line-height: 20px;
   white-space: nowrap;
   ${({ $type }) => {
-        switch ($type) {
-            case 'ongoing':
-                return `
-          background: rgba(230, 244, 255, 0.8);
-          border: 1px solid rgba(145, 202, 255, 0.8);
-          color: rgba(22, 119, 255, 0.9);
+    switch ($type) {
+      case DeadlineType.Ongoing:
+        return `
+          background: var(--Colors-Base-Blue-1);
+          border: 1px solid var(--Colors-Base-Blue-3);
+          color: var(--Colors-Base-Blue-6);
         `
-            case 'immediate':
-                return `
-          background: #FFF1F0;
-          border: 1px solid #FFA39E;
-          color: #F5222D;
+      case DeadlineType.Immediate:
+        return `
+          background: var(--Colors-Base-Red-1);
+          border: 1px solid var(--Colors-Base-Red-3);
+          color: var(--Colors-Base-Red-6);
         `
-            default:
-                return `
+      case DeadlineType.Date:
+        return `
           background: var(--chip-bg);
           border: 1px solid var(--chip-line);
           color: var(--sea-ink-soft);
         `
-        }
-    }}
+    }
+  }}
 `
+
+export default DeadlineTag
