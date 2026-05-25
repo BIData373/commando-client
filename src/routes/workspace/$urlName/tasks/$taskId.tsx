@@ -30,5 +30,5 @@ function TaskDetail() {
     handleClose()
   }
 
-  return <TaskDetailPanel task={task} onClose={handleClose} onArchive={handleArchive} onDelete={handleDelete} />
+  return !!task && <TaskDetailPanel task={task} onClose={handleClose} onArchive={handleArchive} onDelete={handleDelete} />
 }

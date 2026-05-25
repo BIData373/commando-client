@@ -160,6 +160,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
             hiddenColumns={hiddenColumns}
             onUpdateStatus={updateTaskStatus}
             onEdit={handleEdit}
+            onDoubleClick={handleEdit}
             onArchive={handleArchive}
             onDelete={handleDelete}
             onBulkChangeStatus={handleBulkChangeStatus}

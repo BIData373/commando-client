@@ -5,7 +5,7 @@ export const MOCK_TASK_HISTORY: Record<number, HistoryChange[]> = {
     {
       id: 1,
       name: 'אייל שחר',
-      userId: 'S1543115',
+      userId: 1,
       action: 'create',
       field: 'משימה',
       value: 'סיור ביטחוני - מחסום צפון',
@@ -14,7 +14,7 @@ export const MOCK_TASK_HISTORY: Record<number, HistoryChange[]> = {
     {
       id: 2,
       name: 'אייל שחר',
-      userId: 'S1543115',
+      userId: 2,
       action: 'update',
       field: 'תיאור',
       value: 'בדיקת תקינות קשר, סד״פים ואזימוט מצלמות',
@@ -23,7 +23,7 @@ export const MOCK_TASK_HISTORY: Record<number, HistoryChange[]> = {
     {
       id: 3,
       name: 'אייל שחר',
-      userId: 'S1543115',
+      userId: 3,
       action: 'update',
       field: 'זמנים',
       value: 'מ27/03/25 - 25/03/25 ל28/03/25 - 30/03/25',
@@ -32,7 +32,7 @@ export const MOCK_TASK_HISTORY: Record<number, HistoryChange[]> = {
     {
       id: 4,
       name: 'רוני לוי',
-      userId: 'S1621044',
+      userId: 4,
       action: 'update',
       field: 'סטטוס',
       value: 'בביצוע',
@@ -43,7 +43,7 @@ export const MOCK_TASK_HISTORY: Record<number, HistoryChange[]> = {
     {
       id: 5,
       name: 'דנה כהן',
-      userId: 'S1489302',
+      userId: 5,
       action: 'create',
       field: 'משימה',
       value: 'הכנת ציוד לאימון שטח',
@@ -52,7 +52,7 @@ export const MOCK_TASK_HISTORY: Record<number, HistoryChange[]> = {
     {
       id: 6,
       name: 'דנה כהן',
-      userId: 'S1489302',
+      userId: 6,
       action: 'update',
       field: 'פרטים',
       value: 'הקצאת ערכת מגא"ס מול ענף כשירויות',
@@ -61,7 +61,7 @@ export const MOCK_TASK_HISTORY: Record<number, HistoryChange[]> = {
     {
       id: 7,
       name: 'רוני לוי',
-      userId: 'S1621044',
+      userId: 7,
       action: 'update',
       field: 'אחראי',
       value: 'גדוד 101',
@@ -72,7 +72,7 @@ export const MOCK_TASK_HISTORY: Record<number, HistoryChange[]> = {
     {
       id: 8,
       name: 'אייל שחר',
-      userId: 'S1543115',
+      userId: 1,
       action: 'create',
       field: 'משימה',
       value: 'בדיקת חמ"לים שבועית הספקה',
@@ -81,7 +81,7 @@ export const MOCK_TASK_HISTORY: Record<number, HistoryChange[]> = {
     {
       id: 9,
       name: 'אייל שחר',
-      userId: 'S1543115',
+      userId: 2,
       action: 'update',
       field: 'תיאור',
       value: 'בדיקת כשירות רכבים מבצעיים',
@@ -90,7 +90,7 @@ export const MOCK_TASK_HISTORY: Record<number, HistoryChange[]> = {
     {
       id: 10,
       name: 'דנה כהן',
-      userId: 'S1489302',
+      userId: 3,
       action: 'update',
       field: 'תג"ב',
       value: 'שוטף',
@@ -99,7 +99,7 @@ export const MOCK_TASK_HISTORY: Record<number, HistoryChange[]> = {
     {
       id: 11,
       name: 'דנה כהן',
-      userId: 'S1489302',
+      userId: 4,
       action: 'update',
       field: 'נושא',
       value: 'ביטחון',

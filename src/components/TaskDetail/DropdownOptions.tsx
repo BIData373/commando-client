@@ -16,12 +16,6 @@ export const DropdownOptions = ({
     onArchive,
     onDelete,
 }: DropdownOptions) => {
-    const functions = {
-        onEdit: currentUser.role === UserRole.ADMIN ? onEdit : undefined,
-        onArchive,
-        onDelete: currentUser.role === UserRole.ADMIN ? onDelete : undefined,
-    };
-
     return (
         <RowActionsMenu
             trigger={
@@ -29,7 +23,9 @@ export const DropdownOptions = ({
                     <MoreVertical size={16} />
                 </DotsButton>
             }
-            {...functions}
+            onDelete={currentUser.role === UserRole.ADMIN ? onDelete : undefined}
+            onArchive={onArchive}
+            onEdit={currentUser.role === UserRole.ADMIN ? onEdit : undefined}
         />
     );
 };

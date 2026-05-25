@@ -5,7 +5,6 @@ import { AlertTriangle, MoreVertical } from 'lucide-react'
 import { useState } from 'react'
 import { BsPaperclip as Paperclip } from 'react-icons/bs'
 import type { Task } from '../../data/Tasks'
-import { DEADLINE_LABELS, type DeadlineType } from '../../functions/filter-utils'
 import FlagIcon from '../shared/FlagIcon'
 import HighlightMatch from '../shared/HighlightMatch'
 import type { DirectiveStatus } from '../shared/StatusTag'
@@ -20,6 +19,8 @@ import { ResponsibleCell } from './ResponsibleCell'
 import { RowActionsMenu } from './RowActionsMenu'
 import { StatusCell } from './StatusCell'
 import { TopicCell } from './TopicCell'
+import { DEADLINE_LABELS } from '#/functions/filter-utils'
+import { DeadlineTag } from '../shared/DeadlineTag'
 
 const STATUS_SORT_ORDER: Record<DirectiveStatus, number> = {
   not_started: 0,
@@ -41,6 +42,7 @@ interface TaskTableProps {
   hiddenColumns: Set<TaskColumn>
   onUpdateStatus: (taskId: number, status: DirectiveStatus) => void
   onEdit: (taskId: number) => void
+  onDoubleClick: (taskId: number) => void
   onArchive: (taskIds: number[]) => void
   onDelete: (taskIds: number[]) => void
   onBulkChangeStatus: (taskIds: number[], status: DirectiveStatus) => void
@@ -53,6 +55,7 @@ function TaskTable({
   hiddenColumns,
   onUpdateStatus,
   onEdit,
+  onDoubleClick,
   onArchive,
   onDelete,
   onBulkChangeStatus,
@@ -299,6 +302,7 @@ function TaskTable({
         <DataTable
           columns={columns}
           data={tasks}
+          onRowDoubleClick={(row) => onDoubleClick(row.original.id)}
           rowSelection={selectMode ? rowSelection : undefined}
           onRowSelectionChange={selectMode ? setRowSelection : undefined}
           columnFilters={columnFilters}

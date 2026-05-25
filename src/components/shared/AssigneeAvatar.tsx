@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
-import type { Assignee } from "#/types";
+import type { IAssignee } from "#/types";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 
 interface AssigneeAvatarProps {
-    assignee: Assignee;
+    assignee: IAssignee;
     size?: number;
     ref?: React.Ref<HTMLButtonElement>;
     cursor?: boolean

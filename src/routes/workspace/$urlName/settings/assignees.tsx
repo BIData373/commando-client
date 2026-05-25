@@ -11,6 +11,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '#/components/ui/in
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/components/ui/tooltip'
 import { useAssignees } from '#/hooks/useAssignees'
 import { useUsers } from '#/hooks/useUsers'
+import { useUpdateWorkspaceSettings, useWorkspaceSettings } from '#/hooks/useWorkspaceSettings'
 import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
 
 export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({ component: SettingsAssignees })
@@ -18,13 +19,17 @@ export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({
 const activeTab = SETTINGS_TABS[SettingTabPath.ASSIGNEES]
 
 function SettingsAssignees() {
-  const [allowAssigneeStatusUpdate, setAllowAssigneeStatusUpdate] = useState(false)
+  const { urlName } = Route.useParams()
+  const { data: settings } = useWorkspaceSettings(urlName)
+  const { mutate: updateSettings } = useUpdateWorkspaceSettings(urlName)
+
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
   const { data: assignees = [] } = useAssignees()
   const { data: users = [] } = useUsers()
 
+  const allowAssigneeStatusUpdate = settings?.assigneeStatusEditable ?? false
   const userNames: Record<number, string> = Object.fromEntries(users.map((u) => [u.id, u.name]))
 
   const filteredAssignees = searchQuery.trim()
@@ -32,7 +37,12 @@ function SettingsAssignees() {
     : assignees
 
   function handleCheckboxChange(checked: boolean) {
-    setAllowAssigneeStatusUpdate(checked)
+    updateSettings({
+      name: settings?.name ?? '',
+      command: settings?.command ?? null,
+      logoUrl: settings?.logoUrl ?? null,
+      assigneeStatusEditable: checked,
+    })
   }
 
   function handleSearchChange(e: ChangeEvent<HTMLInputElement>) {

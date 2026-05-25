@@ -1,8 +1,6 @@
+import { EditorExtensions } from "#/utils/tiptapExtensions";
 import styled from "@emotion/styled";
-import Placeholder from "@tiptap/extension-placeholder";
-import UnderlineExtension from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
 import { Bold, ListOrdered, Underline } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -13,23 +11,6 @@ interface NotesFieldProps {
 	onNotesChange: (value: string) => void;
 }
 
-export const EditorExtensions = {
-	extensions: [
-		StarterKit.configure({
-			bulletList: false,
-			blockquote: false,
-			codeBlock: false,
-			code: false,
-			heading: false,
-			horizontalRule: false,
-			strike: false,
-		}),
-		UnderlineExtension,
-		Placeholder.configure({
-			placeholder: "הערות ודגשים",
-		}),
-	],
-};
 
 // ─── Component ───────────────────────────────────────────────────────────────
 

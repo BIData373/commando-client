@@ -1,6 +1,8 @@
 import styled from "@emotion/styled";
+import { useParams } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import { type IUser, UserRole } from "#/types";
+import { useWorkspaceSettings } from "../../hooks/useWorkspaceSettings";
 import { AssigneeAvatar } from "../shared/AssigneeAvatar";
 import {
     type DirectiveStatus,
@@ -32,6 +34,8 @@ export const AssigneeSection = ({
     relatedDirectives,
     onDirectiveStatusChange,
 }: AssigneeSectionProps) => {
+    const { urlName } = useParams({ from: '/workspace/$urlName/tasks/$taskId' });
+    const { data: workspaceSettings } = useWorkspaceSettings(urlName);
     const isAdmin = currentUser.role === UserRole.ADMIN;
 
     const myGroups = relatedDirectives.filter((d) =>
@@ -41,8 +45,10 @@ export const AssigneeSection = ({
         (d) => !d.user.userIds.includes(currentUser.id),
     );
 
+    const headerGroup = isAdmin ? relatedDirectives : myGroups
+
     function renderRow(assignee: RelatedDirective, editable: boolean) {
-        const canEdit = editable && (isAdmin || assignee.user.canEdit);
+        const canEdit = editable && (isAdmin || (workspaceSettings?.assigneeStatusEditable ?? false))
 
         return (
             <AssigneeRowContainer key={assignee.user.id} $white={editable && !isAdmin}>
@@ -77,40 +83,27 @@ export const AssigneeSection = ({
         );
     }
 
-    if (isAdmin) {
-        const isMultiple = relatedDirectives.length >= 2;
-        return (
-            <Section>
-                <SectionLabel>
-                    {isMultiple ? "אחראי לביצוע" : "אחראים לביצוע"}
-                </SectionLabel>
-                {relatedDirectives.length === 0 ? (
-                    <SectionValue>לא הוגדר</SectionValue>
-                ) : (
-                    <AssigneesContainer>
-                        <AssigneeRowsList>
-                            {relatedDirectives.map((item) => renderRow(item, true))}
-                        </AssigneeRowsList>
-                    </AssigneesContainer>
-                )}
-            </Section>
-        );
-    }
-
+    const isMultiple = relatedDirectives.length >= 2;
     return (
         <Section>
-            <SectionLabel>אחריותך לביצוע</SectionLabel>
-            {myGroups.length === 0 ? (
+            <SectionLabel>
+                {isAdmin ?
+                    isMultiple ?
+                        "אחראים לביצוע" : "אחראי לביצוע"
+                    :
+                    "אחריותך לבצע"
+                }
+            </SectionLabel>
+            {headerGroup.length === 0 ? (
                 <SectionValue>לא הוגדר</SectionValue>
             ) : (
                 <AssigneesContainer>
                     <AssigneeRowsList>
-                        {myGroups.map((item) => renderRow(item, true))}
+                        {headerGroup.map((item) => renderRow(item, true))}
                     </AssigneeRowsList>
                 </AssigneesContainer>
             )}
-
-            {otherGroups.length > 0 && (
+            {!isAdmin && otherGroups.length > 0 && (
                 <>
                     <SectionLabel>אחראים נוספים לביצוע</SectionLabel>
                     <AssigneesContainer>
@@ -224,7 +217,7 @@ const AssigneeRowContainer = styled.div<{ $white?: boolean }>`
   gap: 24px;
   padding: 7px 12px;
   background: ${({ $white }) => ($white ? "var(--background)" : "#fcfcfc")};
-  border: 0.5px solid #F0F0F0;
+  border: 0.5px solid var(--line);
   border-radius: 8px;
   width: 100%;
 `;
