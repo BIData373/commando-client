@@ -3,8 +3,8 @@ import { differenceInDays, startOfToday } from 'date-fns'
 import { formatDateShort } from './date-utils'
 import { getStatusStyle, STATUS_LABELS } from '../components/shared/StatusTag'
 import { DEADLINE_LABELS } from '../components/shared/DeadlineTag'
+import type { TaskColumn } from '../hooks/useTaskColumns'
 import type { Task } from '../data/Tasks'
-import type { TaskColumn } from '../components/Tasks/ColumnVisibilityDropdown'
 
 interface CellValue {
   value: string
