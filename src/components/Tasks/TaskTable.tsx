@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { type ColumnDef, type ColumnFiltersState, type FilterFn, type RowSelectionState, type SortingState } from '@tanstack/react-table'
-import { differenceInDays, format, startOfToday } from 'date-fns'
+import { differenceInDays, startOfToday } from 'date-fns'
+import { formatDateShort } from '../../functions/date-utils'
 import { AlertTriangle, MoreVertical } from 'lucide-react'
 import { useState } from 'react'
 import { BsPaperclip as Paperclip } from 'react-icons/bs'
@@ -20,7 +21,7 @@ import { RowActionsMenu } from './RowActionsMenu'
 import { StatusCell } from './StatusCell'
 import { TopicCell } from './TopicCell'
 import { DEADLINE_LABELS } from '#/functions/filter-utils'
-import { DeadlineTag } from '../shared/DeadlineTag'
+import DeadlineTag, { DeadlineType } from '../shared/DeadlineTag'
 
 const STATUS_SORT_ORDER: Record<DirectiveStatus, number> = {
   not_started: 0,
@@ -185,7 +186,7 @@ function TaskTable({
       cell: ({ row: { original: { deadlineType, dueDate } } }) => {
         const today = startOfToday()
         const daysUntil = dueDate ? differenceInDays(dueDate, today) : null
-        const isOverdue = daysUntil !== null && daysUntil < 0 && deadlineType !== 'immediate'
+        const isOverdue = daysUntil !== null && daysUntil < 0 && deadlineType !== DeadlineType.Immediate
         const isApproaching = !isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
 
         const overdueTooltip = `חריגה של ${Math.abs(daysUntil!)} ימים`
@@ -193,10 +194,10 @@ function TaskTable({
 
         return (
           <DeadlineCell>
-            {deadlineType !== 'date' && (
-              <DeadlineTag deadlineType={deadlineType} />
+            {deadlineType !== DeadlineType.Date && (
+              <DeadlineTag $type={deadlineType}>{DEADLINE_LABELS[deadlineType]}</DeadlineTag>
             )}
-            {dueDate && <DeadlineDateText>{format(dueDate, 'dd/MM/yy')}</DeadlineDateText>}
+            {dueDate && <DeadlineDateText>{formatDateShort(dueDate)}</DeadlineDateText>}
             {(isOverdue || isApproaching) && (
               <DeadlineWarning>
                 <Tooltip>
@@ -254,7 +255,7 @@ function TaskTable({
       size: 132,
       enableColumnFilter: false,
       sortingFn: 'datetime',
-      cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
+      cell: ({ getValue }) => <DateText>{formatDateShort(getValue<Date>())}</DateText>,
     },
     updatedAt: {
       accessorKey: 'updatedAt',
@@ -262,7 +263,7 @@ function TaskTable({
       size: 100,
       enableColumnFilter: false,
       sortingFn: 'datetime',
-      cell: ({ getValue }) => <DateText>{format(getValue<Date>(), 'dd/MM/yy')}</DateText>,
+      cell: ({ getValue }) => <DateText>{formatDateShort(getValue<Date>())}</DateText>,
     },
   }
 

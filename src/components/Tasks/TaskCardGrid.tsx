@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
-import { format } from 'date-fns'
 import { Flag } from 'lucide-react'
-import type { Task } from '../../data/Tasks'
-import { DeadlineTag } from '../shared/DeadlineTag'
-import { StatusTag } from '../shared/StatusTag'
+import { formatDateShort } from '../../functions/date-utils'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
+import { StatusTag } from '../shared/StatusTag'
+import type { Task } from '../../data/Tasks'
+import DeadlineTag, { DeadlineType, DEADLINE_LABELS } from '../shared/DeadlineTag'
 
 interface TaskCardGridProps {
   tasks: Task[]
@@ -27,11 +27,11 @@ function TaskCardGrid({ tasks }: TaskCardGridProps) {
             <StatusTag status={task.status} />
           </CardContent>
           <CardFooter>
-            {task.deadlineType !== 'date' && (
-              <DeadlineTag deadlineType={task.deadlineType} />
+            {task.deadlineType !== DeadlineType.Date && (
+              <DeadlineTag $type={task.deadlineType}>{DEADLINE_LABELS[task.deadlineType]}</DeadlineTag>
             )}
             {task.dueDate && (
-              <CardDateText>{format(task.dueDate, 'dd/MM/yy')}</CardDateText>
+              <CardDateText>{formatDateShort(task.dueDate)}</CardDateText>
             )}
           </CardFooter>
         </Card>
@@ -60,3 +60,4 @@ const CardDateText = styled.span`
   color: var(--sea-ink-soft);
   margin-inline-start: auto;
 `
+
