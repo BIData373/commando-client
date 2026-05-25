@@ -1,4 +1,4 @@
-import type { DeadlineType } from '../components/shared/DeadlineTag'
+import { DeadlineType } from '../components/shared/DeadlineTag'
 import type { DiscussionSource } from './Discussions'
 
 export interface FormState {
@@ -18,7 +18,7 @@ export interface FormState {
 
 export const INITIAL_FORM: FormState = {
   title: '',
-  deadlineType: 'date',
+  deadlineType: DeadlineType.Date,
   dueDate: null,
   selectedAssignees: [],
   assigneeDetails: {},
