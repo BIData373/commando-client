@@ -1,38 +1,44 @@
 import { useMemo, useState } from 'react'
 import styled from '@emotion/styled'
+import { type ColumnDef } from '@tanstack/react-table'
 import { TooltipProvider } from '../ui/tooltip'
 import { MetricsBar } from './MetricsBar'
-import { PersonalTaskTable } from './PersonalTaskTable'
+import { TaskTable } from '../Tasks/TaskTable'
+import { ColumnHeaderWithActions } from '../Tasks/ColumnHeaderWithActions'
 import { MultiSelectFilterDropdown } from '../shared/MultiSelectFilterDropdown'
 import { TaskFilters, type QuickFilter } from '../Tasks/TaskFilters'
 import { NoResultsFound } from '../Tasks/NoResultsFound'
 import { useTitleBar } from '../../providers/TitleBarProvider'
 import { PERSONAL_TASKS, type PersonalTask, type Workspace } from '../../data/PersonalTasks'
-import { applyAllFilters, buildFilterOptionsMap } from '../../functions/filter-utils'
+import { applyAllFilters } from '../../functions/filter-utils'
 import type { DirectiveStatus } from '../shared/StatusTag'
 import { isThisWeek } from 'date-fns'
 import type { TasksLayoutProps, View } from '../Tasks/TasksLayout'
+import type { Task } from '../../data/Tasks'
+import type { TaskColumn } from '../../hooks/useTaskColumns'
 
-const PERSONAL_DEFAULT_COLUMN_ORDER: string[] = [
+const PERSONAL_DEFAULT_COLUMN_ORDER: (TaskColumn | string)[] = [
   'title',
   'status',
   'responsible',
   'deadlineType',
   'discussionName',
+  'tags',
   'notes',
   'workspace',
   'createdAt',
+  'updatedAt',
 ]
 
-const PERSONAL_DEFAULT_HIDDEN = new Set<string>(['notes'])
+const PERSONAL_DEFAULT_HIDDEN = new Set<TaskColumn>(['tags', 'notes', 'updatedAt'])
 
 function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
   const [tasks, setTasks] = useState<PersonalTask[]>(PERSONAL_TASKS)
   const [searchQuery, setSearchQuery] = useState('')
   const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set())
   const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<Set<number>>(new Set())
-  const [columnOrder, setColumnOrder] = useState(['id', ...PERSONAL_DEFAULT_COLUMN_ORDER])
-  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set(PERSONAL_DEFAULT_HIDDEN))
+  const [columnOrder, setColumnOrder] = useState<TaskColumn[]>(['id' as TaskColumn, ...PERSONAL_DEFAULT_COLUMN_ORDER] as TaskColumn[])
+  const [hiddenColumns, setHiddenColumns] = useState<Set<TaskColumn>>(new Set(PERSONAL_DEFAULT_HIDDEN) as Set<TaskColumn>)
 
   const workspaces = useMemo(() => {
     const map = new Map<number, Workspace>()
@@ -45,7 +51,7 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
   const inProgressCount = tasks.filter((t) => t.status === 'in_progress').length
   const weeklyNew = tasks.filter((t) => isThisWeek(t.createdAt, { weekStartsOn: 0 })).length
 
-  function handleToggleColumn(columnId: string) {
+  function handleToggleColumn(columnId: TaskColumn) {
     setHiddenColumns((prev) => {
       const next = new Set(prev)
       if (next.has(columnId)) {
@@ -74,7 +80,26 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
     setActiveWorkspaceFilters(new Set())
   }
 
-  const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
+  const workspaceColumn: ColumnDef<Task> = {
+    id: 'workspace',
+    accessorFn: (row) => (row as PersonalTask).workspace.name,
+    header: ({ column }) => <ColumnHeaderWithActions label="מפקד מנחה" column={column} />,
+    size: 170,
+    enableColumnFilter: false,
+    sortingFn: (rowA, rowB) =>
+      (rowA.original as PersonalTask).workspace.name.localeCompare(
+        (rowB.original as PersonalTask).workspace.name, 'he',
+      ),
+    cell: ({ row }) => {
+      const { workspace } = row.original as PersonalTask
+      return (
+        <WorkspaceCell>
+          <WorkspaceIconImg src={workspace.iconUrl} alt={workspace.name} />
+          <WorkspaceCellName>{workspace.name}</WorkspaceCellName>
+        </WorkspaceCell>
+      )
+    },
+  }
 
   const filteredTasks = useMemo(() => {
     let result = applyAllFilters(tasks, activeQuickFilters, new Set(), searchQuery) as PersonalTask[]
@@ -158,6 +183,7 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
           onColumnOrderChange={setColumnOrder}
           onToggleColumn={handleToggleColumn}
           hasExtraActiveFilters={activeWorkspaceFilters.size > 0}
+          extraColumnsMeta={[{ id: 'workspace' as TaskColumn, label: 'מפקד מנחה' }]}
           extraFilters={
             <MultiSelectFilterDropdown
               label={activeWorkspaceFilters.size > 0 ? `סביבות (${activeWorkspaceFilters.size})` : 'כל הסביבות'}
@@ -178,16 +204,16 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
         ) : searchQuery && filteredTasks.length === 0 ? (
           <NoResultsFound variant="no-search-results" />
         ) : (
-          <PersonalTaskTable
-            tasks={filteredTasks}
+          <TaskTable
+            tasks={filteredTasks as Task[]}
             searchQuery={searchQuery}
             columnOrder={columnOrder}
             hiddenColumns={hiddenColumns}
-            filterOptionsMap={filterOptionsMap}
             onUpdateStatus={handleUpdateStatus}
             onBulkChangeStatus={handleBulkChangeStatus}
             onArchive={handleArchive}
             onDelete={handleDelete}
+            extraColumns={{ workspace: workspaceColumn }}
           />
         )}
       </PageRoot>
@@ -246,4 +272,29 @@ const WorkspaceIcon = styled.img`
   height: 20px;
   border-radius: 50%;
   object-fit: cover;
+`
+
+const WorkspaceCell = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+`
+
+const WorkspaceCellName = styled.span`
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+const WorkspaceIconImg = styled.img`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 `

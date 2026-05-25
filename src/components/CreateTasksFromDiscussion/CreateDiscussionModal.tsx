@@ -100,7 +100,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
       dueDate: row.dueDate,
       isImportant: row.isImportant,
       notes: row.notes,
-      groupKey: row.id,
+      groupKey: String(row.id),
     }))
 
     saveTasks(inputs, {

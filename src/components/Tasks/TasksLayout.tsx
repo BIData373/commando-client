@@ -16,6 +16,7 @@ import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
 import { TaskCardGrid } from './TaskCardGrid'
 import { exportTasksToExcel } from '../../functions/export-excel'
 import { applyAllFilters } from '../../functions/filter-utils'
+import type { TaskColumn } from '../../hooks/useTaskColumns'
 import { useTitleBar } from '../../providers/TitleBarProvider'
 import { useMemo, useState } from 'react'
 import { useTasks } from '../../providers/TasksProvider'
@@ -34,9 +35,9 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set())
   const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(new Set())
-  const [columnOrder, setColumnOrder] = useState<string[]>(['id', ...DEFAULT_COLUMN_ORDER])
-  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set(['notes', 'updatedAt']))
-  function handleToggleColumn(columnId: string) {
+  const [columnOrder, setColumnOrder] = useState<TaskColumn[]>(['id' as TaskColumn, ...DEFAULT_COLUMN_ORDER])
+  const [hiddenColumns, setHiddenColumns] = useState<Set<TaskColumn>>(new Set<TaskColumn>(['notes', 'updatedAt'] as TaskColumn[]))
+  function handleToggleColumn(columnId: TaskColumn) {
     setHiddenColumns((prev) => {
       const next = new Set(prev)
       if (next.has(columnId)) {

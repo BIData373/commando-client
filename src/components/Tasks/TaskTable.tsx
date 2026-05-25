@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import { type ColumnFiltersState, type RowSelectionState, type SortingState } from '@tanstack/react-table'
+import { type ColumnDef, type ColumnFiltersState, type RowSelectionState, type SortingState } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
 import { DataTable } from '../ui/data-table'
 import { BulkActionsBar } from './BulkActionsBar'
@@ -11,13 +11,14 @@ import { buildFilterOptionsMap } from '../../functions/filter-utils'
 interface TaskTableProps {
   tasks: Task[]
   searchQuery: string
-  columnOrder: string[]
-  hiddenColumns: Set<string>
+  columnOrder: TaskColumn[]
+  hiddenColumns: Set<TaskColumn>
   onUpdateStatus: (taskId: number, status: DirectiveStatus) => void
-  onEdit: (taskId: number) => void
+  onEdit?: (taskId: number) => void
   onArchive: (taskIds: number[]) => void
   onDelete: (taskIds: number[]) => void
   onBulkChangeStatus: (taskIds: number[], status: DirectiveStatus) => void
+  extraColumns?: Record<string, ColumnDef<Task>>
   showHeader?: boolean
 }
 
@@ -27,10 +28,11 @@ function TaskTable({
   columnOrder,
   hiddenColumns,
   onUpdateStatus,
-  onEdit,
+  onEdit = () => {},
   onArchive,
   onDelete,
   onBulkChangeStatus,
+  extraColumns,
   showHeader = true,
 }: TaskTableProps) {
   const [selectMode, setSelectMode] = useState(false)
@@ -64,10 +66,12 @@ function TaskTable({
 
   const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
 
-  const visibleColumns = columnOrder
-    .filter((id) => !hiddenColumns.has(id)) as TaskColumn[]
+  const extraColumnIds = extraColumns ? new Set(Object.keys(extraColumns)) : new Set<string>()
 
-  const { columns } = useTaskColumns({
+  const visibleColumns = columnOrder
+    .filter((id) => !hiddenColumns.has(id) && !extraColumnIds.has(id)) as TaskColumn[]
+
+  const { columns: baseColumns } = useTaskColumns({
     visibleColumns,
     searchQuery,
     filterOptionsMap,
@@ -85,6 +89,24 @@ function TaskTable({
       onEnterSelectMode: handleEnterSelectMode,
     },
   })
+
+  const columns = [...baseColumns]
+
+  if (extraColumns) {
+    for (const [id, colDef] of Object.entries(extraColumns)) {
+      const colId = id as TaskColumn
+      const isVisible = !hiddenColumns.has(colId)
+      const orderIndex = columnOrder.indexOf(colId)
+      if (!isVisible || orderIndex === -1) continue
+
+      const visibleBeforeCount = columnOrder
+        .slice(0, orderIndex)
+        .filter((colId) => !hiddenColumns.has(colId))
+        .length
+
+      columns.splice(visibleBeforeCount, 0, colDef as ColumnDef<Task>)
+    }
+  }
 
   return (
     <>
@@ -126,11 +148,16 @@ export { TaskTable }
 // ─── Table ────────────────────────────────────────────────────────────────────
 
 const TableWrapper = styled.div`
-  overflow-x: auto;
+  overflow: auto;
+  direction: ltr;
   border-radius: 8px;
-  border: 0.5px solid rgba(0, 0, 0, 0.15);
-  background: white;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+
+  & > * {
+    direction: rtl;
+  }
+  border: 0.5px solid var(--Background-color-bg-text-active);
+  background: var(--background);
+  box-shadow: var(--card-shadow-default);
 
   table {
     width: 100%;
@@ -142,7 +169,7 @@ const TableWrapper = styled.div`
       background: var(--link-bg-hover);
     }
 
-    &:last-of-type td{
+    &:last-of-type td {
       border-bottom: none;
     }
   }
@@ -151,11 +178,11 @@ const TableWrapper = styled.div`
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
-    color:rgba(0, 0, 0, 0.65);
+    color: var(--text-color);
     height: 48px;
     white-space: nowrap;
-    background: white;
-    border-right: 0.5px solid rgba(0, 0, 0, 0.15);
+    background: var(--background);
+    border-right: 0.5px solid var(--Background-color-bg-text-active);
 
     &:first-of-type {
       border-right: none;
@@ -168,7 +195,7 @@ const TableWrapper = styled.div`
     max-height: 43px;
     vertical-align: middle;
     overflow: hidden;
-    border: 0.5px solid rgba(0, 0, 0, 0.15);
+    border: 0.5px solid var(--Background-color-bg-text-active);
 
     &:first-of-type {
       border-right: none;
