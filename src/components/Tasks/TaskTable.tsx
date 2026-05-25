@@ -90,23 +90,27 @@ function TaskTable({
     },
   })
 
-  const columns = [...baseColumns]
+  const columns = useMemo(() => {
+    const result = [...baseColumns]
 
-  if (extraColumns) {
-    for (const [id, colDef] of Object.entries(extraColumns)) {
-      const colId = id as TaskColumn
-      const isVisible = !hiddenColumns.has(colId)
-      const orderIndex = columnOrder.indexOf(colId)
-      if (!isVisible || orderIndex === -1) continue
+    if (extraColumns) {
+      for (const [id, colDef] of Object.entries(extraColumns)) {
+        const colId = id as TaskColumn
+        const isVisible = !hiddenColumns.has(colId)
+        const orderIndex = columnOrder.indexOf(colId)
+        if (!isVisible || orderIndex === -1) continue
 
-      const visibleBeforeCount = columnOrder
-        .slice(0, orderIndex)
-        .filter((colId) => !hiddenColumns.has(colId))
-        .length
+        const visibleBeforeCount = columnOrder
+          .slice(0, orderIndex)
+          .filter((colId) => !hiddenColumns.has(colId))
+          .length
 
-      columns.splice(visibleBeforeCount, 0, colDef as ColumnDef<Task>)
+        result.splice(visibleBeforeCount, 0, colDef as ColumnDef<Task>)
+      }
     }
-  }
+
+    return result
+  }, [baseColumns, extraColumns, columnOrder, hiddenColumns])
 
   return (
     <>

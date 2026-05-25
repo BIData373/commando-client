@@ -32,6 +32,29 @@ const PERSONAL_DEFAULT_COLUMN_ORDER: (TaskColumn | string)[] = [
 
 const PERSONAL_DEFAULT_HIDDEN = new Set<TaskColumn>(['tags', 'notes', 'updatedAt'])
 
+const WORKSPACE_COLUMN: ColumnDef<Task> = {
+  id: 'workspace',
+  accessorFn: (row) => (row as PersonalTask).workspace.name,
+  header: ({ column }) => <ColumnHeaderWithActions label="מפקד מנחה" column={column} />,
+  size: 170,
+  enableColumnFilter: false,
+  sortingFn: (rowA, rowB) =>
+    (rowA.original as PersonalTask).workspace.name.localeCompare(
+      (rowB.original as PersonalTask).workspace.name, 'he',
+    ),
+  cell: ({ row }) => {
+    const { workspace } = row.original as PersonalTask
+    return (
+      <WorkspaceCell>
+        <WorkspaceIconImg src={workspace.iconUrl} alt={workspace.name} />
+        <WorkspaceCellName>{workspace.name}</WorkspaceCellName>
+      </WorkspaceCell>
+    )
+  },
+}
+
+const EXTRA_COLUMNS: Record<string, ColumnDef<Task>> = { workspace: WORKSPACE_COLUMN }
+
 function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
   const [tasks, setTasks] = useState<PersonalTask[]>(PERSONAL_TASKS)
   const [searchQuery, setSearchQuery] = useState('')
@@ -78,27 +101,6 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
   function clearAllFilters() {
     setActiveQuickFilters(new Set())
     setActiveWorkspaceFilters(new Set())
-  }
-
-  const workspaceColumn: ColumnDef<Task> = {
-    id: 'workspace',
-    accessorFn: (row) => (row as PersonalTask).workspace.name,
-    header: ({ column }) => <ColumnHeaderWithActions label="מפקד מנחה" column={column} />,
-    size: 170,
-    enableColumnFilter: false,
-    sortingFn: (rowA, rowB) =>
-      (rowA.original as PersonalTask).workspace.name.localeCompare(
-        (rowB.original as PersonalTask).workspace.name, 'he',
-      ),
-    cell: ({ row }) => {
-      const { workspace } = row.original as PersonalTask
-      return (
-        <WorkspaceCell>
-          <WorkspaceIconImg src={workspace.iconUrl} alt={workspace.name} />
-          <WorkspaceCellName>{workspace.name}</WorkspaceCellName>
-        </WorkspaceCell>
-      )
-    },
   }
 
   const filteredTasks = useMemo(() => {
@@ -213,7 +215,7 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
             onBulkChangeStatus={handleBulkChangeStatus}
             onArchive={handleArchive}
             onDelete={handleDelete}
-            extraColumns={{ workspace: workspaceColumn }}
+            extraColumns={EXTRA_COLUMNS}
           />
         )}
       </PageRoot>
