@@ -12,18 +12,19 @@ import { type DirectiveStatus } from '../shared/StatusTag'
 import { NoResultsFound } from './NoResultsFound'
 import { TaskFilters, type QuickFilter } from './TaskFilters'
 import { TaskTable } from './TaskTable'
-import { DEFAULT_COLUMN_ORDER, type TaskColumn } from './ColumnVisibilityDropdown'
+import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
 import { TaskCardGrid } from './TaskCardGrid'
 import { exportTasksToExcel } from '../../functions/export-excel'
 import { applyAllFilters } from '../../functions/filter-utils'
+import type { TaskColumn } from '../../hooks/useTaskColumns'
 import { useTitleBar } from '../../providers/TitleBarProvider'
 import { useMemo, useState } from 'react'
 import { useTasks } from '../../providers/TasksProvider'
-import { TaskSearchBar } from './TaskSearchBar'
+import { MultiSelectFilterDropdown } from '../shared/MultiSelectFilterDropdown'
 
 export type View = 'TABLE' | 'CARDS'
 
-interface TasksLayoutProps {
+export interface TasksLayoutProps {
   view: View
   urlName: string
 }
@@ -34,8 +35,8 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set())
   const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(new Set())
-  const [columnOrder, setColumnOrder] = useState(DEFAULT_COLUMN_ORDER)
-  const [hiddenColumns, setHiddenColumns] = useState<Set<TaskColumn>>(new Set(['notes', 'updatedAt']))
+  const [columnOrder, setColumnOrder] = useState<TaskColumn[]>(['id' as TaskColumn, ...DEFAULT_COLUMN_ORDER])
+  const [hiddenColumns, setHiddenColumns] = useState<Set<TaskColumn>>(new Set<TaskColumn>(['notes', 'updatedAt'] as TaskColumn[]))
   function handleToggleColumn(columnId: TaskColumn) {
     setHiddenColumns((prev) => {
       const next = new Set(prev)
@@ -93,7 +94,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   }
 
   function handleCreateTaskFromDiscussion() {
-    navigate({ to: '/workspace/$urlName/tasks/new', params: { urlName }, search: { view, mode: 'discussion'} })
+    navigate({ to: '/workspace/$urlName/tasks/new', params: { urlName }, search: { view, mode: 'discussion' } })
   }
 
   function handleCreateTask() {
@@ -147,26 +148,27 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
   return (
     <TooltipProvider>
       <TasksRoot>
-        <Toolbar>
-          <TaskSearchBar
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            onExport={handleExport}
-            columnOrder={columnOrder}
-            hiddenColumns={hiddenColumns}
-            onColumnOrderChange={setColumnOrder}
-            onToggleColumn={handleToggleColumn}
-          />
-          <TaskFilters
-            tasks={tasks}
-            activeQuickFilters={activeQuickFilters}
-            activeTopicFilters={activeTopicFilters}
-            allTopics={allTopics}
-            onToggleQuickFilter={toggleQuickFilter}
-            onApplyTopicFilters={setActiveTopicFilters}
-            onClearAllFilters={clearAllFilters}
-          />
-        </Toolbar>
+        <TaskFilters
+          tasks={tasks}
+          activeQuickFilters={activeQuickFilters}
+          onToggleQuickFilter={toggleQuickFilter}
+          onClearAllFilters={clearAllFilters}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onExport={handleExport}
+          columnOrder={columnOrder}
+          hiddenColumns={hiddenColumns}
+          onColumnOrderChange={setColumnOrder}
+          onToggleColumn={handleToggleColumn}
+          hasExtraActiveFilters={activeTopicFilters.size > 0}
+          extraFilters={<MultiSelectFilterDropdown
+            label="נושא"
+            options={allTopics.map((t) => ({ value: t, label: t }))}
+            activeValues={activeTopicFilters}
+            onApply={setActiveTopicFilters}
+            $active={activeTopicFilters.size > 0}
+          />}
+        />
 
         {tasks.length === 0 ? (
           <NoResultsFound variant="empty" />
@@ -329,12 +331,3 @@ const StyledDropdownItem = styled(DropdownMenuItem)`
   cursor: pointer;
 `
 
-// ─── Toolbar ──────────────────────────────────────────────────────────────────
-
-const Toolbar = styled.div`
-  direction: ltr;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 40px;
-`

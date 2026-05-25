@@ -3,32 +3,46 @@ import styled from '@emotion/styled'
 import { ChevronDown } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Checkbox } from '../ui/checkbox'
+import type { ReactNode } from 'react'
 
-interface TopicFilterDropdownProps {
-  topics: string[]
-  activeTopics: Set<string>
-  onApply: (selected: Set<string>) => void
+interface FilterOption<T extends string | number> {
+  value: T
+  label: string
+  icon?: ReactNode
+}
+
+interface MultiSelectFilterDropdownProps<T extends string | number> {
+  label: string
+  options: FilterOption<T>[]
+  activeValues: Set<T>
+  onApply: (selected: Set<T>) => void
   $active: boolean
 }
 
-function TopicFilterDropdown({ topics, activeTopics, onApply, $active }: TopicFilterDropdownProps) {
+function MultiSelectFilterDropdown<T extends string | number>({
+  label,
+  options,
+  activeValues,
+  onApply,
+  $active,
+}: MultiSelectFilterDropdownProps<T>) {
   const [open, setOpen] = useState(false)
-  const [pending, setPending] = useState<Set<string>>(new Set(activeTopics))
+  const [pending, setPending] = useState<Set<T>>(new Set(activeValues))
 
   function handleOpenChange(nextOpen: boolean) {
     if (nextOpen) {
-      setPending(new Set(activeTopics))
+      setPending(new Set(activeValues))
     }
     setOpen(nextOpen)
   }
 
-  function toggleTopic(topic: string) {
+  function toggleValue(value: T) {
     setPending((prev) => {
       const next = new Set(prev)
-      if (next.has(topic)) {
-        next.delete(topic)
+      if (next.has(value)) {
+        next.delete(value)
       } else {
-        next.add(topic)
+        next.add(value)
       }
       return next
     })
@@ -49,20 +63,23 @@ function TopicFilterDropdown({ topics, activeTopics, onApply, $active }: TopicFi
       <PopoverTrigger asChild>
         <TriggerPill $active={$active}>
           <ChevronDown size={16} />
-          נושא
+          {label}
         </TriggerPill>
       </PopoverTrigger>
       <PopoverContent align="start" sideOffset={8} asChild>
         <DropdownPanel>
           <ItemList>
-            {topics.map((topic) => (
+            {options.map((option) => (
               <DropdownItem
-                key={topic}
-                $selected={pending.has(topic)}
-                onClick={() => toggleTopic(topic)}
+                key={option.value}
+                $selected={pending.has(option.value)}
+                onClick={() => toggleValue(option.value)}
               >
-                <TopicLabel>{topic}</TopicLabel>
-                <Checkbox checked={pending.has(topic)} />
+                <OptionLabel>
+                  {option.icon}
+                  <span>{option.label}</span>
+                </OptionLabel>
+                <Checkbox checked={pending.has(option.value)} />
               </DropdownItem>
             ))}
           </ItemList>
@@ -81,9 +98,8 @@ function TopicFilterDropdown({ topics, activeTopics, onApply, $active }: TopicFi
   )
 }
 
-export { TopicFilterDropdown }
-
-// ─── Styled ──────────────────────────────────────────────────────────────────
+export { MultiSelectFilterDropdown }
+export type { FilterOption }
 
 const TriggerPill = styled.button<{ $active: boolean }>`
   display: flex;
@@ -116,14 +132,14 @@ const DropdownPanel = styled.div`
     0px 9px 28px 0px rgba(0, 0, 0, 0.05);
   width: auto;
   min-width: 180px;
-`
+  `
 
 const ItemList = styled.div`
   display: flex;
   flex-direction: column;
   max-height: 160px;
   overflow-y: auto;
-`
+  `
 
 const DropdownItem = styled.div<{ $selected: boolean }>`
   direction: ltr;
@@ -141,13 +157,17 @@ const DropdownItem = styled.div<{ $selected: boolean }>`
   }
 `
 
-const TopicLabel = styled.span`
+const OptionLabel = styled.div`
+  direction: rtl;
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
-  text-align: end;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

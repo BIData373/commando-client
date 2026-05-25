@@ -240,7 +240,7 @@ const SaveButton = styled.button`
   height: 40px;
   border: none;
   border-radius: 8px;
-  background: var(--gradient);
+  background: var(--default-linear);
   color: var(--background);
   font-size: 16px;
   font-weight: 400;
