@@ -159,9 +159,9 @@ const TableWrapper = styled.div`
   & > * {
     direction: rtl;
   }
-  border: 0.5px solid rgba(0, 0, 0, 0.15);
-  background: white;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  border: 0.5px solid var(--Background-color-bg-text-active);
+  background: var(--background);
+  box-shadow: var(--card-shadow-default);
 
   table {
     width: 100%;
@@ -182,11 +182,11 @@ const TableWrapper = styled.div`
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
-    color: rgba(0, 0, 0, 0.65);
+    color: var(--text-color);
     height: 48px;
     white-space: nowrap;
-    background: white;
-    border-right: 0.5px solid rgba(0, 0, 0, 0.15);
+    background: var(--background);
+    border-right: 0.5px solid var(--Background-color-bg-text-active);
 
     &:first-of-type {
       border-right: none;
@@ -199,7 +199,7 @@ const TableWrapper = styled.div`
     max-height: 43px;
     vertical-align: middle;
     overflow: hidden;
-    border: 0.5px solid rgba(0, 0, 0, 0.15);
+    border: 0.5px solid var(--Background-color-bg-text-active);
 
     &:first-of-type {
       border-right: none;
@@ -222,7 +222,7 @@ const WorkspaceName = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

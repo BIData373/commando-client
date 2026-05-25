@@ -232,14 +232,11 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   white-space: nowrap;
   cursor: pointer;
   transition: background 0.15s, box-shadow 0.15s;
-  background: ${({ $selected }) => ($selected ? 'white' : 'transparent')};
-  color: ${({ $selected }) => ($selected ? 'rgba(0, 0, 0, 0.88)' : 'rgba(0, 0, 0, 0.65)')};
-  box-shadow: ${({ $selected }) =>
-    $selected
-      ? '0px 1px 2px 0px rgba(0, 0, 0, 0.03), 0px 1px 6px -1px rgba(0, 0, 0, 0.02), 0px 2px 4px 0px rgba(0, 0, 0, 0.02)'
-      : 'none'};
+  background: ${({ $selected }) => ($selected ? 'var(--background)' : 'transparent')};
+  color: ${({ $selected }) => ($selected ? 'rgba(0, 0, 0, 0.88)' : 'var(--text-color)')};
+  box-shadow: ${({ $selected }) => $selected ? 'var(--card-shadow-default)' : 'none'};
   &:hover {
-    background: ${({ $selected }) => ($selected ? 'white' : 'rgba(0, 0, 0, 0.06)')};
+    background: ${({ $selected }) => ($selected ? 'var(--background)' : 'rgba(0, 0, 0, 0.06)')};
   }
 `
 

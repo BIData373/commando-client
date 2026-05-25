@@ -1,6 +1,8 @@
 import { differenceInDays, startOfToday } from 'date-fns'
 import type { Task } from '../data/Tasks'
 import type { QuickFilter } from '../components/Tasks/TaskFilters'
+import { STATUS_LABELS } from '../components/shared/StatusTag'
+import { DEADLINE_LABELS } from '../components/shared/DeadlineTag'
 // ─── Shared Types ────────────────────────────────────────────────────────────
 
 export interface FilterOption {
@@ -66,13 +68,13 @@ function buildFilterOptionsMap(tasks: Task[]): Record<string, FilterOption[]> {
     t.tags.forEach((tag) => tagsSet.add(tag))
   }
 
-  const toOptions = (set: Set<string>): FilterOption[] =>
-    [...set].map((v) => ({ value: v, label: v }))
+  const toOptions = (set: Set<string>, labelMap?: Record<string, string>): FilterOption[] =>
+    [...set].map((v) => ({ value: v, label: labelMap?.[v] ?? v }))
 
   return {
-    status: toOptions(statusSet),
+    status: toOptions(statusSet, STATUS_LABELS),
     responsible: toOptions(responsibleSet),
-    deadlineType: toOptions(deadlineTypeSet),
+    deadlineType: toOptions(deadlineTypeSet, DEADLINE_LABELS),
     discussionName: toOptions(discussionNameSet),
     tags: toOptions(tagsSet),
   }
