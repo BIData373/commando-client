@@ -2,7 +2,8 @@ import { useState } from 'react'
 import styled from '@emotion/styled'
 import { ChevronLeft } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import DatePicker, { CalendarMode } from '../shared/DatePicker'
+import { CalendarMode } from '../shared/DatePicker'
+import DatePickerPopover from '../shared/DatePickerPopover'
 import DeadlineTag, { DeadlineType, DEADLINE_LABELS } from '../shared/DeadlineTag'
 import { formatDateShort } from '../../functions/date-utils'
 
@@ -25,32 +26,17 @@ const TYPES_WITH_CALENDAR: DeadlineType[] = [DeadlineType.Date, DeadlineType.Ong
 
 function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChange }: DeadlineCellProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [calendarFor, setCalendarFor] = useState<DeadlineType.Date | DeadlineType.Ongoing | null>(null)
 
   function handleOptionClick(type: DeadlineType) {
     onDeadlineTypeChange(type)
-    if (TYPES_WITH_CALENDAR.includes(type)) {
-      setCalendarFor(type as DeadlineType.Date | DeadlineType.Ongoing)
-    } else {
-      setCalendarFor(null)
+    if (!TYPES_WITH_CALENDAR.includes(type)) {
       setIsOpen(false)
     }
   }
 
-  function handleDateSelect(date: Date | undefined) {
-    onDateChange(date ?? null)
-    setCalendarFor(null)
-    setIsOpen(false)
-  }
-
-  function handleOpenChange(open: boolean) {
-    setIsOpen(open)
-    if (!open) setCalendarFor(null)
-  }
-
   return (
-    <DeadlineCellWrapper $open={isOpen}>
-      <Popover open={isOpen} onOpenChange={handleOpenChange}>
+    <DeadlineCellWrapper data-cell-active={isOpen || undefined}>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <DeadlineTrigger>
             {!deadlineType ? (
@@ -65,19 +51,17 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
             ) : dueDate ? (
               <DateText>{formatDateShort(dueDate)}</DateText>
             ) : (
-              <DeadlineValueText>
-                {DEADLINE_LABELS[deadlineType]}
-              </DeadlineValueText>
+              <PlaceholderText>{`תג"ב`}</PlaceholderText>
             )}
           </DeadlineTrigger>
         </PopoverTrigger>
-        <DeadlineDropdownContent sideOffset={1}>
+        <DeadlineDropdownContent sideOffset={4}>
           <DropdownRow>
             <DropdownHeader>{`תג"ב`}</DropdownHeader>
             {DEADLINE_TYPES.map((type) => (
               <DeadlineOption
                 key={type}
-                $active={calendarFor === type}
+                $active={deadlineType === type}
                 onClick={() => handleOptionClick(type)}
               >
                 <DeadlineOptionText>{DEADLINE_LABELS[type]}</DeadlineOptionText>
@@ -87,15 +71,32 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
                 )}
               </DeadlineOption>
             ))}
-            {calendarFor && (
-              <CalendarPanel>
-                <DatePicker
-                  mode={CalendarMode.Single}
-                  selected={dueDate ?? undefined}
-                  onSelect={handleDateSelect}
-                />
-              </CalendarPanel>
-            )}
+            <DatePickerPopover
+              mode={CalendarMode.Single}
+              open={deadlineType === DeadlineType.Date || deadlineType === DeadlineType.Ongoing}
+              value={dueDate ?? undefined}
+              side="left"
+              sideOffset={12}
+              align="start"
+              triggerButton={() => <HiddenAnchor />}
+              header={() => (
+                <PopoverHeaderText>
+                  {deadlineType === DeadlineType.Ongoing ? 'עד (אופציונלי)' : 'בחר תאריך להנחיה'}
+                </PopoverHeaderText>
+              )}
+              footer={({ value }) => (
+                <PopoverFooter>
+                  <SetButton onClick={() => { onDateChange(value as Date ?? null); setIsOpen(false); }}>
+                    הגדר
+                  </SetButton>
+                  {deadlineType === DeadlineType.Ongoing && (
+                    <SetWithoutDateButton onClick={() => { onDateChange(null); setIsOpen(false); }}>
+                      הגדר ללא תאריך
+                    </SetWithoutDateButton>
+                  )}
+                </PopoverFooter>
+              )}
+            />
           </DropdownRow>
         </DeadlineDropdownContent>
       </Popover>
@@ -107,15 +108,12 @@ export default DeadlineCell
 
 // ─── Styled ─────────────────────────────────────────────────────────────────
 
-const DeadlineCellWrapper = styled.div<{ $open: boolean }>`
+const DeadlineCellWrapper = styled.div`
   direction: rtl;
   display: flex;
   align-items: center;
   height: 100%;
-  margin: 0 -12px;
-  padding: 0 12px;
   background: transparent;
-  outline: ${({ $open }) => ($open ? '1px solid var(--tab-active-color)' : 'none')};
 `
 
 const DeadlineTrigger = styled.button`
@@ -134,19 +132,12 @@ const PlaceholderText = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.25);
+  color:  var(--Components-Dropdown-Global-colorTextDescription);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `
 
-const DeadlineValueText = styled.span`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color-2);
-  white-space: nowrap;
-`
 
 const DisplayRow = styled.div`
   display: flex;
@@ -181,7 +172,7 @@ const DropdownHeader = styled.div`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--Components-Dropdown-Global-colorTextDescription);
 `
 
 const DeadlineOption = styled.button<{ $active: boolean }>`
@@ -191,13 +182,13 @@ const DeadlineOption = styled.button<{ $active: boolean }>`
   width: 100%;
   height: 32px;
   padding-inline: 12px;
-  background: ${({ $active }) => ($active ? 'rgba(0, 0, 0, 0.04)' : 'transparent')};
+  background: ${({ $active }) => ($active ? 'var(--Components-Dropdown-Global-controlItemBgHover)' : 'transparent')};
   border-radius: 4px;
   cursor: pointer;
   color: var(--text-color-2);
 
   &:hover {
-    background: rgba(0, 0, 0, 0.04);
+    background: var(--Components-Dropdown-Global-controlItemBgHover);
   }
 `
 
@@ -210,11 +201,60 @@ const DeadlineOptionText = styled.span`
   text-align: start;
 `
 
-const CalendarPanel = styled.div`
+const HiddenAnchor = styled.div`
   position: absolute;
   inset-block-start: 0;
-  inset-inline-start: calc(100% + 4px);
+  inset-inline-end: 0;
+`
+
+const PopoverHeaderText = styled.span`
+  direction: ltr;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  color: var(--text-color-2);
+  text-align: end;
+`
+
+const PopoverFooter = styled.div`
+  direction: ltr;
+  display: flex;
+  gap: 8px;
+`
+
+const SetButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding-inline: 15px;
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  background: var(--default-linear);
+  color: var(--background);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  cursor: pointer;
+  white-space: nowrap;
+`
+
+const SetWithoutDateButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding-inline: 16px;
+  border: 1px solid var(--primary);
+  border-radius: 6px;
   background: var(--background);
-  border-radius: 8px;
-  box-shadow: var(--card-shadow);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  cursor: pointer;
+  white-space: nowrap;
+  background-image: var(--default-linear);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `
