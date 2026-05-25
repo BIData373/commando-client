@@ -193,7 +193,8 @@ const TableOuterContainer = styled.div`
       border-right: none;
     }
 
-    &:focus-within {
+    &:focus-within,
+    &:has([data-cell-active="true"]) {
       outline: 1px solid var(--button-color-hover);
       outline-offset: -2px;
     }
