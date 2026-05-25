@@ -1,6 +1,6 @@
-import type { Assignee } from '../../types';
+import type { IAssignee } from '../../types';
 
-export const mockAssignees: Assignee[] = [
+export const mockAssignees: IAssignee[] = [
     {
         id: 1,
         name: 'מחלקת מבצעים',
@@ -9,7 +9,6 @@ export const mockAssignees: Assignee[] = [
         email: 'yosi.levi@idf.il',
         emblem: null,
         userIds: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        canEdit: true,
         createdAt: '2026-01-01T00:00:00Z',
         createdBy: 1,
         updatedAt: '2026-01-01T00:00:00Z',
@@ -25,7 +24,6 @@ export const mockAssignees: Assignee[] = [
         email: 'dan.levana@idf.il',
         emblem: null,
         userIds: [3, 5, 7, 10, 11],
-        canEdit: false,
         createdAt: '2026-01-01T00:00:00Z',
         createdBy: 1,
         updatedAt: '2026-01-01T00:00:00Z',
@@ -41,7 +39,6 @@ export const mockAssignees: Assignee[] = [
         email: 'avi.bachar@idf.il',
         emblem: null,
         userIds: [4],
-        canEdit: true,
         createdAt: '2026-01-01T00:00:00Z',
         createdBy: 1,
         updatedAt: '2026-01-01T00:00:00Z',
@@ -57,7 +54,6 @@ export const mockAssignees: Assignee[] = [
         email: 'ron.israeli@idf.il',
         emblem: null,
         userIds: [1, 2, 6, 8, 9, 10, 11, 12],
-        canEdit: false,
         createdAt: '2026-01-01T00:00:00Z',
         createdBy: 1,
         updatedAt: '2026-01-01T00:00:00Z',
@@ -73,7 +69,6 @@ export const mockAssignees: Assignee[] = [
         email: 'shmuel.mizrahi@idf.il',
         emblem: null,
         userIds: [7, 9],
-        canEdit: true,
         createdAt: '2026-01-01T00:00:00Z',
         createdBy: 1,
         updatedAt: '2026-01-01T00:00:00Z',
@@ -89,7 +84,6 @@ export const mockAssignees: Assignee[] = [
         emblem: null,
         role: 'מג"ד 375',
         userIds: [2, 4, 6, 12],
-        canEdit: false,
         createdAt: '2026-01-01T00:00:00Z',
         createdBy: 1,
         updatedAt: '2026-01-01T00:00:00Z',
@@ -105,7 +99,6 @@ export const mockAssignees: Assignee[] = [
         email: 'pikud@idf.il',
         emblem: null,
         userIds: [2, 5, 8, 11],
-        canEdit: true,
         createdAt: '2026-01-01T00:00:00Z',
         createdBy: 1,
         updatedAt: '2026-01-01T00:00:00Z',

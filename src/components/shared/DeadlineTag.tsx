@@ -1,5 +1,5 @@
+import { DEADLINE_LABELS, type DeadlineType } from '#/functions/filter-utils'
 import styled from '@emotion/styled'
-import { DEADLINE_LABELS, type DeadlineType } from '../Tasks/TaskTable'
 
 interface DeadlineTagProps {
     deadlineType: DeadlineType

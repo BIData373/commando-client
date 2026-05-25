@@ -1,4 +1,4 @@
-import type { Assignee } from '#/types'
+import type { IAssignee } from '#/types'
 import type { DirectiveStatus } from '../components/shared/StatusTag'
 import type { RelatedDirective } from '../components/Tasks/ResponsibleCell'
 import { MOCK_ASSIGNEES } from './Assignees'
@@ -11,7 +11,7 @@ export interface Task {
   details?: string
   flagged: boolean
   status: DirectiveStatus
-  responsible: Assignee | null
+  responsible: IAssignee | null
   relatedDirectives: RelatedDirective[]
   deadlineType: DeadlineType
   dueDate: Date | null

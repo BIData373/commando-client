@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useCreateAssignee, useUpdateAssignee } from '#/hooks/useAssignees'
 import { type IMesibaIcon, useMesibaIconByName } from '#/hooks/useMesiba'
 import { useUsers } from '#/hooks/useUsers'
-import type { Assignee, IUser } from '#/types'
+import type { IAssignee, IUser } from '#/types'
 import { concatName } from '#/utils/userUtils'
 import { CancelButton } from '../shared/CancelButton'
 import { PrimaryButton } from '../shared/PrimaryButton'
@@ -19,7 +19,7 @@ import { UsersLists } from './UsersLists'
 interface AssigneeDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    assignee?: Assignee
+    assignee?: IAssignee
 }
 
 export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogProps) {

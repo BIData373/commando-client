@@ -27,6 +27,7 @@ interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
   data: TData[]
   onRowClick?: (row: Row<TData>) => void
+  onRowDoubleClick?: (row: Row<TData>) => void
   rowSelection?: RowSelectionState
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
   columnFilters?: ColumnFiltersState
@@ -41,6 +42,7 @@ export function DataTable<TData>({
   columns,
   data,
   onRowClick,
+  onRowDoubleClick,
   rowSelection,
   onRowSelectionChange,
   columnFilters,
@@ -120,6 +122,7 @@ export function DataTable<TData>({
               data-state={row.getIsSelected() ? 'selected' : undefined}
               data-highlighted={highlightedRowIds?.has(row.id) ? '' : undefined}
               onClick={onRowClick ? () => onRowClick(row) : undefined}
+              onDoubleClick={onRowDoubleClick ? () => onRowDoubleClick(row) : undefined}
             >
               {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.id}>

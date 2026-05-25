@@ -1,19 +1,19 @@
 import styled from '@emotion/styled'
 import { X } from 'lucide-react'
 import { Popover as PopoverPrimitive } from 'radix-ui'
-import type { Assignee } from '#/types'
+import type { IAssignee } from '#/types'
 import { AssigneeAvatar } from '../shared/AssigneeAvatar'
 import { type DirectiveStatus, StatusTag } from '../shared/StatusTag'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 export type AvatarColor = 'cyan' | 'blue' | 'green' | 'orange' | 'gray'
 
 export interface RelatedDirective {
-  user: Assignee
+  user: IAssignee
   status: DirectiveStatus
 }
 
 interface ResponsibleCellProps {
-  responsible: Assignee | null
+  responsible: IAssignee | null
   relatedDirectives: RelatedDirective[]
 }
 

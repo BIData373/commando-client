@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 import { EditorContent, useEditor } from "@tiptap/react";
-import { format } from "date-fns";
 import {
   Calendar,
   ChevronUp,
@@ -14,7 +13,6 @@ import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { MOCK_TASK_HISTORY } from "../../mocks/data/history";
 import { MOCK_TASK_MESSAGES } from "../../mocks/data/messages";
 import { useTasks } from "../../providers/TasksProvider";
-import { EditorExtensions } from "../CreateTasks/NotesField";
 import { DeadlineTag } from "../shared/DeadlineTag";
 import FlagIcon from "../shared/FlagIcon";
 import type { DirectiveStatus } from "../shared/StatusTag";
@@ -22,36 +20,18 @@ import { AssigneeSection } from "./AssigneeSection";
 import { DropdownOptions } from "./DropdownOptions";
 import TaskConversationPanel from "./TaskConversationPanel";
 import TaskHistoryPanel from "./TaskHistoryPanel";
+import { EditorExtensions } from "#/utils/tiptapExtensions";
+import { formatDateToDateMonthYear, formatDateToMinutesHours } from "#/utils/timeFormat";
 
 interface TaskDetailPanelProps {
-  task: Task | undefined;
+  task: Task;
   onClose: () => void;
   onArchive: () => void;
   onDelete: () => void;
 }
 
 function TaskDetailPanel({
-  task,
-  onClose,
-  onArchive,
-  onDelete,
-}: TaskDetailPanelProps) {
-  const { data: loggedInUser } = useCurrentUser();
-  const { updateDirectiveStatus } = useTasks();
-
-  const [showHistory, setShowHistory] = useState(false);
-  const [showConversation, setShowConversation] = useState(false);
-
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const [scrollShadow, setScrollShadow] = useState({ top: false, bottom: false })
-
-  const editor = useEditor({
-    ...EditorExtensions,
-  });
-
-  if (!task || !loggedInUser) return null;
-
-  const {
+  task: {
     id,
     title,
     details,
@@ -67,7 +47,24 @@ function TaskDetailPanel({
     hasAttachment,
     attachmentUrl,
     notes,
-  } = task;
+  },
+  onClose,
+  onArchive,
+  onDelete,
+}: TaskDetailPanelProps) {
+  const { data: loggedInUser } = useCurrentUser();
+  const { updateDirectiveStatus } = useTasks();
+
+  const [showHistory, setShowHistory] = useState(false);
+  const [showConversation, setShowConversation] = useState(false);
+
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [scrollShadow, setScrollShadow] = useState({ top: false, bottom: false })
+
+  const editor = useEditor({
+    ...EditorExtensions,
+    content: notes
+  })
 
   const attacmentFile = attachmentUrl?.split('/').pop()?.split('.')[0]
 
@@ -80,8 +77,6 @@ function TaskDetailPanel({
   }
 
   const hasTagOrAttacment = tags.length > 0 || hasAttachment;
-
-  editor.commands.setContent(notes);
 
   const taskMessages = MOCK_TASK_MESSAGES[id] ?? [];
 
@@ -98,7 +93,7 @@ function TaskDetailPanel({
     setShowHistory(false);
   }
 
-  return (
+  return loggedInUser && (
     <Overlay onClick={onClose}>
       <Panel onClick={handlePanelClick}>
         <TaskIdLabel>#{id}</TaskIdLabel>
@@ -133,7 +128,7 @@ function TaskDetailPanel({
                 {dueDate && (
                   <DateContainer>
                     <MetaLabel>עד</MetaLabel>
-                    <DueDateText>{format(dueDate, "dd/MM/yy")}</DueDateText>
+                    <DueDateText>{formatDateToDateMonthYear(dueDate)}</DueDateText>
                     <Calendar size={16} />
                   </DateContainer>
                 )}
@@ -143,7 +138,7 @@ function TaskDetailPanel({
                   <History size={16} />
                 </HistoryButton>
                 <MetaText>
-                  {format(createdAt, "HH:mm")} - {format(createdAt, "dd/MM/yy")}
+                  {formatDateToMinutesHours(createdAt)} - {formatDateToDateMonthYear(createdAt)}
                 </MetaText>
               </CreatedGroup>
             </MetaRow>
@@ -196,7 +191,7 @@ function TaskDetailPanel({
                 <NotesSection>
                   <SectionLabel>הערות הנחיה</SectionLabel>
                   <NotesText>
-                    <EditorContent editor={editor} />
+                    <StyledEditorContent editor={editor} />
                   </NotesText>
                 </NotesSection>
               )}
@@ -211,20 +206,24 @@ function TaskDetailPanel({
           </ChatGroup>
           <ChevronUp size={20} />
         </BottomBar>
-        {showHistory && <HistoryOverlay />}
         {showHistory && (
-          <TaskHistoryPanel
-            history={MOCK_TASK_HISTORY[id] ?? []}
-            onClose={() => setShowHistory(false)}
-          />
+          <>
+            <HistoryOverlay />
+            <TaskHistoryPanel
+              history={MOCK_TASK_HISTORY[id] ?? []}
+              onClose={() => setShowHistory(false)}
+            />
+          </>
         )}
-        {showConversation && <HistoryOverlay />}
         {showConversation && (
-          <TaskConversationPanel
-            messages={taskMessages}
-            currentUser={loggedInUser}
-            onClose={() => setShowConversation(false)}
-          />
+          <>
+            <HistoryOverlay />
+            <TaskConversationPanel
+              messages={taskMessages}
+              currentUser={loggedInUser}
+              onClose={() => setShowConversation(false)}
+            />
+          </>
         )}
       </Panel>
     </Overlay>
@@ -238,7 +237,7 @@ export default TaskDetailPanel;
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--text-color-400);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -249,7 +248,7 @@ const Overlay = styled.div`
 const Panel = styled.div`
   position: relative;
   overflow: hidden;
-  background: white;
+  background: var(--background);
   border-radius: 8px;
   width: 1094px;
   height: 850px;
@@ -305,7 +304,7 @@ const ScrollContent = styled.div<{ $noScroll: boolean }>`
 
 const BottomBar = styled.div<{ $hidden?: boolean; $shadow: boolean }>`
   flex-shrink: 0;
-  background: #fafafa;
+  background: var(--background-area);
   height: 53px;
   border-top: 10px solid rgba(0, 0, 0, 0.0);
   display: ${({ $hidden }) => ($hidden ? "none" : "flex")};
@@ -463,7 +462,7 @@ const DividerText = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.25);
+  color: var(--text-color-200);
   white-space: nowrap;
   flex-shrink: 0;
 `;
@@ -612,3 +611,13 @@ const NotesText = styled.div`
     text-decoration: underline;
   }
 `;
+
+const StyledEditorContent = styled(EditorContent)`
+  .ProseMirror {
+    &:focus {
+      outline: none;
+      border: none;
+    }
+
+  }
+`

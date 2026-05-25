@@ -1,8 +1,8 @@
-import { keyframes } from '@emotion/react'
 import styled from '@emotion/styled'
-import { format } from 'date-fns'
+import { formatDateToDateMonthFullYear, formatDateToMinutesHours } from '#/utils/timeFormat'
 import { ChevronsLeft } from 'lucide-react'
 import type { HistoryAction, HistoryChange } from '../../types/history'
+import { keyframes } from '@emotion/react'
 
 interface TaskHistoryPanelProps {
   history: HistoryChange[]
@@ -10,7 +10,7 @@ interface TaskHistoryPanelProps {
 }
 
 interface HistoryGroup {
-  userId: string
+  userId: number
   name: string
   timestamp: Date
   changes: Array<{ action: HistoryAction; field: string; value: string }>
@@ -82,9 +82,9 @@ function TaskHistoryPanel({ history, onClose }: TaskHistoryPanelProps) {
                       <UserId>{group.userId}</UserId>
                     </UserGroup>
                     <TimeGroup>
-                      <DateText>{format(group.timestamp, 'dd/MM/yyyy')}</DateText>
+                      <DateText>{formatDateToDateMonthFullYear(group.timestamp)}</DateText>
                       <TimeSeparator />
-                      <TimeText>{format(group.timestamp, 'HH:mm')}</TimeText>
+                      <TimeText>{formatDateToMinutesHours(group.timestamp)}</TimeText>
                     </TimeGroup>
                   </MetaRow>
 
@@ -294,7 +294,7 @@ const UserId = styled.span`
 // ─── Change card ───────────────────────────────────────────────────────────────
 
 const ChangeCard = styled.div`
-  background: #fafafa;
+  background: var(--background-area);
   border-radius: 4px;
   padding: 4px 8px;
   display: flex;

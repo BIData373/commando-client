@@ -101,24 +101,21 @@ function TaskConversationPanel({
           {dateGroups.map((group) => (
             <DateSection key={group.dateLabel}>
               <DateLabel>{group.dateLabel}</DateLabel>
-              {group.messages.map((msg) => {
-                const isOwn = msg.userId === currentUser.id
-                return (
-                  <MessageOuter key={msg.id} $isOwn={isOwn}>
-                    <MessageCard>
-                      <MessageHeader>
-                        <AuthorText>
-                          <AuthorName>{msg.fullName} - </AuthorName>
-                          <AuthorUpn>{msg.upn}</AuthorUpn>
-                          <AuthorEmail> - {msg.emailDisplayName} </AuthorEmail>
-                        </AuthorText>
-                        <TimeText>{format(msg.timestamp, 'HH:mm')}</TimeText>
-                      </MessageHeader>
-                      <MessageText>{msg.text}</MessageText>
-                    </MessageCard>
-                  </MessageOuter>
-                )
-              })}
+              {group.messages.map((msg) => (
+                <MessageOuter key={msg.id} $isOwn={msg.userId === currentUser.id}>
+                  <MessageCard>
+                    <MessageHeader>
+                      <AuthorText>
+                        <AuthorName>{msg.fullName} - </AuthorName>
+                        <AuthorUpn>{msg.upn}</AuthorUpn>
+                        <AuthorEmail> - {msg.emailDisplayName} </AuthorEmail>
+                      </AuthorText>
+                      <TimeText>{format(msg.timestamp, 'HH:mm')}</TimeText>
+                    </MessageHeader>
+                    <MessageText>{msg.text}</MessageText>
+                  </MessageCard>
+                </MessageOuter>
+              ))}
             </DateSection>
           ))}
         </MessagesArea>
@@ -162,7 +159,7 @@ const ConversationWrapper = styled.div`
   background: var(--background);
   border-radius: 8px;
   border: 1px solid #eef2f6;
-  box-shadow: 0 -10px 25.9px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 -10px 25.9px var(--text-color-200);
   display: flex;
   flex-direction: column;
   animation: ${slideUp} 0.22s ease-out both;
@@ -171,7 +168,7 @@ const ConversationWrapper = styled.div`
 
 const ConversationHeader = styled.div`
   flex-shrink: 0;
-  background: #fafafa;
+  background: var(--background-area);
   border-bottom: 1px solid var(--line);
   height: 53px;
   display: flex;
@@ -227,7 +224,7 @@ const ChatBadge = styled.span`
   font-weight: 400;
   color: var(--background);
   background: var(--chat-gradient);
-  box-shadow: 0 0 0 1px white;
+  box-shadow: 0 0 0 1px var(--background);
   flex-shrink: 0;
 `
 
@@ -337,7 +334,7 @@ const MessageText = styled.p`
 
 const InputArea = styled.div`
   flex-shrink: 0;
-  background: #fafafa;
+  background: var(--background-area);
   border-radius: 8px;
   padding: 12px;
   margin: 0 0 0 0;
@@ -372,7 +369,7 @@ const StyledInput = styled.input`
   min-width: 0;
   height: 32px;
   background: var(--background);
-  border: 0.8px solid #d9d9d9;
+  border: 0.8px solid var(--card-border);
   border-radius: 8px;
   padding: 4px 12px;
   font-size: 14px;
