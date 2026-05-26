@@ -27,7 +27,7 @@ export default defineConfig({
         preserveReadonlyRequestBodies: 'strip',
         mutator: {
           path: 'src/axios.ts',
-          name: 'apiRequest'
+          name: 'sendRequest'
         },
         query: {
           useQuery: true,

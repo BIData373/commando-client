@@ -21,7 +21,7 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { apiRequest } from "../../axios"
+import { sendRequest } from "../../axios"
 import type {
 	CreatePikudDto,
 	DeletePikudPathParameters,
@@ -35,7 +35,7 @@ export const createPikud = (
 	createPikudDto: CreatePikudDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<PikudDto>({
+	return sendRequest<PikudDto>({
 		url: `/pikud`,
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -106,7 +106,7 @@ export const useCreatePikud = <TError = unknown, TContext = unknown>(
 	return useMutation(getCreatePikudMutationOptions(options), queryClient)
 }
 export const listPikuds = (signal?: AbortSignal) => {
-	return apiRequest<PikudDto[]>({ url: `/pikud`, method: "GET", signal })
+	return sendRequest<PikudDto[]>({ url: `/pikud`, method: "GET", signal })
 }
 
 export const getListPikudsQueryKey = () => {
@@ -224,7 +224,7 @@ export const getPikud = (
 	{ id }: GetPikudPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<PikudDto>({ url: `/pikud/${id}`, method: "GET", signal })
+	return sendRequest<PikudDto>({ url: `/pikud/${id}`, method: "GET", signal })
 }
 
 export const getGetPikudQueryKey = ({ id }: GetPikudPathParameters) => {
@@ -353,7 +353,7 @@ export const updatePikud = (
 	updatePikudDto: UpdatePikudDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<PikudDto>({
+	return sendRequest<PikudDto>({
 		url: `/pikud/${id}`,
 		method: "PATCH",
 		headers: { "Content-Type": "application/json" },
@@ -427,7 +427,11 @@ export const deletePikud = (
 	{ id }: DeletePikudPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<PikudDto>({ url: `/pikud/${id}`, method: "DELETE", signal })
+	return sendRequest<PikudDto>({
+		url: `/pikud/${id}`,
+		method: "DELETE",
+		signal,
+	})
 }
 
 export const getDeletePikudMutationOptions = <

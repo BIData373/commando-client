@@ -21,7 +21,7 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { apiRequest } from "../../axios"
+import { sendRequest } from "../../axios"
 import type {
 	CreateTagDto,
 	DeleteTagPathParameters,
@@ -33,7 +33,7 @@ import type {
 } from "../model"
 
 export const createTag = (createTagDto: CreateTagDto, signal?: AbortSignal) => {
-	return apiRequest<TagDto>({
+	return sendRequest<TagDto>({
 		url: `/tag`,
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -104,7 +104,7 @@ export const useCreateTag = <TError = unknown, TContext = unknown>(
 	return useMutation(getCreateTagMutationOptions(options), queryClient)
 }
 export const listTags = (params: ListTagsParams, signal?: AbortSignal) => {
-	return apiRequest<TagDto[]>({ url: `/tag`, method: "GET", params, signal })
+	return sendRequest<TagDto[]>({ url: `/tag`, method: "GET", params, signal })
 }
 
 export const getListTagsQueryKey = (params?: ListTagsParams) => {
@@ -226,7 +226,7 @@ export function useListTags<
 }
 
 export const getTag = ({ id }: GetTagPathParameters, signal?: AbortSignal) => {
-	return apiRequest<TagDto>({ url: `/tag/${id}`, method: "GET", signal })
+	return sendRequest<TagDto>({ url: `/tag/${id}`, method: "GET", signal })
 }
 
 export const getGetTagQueryKey = ({ id }: GetTagPathParameters) => {
@@ -353,7 +353,7 @@ export const updateTag = (
 	updateTagDto: UpdateTagDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<TagDto>({
+	return sendRequest<TagDto>({
 		url: `/tag/${id}`,
 		method: "PATCH",
 		headers: { "Content-Type": "application/json" },
@@ -427,7 +427,7 @@ export const deleteTag = (
 	{ id }: DeleteTagPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<TagDto>({ url: `/tag/${id}`, method: "DELETE", signal })
+	return sendRequest<TagDto>({ url: `/tag/${id}`, method: "DELETE", signal })
 }
 
 export const getDeleteTagMutationOptions = <

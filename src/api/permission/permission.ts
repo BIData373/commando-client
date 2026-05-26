@@ -21,7 +21,7 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { apiRequest } from "../../axios"
+import { sendRequest } from "../../axios"
 import type {
 	DeletePermissionParams,
 	GetMyPermissionParams,
@@ -34,7 +34,7 @@ export const getPermissions = (
 	params: GetPermissionsParams,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<PermissionDto[]>({
+	return sendRequest<PermissionDto[]>({
 		url: `/permission`,
 		method: "GET",
 		params,
@@ -164,7 +164,7 @@ export const updatePermission = (
 	updatePermissionDto: UpdatePermissionDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<PermissionDto>({
+	return sendRequest<PermissionDto>({
 		url: `/permission`,
 		method: "PATCH",
 		headers: { "Content-Type": "application/json" },
@@ -238,7 +238,7 @@ export const deletePermission = (
 	params: DeletePermissionParams,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<PermissionDto>({
+	return sendRequest<PermissionDto>({
 		url: `/permission`,
 		method: "DELETE",
 		params,
@@ -311,7 +311,7 @@ export const getMyPermission = (
 	params: GetMyPermissionParams,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<PermissionDto>({
+	return sendRequest<PermissionDto>({
 		url: `/permission/me`,
 		method: "GET",
 		params,

@@ -21,7 +21,7 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { apiRequest } from "../../axios"
+import { sendRequest } from "../../axios"
 import type {
 	CreateSourceDto,
 	DeleteSourcePathParameters,
@@ -36,7 +36,7 @@ export const createSource = (
 	createSourceDto: CreateSourceDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<SourceDto>({
+	return sendRequest<SourceDto>({
 		url: `/source`,
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -110,7 +110,7 @@ export const listSources = (
 	params: ListSourcesParams,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<SourceDto[]>({
+	return sendRequest<SourceDto[]>({
 		url: `/source`,
 		method: "GET",
 		params,
@@ -240,7 +240,7 @@ export const getSource = (
 	{ id }: GetSourcePathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<SourceDto>({ url: `/source/${id}`, method: "GET", signal })
+	return sendRequest<SourceDto>({ url: `/source/${id}`, method: "GET", signal })
 }
 
 export const getGetSourceQueryKey = ({ id }: GetSourcePathParameters) => {
@@ -369,7 +369,7 @@ export const updateSource = (
 	updateSourceDto: UpdateSourceDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<SourceDto>({
+	return sendRequest<SourceDto>({
 		url: `/source/${id}`,
 		method: "PATCH",
 		headers: { "Content-Type": "application/json" },
@@ -443,7 +443,7 @@ export const deleteSource = (
 	{ id }: DeleteSourcePathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<SourceDto>({
+	return sendRequest<SourceDto>({
 		url: `/source/${id}`,
 		method: "DELETE",
 		signal,

@@ -18,14 +18,14 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useQuery } from "@tanstack/react-query"
-import { apiRequest } from "../../axios"
+import { sendRequest } from "../../axios"
 import type { GetTaskHistoryParams, TaskHistoryDto } from "../model"
 
 export const getTaskHistory = (
 	params: GetTaskHistoryParams,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<TaskHistoryDto[]>({
+	return sendRequest<TaskHistoryDto[]>({
 		url: `/task-history`,
 		method: "GET",
 		params,

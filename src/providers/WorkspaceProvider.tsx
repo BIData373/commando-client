@@ -3,8 +3,7 @@ import { useParams } from "@tanstack/react-router"
 import {
 	createContext,
 	type PropsWithChildren,
-	type ReactNode,
-	useContext,
+	useContext
 } from "react"
 import type { WorkspaceDto } from "../api/model/workspace-dto"
 import { useListWorkspaces } from "../api/workspace/workspace"

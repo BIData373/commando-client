@@ -21,7 +21,7 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { apiRequest } from "../../axios"
+import { sendRequest } from "../../axios"
 import type {
 	CreateWorkspaceStatusDto,
 	DeleteWorkspaceStatusPathParameters,
@@ -36,7 +36,7 @@ export const createWorkspaceStatus = (
 	createWorkspaceStatusDto: CreateWorkspaceStatusDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<WorkspaceStatusDto>({
+	return sendRequest<WorkspaceStatusDto>({
 		url: `/workspace-status`,
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -113,7 +113,7 @@ export const listWorkspaceStatuses = (
 	params: ListWorkspaceStatusesParams,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<WorkspaceStatusDto[]>({
+	return sendRequest<WorkspaceStatusDto[]>({
 		url: `/workspace-status`,
 		method: "GET",
 		params,
@@ -266,7 +266,7 @@ export const getWorkspaceStatus = (
 	{ id }: GetWorkspaceStatusPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<WorkspaceStatusDto>({
+	return sendRequest<WorkspaceStatusDto>({
 		url: `/workspace-status/${id}`,
 		method: "GET",
 		signal,
@@ -424,7 +424,7 @@ export const updateWorkspaceStatus = (
 	updateWorkspaceStatusDto: UpdateWorkspaceStatusDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<WorkspaceStatusDto>({
+	return sendRequest<WorkspaceStatusDto>({
 		url: `/workspace-status/${id}`,
 		method: "PATCH",
 		headers: { "Content-Type": "application/json" },
@@ -516,7 +516,7 @@ export const deleteWorkspaceStatus = (
 	{ id }: DeleteWorkspaceStatusPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<WorkspaceStatusDto>({
+	return sendRequest<WorkspaceStatusDto>({
 		url: `/workspace-status/${id}`,
 		method: "DELETE",
 		signal,
