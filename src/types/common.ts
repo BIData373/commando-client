@@ -1,3 +1,5 @@
+import type { DirectiveStatus } from "#/utils/statusUtils";
+
 /** Pagination request parameters */
 export interface PaginationParams {
     page: number;
@@ -81,11 +83,10 @@ export interface PriorityInfo {
 }
 
 /** Hebrew status labels (military) */
-export const STATUS_LABELS: Record<InstructionStatus, string> = {
-    open: 'ממתין לביצוע',
-    inProgress: 'בביצוע',
-    completed: 'בוצע',
-    archived: 'בארכיון',
+export const STATUS_LABELS: Record<DirectiveStatus, string> = {
+    not_started: 'ממתין לביצוע',
+    in_progress: 'בביצוע',
+    completed: 'בוצע'
 };
 
 /** Hebrew priority labels (military) */
