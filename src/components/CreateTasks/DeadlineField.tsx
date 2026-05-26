@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import DatePicker, { CalendarMode } from '../shared/DatePicker'
+import type { DatePickerValue } from '../shared/DatePicker'
 import { DeadlineType } from '../shared/DeadlineTag'
 import { formatDate } from '#/functions/date-utils'
 
@@ -21,7 +22,8 @@ interface DeadlineFieldProps {
 function DeadlineField({ deadlineType, dueDate, onDeadlineTypeChange, onDateChange }: DeadlineFieldProps) {
   const [isDateOpen, setIsDateOpen] = useState(false)
 
-  function handleDateSelect(date: Date | undefined) {
+  function handleDateSelect(value: DatePickerValue | undefined) {
+    const date = value instanceof Date ? value : undefined
     onDateChange(date ?? null)
     setIsDateOpen(false)
   }

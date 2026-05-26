@@ -1,6 +1,10 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
 import type { DirectiveStatus } from '../components/shared/StatusTag'
+import type { QuickFilter } from '../components/Tasks/TaskFilters'
+import { DEFAULT_COLUMN_ORDER } from '../components/Tasks/ColumnVisibilityDropdown'
+import { applyAllFilters } from '../functions/filter-utils'
 import { INITIAL_TASKS, type Task } from '../data/Tasks'
+import type { TaskColumn } from '../hooks/useTaskColumns'
 
 export type NewTaskInput = Omit<Task, 'id' | 'createdAt' | 'updatedAt'> & { groupKey?: string }
 
@@ -10,16 +14,73 @@ interface TasksContextValue {
   updateTaskStatus: (taskId: number, status: DirectiveStatus) => void
   removeTasks: (taskIds: number[]) => void
   bulkUpdateStatus: (taskIds: number[], status: DirectiveStatus) => void
+  searchQuery: string
+  setSearchQuery: (query: string) => void
+  activeQuickFilters: Set<QuickFilter>
+  toggleQuickFilter: (filter: QuickFilter) => void
+  clearQuickFilters: () => void
+  columnOrder: TaskColumn[]
+  setColumnOrder: (order: TaskColumn[]) => void
+  hiddenColumns: Set<TaskColumn>
+  toggleColumn: (columnId: TaskColumn) => void
+  filteredTasks: Task[]
 }
+
+const WORKSPACE_DEFAULT_HIDDEN = new Set<TaskColumn>(['notes', 'updatedAt'] as TaskColumn[])
 
 const TasksContext = createContext<TasksContextValue | null>(null)
 
 interface TasksProviderProps {
+  initialTasks?: Task[]
+  defaultColumnOrder?: TaskColumn[]
+  defaultHiddenColumns?: Set<TaskColumn>
   children: ReactNode
 }
 
-export function TasksProvider({ children }: TasksProviderProps) {
-  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS)
+export function TasksProvider({
+  initialTasks = INITIAL_TASKS,
+  defaultColumnOrder = DEFAULT_COLUMN_ORDER,
+  defaultHiddenColumns = WORKSPACE_DEFAULT_HIDDEN,
+  children,
+}: TasksProviderProps) {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set())
+  const [columnOrder, setColumnOrder] = useState<TaskColumn[]>(['id' as TaskColumn, ...defaultColumnOrder])
+  const [hiddenColumns, setHiddenColumns] = useState<Set<TaskColumn>>(defaultHiddenColumns)
+
+  function toggleColumn(columnId: TaskColumn) {
+    setHiddenColumns((prev) => {
+      const next = new Set(prev)
+      if (next.has(columnId)) {
+        next.delete(columnId)
+      } else {
+        next.add(columnId)
+      }
+      return next
+    })
+  }
+
+  function toggleQuickFilter(filter: QuickFilter) {
+    setActiveQuickFilters((prev) => {
+      const next = new Set(prev)
+      if (next.has(filter)) {
+        next.delete(filter)
+      } else {
+        next.add(filter)
+      }
+      return next
+    })
+  }
+
+  function clearQuickFilters() {
+    setActiveQuickFilters(new Set())
+  }
+
+  const filteredTasks = useMemo(
+    () => applyAllFilters(tasks, activeQuickFilters, new Set(), searchQuery),
+    [tasks, searchQuery, activeQuickFilters],
+  )
 
   function addTasks(inputs: NewTaskInput[]) {
     if (inputs.length === 0) return
@@ -93,7 +154,14 @@ export function TasksProvider({ children }: TasksProviderProps) {
   }
 
   return (
-    <TasksContext.Provider value={{ tasks, addTasks, updateTaskStatus, removeTasks, bulkUpdateStatus }}>
+    <TasksContext.Provider value={{
+      tasks, addTasks, updateTaskStatus, removeTasks, bulkUpdateStatus,
+      searchQuery, setSearchQuery,
+      activeQuickFilters, toggleQuickFilter, clearQuickFilters,
+      columnOrder, setColumnOrder,
+      hiddenColumns, toggleColumn,
+      filteredTasks,
+    }}>
       {children}
     </TasksContext.Provider>
   )
