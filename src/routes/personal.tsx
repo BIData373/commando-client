@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import PersonalTasksLayout from '../components/Personal/PersonalTasksLayout'
+import PersonalTasksLayout, { PERSONAL_PROVIDER_CONFIG } from '../components/Personal/PersonalTasksLayout'
 import type { View } from '../components/Tasks/TasksLayout'
+import { TasksProvider } from '../providers/TasksProvider'
 
 export const Route = createFileRoute('/personal')({
   component: PersonalPage,
@@ -19,5 +20,9 @@ export const Route = createFileRoute('/personal')({
 function PersonalPage() {
   const { view } = Route.useSearch()
 
-  return <PersonalTasksLayout view={view} urlName="" />
+  return (
+    <TasksProvider {...PERSONAL_PROVIDER_CONFIG}>
+      <PersonalTasksLayout view={view} urlName="" />
+    </TasksProvider>
+  )
 }
