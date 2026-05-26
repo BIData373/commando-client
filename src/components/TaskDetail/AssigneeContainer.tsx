@@ -1,14 +1,9 @@
 import styled from "@emotion/styled";
 import { ChevronDown } from "lucide-react";
-import type { IWorkspaceSettings } from "#/types";
+import { type IWorkspaceSettings, STATUS_LABELS } from "#/types";
+import { DirectiveStatus, statusColors } from "#/utils/statusUtils";
 import { AssigneeAvatar } from "../shared/AssigneeAvatar";
-import {
-    type DirectiveStatus,
-    getStatusStyle,
-    STATUS_KEYS,
-    STATUS_LABELS,
-    StatusTag,
-} from "../shared/StatusTag";
+import { StatusTag } from "../shared/StatusTag";
 import type { RelatedDirective } from "../Tasks/ResponsibleCell";
 import {
     DropdownMenu,
@@ -53,7 +48,7 @@ export const AssigneeContainer = ({
                         </StatusPillTrigger>
                     </DropdownMenuTrigger>
                     <StatusDropdownContent align="center" sideOffset={6}>
-                        {STATUS_KEYS.map((s) => (
+                        {Object.values(DirectiveStatus).map((s) => (
                             <StatusDropdownItem
                                 key={s}
                                 $selected={s === assignee.status}
@@ -86,7 +81,7 @@ const StatusPillTrigger = styled.button<{ $status: DirectiveStatus }>`
   white-space: nowrap;
   cursor: pointer;
   ${({ $status }) => {
-        const { fontColor, bgColor } = statusSt($status);
+        const { fontColor, bgColor } = statusColors[$status];
         return `background: ${bgColor}; color: ${fontColor};`;
     }}
 
