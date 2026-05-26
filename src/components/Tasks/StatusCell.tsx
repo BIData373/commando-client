@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
+import { DirectiveStatus } from '#/utils/statusUtils'
+import { StatusTag } from '../shared/StatusTag'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuTrigger,
   DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
-import { StatusTag, STATUS_KEYS } from '../shared/StatusTag'
-import type { DirectiveStatus } from '../shared/StatusTag'
 
 interface StatusCellProps {
   status: DirectiveStatus
@@ -28,7 +28,7 @@ export function StatusCell({ status, taskId, onUpdate }: StatusCellProps) {
           </TriggerWrapper>
         </DropdownMenuTrigger>
         <StatusDropdownContent align="center" sideOffset={6}>
-          {STATUS_KEYS.map((s) => (
+          {Object.values(DirectiveStatus).map((s) => (
             <StatusDropdownItem key={s} $selected={s === status} onSelect={() => handleSelectStatus(s)}>
               <StatusTag status={s} />
             </StatusDropdownItem>
@@ -67,7 +67,7 @@ const StatusDropdownContent = styled(DropdownMenuContent)`
     0px 9px 28px rgba(0, 0, 0, 0.05);
 `
 
-const StatusDropdownItem = styled(DropdownMenuItem)<{ $selected: boolean }>`
+const StatusDropdownItem = styled(DropdownMenuItem) <{ $selected: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;

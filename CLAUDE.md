@@ -127,16 +127,26 @@ const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
 
 ## Known CSS Variables (from existing components)
 
-| Variable               | Usage                          |
-| ---------------------- | ------------------------------ |
-| `var(--header-bg)`     | Header background              |
-| `var(--line)`          | Border color                   |
-| `var(--chip-bg)`       | Pill/chip background           |
-| `var(--chip-line)`     | Pill/chip border               |
-| `var(--sea-ink)`       | Primary text color             |
-| `var(--sea-ink-soft)`  | Secondary/muted text           |
-| `var(--link-bg-hover)` | Nav link hover background      |
-| `var(--z-dropdown)`    | Z-index for dropdowns/overlays |
+| Variable                  | Usage                          |
+| ------------------------- | ------------------------------ |
+| `var(--header-bg)`        | Header background (dark navy)  |
+| `var(--line)`             | Border color                   |
+| `var(--chip-bg)`          | Pill/chip background           |
+| `var(--chip-line)`        | Pill/chip border               |
+| `var(--sea-ink)`          | Primary text color             |
+| `var(--sea-ink-soft)`     | Secondary/muted text           |
+| `var(--link-bg-hover)`    | Nav link hover background      |
+| `var(--z-dropdown)`       | Z-index for dropdowns/overlays |
+| `var(--purple-start)`     | Gradient start (buttons, tabs) |
+| `var(--purple-end)`       | Gradient end (buttons, tabs)   |
+| `var(--status-done)`      | Green text – done status       |
+| `var(--status-done-bg)`   | Green bg – done status         |
+| `var(--status-progress)`  | Orange text – in-progress      |
+| `var(--status-progress-bg)` | Orange bg – in-progress      |
+| `var(--status-pending)`   | Gray text – pending status     |
+| `var(--status-pending-bg)` | Gray bg – pending status      |
+
+All semantic tokens are defined in both `:root` (light mode) and `.dark` in `src/styles.css`.
 
 ## Static Assets (`public/`)
 

@@ -1,10 +1,11 @@
 import * as XLSX from 'xlsx-js-style'
 import { differenceInDays, startOfToday } from 'date-fns'
 import { formatDateShort } from './date-utils'
-import { getStatusStyle, STATUS_LABELS } from '../components/shared/StatusTag'
+import { STATUS_LABELS } from '../components/shared/StatusTag'
 import { DEADLINE_LABELS } from '../components/shared/DeadlineTag'
 import type { TaskColumn } from '../hooks/useTaskColumns'
 import type { Task } from '../data/Tasks'
+import { statusColors } from '#/utils/statusUtils'
 
 interface CellValue {
   value: string
@@ -42,10 +43,12 @@ function getDeadlineDateStyle(task: Task) {
 
 const COLUMN_DEFS: Record<string, ExportColumn<Task>> = {
   title: { header: 'ההנחיה', accessor: (t) => t.details ? `${t.title} – ${t.details}` : t.title },
-  status: { header: 'סטטוס', accessor: (t) => ({
-    value: STATUS_LABELS[t.status],
-    ...getStatusStyle(t.status),
-  }) },
+  status: {
+    header: 'סטטוס', accessor: (t) => ({
+      value: STATUS_LABELS[t.status],
+      ...statusColors[t.status],
+    })
+  },
   responsible: { header: 'אחראי', accessor: (t) => t.responsible?.name ?? '' },
   deadlineType: { header: 'תג"ב', accessor: (t) => {
     const typeStr = DEADLINE_LABELS[t.deadlineType]

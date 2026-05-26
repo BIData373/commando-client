@@ -1,8 +1,8 @@
 import type { IAssignee } from '#/types'
-import type { DirectiveStatus } from '../components/shared/StatusTag'
+import { DirectiveStatus } from '#/utils/statusUtils'
+import { DeadlineType } from '../components/shared/DeadlineTag'
 import type { RelatedDirective } from '../components/Tasks/ResponsibleCell'
 import { MOCK_ASSIGNEES } from './Assignees'
-import { DeadlineType } from '../components/shared/DeadlineTag'
 
 export interface Task {
   id: number
@@ -31,13 +31,13 @@ export const INITIAL_TASKS: Task[] = [
     title: 'בדיקת כשירות רכבים מבצעיים',
     details: 'בדיקת רכבי פלוגה א׳',
     flagged: false,
-    status: 'not_started',
+    status: DirectiveStatus.NOT_STARTED,
     responsible: MOCK_ASSIGNEES[1],
     relatedDirectives: [
-      { user: MOCK_ASSIGNEES[2], status: 'not_started' },
-      { user: MOCK_ASSIGNEES[3], status: 'in_progress' },
-      { user: MOCK_ASSIGNEES[4], status: 'in_progress' },
-      { user: MOCK_ASSIGNEES[5], status: 'in_progress' },
+      { user: MOCK_ASSIGNEES[2], status: DirectiveStatus.NOT_STARTED },
+      { user: MOCK_ASSIGNEES[3], status: DirectiveStatus.IN_PROGRESS },
+      { user: MOCK_ASSIGNEES[4], status: DirectiveStatus.IN_PROGRESS },
+      { user: MOCK_ASSIGNEES[5], status: DirectiveStatus.IN_PROGRESS },
     ],
     deadlineType: DeadlineType.Ongoing,
     dueDate: new Date('2026-12-03'),
@@ -55,7 +55,7 @@ export const INITIAL_TASKS: Task[] = [
     id: 1,
     title: 'סיור ביטחוני - מחסום צפון',
     flagged: true,
-    status: 'in_progress',
+    status: DirectiveStatus.IN_PROGRESS,
     responsible: MOCK_ASSIGNEES[2],
     relatedDirectives: [],
     deadlineType: DeadlineType.Date,
@@ -75,12 +75,10 @@ export const INITIAL_TASKS: Task[] = [
     title: 'הכנת ציוד לאימון שטח',
     details: 'הקצאת ערכת מגא"ס מול ענף כשירויות',
     flagged: true,
-    status: 'not_started',
+    status: DirectiveStatus.NOT_STARTED,
     responsible: MOCK_ASSIGNEES[3],
     relatedDirectives: [
-      { user: MOCK_ASSIGNEES[4], status: 'not_started' },
-      { user: MOCK_ASSIGNEES[2], status: 'not_started' },
-      { user: MOCK_ASSIGNEES[3], status: 'not_started' },
+      { user: MOCK_ASSIGNEES[4], status: DirectiveStatus.NOT_STARTED },
     ],
     deadlineType: DeadlineType.Immediate,
     dueDate: null,
@@ -98,7 +96,7 @@ export const INITIAL_TASKS: Task[] = [
     id: 10,
     title: 'דוח מצב שבועי',
     flagged: false,
-    status: 'completed',
+    status: DirectiveStatus.COMPLETED,
     responsible: MOCK_ASSIGNEES[5],
     relatedDirectives: [],
     deadlineType: DeadlineType.Date,
@@ -117,13 +115,12 @@ export const INITIAL_TASKS: Task[] = [
     id: 21,
     title: 'הערכות לחורף',
     flagged: false,
-    status: 'in_progress',
-    responsible: MOCK_ASSIGNEES[6],
+    status: DirectiveStatus.IN_PROGRESS,
+    responsible: MOCK_ASSIGNEES[4],
     relatedDirectives: [
-      { user: MOCK_ASSIGNEES[1], status: 'in_progress' },
-      { user: MOCK_ASSIGNEES[7], status: 'in_progress' },
-      { user: MOCK_ASSIGNEES[2], status: 'in_progress' },
-      { user: MOCK_ASSIGNEES[3], status: 'not_started' },
+      { user: MOCK_ASSIGNEES[5], status: DirectiveStatus.NOT_STARTED },
+      { user: MOCK_ASSIGNEES[6], status: DirectiveStatus.IN_PROGRESS },
+      { user: MOCK_ASSIGNEES[7], status: DirectiveStatus.NOT_STARTED },
     ],
     deadlineType: DeadlineType.Ongoing,
     dueDate: new Date('2026-12-01'),
@@ -141,7 +138,7 @@ export const INITIAL_TASKS: Task[] = [
     id: 89,
     title: 'בדיקת ציוד - מחסן 4',
     flagged: true,
-    status: 'not_started',
+    status: DirectiveStatus.NOT_STARTED,
     responsible: null,
     relatedDirectives: [],
     deadlineType: DeadlineType.Date,

@@ -5,7 +5,7 @@ import { formatDateShort } from '../functions/date-utils'
 import { AlertTriangle, MoreVertical } from 'lucide-react'
 import { BsPaperclip as Paperclip } from 'react-icons/bs'
 import { Checkbox } from '../components/ui/checkbox'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../components/ui/tooltip'
 import { StatusCell } from '../components/Tasks/StatusCell'
 import { ResponsibleCell } from '../components/Tasks/ResponsibleCell'
 import { TopicCell } from '../components/Tasks/TopicCell'
@@ -15,8 +15,8 @@ import type { Task } from '../data/Tasks'
 import FlagIcon from '../components/shared/FlagIcon'
 import HighlightMatch from '../components/shared/HighlightMatch'
 import DeadlineTag, { DEADLINE_LABELS, DeadlineType } from '../components/shared/DeadlineTag'
-import type { DirectiveStatus } from '../components/shared/StatusTag'
 import { type FilterOption } from '../functions/filter-utils'
+import type { DirectiveStatus } from '#/utils/statusUtils'
 
 export type TaskColumn = keyof Task
 
@@ -83,7 +83,6 @@ interface UseTaskColumnsReturn {
   columns: ColumnDef<Task>[]
   availableColumns: TaskColumnMeta[]
 }
-
 
 function useTaskColumns({
   visibleColumns,
@@ -204,12 +203,14 @@ function useTaskColumns({
             {dueDate && <DeadlineDateText>{formatDateShort(dueDate)}</DeadlineDateText>}
             {(isOverdue || isApproaching) && (
               <DeadlineWarning>
-                <Tooltip>
-                  <WarningTrigger>
-                    {isOverdue ? <OverdueIcon size={16} /> : <ApproachingIcon size={16} />}
-                  </WarningTrigger>
-                  <TooltipContent>{isOverdue ? `חריגה של ${Math.abs(daysUntil!)} ימים` : daysUntil === 0 ? 'תג"ב היום' : 'תג"ב מחר'}</TooltipContent>
-                </Tooltip>
+                <TooltipProvider>
+                  <Tooltip>
+                    <WarningTrigger>
+                      {isOverdue ? <OverdueIcon size={16} /> : <ApproachingIcon size={16} />}
+                    </WarningTrigger>
+                    <TooltipContent>{isOverdue ? `חריגה של ${Math.abs(daysUntil!)} ימים` : daysUntil === 0 ? 'תג"ב היום' : 'תג"ב מחר'}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </DeadlineWarning>
             )}
           </DeadlineCell>

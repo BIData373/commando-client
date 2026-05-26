@@ -1,3 +1,5 @@
+import type { QuickFilter } from '#/utils/filterUtils'
+import type { DirectiveStatus } from '#/utils/statusUtils'
 import styled from '@emotion/styled'
 import { Outlet, useNavigate } from '@tanstack/react-router'
 import { ChevronDown, Plus } from 'lucide-react'
@@ -24,9 +26,11 @@ export type View = 'TABLE' | 'CARDS'
 export interface TasksLayoutProps {
   view: View
   urlName: string
+  tabFilter?: QuickFilter
+  statusFilter?: DirectiveStatus
 }
 
-function TasksLayout({ view, urlName }: TasksLayoutProps) {
+function TasksLayout({ view, urlName, tabFilter, statusFilter }: TasksLayoutProps) {
   const navigate = useNavigate()
   const {
     tasks, activeQuickFilters, clearQuickFilters,
@@ -48,7 +52,6 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
       : baseFilteredTasks,
     [tasks, searchQuery, activeQuickFilters, activeTopicFilters, baseFilteredTasks],
   )
-
   function handleEdit(taskId: number) {
     navigate({ to: '/workspace/$urlName/tasks/$taskId', params: { urlName, taskId: String(taskId) }, search: { view } })
   }
@@ -133,6 +136,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
           <TaskTable
             tasks={filteredTasks}
             onEdit={handleEdit}
+            initialStatusFilter={statusFilter}
             onDoubleClick={handleEdit}
           />
         ) : (

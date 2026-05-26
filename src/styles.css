@@ -116,6 +116,28 @@ body,
   --radius: 0.625rem;
   --line: #F0F0F0;
 
+  /* Semantic tokens */
+  --sea-ink: oklch(0.12 0.028 254);
+  --sea-ink-soft: oklch(0.52 0.020 252);
+  --chip-bg: oklch(0.96 0.006 252);
+  --chip-line: oklch(0.87 0.010 252);
+  --link-bg-hover: oklch(0.93 0.008 252);
+  --line: oklch(0.91 0 0);
+  --z-dropdown: 1000;
+  --header-bg: oklch(0.14 0.035 258);
+
+  /* Status colors */
+  --status-done: #52c41a;
+  --status-done-bg: #f6ffed;
+  --status-progress: #2F54EB;
+  --status-progress-bg: #F0F5FF;
+  --status-pending: #FA541C;
+  --status-pending-bg: #FFF2E8;
+
+  /* Purple accent */
+  --purple-start: oklch(0.60 0.23 272);
+  --purple-end: oklch(0.46 0.32 305);
+
   --shadow-2xs: 0 1px 3px 0px oklch(0.00 0 0 / 0.05);
   --shadow-xs: 0 1px 3px 0px oklch(0.00 0 0 / 0.05);
   --shadow-sm: 0 1px 3px 0px oklch(0.00 0 0 / 0.10), 0 1px 2px -1px oklch(0.00 0 0 / 0.10);
@@ -170,6 +192,26 @@ body,
   --shadow-xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.10), 0 8px 10px -1px oklch(0.00 0 0 / 0.10);
   --shadow-2xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.25);
 
+  /* Semantic tokens */
+  --sea-ink: oklch(97.614% 0.00011 271.152);
+  --sea-ink-soft: oklch(0.52 0.020 252);
+  --chip-bg: oklch(24.776% 0.00003 271.152);
+  --chip-line: oklch(0.87 0.010 252);
+  --link-bg-hover: oklch(0.93 0.008 252);
+  --line: oklch(0.91 0 0);
+  --z-dropdown: 1000;
+
+  /* Status colors */
+  --status-done: oklch(0.70 0.22 145);
+  --status-done-bg: oklch(0.98 0.04 145);
+  --status-progress: #2F54EB;
+  --status-progress-bg: #FFF2E8;
+  --status-pending: #FA541C;
+  --status-pending-bg: oklch(0.94 0 0);
+
+  /* Purple accent */
+  --purple-start: oklch(0.60 0.23 272);
+  --purple-end: oklch(0.46 0.32 305);
   --background-area: #151414;
   --text-color: rgba(234, 221, 221, 0.65);
   --text-color-2: rgba(234, 221, 221, 0.65);

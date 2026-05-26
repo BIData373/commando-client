@@ -1,12 +1,13 @@
 import styled from '@emotion/styled'
 import { type ColumnDef, type ColumnFiltersState, type RowSelectionState, type SortingState } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
+import type { DirectiveStatus } from '#/utils/statusUtils'
+import type { Task } from '../../data/Tasks'
+import { buildFilterOptionsMap } from '../../functions/filter-utils'
+import { type TaskColumn, useTaskColumns } from '../../hooks/useTaskColumns'
+import { useTasks } from '../../providers/TasksProvider'
 import { DataTable } from '../ui/data-table'
 import { BulkActionsBar } from './BulkActionsBar'
-import type { Task } from '../../data/Tasks'
-import { useTaskColumns, type TaskColumn } from '../../hooks/useTaskColumns'
-import { buildFilterOptionsMap } from '../../functions/filter-utils'
-import { useTasks } from '../../providers/TasksProvider'
 
 interface TaskTableProps {
   tasks: Task[]
@@ -14,6 +15,7 @@ interface TaskTableProps {
   onDoubleClick?: (taskId: number) => void
   extraColumns?: Record<string, ColumnDef<Task>>
   showHeader?: boolean
+  initialStatusFilter?: DirectiveStatus
 }
 
 function TaskTable({
@@ -22,6 +24,7 @@ function TaskTable({
   onDoubleClick,
   extraColumns,
   showHeader = true,
+  initialStatusFilter,
 }: TaskTableProps) {
   const {
     searchQuery, columnOrder, hiddenColumns,
@@ -29,7 +32,9 @@ function TaskTable({
   } = useTasks()
   const [selectMode, setSelectMode] = useState(false)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+    initialStatusFilter ? [{ id: 'status', value: [initialStatusFilter] }] : []
+  )
   const [sorting, setSorting] = useState<SortingState>([])
 
   const selectedTaskIds = Object.keys(rowSelection)
