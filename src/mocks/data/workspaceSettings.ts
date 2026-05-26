@@ -1,8 +1,13 @@
-import type { IWorkspaceSettings } from "../../types"
+import type { IWorkspaceSettings } from "../../types";
 
 export const mockWorkspaceSettings: Record<string, IWorkspaceSettings> = {
-	"env-01": { name: "מפקדת חטיבה", command: "פיקוד צפון", logoUrl: null },
-}
+	"env-01": {
+		name: "מפקדת חטיבה",
+		command: "פיקוד צפון",
+		logoUrl: null,
+		assigneeStatusEditable: true,
+	},
+};
 
 export function getOrInitWorkspaceSettings(
 	urlName: string,
@@ -12,7 +17,8 @@ export function getOrInitWorkspaceSettings(
 			name: urlName,
 			command: null,
 			logoUrl: null,
-		}
+			assigneeStatusEditable: true,
+		};
 	}
-	return mockWorkspaceSettings[urlName]
+	return mockWorkspaceSettings[urlName];
 }

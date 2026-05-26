@@ -1,28 +1,22 @@
-import styled from "@emotion/styled"
-import { X } from "lucide-react"
-import { Popover as PopoverPrimitive } from "radix-ui"
-import { type DirectiveStatus, StatusTag } from "../shared/StatusTag"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import styled from "@emotion/styled";
+import { X } from "lucide-react";
+import { Popover as PopoverPrimitive } from "radix-ui";
+import type { IAssignee } from "src/types";
+import type { DirectiveStatus } from "src/utils/statusUtils";
+import { AssigneeAvatar } from "../shared/AssigneeAvatar";
+import { StatusTag } from "../shared/StatusTag";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
-export type AvatarColor = "cyan" | "blue" | "green" | "orange" | "gray"
-
-export interface Assignee {
-	id: number
-	initials: string
-	colorToken: AvatarColor
-	name: string
-	role: string
-	email: string
-}
+export type AvatarColor = "cyan" | "blue" | "green" | "orange" | "gray";
 
 export interface RelatedDirective {
-	user: Assignee
-	status: DirectiveStatus
+	user: IAssignee;
+	status: DirectiveStatus;
 }
 
 interface ResponsibleCellProps {
-	responsible: Assignee | null
-	relatedDirectives: RelatedDirective[]
+	responsible: IAssignee | null;
+	relatedDirectives: RelatedDirective[];
 }
 
 export function ResponsibleCell({
@@ -34,9 +28,7 @@ export function ResponsibleCell({
 			{responsible && (
 				<Popover>
 					<PopoverTrigger asChild>
-						<AvatarCircle $color={responsible.colorToken}>
-							{responsible.initials}
-						</AvatarCircle>
+						<AssigneeAvatar assignee={responsible} cursor />
 					</PopoverTrigger>
 					<DetailedContent side="top" sideOffset={10} align="center">
 						<PopoverArrow width={12} height={6} />
@@ -45,9 +37,7 @@ export function ResponsibleCell({
 						</CloseButton>
 						<DetailedHeader>
 							<SectionLabel>אחראי :</SectionLabel>
-							<AvatarCircle $color={responsible.colorToken}>
-								{responsible.initials}
-							</AvatarCircle>
+							<AssigneeAvatar assignee={responsible} />
 							<RoleText>{responsible.role}</RoleText>
 						</DetailedHeader>
 						<Separator />
@@ -86,9 +76,7 @@ export function ResponsibleCell({
 								<CompactRow key={d.user.id}>
 									<StatusTag status={d.status} />
 									<CompactRole>{d.user.role}</CompactRole>
-									<AvatarCircle $color={d.user.colorToken}>
-										{d.user.initials}
-									</AvatarCircle>
+									<AssigneeAvatar assignee={d.user} />
 								</CompactRow>
 							))}
 						</CompactList>
@@ -96,7 +84,7 @@ export function ResponsibleCell({
 				</Popover>
 			)}
 		</CellRoot>
-	)
+	);
 }
 
 // ─── Cell layout ──────────────────────────────────────────────────────────────
@@ -105,10 +93,8 @@ const CellRoot = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
-`
+`;
 
-// ─── Avatar ───────────────────────────────────────────────────────────────────
-//TO-DO
 const AvatarCircle = styled.button<{ $color: AvatarColor }>`
   display: inline-flex;
   align-items: center;
@@ -127,18 +113,18 @@ const AvatarCircle = styled.button<{ $color: AvatarColor }>`
   ${({ $color }) => {
 		switch ($color) {
 			case "cyan":
-				return "background: #87e8de;"
+				return "background: #87e8de;";
 			case "blue":
-				return "background: #91caff;"
+				return "background: #91caff;";
 			case "green":
-				return "background: #b7eb8f;"
+				return "background: #b7eb8f;";
 			case "orange":
-				return "background: #ffd591;"
+				return "background: #ffd591;";
 			case "gray":
-				return "background: var(--colors-base-neutral-3);"
+				return "background: var(--colors-base-neutral-3);";
 		}
 	}}
-`
+`;
 
 // ─── Shared popover styles ─────────────────────────────────────────────────────
 
@@ -147,11 +133,11 @@ const POPOVER_SHADOW = `
     0px 6px 16px rgba(0, 0, 0, 0.08),
     0px 3px 6px rgba(0, 0, 0, 0.12),
     0px 9px 28px rgba(0, 0, 0, 0.05);
-`
+`;
 
 const PopoverArrow = styled(PopoverPrimitive.Arrow)`
   fill: white;
-`
+`;
 
 // ─── Detailed popover ─────────────────────────────────────────────────────────
 
@@ -165,7 +151,7 @@ const DetailedContent = styled(PopoverContent)`
   flex-direction: column;
   gap: 8px;
   ${POPOVER_SHADOW}
-`
+`;
 
 const CloseButton = styled(PopoverPrimitive.Close)`
   position: absolute;
@@ -186,7 +172,7 @@ const CloseButton = styled(PopoverPrimitive.Close)`
     background: var(--link-bg-hover);
     color: var(--sea-ink);
   }
-`
+`;
 
 const DetailedHeader = styled.div`
 direction: rtl;
@@ -194,38 +180,38 @@ direction: rtl;
   align-items: center;
   gap: 8px;
   padding-inline-end: 24px;
-`
+`;
 
 const RoleText = styled.span`
   font-size: 16px;
   font-weight: 500;
   color: var(--sea-ink);
-`
+`;
 
 const Separator = styled.div`
   height: 0.5px;
   background: var(--line);
-`
+`;
 
 const SectionLabel = styled.span`
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
   color: var(--Colors-Base-Neutral-7, #8C8C8C);
-`
+`;
 
 const UserRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-`
+`;
 
 const UserInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
-`
+`;
 
 const UserName = styled.span`
   font-size: 14px;
@@ -233,7 +219,7 @@ const UserName = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`
+`;
 
 const UserEmail = styled.span`
   font-size: 12px;
@@ -241,7 +227,7 @@ const UserEmail = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`
+`;
 
 const UserScrollArea = styled.div`
   overflow-y: auto;
@@ -263,7 +249,7 @@ const UserScrollArea = styled.div`
     border-radius: 31px;
     }
     
-`
+`;
 
 const UserList = styled.div`
   direction: rtl;
@@ -271,7 +257,7 @@ const UserList = styled.div`
   flex-direction: column;
   gap: 8px;
   padding-inline-end: 8px;
-`
+`;
 
 // ─── Compact popover ──────────────────────────────────────────────────────────
 
@@ -285,24 +271,24 @@ const CompactContent = styled(PopoverContent)`
   flex-direction: column;
   gap: 0;
   ${POPOVER_SHADOW}
-`
+`;
 
 const CompactList = styled.div`
   direction: ltr;
   display: flex;
   flex-direction: column;
   gap: 12px;
-`
+`;
 
 const CompactRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-`
+`;
 
 const CompactRole = styled.span`
   font-size: 14px;
   color: var(--sea-ink);
   flex: 1;
   white-space: nowrap;
-`
+`;

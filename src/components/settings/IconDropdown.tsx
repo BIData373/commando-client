@@ -1,13 +1,13 @@
-import { type IMesibaIcon, useSearchMesibaIcons } from "src/hooks/useMesiba"
-import { MesibaIcon } from "./MesibaIcon"
-import { SearchDropdown } from "./SearchDropdown"
+import { type IMesibaIcon, useSearchMesibaIcons } from "src/hooks/useMesiba";
+import { MesibaIcon } from "./MesibaIcon";
+import { SearchDropdown } from "./SearchDropdown";
 
 interface IconDropdownProps {
-	value: string
-	onSelect(icon: IMesibaIcon): void
-	onChange(value: string): void
-	onClear(): void
-	selectedItem?: IMesibaIcon
+	value: string;
+	onSelect(icon: IMesibaIcon): void;
+	onChange(value: string): void;
+	onClear(): void;
+	selectedItem?: IMesibaIcon;
 }
 
 export function IconDropdown({
@@ -17,7 +17,7 @@ export function IconDropdown({
 	onClear,
 	selectedItem,
 }: IconDropdownProps) {
-	const { data: icons = [], isFetching } = useSearchMesibaIcons(value)
+	const { data: icons = [], isFetching } = useSearchMesibaIcons(value);
 
 	return (
 		<SearchDropdown<IMesibaIcon>
@@ -31,5 +31,5 @@ export function IconDropdown({
 			selectedItem={selectedItem}
 			renderItem={(item) => <MesibaIcon icon={item} />}
 		/>
-	)
+	);
 }

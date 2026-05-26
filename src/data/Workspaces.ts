@@ -1,8 +1,8 @@
 export interface Workspace {
-	urlName: string
-	displayName: string
-	description: string
-	memberCount: number
+	urlName: string;
+	displayName: string;
+	description: string;
+	memberCount: number;
 }
 
 export const PLACEHOLDER_WORKSPACES: Workspace[] = [
@@ -30,4 +30,4 @@ export const PLACEHOLDER_WORKSPACES: Workspace[] = [
 		description: "מטה פיקוד עליון",
 		memberCount: 5,
 	},
-]
+];

@@ -1,64 +1,72 @@
-import styled from "@emotion/styled"
-import { createFileRoute } from "@tanstack/react-router"
-import { CircleQuestionMarkIcon, Plus, Search } from "lucide-react"
-import { type ChangeEvent, useState } from "react"
-import { useListAssignees } from "src/api/assignee/assignee"
-import { useListUsers } from "src/api/user/user"
-import { AssigneeCard } from "src/components/settings/AssigneeCard"
-import { AssigneeDialog } from "src/components/settings/AssigneeDialog"
-import { SectionTitle } from "src/components/settings/SectionTitle"
-import { PrimaryButton } from "src/components/shared/PrimaryButton"
-import { Checkbox } from "src/components/ui/checkbox"
+import styled from "@emotion/styled";
+import { createFileRoute } from "@tanstack/react-router";
+import { CircleQuestionMarkIcon, Plus, Search } from "lucide-react";
+import { type ChangeEvent, useState } from "react";
+import { AssigneeCard } from "src/components/settings/AssigneeCard";
+import { AssigneeDialog } from "src/components/settings/AssigneeDialog";
+import { SectionTitle } from "src/components/settings/SectionTitle";
+import { PrimaryButton } from "src/components/shared/PrimaryButton";
+import { Checkbox } from "src/components/ui/checkbox";
 import {
 	InputGroup,
 	InputGroupAddon,
 	InputGroupInput,
-} from "src/components/ui/input-group"
+} from "src/components/ui/input-group";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-} from "src/components/ui/tooltip"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { SETTINGS_TABS, SettingTabPath } from "src/utils/settingsUtils"
+} from "src/components/ui/tooltip";
+import { useAssignees } from "src/hooks/useAssignees";
+import { useUsers } from "src/hooks/useUsers";
+import {
+	useUpdateWorkspaceSettings,
+	useWorkspaceSettings,
+} from "src/hooks/useWorkspaceSettings";
+import { SETTINGS_TABS, SettingTabPath } from "src/utils/settingsUtils";
 
 export const Route = createFileRoute("/workspace/$urlName/settings/assignees")({
 	component: SettingsAssignees,
-})
+});
 
-const activeTab = SETTINGS_TABS[SettingTabPath.ASSIGNEES]
+const activeTab = SETTINGS_TABS[SettingTabPath.ASSIGNEES];
 
 function SettingsAssignees() {
-	const { workspaceId, assigneeStatusEditable } = useWorkspace()
+	const { urlName } = Route.useParams();
+	const { data: settings } = useWorkspaceSettings(urlName);
+	const { mutate: updateSettings } = useUpdateWorkspaceSettings(urlName);
 
-	const { data: assignees = [] } = useListAssignees({ workspaceId })
-	const { data: users = [] } = useListUsers()
+	const [searchQuery, setSearchQuery] = useState("");
+	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
-	const [allowAssigneeStatusUpdate, setAllowAssigneeStatusUpdate] = useState(
-		assigneeStatusEditable,
-	)
-	const [searchQuery, setSearchQuery] = useState("")
-	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+	const { data: assignees = [] } = useAssignees();
+	const { data: users = [] } = useUsers();
 
+	const allowAssigneeStatusUpdate = settings?.assigneeStatusEditable ?? false;
 	const userNames: Record<number, string> = Object.fromEntries(
-		users.map((u) => [u.id, u.upn]),
-	)
+		users.map((u) => [u.id, u.name]),
+	);
 
 	const filteredAssignees = searchQuery.trim()
 		? assignees.filter((a) => a.name.includes(searchQuery))
-		: assignees
+		: assignees;
 
 	function handleCheckboxChange(checked: boolean) {
-		setAllowAssigneeStatusUpdate(checked)
+		updateSettings({
+			name: settings?.name ?? "",
+			command: settings?.command ?? null,
+			logoUrl: settings?.logoUrl ?? null,
+			assigneeStatusEditable: checked,
+		});
 	}
 
 	function handleSearchChange(e: ChangeEvent<HTMLInputElement>) {
-		setSearchQuery(e.target.value)
+		setSearchQuery(e.target.value);
 	}
 
 	function handleOpenCreateDialog() {
-		setIsCreateDialogOpen(true)
+		setIsCreateDialogOpen(true);
 	}
 
 	return (
@@ -73,7 +81,6 @@ function SettingsAssignees() {
 					<Checkbox
 						id="allow-status-update"
 						checked={allowAssigneeStatusUpdate}
-						defaultChecked={assigneeStatusEditable}
 						onCheckedChange={handleCheckboxChange}
 					/>
 					<CheckboxLabel htmlFor="allow-status-update">
@@ -127,20 +134,20 @@ function SettingsAssignees() {
 				</AssigneeCardGrid>
 			</CardScrollArea>
 		</AssigneesRoot>
-	)
+	);
 }
 
 const SearchWrapper = styled.div`
   max-width: 300px;
   flex: 1;
-`
+`;
 
 const ToolbarRow = styled.div`
   display: flex;
   align-items: center;
   margin-right: 12px;
   gap: 12px;
-`
+`;
 
 const StyledTooltipContent = styled(TooltipContent)`
   background: var(--background);
@@ -149,13 +156,13 @@ const StyledTooltipContent = styled(TooltipContent)`
   svg {
     opacity: 0;
   } 
-`
+`;
 
 const StyledContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-`
+`;
 
 const AssigneesRoot = styled.div`
   flex: 1;
@@ -164,7 +171,7 @@ const AssigneesRoot = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-`
+`;
 
 const CardScrollArea = styled.div`
   flex: 1;
@@ -172,25 +179,25 @@ const CardScrollArea = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   direction: ltr;
-`
+`;
 
 const CheckboxRow = styled.div`
   display: flex;
   align-items: center;
   margin-right: 12px;
   gap: 8px;
-`
+`;
 
 const CheckboxLabel = styled.label`
   font-size: 14px;
   font-weight: 400;
   color: var(--sea-ink);
   cursor: pointer;
-`
+`;
 
 const StyledInputGroup = styled(InputGroup)`
   background: var(--background);
-`
+`;
 
 const QuestionIcon = styled.button`
   display: flex;
@@ -200,7 +207,7 @@ const QuestionIcon = styled.button`
   padding: 0;
   color: rgba(0, 0, 0, 0.25);
   cursor: pointer;
-`
+`;
 
 const AssigneeCardGrid = styled.div`
   padding: 20px 10px;
@@ -209,4 +216,4 @@ const AssigneeCardGrid = styled.div`
   flex: 1;
   gap: 18px;
   direction: rtl;
-`
+`;

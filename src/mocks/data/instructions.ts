@@ -2,16 +2,16 @@ import type {
 	IInstruction,
 	IInstructionListItem,
 	IInstructionStats,
-} from "../../types"
-import { mockEnvironments, mockTags } from "./environments"
-import { currentUser, mockUserSummaries } from "./users"
+} from "../../types";
+import { mockEnvironments, mockTags } from "./environments";
+import { currentUser, mockUserSummaries } from "./users";
 
 const env1Tags = mockTags.filter(
 	(t) => t.environmentId === "env-01-aaaa-bbbb-cccccccccccc",
-)
+);
 const env2Tags = mockTags.filter(
 	(t) => t.environmentId === "env-02-aaaa-bbbb-cccccccccccc",
-)
+);
 
 export const mockInstructions: IInstruction[] = [
 	{
@@ -579,7 +579,7 @@ export const mockInstructions: IInstruction[] = [
 		archived: false,
 		isImportant: false,
 	},
-]
+];
 
 // FIX Remove
 /** Convert full instruction to list item */
@@ -601,18 +601,18 @@ export function toListItem(inst: IInstruction): IInstructionListItem {
 		createdAt: inst.createdAt,
 		updatedAt: inst.updatedAt,
 		isImportant: inst.isImportant,
-	}
+	};
 }
 
 export function getStatsForEnv(envId: string): IInstructionStats {
 	const envInstructions = mockInstructions.filter(
 		(i) => i.environmentId === envId,
-	)
-	return computeStats(envInstructions)
+	);
+	return computeStats(envInstructions);
 }
 
 function computeStats(instructions: IInstruction[]): IInstructionStats {
-	const now = new Date()
+	const now = new Date();
 	return {
 		total: instructions.length,
 		open: instructions.filter((i) => i.status === "open").length,
@@ -629,31 +629,31 @@ function computeStats(instructions: IInstruction[]): IInstructionStats {
 		urgent: instructions.filter((i) => i.priority === "urgent").length,
 		dueSoon: instructions.filter((i) => {
 			if (!i.dueDate || i.status === "completed" || i.status === "archived")
-				return false
-			const due = new Date(i.dueDate)
-			const diffDays = (due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-			return diffDays >= 0 && diffDays <= 7
+				return false;
+			const due = new Date(i.dueDate);
+			const diffDays = (due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+			return diffDays >= 0 && diffDays <= 7;
 		}).length,
-	}
+	};
 }
 
 /** Get all instructions assigned to current user across all environments */
 export function getMyInstructions(): (IInstructionListItem & {
-	environmentName: string
+	environmentName: string;
 })[] {
-	const envNameMap = new Map(mockEnvironments.map((e) => [e.id, e.name]))
+	const envNameMap = new Map(mockEnvironments.map((e) => [e.id, e.name]));
 	return mockInstructions
 		.filter((i) => i.assignees.some((a) => a.user.id === currentUser.id))
 		.map((i) => ({
 			...toListItem(i),
 			environmentName: envNameMap.get(i.environmentId) || "לא ידוע",
-		}))
+		}));
 }
 
 /** Get aggregated stats for current user's instructions */
 export function getMyStats(): IInstructionStats {
 	const myInstructions = mockInstructions.filter((i) =>
 		i.assignees.some((a) => a.user.id === currentUser.id),
-	)
-	return computeStats(myInstructions)
+	);
+	return computeStats(myInstructions);
 }

@@ -1,14 +1,15 @@
-import type { UserDto } from "src/api/model"
-import { useListUsers } from "src/api/user/user"
-import { SearchDropdown } from "./SearchDropdown"
-import { UserItem } from "./UserDropdownItem"
+import { useRef } from "react";
+import { useUsers } from "src/hooks/useUsers";
+import type { IUser } from "src/types";
+import { SearchDropdown } from "./SearchDropdown";
+import { UserItem } from "./UserDropdownItem";
 
 interface DropdownUsersProps {
-	value: string
-	onChange(value: string): void
-	onSelect(user: UserDto | null): void
-	onClear(): void
-	placeholder?: string
+	value: string;
+	onChange(value: string): void;
+	onSelect(user: IUser | null): void;
+	onClear(): void;
+	placeholder?: string;
 }
 
 export function DropdownUsers({
@@ -18,27 +19,25 @@ export function DropdownUsers({
 	onClear,
 	placeholder,
 }: DropdownUsersProps) {
-	const { data: users = [], isLoading } = useListUsers()
+	const { data: users = [], isLoading } = useUsers();
 
 	function filterUsers(query: string) {
 		return query.trim()
-			? users.filter(
-					(u) => u.info?.displayName?.includes(query) || u.upn.includes(query),
-				)
-			: []
+			? users.filter((u) => u.name.includes(query) || u.email.includes(query))
+			: [];
 	}
 
-	const filteredUsers = filterUsers(value)
+	const filteredUsers = filterUsers(value);
 
 	function handleUserSearch(newValue: string) {
-		onChange(newValue)
+		onChange(newValue);
 		if (filterUsers(newValue).length === 0) {
-			onSelect(null)
+			onSelect(null);
 		}
 	}
 
 	return (
-		<SearchDropdown<UserDto>
+		<SearchDropdown<IUser>
 			items={filteredUsers}
 			value={value}
 			onChange={handleUserSearch}
@@ -48,5 +47,5 @@ export function DropdownUsers({
 			isLoading={isLoading}
 			renderItem={(item) => <UserItem user={item} />}
 		/>
-	)
+	);
 }

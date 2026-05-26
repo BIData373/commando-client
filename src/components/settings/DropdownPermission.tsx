@@ -1,23 +1,23 @@
-import styled from "@emotion/styled"
-import { ChevronDown } from "lucide-react"
-import { UserRole } from "src/types"
+import styled from "@emotion/styled";
+import { ChevronDown } from "lucide-react";
+import { UserRole } from "src/types";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
+} from "../ui/dropdown-menu";
 
 const roleNames: Record<UserRole, string> = {
 	[UserRole.ADMIN]: "ניהול",
 	[UserRole.VIEWER]: "צפייה",
-}
+};
 
 interface SelectDropdownPermissionProps {
-	value: UserRole
-	ghost?: boolean
-	disabled?: boolean
-	onChange?(role: UserRole): void
+	value: UserRole;
+	ghost?: boolean;
+	disabled?: boolean;
+	onChange?(role: UserRole): void;
 }
 
 export function DropdownPermission({
@@ -27,7 +27,7 @@ export function DropdownPermission({
 	onChange,
 }: SelectDropdownPermissionProps) {
 	function onSelectPermission(value: string) {
-		onChange?.(value as UserRole)
+		onChange?.(value as UserRole);
 	}
 
 	return (
@@ -47,12 +47,12 @@ export function DropdownPermission({
 				))}
 			</StyledDropdownMenuContent>
 		</DropdownMenu>
-	)
+	);
 }
 
 const RoleTrigger = styled(DropdownMenuTrigger)<{
-	$ghost?: boolean
-	$enabled: boolean
+	$ghost?: boolean;
+	$enabled: boolean;
 }>`
   display: flex;
   align-items: center;
@@ -90,11 +90,11 @@ const StyledDropdownMenuContent = styled(DropdownMenuContent)`
     direction: rtl;
     box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
     border-radius: 6px;
-`
+`;
 
 const StyledDropdownMenuItem = styled(DropdownMenuItem)`
     &:hover {
       color: #1677FF;
       background: #e2eeff;
     }
-`
+`;

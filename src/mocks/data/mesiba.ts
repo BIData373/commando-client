@@ -1,7 +1,7 @@
-import type { IMesibaIcon } from "../../hooks/useMesiba"
+import type { IMesibaIcon } from "../../hooks/useMesiba";
 
 function svgIcon(color: string) {
-	return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="${color}"/></svg>`
+	return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="${color}"/></svg>`;
 }
 
 export const mockMesibaIcons: IMesibaIcon[] = [
@@ -17,4 +17,4 @@ export const mockMesibaIcons: IMesibaIcon[] = [
 	{ id: 10, iconName: svgIcon("darkorange"), heb_name: "חיל ההנדסה" },
 	{ id: 11, iconName: svgIcon("hotpink"), heb_name: "חיל הקשר" },
 	{ id: 12, iconName: svgIcon("indigo"), heb_name: "חיל המודיעין" },
-]
+];

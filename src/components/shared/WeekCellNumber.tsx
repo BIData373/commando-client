@@ -1,32 +1,43 @@
-import styled from "@emotion/styled"
-import { useContext } from "react"
-import type { DateRange, WeekNumberProps } from "react-day-picker"
-import { RangeContext } from "src/providers/RangeProvider"
+import styled from "@emotion/styled";
+import { useContext } from "react";
+import type { DateRange, WeekNumberProps } from "react-day-picker";
+import { RangeContext, RangeSetterContext } from "src/providers/RangeProvider";
 
 function isFullWeekSelected(
 	week: WeekNumberProps["week"],
 	range: DateRange | undefined,
 ): boolean {
-	if (!range?.from || !range?.to) return false
-	const firstDay = week.days[0].date
-	const lastDay = week.days[week.days.length - 1].date
-	return firstDay >= range.from && lastDay <= range.to
+	if (!range?.from || !range?.to) return false;
+	const firstDay = week.days[0].date;
+	const lastDay = week.days[week.days.length - 1].date;
+	return firstDay >= range.from && lastDay <= range.to;
 }
 
 export function WeekNumberCell({ week, ...props }: WeekNumberProps) {
-	const range = useContext(RangeContext)
-	const selected = isFullWeekSelected(week, range)
+	const range = useContext(RangeContext);
+	const setRange = useContext(RangeSetterContext);
+	const selected = isFullWeekSelected(week, range);
+
+	function handleWeekClick() {
+		setRange?.({
+			from: week.days[0].date,
+			to: week.days[week.days.length - 1].date,
+		});
+	}
+
 	return (
 		<WeekNumber {...props}>
-			<WeekNumberBadge $selected={selected}>{week.weekNumber}</WeekNumberBadge>
+			<WeekNumberBadge $selected={selected} onClick={handleWeekClick}>
+				{week.weekNumber}
+			</WeekNumberBadge>
 		</WeekNumber>
-	)
+	);
 }
 
 const WeekNumber = styled.td`
   display: flex;
   align-items: center;
-`
+`;
 
 const WeekNumberBadge = styled.div<{ $selected: boolean }>`
   display: flex;
@@ -37,6 +48,12 @@ const WeekNumberBadge = styled.div<{ $selected: boolean }>`
   border-radius: 5px;
   font-size: 10px;
   margin-left: 2px;
+  cursor: pointer;
   color: ${({ $selected }) => ($selected ? "var(--primary-foreground)" : "var(--muted-foreground)")};
   background: ${({ $selected }) => ($selected ? "var(--primary)" : "transparent")};
-`
+
+  &:hover {
+    background: #c9c6c6;
+    color: var(--foreground);
+  }
+`;

@@ -1,21 +1,21 @@
-import styled from "@emotion/styled"
-import { useRef, useState } from "react"
-import { TrashButton } from "../shared/TrashButton"
-import { DataTable } from "../ui/data-table"
-import TaskAssigneeExpansion from "./TaskAssigneeExpansion"
-import columns, { type TaskRow, type TaskTableMeta } from "./TasksColumns"
+import styled from "@emotion/styled";
+import { useRef, useState } from "react";
+import { DataTable } from "../ui/data-table";
+import { DATA_CELL_ACTIVE_KEY } from "./DeadlineCell";
+import TaskAssigneeExpansion from "./TaskAssigneeExpansion";
+import columns, { type TaskRow, type TaskTableMeta } from "./TasksColumns";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 interface CreateTasksTableProps {
-	onSave: (tasks: TaskRow[]) => void
-	onBack: () => void
+	onSave: (tasks: TaskRow[]) => void;
+	onBack: () => void;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
-	const nextRowId = useRef(1)
+	const nextRowId = useRef(1);
 
 	function createEmptyRow(): TaskRow {
 		return {
@@ -27,67 +27,73 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
 			assigneeDetails: {},
 			notes: "",
 			isImportant: false,
-		}
+		};
 	}
 
-	const [rows, setRows] = useState<TaskRow[]>([createEmptyRow()])
-	const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set())
+	const [rows, setRows] = useState<TaskRow[]>([createEmptyRow()]);
+	const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
 
 	function removeExpandedRow(id: number) {
 		setExpandedRows((prev) => {
-			const next = new Set(prev)
-			next.delete(id)
-			return next
-		})
+			const next = new Set(prev);
+			next.delete(id);
+			return next;
+		});
 	}
 
 	function updateRow(id: number, updates: Partial<TaskRow>) {
 		setRows((prev) => {
-			const next = prev.map((r) => (r.id === id ? { ...r, ...updates } : r))
-			const last = next[next.length - 1]
+			const next = prev.map((r) => (r.id === id ? { ...r, ...updates } : r));
+			const last = next[next.length - 1];
 			if (last.title.trim()) {
-				next.push(createEmptyRow())
+				next.push(createEmptyRow());
 			}
-			return next
-		})
+			return next;
+		});
 
 		if ("assigneeIds" in updates) {
-			const newIds = updates.assigneeIds!
+			const newIds = updates.assigneeIds!;
 			if (newIds.length > 1) {
-				setExpandedRows((prev) => new Set(prev).add(id))
+				setExpandedRows((prev) => new Set(prev).add(id));
 			} else {
-				removeExpandedRow(id)
+				removeExpandedRow(id);
 			}
 		}
 	}
 
 	function toggleRowExpansion(id: number) {
 		setExpandedRows((prev) => {
-			const next = new Set(prev)
-			if (next.has(id)) next.delete(id)
-			else next.add(id)
-			return next
-		})
+			const next = new Set(prev);
+			if (next.has(id)) next.delete(id);
+			else next.add(id);
+			return next;
+		});
 	}
 
 	function deleteRow(id: number) {
 		setRows((prev) => {
-			const next = prev.filter((r) => r.id !== id)
-			if (next.length === 0) return [createEmptyRow()]
-			return next
-		})
-		removeExpandedRow(id)
+			const next = prev.filter((r) => r.id !== id);
+			if (next.length === 0) return [createEmptyRow()];
+			return next;
+		});
+		removeExpandedRow(id);
 	}
 
 	function handleSave() {
-		const filled = rows.filter((r) => r.title.trim())
-		onSave(filled)
+		const filled = rows.filter((r) => r.title.trim());
+		onSave(filled);
 	}
 
-	const filledCount = rows.filter((r) => r.title.trim()).length
-	const hasAnyTask = filledCount > 0
+	const filledCount = rows.filter((r) => r.title.trim()).length;
+	const hasAnyTask = filledCount > 0;
 
-	const meta: TaskTableMeta = { updateRow, expandedRows, toggleRowExpansion }
+	const meta: TaskTableMeta = {
+		updateRow,
+		expandedRows,
+		toggleRowExpansion,
+		deleteRow,
+		isLastRow: (index: number) => index === rows.length - 1,
+	};
 
 	return (
 		<TableWrapper>
@@ -98,17 +104,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
 					getRowId={(row) => String(row.id)}
 					meta={meta}
 					containerClassName="overflow-x-hidden"
-					renderRowOverlay={(row) => {
-						const canDelete =
-							row.original.title.trim().length > 0 &&
-							row.index !== rows.length - 1
-						return canDelete ? (
-							<RowDeleteButton
-								size={14}
-								onClick={() => deleteRow(row.original.id)}
-							/>
-						) : null
-					}}
+					expansionColSpan={columns.length - 1}
 					renderRowExpansion={(row) =>
 						row.original.assigneeIds.length > 1 &&
 						expandedRows.has(row.original.id) ? (
@@ -129,10 +125,10 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
 				<BackButton onClick={onBack}>חזור</BackButton>
 			</FooterRow>
 		</TableWrapper>
-	)
+	);
 }
 
-export default CreateTasksTable
+export default CreateTasksTable;
 
 // ─── Table Styled Components ────────────────────────────────────────────────
 
@@ -144,18 +140,17 @@ const TableWrapper = styled.div`
   min-height: 0;
   justify-content: space-between;
   overflow-x: hidden;
-`
+  `;
 
 const TableOuterContainer = styled.div`
-  direction: rtl;
-  border-radius: 8px;
-  border: 0.5px solid var(--Background-color-bg-text-active);
+  direction: ltr;
   overflow-x: hidden;
   overflow-y: auto;
-  box-shadow: var(--card-shadow-default);
 
   table {
-    border-collapse: collapse;
+    direction: rtl;
+    border-collapse: separate;
+    border-spacing: 0;
     table-layout: fixed;
   }
 
@@ -163,13 +158,26 @@ const TableOuterContainer = styled.div`
     height: 48px;
     padding: 12px;
     background: var(--background);
-    border-right: 0.5px solid var(--Background-color-bg-text-active);
+    border-top: 0.5px solid var(--Background-color-bg-text-active);
+    border-bottom: 0.5px solid var(--Background-color-bg-text-active);
+    border-inline-end: 0.5px solid var(--Background-color-bg-text-active);
     text-align: start;
     vertical-align: middle;
     white-space: nowrap;
 
     &:first-of-type {
-      border-right: none;
+      border-inline-start: 0.5px solid var(--Background-color-bg-text-active);
+      border-start-start-radius: 8px;
+    }
+
+    &:nth-last-of-type(2) {
+      border-start-end-radius: 8px;
+    }
+
+    &:last-of-type {
+      border: none;
+      background: var(--background);
+      padding: 0;
     }
   }
 
@@ -180,8 +188,16 @@ const TableOuterContainer = styled.div`
       background: var(--background-area);
     }
 
-    &:last-of-type td{
-    border-bottom: none;
+    &:hover td:last-of-type {
+      background: var(--background);
+    }
+
+    &:last-of-type td:first-of-type {
+      border-end-start-radius: 8px;
+    }
+
+    &:last-of-type td:nth-last-of-type(2) {
+      border-end-end-radius: 8px;
     }
   }
 
@@ -189,51 +205,46 @@ const TableOuterContainer = styled.div`
     height: 44px;
     padding: 0px 12px;
     background: var(--background);
-    border: 0.5px solid var(--Background-color-bg-text-active);
     vertical-align: middle;
 
-    &:first-of-type {
-      border-right: none;
+    &:not(:last-of-type) {
+      border-bottom: 0.5px solid var(--Background-color-bg-text-active);
+      border-inline-end: 0.5px solid var(--Background-color-bg-text-active);
     }
 
-    &:focus-within {
+    &:first-of-type {
+      border-inline-start: 0.5px solid var(--Background-color-bg-text-active);
+    }
+
+    tr:not([data-expansion-row]) > &:last-of-type {
+      border: none;
+      background: transparent;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &:focus-within:not(:last-of-type) {
+    &:focus-within,
+    &:has([${DATA_CELL_ACTIVE_KEY}="true"]) {
       outline: 1px solid var(--button-color-hover);
       outline-offset: -2px;
     }
   }
-`
-
-const RowDeleteButton = styled(TrashButton)`
-  position: absolute;
-  inset-inline-start: -32px;
-  inset-block-start: 50%;
-  transform: translateY(-50%);
-  display: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  padding: 0;
-  opacity: 1;
-
-  &:hover {
-    color: #ff4d4f;
-    background: rgba(255, 77, 79, 0.06);
-  }
-
-  tr:hover > & {
-    display: flex;
-  }
-`
+}
+`;
 
 // ─── Footer ─────────────────────────────────────────────────────────────────
 
 const FooterRow = styled.div`
   direction: ltr;
   display: flex;
+  margin-top: 16px;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-`
+`;
 
 const SaveButton = styled.button`
   display: flex;
@@ -269,7 +280,7 @@ const SaveButton = styled.button`
   &:hover:not(:disabled) {
     opacity: 0.9;
   }
-`
+`;
 
 const BackButton = styled.button`
   display: flex;
@@ -301,4 +312,4 @@ const BackButton = styled.button`
     border-color: var(--button-color-hover);
     color: var(--button-color-hover);
   }
-`
+`;

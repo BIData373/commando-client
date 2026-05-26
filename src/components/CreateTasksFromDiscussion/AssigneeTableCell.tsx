@@ -1,28 +1,28 @@
-import styled from "@emotion/styled"
-import { ChevronDown } from "lucide-react"
-import { MOCK_ASSIGNEES } from "src/data/Assignees"
+import styled from "@emotion/styled";
+import { ChevronDown } from "lucide-react";
+import { MOCK_ASSIGNEES } from "src/data/Assignees";
 import type {
 	TaskRow,
 	TaskTableMeta,
-} from "../CreateTasksFromDiscussion/TasksColumns"
-import AssigneePicker from "../shared/AssigneePicker"
-import type { AvatarColor } from "../Tasks/ResponsibleCell"
+} from "../CreateTasksFromDiscussion/TasksColumns";
+import AssigneePicker from "../shared/AssigneePicker";
+import type { AvatarColor } from "../Tasks/ResponsibleCell";
 
 interface AssigneeTableCellProps {
-	row: TaskRow
-	meta: TaskTableMeta
+	row: TaskRow;
+	meta: TaskTableMeta;
 }
 
 function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
-	const assigneeIds = row.assigneeIds
-	const hasMultiple = assigneeIds.length > 1
-	const isExpanded = meta.expandedRows.has(row.id)
+	const assigneeIds = row.assigneeIds;
+	const hasMultiple = assigneeIds.length > 1;
+	const isExpanded = meta.expandedRows.has(row.id);
 
 	function handleToggleAssignee(assigneeId: number) {
-		const isRemoving = assigneeIds.includes(assigneeId)
+		const isRemoving = assigneeIds.includes(assigneeId);
 		const nextIds = isRemoving
 			? assigneeIds.filter((id) => id !== assigneeId)
-			: [...assigneeIds, assigneeId]
+			: [...assigneeIds, assigneeId];
 
 		const nextDetails = isRemoving
 			? Object.fromEntries(
@@ -30,12 +30,12 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 						([id]) => Number(id) !== assigneeId,
 					),
 				)
-			: row.assigneeDetails
+			: row.assigneeDetails;
 
 		meta.updateRow(row.id, {
 			assigneeIds: nextIds,
 			assigneeDetails: nextDetails,
-		})
+		});
 	}
 
 	return hasMultiple && !isExpanded ? (
@@ -49,7 +49,7 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 			</CollapsedAssigneeLabel>
 		</CollapsedAssigneeButton>
 	) : (
-		<AssigneeCellOuter $highlighted={hasMultiple && isExpanded}>
+		<AssigneeCellOuter>
 			<AssigneePicker
 				selectedAssignees={assigneeIds}
 				onToggle={handleToggleAssignee}
@@ -88,22 +88,16 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 				}
 			/>
 		</AssigneeCellOuter>
-	)
+	);
 }
 
-export default AssigneeTableCell
+export default AssigneeTableCell;
 
-const AssigneeCellOuter = styled.div<{ $highlighted: boolean }>`
+const AssigneeCellOuter = styled.div`
   display: flex;
   align-items: center;
   height: 100%;
-  margin: 0 -12px;
-  padding: 0 12px;
-  ${({ $highlighted }) =>
-		$highlighted
-			? "outline: 1px solid var(--button-color-hover); outline-offset: -1px;"
-			: ""}
-`
+`;
 
 const CollapsedAssigneeButton = styled.button`
   direction: ltr;
@@ -115,7 +109,7 @@ const CollapsedAssigneeButton = styled.button`
   border: none;
   background: transparent;
   cursor: pointer;
-`
+`;
 
 const CollapsedAssigneeLabel = styled.span`
   direction: rtl;
@@ -123,7 +117,7 @@ const CollapsedAssigneeLabel = styled.span`
   line-height: 22px;
   color: var(--text-color-2);
   white-space: nowrap;
-`
+`;
 
 const CompactTriggerButton = styled.button`
   direction: ltr;
@@ -136,26 +130,26 @@ const CompactTriggerButton = styled.button`
   outline: none;
   background: transparent;
   cursor: pointer;
-`
+`;
 
 const CompactChevron = styled(ChevronDown)`
-  color: rgba(0, 0, 0, 0.25);
+  color: var(--Text-color-text-placeholder);
   flex-shrink: 0;
-`
+`;
 
 const CompactLabel = styled.span`
   font-size: 14px;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.25);
+  color: var(--Text-color-text-placeholder);
   white-space: nowrap;
   text-align: end;
-`
+`;
 
 const CompactAvatarStack = styled.div`
   display: flex;
   align-items: center;
   flex-direction: row-reverse;
-`
+`;
 
 const CompactStackedAvatar = styled.div<{ $color?: AvatarColor }>`
   display: inline-flex;
@@ -174,21 +168,21 @@ const CompactStackedAvatar = styled.div<{ $color?: AvatarColor }>`
   }
 
   ${({ $color }) => getAvatarBackground($color)}
-`
+`;
 
 const AssigneeTag = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 2px 4px;
-`
+`;
 
 const AssigneeTagRole = styled.span`
   font-size: 12px;
   line-height: 20px;
   color: var(--text-color-2);
   white-space: nowrap;
-`
+`;
 
 const AssigneeTagAvatar = styled.div<{ $color?: AvatarColor }>`
   display: inline-flex;
@@ -202,21 +196,21 @@ const AssigneeTagAvatar = styled.div<{ $color?: AvatarColor }>`
   flex-shrink: 0;
 
   ${({ $color }) => getAvatarBackground($color)}
-`
+`;
 //TO-DO
 function getAvatarBackground(color?: AvatarColor) {
 	switch (color) {
 		case "cyan":
-			return "background: #87e8de;"
+			return "background: #87e8de;";
 		case "blue":
-			return "background: #91caff;"
+			return "background: #91caff;";
 		case "green":
-			return "background: #b7eb8f;"
+			return "background: #b7eb8f;";
 		case "orange":
-			return "background: #ffd591;"
+			return "background: #ffd591;";
 		case "gray":
-			return "background: var(--colors-base-neutral-3);"
+			return "background: var(--colors-base-neutral-3);";
 		default:
-			return "background: var(--colors-base-neutral-3);"
+			return "background: var(--colors-base-neutral-3);";
 	}
 }

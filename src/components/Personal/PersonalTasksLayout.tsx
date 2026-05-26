@@ -1,27 +1,26 @@
-import styled from "@emotion/styled"
-import type { ColumnDef } from "@tanstack/react-table"
-import { isThisWeek } from "date-fns"
-import { useMemo, useState } from "react"
+import styled from "@emotion/styled";
+import type { ColumnDef } from "@tanstack/react-table";
+import { isThisWeek } from "date-fns";
+import { useMemo, useState } from "react";
 import {
 	PERSONAL_TASKS,
 	type PersonalTask,
 	type Workspace,
-} from "../../data/PersonalTasks"
-import type { Task } from "../../data/Tasks"
-import { applyAllFilters } from "../../functions/filter-utils"
-import type { TaskColumn } from "../../hooks/useTaskColumns"
-import { useTitleBar } from "../../providers/TitleBarProvider"
-import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
-import type { DirectiveStatus } from "../shared/StatusTag"
-import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
-import { NoResultsFound } from "../Tasks/NoResultsFound"
-import { type QuickFilter, TaskFilters } from "../Tasks/TaskFilters"
-import type { TasksLayoutProps, View } from "../Tasks/TasksLayout"
-import { TaskTable } from "../Tasks/TaskTable"
-import { TooltipProvider } from "../ui/tooltip"
-import { MetricsBar } from "./MetricsBar"
+} from "../../data/PersonalTasks";
+import type { Task } from "../../data/Tasks";
+import type { TaskColumn } from "../../hooks/useTaskColumns";
+import { useTasks } from "../../providers/TasksProvider";
+import { useTitleBar } from "../../providers/TitleBarProvider";
+import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown";
+import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions";
+import { NoResultsFound } from "../Tasks/NoResultsFound";
+import { TaskFilters } from "../Tasks/TaskFilters";
+import type { TasksLayoutProps, View } from "../Tasks/TasksLayout";
+import { TaskTable } from "../Tasks/TaskTable";
+import { TooltipProvider } from "../ui/tooltip";
+import { MetricsBar } from "./MetricsBar";
 
-const PERSONAL_DEFAULT_COLUMN_ORDER: (TaskColumn | string)[] = [
+const PERSONAL_DEFAULT_COLUMN_ORDER: TaskColumn[] = [
 	"title",
 	"status",
 	"responsible",
@@ -32,13 +31,13 @@ const PERSONAL_DEFAULT_COLUMN_ORDER: (TaskColumn | string)[] = [
 	"workspace",
 	"createdAt",
 	"updatedAt",
-]
+] as TaskColumn[];
 
 const PERSONAL_DEFAULT_HIDDEN = new Set<TaskColumn>([
 	"tags",
 	"notes",
 	"updatedAt",
-])
+] as TaskColumn[]);
 
 const WORKSPACE_COLUMN: ColumnDef<Task> = {
 	id: "workspace",
@@ -54,124 +53,77 @@ const WORKSPACE_COLUMN: ColumnDef<Task> = {
 			"he",
 		),
 	cell: ({ row }) => {
-		const { workspace } = row.original as PersonalTask
+		const { workspace } = row.original as PersonalTask;
 		return (
 			<WorkspaceCell>
 				<WorkspaceIconImg src={workspace.iconUrl} alt={workspace.name} />
 				<WorkspaceCellName>{workspace.name}</WorkspaceCellName>
 			</WorkspaceCell>
-		)
+		);
 	},
-}
+};
 
 const EXTRA_COLUMNS: Record<string, ColumnDef<Task>> = {
 	workspace: WORKSPACE_COLUMN,
-}
+};
+
+export const PERSONAL_PROVIDER_CONFIG = {
+	initialTasks: PERSONAL_TASKS as Task[],
+	defaultColumnOrder: PERSONAL_DEFAULT_COLUMN_ORDER,
+	defaultHiddenColumns: PERSONAL_DEFAULT_HIDDEN,
+};
 
 function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
-	const [tasks, setTasks] = useState<PersonalTask[]>(PERSONAL_TASKS)
-	const [searchQuery, setSearchQuery] = useState("")
-	const [activeQuickFilters, setActiveQuickFilters] = useState<
-		Set<QuickFilter>
-	>(new Set())
+	const {
+		tasks,
+		clearQuickFilters,
+		searchQuery,
+		filteredTasks: baseFilteredTasks,
+	} = useTasks();
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
-	>(new Set())
-	const [columnOrder, setColumnOrder] = useState<TaskColumn[]>([
-		"id" as TaskColumn,
-		...PERSONAL_DEFAULT_COLUMN_ORDER,
-	] as TaskColumn[])
-	const [hiddenColumns, setHiddenColumns] = useState<Set<TaskColumn>>(
-		new Set(PERSONAL_DEFAULT_HIDDEN) as Set<TaskColumn>,
-	)
+	>(new Set());
 
 	const workspaces = useMemo(() => {
-		const map = new Map<number, Workspace>()
-		tasks.forEach((t) => map.set(t.workspace.id, t.workspace))
-		return [...map.values()]
-	}, [tasks])
+		const map = new Map<number, Workspace>();
+		(tasks as PersonalTask[]).forEach((t) => {
+			map.set(t.workspace.id, t.workspace);
+		});
+		return [...map.values()];
+	}, [tasks]);
 
-	const totalCount = tasks.length
-	const notStartedCount = tasks.filter((t) => t.status === "not_started").length
-	const inProgressCount = tasks.filter((t) => t.status === "in_progress").length
+	const totalCount = tasks.length;
+	const notStartedCount = tasks.filter(
+		(t) => t.status === "not_started",
+	).length;
+	const inProgressCount = tasks.filter(
+		(t) => t.status === "in_progress",
+	).length;
 	const weeklyNew = tasks.filter((t) =>
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
-	).length
-
-	function handleToggleColumn(columnId: TaskColumn) {
-		setHiddenColumns((prev) => {
-			const next = new Set(prev)
-			if (next.has(columnId)) {
-				next.delete(columnId)
-			} else {
-				next.add(columnId)
-			}
-			return next
-		})
-	}
-
-	function toggleQuickFilter(filter: QuickFilter) {
-		setActiveQuickFilters((prev) => {
-			const next = new Set(prev)
-			if (next.has(filter)) {
-				next.delete(filter)
-			} else {
-				next.add(filter)
-			}
-			return next
-		})
-	}
+	).length;
 
 	function clearAllFilters() {
-		setActiveQuickFilters(new Set())
-		setActiveWorkspaceFilters(new Set())
+		clearQuickFilters();
+		setActiveWorkspaceFilters(new Set());
 	}
 
 	const filteredTasks = useMemo(() => {
-		let result = applyAllFilters(
-			tasks,
-			activeQuickFilters,
-			new Set(),
-			searchQuery,
-		) as PersonalTask[]
+		let result = baseFilteredTasks as PersonalTask[];
 
 		if (activeWorkspaceFilters.size > 0) {
-			result = result.filter((t) => activeWorkspaceFilters.has(t.workspace.id))
+			result = result.filter((t) => activeWorkspaceFilters.has(t.workspace.id));
 		}
 
-		return result
-	}, [tasks, searchQuery, activeQuickFilters, activeWorkspaceFilters])
-
-	function handleUpdateStatus(taskId: number, status: DirectiveStatus) {
-		setTasks((prev) =>
-			prev.map((t) =>
-				t.id === taskId ? { ...t, status, updatedAt: new Date() } : t,
-			),
-		)
-	}
-
-	function handleBulkChangeStatus(taskIds: number[], status: DirectiveStatus) {
-		setTasks((prev) =>
-			prev.map((t) =>
-				taskIds.includes(t.id) ? { ...t, status, updatedAt: new Date() } : t,
-			),
-		)
-	}
-
-	function handleArchive(taskIds: number[]) {
-		setTasks((prev) => prev.filter((t) => !taskIds.includes(t.id)))
-	}
-
-	function handleDelete(taskIds: number[]) {
-		setTasks((prev) => prev.filter((t) => !taskIds.includes(t.id)))
-	}
+		return result;
+	}, [baseFilteredTasks, activeWorkspaceFilters]);
 
 	function handleExport() {
 		// placeholder for export
 	}
 
 	function handleViewChange(newView: View) {
-		return newView
+		return newView;
 		// placeholder for view change
 	}
 
@@ -193,7 +145,7 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 			</SegmentedControl>
 		),
 		[view, urlName],
-	)
+	);
 
 	return (
 		<TooltipProvider>
@@ -206,17 +158,8 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 				/>
 
 				<TaskFilters
-					tasks={tasks}
-					activeQuickFilters={activeQuickFilters}
-					onToggleQuickFilter={toggleQuickFilter}
 					onClearAllFilters={clearAllFilters}
-					searchQuery={searchQuery}
-					onSearchChange={setSearchQuery}
 					onExport={handleExport}
-					columnOrder={columnOrder}
-					hiddenColumns={hiddenColumns}
-					onColumnOrderChange={setColumnOrder}
-					onToggleColumn={handleToggleColumn}
 					hasExtraActiveFilters={activeWorkspaceFilters.size > 0}
 					extraColumnsMeta={[
 						{ id: "workspace" as TaskColumn, label: "מפקד מנחה" },
@@ -247,22 +190,15 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 				) : (
 					<TaskTable
 						tasks={filteredTasks as Task[]}
-						searchQuery={searchQuery}
-						columnOrder={columnOrder}
-						hiddenColumns={hiddenColumns}
-						onUpdateStatus={handleUpdateStatus}
-						onBulkChangeStatus={handleBulkChangeStatus}
-						onArchive={handleArchive}
-						onDelete={handleDelete}
 						extraColumns={EXTRA_COLUMNS}
 					/>
 				)}
 			</PageRoot>
 		</TooltipProvider>
-	)
+	);
 }
 
-export default PersonalTasksLayout
+export default PersonalTasksLayout;
 
 const PageRoot = styled.div`
   display: flex;
@@ -271,7 +207,7 @@ const PageRoot = styled.div`
   gap: 28px;
   height: 100%;
   overflow: hidden;
-`
+`;
 
 const SegmentedControl = styled.div`
   display: flex;
@@ -282,7 +218,7 @@ const SegmentedControl = styled.div`
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-`
+`;
 
 const SegmentedItem = styled.button<{ $selected: boolean }>`
   display: flex;
@@ -305,21 +241,21 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   &:hover {
     background: ${({ $selected }) => ($selected ? "var(--background)" : "rgba(0, 0, 0, 0.06)")};
   }
-`
+`;
 
 const WorkspaceIcon = styled.img`
   width: 20px;
   height: 20px;
   border-radius: 50%;
   object-fit: cover;
-`
+`;
 
 const WorkspaceCell = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
   justify-content: flex-start;
-`
+`;
 
 const WorkspaceCellName = styled.span`
   font-size: 14px;
@@ -329,7 +265,7 @@ const WorkspaceCellName = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`
+`;
 
 const WorkspaceIconImg = styled.img`
   width: 24px;
@@ -337,4 +273,4 @@ const WorkspaceIconImg = styled.img`
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
-`
+`;

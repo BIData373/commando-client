@@ -3,8 +3,8 @@ import type {
 	IEnvironmentWithRole,
 	IResponsibleGroup,
 	ITag,
-} from "../../types"
-import { mockUserSummaries, mockUsers } from "./users"
+} from "../../types";
+import { mockUserSummaries, mockUsers } from "./users";
 
 export const mockTags: ITag[] = [
 	{
@@ -56,7 +56,7 @@ export const mockTags: ITag[] = [
 		color: "#d946ef",
 		createdAt: "2025-09-01T08:00:00Z",
 	},
-]
+];
 
 export const mockEnvironments: IEnvironmentWithRole[] = [
 	{
@@ -98,7 +98,7 @@ export const mockEnvironments: IEnvironmentWithRole[] = [
 		instructionCount: 5,
 		currentUserRole: "responsible",
 	},
-]
+];
 
 export const mockMembers: IEnvironmentMember[] = [
 	{
@@ -136,7 +136,7 @@ export const mockMembers: IEnvironmentMember[] = [
 		role: "responsible",
 		joinedAt: "2025-08-15T08:00:00Z",
 	},
-]
+];
 
 export const mockResponsibleGroups: IResponsibleGroup[] = [
 	{
@@ -160,4 +160,4 @@ export const mockResponsibleGroups: IResponsibleGroup[] = [
 		members: [mockUserSummaries[1], mockUserSummaries[4]],
 		createdAt: "2025-09-01T08:00:00Z",
 	},
-]
+];

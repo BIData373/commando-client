@@ -1,5 +1,5 @@
-import styled from "@emotion/styled"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import styled from "@emotion/styled";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 export const PRESET_COLORS = [
 	"#00474f",
@@ -26,11 +26,11 @@ export const PRESET_COLORS = [
 	"#eb2f96",
 	"#ff85c0",
 	"#8c8c8c",
-]
+];
 
 interface ColorPickerProps {
-	selectedColor: string
-	onChange(color: string): void
+	selectedColor: string;
+	onChange(color: string): void;
 }
 
 export function ColorPicker({ selectedColor, onChange }: ColorPickerProps) {
@@ -64,13 +64,13 @@ export function ColorPicker({ selectedColor, onChange }: ColorPickerProps) {
 				</ColorPickerPopup>
 			</StyledPopoverContent>
 		</Popover>
-	)
+	);
 }
 
 const StyledPopoverContent = styled(PopoverContent)`
     max-width: max-content;
     z-index: 1000;
-`
+`;
 
 const ColorSwatchContainer = styled.div`
   background: var(--background);
@@ -80,7 +80,7 @@ const ColorSwatchContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`
+`;
 
 const ColorSwatch = styled.div<{ $color: string }>`
   width: 20px;
@@ -90,7 +90,7 @@ const ColorSwatch = styled.div<{ $color: string }>`
   cursor: pointer;
   flex-shrink: 0;
   position: relative;
-`
+`;
 
 const ColorPickerPopup = styled.div`
   display: flex;
@@ -100,14 +100,14 @@ const ColorPickerPopup = styled.div`
   width: 144px;
   align-items: flex-start;
   align-content: flex-start;
-`
+`;
 
 const ColorGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   width: 100%;
-`
+`;
 
 const ColorOption = styled.div<{ $color: string; $selected: boolean }>`
   width: 24px;
@@ -122,7 +122,7 @@ const ColorOption = styled.div<{ $color: string; $selected: boolean }>`
   &:hover {
     opacity: 0.85;
   }
-`
+`;
 
 const OtherColorLabel = styled.label`
   display: flex;
@@ -139,7 +139,7 @@ const OtherColorLabel = styled.label`
   cursor: pointer;
   white-space: nowrap;
   position: relative;
-`
+`;
 
 const HiddenColorInput = styled.input`
   position: absolute;
@@ -147,4 +147,4 @@ const HiddenColorInput = styled.input`
   height: 0;
   opacity: 0;
   pointer-events: none;
-`
+`;
