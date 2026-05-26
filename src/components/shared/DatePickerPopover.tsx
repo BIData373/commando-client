@@ -1,71 +1,74 @@
-import styled from '@emotion/styled'
-import { Popover } from 'radix-ui'
-import type { ReactNode } from 'react'
-import { useState } from 'react'
-import DatePicker, { CalendarMode } from './DatePicker'
-import type { DatePickerValue } from './DatePicker'
+import styled from "@emotion/styled";
+import { Popover } from "radix-ui";
+import type { ReactNode } from "react";
+import { useState } from "react";
+import type { DatePickerValue } from "./DatePicker";
+import DatePicker, { type CalendarMode } from "./DatePicker";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface DatePickerSlotProps {
-  value: DatePickerValue | undefined
-  onChange: (value: DatePickerValue | undefined) => void
-  onClose: () => void
+	value: DatePickerValue | undefined;
+	onChange: (value: DatePickerValue | undefined) => void;
+	onClose: () => void;
 }
 
 interface DatePickerPopoverProps {
-  mode: CalendarMode
-  triggerButton: (props: DatePickerSlotProps) => ReactNode
-  header?: (props: DatePickerSlotProps) => ReactNode
-  footer?: (props: DatePickerSlotProps) => ReactNode
-  open?: boolean
-  value?: DatePickerValue
-  align?: 'start' | 'center' | 'end'
-  side?: 'top' | 'right' | 'bottom' | 'left'
-  sideOffset?: number
+	mode: CalendarMode;
+	triggerButton: (props: DatePickerSlotProps) => ReactNode;
+	header?: (props: DatePickerSlotProps) => ReactNode;
+	footer?: (props: DatePickerSlotProps) => ReactNode;
+	open?: boolean;
+	value?: DatePickerValue;
+	align?: "start" | "center" | "end";
+	side?: "top" | "right" | "bottom" | "left";
+	sideOffset?: number;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function DatePickerPopover({
-  mode,
-  triggerButton,
-  header,
-  footer,
-  open: controlledOpen,
-  value: initialValue,
-  align = 'end',
-  side,
-  sideOffset = 8,
+	mode,
+	triggerButton,
+	header,
+	footer,
+	open: controlledOpen,
+	value: initialValue,
+	align = "end",
+	side,
+	sideOffset = 8,
 }: DatePickerPopoverProps) {
-  const [uncontrolledOpen, setUncontrolledOpen] = useState(false)
-  const [value, setValue] = useState<DatePickerValue | undefined>(initialValue)
+	const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+	const [value, setValue] = useState<DatePickerValue | undefined>(initialValue);
 
-  const open = controlledOpen ?? uncontrolledOpen
+	const open = controlledOpen ?? uncontrolledOpen;
 
-  const slotProps: DatePickerSlotProps = {
-    value,
-    onChange: setValue,
-    onClose: () => setUncontrolledOpen(false),
-  }
+	const slotProps: DatePickerSlotProps = {
+		value,
+		onChange: setValue,
+		onClose: () => setUncontrolledOpen(false),
+	};
 
-  return (
-    <Popover.Root open={open} onOpenChange={setUncontrolledOpen}>
-      <Popover.Trigger asChild>
-        {triggerButton(slotProps)}
-      </Popover.Trigger>
-      <Popover.Portal>
-        <PopoverContent data-lang="he" align={align} side={side} sideOffset={sideOffset}>
-          {header?.(slotProps)}
-          <DatePicker mode={mode} selected={value} onSelect={setValue} />
-          {footer?.(slotProps)}
-        </PopoverContent>
-      </Popover.Portal>
-    </Popover.Root>
-  )
+	return (
+		<Popover.Root open={open} onOpenChange={setUncontrolledOpen}>
+			<Popover.Trigger asChild>{triggerButton(slotProps)}</Popover.Trigger>
+			<Popover.Portal>
+				<PopoverContent
+					data-lang="he"
+					align={align}
+					side={side}
+					sideOffset={sideOffset}
+				>
+					{header?.(slotProps)}
+					<DatePicker mode={mode} selected={value} onSelect={setValue} />
+					{footer?.(slotProps)}
+				</PopoverContent>
+			</Popover.Portal>
+		</Popover.Root>
+	);
 }
 
-export default DatePickerPopover
+export default DatePickerPopover;
 
 // ─── Styled ─────────────────────────────────────────────────────────────────
 
@@ -80,4 +83,4 @@ const PopoverContent = styled(Popover.Content)`
   gap: 12px;
   width: 340px;
   z-index: var(--z-dropdown);
-`
+`;

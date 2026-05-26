@@ -1,157 +1,168 @@
-import { useState, useRef } from 'react'
-import styled from '@emotion/styled'
-import { ChevronDown, Tag, X } from 'lucide-react'
-import HighlightMatch from '../shared/HighlightMatch'
-import { ALL_TOPICS } from '../../data/Topics'
+import styled from "@emotion/styled";
+import { ChevronDown, Tag, X } from "lucide-react";
+import { useRef, useState } from "react";
+import { ALL_TOPICS } from "../../data/Topics";
+import HighlightMatch from "../shared/HighlightMatch";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface TopicFieldProps {
-  topics: string[]
-  lockedTopics: string[]
-  onTopicSelect: (topic: string) => void
-  onTopicRemove: (topic: string) => void
+	topics: string[];
+	lockedTopics: string[];
+	onTopicSelect: (topic: string) => void;
+	onTopicRemove: (topic: string) => void;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-function TopicField({ topics, lockedTopics, onTopicSelect, onTopicRemove }: TopicFieldProps) {
-  const [topicQuery, setTopicQuery] = useState('')
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+function TopicField({
+	topics,
+	lockedTopics,
+	onTopicSelect,
+	onTopicRemove,
+}: TopicFieldProps) {
+	const [topicQuery, setTopicQuery] = useState("");
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const inputRef = useRef<HTMLInputElement>(null);
 
-  const filteredTopics = ALL_TOPICS.filter(
-    (t) => t.includes(topicQuery) && !topics.includes(t),
-  )
+	const filteredTopics = ALL_TOPICS.filter(
+		(t) => t.includes(topicQuery) && !topics.includes(t),
+	);
 
-  const isNewTopic = topicQuery.trim() !== '' && !ALL_TOPICS.includes(topicQuery.trim())
-  const showDropdown = isDropdownOpen && (filteredTopics.length > 0 || isNewTopic)
+	const isNewTopic =
+		topicQuery.trim() !== "" && !ALL_TOPICS.includes(topicQuery.trim());
+	const showDropdown =
+		isDropdownOpen && (filteredTopics.length > 0 || isNewTopic);
 
-  function handleSelect(topic: string) {
-    onTopicSelect(topic)
-    setTopicQuery('')
-  }
+	function handleSelect(topic: string) {
+		onTopicSelect(topic);
+		setTopicQuery("");
+	}
 
-  function handleCreateNew() {
-    if (topicQuery.trim() && !topics.includes(topicQuery.trim())) {
-      onTopicSelect(topicQuery.trim())
-    }
-    setTopicQuery('')
-  }
+	function handleCreateNew() {
+		if (topicQuery.trim() && !topics.includes(topicQuery.trim())) {
+			onTopicSelect(topicQuery.trim());
+		}
+		setTopicQuery("");
+	}
 
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      if (topicQuery.trim()) {
-        const existing = filteredTopics.find((t) => t === topicQuery.trim())
-        if (existing) {
-          handleSelect(existing)
-        } else {
-          handleCreateNew()
-        }
-      }
-    }
-  }
+	function handleKeyDown(e: React.KeyboardEvent) {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			if (topicQuery.trim()) {
+				const existing = filteredTopics.find((t) => t === topicQuery.trim());
+				if (existing) {
+					handleSelect(existing);
+				} else {
+					handleCreateNew();
+				}
+			}
+		}
+	}
 
-  function handleRemoveTopic(e: React.MouseEvent, topic: string) {
-    e.preventDefault()
-    onTopicRemove(topic)
-  }
+	function handleRemoveTopic(e: React.MouseEvent, topic: string) {
+		e.preventDefault();
+		onTopicRemove(topic);
+	}
 
-  function handleSelectMouseDown(e: React.MouseEvent, topic: string) {
-    e.preventDefault()
-    handleSelect(topic)
-  }
+	function handleSelectMouseDown(e: React.MouseEvent, topic: string) {
+		e.preventDefault();
+		handleSelect(topic);
+	}
 
-  function handleCreateNewMouseDown(e: React.MouseEvent) {
-    e.preventDefault()
-    handleCreateNew()
-  }
+	function handleCreateNewMouseDown(e: React.MouseEvent) {
+		e.preventDefault();
+		handleCreateNew();
+	}
 
-  function handleInputBoxClick() {
-    inputRef.current?.focus()
-  }
+	function handleInputBoxClick() {
+		inputRef.current?.focus();
+	}
 
-  function handleQueryChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setTopicQuery(e.target.value)
-  }
+	function handleQueryChange(e: React.ChangeEvent<HTMLInputElement>) {
+		setTopicQuery(e.target.value);
+	}
 
-  function handleFocus() {
-    setIsDropdownOpen(true)
-  }
+	function handleFocus() {
+		setIsDropdownOpen(true);
+	}
 
-  function handleBlur() {
-    setTimeout(() => setIsDropdownOpen(false), 200)
-  }
+	function handleBlur() {
+		setTimeout(() => setIsDropdownOpen(false), 200);
+	}
 
-  return (
-    <FormItem>
-      <FormLabelRow>
-        <LabelText>נושא</LabelText>
-      </FormLabelRow>
-      <TopicFieldWrapper>
-        <TopicInputBox onClick={handleInputBoxClick}>
-          <StyledChevronDown size={16} />
-          <InputContent>
-            {topics.map((topic) => (
-              <TopicTag key={topic}>
-                <TagText>{topic}</TagText>
-                {!lockedTopics.includes(topic) && (
-                  <TagRemoveButton
-                    onMouseDown={(e) => handleRemoveTopic(e, topic)}
-                  >
-                    <X size={12} />
-                  </TagRemoveButton>
-                )}
-              </TopicTag>
-            ))}
-            <TopicInputField
-              ref={inputRef}
-              value={topicQuery}
-              onChange={handleQueryChange}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              onKeyDown={handleKeyDown}
-              placeholder={topics.length === 0 ? "מאמץ/מבצע/קטגוריה (לדוג': 'שאגת הארי' , הגנה במרחב)" : ''}
-              dir="rtl"
-            />
-          </InputContent>
-          {topics.length === 0 &&
-            <StyledTag size={16} />
-          }
-        </TopicInputBox>
-        {showDropdown && (
-          <DropdownMenu>
-            {filteredTopics.length > 0 && topicQuery && (
-              <SuggestionsHeader>הצעות</SuggestionsHeader>
-            )}
-            {filteredTopics.map((topic) => (
-              <TopicOption
-                key={topic}
-                onMouseDown={(e) => handleSelectMouseDown(e, topic)}
-              >
-                {topicQuery ? <HighlightMatch text={topic} query={topicQuery} /> : topic}
-              </TopicOption>
-            ))}
-            {isNewTopic && (
-              <>
-                {filteredTopics.length > 0 && <Divider />}
-                <TopicOption
-                  onMouseDown={handleCreateNewMouseDown}
-                >
-                  <HighlightedText>{topicQuery}</HighlightedText>
-                  <span> (חדש)</span>
-                </TopicOption>
-              </>
-            )}
-          </DropdownMenu>
-        )}
-      </TopicFieldWrapper>
-    </FormItem>
-  )
+	return (
+		<FormItem>
+			<FormLabelRow>
+				<LabelText>נושא</LabelText>
+			</FormLabelRow>
+			<TopicFieldWrapper>
+				<TopicInputBox onClick={handleInputBoxClick}>
+					<StyledChevronDown size={16} />
+					<InputContent>
+						{topics.map((topic) => (
+							<TopicTag key={topic}>
+								<TagText>{topic}</TagText>
+								{!lockedTopics.includes(topic) && (
+									<TagRemoveButton
+										onMouseDown={(e) => handleRemoveTopic(e, topic)}
+									>
+										<X size={12} />
+									</TagRemoveButton>
+								)}
+							</TopicTag>
+						))}
+						<TopicInputField
+							ref={inputRef}
+							value={topicQuery}
+							onChange={handleQueryChange}
+							onFocus={handleFocus}
+							onBlur={handleBlur}
+							onKeyDown={handleKeyDown}
+							placeholder={
+								topics.length === 0
+									? "מאמץ/מבצע/קטגוריה (לדוג': 'שאגת הארי' , הגנה במרחב)"
+									: ""
+							}
+							dir="rtl"
+						/>
+					</InputContent>
+					{topics.length === 0 && <StyledTag size={16} />}
+				</TopicInputBox>
+				{showDropdown && (
+					<DropdownMenu>
+						{filteredTopics.length > 0 && topicQuery && (
+							<SuggestionsHeader>הצעות</SuggestionsHeader>
+						)}
+						{filteredTopics.map((topic) => (
+							<TopicOption
+								key={topic}
+								onMouseDown={(e) => handleSelectMouseDown(e, topic)}
+							>
+								{topicQuery ? (
+									<HighlightMatch text={topic} query={topicQuery} />
+								) : (
+									topic
+								)}
+							</TopicOption>
+						))}
+						{isNewTopic && (
+							<>
+								{filteredTopics.length > 0 && <Divider />}
+								<TopicOption onMouseDown={handleCreateNewMouseDown}>
+									<HighlightedText>{topicQuery}</HighlightedText>
+									<span> (חדש)</span>
+								</TopicOption>
+							</>
+						)}
+					</DropdownMenu>
+				)}
+			</TopicFieldWrapper>
+		</FormItem>
+	);
 }
 
-export default TopicField
+export default TopicField;
 
 // ─── Styled ─────────────────────────────────────────────────────────────────
 
@@ -160,7 +171,7 @@ const FormItem = styled.div`
   flex-direction: column;
   align-items: flex-end;
   width: 100%;
-`
+`;
 
 const FormLabelRow = styled.div`
   display: flex;
@@ -169,7 +180,7 @@ const FormLabelRow = styled.div`
   gap: 0px;
   padding-block-end: 8px;
   width: 100%;
-`
+`;
 
 const LabelText = styled.span`
   font-size: 14px;
@@ -177,12 +188,12 @@ const LabelText = styled.span`
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;
-`
+`;
 
 const TopicFieldWrapper = styled.div`
 position: relative;
 width: 100%;
-`
+`;
 
 const TopicInputBox = styled.div`
   display: flex;
@@ -200,7 +211,7 @@ const TopicInputBox = styled.div`
     border-color: #1677ff;
     box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
   }
-`
+`;
 
 const InputContent = styled.div`
   display: flex;
@@ -214,7 +225,7 @@ const InputContent = styled.div`
   padding-block: 2px;
   min-width: 0;
   direction: rtl;
-`
+`;
 
 const TopicInputField = styled.input`
   direction: rtl;
@@ -232,7 +243,7 @@ const TopicInputField = styled.input`
   &::placeholder {
     color: rgba(0, 0, 0, 0.25);
   }
-`
+`;
 
 const TopicTag = styled.span`
   display: inline-flex;
@@ -242,7 +253,7 @@ const TopicTag = styled.span`
   background: rgba(0, 0, 0, 0.02);
   border-radius: 4px;
   flex-shrink: 0;
-`
+`;
 
 const TagText = styled.span`
   font-size: 12px;
@@ -250,7 +261,7 @@ const TagText = styled.span`
   line-height: 20px;
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;
-`
+`;
 
 const TagRemoveButton = styled.button`
   display: flex;
@@ -265,7 +276,7 @@ const TagRemoveButton = styled.button`
   &:hover {
     color: rgba(0, 0, 0, 0.88);
   }
-`
+`;
 
 const DropdownMenu = styled.div`
   position: absolute;
@@ -282,7 +293,7 @@ const DropdownMenu = styled.div`
   overflow-y: auto;
   padding: 4px;
   direction: rtl;
-`
+`;
 
 const SuggestionsHeader = styled.div`
   display: flex;
@@ -296,7 +307,7 @@ const SuggestionsHeader = styled.div`
   line-height: 22px;
   color: rgba(0, 0, 0, 0.45);
   white-space: nowrap;
-`
+`;
 
 const TopicOption = styled.button`
   display: flex;
@@ -321,20 +332,20 @@ const TopicOption = styled.button`
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
-`
+`;
 
 const HighlightedText = styled.span`
   font-weight: 700;
-`
+`;
 
 const StyledChevronDown = styled(ChevronDown)`
   color: rgba(0, 0, 0, 0.25);
-`
+`;
 const StyledTag = styled(Tag)`
   color: rgba(0, 0, 0, 0.25);
-`
+`;
 const Divider = styled.div`
   height: 1px;
   background: rgba(0, 0, 0, 0.06);
   margin-block: 4px;
-`
+`;

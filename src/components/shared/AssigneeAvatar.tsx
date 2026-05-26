@@ -1,55 +1,55 @@
 import styled from "@emotion/styled";
-import type { IAssignee } from "#/types";
+import type { IAssignee } from "src/types";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 
 interface AssigneeAvatarProps {
-    assignee: IAssignee;
-    size?: number;
-    ref?: React.Ref<HTMLButtonElement>;
-    cursor?: boolean
+	assignee: IAssignee;
+	size?: number;
+	ref?: React.Ref<HTMLButtonElement>;
+	cursor?: boolean;
 }
 
 function getInitials(name: string): string {
-    return name
-        .split(" ")
-        .map((part) => part[0])
-        .join("")
-        .slice(0, 2);
+	return name
+		.split(" ")
+		.map((part) => part[0])
+		.join("")
+		.slice(0, 2);
 }
 
 export const AssigneeAvatar = ({
-    assignee,
-    size,
-    ref,
-    cursor,
-    ...props
+	assignee,
+	size,
+	ref,
+	cursor,
+	...props
 }: AssigneeAvatarProps) => {
-    return (
-        <StyledAvatar $cursor={cursor} ref={ref} {...props}>
-            {assignee.emblem ? (
-                <EmblemAvatarImg
-                    $size={size}
-                    src={assignee.emblem}
-                    alt={assignee.name}
-                />
-            ) : (
-                <ColoredFallback $size={size} $color={assignee.color}>
-                    {getInitials(assignee.name)}
-                </ColoredFallback>
-            )}
-        </StyledAvatar>
-    );
+	return (
+		<StyledAvatar $cursor={cursor} ref={ref} {...props}>
+			{assignee.emblem ? (
+				<EmblemAvatarImg
+					$size={size}
+					src={assignee.emblem}
+					alt={assignee.name}
+				/>
+			) : (
+				<ColoredFallback $size={size} $color={assignee.color}>
+					{getInitials(assignee.name)}
+				</ColoredFallback>
+			)}
+		</StyledAvatar>
+	);
 };
 
-const StyledAvatar = styled(Avatar) <{ $cursor?: boolean }>`
+const StyledAvatar = styled(Avatar)<{ $cursor?: boolean }>`
     &:hover {
-        cursor: ${({ $cursor }) => $cursor ? 'pointer' : 'default'};
+        cursor: ${({ $cursor }) => ($cursor ? "pointer" : "default")};
     }
-`
+`;
 
-const ColoredFallback = styled(AvatarFallback) <{
-    $color: string | null;
-    $size?: number;
+const ColoredFallback = styled(AvatarFallback)<{
+	$color: string | null;
+	$size?: number;
 }>`
   background: ${({ $color }) => $color ?? "var(--chip-bg)"};
   color: var(--background);

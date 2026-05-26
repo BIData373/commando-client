@@ -1,63 +1,73 @@
-import styled from '@emotion/styled'
-import { Flag } from 'lucide-react'
-import { formatDateShort } from '../../functions/date-utils'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
-import { StatusTag } from '../shared/StatusTag'
-import type { Task } from '../../data/Tasks'
-import DeadlineTag, { DeadlineType, DEADLINE_LABELS } from '../shared/DeadlineTag'
+import styled from "@emotion/styled";
+import { Flag } from "lucide-react";
+import type { Task } from "../../data/Tasks";
+import { formatDateShort } from "../../functions/date-utils";
+import DeadlineTag, {
+	DEADLINE_LABELS,
+	DeadlineType,
+} from "../shared/DeadlineTag";
+import { StatusTag } from "../shared/StatusTag";
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "../ui/card";
 
 interface TaskCardGridProps {
-  tasks: Task[]
+	tasks: Task[];
 }
 
 function TaskCardGrid({ tasks }: TaskCardGridProps) {
-  return (
-    <CardGridContainer>
-      {tasks.map((task) => (
-        <Card key={task.id}>
-          <CardHeader>
-            <CardTitle>
-              <CardTitleRow>
-                {task.title}
-                {task.flagged && <Flag size={16} />}
-              </CardTitleRow>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <StatusTag status={task.status} />
-          </CardContent>
-          <CardFooter>
-            {task.deadlineType !== DeadlineType.Date && (
-              <DeadlineTag $type={task.deadlineType}>{DEADLINE_LABELS[task.deadlineType]}</DeadlineTag>
-            )}
-            {task.dueDate && (
-              <CardDateText>{formatDateShort(task.dueDate)}</CardDateText>
-            )}
-          </CardFooter>
-        </Card>
-      ))}
-    </CardGridContainer>
-  )
+	return (
+		<CardGridContainer>
+			{tasks.map((task) => (
+				<Card key={task.id}>
+					<CardHeader>
+						<CardTitle>
+							<CardTitleRow>
+								{task.title}
+								{task.flagged && <Flag size={16} />}
+							</CardTitleRow>
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<StatusTag status={task.status} />
+					</CardContent>
+					<CardFooter>
+						{task.deadlineType !== DeadlineType.Date && (
+							<DeadlineTag $type={task.deadlineType}>
+								{DEADLINE_LABELS[task.deadlineType]}
+							</DeadlineTag>
+						)}
+						{task.dueDate && (
+							<CardDateText>{formatDateShort(task.dueDate)}</CardDateText>
+						)}
+					</CardFooter>
+				</Card>
+			))}
+		</CardGridContainer>
+	);
 }
 
-export { TaskCardGrid }
+export { TaskCardGrid };
 
 const CardGridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
-`
+`;
 
 const CardTitleRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-`
+`;
 
 const CardDateText = styled.span`
   font-size: 12px;
   color: var(--sea-ink-soft);
   margin-inline-start: auto;
-`
-
+`;

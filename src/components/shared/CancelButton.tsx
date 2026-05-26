@@ -1,18 +1,18 @@
-import styled from '@emotion/styled'
+import styled from "@emotion/styled";
 
 interface CancleButtonProps {
-    title: string
-    onClick?(): void
-    ref?: React.Ref<HTMLButtonElement>
+	title: string;
+	onClick?(): void;
+	ref?: React.Ref<HTMLButtonElement>;
 }
 
 export const CancelButton = ({ title, onClick, ref }: CancleButtonProps) => {
-    return (
-        <Button onClick={onClick} ref={ref}>
-            {title}
-        </Button>
-    )
-}
+	return (
+		<Button onClick={onClick} ref={ref}>
+			{title}
+		</Button>
+	);
+};
 
 const Button = styled.button`
   display: flex;
@@ -44,4 +44,4 @@ const Button = styled.button`
     border-color: var(--button-color-hover);
     color: var(--button-color-hover);
   }
-`
+`;

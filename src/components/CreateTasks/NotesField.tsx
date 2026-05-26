@@ -1,8 +1,8 @@
-import { EditorExtensions } from "#/utils/tiptapExtensions";
 import styled from "@emotion/styled";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { Bold, ListOrdered, Underline } from "lucide-react";
 import { useEffect, useState } from "react";
+import { EditorExtensions } from "src/utils/tiptapExtensions";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -10,7 +10,6 @@ interface NotesFieldProps {
 	notes: string;
 	onNotesChange: (value: string) => void;
 }
-
 
 // ─── Component ───────────────────────────────────────────────────────────────
 

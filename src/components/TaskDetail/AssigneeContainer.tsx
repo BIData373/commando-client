@@ -1,69 +1,69 @@
 import styled from "@emotion/styled";
 import { ChevronDown } from "lucide-react";
-import { type IWorkspaceSettings, STATUS_LABELS } from "#/types";
-import { DirectiveStatus, statusColors } from "#/utils/statusUtils";
+import { type IWorkspaceSettings, STATUS_LABELS } from "src/types";
+import { DirectiveStatus, statusColors } from "src/utils/statusUtils";
 import { AssigneeAvatar } from "../shared/AssigneeAvatar";
 import { StatusTag } from "../shared/StatusTag";
 import type { RelatedDirective } from "../Tasks/ResponsibleCell";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
 interface AsiggneeContainerProps {
-    isAdmin: boolean;
-    editable: boolean;
-    assignee: RelatedDirective;
-    workspaceSettings?: IWorkspaceSettings;
-    onDirectiveStatusChange: (
-        assigneeId: number,
-        status: DirectiveStatus,
-    ) => void;
+	isAdmin: boolean;
+	editable: boolean;
+	assignee: RelatedDirective;
+	workspaceSettings?: IWorkspaceSettings;
+	onDirectiveStatusChange: (
+		assigneeId: number,
+		status: DirectiveStatus,
+	) => void;
 }
 
 export const AssigneeContainer = ({
-    isAdmin,
-    editable,
-    assignee,
-    workspaceSettings,
-    onDirectiveStatusChange,
+	isAdmin,
+	editable,
+	assignee,
+	workspaceSettings,
+	onDirectiveStatusChange,
 }: AsiggneeContainerProps) => {
-    const canEdit =
-        editable &&
-        (isAdmin || (workspaceSettings?.assigneeStatusEditable ?? false));
-    return (
-        <AssigneeRowContainer key={assignee.user.id} $white={editable && !isAdmin}>
-            <AssigneeInfoBlock>
-                <AssigneeAvatar assignee={assignee.user} />
-                <AssigneeRoleText>{assignee.user.role}</AssigneeRoleText>
-            </AssigneeInfoBlock>
-            {canEdit ? (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <StatusPillTrigger $status={assignee.status}>
-                            {STATUS_LABELS[assignee.status]}
-                            <ChevronDown size={12} />
-                        </StatusPillTrigger>
-                    </DropdownMenuTrigger>
-                    <StatusDropdownContent align="center" sideOffset={6}>
-                        {Object.values(DirectiveStatus).map((s) => (
-                            <StatusDropdownItem
-                                key={s}
-                                $selected={s === assignee.status}
-                                onSelect={() => onDirectiveStatusChange(assignee.user.id, s)}
-                            >
-                                <StatusTag status={s} />
-                            </StatusDropdownItem>
-                        ))}
-                    </StatusDropdownContent>
-                </DropdownMenu>
-            ) : (
-                <StatusTag status={assignee.status} />
-            )}
-        </AssigneeRowContainer>
-    );
+	const canEdit =
+		editable &&
+		(isAdmin || (workspaceSettings?.assigneeStatusEditable ?? false));
+	return (
+		<AssigneeRowContainer key={assignee.user.id} $white={editable && !isAdmin}>
+			<AssigneeInfoBlock>
+				<AssigneeAvatar assignee={assignee.user} />
+				<AssigneeRoleText>{assignee.user.role}</AssigneeRoleText>
+			</AssigneeInfoBlock>
+			{canEdit ? (
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<StatusPillTrigger $status={assignee.status}>
+							{STATUS_LABELS[assignee.status]}
+							<ChevronDown size={12} />
+						</StatusPillTrigger>
+					</DropdownMenuTrigger>
+					<StatusDropdownContent align="center" sideOffset={6}>
+						{Object.values(DirectiveStatus).map((s) => (
+							<StatusDropdownItem
+								key={s}
+								$selected={s === assignee.status}
+								onSelect={() => onDirectiveStatusChange(assignee.user.id, s)}
+							>
+								<StatusTag status={s} />
+							</StatusDropdownItem>
+						))}
+					</StatusDropdownContent>
+				</DropdownMenu>
+			) : (
+				<StatusTag status={assignee.status} />
+			)}
+		</AssigneeRowContainer>
+	);
 };
 
 const StatusPillTrigger = styled.button<{ $status: DirectiveStatus }>`
@@ -81,9 +81,9 @@ const StatusPillTrigger = styled.button<{ $status: DirectiveStatus }>`
   white-space: nowrap;
   cursor: pointer;
   ${({ $status }) => {
-        const { fontColor, bgColor } = statusColors[$status];
-        return `background: ${bgColor}; color: ${fontColor};`;
-    }}
+		const { fontColor, bgColor } = statusColors[$status];
+		return `background: ${bgColor}; color: ${fontColor};`;
+	}}
 
   &:focus-visible {
     outline: none;
@@ -105,7 +105,7 @@ const StatusDropdownContent = styled(DropdownMenuContent)`
     0px 9px 28px rgba(0, 0, 0, 0.05);
 `;
 
-const StatusDropdownItem = styled(DropdownMenuItem) <{ $selected: boolean }>`
+const StatusDropdownItem = styled(DropdownMenuItem)<{ $selected: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
