@@ -1,15 +1,14 @@
-import styled from "@emotion/styled"
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import type { WorkspaceDto } from "src/api/model"
-import { useListWorkspaces } from "src/api/workspace/workspace"
-import { Avatar, AvatarFallback, AvatarImage } from "src/components/ui/avatar"
+import styled from "@emotion/styled";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Avatar, AvatarFallback, AvatarImage } from "src/components/ui/avatar";
 import {
 	Card,
 	CardAction,
+	CardDescription,
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "src/components/ui/card"
+} from "src/components/ui/card";
 
 export const Route = createFileRoute("/")({
 	component: RouteComponent,
@@ -20,13 +19,13 @@ export const Route = createFileRoute("/")({
 			user: false,
 		},
 	},
-})
+});
 
 interface Workspace {
-	urlName: string
-	displayName: string
-	description: string
-	memberCount: number
+	urlName: string;
+	displayName: string;
+	description: string;
+	memberCount: number;
 }
 
 const PLACEHOLDER_WORKSPACES: Workspace[] = [
@@ -54,26 +53,27 @@ const PLACEHOLDER_WORKSPACES: Workspace[] = [
 		description: "מטה פיקוד עליון",
 		memberCount: 5,
 	},
-]
+];
 
 interface WorkspaceCardProps {
-	workspace: WorkspaceDto
+	workspace: Workspace;
 }
 
 function WorkspaceCard({ workspace }: WorkspaceCardProps) {
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 
 	function handleWorkspaceClick() {
 		navigate({
 			to: "/workspace/$urlName",
 			params: { urlName: workspace.urlName },
-		})
+		});
 	}
 
 	return (
 		<Card onClick={handleWorkspaceClick}>
 			<CardHeader>
-				<CardTitle>{workspace.title}</CardTitle>
+				<CardTitle>{workspace.displayName}</CardTitle>
+				<CardDescription>{workspace.description}</CardDescription>
 
 				<CardAction>
 					<Avatar>
@@ -86,20 +86,20 @@ function WorkspaceCard({ workspace }: WorkspaceCardProps) {
 					</Avatar>
 				</CardAction>
 			</CardHeader>
-			<CardFooter>
-				{/* TODO - dont have this info */}
-				{/* {workspace.memberCount} משתמשים */}
-			</CardFooter>
+			<CardFooter>{workspace.memberCount} משתמשים</CardFooter>
 		</Card>
-	)
+	);
 }
 
 function RouteComponent() {
-	const { data: workspaces = [] } = useListWorkspaces()
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 
 	function handlePersonalClick() {
-		navigate({ to: "/personal", search: { view: "TABLE" } })
+		navigate({ to: "/personal", search: { view: "TABLE" } });
+	}
+
+	function handleWorkspaceClick(urlName: string) {
+		navigate({ to: "/workspace/$urlName", params: { urlName } });
 	}
 
 	return (
@@ -112,12 +112,12 @@ function RouteComponent() {
 			<SectionTitle>סביבות עבודה</SectionTitle>
 
 			<WorkspaceGrid>
-				{workspaces.map((ws) => (
+				{PLACEHOLDER_WORKSPACES.map((ws) => (
 					<WorkspaceCard key={ws.urlName} workspace={ws} />
 				))}
 			</WorkspaceGrid>
 		</PageRoot>
-	)
+	);
 }
 
 const PageRoot = styled.div`
@@ -125,7 +125,7 @@ const PageRoot = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-`
+`;
 
 const PersonalBanner = styled.button`
   display: flex;
@@ -143,18 +143,18 @@ const PersonalBanner = styled.button`
   &:hover {
     background: var(--link-bg-hover);
   }
-`
+`;
 
 const PersonalLabel = styled.span`
   font-size: 18px;
   font-weight: 600;
   color: var(--sea-ink);
-`
+`;
 
 const PersonalSub = styled.span`
   font-size: 14px;
   color: var(--sea-ink-soft);
-`
+`;
 
 const SectionTitle = styled.h2`
   font-size: 14px;
@@ -163,33 +163,33 @@ const SectionTitle = styled.h2`
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0;
-`
+`;
 
 const WorkspaceGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
-`
+`;
 
 const WorkspaceIcon = styled.img`
   width: 40px;
   height: 40px;
   border-radius: 50%;
   flex-shrink: 0;
-`
+`;
 
 const WorkspaceInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-width: 0;
-`
+`;
 
 const WorkspaceName = styled.span`
   font-size: 15px;
   font-weight: 600;
   color: var(--sea-ink);
-`
+`;
 
 const WorkspaceDesc = styled.span`
   font-size: 13px;
@@ -197,9 +197,9 @@ const WorkspaceDesc = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-`
+`;
 
 const WorkspaceMeta = styled.span`
   font-size: 12px;
   color: var(--sea-ink-soft);
-`
+`;

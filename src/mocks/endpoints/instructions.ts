@@ -5,7 +5,7 @@ import type {
 	IInstructionListItem,
 	IInstructionStats,
 	IUpdateInstruction,
-} from "../../types"
+} from "../../types";
 import {
 	currentUser,
 	getStatsForEnv,
@@ -13,7 +13,7 @@ import {
 	mockTags,
 	mockUserSummaries,
 	toListItem,
-} from "../data"
+} from "../data";
 
 /** Simulate async delay */
 const delay = (ms = 200) => new Promise((r) => setTimeout(r, ms))
@@ -24,23 +24,23 @@ export const instructionsApi = {
 		envId: string,
 		_filters?: IInstructionFilters,
 	): Promise<{ data: IInstructionListItem[]; total: number }> {
-		await delay()
-		const items = mockInstructions.filter((i) => i.environmentId === envId)
+		await delay();
+		const items = mockInstructions.filter((i) => i.environmentId === envId);
 		return {
 			data: items.map(toListItem),
 			total: items.length,
-		}
+		};
 	},
 
 	async getById(instructionId: string): Promise<IInstruction> {
-		await delay()
-		const inst = mockInstructions.find((i) => i.id === instructionId)
-		if (!inst) throw new Error("Instruction not found")
-		return { ...inst }
+		await delay();
+		const inst = mockInstructions.find((i) => i.id === instructionId);
+		if (!inst) throw new Error("Instruction not found");
+		return { ...inst };
 	},
 
 	async create(envId: string, data: ICreateInstruction): Promise<IInstruction> {
-		await delay(300)
+		await delay(300);
 		const newInst: IInstruction = {
 			id: `inst-new-${Date.now()}`,
 			environmentId: envId,
@@ -70,20 +70,20 @@ export const instructionsApi = {
 			completedAt: null,
 			archived: false,
 			isImportant: data.isImportant || false,
-		}
-		mockInstructions.push(newInst)
-		return { ...newInst }
+		};
+		mockInstructions.push(newInst);
+		return { ...newInst };
 	},
 
 	async update(
 		instructionId: string,
 		data: IUpdateInstruction,
 	): Promise<IInstruction> {
-		await delay(300)
-		const idx = mockInstructions.findIndex((i) => i.id === instructionId)
-		if (idx === -1) throw new Error("Instruction not found")
+		await delay(300);
+		const idx = mockInstructions.findIndex((i) => i.id === instructionId);
+		if (idx === -1) throw new Error("Instruction not found");
 
-		const current = mockInstructions[idx]
+		const current = mockInstructions[idx];
 		const updated = {
 			...current,
 			...data,
@@ -92,20 +92,20 @@ export const instructionsApi = {
 				data.status === "completed"
 					? new Date().toISOString()
 					: current.completedAt,
-		}
-		mockInstructions[idx] = updated
-		return { ...updated }
+		};
+		mockInstructions[idx] = updated;
+		return { ...updated };
 	},
 
 	async delete(instructionId: string): Promise<void> {
-		await delay(200)
-		const idx = mockInstructions.findIndex((i) => i.id === instructionId)
-		if (idx === -1) throw new Error("Instruction not found")
-		mockInstructions.splice(idx, 1)
+		await delay(200);
+		const idx = mockInstructions.findIndex((i) => i.id === instructionId);
+		if (idx === -1) throw new Error("Instruction not found");
+		mockInstructions.splice(idx, 1);
 	},
 
 	async getStats(envId: string): Promise<IInstructionStats> {
-		await delay()
-		return getStatsForEnv(envId)
+		await delay();
+		return getStatsForEnv(envId);
 	},
-}
+};

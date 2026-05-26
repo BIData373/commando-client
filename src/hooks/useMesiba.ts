@@ -1,14 +1,14 @@
-import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
-import { mesibaApi } from "../mocks/endpoints"
-import { USE_MOCK_API } from "../utils/envUtils"
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { mesibaApi } from "../mocks/endpoints";
+import { USE_MOCK_API } from "../utils/envUtils";
 
-const mesibaBaseApiUrl = import.meta.env.VITE_MESIBA_BASE_URL_API
+const mesibaBaseApiUrl = import.meta.env.VITE_MESIBA_BASE_URL_API;
 
 export interface IMesibaIcon {
-	id: number
-	iconName: string
-	heb_name: string
+	id: number;
+	iconName: string;
+	heb_name: string;
 }
 
 export function useSearchMesibaIcons(search: string) {
@@ -22,7 +22,7 @@ export function useSearchMesibaIcons(search: string) {
 							.get<IMesibaIcon[]>(`${mesibaBaseApiUrl}${search}`)
 							.then((r) => r.data)
 					: Promise.resolve([]),
-	})
+	});
 }
 
 export function useMesibaIconByName(iconName?: string) {
@@ -35,5 +35,5 @@ export function useMesibaIconByName(iconName?: string) {
 						.get<IMesibaIcon>(`${mesibaBaseApiUrl}by-name/${iconName}`)
 						.then((r) => r.data),
 		enabled: !!iconName,
-	})
+	});
 }

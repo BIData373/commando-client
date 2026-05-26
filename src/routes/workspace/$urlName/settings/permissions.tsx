@@ -1,104 +1,95 @@
-import styled from "@emotion/styled"
-import { createFileRoute } from "@tanstack/react-router"
-import { UserPlus } from "lucide-react"
-import { useMemo, useState } from "react"
-import { PermissionDtoType, type UserDto } from "src/api/model"
-import {
-	useDeletePermission,
-	useGetPermissions,
-	useUpdatePermission,
-} from "src/api/permission/permission"
-import { useListWorkspaces } from "src/api/workspace/workspace"
-import { DropdownPermission } from "src/components/settings/DropdownPermission"
-import { DropdownUsers } from "src/components/settings/DropdownUsers"
-import { SectionTitle } from "src/components/settings/SectionTitle"
-import { UserPermissionList } from "src/components/settings/UserPermissionList"
+import styled from "@emotion/styled";
+import { createFileRoute } from "@tanstack/react-router";
+import { UserPlus } from "lucide-react";
+import { useMemo, useState } from "react";
+import { DropdownPermission } from "src/components/settings/DropdownPermission";
+import { DropdownUsers } from "src/components/settings/DropdownUsers";
+import { SectionTitle } from "src/components/settings/SectionTitle";
+import { UserPermissionList } from "src/components/settings/UserPermissionList";
 import {
 	Tabs,
 	TabsContent,
 	TabsList,
 	TabsTrigger,
-} from "src/components/ui/tabs"
-import { SETTINGS_TABS, SettingTabPath } from "src/utils/settingsUtils"
-import { concatName } from "src/utils/userUtils"
+} from "src/components/ui/tabs";
+import {
+	useAddUserToWorkspace,
+	useDeleteUser,
+	useUpdateUser,
+	useWorkspaceUsers,
+} from "src/hooks/useUsers";
+import type { IUser } from "src/types";
+import { UserRole } from "src/types";
+import { SETTINGS_TABS, SettingTabPath } from "src/utils/settingsUtils";
+import { concatName } from "src/utils/userUtils";
 
 export const Route = createFileRoute(
 	"/workspace/$urlName/settings/permissions",
-)({ component: SettingsPermissions })
+)({ component: SettingsPermissions });
 
-const activeTabLabel = SETTINGS_TABS[SettingTabPath.PERMISSIONS]
+const activeTabLabel = SETTINGS_TABS[SettingTabPath.PERMISSIONS];
 
 enum PermissionsTab {
 	ALL = "all",
-	MANAGERS = "admins",
+	ADMINS = "admins",
 	VIEWERS = "viewers",
 }
 
 function SettingsPermissions() {
-	const { urlName } = Route.useParams()
-	const [search, setSearch] = useState("")
-	const [activeTab, setActiveTab] = useState(PermissionsTab.ALL)
-	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null)
-	const [role, setRole] = useState<PermissionDtoType>(PermissionDtoType.VIEWER)
+	const { urlName } = Route.useParams();
+	const [search, setSearch] = useState("");
+	const [activeTab, setActiveTab] = useState(PermissionsTab.ALL);
+	const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+	const [role, setRole] = useState<UserRole>(UserRole.VIEWER);
 
-	// FIX Move to provider, move SettingsPermissions permissions to seperate file, render on fetched
-	const { data: workspaces } = useListWorkspaces({ urlName })
-	const workspace = workspaces!.[0]
-
-	const { data: permissionUsers = [] } = useGetPermissions({
-		workspaceId: workspace.id,
-	})
-	
-	const { mutate: userUpdate } = useUpdatePermission()
-	const { mutate: deleteUser } = useDeletePermission()
+	const { data: permissionUsers = [] } = useWorkspaceUsers(urlName);
+	const { mutate: userUpdate } = useUpdateUser();
+	const { mutate: addUserToWorkspace } = useAddUserToWorkspace();
+	const { mutate: deleteUser } = useDeleteUser();
 
 	const currentTabUsers = useMemo(() => {
 		const taggedRole =
-			activeTab === PermissionsTab.MANAGERS
-				? PermissionDtoType.MANAGER
-				: PermissionDtoType.VIEWER
+			activeTab === PermissionsTab.ADMINS ? UserRole.ADMIN : UserRole.VIEWER;
 		return activeTab === PermissionsTab.ALL
 			? permissionUsers
-			: permissionUsers.filter((user) => user.type === taggedRole)
-	}, [activeTab, permissionUsers])
+			: permissionUsers.filter((user) => user.role === taggedRole);
+	}, [activeTab, permissionUsers]);
 
-	function handleUserAdd(type: PermissionDtoType) {
-		if (!selectedUser) return
-		userUpdate({ data: { workspaceId: 1, upn: selectedUser.upn, type } })
-		setSearch("")
-		setSelectedUser(null)
+	function handleUserAdd(role: UserRole) {
+		if (!selectedUser) return;
+		addUserToWorkspace({ userId: selectedUser.id, urlName });
+		userUpdate({ userId: selectedUser.id, data: { role } });
+		setSearch("");
+		setSelectedUser(null);
 	}
 
-	function handleDeletePermission(user: UserDto) {
-		deleteUser({ params: { userId: user.id, workspaceId: workspace.id } })
+	function handleDeletePermissionUser(userId: number) {
+		deleteUser({ userId, urlName });
 	}
 
-	function handleUpdatePermission(
-		userId: number,
-		type: PermissionDtoType,
-	) {
-		userUpdate({ data: { upn, type } })
+	function handleRoleChangePermissionUser(userId: number, role: UserRole) {
+		userUpdate({ userId, data: { role } });
 	}
 
 	function handleTabChange(value: string) {
-		setActiveTab(value as PermissionsTab)
+		setActiveTab(value as PermissionsTab);
 	}
 
 	function handleSearchChange(v: string) {
-		setSearch(v)
-		if (!v) setSelectedUser(null)
+		setSearch(v);
+		if (!v) setSelectedUser(null);
 	}
 
-	function handleSearchSelect(user: UserDto | null) {
-		setSelectedUser(user)
+	function handleSearchSelect(user: IUser | null) {
+		setSelectedUser(user);
 		if (user) {
-			setSearch(concatName(user))
+			setSearch(concatName(user));
 		}
 	}
 
 	function handleSearchClear() {
-		setSearch("")
-		setSelectedUser(null)
+		setSearch("");
+		setSelectedUser(null);
 	}
 
 	return (
@@ -138,7 +129,7 @@ function SettingsPermissions() {
 						<StyledTabsTrigger value={PermissionsTab.ALL}>
 							כולם
 						</StyledTabsTrigger>
-						<StyledTabsTrigger value={PermissionsTab.MANAGERS}>
+						<StyledTabsTrigger value={PermissionsTab.ADMINS}>
 							מנהלים
 						</StyledTabsTrigger>
 						<StyledTabsTrigger value={PermissionsTab.VIEWERS}>
@@ -150,9 +141,9 @@ function SettingsPermissions() {
 							<UserListScrollArea>
 								<UserListInner>
 									<UserPermissionList
-										permissions={currentTabUsers}
-										onDelete={handleDeletePermission}
-										onRoleChange={handleUpdatePermission}
+										users={currentTabUsers}
+										onDelete={handleDeletePermissionUser}
+										onRoleChange={handleRoleChangePermissionUser}
 									/>
 								</UserListInner>
 							</UserListScrollArea>
@@ -161,7 +152,7 @@ function SettingsPermissions() {
 				</StyledTabs>
 			</PermissionsInner>
 		</PermissionsRoot>
-	)
+	);
 }
 
 const PermissionsRoot = styled.div`
@@ -171,7 +162,7 @@ const PermissionsRoot = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-`
+`;
 
 const PermissionsInner = styled.div`
   flex: 1;
@@ -182,7 +173,7 @@ const PermissionsInner = styled.div`
   gap: 24px;
   max-width: 550px;
   padding: 0 12px;
-`
+`;
 
 const AddUserRow = styled.div`
   display: flex;
@@ -190,7 +181,7 @@ const AddUserRow = styled.div`
   justify-content: center;
 
   gap: 8px;
-`
+`;
 
 const AddAvatarButton = styled.button`
   display: flex;
@@ -203,14 +194,14 @@ const AddAvatarButton = styled.button`
   color: var(--color-primary-foreground);
   cursor: pointer;
   background: var(--default-linear);
-`
+`;
 
 const StyledTabs = styled(Tabs)`
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
-`
+`;
 
 const UserListScrollArea = styled.div`
   flex: 1;
@@ -219,25 +210,25 @@ const UserListScrollArea = styled.div`
   overflow-x: hidden;
   direction: ltr;
   padding-inline-end: 8px;
-`
+`;
 
 const UserListInner = styled.div`
   direction: rtl;
-`
+`;
 
 const Subtitle = styled.p`
   font-size: 14px;
   font-weight: 400;
   color: var(--text-subtitle-color);
   margin: 0;
-`
+`;
 
 const StyledTabsList = styled(TabsList)`
   align-self: flex-end;
   direction: rtl;
   border-bottom: 1px solid var(--line);
   gap: 24px;
-  `
+  `;
 
 const StyledTabsContent = styled(TabsContent)`
   flex: 1;
@@ -245,7 +236,7 @@ const StyledTabsContent = styled(TabsContent)`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  `
+  `;
 
 const StyledTabsTrigger = styled(TabsTrigger)`
   color: var(--text-color-2);
@@ -254,17 +245,17 @@ const StyledTabsTrigger = styled(TabsTrigger)`
   cursor: pointer;  
 
   &[data-state="active"] {
-    color: var(--tab-active-color);
+    color: var(--active-color);
   }
   
   &[data-state="active"]::after {
-    background-color: var(--tab-active-color);
+    background-color: var(--active-color);
   }
-`
+`;
 
 const SearchSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-`
+`;

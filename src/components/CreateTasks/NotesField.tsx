@@ -1,69 +1,53 @@
-import styled from "@emotion/styled"
-import Placeholder from "@tiptap/extension-placeholder"
-import UnderlineExtension from "@tiptap/extension-underline"
-import { EditorContent, useEditor } from "@tiptap/react"
-import StarterKit from "@tiptap/starter-kit"
-import { Bold, ListOrdered, Underline } from "lucide-react"
-import { useEffect, useState } from "react"
+import styled from "@emotion/styled";
+import { EditorContent, useEditor } from "@tiptap/react";
+import { Bold, ListOrdered, Underline } from "lucide-react";
+import { useEffect, useState } from "react";
+import { EditorExtensions } from "src/utils/tiptapExtensions";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface NotesFieldProps {
-	notes: string
-	onNotesChange: (value: string) => void
+	notes: string;
+	onNotesChange: (value: string) => void;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function NotesField({ notes, onNotesChange }: NotesFieldProps) {
-	const [isFocused, setIsFocused] = useState(false)
-	const [, setTick] = useState(0)
+	const [isFocused, setIsFocused] = useState(false);
+	const [, setTick] = useState(0);
 
 	const editor = useEditor({
-		extensions: [
-			StarterKit.configure({
-				bulletList: false,
-				blockquote: false,
-				codeBlock: false,
-				code: false,
-				heading: false,
-				horizontalRule: false,
-				strike: false,
-			}),
-			UnderlineExtension,
-			Placeholder.configure({
-				placeholder: "הערות ודגשים",
-			}),
-		],
+		...EditorExtensions,
 		content: notes,
 		onUpdate: ({ editor }) => {
-			onNotesChange(editor.getHTML())
+			onNotesChange(editor.getHTML());
 		},
 		onFocus: () => setIsFocused(true),
 		onBlur: () => setIsFocused(false),
 		onTransaction: () => setTick((t) => t + 1),
-	})
+	});
 
 	useEffect(() => {
 		if (editor && notes !== editor.getHTML()) {
-			editor.commands.setContent(notes)
+			editor.commands.setContent(notes);
 		}
-	}, [notes, editor])
+	}, [notes, editor]);
 
 	function handleToggleBold() {
-		editor?.chain().focus().toggleBold().run()
+		editor?.chain().focus().toggleBold().run();
 	}
 
 	function handleToggleUnderline() {
-		editor?.chain().focus().toggleUnderline().run()
+		editor?.chain().focus().toggleUnderline().run();
 	}
 
 	function handleToggleOrderedList() {
-		editor?.chain().focus().toggleOrderedList().run()
+		editor?.chain().focus().toggleOrderedList().run();
 	}
 
 	function handlePreventDefault(e: React.MouseEvent) {
-		e.preventDefault()
+		e.preventDefault();
 	}
 
 	return (
@@ -101,10 +85,10 @@ function NotesField({ notes, onNotesChange }: NotesFieldProps) {
 				<StyledEditorContent editor={editor} dir="rtl" />
 			</NotesEditorWrapper>
 		</FormItem>
-	)
+	);
 }
 
-export default NotesField
+export default NotesField;
 
 // ─── Styled ─────────────────────────────────────────────────────────────────
 
@@ -113,7 +97,7 @@ const FormItem = styled.div`
   flex-direction: column;
   align-items: flex-end;
   width: 100%;
-`
+`;
 
 const FormLabelRow = styled.div`
   display: flex;
@@ -125,16 +109,16 @@ const FormLabelRow = styled.div`
   font-size: 14px;
   line-height: 22px;
   white-space: nowrap;
-`
+`;
 
 const LabelText = styled.span`
   color: rgba(0, 0, 0, 0.88);
-`
+`;
 
 const NotesEditorWrapper = styled.div`
   position: relative;
   width: 100%;
-`
+`;
 
 const NotesToolbar = styled.div`
   position: absolute;
@@ -152,7 +136,7 @@ const NotesToolbar = styled.div`
     0px 3px 6px rgba(0, 0, 0, 0.12),
     0px 9px 28px rgba(0, 0, 0, 0.05);
   z-index: var(--z-dropdown);
-`
+`;
 
 const ToolbarButton = styled.button<{ $active: boolean }>`
   display: flex;
@@ -170,13 +154,13 @@ const ToolbarButton = styled.button<{ $active: boolean }>`
   &:hover {
     background: ${({ $active }) => ($active ? "rgba(22, 119, 255, 0.15)" : "rgba(0, 0, 0, 0.04)")};
   }
-`
+`;
 
 const ToolbarDivider = styled.div`
   width: 1px;
   height: 16px;
   background: #d9d9d9;
-`
+`;
 
 const StyledEditorContent = styled(EditorContent)`
   .tiptap {
@@ -213,4 +197,4 @@ const StyledEditorContent = styled(EditorContent)`
       list-style-type: decimal;
     }
   }
-`
+`;

@@ -1,21 +1,25 @@
-import styled from "@emotion/styled"
-import { Search, X } from "lucide-react"
-import { Popover as PopoverPrimitive } from "radix-ui"
-import type { ReactNode } from "react"
-import { useRef, useState } from "react"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group"
-import { Spinner } from "../ui/spinner"
+import styled from "@emotion/styled";
+import { Search, X } from "lucide-react";
+import { Popover as PopoverPrimitive } from "radix-ui";
+import type { ReactNode } from "react";
+import { useRef, useState } from "react";
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupInput,
+} from "../ui/input-group";
+import { Spinner } from "../ui/spinner";
 
 interface SearchDropdownProps<T extends { id: number | string }> {
-	items: T[]
-	renderItem: (item: T) => ReactNode
-	onSelect: (item: T) => void
-	value: string
-	onChange: (value: string) => void
-	placeholder?: string
-	isLoading?: boolean
-	onClear?: () => void
-	selectedItem?: T
+	items: T[];
+	renderItem: (item: T) => ReactNode;
+	onSelect: (item: T) => void;
+	value: string;
+	onChange: (value: string) => void;
+	placeholder?: string;
+	isLoading?: boolean;
+	onClear?: () => void;
+	selectedItem?: T;
 }
 
 export function SearchDropdown<T extends { id: number | string }>({
@@ -29,45 +33,45 @@ export function SearchDropdown<T extends { id: number | string }>({
 	onClear,
 	selectedItem,
 }: SearchDropdownProps<T>) {
-	const [isOpen, setIsOpen] = useState(false)
-	const [isFocused, setIsFocused] = useState(false)
-	const wheelCleanupRef = useRef<(() => void) | null>(null)
+	const [isOpen, setIsOpen] = useState(false);
+	const [isFocused, setIsFocused] = useState(false);
+	const wheelCleanupRef = useRef<(() => void) | null>(null);
 
 	function handleContentRef(el: HTMLDivElement | null) {
-		wheelCleanupRef.current?.()
-		wheelCleanupRef.current = null
-		if (!el) return
-		const stop = (e: WheelEvent) => e.stopPropagation()
-		el.addEventListener("wheel", stop)
-		wheelCleanupRef.current = () => el.removeEventListener("wheel", stop)
+		wheelCleanupRef.current?.();
+		wheelCleanupRef.current = null;
+		if (!el) return;
+		const stop = (e: WheelEvent) => e.stopPropagation();
+		el.addEventListener("wheel", stop);
+		wheelCleanupRef.current = () => el.removeEventListener("wheel", stop);
 	}
 
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-		onChange(e.target.value)
-		setIsOpen(e.target.value.trim().length > 0)
+		onChange(e.target.value);
+		setIsOpen(e.target.value.trim().length > 0);
 	}
 
 	function handleFocus() {
-		setIsFocused(true)
+		setIsFocused(true);
 	}
 
 	function handleBlur() {
-		setIsOpen(false)
-		setIsFocused(false)
+		setIsOpen(false);
+		setIsFocused(false);
 	}
 
 	function handleSelect(item: T) {
-		onSelect(item)
-		setIsOpen(false)
+		onSelect(item);
+		setIsOpen(false);
 	}
 
 	function handleClear() {
-		onClear?.()
-		setIsOpen(false)
+		onClear?.();
+		setIsOpen(false);
 	}
 
 	function handleRootClick(e: React.MouseEvent) {
-		e.preventDefault()
+		e.preventDefault();
 	}
 
 	return (
@@ -122,16 +126,16 @@ export function SearchDropdown<T extends { id: number | string }>({
 				</PopoverPrimitive.Portal>
 			)}
 		</PopoverPrimitive.Root>
-	)
+	);
 }
 
 const Root = styled.div`
   width: 100%;
-`
+`;
 
 const StyledInputGroup = styled(InputGroup)`
   background: var(--background);
-`
+`;
 
 const DropdownContent = styled(PopoverPrimitive.Content)`
   width: var(--radix-popover-trigger-width);
@@ -144,7 +148,7 @@ const DropdownContent = styled(PopoverPrimitive.Content)`
   max-height: 240px;
   overflow-y: auto;
   overscroll-behavior: contain;
-`
+`;
 
 const SelectedDisplay = styled.div`
   display: flex;
@@ -153,7 +157,7 @@ const SelectedDisplay = styled.div`
   padding: 0 10px;
   flex: 1;
   min-width: 0;
-`
+`;
 
 const DropdownItem = styled.div`
   padding: 8px 12px;
@@ -163,4 +167,4 @@ const DropdownItem = styled.div`
   &:hover {
     background: var(--link-bg-hover);
   }
-`
+`;

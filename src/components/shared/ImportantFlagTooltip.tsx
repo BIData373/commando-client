@@ -1,13 +1,13 @@
-import styled from "@emotion/styled"
-import { HelpCircle } from "lucide-react"
-import { Tooltip as TooltipPrimitive } from "radix-ui"
-import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
-import FlagIcon from "./FlagIcon"
+import styled from "@emotion/styled";
+import { HelpCircle } from "lucide-react";
+import { Tooltip as TooltipPrimitive } from "radix-ui";
+import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import FlagIcon from "./FlagIcon";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface ImportantFlagTooltipProps {
-	side: "top" | "left" | "right" | "bottom"
+	side: "top" | "left" | "right" | "bottom";
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -29,10 +29,10 @@ function ImportantFlagTooltip({ side }: ImportantFlagTooltipProps) {
 				</TooltipPrimitive.Portal>
 			</Tooltip>
 		</TooltipProvider>
-	)
+	);
 }
 
-export default ImportantFlagTooltip
+export default ImportantFlagTooltip;
 
 // ─── Styles ─────────────────────────────────────────────────────────────────
 
@@ -45,7 +45,7 @@ const IconButton = styled.button`
   cursor: pointer;
   color: rgba(0, 0, 0, 0.45);
   padding: 0;
-`
+`;
 
 const TooltipContent = styled(TooltipPrimitive.Content)`
   display: flex;
@@ -63,4 +63,4 @@ const TooltipContent = styled(TooltipPrimitive.Content)`
     0px 3px 6px -4px rgba(0, 0, 0, 0.12),
     0px 9px 28px 8px rgba(0, 0, 0, 0.05);
   z-index: 10;
-`
+`;

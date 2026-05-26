@@ -1,7 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { sendRequest } from "../axios"
-import { instructionsApi } from "../mocks/endpoints"
-import type { MutationOptions, QueryOptions } from "../queryClient"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { sendRequest } from "../axios";
+import { instructionsApi } from "../mocks/endpoints";
+import type { MutationOptions, QueryOptions } from "../queryClient";
 import type {
 	ICreateInstruction,
 	IInstruction,
@@ -9,10 +9,10 @@ import type {
 	IInstructionListItem,
 	IInstructionStats,
 	IUpdateInstruction,
-} from "../types"
-import { USE_MOCK_API } from "../utils/envUtils"
+} from "../types";
+import { USE_MOCK_API } from "../utils/envUtils";
 
-const instructionsUrl = "instructions"
+const instructionsUrl = "instructions";
 
 export const instructionKeys = {
 	all: [instructionsUrl] as const,
@@ -20,16 +20,16 @@ export const instructionKeys = {
 		[instructionsUrl, "list", envId, filters] as const,
 	detail: (id: string) => [instructionsUrl, "detail", id] as const,
 	stats: (envId: string) => [instructionsUrl, "stats", envId] as const,
-}
+};
 
 interface InstructionListResult {
-	data: IInstructionListItem[]
-	total: number
+	data: IInstructionListItem[];
+	total: number;
 }
 
 interface UpdateInstructionParams {
-	instructionId: string
-	data: IUpdateInstruction
+	instructionId: string;
+	data: IUpdateInstruction;
 }
 
 // FIX Move to environments
@@ -47,12 +47,12 @@ export function useInstructions(
 						method: "GET",
 						url: `/environments/${envId}/instructions`,
 						params: filters,
-					})
-			return response
+					});
+			return response;
 		},
 		enabled: !!envId,
 		...options,
-	})
+	});
 }
 
 export function useInstruction(
@@ -67,12 +67,12 @@ export function useInstruction(
 				: await sendRequest<IInstruction>({
 						method: "GET",
 						url: `/instructions/${instructionId}`,
-					})
-			return data
+					});
+			return data;
 		},
 		enabled: !!instructionId,
 		...options,
-	})
+	});
 }
 
 export function useInstructionStats(
@@ -87,19 +87,19 @@ export function useInstructionStats(
 				: await sendRequest<IInstructionStats>({
 						method: "GET",
 						url: `/environments/${envId}/instructions/stats`,
-					})
-			return data
+					});
+			return data;
 		},
 		enabled: !!envId,
 		...options,
-	})
+	});
 }
 
 export function useCreateInstruction(
 	envId: string,
 	options?: MutationOptions<ICreateInstruction>,
 ) {
-	const queryClient = useQueryClient()
+	const queryClient = useQueryClient();
 
 	return useMutation({
 		mutationFn: (data: ICreateInstruction) =>
@@ -112,18 +112,18 @@ export function useCreateInstruction(
 					}),
 		...options,
 		onSuccess: (...args) => {
-			queryClient.invalidateQueries({ queryKey: instructionKeys.list(envId) })
-			queryClient.invalidateQueries({ queryKey: instructionKeys.stats(envId) })
-			options?.onSuccess?.(...args)
+			queryClient.invalidateQueries({ queryKey: instructionKeys.list(envId) });
+			queryClient.invalidateQueries({ queryKey: instructionKeys.stats(envId) });
+			options?.onSuccess?.(...args);
 		},
-	})
+	});
 }
 
 export function useUpdateInstruction(
 	envId: string,
 	options?: MutationOptions<UpdateInstructionParams>,
 ) {
-	const queryClient = useQueryClient()
+	const queryClient = useQueryClient();
 
 	return useMutation({
 		mutationFn: ({ instructionId, data }: UpdateInstructionParams) =>
@@ -136,18 +136,18 @@ export function useUpdateInstruction(
 					}),
 		...options,
 		onSuccess: (...args) => {
-			queryClient.invalidateQueries({ queryKey: instructionKeys.list(envId) })
-			queryClient.invalidateQueries({ queryKey: instructionKeys.stats(envId) })
-			options?.onSuccess?.(...args)
+			queryClient.invalidateQueries({ queryKey: instructionKeys.list(envId) });
+			queryClient.invalidateQueries({ queryKey: instructionKeys.stats(envId) });
+			options?.onSuccess?.(...args);
 		},
-	})
+	});
 }
 
 export function useDeleteInstruction(
 	envId: string,
 	options?: MutationOptions<string>,
 ) {
-	const queryClient = useQueryClient()
+	const queryClient = useQueryClient();
 
 	return useMutation({
 		mutationFn: (instructionId: string) =>
@@ -159,9 +159,9 @@ export function useDeleteInstruction(
 					}),
 		...options,
 		onSuccess: (...args) => {
-			queryClient.invalidateQueries({ queryKey: instructionKeys.list(envId) })
-			queryClient.invalidateQueries({ queryKey: instructionKeys.stats(envId) })
-			options?.onSuccess?.(...args)
+			queryClient.invalidateQueries({ queryKey: instructionKeys.list(envId) });
+			queryClient.invalidateQueries({ queryKey: instructionKeys.stats(envId) });
+			options?.onSuccess?.(...args);
 		},
-	})
+	});
 }

@@ -1,22 +1,22 @@
-import styled from "@emotion/styled"
-import type { DirectiveStatus } from "../shared/StatusTag"
-import { STATUS_KEYS, StatusTag } from "../shared/StatusTag"
+import styled from "@emotion/styled";
+import { DirectiveStatus } from "src/utils/statusUtils";
+import { StatusTag } from "../shared/StatusTag";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
+} from "../ui/dropdown-menu";
 
 interface StatusCellProps {
-	status: DirectiveStatus
-	taskId: number
-	onUpdate: (taskId: number, status: DirectiveStatus) => void
+	status: DirectiveStatus;
+	taskId: number;
+	onUpdate: (taskId: number, status: DirectiveStatus) => void;
 }
 
 export function StatusCell({ status, taskId, onUpdate }: StatusCellProps) {
 	function handleSelectStatus(newStatus: DirectiveStatus) {
-		onUpdate(taskId, newStatus)
+		onUpdate(taskId, newStatus);
 	}
 
 	return (
@@ -28,7 +28,7 @@ export function StatusCell({ status, taskId, onUpdate }: StatusCellProps) {
 					</TriggerWrapper>
 				</DropdownMenuTrigger>
 				<StatusDropdownContent align="center" sideOffset={6}>
-					{STATUS_KEYS.map((s) => (
+					{Object.values(DirectiveStatus).map((s) => (
 						<StatusDropdownItem
 							key={s}
 							$selected={s === status}
@@ -40,14 +40,14 @@ export function StatusCell({ status, taskId, onUpdate }: StatusCellProps) {
 				</StatusDropdownContent>
 			</DropdownMenu>
 		</CellCenter>
-	)
+	);
 }
 
 const CellCenter = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-`
+`;
 
 const TriggerWrapper = styled.span`
   cursor: pointer;
@@ -55,7 +55,7 @@ const TriggerWrapper = styled.span`
   &:focus-visible {
     outline: none;
   }
-`
+`;
 
 const StatusDropdownContent = styled(DropdownMenuContent)`
   width: 100px;
@@ -69,7 +69,7 @@ const StatusDropdownContent = styled(DropdownMenuContent)`
   box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.08),
     0px 3px 6px rgba(0, 0, 0, 0.12),
     0px 9px 28px rgba(0, 0, 0, 0.05);
-`
+`;
 
 const StatusDropdownItem = styled(DropdownMenuItem)<{ $selected: boolean }>`
   display: flex;
@@ -87,4 +87,4 @@ const StatusDropdownItem = styled(DropdownMenuItem)<{ $selected: boolean }>`
     background: rgba(230, 244, 255, 1);
     color: inherit;
   }
-`
+`;

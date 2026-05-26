@@ -60,11 +60,16 @@ body,
   --sidebar-accent-foreground: oklch(0.20 0 0);
   --sidebar-border: oklch(0.92 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-
+  
+  --Components-Form-Component-labelRequiredMarkColor: #FF4D4F;
   --Background-color-bg-text-active: rgba(0, 0, 0, 0.15);
+  --Components-Dropdown-Global-colorTextDescription: rgba(0, 0, 0, 0.45);
+  --Components-Dropdown-Global-controlItemBgHover: rgba(0, 0, 0, 0.04);
+  --Text-color-text-placeholder: rgba(0, 0, 0, 0.25);
 
   --text-color: rgba(0, 0, 0, 0.65);
   --text-color-2: rgba(0, 0, 0, 0.88);
+  --text-color-400: rgba(0, 0, 0, 0.45);
   --card-background: rgba(0, 0, 0, 0.02);
   --icon-background: rgba(0, 0, 0, 0.4);
   --card-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
@@ -73,7 +78,11 @@ body,
 
   --card-border: #d9d9d9;
   --background-area: #fafafa;
-  
+  --background-assignee: #fcfcfc;
+  --selected-item: rgba(230, 244, 255, 1);
+  --button-hover: rgba(0, 0, 0, 0.06);
+  --button-active: rgba(0, 0, 0, 0.2);
+
   --default-linear: linear-gradient(135deg, #6866FF 0%, #7604C8 100%);
 
   --colors-base-neutral-3: oklch(97.02% 0 271.15);
@@ -95,9 +104,10 @@ body,
   --Colors-Brand-Warning-colorWarningText: oklch(80.16% 0.17 76);
 
   --button-color-hover: #4096FF;
+  --button-gradient: linear-gradient(135deg, #6866ff 0%, #7604c8 100%);
   --default-linear: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
   --text-subtitle-color: #8C8C8C;
-  --tab-active-color: #1677ff;
+  --active-color: #1677ff;
 
   --font-sans: 'Rubik Variable', ui-sans-serif, sans-serif;
   --font-serif: 'Rubik Variable', ui-sans-serif, sans-serif;
@@ -105,6 +115,28 @@ body,
 
   --radius: 0.625rem;
   --line: #F0F0F0;
+
+  /* Semantic tokens */
+  --sea-ink: oklch(0.12 0.028 254);
+  --sea-ink-soft: oklch(0.52 0.020 252);
+  --chip-bg: oklch(0.96 0.006 252);
+  --chip-line: oklch(0.87 0.010 252);
+  --link-bg-hover: oklch(0.93 0.008 252);
+  --line: oklch(0.91 0 0);
+  --z-dropdown: 1000;
+  --header-bg: oklch(0.14 0.035 258);
+
+  /* Status colors */
+  --status-done: #52c41a;
+  --status-done-bg: #f6ffed;
+  --status-progress: #2F54EB;
+  --status-progress-bg: #F0F5FF;
+  --status-pending: #FA541C;
+  --status-pending-bg: #FFF2E8;
+
+  /* Purple accent */
+  --purple-start: oklch(0.60 0.23 272);
+  --purple-end: oklch(0.46 0.32 305);
 
   --shadow-2xs: 0 1px 3px 0px oklch(0.00 0 0 / 0.05);
   --shadow-xs: 0 1px 3px 0px oklch(0.00 0 0 / 0.05);
@@ -115,6 +147,7 @@ body,
   --shadow-xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.10), 0 8px 10px -1px oklch(0.00 0 0 / 0.10);
   --shadow-2xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.25);
   --shadow-inset: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-popover: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
 .dark {
@@ -159,9 +192,30 @@ body,
   --shadow-xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.10), 0 8px 10px -1px oklch(0.00 0 0 / 0.10);
   --shadow-2xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.25);
 
+  /* Semantic tokens */
+  --sea-ink: oklch(97.614% 0.00011 271.152);
+  --sea-ink-soft: oklch(0.52 0.020 252);
+  --chip-bg: oklch(24.776% 0.00003 271.152);
+  --chip-line: oklch(0.87 0.010 252);
+  --link-bg-hover: oklch(0.93 0.008 252);
+  --line: oklch(0.91 0 0);
+  --z-dropdown: 1000;
+
+  /* Status colors */
+  --status-done: oklch(0.70 0.22 145);
+  --status-done-bg: oklch(0.98 0.04 145);
+  --status-progress: #2F54EB;
+  --status-progress-bg: #FFF2E8;
+  --status-pending: #FA541C;
+  --status-pending-bg: oklch(0.94 0 0);
+
+  /* Purple accent */
+  --purple-start: oklch(0.60 0.23 272);
+  --purple-end: oklch(0.46 0.32 305);
   --background-area: #151414;
   --text-color: rgba(234, 221, 221, 0.65);
   --text-color-2: rgba(234, 221, 221, 0.65);
+  --text-color-200: rgba(0, 0, 0, 0.25);
   --icon-background: rgba(255, 218, 218, 0.4);
   --card-shadow-default: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
   --card-shadow-hover: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);

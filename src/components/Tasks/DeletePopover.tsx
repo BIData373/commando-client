@@ -1,14 +1,14 @@
-import styled from "@emotion/styled"
-import { CircleAlert } from "lucide-react"
-import { type ReactNode, useState } from "react"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import styled from "@emotion/styled";
+import { CircleAlert } from "lucide-react";
+import { type ReactNode, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface DeletePopoverProps {
-	count: number
-	trigger: ReactNode
-	side?: "top" | "bottom"
-	align?: "center" | "start" | "end"
-	onConfirm: () => void
+	count: number;
+	trigger: ReactNode;
+	side?: "top" | "bottom";
+	align?: "center" | "start" | "end";
+	onConfirm: () => void;
 }
 
 export function DeletePopover({
@@ -18,11 +18,11 @@ export function DeletePopover({
 	align = "center",
 	onConfirm,
 }: DeletePopoverProps) {
-	const [open, setOpen] = useState(false)
+	const [open, setOpen] = useState(false);
 
 	function handleConfirm() {
-		setOpen(false)
-		onConfirm()
+		setOpen(false);
+		onConfirm();
 	}
 
 	return (
@@ -44,7 +44,7 @@ export function DeletePopover({
 				</Actions>
 			</Content>
 		</Popover>
-	)
+	);
 }
 
 const Content = styled(PopoverContent)`
@@ -56,18 +56,19 @@ const Content = styled(PopoverContent)`
   padding: 12px;
   border-radius: 4px;
   background: white;
+  z-index: 1000;
   box-shadow:
     0px 6px 16px 0px rgba(0, 0, 0, 0.08),
     0px 3px 6px -4px rgba(0, 0, 0, 0.12),
     0px 9px 28px 8px rgba(0, 0, 0, 0.05);
-`
+`;
 
 const Head = styled.div`
   display: flex;
   gap: 8px;
   align-items: start;
   justify-content: flex-end;
-`
+`;
 
 const TextWrapper = styled.div`
   display: flex;
@@ -75,21 +76,21 @@ const TextWrapper = styled.div`
   flex: 1 0 0;
   gap: 4px;
   text-align: end;
-`
+`;
 
 const Title = styled.p`
   font-size: 16px;
   font-weight: 600;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
-`
+`;
 
 const Description = styled.p`
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
-`
+`;
 
 const IconWrapper = styled.div`
   display: flex;
@@ -97,13 +98,13 @@ const IconWrapper = styled.div`
   padding-block: 2px;
   color: #faad14;
   flex-shrink: 0;
-`
+`;
 
 const Actions = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
-`
+`;
 
 const DeleteButton = styled.button`
   display: flex;
@@ -124,7 +125,7 @@ const DeleteButton = styled.button`
   &:hover {
     background: #ff7875;
   }
-`
+`;
 
 const CancelButton = styled.button`
   display: flex;
@@ -146,4 +147,4 @@ const CancelButton = styled.button`
     border-color: #4096ff;
     color: #4096ff;
   }
-`
+`;

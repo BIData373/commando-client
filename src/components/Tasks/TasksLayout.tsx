@@ -1,115 +1,90 @@
-import styled from "@emotion/styled"
-import { Outlet, useNavigate } from "@tanstack/react-router"
-import { ChevronDown, Plus } from "lucide-react"
-import { useMemo, useState } from "react"
-import { exportTasksToExcel } from "../../functions/export-excel"
-import { applyAllFilters } from "../../functions/filter-utils"
-import type { TaskColumn } from "../../hooks/useTaskColumns"
-import { useTasks } from "../../providers/TasksProvider"
-import { useTitleBar } from "../../providers/TitleBarProvider"
-import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
-import type { DirectiveStatus } from "../shared/StatusTag"
+import styled from "@emotion/styled";
+import { Outlet, useNavigate } from "@tanstack/react-router";
+import { ChevronDown, Plus } from "lucide-react";
+import { useMemo, useState } from "react";
+import type { QuickFilter } from "src/utils/filterUtils";
+import type { DirectiveStatus } from "src/utils/statusUtils";
+import { exportTasksToExcel } from "../../functions/export-excel";
+import { applyAllFilters } from "../../functions/filter-utils";
+import { useTasks } from "../../providers/TasksProvider";
+import { useTitleBar } from "../../providers/TitleBarProvider";
+import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
-import { TooltipProvider } from "../ui/tooltip"
-import { DEFAULT_COLUMN_ORDER } from "./ColumnVisibilityDropdown"
-import { NoResultsFound } from "./NoResultsFound"
-import { TaskCardGrid } from "./TaskCardGrid"
-import { type QuickFilter, TaskFilters } from "./TaskFilters"
-import { TaskTable } from "./TaskTable"
+} from "../ui/dropdown-menu";
+import { TooltipProvider } from "../ui/tooltip";
+import { NoResultsFound } from "./NoResultsFound";
+import { TaskCardGrid } from "./TaskCardGrid";
+import { TaskFilters } from "./TaskFilters";
+import { TaskTable } from "./TaskTable";
 
-export type View = "TABLE" | "CARDS"
+export type View = "TABLE" | "CARDS";
 
 export interface TasksLayoutProps {
-	view: View
-	urlName: string
+	view: View;
+	urlName: string;
+	tabFilter?: QuickFilter;
+	statusFilter?: DirectiveStatus;
 }
 
-function TasksLayout({ view, urlName }: TasksLayoutProps) {
-	const navigate = useNavigate()
-	const { tasks, updateTaskStatus, removeTasks, bulkUpdateStatus } = useTasks()
-	const [searchQuery, setSearchQuery] = useState("")
-	const [activeQuickFilters, setActiveQuickFilters] = useState<
-		Set<QuickFilter>
-	>(new Set())
+function TasksLayout({
+	view,
+	urlName,
+	tabFilter,
+	statusFilter,
+}: TasksLayoutProps) {
+	const navigate = useNavigate();
+	const {
+		tasks,
+		activeQuickFilters,
+		clearQuickFilters,
+		searchQuery,
+		columnOrder,
+		hiddenColumns,
+		filteredTasks: baseFilteredTasks,
+	} = useTasks();
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
-	)
-	const [columnOrder, setColumnOrder] = useState<TaskColumn[]>([
-		"id" as TaskColumn,
-		...DEFAULT_COLUMN_ORDER,
-	])
-	const [hiddenColumns, setHiddenColumns] = useState<Set<TaskColumn>>(
-		new Set<TaskColumn>(["notes", "updatedAt"] as TaskColumn[]),
-	)
-	function handleToggleColumn(columnId: TaskColumn) {
-		setHiddenColumns((prev) => {
-			const next = new Set(prev)
-			if (next.has(columnId)) {
-				next.delete(columnId)
-			} else {
-				next.add(columnId)
-			}
-			return next
-		})
-	}
-
-	function toggleQuickFilter(filter: QuickFilter) {
-		setActiveQuickFilters((prev) => {
-			const next = new Set(prev)
-			if (next.has(filter)) {
-				next.delete(filter)
-			} else {
-				next.add(filter)
-			}
-			return next
-		})
-	}
+	);
 
 	function clearAllFilters() {
-		setActiveQuickFilters(new Set())
-		setActiveTopicFilters(new Set())
+		clearQuickFilters();
+		setActiveTopicFilters(new Set());
 	}
 
-	const allTopics = [...new Set(tasks.flatMap((t) => t.tags))]
+	const allTopics = [...new Set(tasks.flatMap((t) => t.tags))];
 
 	const filteredTasks = useMemo(
 		() =>
-			applyAllFilters(
-				tasks,
-				activeQuickFilters,
-				activeTopicFilters,
-				searchQuery,
-			),
-		[tasks, searchQuery, activeQuickFilters, activeTopicFilters],
-	)
-
+			activeTopicFilters.size > 0
+				? applyAllFilters(
+						tasks,
+						activeQuickFilters,
+						activeTopicFilters,
+						searchQuery,
+					)
+				: baseFilteredTasks,
+		[
+			tasks,
+			searchQuery,
+			activeQuickFilters,
+			activeTopicFilters,
+			baseFilteredTasks,
+		],
+	);
 	function handleEdit(taskId: number) {
 		navigate({
 			to: "/workspace/$urlName/tasks/$taskId",
 			params: { urlName, taskId: String(taskId) },
 			search: { view },
-		})
-	}
-
-	function handleArchive(taskIds: number[]) {
-		removeTasks(taskIds)
-	}
-
-	function handleDelete(taskIds: number[]) {
-		removeTasks(taskIds)
+		});
 	}
 
 	function handleExport() {
-		exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns })
-	}
-
-	function handleBulkChangeStatus(taskIds: number[], status: DirectiveStatus) {
-		bulkUpdateStatus(taskIds, status)
+		exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns });
 	}
 
 	function handleCreateTaskFromDiscussion() {
@@ -117,7 +92,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
 			to: "/workspace/$urlName/tasks/new",
 			params: { urlName },
 			search: { view, mode: "discussion" },
-		})
+		});
 	}
 
 	function handleCreateTask() {
@@ -125,7 +100,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
 			to: "/workspace/$urlName/tasks/new",
 			params: { urlName },
 			search: { view, mode: "single" },
-		})
+		});
 	}
 
 	function handleViewChange(newView: View) {
@@ -133,7 +108,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
 			to: "/workspace/$urlName/tasks",
 			params: { urlName },
 			search: { view: newView },
-		})
+		});
 	}
 
 	useTitleBar(
@@ -174,23 +149,14 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
 			</ButtonGroup>
 		),
 		[view, urlName],
-	)
+	);
 
 	return (
 		<TooltipProvider>
 			<TasksRoot>
 				<TaskFilters
-					tasks={tasks}
-					activeQuickFilters={activeQuickFilters}
-					onToggleQuickFilter={toggleQuickFilter}
 					onClearAllFilters={clearAllFilters}
-					searchQuery={searchQuery}
-					onSearchChange={setSearchQuery}
 					onExport={handleExport}
-					columnOrder={columnOrder}
-					hiddenColumns={hiddenColumns}
-					onColumnOrderChange={setColumnOrder}
-					onToggleColumn={handleToggleColumn}
 					hasExtraActiveFilters={activeTopicFilters.size > 0}
 					extraFilters={
 						<MultiSelectFilterDropdown
@@ -210,14 +176,9 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
 				) : view === "TABLE" ? (
 					<TaskTable
 						tasks={filteredTasks}
-						searchQuery={searchQuery}
-						columnOrder={columnOrder}
-						hiddenColumns={hiddenColumns}
-						onUpdateStatus={updateTaskStatus}
 						onEdit={handleEdit}
-						onArchive={handleArchive}
-						onDelete={handleDelete}
-						onBulkChangeStatus={handleBulkChangeStatus}
+						initialStatusFilter={statusFilter}
+						onDoubleClick={handleEdit}
 					/>
 				) : (
 					<TaskCardGrid tasks={filteredTasks} />
@@ -225,10 +186,10 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
 			</TasksRoot>
 			<Outlet />
 		</TooltipProvider>
-	)
+	);
 }
 
-export default TasksLayout
+export default TasksLayout;
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
@@ -237,7 +198,7 @@ const TasksRoot = styled.div`
   display: flex;
   flex-direction: column;
   gap: 28px;
-`
+`;
 
 // ─── Title Bar Actions ───────────────────────────────────────────────────────
 
@@ -246,7 +207,7 @@ const ButtonGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-`
+`;
 
 const CreateButton = styled.button`
   direction: rtl;
@@ -284,17 +245,17 @@ const CreateButton = styled.button`
   &:active {
     opacity: 0.85;
   }
-`
+`;
 
 const CreateButtonText = styled.span`
   direction: rtl;
-`
+`;
 
 const SectionDivider = styled.div`
   width: 1px;
   height: 39px;
   background: rgba(0, 0, 0, 0.15);
-`
+`;
 
 const SegmentedControl = styled.div`
   display: flex;
@@ -305,7 +266,7 @@ const SegmentedControl = styled.div`
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-`
+`;
 
 const SegmentedItem = styled.button<{ $selected: boolean }>`
   display: flex;
@@ -331,7 +292,7 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   &:hover {
     background: ${({ $selected }) => ($selected ? "white" : "rgba(0, 0, 0, 0.06)")};
   }
-`
+`;
 
 // ─── Create Dropdown ─────────────────────────────────────────────────────────
 
@@ -344,7 +305,7 @@ const StyledDropdownContent = styled(DropdownMenuContent)`
     0px 9px 28px 0px rgba(0, 0, 0, 0.05),
     0px 3px 6px -4px rgba(0, 0, 0, 0.12),
     0px 6px 16px 0px rgba(0, 0, 0, 0.08);
-`
+`;
 
 const StyledDropdownItem = styled(DropdownMenuItem)`
   direction: rtl;
@@ -361,4 +322,4 @@ const StyledDropdownItem = styled(DropdownMenuItem)`
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;
   cursor: pointer;
-`
+`;

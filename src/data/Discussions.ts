@@ -1,9 +1,9 @@
 export interface DiscussionSource {
-	id: number
-	name: string
-	date: string
-	tags: string[]
-	hasAttachment: boolean
+	id: number;
+	name: string;
+	date: string;
+	tags: string[];
+	hasAttachment: boolean;
 }
 
 export const MOCK_DISCUSSIONS: DiscussionSource[] = [
@@ -42,4 +42,4 @@ export const MOCK_DISCUSSIONS: DiscussionSource[] = [
 		tags: ["לוגיסטיקה"],
 		hasAttachment: false,
 	},
-]
+];

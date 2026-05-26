@@ -1,15 +1,15 @@
-import { DeadlineType } from "../components/shared/DeadlineTag"
-import { MOCK_ASSIGNEES } from "./Assignees"
-import type { Task } from "./Tasks"
+import { DeadlineType } from "../components/shared/DeadlineTag";
+import { MOCK_ASSIGNEES } from "./Assignees";
+import type { Task } from "./Tasks";
 
 export interface Workspace {
-	id: number
-	name: string
-	iconUrl: string
+	id: number;
+	name: string;
+	iconUrl: string;
 }
 
 export interface PersonalTask extends Task {
-	workspace: Workspace
+	workspace: Workspace;
 }
 
 const MOCK_WORKSPACES: Workspace[] = [
@@ -17,7 +17,7 @@ const MOCK_WORKSPACES: Workspace[] = [
 	{ id: 2, name: "של סביבה משפ...", iconUrl: "/workspace-icon.png" },
 	{ id: 3, name: 'שחף א"פ פלדה', iconUrl: "/workspace-icon.png" },
 	{ id: 4, name: "חגל פלוחין", iconUrl: "/workspace-icon.png" },
-]
+];
 
 export const PERSONAL_TASKS: PersonalTask[] = [
 	{
@@ -323,4 +323,4 @@ export const PERSONAL_TASKS: PersonalTask[] = [
 		updatedAt: new Date("2025-03-19"),
 		workspace: MOCK_WORKSPACES[0],
 	},
-]
+];
