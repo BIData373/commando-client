@@ -4,6 +4,7 @@ import { DataTable } from '../ui/data-table'
 import columns, { type TaskRow, type TaskTableMeta } from './TasksColumns'
 import TaskAssigneeExpansion from './TaskAssigneeExpansion'
 import { TrashButton } from '../shared/TrashButton'
+import { DATA_CELL_ACTIVE_KEY } from './DeadlineCell'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -193,7 +194,8 @@ const TableOuterContainer = styled.div`
       border-right: none;
     }
 
-    &:focus-within {
+    &:focus-within,
+    &:has([${DATA_CELL_ACTIVE_KEY}="true"]) {
       outline: 1px solid var(--button-color-hover);
       outline-offset: -2px;
     }
