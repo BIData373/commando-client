@@ -9,7 +9,6 @@ export interface IUser {
     email: string;
     name: string;
     avatarUrl: string | null;
-    color?: string | null;
     role: UserRole;
     createdAt: string;
     updatedAt: string;
@@ -30,7 +29,6 @@ export interface ICreateUser {
     email: string;
     role: UserRole;
     avatarUrl?: string | null;
-    color?: string | null;
 }
 
 /** Update user request */
@@ -39,5 +37,4 @@ export interface IUpdateUser {
     email?: string;
     role?: UserRole;
     avatarUrl?: string | null;
-    color?: string | null;
 }

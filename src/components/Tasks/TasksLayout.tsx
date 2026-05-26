@@ -137,6 +137,7 @@ function TasksLayout({ view, urlName, tabFilter, statusFilter }: TasksLayoutProp
             tasks={filteredTasks}
             onEdit={handleEdit}
             initialStatusFilter={statusFilter}
+            onDoubleClick={handleEdit}
           />
         ) : (
           <TaskCardGrid tasks={filteredTasks} />

@@ -17,7 +17,7 @@ export const TrashButton = ({ onClick, ref, size, className }: TrashButtonProps)
 }
 
 
-const DeleteButton = styled.button<{ $visible?: boolean }>`
+const DeleteButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -28,8 +28,6 @@ const DeleteButton = styled.button<{ $visible?: boolean }>`
   flex-shrink: 0;
   border-radius: 2px;
   color: rgba(0, 0, 0, 0.45);
-  transition: opacity 0.3s ease-in-out;
-  opacity: ${({ $visible }) => $visible ? '1' : '0'};
 
   &:hover {
     color: var(--text-color-2);

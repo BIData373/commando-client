@@ -61,6 +61,8 @@ export function AssigneeDialog({ assignee, open, onOpenChange }: AssigneeDialogP
                 color: value.color,
                 emblem: value.emblem || null,
                 userIds: localAssignees.map((u) => u.id),
+                role: 'מג"ד 373',
+                email: 'magad373@gmail.com'
             }
             try {
                 if (assignee) {

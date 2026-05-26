@@ -1,110 +1,95 @@
-import { useState, useEffect } from 'react'
-import styled from '@emotion/styled'
-import { Bold, Underline, ListOrdered } from 'lucide-react'
-import { useEditor, EditorContent } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import UnderlineExtension from '@tiptap/extension-underline'
-import Placeholder from '@tiptap/extension-placeholder'
+import { EditorExtensions } from "#/utils/tiptapExtensions";
+import styled from "@emotion/styled";
+import { EditorContent, useEditor } from "@tiptap/react";
+import { Bold, ListOrdered, Underline } from "lucide-react";
+import { useEffect, useState } from "react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface NotesFieldProps {
-  notes: string
-  onNotesChange: (value: string) => void
+	notes: string;
+	onNotesChange: (value: string) => void;
 }
+
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function NotesField({ notes, onNotesChange }: NotesFieldProps) {
-  const [isFocused, setIsFocused] = useState(false)
-  const [, setTick] = useState(0)
+	const [isFocused, setIsFocused] = useState(false);
+	const [, setTick] = useState(0);
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        bulletList: false,
-        blockquote: false,
-        codeBlock: false,
-        code: false,
-        heading: false,
-        horizontalRule: false,
-        strike: false,
-      }),
-      UnderlineExtension,
-      Placeholder.configure({
-        placeholder: 'הערות ודגשים',
-      }),
-    ],
-    content: notes,
-    onUpdate: ({ editor }) => {
-      onNotesChange(editor.getHTML())
-    },
-    onFocus: () => setIsFocused(true),
-    onBlur: () => setIsFocused(false),
-    onTransaction: () => setTick((t) => t + 1),
-  })
+	const editor = useEditor({
+		...EditorExtensions,
+		content: notes,
+		onUpdate: ({ editor }) => {
+			onNotesChange(editor.getHTML());
+		},
+		onFocus: () => setIsFocused(true),
+		onBlur: () => setIsFocused(false),
+		onTransaction: () => setTick((t) => t + 1),
+	});
 
-  useEffect(() => {
-    if (editor && notes !== editor.getHTML()) {
-      editor.commands.setContent(notes)
-    }
-  }, [notes, editor])
+	useEffect(() => {
+		if (editor && notes !== editor.getHTML()) {
+			editor.commands.setContent(notes);
+		}
+	}, [notes, editor]);
 
-  function handleToggleBold() {
-    editor?.chain().focus().toggleBold().run()
-  }
+	function handleToggleBold() {
+		editor?.chain().focus().toggleBold().run();
+	}
 
-  function handleToggleUnderline() {
-    editor?.chain().focus().toggleUnderline().run()
-  }
+	function handleToggleUnderline() {
+		editor?.chain().focus().toggleUnderline().run();
+	}
 
-  function handleToggleOrderedList() {
-    editor?.chain().focus().toggleOrderedList().run()
-  }
+	function handleToggleOrderedList() {
+		editor?.chain().focus().toggleOrderedList().run();
+	}
 
-  function handlePreventDefault(e: React.MouseEvent) {
-    e.preventDefault()
-  }
+	function handlePreventDefault(e: React.MouseEvent) {
+		e.preventDefault();
+	}
 
-  return (
-    <FormItem>
-      <FormLabelRow>
-        <LabelText>הערות הנחיה</LabelText>
-      </FormLabelRow>
-      <NotesEditorWrapper>
-        {isFocused && (
-          <NotesToolbar onMouseDown={handlePreventDefault}>
-            <ToolbarButton
-              type="button"
-              $active={editor?.isActive('orderedList') ?? false}
-              onClick={handleToggleOrderedList}
-            >
-              <ListOrdered size={16} />
-            </ToolbarButton>
-            <ToolbarDivider />
-            <ToolbarButton
-              type="button"
-              $active={editor?.isActive('underline') ?? false}
-              onClick={handleToggleUnderline}
-            >
-              <Underline size={16} />
-            </ToolbarButton>
-            <ToolbarButton
-              type="button"
-              $active={editor?.isActive('bold') ?? false}
-              onClick={handleToggleBold}
-            >
-              <Bold size={16} />
-            </ToolbarButton>
-          </NotesToolbar>
-        )}
-        <StyledEditorContent editor={editor} dir="rtl" />
-      </NotesEditorWrapper>
-    </FormItem>
-  )
+	return (
+		<FormItem>
+			<FormLabelRow>
+				<LabelText>הערות הנחיה</LabelText>
+			</FormLabelRow>
+			<NotesEditorWrapper>
+				{isFocused && (
+					<NotesToolbar onMouseDown={handlePreventDefault}>
+						<ToolbarButton
+							type="button"
+							$active={editor?.isActive("orderedList") ?? false}
+							onClick={handleToggleOrderedList}
+						>
+							<ListOrdered size={16} />
+						</ToolbarButton>
+						<ToolbarDivider />
+						<ToolbarButton
+							type="button"
+							$active={editor?.isActive("underline") ?? false}
+							onClick={handleToggleUnderline}
+						>
+							<Underline size={16} />
+						</ToolbarButton>
+						<ToolbarButton
+							type="button"
+							$active={editor?.isActive("bold") ?? false}
+							onClick={handleToggleBold}
+						>
+							<Bold size={16} />
+						</ToolbarButton>
+					</NotesToolbar>
+				)}
+				<StyledEditorContent editor={editor} dir="rtl" />
+			</NotesEditorWrapper>
+		</FormItem>
+	);
 }
 
-export default NotesField
+export default NotesField;
 
 // ─── Styled ─────────────────────────────────────────────────────────────────
 
@@ -113,7 +98,7 @@ const FormItem = styled.div`
   flex-direction: column;
   align-items: flex-end;
   width: 100%;
-`
+`;
 
 const FormLabelRow = styled.div`
   display: flex;
@@ -125,16 +110,16 @@ const FormLabelRow = styled.div`
   font-size: 14px;
   line-height: 22px;
   white-space: nowrap;
-`
+`;
 
 const LabelText = styled.span`
   color: rgba(0, 0, 0, 0.88);
-`
+`;
 
 const NotesEditorWrapper = styled.div`
   position: relative;
   width: 100%;
-`
+`;
 
 const NotesToolbar = styled.div`
   position: absolute;
@@ -152,7 +137,7 @@ const NotesToolbar = styled.div`
     0px 3px 6px rgba(0, 0, 0, 0.12),
     0px 9px 28px rgba(0, 0, 0, 0.05);
   z-index: var(--z-dropdown);
-`
+`;
 
 const ToolbarButton = styled.button<{ $active: boolean }>`
   display: flex;
@@ -161,22 +146,22 @@ const ToolbarButton = styled.button<{ $active: boolean }>`
   width: 24px;
   height: 24px;
   padding: 0 4px;
-  background: ${({ $active }) => ($active ? 'rgba(22, 119, 255, 0.1)' : 'transparent')};
+  background: ${({ $active }) => ($active ? "rgba(22, 119, 255, 0.1)" : "transparent")};
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  color: ${({ $active }) => ($active ? '#1677ff' : 'rgba(0, 0, 0, 0.88)')};
+  color: ${({ $active }) => ($active ? "#1677ff" : "rgba(0, 0, 0, 0.88)")};
 
   &:hover {
-    background: ${({ $active }) => ($active ? 'rgba(22, 119, 255, 0.15)' : 'rgba(0, 0, 0, 0.04)')};
+    background: ${({ $active }) => ($active ? "rgba(22, 119, 255, 0.15)" : "rgba(0, 0, 0, 0.04)")};
   }
-`
+`;
 
 const ToolbarDivider = styled.div`
   width: 1px;
   height: 16px;
   background: #d9d9d9;
-`
+`;
 
 const StyledEditorContent = styled(EditorContent)`
   .tiptap {
@@ -213,4 +198,4 @@ const StyledEditorContent = styled(EditorContent)`
       list-style-type: decimal;
     }
   }
-`
+`;
