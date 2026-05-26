@@ -1,12 +1,13 @@
 import styled from '@emotion/styled'
 import { Archive, Trash2, X } from 'lucide-react'
+import { DirectiveStatus } from '#/utils/statusUtils'
+import { StatusTag } from '../shared/StatusTag'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
-import { StatusTag, type DirectiveStatus, STATUS_KEYS } from '../shared/StatusTag'
 import { DeletePopover } from './DeletePopover'
 
 interface BulkActionsBarProps {
@@ -47,7 +48,7 @@ export function BulkActionsBar({
             <GhostButton>עדכן סטטוס</GhostButton>
           </DropdownMenuTrigger>
           <StatusContent align="start" sideOffset={4}>
-            {STATUS_KEYS.map((s) => (
+            {Object.values(DirectiveStatus).map((s) => (
               <StatusItem key={s} onSelect={() => onChangeStatus(s)}>
                 <StatusTag status={s} />
               </StatusItem>
@@ -57,7 +58,7 @@ export function BulkActionsBar({
       </ActionsSection>
       <SelectedButton onClick={onExitSelect}>
         <X size={16} />
-         {selectedCount} משימות נבחרו
+        {selectedCount} משימות נבחרו
       </SelectedButton>
     </Bar>
   )

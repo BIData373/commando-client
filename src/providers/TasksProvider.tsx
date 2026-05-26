@@ -1,9 +1,9 @@
+import type { QuickFilter } from '#/utils/filterUtils'
+import type { DirectiveStatus } from '#/utils/statusUtils'
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
-import type { DirectiveStatus } from '../components/shared/StatusTag'
-import type { QuickFilter } from '../components/Tasks/TaskFilters'
 import { DEFAULT_COLUMN_ORDER } from '../components/Tasks/ColumnVisibilityDropdown'
-import { applyAllFilters } from '../functions/filter-utils'
 import { INITIAL_TASKS, type Task } from '../data/Tasks'
+import { applyAllFilters } from '../functions/filter-utils'
 import type { TaskColumn } from '../hooks/useTaskColumns'
 
 export type NewTaskInput = Omit<Task, 'id' | 'createdAt' | 'updatedAt'> & { groupKey?: string }
@@ -145,8 +145,8 @@ export function TasksProvider({
           ...(isTarget ? { status, updatedAt: new Date() } : {}),
           relatedDirectives: updatedRelated
             ? t.relatedDirectives.map((d) =>
-                updatedResponsibleIds.has(d.user.id) ? { ...d, status } : d,
-              )
+              updatedResponsibleIds.has(d.user.id) ? { ...d, status } : d,
+            )
             : t.relatedDirectives,
         }
       })

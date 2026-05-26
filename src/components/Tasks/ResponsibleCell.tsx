@@ -1,10 +1,12 @@
+import type { IAssignee } from '#/types'
+import type { DirectiveStatus } from '#/utils/statusUtils'
 import styled from '@emotion/styled'
 import { X } from 'lucide-react'
 import { Popover as PopoverPrimitive } from 'radix-ui'
-import type { IAssignee } from '#/types'
 import { AssigneeAvatar } from '../shared/AssigneeAvatar'
-import { type DirectiveStatus, StatusTag } from '../shared/StatusTag'
+import { StatusTag } from '../shared/StatusTag'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+
 export type AvatarColor = 'cyan' | 'blue' | 'green' | 'orange' | 'gray'
 
 export interface RelatedDirective {
@@ -97,8 +99,6 @@ const CellRoot = styled.div`
   gap: 4px;
 `
 
-// ─── Avatar ───────────────────────────────────────────────────────────────────
-//TO-DO
 const AvatarCircle = styled.button<{ $color: AvatarColor }>`
   display: inline-flex;
   align-items: center;

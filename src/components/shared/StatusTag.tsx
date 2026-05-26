@@ -1,21 +1,10 @@
 import styled from '@emotion/styled'
-
-export type DirectiveStatus = 'not_started' | 'in_progress' | 'completed'
+import { DirectiveStatus, statusColors } from '#/utils/statusUtils'
 
 export const STATUS_LABELS: Record<DirectiveStatus, string> = {
-  not_started: 'טרם בוצע',
-  in_progress: 'בעבודה',
-  completed: 'בוצע',
-}
-
-export const STATUS_KEYS: DirectiveStatus[] = ['not_started', 'in_progress', 'completed']
-
-export function getStatusStyle(status: DirectiveStatus) {
-  switch (status) {
-    case 'not_started': return { fontColor: 'var(--Colors-Base-Volcano-6)', bgColor: 'var(--Colors-Base-Volcano-1)' }
-    case 'in_progress': return { fontColor: 'var(--Colors-Base-Geekblue-6)', bgColor: 'var(--Colors-Base-Geekblue-1)' }
-    case 'completed': return { fontColor: 'var(--Colors-Base-Green-6)', bgColor: 'var(--Colors-Base-Green-1)' }
-  }
+  [DirectiveStatus.NOT_STARTED]: 'טרם בוצע',
+  [DirectiveStatus.IN_PROGRESS]: 'בעבודה',
+  [DirectiveStatus.COMPLETED]: 'בוצע',
 }
 
 interface StatusTagProps {
@@ -43,7 +32,7 @@ const Tag = styled.span<{ $status: DirectiveStatus; $interactive?: boolean }>`
   white-space: nowrap;
   cursor: ${({ $interactive }) => ($interactive ? 'pointer' : 'default')};
   ${({ $status }) => {
-    const { fontColor, bgColor } = getStatusStyle($status)
+    const { fontColor, bgColor } = statusColors[$status]
     return `
       background: ${bgColor};
       color: ${fontColor};

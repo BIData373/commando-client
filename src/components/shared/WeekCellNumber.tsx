@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { useContext } from 'react'
 import type { DateRange, WeekNumberProps } from 'react-day-picker'
-import { RangeContext } from '#/providers/RangeProvider'
+import { RangeContext, RangeSetterContext } from '#/providers/RangeProvider'
 
 
 function isFullWeekSelected(week: WeekNumberProps['week'], range: DateRange | undefined): boolean {
@@ -13,10 +13,19 @@ function isFullWeekSelected(week: WeekNumberProps['week'], range: DateRange | un
 
 export function WeekNumberCell({ week, ...props }: WeekNumberProps) {
     const range = useContext(RangeContext)
+    const setRange = useContext(RangeSetterContext)
     const selected = isFullWeekSelected(week, range)
+
+    function handleWeekClick() {
+        setRange?.({
+            from: week.days[0].date,
+            to: week.days[week.days.length - 1].date,
+        })
+    }
+
     return (
         <WeekNumber {...props}>
-            <WeekNumberBadge $selected={selected}>
+            <WeekNumberBadge $selected={selected} onClick={handleWeekClick}>
                 {week.weekNumber}
             </WeekNumberBadge>
         </WeekNumber>
@@ -37,6 +46,12 @@ const WeekNumberBadge = styled.div<{ $selected: boolean }>`
   border-radius: 5px;
   font-size: 10px;
   margin-left: 2px;
+  cursor: pointer;
   color: ${({ $selected }) => $selected ? 'var(--primary-foreground)' : 'var(--muted-foreground)'};
   background: ${({ $selected }) => $selected ? 'var(--primary)' : 'transparent'};
+
+  &:hover {
+    background: #c9c6c6;
+    color: var(--foreground);
+  }
 `

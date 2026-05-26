@@ -1,6 +1,6 @@
 import { differenceInDays, startOfToday } from 'date-fns'
+import { QuickFilter } from '#/utils/filterUtils'
 import type { Task } from '../data/Tasks'
-import type { QuickFilter } from '../components/Tasks/TaskFilters'
 import { STATUS_LABELS } from '../components/shared/StatusTag'
 import { DEADLINE_LABELS } from '../components/shared/DeadlineTag'
 // ─── Shared Types ────────────────────────────────────────────────────────────
@@ -16,11 +16,11 @@ function matchesQuickFilter(task: Task, filter: QuickFilter): boolean {
   const today = startOfToday()
   const daysUntil = task.dueDate ? differenceInDays(task.dueDate, today) : null
   switch (filter) {
-    case 'overdue':
+    case QuickFilter.OVERDUE:
       return daysUntil !== null && daysUntil < 0 && task.deadlineType !== 'immediate'
-    case 'approaching':
+    case QuickFilter.APPROACHING:
       return daysUntil !== null && daysUntil >= 0 && daysUntil < 2 && !(daysUntil < 0 && task.deadlineType !== 'immediate')
-    case 'flagged':
+    case QuickFilter.FLAGGED:
       return task.flagged
   }
 }
