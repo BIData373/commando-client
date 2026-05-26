@@ -20,6 +20,7 @@ interface DeadlineCellProps {
 
 const DEADLINE_TYPES = Object.keys(DEADLINE_LABELS) as DeadlineType[]
 const TYPES_WITH_CALENDAR: DeadlineType[] = [DeadlineType.Date, DeadlineType.Ongoing]
+export const DATA_CELL_ACTIVE_KEY = 'data-cell-active'
 
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -34,8 +35,18 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
     }
   }
 
+  function handleSetDate(value: Date | undefined) {
+    onDateChange(value ?? null)
+    setIsOpen(false)
+  }
+
+  function handleSetWithoutDate() {
+    onDateChange(null)
+    setIsOpen(false)
+  }
+
   return (
-    <DeadlineCellWrapper data-cell-active={isOpen || undefined}>
+    <DeadlineCellWrapper {...{ [DATA_CELL_ACTIVE_KEY]: isOpen || undefined }}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <DeadlineTrigger>
@@ -86,11 +97,11 @@ function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChang
               )}
               footer={({ value }) => (
                 <PopoverFooter>
-                  <SetButton onClick={() => { onDateChange(value as Date ?? null); setIsOpen(false); }}>
+                  <SetButton onClick={() => handleSetDate(value)}>
                     הגדר
                   </SetButton>
                   {deadlineType === DeadlineType.Ongoing && (
-                    <SetWithoutDateButton onClick={() => { onDateChange(null); setIsOpen(false); }}>
+                    <SetWithoutDateButton onClick={handleSetWithoutDate}>
                       הגדר ללא תאריך
                     </SetWithoutDateButton>
                   )}
