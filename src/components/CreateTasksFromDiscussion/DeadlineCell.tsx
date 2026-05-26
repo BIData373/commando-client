@@ -146,6 +146,7 @@ const DeadlineCellWrapper = styled.div`
   align-items: center;
   height: 100%;
   background: transparent;
+  z-index: var(--z-dropdown);
 `;
 
 const DeadlineTrigger = styled.button`
@@ -189,6 +190,7 @@ const DeadlineDropdownContent = styled(PopoverContent)`
   min-width: 0 !important;
   padding: 4px;
   overflow: visible;
+  z-index: var(--z-dropdown);
 `;
 
 const DropdownRow = styled.div`
