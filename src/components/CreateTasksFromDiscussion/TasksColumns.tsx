@@ -1,11 +1,12 @@
 import styled from '@emotion/styled'
 import { type ColumnDef } from '@tanstack/react-table'
-import { Checkbox } from '../ui/checkbox'
 import { DeadlineType } from '../shared/DeadlineTag'
 import FlagIcon from '../shared/FlagIcon'
 import ImportantFlagTooltip from '../shared/ImportantFlagTooltip'
-import DeadlineCell from './DeadlineCell'
+import { TrashButton } from '../shared/TrashButton'
+import { Checkbox } from '../ui/checkbox'
 import AssigneeTableCell from './AssigneeTableCell'
+import DeadlineCell from './DeadlineCell'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 export enum TaskColumnId {
@@ -28,6 +29,8 @@ export interface TaskTableMeta {
   updateRow: (id: number, updates: Partial<TaskRow>) => void
   expandedRows: Set<number>
   toggleRowExpansion: (id: number) => void
+  deleteRow: (id: number) => void
+  isLastRow: (index: number) => boolean
 }
 
 // ─── Cell Handlers ─────────────────────────────────────────────────────────
@@ -53,6 +56,10 @@ function handleImportantChange(
   updateRow: TaskTableMeta['updateRow'],
 ) {
   updateRow(id, { isImportant: checked })
+}
+
+function handleDelete(id: number, deleteRow: TaskTableMeta['deleteRow']) {
+  deleteRow(id)
 }
 
 function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -85,7 +92,7 @@ function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
 const columns: ColumnDef<TaskRow>[] = [
   {
     id: 'title',
-    size: 695,
+    size: 655,
     header: () => (
       <HeaderLabelGroup>
         <RequiredMark>*</RequiredMark>
@@ -181,6 +188,20 @@ const columns: ColumnDef<TaskRow>[] = [
       )
     },
   },
+  {
+    id: 'delete',
+    size: 35,
+    header: () => null,
+    cell: ({ row, table }) => {
+      const { deleteRow, isLastRow } = table.options.meta as TaskTableMeta
+
+      return !row.original.title.trim().length || isLastRow(row.index)
+        ? null
+        : (
+          <StyledTrashButton onClick={() => handleDelete(row.original.id, deleteRow)} size={14} />
+        )
+    },
+  },
 ]
 
 export default columns
@@ -202,7 +223,7 @@ const HeaderLabelGroup = styled.div`
 `
 
 const RequiredMark = styled.span`
-  color: #ff4d4f;
+  color: var(--Components-Form-Component-labelRequiredMarkColor);
   font-size: 14px;
   line-height: 22px;
 `
@@ -234,7 +255,7 @@ const CellTextarea = styled.textarea<{ $color?: string }>`
   overflow-x: hidden;
 
   &::placeholder {
-    color: rgba(0, 0, 0, 0.25);
+    color: var(--Text-color-text-placeholder);
   }
 `
 
@@ -243,4 +264,13 @@ const CheckboxWrapper = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
+`
+
+const StyledTrashButton = styled(TrashButton)`
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+
+  tr:hover & {
+    opacity: 1;
+  }
 `
