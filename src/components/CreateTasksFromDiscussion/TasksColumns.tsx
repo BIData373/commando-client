@@ -58,6 +58,10 @@ function handleImportantChange(
   updateRow(id, { isImportant: checked })
 }
 
+function handleDelete(id: number, deleteRow: TaskTableMeta['deleteRow']) {
+  deleteRow(id)
+}
+
 function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
   const target = e.target as HTMLElement
   const row = Number(target.dataset.row)
@@ -190,16 +194,11 @@ const columns: ColumnDef<TaskRow>[] = [
     header: () => null,
     cell: ({ row, table }) => {
       const { deleteRow, isLastRow } = table.options.meta as TaskTableMeta
-      const canDelete = row.original.title.trim().length > 0 && !isLastRow(row.index)
 
-      function handleDelete() {
-        deleteRow(row.original.id)
-      }
-
-      if (!canDelete) return null
+      if (!row.original.title.trim().length || isLastRow(row.index)) return null
 
       return (
-        <StyledTrashButton onClick={handleDelete} size={14} />
+        <StyledTrashButton onClick={() => handleDelete(row.original.id, deleteRow)} size={14} />
       )
     },
   },
