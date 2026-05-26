@@ -73,11 +73,11 @@ function Dashboard() {
     <PageWrapper>
 
       <ContentArea>
-        <DashboardDatePicker
+        {/* <DashboardDatePicker
           dateType={dataType}
           onDateTypeChange={setDataType}
           setRange={setRange}
-        />
+        /> */}
 
         <GridLayout>
           <FocusedInstructions urlName={urlName} tasks={filteredTasks} />

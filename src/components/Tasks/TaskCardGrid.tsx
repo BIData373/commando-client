@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import { Flag } from 'lucide-react'
-import { format } from 'date-fns'
+import { formatDateShort } from '../../functions/date-utils'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { StatusTag } from '../shared/StatusTag'
 import type { Task } from '../../data/Tasks'
-import { DEADLINE_LABELS, type DeadlineType } from '../../functions/filter-utils'
+import DeadlineTag, { DeadlineType, DEADLINE_LABELS } from '../shared/DeadlineTag'
 
 interface TaskCardGridProps {
   tasks: Task[]
@@ -27,11 +27,11 @@ function TaskCardGrid({ tasks }: TaskCardGridProps) {
             <StatusTag status={task.status} />
           </CardContent>
           <CardFooter>
-            {task.deadlineType !== 'date' && (
+            {task.deadlineType !== DeadlineType.Date && (
               <DeadlineTag $type={task.deadlineType}>{DEADLINE_LABELS[task.deadlineType]}</DeadlineTag>
             )}
             {task.dueDate && (
-              <CardDateText>{format(task.dueDate, 'dd/MM/yy')}</CardDateText>
+              <CardDateText>{formatDateShort(task.dueDate)}</CardDateText>
             )}
           </CardFooter>
         </Card>
@@ -61,33 +61,3 @@ const CardDateText = styled.span`
   margin-inline-start: auto;
 `
 
-const DeadlineTag = styled.span<{ $type: DeadlineType }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  ${({ $type }) => {
-    switch ($type) {
-      case 'ongoing':
-        return `
-          background: rgba(230, 244, 255, 0.8);
-          border: 1px solid rgba(145, 202, 255, 0.8);
-          color: rgba(22, 119, 255, 0.9);
-        `
-      case 'immediate':
-        return `
-          background: #FFF1F0;
-          border: 1px solid #FFA39E;
-          color: #F5222D;
-        `
-      case 'date':
-        return `
-          background: var(--chip-bg);
-          border: 1px solid var(--chip-line);
-          color: var(--sea-ink-soft);
-        `
-    }
-  }}
-`

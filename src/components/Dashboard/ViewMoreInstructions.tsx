@@ -2,17 +2,19 @@ import styled from '@emotion/styled'
 import { useNavigate } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
 import type { QuickFilter } from '#/utils/filterUtils'
+import type { DirectiveStatus } from '#/utils/statusUtils'
 
 interface IViewInstruction {
     urlName: string
-    filter?: QuickFilter
+    tabFilter?: QuickFilter
+    statusFilter?: DirectiveStatus
 }
 
-export const ViewMoreInstructions = ({ urlName, filter }: IViewInstruction) => {
+export const ViewMoreInstructions = ({ urlName, tabFilter, statusFilter }: IViewInstruction) => {
     const navigate = useNavigate()
 
     function handleViewMore() {
-        navigate({ to: '/workspace/$urlName/tasks', params: { urlName }, search: { view: 'TABLE', filter: filter } })
+        navigate({ to: '/workspace/$urlName/tasks', params: { urlName }, search: { view: 'TABLE', tabFilter, statusFilter } })
     }
 
     return (

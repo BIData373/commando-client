@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import { DirectiveStatus } from '#/utils/statusUtils'
 import compleateInstruction from '../../assets/icons/completeInstruction.svg'
 import type { Task } from '../../data/Tasks'
-import { TaskColumnId, useTaskColumns } from '../../hooks/useTaskColumns'
+import { useTaskColumns } from '../../hooks/useTaskColumns'
 import { EmptyCardState } from './EmptyCardState'
 import { ViewMoreInstructions } from './ViewMoreInstructions'
 
@@ -12,8 +12,6 @@ interface RecentlyCompletedProps {
   urlName: string
   tasks: Task[]
 }
-
-const VISIBLE_COLUMNS = [TaskColumnId.Title, TaskColumnId.Status, TaskColumnId.Responsible]
 
 const coreRowModel = getCoreRowModel()
 
@@ -24,10 +22,14 @@ export default function RecentlyCompleted({ urlName, tasks }: RecentlyCompletedP
   )
 
   const { columns } = useTaskColumns({
-    visibleColumns: VISIBLE_COLUMNS,
+    visibleColumns: [
+      'title',
+      'status',
+      'responsible'
+    ],
     searchQuery: '',
     filterOptionsMap: {},
-    onUpdateStatus: () => {},
+    onUpdateStatus: () => { },
   })
 
   const table = useReactTable({
@@ -66,8 +68,7 @@ export default function RecentlyCompleted({ urlName, tasks }: RecentlyCompletedP
           </TaskList>
         )}
       </Card>
-      {/* TODO: filter by status = done */}
-      <ViewMoreInstructions urlName={urlName} filter={undefined} />
+      <ViewMoreInstructions urlName={urlName} statusFilter={DirectiveStatus.COMPLETED} />
     </Section>
   )
 }

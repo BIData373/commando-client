@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { Download, Search } from 'lucide-react'
-import { ColumnVisibilityDropdown, type TaskColumn } from './ColumnVisibilityDropdown'
+import { ColumnVisibilityDropdown } from './ColumnVisibilityDropdown'
+import type { TaskColumn } from '#/hooks/useTaskColumns'
 
 interface TaskSearchBarProps {
   searchQuery: string
@@ -111,7 +112,6 @@ const SearchField = styled.input`
   border: none;
   outline: none;
   background: transparent;
-  font-family: 'Rubik', sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;

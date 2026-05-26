@@ -1,8 +1,8 @@
-import { createContext, type ReactNode, useContext, useState } from 'react'
-import type { DirectiveStatus } from '#/utils/statusUtils'
+import { createContext, useContext, useState, type ReactNode } from 'react'
 import { INITIAL_TASKS, type Task } from '../data/Tasks'
+import type { DirectiveStatus } from '#/utils/statusUtils'
 
-type NewTaskInput = Omit<Task, 'id' | 'createdAt' | 'updatedAt'>
+export type NewTaskInput = Omit<Task, 'id' | 'createdAt' | 'updatedAt'> & { groupKey?: string }
 
 interface TasksContextValue {
   tasks: Task[]
@@ -24,14 +24,24 @@ export function TasksProvider({ children }: TasksProviderProps) {
   function addTasks(inputs: NewTaskInput[]) {
     if (inputs.length === 0) return
     setTasks((prev) => {
-      const baseId = prev.reduce((max, t) => (t.id > max ? t.id : max), 0)
+      let nextId = prev.reduce((max, t) => (t.id > max ? t.id : max), 0)
+      const groupIds = new Map<string, number>()
       const now = new Date()
-      const newTasks: Task[] = inputs.map((input, index) => ({
-        ...input,
-        id: baseId + index + 1,
-        createdAt: now,
-        updatedAt: now,
-      }))
+      const newTasks: Task[] = inputs.map(({ groupKey, ...input }) => {
+        let id: number
+        if (groupKey) {
+          const existing = groupIds.get(groupKey)
+          if (existing) {
+            id = existing
+          } else {
+            id = ++nextId
+            groupIds.set(groupKey, id)
+          }
+        } else {
+          id = ++nextId
+        }
+        return { ...input, id, createdAt: now, updatedAt: now }
+      })
       return [...newTasks, ...prev]
     })
   }

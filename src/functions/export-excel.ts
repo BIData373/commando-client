@@ -1,10 +1,11 @@
 import * as XLSX from 'xlsx-js-style'
-import { differenceInDays, format, startOfToday } from 'date-fns'
+import { differenceInDays, startOfToday } from 'date-fns'
+import { formatDateShort } from './date-utils'
 import { STATUS_LABELS } from '../components/shared/StatusTag'
+import { DEADLINE_LABELS } from '../components/shared/DeadlineTag'
+import type { TaskColumn } from '../hooks/useTaskColumns'
 import type { Task } from '../data/Tasks'
-import type { TaskColumn } from '../components/Tasks/ColumnVisibilityDropdown'
 import { statusColors } from '#/utils/statusUtils'
-import { DEADLINE_LABELS } from '#/components/shared/DeadlineTag'
 
 interface CellValue {
   value: string
@@ -49,26 +50,22 @@ const COLUMN_DEFS: Record<string, ExportColumn<Task>> = {
     })
   },
   responsible: { header: 'אחראי', accessor: (t) => t.responsible?.name ?? '' },
-  deadlineType: {
-    header: 'תג"ב', accessor: (t) => {
-      const typeStr = DEADLINE_LABELS[t.deadlineType]
-      const dateStr = t.dueDate ? format(t.dueDate, 'dd/MM/yy') : ''
-      const value = dateStr ? `${typeStr} | ${dateStr}` : typeStr
-      return { value, ...getDeadlineDateStyle(t) }
-    }
-  },
-  discussionName: {
-    header: 'מקור', accessor: (t) => {
-      const source = `${t.discussionName} | ${t.discussionDate}`
-      return t.attachmentUrl
-        ? { value: source, link: t.attachmentUrl }
-        : source
-    }
-  },
+  deadlineType: { header: 'תג"ב', accessor: (t) => {
+    const typeStr = DEADLINE_LABELS[t.deadlineType]
+    const dateStr = t.dueDate ? formatDateShort(t.dueDate) : ''
+    const value = dateStr ? `${typeStr} | ${dateStr}` : typeStr
+    return { value, ...getDeadlineDateStyle(t) }
+  } },
+  discussionName: { header: 'מקור', accessor: (t) => {
+    const source = `${t.discussionName} | ${t.discussionDate}`
+    return t.attachmentUrl
+      ? { value: source, link: t.attachmentUrl }
+      : source
+  } },
   tags: { header: 'נושא', accessor: (t) => t.tags.join(', ') },
   notes: { header: 'הערות', accessor: (t) => t.notes },
-  createdAt: { header: 'תאריך יצירה', accessor: (t) => format(t.createdAt, 'dd/MM/yy') },
-  updatedAt: { header: 'עודכן ב', accessor: (t) => format(t.updatedAt, 'dd/MM/yy') },
+  createdAt: { header: 'תאריך יצירה', accessor: (t) => formatDateShort(t.createdAt) },
+  updatedAt: { header: 'עודכן ב', accessor: (t) => formatDateShort(t.updatedAt) },
 }
 
 interface ExportOptions {
