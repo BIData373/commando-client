@@ -451,12 +451,12 @@ const HistoryButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.06);
+    background: var(--button-hover);
     color: var(--sea-ink);
   }
   
   &:active {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--button-active);
     color: var(--sea-ink);
   }
 `;
@@ -515,7 +515,7 @@ const TagChip = styled.span`
   border-radius: 4px;
   font-size: 12px;
   line-height: 20px;
-  background:rgba(0, 0, 0, 0.02);
+  background:var(--card-background);
   border-radius: 4px;
   border: 1px solid var(--chip-line);
   color: var(--sea-ink);

@@ -43,7 +43,7 @@ const DotsButton = styled.button`
   outline: none;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.06);
+    background: var(--button-hover);
     color: var(--sea-ink);
   }
 `;
