@@ -2,29 +2,24 @@ import styled from '@emotion/styled'
 import { Popover } from 'radix-ui'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
-import type { DateRange } from 'react-day-picker'
 import DatePicker, { CalendarMode } from './DatePicker'
+import type { DatePickerValue } from './DatePicker'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-interface ModeValueMap {
-  [CalendarMode.Single]: Date
-  [CalendarMode.Range]: DateRange
-}
-
-export interface DatePickerSlotProps<M extends CalendarMode> {
-  value: ModeValueMap[M] | undefined
-  onChange: (value: ModeValueMap[M] | undefined) => void
+export interface DatePickerSlotProps {
+  value: DatePickerValue | undefined
+  onChange: (value: DatePickerValue | undefined) => void
   onClose: () => void
 }
 
-interface DatePickerPopoverProps<M extends CalendarMode> {
-  mode: M
-  triggerButton: (props: DatePickerSlotProps<M>) => ReactNode
-  header?: (props: DatePickerSlotProps<M>) => ReactNode
-  footer?: (props: DatePickerSlotProps<M>) => ReactNode
+interface DatePickerPopoverProps {
+  mode: CalendarMode
+  triggerButton: (props: DatePickerSlotProps) => ReactNode
+  header?: (props: DatePickerSlotProps) => ReactNode
+  footer?: (props: DatePickerSlotProps) => ReactNode
   open?: boolean
-  value?: ModeValueMap[M]
+  value?: DatePickerValue
   align?: 'start' | 'center' | 'end'
   side?: 'top' | 'right' | 'bottom' | 'left'
   sideOffset?: number
@@ -32,7 +27,7 @@ interface DatePickerPopoverProps<M extends CalendarMode> {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-function DatePickerPopover<M extends CalendarMode>({
+function DatePickerPopover({
   mode,
   triggerButton,
   header,
@@ -42,13 +37,13 @@ function DatePickerPopover<M extends CalendarMode>({
   align = 'end',
   side,
   sideOffset = 8,
-}: DatePickerPopoverProps<M>) {
+}: DatePickerPopoverProps) {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false)
-  const [value, setValue] = useState<ModeValueMap[M] | undefined>(initialValue)
+  const [value, setValue] = useState<DatePickerValue | undefined>(initialValue)
 
   const open = controlledOpen ?? uncontrolledOpen
 
-  const slotProps: DatePickerSlotProps<M> = {
+  const slotProps: DatePickerSlotProps = {
     value,
     onChange: setValue,
     onClose: () => setUncontrolledOpen(false),
@@ -62,18 +57,7 @@ function DatePickerPopover<M extends CalendarMode>({
       <Popover.Portal>
         <PopoverContent data-lang="he" align={align} side={side} sideOffset={sideOffset}>
           {header?.(slotProps)}
-          {mode === CalendarMode.Range
-            ?
-            <DatePicker
-              mode="range"
-              selected={value as DateRange | undefined}
-              onSelect={setValue as (val: DateRange | undefined) => void} />
-            :
-            <DatePicker
-              mode="single"
-              selected={value as Date | undefined}
-              onSelect={setValue as (val: Date | undefined) => void} />
-          }
+          <DatePicker mode={mode} selected={value} onSelect={setValue} />
           {footer?.(slotProps)}
         </PopoverContent>
       </Popover.Portal>
