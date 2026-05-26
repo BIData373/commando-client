@@ -12,7 +12,6 @@ interface TasksContextValue {
   tasks: Task[]
   addTasks: (inputs: NewTaskInput[]) => void
   updateTaskStatus: (taskId: number, status: DirectiveStatus) => void
-  updateDirectiveStatus: (taskId: number, assigneeId: number, status: DirectiveStatus) => void
   removeTasks: (taskIds: number[]) => void
   bulkUpdateStatus: (taskIds: number[], status: DirectiveStatus) => void
   searchQuery: string
@@ -126,20 +125,6 @@ export function TasksProvider({
         }
       })
     })
-  }
-
-  function updateDirectiveStatus(taskId: number, assigneeId: number, status: DirectiveStatus) {
-    setTasks((prev) =>
-      prev.map((t) => {
-        if (t.id !== taskId) return t
-        return {
-          ...t,
-          relatedDirectives: t.relatedDirectives.map((d) =>
-            d.user.id === assigneeId ? { ...d, status } : d,
-          ),
-        }
-      }),
-    )
   }
 
   function removeTasks(taskIds: number[]) {

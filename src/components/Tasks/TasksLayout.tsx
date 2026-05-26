@@ -134,9 +134,6 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
             tasks={filteredTasks}
             onEdit={handleEdit}
             onDoubleClick={handleEdit}
-            onArchive={handleArchive}
-            onDelete={handleDelete}
-            onBulkChangeStatus={handleBulkChangeStatus}
           />
         ) : (
           <TaskCardGrid tasks={filteredTasks} />
