@@ -5,20 +5,20 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { MessageDtoDeletedAt } from "./message-dto-deleted-at";
-import type { MessageDtoDeletedBy } from "./message-dto-deleted-by";
+import type { MessageDtoDeletedAt } from "./message-dto-deleted-at"
+import type { MessageDtoDeletedBy } from "./message-dto-deleted-by"
 
 export interface MessageDto {
-	createdAt: string;
-	createdBy: number;
-	updatedAt: string;
-	updatedBy: number;
+	createdAt: string
+	createdBy: number
+	updatedAt: string
+	updatedBy: number
 	/** @nullable */
-	deletedAt: MessageDtoDeletedAt;
+	deletedAt: MessageDtoDeletedAt
 	/** @nullable */
-	deletedBy: MessageDtoDeletedBy;
-	id: number;
-	content: string;
-	assigneeId: number;
-	taskId: number;
+	deletedBy: MessageDtoDeletedBy
+	id: number
+	content: string
+	assigneeId: number
+	taskId: number
 }

@@ -1,58 +1,63 @@
-import styled from '@emotion/styled'
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
-import { useDayPicker } from 'react-day-picker'
+import styled from "@emotion/styled"
+import {
+	ChevronLeft,
+	ChevronRight,
+	ChevronsLeft,
+	ChevronsRight,
+} from "lucide-react"
+import { useDayPicker } from "react-day-picker"
 
 function CalendarNav() {
-  const { months, goToMonth, nextMonth, previousMonth } = useDayPicker()
-  const currentMonth = months[0]?.date
+	const { months, goToMonth, nextMonth, previousMonth } = useDayPicker()
+	const currentMonth = months[0]?.date
 
-  const handlePreviousYear = () => {
-    if (!currentMonth) return
-    const prev = new Date(currentMonth)
-    prev.setFullYear(prev.getFullYear() - 1)
-    goToMonth(prev)
-  }
+	const handlePreviousYear = () => {
+		if (!currentMonth) return
+		const prev = new Date(currentMonth)
+		prev.setFullYear(prev.getFullYear() - 1)
+		goToMonth(prev)
+	}
 
-  const handleNextYear = () => {
-    if (!currentMonth) return
-    const next = new Date(currentMonth)
-    next.setFullYear(next.getFullYear() + 1)
-    goToMonth(next)
-  }
+	const handleNextYear = () => {
+		if (!currentMonth) return
+		const next = new Date(currentMonth)
+		next.setFullYear(next.getFullYear() + 1)
+		goToMonth(next)
+	}
 
-  const handlePreviousMonth = () => {
-    if (previousMonth) goToMonth(previousMonth)
-  }
+	const handlePreviousMonth = () => {
+		if (previousMonth) goToMonth(previousMonth)
+	}
 
-  const handleNextMonth = () => {
-    if (nextMonth) goToMonth(nextMonth)
-  }
+	const handleNextMonth = () => {
+		if (nextMonth) goToMonth(nextMonth)
+	}
 
-  const monthLabel = currentMonth
-    ? currentMonth.toLocaleDateString('he', { month: 'long', year: 'numeric' })
-    : ''
+	const monthLabel = currentMonth
+		? currentMonth.toLocaleDateString("he", { month: "long", year: "numeric" })
+		: ""
 
-  return (
-    <NavContainer>
-      <NavGroup>
-        <NavButton onClick={handleNextYear}>
-          <ChevronsLeft size={16} />
-        </NavButton>
-        <NavButton onClick={handleNextMonth}>
-          <ChevronLeft size={16} />
-        </NavButton>
-      </NavGroup>
-      <MonthLabel>{monthLabel}</MonthLabel>
-      <NavGroup>
-        <NavButton onClick={handlePreviousMonth}>
-          <ChevronRight size={16} />
-        </NavButton>
-        <NavButton onClick={handlePreviousYear}>
-          <ChevronsRight size={16} />
-        </NavButton>
-      </NavGroup>
-    </NavContainer>
-  )
+	return (
+		<NavContainer>
+			<NavGroup>
+				<NavButton onClick={handleNextYear}>
+					<ChevronsLeft size={16} />
+				</NavButton>
+				<NavButton onClick={handleNextMonth}>
+					<ChevronLeft size={16} />
+				</NavButton>
+			</NavGroup>
+			<MonthLabel>{monthLabel}</MonthLabel>
+			<NavGroup>
+				<NavButton onClick={handlePreviousMonth}>
+					<ChevronRight size={16} />
+				</NavButton>
+				<NavButton onClick={handlePreviousYear}>
+					<ChevronsRight size={16} />
+				</NavButton>
+			</NavGroup>
+		</NavContainer>
+	)
 }
 
 export default CalendarNav

@@ -1,86 +1,94 @@
-import styled from '@emotion/styled'
-import { ChevronDown } from 'lucide-react'
-import AssigneePicker from '../shared/AssigneePicker'
-import type { TaskRow, TaskTableMeta } from '../CreateTasksFromDiscussion/TasksColumns'
-import type { AvatarColor } from '../Tasks/ResponsibleCell'
-import { MOCK_ASSIGNEES } from '#/data/Assignees'
+import styled from "@emotion/styled"
+import { ChevronDown } from "lucide-react"
+import { MOCK_ASSIGNEES } from "src/data/Assignees"
+import type {
+	TaskRow,
+	TaskTableMeta,
+} from "../CreateTasksFromDiscussion/TasksColumns"
+import AssigneePicker from "../shared/AssigneePicker"
+import type { AvatarColor } from "../Tasks/ResponsibleCell"
 
 interface AssigneeTableCellProps {
-  row: TaskRow
-  meta: TaskTableMeta
+	row: TaskRow
+	meta: TaskTableMeta
 }
 
 function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
-  const assigneeIds = row.assigneeIds
-  const hasMultiple = assigneeIds.length > 1
-  const isExpanded = meta.expandedRows.has(row.id)
+	const assigneeIds = row.assigneeIds
+	const hasMultiple = assigneeIds.length > 1
+	const isExpanded = meta.expandedRows.has(row.id)
 
-  function handleToggleAssignee(assigneeId: number) {
-    const isRemoving = assigneeIds.includes(assigneeId)
-    const nextIds = isRemoving
-      ? assigneeIds.filter((id) => id !== assigneeId)
-      : [...assigneeIds, assigneeId]
+	function handleToggleAssignee(assigneeId: number) {
+		const isRemoving = assigneeIds.includes(assigneeId)
+		const nextIds = isRemoving
+			? assigneeIds.filter((id) => id !== assigneeId)
+			: [...assigneeIds, assigneeId]
 
-    const nextDetails = isRemoving
-      ? Object.fromEntries(
-        Object.entries(row.assigneeDetails).filter(
-          ([id]) => Number(id) !== assigneeId,
-        ),
-      )
-      : row.assigneeDetails
-      
-    meta.updateRow(row.id, {
-      assigneeIds: nextIds,
-      assigneeDetails: nextDetails,
-    })
-  }
+		const nextDetails = isRemoving
+			? Object.fromEntries(
+					Object.entries(row.assigneeDetails).filter(
+						([id]) => Number(id) !== assigneeId,
+					),
+				)
+			: row.assigneeDetails
 
-  return hasMultiple && !isExpanded ? (
-    <CollapsedAssigneeButton type="button" onClick={() => meta.toggleRowExpansion(row.id)}>
-      <ChevronDown size={16} />
-      <CollapsedAssigneeLabel>{assigneeIds.length} אחראים</CollapsedAssigneeLabel>
-    </CollapsedAssigneeButton>
-  ) : (
-    <AssigneeCellOuter $highlighted={hasMultiple && isExpanded}>
-      <AssigneePicker
-        selectedAssignees={assigneeIds}
-        onToggle={handleToggleAssignee}
-        trigger={
-          <CompactTriggerButton type="button">
-            <CompactChevron size={16} />
+		meta.updateRow(row.id, {
+			assigneeIds: nextIds,
+			assigneeDetails: nextDetails,
+		})
+	}
 
-            {hasMultiple ? (
-              <CompactAvatarStack>
-                {assigneeIds.map((id) => (
-                  MOCK_ASSIGNEES[id] ? (
-                    <CompactStackedAvatar
-                      key={id}
-                      $color={MOCK_ASSIGNEES[id].colorToken}
-                    >
-                      {MOCK_ASSIGNEES[id].initials}
-                    </CompactStackedAvatar>
-                  ) : null
-                ))}
-              </CompactAvatarStack>
-            ) : assigneeIds.length === 1 ? (
-              <AssigneeTag>
-                <AssigneeTagRole>
-                  {MOCK_ASSIGNEES[assigneeIds[0]]?.role}
-                </AssigneeTagRole>
-                <AssigneeTagAvatar
-                  $color={MOCK_ASSIGNEES[assigneeIds[0]]?.colorToken}
-                >
-                  {MOCK_ASSIGNEES[assigneeIds[0]]?.initials}
-                </AssigneeTagAvatar>
-              </AssigneeTag>
-            ) : (
-              <CompactLabel>בחר אחראי</CompactLabel>
-            )}
-          </CompactTriggerButton>
-        }
-      />
-    </AssigneeCellOuter>
-  )
+	return hasMultiple && !isExpanded ? (
+		<CollapsedAssigneeButton
+			type="button"
+			onClick={() => meta.toggleRowExpansion(row.id)}
+		>
+			<ChevronDown size={16} />
+			<CollapsedAssigneeLabel>
+				{assigneeIds.length} אחראים
+			</CollapsedAssigneeLabel>
+		</CollapsedAssigneeButton>
+	) : (
+		<AssigneeCellOuter $highlighted={hasMultiple && isExpanded}>
+			<AssigneePicker
+				selectedAssignees={assigneeIds}
+				onToggle={handleToggleAssignee}
+				trigger={
+					<CompactTriggerButton type="button">
+						<CompactChevron size={16} />
+
+						{hasMultiple ? (
+							<CompactAvatarStack>
+								{assigneeIds.map((id) =>
+									MOCK_ASSIGNEES[id] ? (
+										<CompactStackedAvatar
+											key={id}
+											$color={MOCK_ASSIGNEES[id].colorToken}
+										>
+											{MOCK_ASSIGNEES[id].initials}
+										</CompactStackedAvatar>
+									) : null,
+								)}
+							</CompactAvatarStack>
+						) : assigneeIds.length === 1 ? (
+							<AssigneeTag>
+								<AssigneeTagRole>
+									{MOCK_ASSIGNEES[assigneeIds[0]]?.role}
+								</AssigneeTagRole>
+								<AssigneeTagAvatar
+									$color={MOCK_ASSIGNEES[assigneeIds[0]]?.colorToken}
+								>
+									{MOCK_ASSIGNEES[assigneeIds[0]]?.initials}
+								</AssigneeTagAvatar>
+							</AssigneeTag>
+						) : (
+							<CompactLabel>בחר אחראי</CompactLabel>
+						)}
+					</CompactTriggerButton>
+				}
+			/>
+		</AssigneeCellOuter>
+	)
 }
 
 export default AssigneeTableCell
@@ -92,7 +100,9 @@ const AssigneeCellOuter = styled.div<{ $highlighted: boolean }>`
   margin: 0 -12px;
   padding: 0 12px;
   ${({ $highlighted }) =>
-    $highlighted ? 'outline: 1px solid var(--button-color-hover); outline-offset: -1px;' : ''}
+		$highlighted
+			? "outline: 1px solid var(--button-color-hover); outline-offset: -1px;"
+			: ""}
 `
 
 const CollapsedAssigneeButton = styled.button`
@@ -195,18 +205,18 @@ const AssigneeTagAvatar = styled.div<{ $color?: AvatarColor }>`
 `
 //TO-DO
 function getAvatarBackground(color?: AvatarColor) {
-  switch (color) {
-    case 'cyan':
-      return 'background: #87e8de;'
-    case 'blue':
-      return 'background: #91caff;'
-    case 'green':
-      return 'background: #b7eb8f;'
-    case 'orange':
-      return 'background: #ffd591;'
-    case 'gray':
-      return 'background: var(--colors-base-neutral-3);'
-    default:
-      return 'background: var(--colors-base-neutral-3);'
-  }
+	switch (color) {
+		case "cyan":
+			return "background: #87e8de;"
+		case "blue":
+			return "background: #91caff;"
+		case "green":
+			return "background: #b7eb8f;"
+		case "orange":
+			return "background: #ffd591;"
+		case "gray":
+			return "background: var(--colors-base-neutral-3);"
+		default:
+			return "background: var(--colors-base-neutral-3);"
+	}
 }

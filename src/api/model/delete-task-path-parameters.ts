@@ -7,5 +7,5 @@
  */
 
 export type DeleteTaskPathParameters = {
-	id: number;
-};
+	id: number
+}

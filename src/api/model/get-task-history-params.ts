@@ -7,5 +7,5 @@
  */
 
 export type GetTaskHistoryParams = {
-	taskId: number;
-};
+	taskId: number
+}

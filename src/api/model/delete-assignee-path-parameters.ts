@@ -7,5 +7,5 @@
  */
 
 export type DeleteAssigneePathParameters = {
-	id: number;
-};
+	id: number
+}

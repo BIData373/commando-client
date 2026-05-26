@@ -7,5 +7,5 @@
  */
 
 export type ListMessagesParams = {
-	taskId: number;
-};
+	taskId: number
+}

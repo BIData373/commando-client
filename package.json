@@ -2,9 +2,6 @@
   "name": "commando-client",
   "private": true,
   "type": "module",
-  "imports": {
-    "#/*": "./src/*"
-  },
   "scripts": {
     "dev": "vite dev --port 8080",
     "build": "vite build",

@@ -7,5 +7,5 @@
  */
 
 export type UpdateUserPathParameters = {
-	id: number;
-};
+	id: number
+}

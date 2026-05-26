@@ -7,5 +7,5 @@
  */
 
 export interface UpdateSourceDto {
-	name?: string;
+	name?: string
 }

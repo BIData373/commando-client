@@ -1,60 +1,63 @@
-import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
-import styled from '@emotion/styled'
-import { createFileRoute, Outlet, useNavigate, useRouterState } from '@tanstack/react-router'
-import { Tabs, TabsList, TabsTrigger } from '../../../components/ui/tabs'
+import styled from "@emotion/styled"
+import {
+	createFileRoute,
+	Outlet,
+	useNavigate,
+	useRouterState,
+} from "@tanstack/react-router"
+import { SETTINGS_TABS, SettingTabPath } from "src/utils/settingsUtils"
+import { Tabs, TabsList, TabsTrigger } from "../../../components/ui/tabs"
 
-
-export const Route = createFileRoute('/workspace/$urlName/settings')({
-  component: SettingsLayout,
-  staticData: {
-    header: {
-      title: 'הגדרות סביבת המפקד',
-      user: true,
-      navigation: true,
-      workspace: true,
-    },
-  },
+export const Route = createFileRoute("/workspace/$urlName/settings")({
+	component: SettingsLayout,
+	staticData: {
+		header: {
+			title: "הגדרות סביבת המפקד",
+			user: true,
+			navigation: true,
+			workspace: true,
+		},
+	},
 })
 
-
 const SETTINGS_ROUTES: Record<SettingTabPath, string> = {
-  [SettingTabPath.GENERAL]: '/workspace/$urlName/settings/general',
-  [SettingTabPath.ASSIGNEES]: '/workspace/$urlName/settings/assignees',
-  [SettingTabPath.PERMISSIONS]: '/workspace/$urlName/settings/permissions',
+	[SettingTabPath.GENERAL]: "/workspace/$urlName/settings/general",
+	[SettingTabPath.ASSIGNEES]: "/workspace/$urlName/settings/assignees",
+	[SettingTabPath.PERMISSIONS]: "/workspace/$urlName/settings/permissions",
 } as const
 
 function SettingsLayout() {
-  const navigate = useNavigate()
-  const { location } = useRouterState()
-  const { urlName } = Route.useParams()
-  
-  const activeTab = (Object.values(SettingTabPath).find((t) =>
-    location.pathname.endsWith(t)
-  ) ?? SettingTabPath.GENERAL)
+	const navigate = useNavigate()
+	const { location } = useRouterState()
+	const { urlName } = Route.useParams()
 
-  function handleTabChange(value: string) {
-    const path = SETTINGS_ROUTES[value as SettingTabPath]
-    navigate({ to: path, params: { urlName } })
-  }
+	const activeTab =
+		Object.values(SettingTabPath).find((t) => location.pathname.endsWith(t)) ??
+		SettingTabPath.GENERAL
 
-  return (
-    <SettingsRoot>
-      <Tabs value={activeTab} onValueChange={handleTabChange}>
-        <FullWidthTabsList variant="line">
-          {Object.values(SettingTabPath).map((value) => (
-            <StyledTabsTrigger key={value} value={value}>
-              {SETTINGS_TABS[value]}
-            </StyledTabsTrigger>
-          ))}
-        </FullWidthTabsList>
-      </Tabs>
-      <ContentWrapper>
-        <OutletContainer>
-          <Outlet />
-        </OutletContainer>
-      </ContentWrapper>
-    </SettingsRoot >
-  )
+	function handleTabChange(value: string) {
+		const path = SETTINGS_ROUTES[value as SettingTabPath]
+		navigate({ to: path, params: { urlName } })
+	}
+
+	return (
+		<SettingsRoot>
+			<Tabs value={activeTab} onValueChange={handleTabChange}>
+				<FullWidthTabsList variant="line">
+					{Object.values(SettingTabPath).map((value) => (
+						<StyledTabsTrigger key={value} value={value}>
+							{SETTINGS_TABS[value]}
+						</StyledTabsTrigger>
+					))}
+				</FullWidthTabsList>
+			</Tabs>
+			<ContentWrapper>
+				<OutletContainer>
+					<Outlet />
+				</OutletContainer>
+			</ContentWrapper>
+		</SettingsRoot>
+	)
 }
 
 const SettingsRoot = styled.div`

@@ -1,17 +1,19 @@
-import type { UserDto } from '#/api/model';
-import styled from '@emotion/styled';
+import styled from "@emotion/styled"
+import type { UserDto } from "src/api/model"
 
 interface UserItemProps {
-  user: UserDto
+	user: UserDto
 }
 
 export function UserItem({ user }: UserItemProps) {
-  return (
-    <>
-      <UserName>{user.info?.name ?? ''} - {user.upn}</UserName>
-      <UserMeta>{user.info?.displayName ?? ''}</UserMeta>
-    </>
-  )
+	return (
+		<>
+			<UserName>
+				{user.info?.name ?? ""} - {user.upn}
+			</UserName>
+			<UserMeta>{user.info?.displayName ?? ""}</UserMeta>
+		</>
+	)
 }
 
 const UserName = styled.span`

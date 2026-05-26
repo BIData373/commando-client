@@ -7,7 +7,7 @@
  */
 
 export interface AssigneeTaskStatusDto {
-	taskId: number;
-	assigneeId: number;
-	statusId: number;
+	taskId: number
+	assigneeId: number
+	statusId: number
 }

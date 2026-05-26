@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export type ListAssigneeUsersPathParameters = {
-	id: number
+export type DeletePermissionParams = {
+	userId: number
+	workspaceId: number
 }

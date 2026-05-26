@@ -7,5 +7,5 @@
  */
 
 export type ListAssigneeTaskStatusesPathParameters = {
-	taskId: number;
-};
+	taskId: number
+}

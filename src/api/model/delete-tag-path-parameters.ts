@@ -7,5 +7,5 @@
  */
 
 export type DeleteTagPathParameters = {
-	id: number;
-};
+	id: number
+}

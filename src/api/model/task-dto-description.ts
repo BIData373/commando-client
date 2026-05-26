@@ -9,4 +9,4 @@
 /**
  * @nullable
  */
-export type TaskDtoDescription = { [key: string]: unknown } | null;
+export type TaskDtoDescription = { [key: string]: unknown } | null

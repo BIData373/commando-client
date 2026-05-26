@@ -1,135 +1,143 @@
-import styled from '@emotion/styled'
-import { createFileRoute } from '@tanstack/react-router'
-import { X } from 'lucide-react'
-import { useState } from 'react'
-import { IconDropdown } from '#/components/settings/IconDropdown'
-import { SectionTitle } from '#/components/settings/SectionTitle'
-import { SelectCommand } from '#/components/settings/SelectCommand'
-import type { IMesibaIcon } from '#/hooks/useMesiba'
-import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
-import { Input } from '../../../../components/ui/input'
-import { useUpdateWorkspaceSettings, useWorkspaceSettings } from '../../../../hooks/useWorkspaceSettings'
-import { useWorkspace } from '#/providers/WorkspaceProvider'
+import styled from "@emotion/styled"
+import { createFileRoute } from "@tanstack/react-router"
+import { X } from "lucide-react"
+import { useState } from "react"
+import { IconDropdown } from "src/components/settings/IconDropdown"
+import { SectionTitle } from "src/components/settings/SectionTitle"
+import { SelectCommand } from "src/components/settings/SelectCommand"
+import type { IMesibaIcon } from "src/hooks/useMesiba"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { SETTINGS_TABS, SettingTabPath } from "src/utils/settingsUtils"
+import { Input } from "../../../../components/ui/input"
+import {
+	useUpdateWorkspaceSettings,
+	useWorkspaceSettings,
+} from "../../../../hooks/useWorkspaceSettings"
 
-export const Route = createFileRoute('/workspace/$urlName/settings/general')({ component: SettingsGeneral })
+export const Route = createFileRoute("/workspace/$urlName/settings/general")({
+	component: SettingsGeneral,
+})
 
 const NAME_MAX_LENGTH = 50
 const activeTabLabel = SETTINGS_TABS[SettingTabPath.GENERAL]
 
 interface FormState {
-  name: string
-  command: string
-  emblem: string
+	name: string
+	command: string
+	emblem: string
 }
 
 function SettingsGeneral() {
-  const workspace = useWorkspace()
+	const workspace = useWorkspace()
 
-  const { data: settings } = useWorkspaceSettings(workspace.urlName)
-  const { mutate: updateSettings } = useUpdateWorkspaceSettings(workspace.urlName)
+	const { data: settings } = useWorkspaceSettings(workspace.urlName)
+	const { mutate: updateSettings } = useUpdateWorkspaceSettings(
+		workspace.urlName,
+	)
 
+	const [form, setForm] = useState<FormState>({
+		name: workspace.title ?? "",
+		command: workspace.pikudId.toString() ?? "",
+		emblem: workspace.icon ?? "",
+	})
+	const [iconSearch, setIconSearch] = useState("")
+	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
 
-  const [form, setForm] = useState<FormState>({
-    name: workspace.title ?? '',
-    command: workspace.pikudId.toString() ?? '',
-    emblem: workspace.icon ?? '',
-  })
-  const [iconSearch, setIconSearch] = useState('')
-  const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
+	const setField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
+		const next = { ...form, [key]: value }
+		setForm(next)
+		updateSettings({
+			name: next.name,
+			command: next.command || null,
+			logoUrl: next.emblem || null,
+		})
+	}
 
-  const setField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
-    const next = { ...form, [key]: value }
-    setForm(next)
-    updateSettings({
-      name: next.name,
-      command: next.command || null,
-      logoUrl: next.emblem || null,
-    })
-  }
+	function handleIconSelect(icon: IMesibaIcon) {
+		setField("emblem", icon.iconName)
+		setSelectedIcon(icon)
+		setIconSearch("")
+	}
 
-  function handleIconSelect(icon: IMesibaIcon) {
-    setField('emblem', icon.iconName)
-    setSelectedIcon(icon)
-    setIconSearch('')
-  }
+	function handleNameChange(
+		e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
+	) {
+		setField("name", e.target.value.slice(0, NAME_MAX_LENGTH))
+	}
 
-  function handleNameChange(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) {
-    setField('name', e.target.value.slice(0, NAME_MAX_LENGTH))
-  }
+	function handleCommandChange(value: string) {
+		setField("command", value)
+	}
 
-  function handleCommandChange(value: string) {
-    setField('command', value)
-  }
+	function handleIconClear() {
+		setField("emblem", "")
+		setSelectedIcon(null)
+		setIconSearch("")
+	}
 
-  function handleIconClear() {
-    setField('emblem', '')
-    setSelectedIcon(null)
-    setIconSearch('')
-  }
+	function handleImageNotFound(e: React.SyntheticEvent<HTMLImageElement>) {
+		e.currentTarget.onerror = null
+		e.currentTarget.src = "/workspace-icon.png"
+	}
 
-  function handleImageNotFound(e: React.SyntheticEvent<HTMLImageElement>) {
-    e.currentTarget.onerror = null
-    e.currentTarget.src = '/workspace-icon.png'
-  }
+	return (
+		<GeneralRootPage>
+			<SectionTitle title={activeTabLabel} />
+			<GeneralScrollArea>
+				<FormRoot>
+					<FieldRow>
+						<FieldLabel>שם סביבה</FieldLabel>
+						<InputWrapper>
+							<StyledInput
+								value={form.name}
+								onChange={handleNameChange}
+								placeholder="הזן שם סביבה"
+								maxLength={NAME_MAX_LENGTH}
+							/>
+							<CharCounter $atLimit={form.name.length >= NAME_MAX_LENGTH}>
+								{form.name.length}/{NAME_MAX_LENGTH}
+							</CharCounter>
+						</InputWrapper>
+					</FieldRow>
 
-  return (
-    <GeneralRootPage>
-      <SectionTitle title={activeTabLabel} />
-      <GeneralScrollArea>
-        <FormRoot>
-          <FieldRow>
-            <FieldLabel>שם סביבה</FieldLabel>
-            <InputWrapper>
-              <StyledInput
-                value={form.name}
-                onChange={handleNameChange}
-                placeholder="הזן שם סביבה"
-                maxLength={NAME_MAX_LENGTH}
-              />
-              <CharCounter $atLimit={form.name.length >= NAME_MAX_LENGTH}>
-                {form.name.length}/{NAME_MAX_LENGTH}
-              </CharCounter>
-            </InputWrapper>
-          </FieldRow>
+					<FieldRow>
+						<FieldLabel>שיוך פיקודי ארגוני</FieldLabel>
+						<SelectCommand
+							command={form.command}
+							onChange={handleCommandChange}
+						/>
+					</FieldRow>
 
-          <FieldRow>
-            <FieldLabel>שיוך פיקודי ארגוני</FieldLabel>
-            <SelectCommand
-              command={form.command}
-              onChange={handleCommandChange}
-            />
-          </FieldRow>
-
-          <FieldRow>
-            <FieldLabel>סמל</FieldLabel>
-            <IconDropdown
-              value={iconSearch}
-              onChange={setIconSearch}
-              onClear={handleIconClear}
-              onSelect={handleIconSelect}
-              selectedItem={selectedIcon ?? undefined}
-            />
-            <EmblemPreview>
-              {form.emblem ? (
-                <>
-                  <EmblemClearButton type="button" onClick={handleIconClear}>
-                    <X size={16} />
-                  </EmblemClearButton>
-                  <img
-                    src={form.emblem}
-                    alt="סמל לשכה"
-                    onError={handleImageNotFound}
-                  />
-                </>
-              ) : (
-                <EmblemPlaceholder>בחר סמל</EmblemPlaceholder>
-              )}
-            </EmblemPreview>
-          </FieldRow>
-        </FormRoot>
-      </GeneralScrollArea>
-    </GeneralRootPage>
-  )
+					<FieldRow>
+						<FieldLabel>סמל</FieldLabel>
+						<IconDropdown
+							value={iconSearch}
+							onChange={setIconSearch}
+							onClear={handleIconClear}
+							onSelect={handleIconSelect}
+							selectedItem={selectedIcon ?? undefined}
+						/>
+						<EmblemPreview>
+							{form.emblem ? (
+								<>
+									<EmblemClearButton type="button" onClick={handleIconClear}>
+										<X size={16} />
+									</EmblemClearButton>
+									<img
+										src={form.emblem}
+										alt="סמל לשכה"
+										onError={handleImageNotFound}
+									/>
+								</>
+							) : (
+								<EmblemPlaceholder>בחר סמל</EmblemPlaceholder>
+							)}
+						</EmblemPreview>
+					</FieldRow>
+				</FormRoot>
+			</GeneralScrollArea>
+		</GeneralRootPage>
+	)
 }
 
 const GeneralRootPage = styled.div`
@@ -171,7 +179,7 @@ const StyledInput = styled(Input)`
 
 const CharCounter = styled.span<{ $atLimit: boolean }>`
   font-size: 12px;
-  color: ${({ $atLimit }) => ($atLimit ? 'var(--color-danger, #e53e3e)' : 'var(--sea-ink-soft)')};
+  color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger, #e53e3e)" : "var(--sea-ink-soft)")};
   text-align: end;
 `
 

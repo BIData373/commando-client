@@ -7,9 +7,9 @@
  */
 
 export type PermissionDtoType =
-	(typeof PermissionDtoType)[keyof typeof PermissionDtoType];
+	(typeof PermissionDtoType)[keyof typeof PermissionDtoType]
 
 export const PermissionDtoType = {
 	VIEWER: "VIEWER",
 	MANAGER: "MANAGER",
-} as const;
+} as const

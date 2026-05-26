@@ -7,5 +7,5 @@
  */
 
 export interface UpdateMessageDto {
-	content?: string;
+	content?: string
 }

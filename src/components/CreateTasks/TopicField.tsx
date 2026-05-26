@@ -1,154 +1,165 @@
-import { useState, useRef } from 'react'
-import styled from '@emotion/styled'
-import { ChevronDown, Tag, X } from 'lucide-react'
-import HighlightMatch from '../shared/HighlightMatch'
-import { ALL_TOPICS } from '../../data/Topics'
+import styled from "@emotion/styled"
+import { ChevronDown, Tag, X } from "lucide-react"
+import { useRef, useState } from "react"
+import { ALL_TOPICS } from "../../data/Topics"
+import HighlightMatch from "../shared/HighlightMatch"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface TopicFieldProps {
-  topics: string[]
-  lockedTopics: string[]
-  onTopicSelect: (topic: string) => void
-  onTopicRemove: (topic: string) => void
+	topics: string[]
+	lockedTopics: string[]
+	onTopicSelect: (topic: string) => void
+	onTopicRemove: (topic: string) => void
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-function TopicField({ topics, lockedTopics, onTopicSelect, onTopicRemove }: TopicFieldProps) {
-  const [topicQuery, setTopicQuery] = useState('')
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+function TopicField({
+	topics,
+	lockedTopics,
+	onTopicSelect,
+	onTopicRemove,
+}: TopicFieldProps) {
+	const [topicQuery, setTopicQuery] = useState("")
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+	const inputRef = useRef<HTMLInputElement>(null)
 
-  const filteredTopics = ALL_TOPICS.filter(
-    (t) => t.includes(topicQuery) && !topics.includes(t),
-  )
+	const filteredTopics = ALL_TOPICS.filter(
+		(t) => t.includes(topicQuery) && !topics.includes(t),
+	)
 
-  const isNewTopic = topicQuery.trim() !== '' && !ALL_TOPICS.includes(topicQuery.trim())
-  const showDropdown = isDropdownOpen && (filteredTopics.length > 0 || isNewTopic)
+	const isNewTopic =
+		topicQuery.trim() !== "" && !ALL_TOPICS.includes(topicQuery.trim())
+	const showDropdown =
+		isDropdownOpen && (filteredTopics.length > 0 || isNewTopic)
 
-  function handleSelect(topic: string) {
-    onTopicSelect(topic)
-    setTopicQuery('')
-  }
+	function handleSelect(topic: string) {
+		onTopicSelect(topic)
+		setTopicQuery("")
+	}
 
-  function handleCreateNew() {
-    if (topicQuery.trim() && !topics.includes(topicQuery.trim())) {
-      onTopicSelect(topicQuery.trim())
-    }
-    setTopicQuery('')
-  }
+	function handleCreateNew() {
+		if (topicQuery.trim() && !topics.includes(topicQuery.trim())) {
+			onTopicSelect(topicQuery.trim())
+		}
+		setTopicQuery("")
+	}
 
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      if (topicQuery.trim()) {
-        const existing = filteredTopics.find((t) => t === topicQuery.trim())
-        if (existing) {
-          handleSelect(existing)
-        } else {
-          handleCreateNew()
-        }
-      }
-    }
-  }
+	function handleKeyDown(e: React.KeyboardEvent) {
+		if (e.key === "Enter") {
+			e.preventDefault()
+			if (topicQuery.trim()) {
+				const existing = filteredTopics.find((t) => t === topicQuery.trim())
+				if (existing) {
+					handleSelect(existing)
+				} else {
+					handleCreateNew()
+				}
+			}
+		}
+	}
 
-  function handleRemoveTopic(e: React.MouseEvent, topic: string) {
-    e.preventDefault()
-    onTopicRemove(topic)
-  }
+	function handleRemoveTopic(e: React.MouseEvent, topic: string) {
+		e.preventDefault()
+		onTopicRemove(topic)
+	}
 
-  function handleSelectMouseDown(e: React.MouseEvent, topic: string) {
-    e.preventDefault()
-    handleSelect(topic)
-  }
+	function handleSelectMouseDown(e: React.MouseEvent, topic: string) {
+		e.preventDefault()
+		handleSelect(topic)
+	}
 
-  function handleCreateNewMouseDown(e: React.MouseEvent) {
-    e.preventDefault()
-    handleCreateNew()
-  }
+	function handleCreateNewMouseDown(e: React.MouseEvent) {
+		e.preventDefault()
+		handleCreateNew()
+	}
 
-  function handleInputBoxClick() {
-    inputRef.current?.focus()
-  }
+	function handleInputBoxClick() {
+		inputRef.current?.focus()
+	}
 
-  function handleQueryChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setTopicQuery(e.target.value)
-  }
+	function handleQueryChange(e: React.ChangeEvent<HTMLInputElement>) {
+		setTopicQuery(e.target.value)
+	}
 
-  function handleFocus() {
-    setIsDropdownOpen(true)
-  }
+	function handleFocus() {
+		setIsDropdownOpen(true)
+	}
 
-  function handleBlur() {
-    setTimeout(() => setIsDropdownOpen(false), 200)
-  }
+	function handleBlur() {
+		setTimeout(() => setIsDropdownOpen(false), 200)
+	}
 
-  return (
-    <FormItem>
-      <FormLabelRow>
-        <LabelText>נושא</LabelText>
-      </FormLabelRow>
-      <TopicFieldWrapper>
-        <TopicInputBox onClick={handleInputBoxClick}>
-          <StyledChevronDown size={16} />
-          <InputContent>
-            {topics.map((topic) => (
-              <TopicTag key={topic}>
-                <TagText>{topic}</TagText>
-                {!lockedTopics.includes(topic) && (
-                  <TagRemoveButton
-                    onMouseDown={(e) => handleRemoveTopic(e, topic)}
-                  >
-                    <X size={12} />
-                  </TagRemoveButton>
-                )}
-              </TopicTag>
-            ))}
-            <TopicInputField
-              ref={inputRef}
-              value={topicQuery}
-              onChange={handleQueryChange}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              onKeyDown={handleKeyDown}
-              placeholder={topics.length === 0 ? "מאמץ/מבצע/קטגוריה (לדוג': 'שאגת הארי' , הגנה במרחב)" : ''}
-              dir="rtl"
-            />
-          </InputContent>
-          {topics.length === 0 &&
-            <StyledTag size={16} />
-          }
-        </TopicInputBox>
-        {showDropdown && (
-          <DropdownMenu>
-            {filteredTopics.length > 0 && topicQuery && (
-              <SuggestionsHeader>הצעות</SuggestionsHeader>
-            )}
-            {filteredTopics.map((topic) => (
-              <TopicOption
-                key={topic}
-                onMouseDown={(e) => handleSelectMouseDown(e, topic)}
-              >
-                {topicQuery ? <HighlightMatch text={topic} query={topicQuery} /> : topic}
-              </TopicOption>
-            ))}
-            {isNewTopic && (
-              <>
-                {filteredTopics.length > 0 && <Divider />}
-                <TopicOption
-                  onMouseDown={handleCreateNewMouseDown}
-                >
-                  <HighlightedText>{topicQuery}</HighlightedText>
-                  <span> (חדש)</span>
-                </TopicOption>
-              </>
-            )}
-          </DropdownMenu>
-        )}
-      </TopicFieldWrapper>
-    </FormItem>
-  )
+	return (
+		<FormItem>
+			<FormLabelRow>
+				<LabelText>נושא</LabelText>
+			</FormLabelRow>
+			<TopicFieldWrapper>
+				<TopicInputBox onClick={handleInputBoxClick}>
+					<StyledChevronDown size={16} />
+					<InputContent>
+						{topics.map((topic) => (
+							<TopicTag key={topic}>
+								<TagText>{topic}</TagText>
+								{!lockedTopics.includes(topic) && (
+									<TagRemoveButton
+										onMouseDown={(e) => handleRemoveTopic(e, topic)}
+									>
+										<X size={12} />
+									</TagRemoveButton>
+								)}
+							</TopicTag>
+						))}
+						<TopicInputField
+							ref={inputRef}
+							value={topicQuery}
+							onChange={handleQueryChange}
+							onFocus={handleFocus}
+							onBlur={handleBlur}
+							onKeyDown={handleKeyDown}
+							placeholder={
+								topics.length === 0
+									? "מאמץ/מבצע/קטגוריה (לדוג': 'שאגת הארי' , הגנה במרחב)"
+									: ""
+							}
+							dir="rtl"
+						/>
+					</InputContent>
+					{topics.length === 0 && <StyledTag size={16} />}
+				</TopicInputBox>
+				{showDropdown && (
+					<DropdownMenu>
+						{filteredTopics.length > 0 && topicQuery && (
+							<SuggestionsHeader>הצעות</SuggestionsHeader>
+						)}
+						{filteredTopics.map((topic) => (
+							<TopicOption
+								key={topic}
+								onMouseDown={(e) => handleSelectMouseDown(e, topic)}
+							>
+								{topicQuery ? (
+									<HighlightMatch text={topic} query={topicQuery} />
+								) : (
+									topic
+								)}
+							</TopicOption>
+						))}
+						{isNewTopic && (
+							<>
+								{filteredTopics.length > 0 && <Divider />}
+								<TopicOption onMouseDown={handleCreateNewMouseDown}>
+									<HighlightedText>{topicQuery}</HighlightedText>
+									<span> (חדש)</span>
+								</TopicOption>
+							</>
+						)}
+					</DropdownMenu>
+				)}
+			</TopicFieldWrapper>
+		</FormItem>
+	)
 }
 
 export default TopicField

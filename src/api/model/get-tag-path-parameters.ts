@@ -7,5 +7,5 @@
  */
 
 export type GetTagPathParameters = {
-	id: number;
-};
+	id: number
+}

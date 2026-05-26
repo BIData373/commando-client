@@ -1,16 +1,12 @@
-import styled from '@emotion/styled'
+import styled from "@emotion/styled"
 
 interface SectionTitleProps {
-    title: string
-    className?: string
+	title: string
+	className?: string
 }
 
 export const SectionTitle = ({ title, className }: SectionTitleProps) => {
-    return (
-        <StyledTitle className={className}>
-            {title}
-        </StyledTitle>
-    )
+	return <StyledTitle className={className}>{title}</StyledTitle>
 }
 
 const StyledTitle = styled.h2`

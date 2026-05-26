@@ -7,6 +7,6 @@
  */
 
 export interface CreateAssigneeUserDto {
-	assigneeId: number;
-	userId: number;
+	assigneeId: number
+	userId: number
 }

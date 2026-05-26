@@ -1,94 +1,123 @@
-import type { WorkspaceDto } from '#/api/model'
-import { useListWorkspaces } from '#/api/workspace/workspace'
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
-import { Card, CardAction, CardFooter, CardHeader, CardTitle } from '#/components/ui/card'
-import styled from '@emotion/styled'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import styled from "@emotion/styled"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import type { WorkspaceDto } from "src/api/model"
+import { useListWorkspaces } from "src/api/workspace/workspace"
+import { Avatar, AvatarFallback, AvatarImage } from "src/components/ui/avatar"
+import {
+	Card,
+	CardAction,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "src/components/ui/card"
 
-export const Route = createFileRoute('/')({
-  component: RouteComponent,
-  staticData: {
-    header: {
-      title: 'סביבות',
-      navigation: false,
-      user: false,
-    },
-  },
+export const Route = createFileRoute("/")({
+	component: RouteComponent,
+	staticData: {
+		header: {
+			title: "סביבות",
+			navigation: false,
+			user: false,
+		},
+	},
 })
 
 interface Workspace {
-  urlName: string
-  displayName: string
-  description: string
-  memberCount: number
+	urlName: string
+	displayName: string
+	description: string
+	memberCount: number
 }
 
 const PLACEHOLDER_WORKSPACES: Workspace[] = [
-  { urlName: 'alpha-unit', displayName: 'יחידה אלפא', description: 'ניהול משימות יחידת אלפא', memberCount: 12 },
-  { urlName: 'bravo-unit', displayName: 'יחידה ברבו', description: 'מטה ותיאום מבצעי', memberCount: 8 },
-  { urlName: 'charlie-unit', displayName: 'יחידה צ\'רלי', description: 'לוגיסטיקה ותמיכה', memberCount: 15 },
-  { urlName: 'command-hq', displayName: 'מפקדה', description: 'מטה פיקוד עליון', memberCount: 5 },
+	{
+		urlName: "alpha-unit",
+		displayName: "יחידה אלפא",
+		description: "ניהול משימות יחידת אלפא",
+		memberCount: 12,
+	},
+	{
+		urlName: "bravo-unit",
+		displayName: "יחידה ברבו",
+		description: "מטה ותיאום מבצעי",
+		memberCount: 8,
+	},
+	{
+		urlName: "charlie-unit",
+		displayName: "יחידה צ'רלי",
+		description: "לוגיסטיקה ותמיכה",
+		memberCount: 15,
+	},
+	{
+		urlName: "command-hq",
+		displayName: "מפקדה",
+		description: "מטה פיקוד עליון",
+		memberCount: 5,
+	},
 ]
 
 interface WorkspaceCardProps {
-  workspace: WorkspaceDto
+	workspace: WorkspaceDto
 }
 
 function WorkspaceCard({ workspace }: WorkspaceCardProps) {
-  const navigate = useNavigate()
+	const navigate = useNavigate()
 
-  function handleWorkspaceClick() {
-    navigate({ to: '/workspace/$urlName', params: { urlName: workspace.urlName } })
-  }
+	function handleWorkspaceClick() {
+		navigate({
+			to: "/workspace/$urlName",
+			params: { urlName: workspace.urlName },
+		})
+	}
 
-  return (
-    <Card onClick={handleWorkspaceClick}>
-      <CardHeader>
-        <CardTitle>{workspace.title}</CardTitle>
+	return (
+		<Card onClick={handleWorkspaceClick}>
+			<CardHeader>
+				<CardTitle>{workspace.title}</CardTitle>
 
-        <CardAction>
-          <Avatar>
-            <AvatarImage
-              src="/workspace-icon.png"
-              alt="@shadcn"
-              className="grayscale"
-            />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-        </CardAction>
-      </CardHeader>
-      <CardFooter>
-        {/* TODO - dont have this info */}
-        {/* {workspace.memberCount} משתמשים */}
-      </CardFooter>
-    </Card>
-  )
+				<CardAction>
+					<Avatar>
+						<AvatarImage
+							src="/workspace-icon.png"
+							alt="@shadcn"
+							className="grayscale"
+						/>
+						<AvatarFallback>CN</AvatarFallback>
+					</Avatar>
+				</CardAction>
+			</CardHeader>
+			<CardFooter>
+				{/* TODO - dont have this info */}
+				{/* {workspace.memberCount} משתמשים */}
+			</CardFooter>
+		</Card>
+	)
 }
 
 function RouteComponent() {
-  const { data: workspaces = [] } = useListWorkspaces()
-  const navigate = useNavigate()
+	const { data: workspaces = [] } = useListWorkspaces()
+	const navigate = useNavigate()
 
-  function handlePersonalClick() {
-    navigate({ to: '/personal', search: { view: 'TABLE' } })
-  }
+	function handlePersonalClick() {
+		navigate({ to: "/personal", search: { view: "TABLE" } })
+	}
 
-  return (
-    <PageRoot>
-      <PersonalBanner onClick={handlePersonalClick}>
-        <PersonalLabel>אזור אישי</PersonalLabel>
-        <PersonalSub>משימות ופעולות אישיות</PersonalSub>
-      </PersonalBanner>
+	return (
+		<PageRoot>
+			<PersonalBanner onClick={handlePersonalClick}>
+				<PersonalLabel>אזור אישי</PersonalLabel>
+				<PersonalSub>משימות ופעולות אישיות</PersonalSub>
+			</PersonalBanner>
 
-      <SectionTitle>סביבות עבודה</SectionTitle>
+			<SectionTitle>סביבות עבודה</SectionTitle>
 
-      <WorkspaceGrid>
-        {workspaces.map((ws) => (
-          <WorkspaceCard key={ws.urlName} workspace={ws} />
-        ))}
-      </WorkspaceGrid>
-    </PageRoot>
-  )
+			<WorkspaceGrid>
+				{workspaces.map((ws) => (
+					<WorkspaceCard key={ws.urlName} workspace={ws} />
+				))}
+			</WorkspaceGrid>
+		</PageRoot>
+	)
 }
 
 const PageRoot = styled.div`
@@ -141,7 +170,6 @@ const WorkspaceGrid = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
 `
-
 
 const WorkspaceIcon = styled.img`
   width: 40px;

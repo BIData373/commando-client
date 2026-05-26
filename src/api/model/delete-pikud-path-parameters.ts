@@ -7,5 +7,5 @@
  */
 
 export type DeletePikudPathParameters = {
-	id: number;
-};
+	id: number
+}

@@ -7,5 +7,5 @@
  */
 
 export type DeleteMessagePathParameters = {
-	id: number;
-};
+	id: number
+}

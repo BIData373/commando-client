@@ -7,5 +7,5 @@
  */
 
 export type DeleteUserPathParameters = {
-	id: number;
-};
+	id: number
+}

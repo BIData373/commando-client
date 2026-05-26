@@ -1,98 +1,113 @@
-import styled from '@emotion/styled'
-import { Link, type LinkComponentProps, useRouterState } from '@tanstack/react-router'
-import { ChevronDown, User } from 'lucide-react'
-import type { HeaderConfig } from '#/router'
-import { useTitleBarActions } from '../providers/TitleBarProvider'
-import ThemeToggle from './ThemeToggle'
-import { Avatar, AvatarFallback } from './ui/avatar'
+import styled from "@emotion/styled"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from './ui/dropdown-menu'
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from './ui/navigation-menu'
+	Link,
+	type LinkComponentProps,
+	useRouterState,
+} from "@tanstack/react-router"
+import { ChevronDown, User } from "lucide-react"
+import type { HeaderConfig } from "src/router"
+import { useTitleBarActions } from "../providers/TitleBarProvider"
+import ThemeToggle from "./ThemeToggle"
+import { Avatar, AvatarFallback } from "./ui/avatar"
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "./ui/dropdown-menu"
+import {
+	NavigationMenu,
+	NavigationMenuItem,
+	NavigationMenuLink,
+	NavigationMenuList,
+} from "./ui/navigation-menu"
 
 export default function Header() {
-  // In RTL flex, first item is rightmost. 'בית' is the primary/rightmost link.
-  const links: LinkComponentProps[] = [
-    { to: '/workspace/$urlName/dashboard', children: 'בית' },
-    { to: '/workspace/$urlName/tasks', children: 'הנחיות' },
-    { to: '/workspace/$urlName/settings', children: 'הגדרות לשכה' },
-  ]
+	// In RTL flex, first item is rightmost. 'בית' is the primary/rightmost link.
+	const links: LinkComponentProps[] = [
+		{ to: "/workspace/$urlName/dashboard", children: "בית" },
+		{ to: "/workspace/$urlName/tasks", children: "הנחיות" },
+		{ to: "/workspace/$urlName/settings", children: "הגדרות לשכה" },
+	]
 
-  const { matches } = useRouterState()
-  const headerConfig = matches.findLast(m => m.staticData.header)?.staticData.header as HeaderConfig | undefined
-  const { title = '', navigation = true, user = true, workspace = false } = headerConfig ?? {}
-  const { actions } = useTitleBarActions()
-  const showTitleBar = title || actions
+	const { matches } = useRouterState()
+	const headerConfig = matches.findLast((m) => m.staticData.header)?.staticData
+		.header as HeaderConfig | undefined
+	const {
+		title = "",
+		navigation = true,
+		user = true,
+		workspace = false,
+	} = headerConfig ?? {}
+	const { actions } = useTitleBarActions()
+	const showTitleBar = title || actions
 
-  return (
-    <HeaderContainer>
-      <HeaderRoot>
-        <HeaderInner>
-          <StartSection>
-            <LogoImage src="/logo.svg" alt="Logo" />
-            {navigation && (
-              <NavigationMenu>
-                <NavigationMenuList>
-                  {links.map((link, index) => (
-                    <NavigationMenuItem key={index}>
-                      <NavMenuLink asChild>
-                        <Link to={link.to}>{link.children}</Link>
-                      </NavMenuLink>
-                    </NavigationMenuItem>
-                  ))}
-                </NavigationMenuList>
-              </NavigationMenu>
-            )}
-          </StartSection>
+	return (
+		<HeaderContainer>
+			<HeaderRoot>
+				<HeaderInner>
+					<StartSection>
+						<LogoImage src="/logo.svg" alt="Logo" />
+						{navigation && (
+							<NavigationMenu>
+								<NavigationMenuList>
+									{links.map((link, index) => (
+										<NavigationMenuItem key={index}>
+											<NavMenuLink asChild>
+												<Link to={link.to}>{link.children}</Link>
+											</NavMenuLink>
+										</NavigationMenuItem>
+									))}
+								</NavigationMenuList>
+							</NavigationMenu>
+						)}
+					</StartSection>
 
-          <CenterSection>
-            {workspace && (
-              <>
-                {/* Icon first = rightmost in RTL */}
-                <WorkspaceIcon src="/workspace-icon.png" alt="Workspace icon" />
-                <WorkspaceName>Example Workspace</WorkspaceName>
-              </>
-            )}
-          </CenterSection>
+					<CenterSection>
+						{workspace && (
+							<>
+								{/* Icon first = rightmost in RTL */}
+								<WorkspaceIcon src="/workspace-icon.png" alt="Workspace icon" />
+								<WorkspaceName>Example Workspace</WorkspaceName>
+							</>
+						)}
+					</CenterSection>
 
-          {/* Col 3 — physically LEFT in RTL: user avatar */}
-          <EndSection>
-            {user && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <UserTrigger>
-                    <Avatar>
-                      <AvatarFallback>
-                        <User size={20} />
-                      </AvatarFallback>
-                    </Avatar>
-                    <ChevronDown size={20} />
-                  </UserTrigger>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <ThemeToggle />
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </EndSection>
-        </HeaderInner>
-      </HeaderRoot>
+					{/* Col 3 — physically LEFT in RTL: user avatar */}
+					<EndSection>
+						{user && (
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<UserTrigger>
+										<Avatar>
+											<AvatarFallback>
+												<User size={20} />
+											</AvatarFallback>
+										</Avatar>
+										<ChevronDown size={20} />
+									</UserTrigger>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent>
+									<DropdownMenuSeparator />
+									<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+										<ThemeToggle />
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						)}
+					</EndSection>
+				</HeaderInner>
+			</HeaderRoot>
 
-      {showTitleBar && (
-        <TitleBar>
-          {title && <PageTitle>{title}</PageTitle>}
-          {actions}
-        </TitleBar>
-      )}
-    </HeaderContainer>
-  )
+			{showTitleBar && (
+				<TitleBar>
+					{title && <PageTitle>{title}</PageTitle>}
+					{actions}
+				</TitleBar>
+			)}
+		</HeaderContainer>
+	)
 }
 
 const HeaderContainer = styled.div`

@@ -7,5 +7,5 @@
  */
 
 export type ListAssigneesParams = {
-	workspaceId: number;
-};
+	workspaceId: number
+}

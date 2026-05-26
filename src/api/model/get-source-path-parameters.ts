@@ -7,5 +7,5 @@
  */
 
 export type GetSourcePathParameters = {
-	id: number;
-};
+	id: number
+}

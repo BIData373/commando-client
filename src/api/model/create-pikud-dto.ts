@@ -7,6 +7,6 @@
  */
 
 export interface CreatePikudDto {
-	name: string;
-	icon?: string;
+	name: string
+	icon?: string
 }

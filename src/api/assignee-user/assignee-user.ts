@@ -19,16 +19,16 @@ import type {
 	UseMutationResult,
 	UseQueryOptions,
 	UseQueryResult,
-} from "@tanstack/react-query";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "../../axios";
+} from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { apiRequest } from "../../axios"
 import type {
 	AssigneeUserDto,
 	CreateAssigneeUserDto,
 	DeleteAssigneeUserPathParameters,
 	ListAssigneeUsersPathParameters,
 	UpdateAssigneeUserPathParameters,
-} from "../model";
+} from "../model"
 
 export const createAssigneeUser = (
 	createAssigneeUserDto: CreateAssigneeUserDto,
@@ -40,8 +40,8 @@ export const createAssigneeUser = (
 		headers: { "Content-Type": "application/json" },
 		data: createAssigneeUserDto,
 		signal,
-	});
-};
+	})
+}
 
 export const getCreateAssigneeUserMutationOptions = <
 	TError = unknown,
@@ -52,39 +52,39 @@ export const getCreateAssigneeUserMutationOptions = <
 		TError,
 		{ data: CreateAssigneeUserDto },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createAssigneeUser>>,
 	TError,
 	{ data: CreateAssigneeUserDto },
 	TContext
 > => {
-	const mutationKey = ["createAssigneeUser"];
+	const mutationKey = ["createAssigneeUser"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createAssigneeUser>>,
 		{ data: CreateAssigneeUserDto }
 	> = (props) => {
-		const { data } = props ?? {};
+		const { data } = props ?? {}
 
-		return createAssigneeUser(data);
-	};
+		return createAssigneeUser(data)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type CreateAssigneeUserMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createAssigneeUser>>
->;
-export type CreateAssigneeUserMutationBody = CreateAssigneeUserDto;
-export type CreateAssigneeUserMutationError = unknown;
+>
+export type CreateAssigneeUserMutationBody = CreateAssigneeUserDto
+export type CreateAssigneeUserMutationError = unknown
 
 export const useCreateAssigneeUser = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -93,7 +93,7 @@ export const useCreateAssigneeUser = <TError = unknown, TContext = unknown>(
 			TError,
 			{ data: CreateAssigneeUserDto },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -102,11 +102,8 @@ export const useCreateAssigneeUser = <TError = unknown, TContext = unknown>(
 	{ data: CreateAssigneeUserDto },
 	TContext
 > => {
-	return useMutation(
-		getCreateAssigneeUserMutationOptions(options),
-		queryClient,
-	);
-};
+	return useMutation(getCreateAssigneeUserMutationOptions(options), queryClient)
+}
 export const listAssigneeUsers = (
 	{ id }: ListAssigneeUsersPathParameters,
 	signal?: AbortSignal,
@@ -115,14 +112,14 @@ export const listAssigneeUsers = (
 		url: `/assignee-user/${id}`,
 		method: "GET",
 		signal,
-	});
-};
+	})
+}
 
 export const getListAssigneeUsersQueryKey = ({
 	id,
 }: ListAssigneeUsersPathParameters) => {
-	return [`/assignee-user/${id}`] as const;
-};
+	return [`/assignee-user/${id}`] as const
+}
 
 export const getListAssigneeUsersQueryOptions = <
 	TData = Awaited<ReturnType<typeof listAssigneeUsers>>,
@@ -136,17 +133,17 @@ export const getListAssigneeUsersQueryOptions = <
 				TError,
 				TData
 			>
-		>;
+		>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {};
+	const { query: queryOptions } = options ?? {}
 
 	const queryKey =
-		queryOptions?.queryKey ?? getListAssigneeUsersQueryKey({ id });
+		queryOptions?.queryKey ?? getListAssigneeUsersQueryKey({ id })
 
 	const queryFn: QueryFunction<
 		Awaited<ReturnType<typeof listAssigneeUsers>>
-	> = ({ signal }) => listAssigneeUsers({ id }, signal);
+	> = ({ signal }) => listAssigneeUsers({ id }, signal)
 
 	return {
 		queryKey,
@@ -157,13 +154,13 @@ export const getListAssigneeUsersQueryOptions = <
 		Awaited<ReturnType<typeof listAssigneeUsers>>,
 		TError,
 		TData
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
 
 export type ListAssigneeUsersQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listAssigneeUsers>>
->;
-export type ListAssigneeUsersQueryError = unknown;
+>
+export type ListAssigneeUsersQueryError = unknown
 
 export function useListAssigneeUsers<
 	TData = Awaited<ReturnType<typeof listAssigneeUsers>>,
@@ -185,12 +182,12 @@ export function useListAssigneeUsers<
 					Awaited<ReturnType<typeof listAssigneeUsers>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useListAssigneeUsers<
 	TData = Awaited<ReturnType<typeof listAssigneeUsers>>,
 	TError = unknown,
@@ -211,12 +208,12 @@ export function useListAssigneeUsers<
 					Awaited<ReturnType<typeof listAssigneeUsers>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useListAssigneeUsers<
 	TData = Awaited<ReturnType<typeof listAssigneeUsers>>,
 	TError = unknown,
@@ -229,12 +226,12 @@ export function useListAssigneeUsers<
 				TError,
 				TData
 			>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 
 export function useListAssigneeUsers<
 	TData = Awaited<ReturnType<typeof listAssigneeUsers>>,
@@ -248,20 +245,20 @@ export function useListAssigneeUsers<
 				TError,
 				TData
 			>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
+	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getListAssigneeUsersQueryOptions({ id }, options);
+	const queryOptions = getListAssigneeUsersQueryOptions({ id }, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
 		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-	return { ...query, queryKey: queryOptions.queryKey };
+	return { ...query, queryKey: queryOptions.queryKey }
 }
 
 export const updateAssigneeUser = (
@@ -272,15 +269,15 @@ export const updateAssigneeUser = (
 		url: `/assignee-user/${assigneeId}/${userId}`,
 		method: "GET",
 		signal,
-	});
-};
+	})
+}
 
 export const getUpdateAssigneeUserQueryKey = ({
 	assigneeId,
 	userId,
 }: UpdateAssigneeUserPathParameters) => {
-	return [`/assignee-user/${assigneeId}/${userId}`] as const;
-};
+	return [`/assignee-user/${assigneeId}/${userId}`] as const
+}
 
 export const getUpdateAssigneeUserQueryOptions = <
 	TData = Awaited<ReturnType<typeof updateAssigneeUser>>,
@@ -294,18 +291,18 @@ export const getUpdateAssigneeUserQueryOptions = <
 				TError,
 				TData
 			>
-		>;
+		>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {};
+	const { query: queryOptions } = options ?? {}
 
 	const queryKey =
 		queryOptions?.queryKey ??
-		getUpdateAssigneeUserQueryKey({ assigneeId, userId });
+		getUpdateAssigneeUserQueryKey({ assigneeId, userId })
 
 	const queryFn: QueryFunction<
 		Awaited<ReturnType<typeof updateAssigneeUser>>
-	> = ({ signal }) => updateAssigneeUser({ assigneeId, userId }, signal);
+	> = ({ signal }) => updateAssigneeUser({ assigneeId, userId }, signal)
 
 	return {
 		queryKey,
@@ -316,13 +313,13 @@ export const getUpdateAssigneeUserQueryOptions = <
 		Awaited<ReturnType<typeof updateAssigneeUser>>,
 		TError,
 		TData
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
 
 export type UpdateAssigneeUserQueryResult = NonNullable<
 	Awaited<ReturnType<typeof updateAssigneeUser>>
->;
-export type UpdateAssigneeUserQueryError = unknown;
+>
+export type UpdateAssigneeUserQueryError = unknown
 
 export function useUpdateAssigneeUser<
 	TData = Awaited<ReturnType<typeof updateAssigneeUser>>,
@@ -344,12 +341,12 @@ export function useUpdateAssigneeUser<
 					Awaited<ReturnType<typeof updateAssigneeUser>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useUpdateAssigneeUser<
 	TData = Awaited<ReturnType<typeof updateAssigneeUser>>,
 	TError = unknown,
@@ -370,12 +367,12 @@ export function useUpdateAssigneeUser<
 					Awaited<ReturnType<typeof updateAssigneeUser>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useUpdateAssigneeUser<
 	TData = Awaited<ReturnType<typeof updateAssigneeUser>>,
 	TError = unknown,
@@ -388,12 +385,12 @@ export function useUpdateAssigneeUser<
 				TError,
 				TData
 			>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 
 export function useUpdateAssigneeUser<
 	TData = Awaited<ReturnType<typeof updateAssigneeUser>>,
@@ -407,23 +404,23 @@ export function useUpdateAssigneeUser<
 				TError,
 				TData
 			>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
+	queryKey: DataTag<QueryKey, TData, TError>
 } {
 	const queryOptions = getUpdateAssigneeUserQueryOptions(
 		{ assigneeId, userId },
 		options,
-	);
+	)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
 		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-	return { ...query, queryKey: queryOptions.queryKey };
+	return { ...query, queryKey: queryOptions.queryKey }
 }
 
 export const deleteAssigneeUser = (
@@ -434,8 +431,8 @@ export const deleteAssigneeUser = (
 		url: `/assignee-user/${assigneeId}/${userId}`,
 		method: "DELETE",
 		signal,
-	});
-};
+	})
+}
 
 export const getDeleteAssigneeUserMutationOptions = <
 	TError = unknown,
@@ -446,39 +443,39 @@ export const getDeleteAssigneeUserMutationOptions = <
 		TError,
 		{ pathParams: DeleteAssigneeUserPathParameters },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteAssigneeUser>>,
 	TError,
 	{ pathParams: DeleteAssigneeUserPathParameters },
 	TContext
 > => {
-	const mutationKey = ["deleteAssigneeUser"];
+	const mutationKey = ["deleteAssigneeUser"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteAssigneeUser>>,
 		{ pathParams: DeleteAssigneeUserPathParameters }
 	> = (props) => {
-		const { pathParams } = props ?? {};
+		const { pathParams } = props ?? {}
 
-		return deleteAssigneeUser(pathParams);
-	};
+		return deleteAssigneeUser(pathParams)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type DeleteAssigneeUserMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deleteAssigneeUser>>
->;
+>
 
-export type DeleteAssigneeUserMutationError = unknown;
+export type DeleteAssigneeUserMutationError = unknown
 
 export const useDeleteAssigneeUser = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -487,7 +484,7 @@ export const useDeleteAssigneeUser = <TError = unknown, TContext = unknown>(
 			TError,
 			{ pathParams: DeleteAssigneeUserPathParameters },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -496,8 +493,5 @@ export const useDeleteAssigneeUser = <TError = unknown, TContext = unknown>(
 	{ pathParams: DeleteAssigneeUserPathParameters },
 	TContext
 > => {
-	return useMutation(
-		getDeleteAssigneeUserMutationOptions(options),
-		queryClient,
-	);
-};
+	return useMutation(getDeleteAssigneeUserMutationOptions(options), queryClient)
+}

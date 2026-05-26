@@ -7,5 +7,5 @@
  */
 
 export type UpdateMessagePathParameters = {
-	id: number;
-};
+	id: number
+}

@@ -5,17 +5,17 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { TaskHistoryDtoAction } from "./task-history-dto-action";
-import type { TaskHistoryDtoValue } from "./task-history-dto-value";
+import type { TaskHistoryDtoAction } from "./task-history-dto-action"
+import type { TaskHistoryDtoValue } from "./task-history-dto-value"
 
 export interface TaskHistoryDto {
-	id: number;
-	action: TaskHistoryDtoAction;
-	field: string;
+	id: number
+	action: TaskHistoryDtoAction
+	field: string
 	/** @nullable */
-	value: TaskHistoryDtoValue;
-	timestamp: string;
-	taskId: number;
-	workspaceId: number;
-	userId: number;
+	value: TaskHistoryDtoValue
+	timestamp: string
+	taskId: number
+	workspaceId: number
+	userId: number
 }

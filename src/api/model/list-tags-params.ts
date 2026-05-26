@@ -7,5 +7,5 @@
  */
 
 export type ListTagsParams = {
-	workspaceId: number;
-};
+	workspaceId: number
+}

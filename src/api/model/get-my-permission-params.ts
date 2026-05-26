@@ -7,5 +7,5 @@
  */
 
 export type GetMyPermissionParams = {
-	workspaceId: number;
-};
+	workspaceId: number
+}

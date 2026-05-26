@@ -19,9 +19,9 @@ import type {
 	UseMutationResult,
 	UseQueryOptions,
 	UseQueryResult,
-} from "@tanstack/react-query";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "../../axios";
+} from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { apiRequest } from "../../axios"
 import type {
 	CreateSourceDto,
 	DeleteSourcePathParameters,
@@ -30,7 +30,7 @@ import type {
 	SourceDto,
 	UpdateSourceDto,
 	UpdateSourcePathParameters,
-} from "../model";
+} from "../model"
 
 export const createSource = (
 	createSourceDto: CreateSourceDto,
@@ -42,8 +42,8 @@ export const createSource = (
 		headers: { "Content-Type": "application/json" },
 		data: createSourceDto,
 		signal,
-	});
-};
+	})
+}
 
 export const getCreateSourceMutationOptions = <
 	TError = unknown,
@@ -54,39 +54,39 @@ export const getCreateSourceMutationOptions = <
 		TError,
 		{ data: CreateSourceDto },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createSource>>,
 	TError,
 	{ data: CreateSourceDto },
 	TContext
 > => {
-	const mutationKey = ["createSource"];
+	const mutationKey = ["createSource"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createSource>>,
 		{ data: CreateSourceDto }
 	> = (props) => {
-		const { data } = props ?? {};
+		const { data } = props ?? {}
 
-		return createSource(data);
-	};
+		return createSource(data)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type CreateSourceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createSource>>
->;
-export type CreateSourceMutationBody = CreateSourceDto;
-export type CreateSourceMutationError = unknown;
+>
+export type CreateSourceMutationBody = CreateSourceDto
+export type CreateSourceMutationError = unknown
 
 export const useCreateSource = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -95,7 +95,7 @@ export const useCreateSource = <TError = unknown, TContext = unknown>(
 			TError,
 			{ data: CreateSourceDto },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -104,8 +104,8 @@ export const useCreateSource = <TError = unknown, TContext = unknown>(
 	{ data: CreateSourceDto },
 	TContext
 > => {
-	return useMutation(getCreateSourceMutationOptions(options), queryClient);
-};
+	return useMutation(getCreateSourceMutationOptions(options), queryClient)
+}
 export const listSources = (
 	params: ListSourcesParams,
 	signal?: AbortSignal,
@@ -115,12 +115,12 @@ export const listSources = (
 		method: "GET",
 		params,
 		signal,
-	});
-};
+	})
+}
 
 export const getListSourcesQueryKey = (params?: ListSourcesParams) => {
-	return [`/source`, ...(params ? [params] : [])] as const;
-};
+	return [`/source`, ...(params ? [params] : [])] as const
+}
 
 export const getListSourcesQueryOptions = <
 	TData = Awaited<ReturnType<typeof listSources>>,
@@ -130,28 +130,28 @@ export const getListSourcesQueryOptions = <
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listSources>>, TError, TData>
-		>;
+		>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {};
+	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getListSourcesQueryKey(params);
+	const queryKey = queryOptions?.queryKey ?? getListSourcesQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof listSources>>> = ({
 		signal,
-	}) => listSources(params, signal);
+	}) => listSources(params, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listSources>>,
 		TError,
 		TData
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
 
 export type ListSourcesQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listSources>>
->;
-export type ListSourcesQueryError = unknown;
+>
+export type ListSourcesQueryError = unknown
 
 export function useListSources<
 	TData = Awaited<ReturnType<typeof listSources>>,
@@ -169,12 +169,12 @@ export function useListSources<
 					Awaited<ReturnType<typeof listSources>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useListSources<
 	TData = Awaited<ReturnType<typeof listSources>>,
 	TError = unknown,
@@ -191,12 +191,12 @@ export function useListSources<
 					Awaited<ReturnType<typeof listSources>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useListSources<
 	TData = Awaited<ReturnType<typeof listSources>>,
 	TError = unknown,
@@ -205,12 +205,12 @@ export function useListSources<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listSources>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 
 export function useListSources<
 	TData = Awaited<ReturnType<typeof listSources>>,
@@ -220,32 +220,32 @@ export function useListSources<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listSources>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
+	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getListSourcesQueryOptions(params, options);
+	const queryOptions = getListSourcesQueryOptions(params, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
 		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-	return { ...query, queryKey: queryOptions.queryKey };
+	return { ...query, queryKey: queryOptions.queryKey }
 }
 
 export const getSource = (
 	{ id }: GetSourcePathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<SourceDto>({ url: `/source/${id}`, method: "GET", signal });
-};
+	return apiRequest<SourceDto>({ url: `/source/${id}`, method: "GET", signal })
+}
 
 export const getGetSourceQueryKey = ({ id }: GetSourcePathParameters) => {
-	return [`/source/${id}`] as const;
-};
+	return [`/source/${id}`] as const
+}
 
 export const getGetSourceQueryOptions = <
 	TData = Awaited<ReturnType<typeof getSource>>,
@@ -255,16 +255,16 @@ export const getGetSourceQueryOptions = <
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getSource>>, TError, TData>
-		>;
+		>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {};
+	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getGetSourceQueryKey({ id });
+	const queryKey = queryOptions?.queryKey ?? getGetSourceQueryKey({ id })
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getSource>>> = ({
 		signal,
-	}) => getSource({ id }, signal);
+	}) => getSource({ id }, signal)
 
 	return {
 		queryKey,
@@ -272,14 +272,14 @@ export const getGetSourceQueryOptions = <
 		enabled: !!id,
 		...queryOptions,
 	} as UseQueryOptions<Awaited<ReturnType<typeof getSource>>, TError, TData> & {
-		queryKey: DataTag<QueryKey, TData, TError>;
-	};
-};
+		queryKey: DataTag<QueryKey, TData, TError>
+	}
+}
 
 export type GetSourceQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getSource>>
->;
-export type GetSourceQueryError = unknown;
+>
+export type GetSourceQueryError = unknown
 
 export function useGetSource<
 	TData = Awaited<ReturnType<typeof getSource>>,
@@ -297,12 +297,12 @@ export function useGetSource<
 					Awaited<ReturnType<typeof getSource>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetSource<
 	TData = Awaited<ReturnType<typeof getSource>>,
 	TError = unknown,
@@ -319,12 +319,12 @@ export function useGetSource<
 					Awaited<ReturnType<typeof getSource>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetSource<
 	TData = Awaited<ReturnType<typeof getSource>>,
 	TError = unknown,
@@ -333,12 +333,12 @@ export function useGetSource<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getSource>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 
 export function useGetSource<
 	TData = Awaited<ReturnType<typeof getSource>>,
@@ -348,20 +348,20 @@ export function useGetSource<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getSource>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
+	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getGetSourceQueryOptions({ id }, options);
+	const queryOptions = getGetSourceQueryOptions({ id }, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
 		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-	return { ...query, queryKey: queryOptions.queryKey };
+	return { ...query, queryKey: queryOptions.queryKey }
 }
 
 export const updateSource = (
@@ -375,8 +375,8 @@ export const updateSource = (
 		headers: { "Content-Type": "application/json" },
 		data: updateSourceDto,
 		signal,
-	});
-};
+	})
+}
 
 export const getUpdateSourceMutationOptions = <
 	TError = unknown,
@@ -387,39 +387,39 @@ export const getUpdateSourceMutationOptions = <
 		TError,
 		{ pathParams: UpdateSourcePathParameters; data: UpdateSourceDto },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateSource>>,
 	TError,
 	{ pathParams: UpdateSourcePathParameters; data: UpdateSourceDto },
 	TContext
 > => {
-	const mutationKey = ["updateSource"];
+	const mutationKey = ["updateSource"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateSource>>,
 		{ pathParams: UpdateSourcePathParameters; data: UpdateSourceDto }
 	> = (props) => {
-		const { pathParams, data } = props ?? {};
+		const { pathParams, data } = props ?? {}
 
-		return updateSource(pathParams, data);
-	};
+		return updateSource(pathParams, data)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type UpdateSourceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateSource>>
->;
-export type UpdateSourceMutationBody = UpdateSourceDto;
-export type UpdateSourceMutationError = unknown;
+>
+export type UpdateSourceMutationBody = UpdateSourceDto
+export type UpdateSourceMutationError = unknown
 
 export const useUpdateSource = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -428,7 +428,7 @@ export const useUpdateSource = <TError = unknown, TContext = unknown>(
 			TError,
 			{ pathParams: UpdateSourcePathParameters; data: UpdateSourceDto },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -437,8 +437,8 @@ export const useUpdateSource = <TError = unknown, TContext = unknown>(
 	{ pathParams: UpdateSourcePathParameters; data: UpdateSourceDto },
 	TContext
 > => {
-	return useMutation(getUpdateSourceMutationOptions(options), queryClient);
-};
+	return useMutation(getUpdateSourceMutationOptions(options), queryClient)
+}
 export const deleteSource = (
 	{ id }: DeleteSourcePathParameters,
 	signal?: AbortSignal,
@@ -447,8 +447,8 @@ export const deleteSource = (
 		url: `/source/${id}`,
 		method: "DELETE",
 		signal,
-	});
-};
+	})
+}
 
 export const getDeleteSourceMutationOptions = <
 	TError = unknown,
@@ -459,39 +459,39 @@ export const getDeleteSourceMutationOptions = <
 		TError,
 		{ pathParams: DeleteSourcePathParameters },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteSource>>,
 	TError,
 	{ pathParams: DeleteSourcePathParameters },
 	TContext
 > => {
-	const mutationKey = ["deleteSource"];
+	const mutationKey = ["deleteSource"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteSource>>,
 		{ pathParams: DeleteSourcePathParameters }
 	> = (props) => {
-		const { pathParams } = props ?? {};
+		const { pathParams } = props ?? {}
 
-		return deleteSource(pathParams);
-	};
+		return deleteSource(pathParams)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type DeleteSourceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deleteSource>>
->;
+>
 
-export type DeleteSourceMutationError = unknown;
+export type DeleteSourceMutationError = unknown
 
 export const useDeleteSource = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -500,7 +500,7 @@ export const useDeleteSource = <TError = unknown, TContext = unknown>(
 			TError,
 			{ pathParams: DeleteSourcePathParameters },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -509,5 +509,5 @@ export const useDeleteSource = <TError = unknown, TContext = unknown>(
 	{ pathParams: DeleteSourcePathParameters },
 	TContext
 > => {
-	return useMutation(getDeleteSourceMutationOptions(options), queryClient);
-};
+	return useMutation(getDeleteSourceMutationOptions(options), queryClient)
+}

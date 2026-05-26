@@ -9,4 +9,4 @@
 /**
  * @nullable
  */
-export type MessageDtoDeletedAt = { [key: string]: unknown } | null;
+export type MessageDtoDeletedAt = { [key: string]: unknown } | null

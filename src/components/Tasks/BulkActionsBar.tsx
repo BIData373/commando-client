@@ -1,66 +1,70 @@
-import styled from '@emotion/styled'
-import { Archive, Trash2, X } from 'lucide-react'
+import styled from "@emotion/styled"
+import { Archive, Trash2, X } from "lucide-react"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu'
-import { StatusTag, type DirectiveStatus, STATUS_KEYS } from '../shared/StatusTag'
-import { DeletePopover } from './DeletePopover'
+	type DirectiveStatus,
+	STATUS_KEYS,
+	StatusTag,
+} from "../shared/StatusTag"
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu"
+import { DeletePopover } from "./DeletePopover"
 
 interface BulkActionsBarProps {
-  selectedCount: number
-  onChangeStatus: (status: DirectiveStatus) => void
-  onArchive: () => void
-  onDelete: () => void
-  onExitSelect: () => void
+	selectedCount: number
+	onChangeStatus: (status: DirectiveStatus) => void
+	onArchive: () => void
+	onDelete: () => void
+	onExitSelect: () => void
 }
 
 export function BulkActionsBar({
-  selectedCount,
-  onChangeStatus,
-  onArchive,
-  onDelete,
-  onExitSelect,
+	selectedCount,
+	onChangeStatus,
+	onArchive,
+	onDelete,
+	onExitSelect,
 }: BulkActionsBarProps) {
-  return (
-    <Bar>
-      <ActionsSection>
-        <DeletePopover
-          count={selectedCount}
-          onConfirm={onDelete}
-          trigger={
-            <GhostButton $danger>
-              מחק הנחיה
-              <Trash2 size={16} />
-            </GhostButton>
-          }
-        />
-        <GhostButton onClick={onArchive}>
-          העבר לארכיון
-          <Archive size={16} />
-        </GhostButton>
-        <BarDivider />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <GhostButton>עדכן סטטוס</GhostButton>
-          </DropdownMenuTrigger>
-          <StatusContent align="start" sideOffset={4}>
-            {STATUS_KEYS.map((s) => (
-              <StatusItem key={s} onSelect={() => onChangeStatus(s)}>
-                <StatusTag status={s} />
-              </StatusItem>
-            ))}
-          </StatusContent>
-        </DropdownMenu>
-      </ActionsSection>
-      <SelectedButton onClick={onExitSelect}>
-        <X size={16} />
-         {selectedCount} משימות נבחרו
-      </SelectedButton>
-    </Bar>
-  )
+	return (
+		<Bar>
+			<ActionsSection>
+				<DeletePopover
+					count={selectedCount}
+					onConfirm={onDelete}
+					trigger={
+						<GhostButton $danger>
+							מחק הנחיה
+							<Trash2 size={16} />
+						</GhostButton>
+					}
+				/>
+				<GhostButton onClick={onArchive}>
+					העבר לארכיון
+					<Archive size={16} />
+				</GhostButton>
+				<BarDivider />
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<GhostButton>עדכן סטטוס</GhostButton>
+					</DropdownMenuTrigger>
+					<StatusContent align="start" sideOffset={4}>
+						{STATUS_KEYS.map((s) => (
+							<StatusItem key={s} onSelect={() => onChangeStatus(s)}>
+								<StatusTag status={s} />
+							</StatusItem>
+						))}
+					</StatusContent>
+				</DropdownMenu>
+			</ActionsSection>
+			<SelectedButton onClick={onExitSelect}>
+				<X size={16} />
+				{selectedCount} משימות נבחרו
+			</SelectedButton>
+		</Bar>
+	)
 }
 
 const Bar = styled.div`
@@ -104,7 +108,7 @@ const GhostButton = styled.button<{ $danger?: boolean }>`
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
-  color: ${({ $danger }) => ($danger ? '#dc4446' : 'rgba(255, 255, 255, 0.85)')};
+  color: ${({ $danger }) => ($danger ? "#dc4446" : "rgba(255, 255, 255, 0.85)")};
   cursor: pointer;
   white-space: nowrap;
 
@@ -176,4 +180,3 @@ const StatusItem = styled(DropdownMenuItem)`
     color: inherit;
   }
 `
-

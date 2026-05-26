@@ -7,5 +7,5 @@
  */
 
 export type UpdateAssigneePathParameters = {
-	id: number;
-};
+	id: number
+}

@@ -9,4 +9,4 @@
 /**
  * @nullable
  */
-export type WorkspaceDtoDeletedAt = { [key: string]: unknown } | null;
+export type WorkspaceDtoDeletedAt = { [key: string]: unknown } | null

@@ -7,7 +7,7 @@
  */
 
 export interface UpdateWorkspaceStatusDto {
-	name?: string;
-	color?: string;
-	statusType?: string;
+	name?: string
+	color?: string
+	statusType?: string
 }

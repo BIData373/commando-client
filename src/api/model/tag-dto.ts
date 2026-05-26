@@ -7,11 +7,11 @@
  */
 
 export interface TagDto {
-	createdAt: string;
-	createdBy: number;
-	updatedAt: string;
-	updatedBy: number;
-	id: number;
-	name: string;
-	workspaceId: number;
+	createdAt: string
+	createdBy: number
+	updatedAt: string
+	updatedBy: number
+	id: number
+	name: string
+	workspaceId: number
 }

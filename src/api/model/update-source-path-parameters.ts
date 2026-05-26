@@ -7,5 +7,5 @@
  */
 
 export type UpdateSourcePathParameters = {
-	id: number;
-};
+	id: number
+}

@@ -1,55 +1,58 @@
-import { useState } from 'react'
-import styled from '@emotion/styled'
-import { type Column } from '@tanstack/react-table'
-import { TbArrowsSort } from 'react-icons/tb'
-import { ColumnFilterDropdown } from './ColumnFilterDropdown'
-import type { FilterOption } from '../../functions/filter-utils'
+import styled from "@emotion/styled"
+import type { Column } from "@tanstack/react-table"
+import { useState } from "react"
+import { TbArrowsSort } from "react-icons/tb"
+import type { FilterOption } from "../../functions/filter-utils"
+import { ColumnFilterDropdown } from "./ColumnFilterDropdown"
 
 interface ColumnHeaderWithActionsProps<TData> {
-  label: string
-  column: Column<TData, unknown>
-  filterOptions?: FilterOption[]
+	label: string
+	column: Column<TData, unknown>
+	filterOptions?: FilterOption[]
 }
 
 function ColumnHeaderWithActions<TData>({
-  label,
-  column,
-  filterOptions = [],
+	label,
+	column,
+	filterOptions = [],
 }: ColumnHeaderWithActionsProps<TData>) {
-  const [filterOpen, setFilterOpen] = useState(false)
-  const canFilter = column.getCanFilter() && filterOptions.length > 0
-  const canSort = column.getCanSort()
-  const filterValue = (column.getFilterValue() as string[] | undefined) ?? []
-  const isFilterActive = filterValue.length > 0
-  const isSortActive = column.getIsSorted() !== false
-  const alwaysShow = isFilterActive || isSortActive || filterOpen
+	const [filterOpen, setFilterOpen] = useState(false)
+	const canFilter = column.getCanFilter() && filterOptions.length > 0
+	const canSort = column.getCanSort()
+	const filterValue = (column.getFilterValue() as string[] | undefined) ?? []
+	const isFilterActive = filterValue.length > 0
+	const isSortActive = column.getIsSorted() !== false
+	const alwaysShow = isFilterActive || isSortActive || filterOpen
 
-  function handleApplyFilter(values: Set<string>) {
-    column.setFilterValue(values.size > 0 ? [...values] : undefined)
-  }
+	function handleApplyFilter(values: Set<string>) {
+		column.setFilterValue(values.size > 0 ? [...values] : undefined)
+	}
 
-  return (
-    <HeaderWrapper $alwaysShow={alwaysShow}>
-      <span>{label}</span>
-      <ActionsArea data-slot="actions-area" $show={alwaysShow}>
-        {canFilter && (
-          <ColumnFilterDropdown
-            options={filterOptions}
-            activeValues={new Set(filterValue)}
-            onApply={handleApplyFilter}
-            isActive={isFilterActive}
-            onOpenChange={setFilterOpen}
-          />
-        )}
-        {canSort && (
-          <SortIconButton $active={isSortActive} onClick={() => column.toggleSorting()}>
-            <TbArrowsSort size={16} />
-            {isSortActive && <ActiveBadge />}
-          </SortIconButton>
-        )}
-      </ActionsArea>
-    </HeaderWrapper>
-  )
+	return (
+		<HeaderWrapper $alwaysShow={alwaysShow}>
+			<span>{label}</span>
+			<ActionsArea data-slot="actions-area" $show={alwaysShow}>
+				{canFilter && (
+					<ColumnFilterDropdown
+						options={filterOptions}
+						activeValues={new Set(filterValue)}
+						onApply={handleApplyFilter}
+						isActive={isFilterActive}
+						onOpenChange={setFilterOpen}
+					/>
+				)}
+				{canSort && (
+					<SortIconButton
+						$active={isSortActive}
+						onClick={() => column.toggleSorting()}
+					>
+						<TbArrowsSort size={16} />
+						{isSortActive && <ActiveBadge />}
+					</SortIconButton>
+				)}
+			</ActionsArea>
+		</HeaderWrapper>
+	)
 }
 
 export { ColumnHeaderWithActions }
@@ -77,11 +80,11 @@ const SortIconButton = styled.button<{ $active: boolean }>`
   background: none;
   padding: 0;
   cursor: pointer;
-  color: ${({ $active }) => ($active ? '#1677FF' : 'rgba(0, 0, 0, 0.45)')};
+  color: ${({ $active }) => ($active ? "#1677FF" : "rgba(0, 0, 0, 0.45)")};
   flex-shrink: 0;
 
   &:hover {
-    color: ${({ $active }) => ($active ? '#1677FF' : 'rgba(0, 0, 0, 0.65)')};
+    color: ${({ $active }) => ($active ? "#1677FF" : "rgba(0, 0, 0, 0.65)")};
   }
 `
 

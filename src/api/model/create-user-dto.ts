@@ -5,9 +5,9 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { CreateUserDtoInfo } from "./create-user-dto-info";
+import type { CreateUserDtoInfo } from "./create-user-dto-info"
 
 export interface CreateUserDto {
-	upn: string;
-	info?: CreateUserDtoInfo;
+	upn: string
+	info?: CreateUserDtoInfo
 }

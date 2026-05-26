@@ -19,15 +19,16 @@ import type {
 	UseMutationResult,
 	UseQueryOptions,
 	UseQueryResult,
-} from "@tanstack/react-query";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "../../axios";
+} from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { apiRequest } from "../../axios"
 import type {
+	DeletePermissionParams,
 	GetMyPermissionParams,
 	GetPermissionsParams,
 	PermissionDto,
 	UpdatePermissionDto,
-} from "../model";
+} from "../model"
 
 export const getPermissions = (
 	params: GetPermissionsParams,
@@ -38,12 +39,12 @@ export const getPermissions = (
 		method: "GET",
 		params,
 		signal,
-	});
-};
+	})
+}
 
 export const getGetPermissionsQueryKey = (params?: GetPermissionsParams) => {
-	return [`/permission`, ...(params ? [params] : [])] as const;
-};
+	return [`/permission`, ...(params ? [params] : [])] as const
+}
 
 export const getGetPermissionsQueryOptions = <
 	TData = Awaited<ReturnType<typeof getPermissions>>,
@@ -53,28 +54,28 @@ export const getGetPermissionsQueryOptions = <
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getPermissions>>, TError, TData>
-		>;
+		>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {};
+	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getGetPermissionsQueryKey(params);
+	const queryKey = queryOptions?.queryKey ?? getGetPermissionsQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getPermissions>>> = ({
 		signal,
-	}) => getPermissions(params, signal);
+	}) => getPermissions(params, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof getPermissions>>,
 		TError,
 		TData
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
 
 export type GetPermissionsQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getPermissions>>
->;
-export type GetPermissionsQueryError = unknown;
+>
+export type GetPermissionsQueryError = unknown
 
 export function useGetPermissions<
 	TData = Awaited<ReturnType<typeof getPermissions>>,
@@ -92,12 +93,12 @@ export function useGetPermissions<
 					Awaited<ReturnType<typeof getPermissions>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetPermissions<
 	TData = Awaited<ReturnType<typeof getPermissions>>,
 	TError = unknown,
@@ -114,12 +115,12 @@ export function useGetPermissions<
 					Awaited<ReturnType<typeof getPermissions>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetPermissions<
 	TData = Awaited<ReturnType<typeof getPermissions>>,
 	TError = unknown,
@@ -128,12 +129,12 @@ export function useGetPermissions<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getPermissions>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 
 export function useGetPermissions<
 	TData = Awaited<ReturnType<typeof getPermissions>>,
@@ -143,20 +144,20 @@ export function useGetPermissions<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getPermissions>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
+	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getGetPermissionsQueryOptions(params, options);
+	const queryOptions = getGetPermissionsQueryOptions(params, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
 		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-	return { ...query, queryKey: queryOptions.queryKey };
+	return { ...query, queryKey: queryOptions.queryKey }
 }
 
 export const updatePermission = (
@@ -169,8 +170,8 @@ export const updatePermission = (
 		headers: { "Content-Type": "application/json" },
 		data: updatePermissionDto,
 		signal,
-	});
-};
+	})
+}
 
 export const getUpdatePermissionMutationOptions = <
 	TError = unknown,
@@ -181,39 +182,39 @@ export const getUpdatePermissionMutationOptions = <
 		TError,
 		{ data: UpdatePermissionDto },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updatePermission>>,
 	TError,
 	{ data: UpdatePermissionDto },
 	TContext
 > => {
-	const mutationKey = ["updatePermission"];
+	const mutationKey = ["updatePermission"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updatePermission>>,
 		{ data: UpdatePermissionDto }
 	> = (props) => {
-		const { data } = props ?? {};
+		const { data } = props ?? {}
 
-		return updatePermission(data);
-	};
+		return updatePermission(data)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type UpdatePermissionMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updatePermission>>
->;
-export type UpdatePermissionMutationBody = UpdatePermissionDto;
-export type UpdatePermissionMutationError = unknown;
+>
+export type UpdatePermissionMutationBody = UpdatePermissionDto
+export type UpdatePermissionMutationError = unknown
 
 export const useUpdatePermission = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -222,7 +223,7 @@ export const useUpdatePermission = <TError = unknown, TContext = unknown>(
 			TError,
 			{ data: UpdatePermissionDto },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -231,15 +232,19 @@ export const useUpdatePermission = <TError = unknown, TContext = unknown>(
 	{ data: UpdatePermissionDto },
 	TContext
 > => {
-	return useMutation(getUpdatePermissionMutationOptions(options), queryClient);
-};
-export const deletePermission = (signal?: AbortSignal) => {
+	return useMutation(getUpdatePermissionMutationOptions(options), queryClient)
+}
+export const deletePermission = (
+	params: DeletePermissionParams,
+	signal?: AbortSignal,
+) => {
 	return apiRequest<PermissionDto>({
 		url: `/permission`,
 		method: "DELETE",
+		params,
 		signal,
-	});
-};
+	})
+}
 
 export const getDeletePermissionMutationOptions = <
 	TError = unknown,
@@ -248,58 +253,60 @@ export const getDeletePermissionMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deletePermission>>,
 		TError,
-		void,
+		{ params: DeletePermissionParams },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deletePermission>>,
 	TError,
-	void,
+	{ params: DeletePermissionParams },
 	TContext
 > => {
-	const mutationKey = ["deletePermission"];
+	const mutationKey = ["deletePermission"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deletePermission>>,
-		void
-	> = () => {
-		return deletePermission();
-	};
+		{ params: DeletePermissionParams }
+	> = (props) => {
+		const { params } = props ?? {}
 
-	return { mutationFn, ...mutationOptions };
-};
+		return deletePermission(params)
+	}
+
+	return { mutationFn, ...mutationOptions }
+}
 
 export type DeletePermissionMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deletePermission>>
->;
+>
 
-export type DeletePermissionMutationError = unknown;
+export type DeletePermissionMutationError = unknown
 
 export const useDeletePermission = <TError = unknown, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deletePermission>>,
 			TError,
-			void,
+			{ params: DeletePermissionParams },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deletePermission>>,
 	TError,
-	void,
+	{ params: DeletePermissionParams },
 	TContext
 > => {
-	return useMutation(getDeletePermissionMutationOptions(options), queryClient);
-};
+	return useMutation(getDeletePermissionMutationOptions(options), queryClient)
+}
 export const getMyPermission = (
 	params: GetMyPermissionParams,
 	signal?: AbortSignal,
@@ -309,12 +316,12 @@ export const getMyPermission = (
 		method: "GET",
 		params,
 		signal,
-	});
-};
+	})
+}
 
 export const getGetMyPermissionQueryKey = (params?: GetMyPermissionParams) => {
-	return [`/permission/me`, ...(params ? [params] : [])] as const;
-};
+	return [`/permission/me`, ...(params ? [params] : [])] as const
+}
 
 export const getGetMyPermissionQueryOptions = <
 	TData = Awaited<ReturnType<typeof getMyPermission>>,
@@ -328,28 +335,28 @@ export const getGetMyPermissionQueryOptions = <
 				TError,
 				TData
 			>
-		>;
+		>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {};
+	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getGetMyPermissionQueryKey(params);
+	const queryKey = queryOptions?.queryKey ?? getGetMyPermissionQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyPermission>>> = ({
 		signal,
-	}) => getMyPermission(params, signal);
+	}) => getMyPermission(params, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof getMyPermission>>,
 		TError,
 		TData
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
 
 export type GetMyPermissionQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getMyPermission>>
->;
-export type GetMyPermissionQueryError = unknown;
+>
+export type GetMyPermissionQueryError = unknown
 
 export function useGetMyPermission<
 	TData = Awaited<ReturnType<typeof getMyPermission>>,
@@ -371,12 +378,12 @@ export function useGetMyPermission<
 					Awaited<ReturnType<typeof getMyPermission>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetMyPermission<
 	TData = Awaited<ReturnType<typeof getMyPermission>>,
 	TError = unknown,
@@ -397,12 +404,12 @@ export function useGetMyPermission<
 					Awaited<ReturnType<typeof getMyPermission>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetMyPermission<
 	TData = Awaited<ReturnType<typeof getMyPermission>>,
 	TError = unknown,
@@ -415,12 +422,12 @@ export function useGetMyPermission<
 				TError,
 				TData
 			>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 
 export function useGetMyPermission<
 	TData = Awaited<ReturnType<typeof getMyPermission>>,
@@ -434,18 +441,18 @@ export function useGetMyPermission<
 				TError,
 				TData
 			>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
+	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getGetMyPermissionQueryOptions(params, options);
+	const queryOptions = getGetMyPermissionQueryOptions(params, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
 		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-	return { ...query, queryKey: queryOptions.queryKey };
+	return { ...query, queryKey: queryOptions.queryKey }
 }
