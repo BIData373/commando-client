@@ -49,21 +49,36 @@ function TaskFilters({
       extraColumnsMeta={extraColumnsMeta}
     >
       {extraFilters}
-      <FilterPill $active={activeQuickFilters.has('flagged')} onClick={() => toggleQuickFilter('flagged')}>
+
+      <FilterPill
+        $active={activeQuickFilters.has(QuickFilter.FLAGGED)}
+        onClick={() => toggleQuickFilter(QuickFilter.FLAGGED)}
+      >
         חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
       </FilterPill>
+
       <Tooltip>
         <WarningTrigger>
-          <FilterPill $active={activeQuickFilters.has('approaching')} onClick={() => toggleQuickFilter('approaching')}>
+          <FilterPill
+            $active={activeQuickFilters.has(QuickFilter.APPROACHING)}
+            onClick={() => toggleQuickFilter(QuickFilter.APPROACHING)}
+          >
             תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
           </FilterPill>
         </WarningTrigger>
+
         <TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
       </Tooltip>
-      <FilterPill $active={activeQuickFilters.has('overdue')} onClick={() => toggleQuickFilter('overdue')}>
+
+      <FilterPill
+        $active={activeQuickFilters.has(QuickFilter.OVERDUE)}
+        onClick={() => toggleQuickFilter(QuickFilter.OVERDUE)}
+      >
         חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
       </FilterPill>
+
       <FilterDivider />
+
       <FilterPill $active={!hasActiveFilters} onClick={onClearAllFilters}>
         הכל ({tasks.length})
       </FilterPill>
