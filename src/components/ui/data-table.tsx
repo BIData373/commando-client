@@ -28,6 +28,7 @@ interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
   data: TData[]
   onRowClick?: (row: Row<TData>) => void
+  onRowDoubleClick?: (row: Row<TData>) => void
   rowSelection?: RowSelectionState
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
   columnFilters?: ColumnFiltersState
@@ -39,6 +40,7 @@ interface DataTableProps<TData> {
   meta?: TableMeta<TData>
   renderRowOverlay?: (row: Row<TData>) => React.ReactNode
   renderRowExpansion?: (row: Row<TData>) => React.ReactNode
+  expansionColSpan?: number
   containerClassName?: string
   showHeader?: boolean
 }
@@ -47,6 +49,7 @@ export function DataTable<TData>({
   columns,
   data,
   onRowClick,
+  onRowDoubleClick,
   rowSelection,
   onRowSelectionChange,
   columnFilters,
@@ -58,6 +61,7 @@ export function DataTable<TData>({
   meta,
   renderRowOverlay,
   renderRowExpansion,
+  expansionColSpan,
   containerClassName,
   showHeader = true,
 }: DataTableProps<TData>) {
@@ -147,7 +151,7 @@ export function DataTable<TData>({
               </TableRow>
               {expansionContent != null && (
                 <tr data-expansion-row="">
-                  <ExpansionCell colSpan={columns.length}>
+                  <ExpansionCell colSpan={expansionColSpan ?? columns.length}>
                     {expansionContent}
                   </ExpansionCell>
                 </tr>

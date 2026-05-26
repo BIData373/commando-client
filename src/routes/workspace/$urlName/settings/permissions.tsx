@@ -220,11 +220,11 @@ const StyledTabsTrigger = styled(TabsTrigger)`
   cursor: pointer;  
 
   &[data-state="active"] {
-    color: var(--tab-active-color);
+    color: var(--active-color);
   }
   
   &[data-state="active"]::after {
-    background-color: var(--tab-active-color);
+    background-color: var(--active-color);
   }
 `
 

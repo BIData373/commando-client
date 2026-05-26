@@ -12,6 +12,7 @@ import { BulkActionsBar } from './BulkActionsBar'
 interface TaskTableProps {
   tasks: Task[]
   onEdit?: (taskId: number) => void
+  onDoubleClick?: (taskId: number) => void
   extraColumns?: Record<string, ColumnDef<Task>>
   showHeader?: boolean
   initialStatusFilter?: DirectiveStatus
@@ -20,6 +21,7 @@ interface TaskTableProps {
 function TaskTable({
   tasks,
   onEdit = () => { },
+  onDoubleClick,
   extraColumns,
   showHeader = true,
   initialStatusFilter,
@@ -79,6 +81,7 @@ function TaskTable({
     },
     actions: {
       onEdit,
+      onDoubleClick,
       onArchive: removeTasks,
       onDelete: removeTasks,
       onEnterSelectMode: handleEnterSelectMode,

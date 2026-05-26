@@ -64,6 +64,7 @@ interface SelectModeConfig {
 
 interface ActionsConfig {
   onEdit: (taskId: number) => void
+  onDoubleClick?: (taskId: number) => void
   onArchive: (taskIds: number[]) => void
   onDelete: (taskIds: number[]) => void
   onEnterSelectMode: (taskId?: number) => void
@@ -123,7 +124,9 @@ function useTaskColumns({
       header: ({ column }) => <ColumnHeaderWithActions label={COLUMN_LABELS.id} column={column} />,
       size: 70,
       enableColumnFilter: false,
-      cell: ({ getValue }) => <IdCell>{getValue<number>()}</IdCell>,
+      cell: ({ row: { original: { id } } }) => (
+        <IdCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>{id}</IdCell>
+      ),
     },
     title: {
       accessorKey: 'title',
@@ -132,8 +135,8 @@ function useTaskColumns({
       meta: { grow: true },
       enableSorting: false,
       enableColumnFilter: false,
-      cell: ({ row: { original: { title, details, flagged } } }) => (
-        <TitleCell>
+      cell: ({ row: { original: { id, title, details, flagged } } }) => (
+        <TitleCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
           {flagged && <FlagIcon />}
           {details ? (
             <>

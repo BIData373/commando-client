@@ -21,6 +21,7 @@ export interface IWorkspaceSettings {
     name: string;
     command: string | null;
     logoUrl: string | null;
+    assigneeStatusEditable: boolean;
 }
 
 /** Update payload for workspace general settings */
@@ -28,6 +29,7 @@ export interface IUpdateWorkspaceSettings {
     name: string;
     command: string | null;
     logoUrl: string | null;
+    assigneeStatusEditable?: boolean;
 }
 
 /** Environment with member context (for the current user) */
