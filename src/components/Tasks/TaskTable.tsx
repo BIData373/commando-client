@@ -11,13 +11,15 @@ import { useTasks } from '../../providers/TasksProvider'
 interface TaskTableProps {
   tasks: Task[]
   onEdit?: (taskId: number) => void
+  onDoubleClick?: (taskId: number) => void
   extraColumns?: Record<string, ColumnDef<Task>>
   showHeader?: boolean
 }
 
 function TaskTable({
   tasks,
-  onEdit = () => {},
+  onEdit = () => { },
+  onDoubleClick,
   extraColumns,
   showHeader = true,
 }: TaskTableProps) {
@@ -74,6 +76,7 @@ function TaskTable({
     },
     actions: {
       onEdit,
+      onDoubleClick,
       onArchive: removeTasks,
       onDelete: removeTasks,
       onEnterSelectMode: handleEnterSelectMode,
