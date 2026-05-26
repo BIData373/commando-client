@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
 import styled from '@emotion/styled'
 import { Archive, CheckCircle2, Pencil, Trash2 } from 'lucide-react'
+import type { ReactNode } from 'react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,42 +12,50 @@ import { DeletePopover } from './DeletePopover'
 
 interface RowActionsMenuProps {
   trigger: ReactNode
-  onEdit: () => void
-  onEnterSelect: () => void
+  onEdit?: () => void
+  onEnterSelect?: () => void
   onArchive: () => void
-  onDelete: () => void
+  onDelete?: () => void
 }
 
 export function RowActionsMenu({ trigger, onEdit, onEnterSelect, onArchive, onDelete }: RowActionsMenuProps) {
+  const hasMoreThanTwo = [onEdit, onEnterSelect, onDelete].filter(Boolean).length >= 2
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
       <MenuContent align="start" sideOffset={4}>
-        <MenuItem onSelect={onEdit}>
-          <Pencil size={16} />
-          עריכה
-        </MenuItem>
-        <MenuItem onSelect={onEnterSelect}>
-          <CheckCircle2 size={16} />
-          סמן
-        </MenuItem>
-        <MenuSeparator />
+        {onEdit && (
+          <MenuItem onSelect={onEdit}>
+            <Pencil size={16} />
+            עריכה
+          </MenuItem>
+        )}
+        {onEnterSelect && (
+          <MenuItem onSelect={onEnterSelect}>
+            <CheckCircle2 size={16} />
+            סמן
+          </MenuItem>
+        )}
+        {hasMoreThanTwo && <MenuSeparator />}
         <MenuItem onSelect={onArchive}>
           <Archive size={16} />
           העבר לארכיון
         </MenuItem>
-        <DeletePopover
-          count={1}
-          side="bottom"
-          align="start"
-          onConfirm={onDelete}
-          trigger={
-            <DestructiveMenuItem onSelect={(e) => e.preventDefault()}>
-              <Trash2 size={16} />
-              מחק
-            </DestructiveMenuItem>
-          }
-        />
+        {onDelete && (
+          <DeletePopover
+            count={1}
+            side="bottom"
+            align="start"
+            onConfirm={onDelete}
+            trigger={
+              <DestructiveMenuItem onSelect={(e) => e.preventDefault()}>
+                <Trash2 size={16} />
+                מחק
+              </DestructiveMenuItem>
+            }
+          />
+        )}
       </MenuContent>
     </DropdownMenu>
   )
@@ -58,6 +66,7 @@ const MenuContent = styled(DropdownMenuContent)`
   min-width: 160px;
   padding: 4px;
   border-radius: 8px;
+  z-index: calc(var(--z-dropdown) + 1);
   box-shadow:
     0px 6px 16px rgba(0, 0, 0, 0.08),
     0px 3px 6px rgba(0, 0, 0, 0.12),

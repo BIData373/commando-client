@@ -21,6 +21,8 @@ export const assigneesApi = {
         const now = new Date().toISOString();
         const newAssignee: IAssignee = {
             id: Math.max(...mockAssignees.map((a) => a.id), 0) + 1,
+            color: '',
+            emblem: null,
             userIds: data.userIds ?? [],
             createdAt: now,
             createdBy: 1,

@@ -1,23 +1,23 @@
 import styled from '@emotion/styled'
 import { Outlet, useNavigate } from '@tanstack/react-router'
 import { ChevronDown, Plus } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { exportTasksToExcel } from '../../functions/export-excel'
+import { applyAllFilters } from '../../functions/filter-utils'
+import { useTasks } from '../../providers/TasksProvider'
+import { useTitleBar } from '../../providers/TitleBarProvider'
+import { MultiSelectFilterDropdown } from '../shared/MultiSelectFilterDropdown'
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
 import { TooltipProvider } from '../ui/tooltip'
 import { NoResultsFound } from './NoResultsFound'
+import { TaskCardGrid } from './TaskCardGrid'
 import { TaskFilters } from './TaskFilters'
 import { TaskTable } from './TaskTable'
-import { TaskCardGrid } from './TaskCardGrid'
-import { exportTasksToExcel } from '../../functions/export-excel'
-import { applyAllFilters } from '../../functions/filter-utils'
-import { useTitleBar } from '../../providers/TitleBarProvider'
-import { useMemo, useState } from 'react'
-import { useTasks } from '../../providers/TasksProvider'
-import { MultiSelectFilterDropdown } from '../shared/MultiSelectFilterDropdown'
 
 export type View = 'TABLE' | 'CARDS'
 
@@ -133,6 +133,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
           <TaskTable
             tasks={filteredTasks}
             onEdit={handleEdit}
+            onDoubleClick={handleEdit}
           />
         ) : (
           <TaskCardGrid tasks={filteredTasks} />

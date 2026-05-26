@@ -1,27 +1,19 @@
 import styled from '@emotion/styled'
 import { X } from 'lucide-react'
 import { Popover as PopoverPrimitive } from 'radix-ui'
+import type { IAssignee } from '#/types'
+import { AssigneeAvatar } from '../shared/AssigneeAvatar'
+import { type DirectiveStatus, StatusTag } from '../shared/StatusTag'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { StatusTag, type DirectiveStatus } from '../shared/StatusTag'
-
 export type AvatarColor = 'cyan' | 'blue' | 'green' | 'orange' | 'gray'
 
-export interface Assignee {
-  id: number
-  initials: string
-  colorToken: AvatarColor
-  name: string
-  role: string
-  email: string
-}
-
 export interface RelatedDirective {
-  user: Assignee
+  user: IAssignee
   status: DirectiveStatus
 }
 
 interface ResponsibleCellProps {
-  responsible: Assignee | null
+  responsible: IAssignee | null
   relatedDirectives: RelatedDirective[]
 }
 
@@ -31,9 +23,10 @@ export function ResponsibleCell({ responsible, relatedDirectives }: ResponsibleC
       {responsible && (
         <Popover>
           <PopoverTrigger asChild>
-            <AvatarCircle $color={responsible.colorToken}>
-              {responsible.initials}
-            </AvatarCircle>
+            <AssigneeAvatar
+              assignee={responsible}
+              cursor
+            />
           </PopoverTrigger>
           <DetailedContent side="top" sideOffset={10} align="center">
             <PopoverArrow width={12} height={6} />
@@ -42,9 +35,9 @@ export function ResponsibleCell({ responsible, relatedDirectives }: ResponsibleC
             </CloseButton>
             <DetailedHeader>
               <SectionLabel>אחראי :</SectionLabel>
-              <AvatarCircle $color={responsible.colorToken}>
-                {responsible.initials}
-              </AvatarCircle>
+              <AssigneeAvatar
+                assignee={responsible}
+              />
               <RoleText>{responsible.role}</RoleText>
             </DetailedHeader>
             <Separator />
@@ -83,9 +76,9 @@ export function ResponsibleCell({ responsible, relatedDirectives }: ResponsibleC
                 <CompactRow key={d.user.id}>
                   <StatusTag status={d.status} />
                   <CompactRole>{d.user.role}</CompactRole>
-                  <AvatarCircle $color={d.user.colorToken}>
-                    {d.user.initials}
-                  </AvatarCircle>
+                  <AssigneeAvatar
+                    assignee={d.user}
+                  />
                 </CompactRow>
               ))}
             </CompactList>

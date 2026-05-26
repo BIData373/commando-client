@@ -1,5 +1,6 @@
+import type { IAssignee } from '#/types'
 import type { DirectiveStatus } from '../components/shared/StatusTag'
-import type { Assignee, RelatedDirective } from '../components/Tasks/ResponsibleCell'
+import type { RelatedDirective } from '../components/Tasks/ResponsibleCell'
 import { MOCK_ASSIGNEES } from './Assignees'
 import { DeadlineType } from '../components/shared/DeadlineTag'
 
@@ -9,7 +10,7 @@ export interface Task {
   details?: string
   flagged: boolean
   status: DirectiveStatus
-  responsible: Assignee | null
+  responsible: IAssignee | null
   relatedDirectives: RelatedDirective[]
   deadlineType: DeadlineType
   dueDate: Date | null
@@ -33,10 +34,10 @@ export const INITIAL_TASKS: Task[] = [
     status: 'not_started',
     responsible: MOCK_ASSIGNEES[1],
     relatedDirectives: [
-      { user: MOCK_ASSIGNEES[7], status: 'not_started' },
-      { user: MOCK_ASSIGNEES[8], status: 'in_progress' },
-      { user: MOCK_ASSIGNEES[8], status: 'in_progress' },
-      { user: MOCK_ASSIGNEES[8], status: 'in_progress' },
+      { user: MOCK_ASSIGNEES[2], status: 'not_started' },
+      { user: MOCK_ASSIGNEES[3], status: 'in_progress' },
+      { user: MOCK_ASSIGNEES[4], status: 'in_progress' },
+      { user: MOCK_ASSIGNEES[5], status: 'in_progress' },
     ],
     deadlineType: DeadlineType.Ongoing,
     dueDate: new Date('2026-12-03'),
@@ -78,6 +79,8 @@ export const INITIAL_TASKS: Task[] = [
     responsible: MOCK_ASSIGNEES[3],
     relatedDirectives: [
       { user: MOCK_ASSIGNEES[4], status: 'not_started' },
+      { user: MOCK_ASSIGNEES[2], status: 'not_started' },
+      { user: MOCK_ASSIGNEES[3], status: 'not_started' },
     ],
     deadlineType: DeadlineType.Immediate,
     dueDate: null,
@@ -117,9 +120,10 @@ export const INITIAL_TASKS: Task[] = [
     status: 'in_progress',
     responsible: MOCK_ASSIGNEES[6],
     relatedDirectives: [
-      { user: MOCK_ASSIGNEES[7], status: 'not_started' },
-      { user: MOCK_ASSIGNEES[8], status: 'in_progress' },
-      { user: MOCK_ASSIGNEES[9], status: 'not_started' },
+      { user: MOCK_ASSIGNEES[1], status: 'in_progress' },
+      { user: MOCK_ASSIGNEES[7], status: 'in_progress' },
+      { user: MOCK_ASSIGNEES[2], status: 'in_progress' },
+      { user: MOCK_ASSIGNEES[3], status: 'not_started' },
     ],
     deadlineType: DeadlineType.Ongoing,
     dueDate: new Date('2026-12-01'),
