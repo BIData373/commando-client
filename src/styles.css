@@ -62,6 +62,9 @@ body,
   --sidebar-ring: oklch(0.708 0 0);
 
   --Background-color-bg-text-active: rgba(0, 0, 0, 0.15);
+  --Components-Dropdown-Global-colorTextDescription: rgba(0, 0, 0, 0.45);
+  --Components-Dropdown-Global-controlItemBgHover: rgba(0, 0, 0, 0.04);
+  --Text-color-text-placeholder: rgba(0, 0, 0, 0.25);
 
   --text-color: rgba(0, 0, 0, 0.65);
   --text-color-2: rgba(0, 0, 0, 0.88);
@@ -121,6 +124,7 @@ body,
   --shadow-xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.10), 0 8px 10px -1px oklch(0.00 0 0 / 0.10);
   --shadow-2xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.25);
   --shadow-inset: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-popover: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
 .dark {
