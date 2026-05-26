@@ -1,72 +1,72 @@
-import styled from '@emotion/styled'
-import { Download, FilterX, Search } from 'lucide-react'
-import type { ReactNode } from 'react'
-import { ColumnVisibilityDropdown } from '../Tasks/ColumnVisibilityDropdown'
-import type { TaskColumn, TaskColumnMeta } from '../../hooks/useTaskColumns'
+import styled from "@emotion/styled"
+import { Download, FilterX, Search } from "lucide-react"
+import type { ReactNode } from "react"
+import type { TaskColumn, TaskColumnMeta } from "../../hooks/useTaskColumns"
+import { ColumnVisibilityDropdown } from "../Tasks/ColumnVisibilityDropdown"
 
 interface FilterBarProps {
-  children: ReactNode
-  hasActiveFilters: boolean
-  onClearAll: () => void
-  searchQuery: string
-  onSearchChange: (value: string) => void
-  onExport: () => void
-  columnOrder: TaskColumn[]
-  hiddenColumns: Set<TaskColumn>
-  onColumnOrderChange: (order: TaskColumn[]) => void
-  onToggleColumn: (columnId: TaskColumn) => void
-  extraColumnsMeta?: TaskColumnMeta[]
+	children: ReactNode
+	hasActiveFilters: boolean
+	onClearAll: () => void
+	searchQuery: string
+	onSearchChange: (value: string) => void
+	onExport: () => void
+	columnOrder: TaskColumn[]
+	hiddenColumns: Set<TaskColumn>
+	onColumnOrderChange: (order: TaskColumn[]) => void
+	onToggleColumn: (columnId: TaskColumn) => void
+	extraColumnsMeta?: TaskColumnMeta[]
 }
 
 function FilterBar({
-  children,
-  hasActiveFilters,
-  onClearAll,
-  searchQuery,
-  onSearchChange,
-  onExport,
-  columnOrder,
-  hiddenColumns,
-  onColumnOrderChange,
-  onToggleColumn,
-  extraColumnsMeta,
+	children,
+	hasActiveFilters,
+	onClearAll,
+	searchQuery,
+	onSearchChange,
+	onExport,
+	columnOrder,
+	hiddenColumns,
+	onColumnOrderChange,
+	onToggleColumn,
+	extraColumnsMeta,
 }: FilterBarProps) {
-  return (
-    <BarRoot>
-      <BarStart>
-        <ColumnVisibilityDropdown
-          columnOrder={columnOrder}
-          hiddenColumns={hiddenColumns}
-          onColumnOrderChange={onColumnOrderChange}
-          onToggleColumn={onToggleColumn}
-          extraColumnsMeta={extraColumnsMeta}
-        />
-        <ActionButton onClick={onExport}>
-          <Download size={16} />
-          ייצוא
-        </ActionButton>
-        <SearchInputWrapper>
-          <SearchField
-            placeholder="חפש הנחייה"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-          />
-          <SearchIconBox>
-            <SearchIcon size={16} />
-          </SearchIconBox>
-        </SearchInputWrapper>
-      </BarStart>
-      <BarEnd>
-        {hasActiveFilters && (
-          <ClearButton onClick={onClearAll}>
-            <FilterX size={16} />
-            נקה סננים
-          </ClearButton>
-        )}
-        {children}
-      </BarEnd>
-    </BarRoot>
-  )
+	return (
+		<BarRoot>
+			<BarStart>
+				<ColumnVisibilityDropdown
+					columnOrder={columnOrder}
+					hiddenColumns={hiddenColumns}
+					onColumnOrderChange={onColumnOrderChange}
+					onToggleColumn={onToggleColumn}
+					extraColumnsMeta={extraColumnsMeta}
+				/>
+				<ActionButton onClick={onExport}>
+					<Download size={16} />
+					ייצוא
+				</ActionButton>
+				<SearchInputWrapper>
+					<SearchField
+						placeholder="חפש הנחייה"
+						value={searchQuery}
+						onChange={(e) => onSearchChange(e.target.value)}
+					/>
+					<SearchIconBox>
+						<SearchIcon size={16} />
+					</SearchIconBox>
+				</SearchInputWrapper>
+			</BarStart>
+			<BarEnd>
+				{hasActiveFilters && (
+					<ClearButton onClick={onClearAll}>
+						<FilterX size={16} />
+						נקה סננים
+					</ClearButton>
+				)}
+				{children}
+			</BarEnd>
+		</BarRoot>
+	)
 }
 
 export { FilterBar }
@@ -190,9 +190,9 @@ export const FilterPill = styled.button<{ $active: boolean }>`
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.15s;
-  border: 1px solid ${({ $active }) => ($active ? 'rgba(9, 88, 217, 0.6)' : '#D9D9D9')};
+  border: 1px solid ${({ $active }) => ($active ? "rgba(9, 88, 217, 0.6)" : "#D9D9D9")};
   background: #FFF;
-  color: ${({ $active }) => ($active ? 'rgba(9, 88, 217, 1)' : 'var(--sea-ink)')};
+  color: ${({ $active }) => ($active ? "rgba(9, 88, 217, 1)" : "var(--sea-ink)")};
 
   &:hover {
     background: var(--link-bg-hover);

@@ -7,5 +7,5 @@
  */
 
 export type DeleteSourcePathParameters = {
-	id: number;
-};
+	id: number
+}

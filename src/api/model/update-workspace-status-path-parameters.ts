@@ -7,5 +7,5 @@
  */
 
 export type UpdateWorkspaceStatusPathParameters = {
-	id: number;
-};
+	id: number
+}

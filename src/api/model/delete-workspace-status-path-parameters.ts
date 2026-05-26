@@ -7,5 +7,5 @@
  */
 
 export type DeleteWorkspaceStatusPathParameters = {
-	id: number;
-};
+	id: number
+}

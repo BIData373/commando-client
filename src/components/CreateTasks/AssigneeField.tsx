@@ -1,74 +1,73 @@
-import styled from '@emotion/styled'
-import { ChevronDown } from 'lucide-react'
-import AssigneeRowList from '../shared/AssigneeRow'
-import AssigneePicker from '../shared/AssigneePicker'
+import styled from "@emotion/styled"
+import { ChevronDown } from "lucide-react"
+import AssigneePicker from "../shared/AssigneePicker"
+import AssigneeRowList from "../shared/AssigneeRow"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface AssigneeFieldProps {
-  selectedAssignees: number[]
-  directiveTitle: string
-  onToggle: (id: number) => void
-  onRemove: (id: number) => void
-  onDetailChange: (id: number, value: string) => void
+	selectedAssignees: number[]
+	directiveTitle: string
+	onToggle: (id: number) => void
+	onRemove: (id: number) => void
+	onDetailChange: (id: number, value: string) => void
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function AssigneeField({
-  selectedAssignees,
-  directiveTitle,
-  onToggle,
-  onRemove,
-  onDetailChange,
+	selectedAssignees,
+	directiveTitle,
+	onToggle,
+	onRemove,
+	onDetailChange,
 }: AssigneeFieldProps) {
+	return (
+		<>
+			<AssigneeSection>
+				<FormLabelRow>
+					<LabelText>אחראי</LabelText>
+				</FormLabelRow>
 
-  return (
-    <>
-      <AssigneeSection>
-        <FormLabelRow>
-          <LabelText>אחראי</LabelText>
-        </FormLabelRow>
+				<AssigneePicker
+					selectedAssignees={selectedAssignees}
+					onToggle={onToggle}
+					closeOnFirstSelect
+					trigger={({ search, onSearchChange }) => (
+						<SelectTriggerButton type="button">
+							<SelectChevron size={12} />
+							<SearchInput
+								value={search}
+								onChange={onSearchChange}
+								placeholder="בחירה"
+								dir="rtl"
+							/>
+						</SelectTriggerButton>
+					)}
+				/>
 
-        <AssigneePicker
-          selectedAssignees={selectedAssignees}
-          onToggle={onToggle}
-          closeOnFirstSelect
-          trigger={({ search, onSearchChange }) => (
-            <SelectTriggerButton type="button">
-              <SelectChevron size={12} />
-              <SearchInput
-                value={search}
-                onChange={onSearchChange}
-                placeholder="בחירה"
-                dir="rtl"
-              />
-            </SelectTriggerButton>
-          )}
-        />
+				{selectedAssignees.length === 0 ? (
+					<EmptyAssigneesBox>
+						<EmptyText>לא נבחרו אחראים. אנא בחר מהרשימה</EmptyText>
+					</EmptyAssigneesBox>
+				) : (
+					<AssigneeRowList
+						assigneeIds={selectedAssignees}
+						directiveTitle={directiveTitle}
+						showDetail={selectedAssignees.length > 1}
+						detailPlaceholder="פירוט נוסף לאחראי"
+						onDetailChange={onDetailChange}
+						onRemove={onRemove}
+					/>
+				)}
+			</AssigneeSection>
 
-        {selectedAssignees.length === 0 ? (
-          <EmptyAssigneesBox>
-            <EmptyText>לא נבחרו אחראים. אנא בחר מהרשימה</EmptyText>
-          </EmptyAssigneesBox>
-        ) : (
-          <AssigneeRowList
-            assigneeIds={selectedAssignees}
-            directiveTitle={directiveTitle}
-            showDetail={selectedAssignees.length > 1}
-            detailPlaceholder="פירוט נוסף לאחראי"
-            onDetailChange={onDetailChange}
-            onRemove={onRemove}
-          />
-        )}
-      </AssigneeSection>
-
-      {/* <CreateAssigneeDialog
+			{/* <CreateAssigneeDialog
         open={isCreateAssigneeOpen}
         onOpenChange={setIsCreateAssigneeOpen}
       /> */}
-    </>
-  )
+		</>
+	)
 }
 
 export default AssigneeField

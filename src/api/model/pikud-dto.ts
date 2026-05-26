@@ -5,20 +5,20 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { PikudDtoDeletedAt } from "./pikud-dto-deleted-at";
-import type { PikudDtoDeletedBy } from "./pikud-dto-deleted-by";
+import type { PikudDtoDeletedAt } from "./pikud-dto-deleted-at"
+import type { PikudDtoDeletedBy } from "./pikud-dto-deleted-by"
 
 export interface PikudDto {
-	createdAt: string;
-	createdBy: number;
-	updatedAt: string;
-	updatedBy: number;
+	createdAt: string
+	createdBy: number
+	updatedAt: string
+	updatedBy: number
 	/** @nullable */
-	deletedAt: PikudDtoDeletedAt;
+	deletedAt: PikudDtoDeletedAt
 	/** @nullable */
-	deletedBy: PikudDtoDeletedBy;
-	id: number;
-	name: string;
+	deletedBy: PikudDtoDeletedBy
+	id: number
+	name: string
 	/** @nullable */
-	icon: string | null;
+	icon: string | null
 }

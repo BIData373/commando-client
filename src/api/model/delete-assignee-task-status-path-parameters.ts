@@ -7,6 +7,6 @@
  */
 
 export type DeleteAssigneeTaskStatusPathParameters = {
-	taskId: number;
-	assigneeId: number;
-};
+	taskId: number
+	assigneeId: number
+}

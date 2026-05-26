@@ -7,11 +7,11 @@
  */
 
 export type TaskHistoryDtoAction =
-	(typeof TaskHistoryDtoAction)[keyof typeof TaskHistoryDtoAction];
+	(typeof TaskHistoryDtoAction)[keyof typeof TaskHistoryDtoAction]
 
 export const TaskHistoryDtoAction = {
 	CREATE: "CREATE",
 	UPDATE: "UPDATE",
 	DUPLICATE: "DUPLICATE",
 	DELETE: "DELETE",
-} as const;
+} as const

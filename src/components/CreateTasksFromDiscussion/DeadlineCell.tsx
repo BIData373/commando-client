@@ -1,106 +1,122 @@
-import { useState } from 'react'
-import styled from '@emotion/styled'
-import { ChevronLeft } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import DatePicker, { CalendarMode } from '../shared/DatePicker'
-import DeadlineTag, { DeadlineType, DEADLINE_LABELS } from '../shared/DeadlineTag'
-import { formatDateShort } from '../../functions/date-utils'
+import styled from "@emotion/styled"
+import { ChevronLeft } from "lucide-react"
+import { useState } from "react"
+import { formatDateShort } from "../../functions/date-utils"
+import DatePicker, { CalendarMode } from "../shared/DatePicker"
+import DeadlineTag, {
+	DEADLINE_LABELS,
+	DeadlineType,
+} from "../shared/DeadlineTag"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface DeadlineCellProps {
-  deadlineType: DeadlineType | null
-  dueDate: Date | null
-  onDeadlineTypeChange: (type: DeadlineType) => void
-  onDateChange: (date: Date | null) => void
+	deadlineType: DeadlineType | null
+	dueDate: Date | null
+	onDeadlineTypeChange: (type: DeadlineType) => void
+	onDateChange: (date: Date | null) => void
 }
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 const DEADLINE_TYPES = Object.keys(DEADLINE_LABELS) as DeadlineType[]
-const TYPES_WITH_CALENDAR: DeadlineType[] = [DeadlineType.Date, DeadlineType.Ongoing]
-
+const TYPES_WITH_CALENDAR: DeadlineType[] = [
+	DeadlineType.Date,
+	DeadlineType.Ongoing,
+]
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-function DeadlineCell({ deadlineType, dueDate, onDeadlineTypeChange, onDateChange }: DeadlineCellProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [calendarFor, setCalendarFor] = useState<DeadlineType.Date | DeadlineType.Ongoing | null>(null)
+function DeadlineCell({
+	deadlineType,
+	dueDate,
+	onDeadlineTypeChange,
+	onDateChange,
+}: DeadlineCellProps) {
+	const [isOpen, setIsOpen] = useState(false)
+	const [calendarFor, setCalendarFor] = useState<
+		DeadlineType.Date | DeadlineType.Ongoing | null
+	>(null)
 
-  function handleOptionClick(type: DeadlineType) {
-    onDeadlineTypeChange(type)
-    if (TYPES_WITH_CALENDAR.includes(type)) {
-      setCalendarFor(type as DeadlineType.Date | DeadlineType.Ongoing)
-    } else {
-      setCalendarFor(null)
-      setIsOpen(false)
-    }
-  }
+	function handleOptionClick(type: DeadlineType) {
+		onDeadlineTypeChange(type)
+		if (TYPES_WITH_CALENDAR.includes(type)) {
+			setCalendarFor(type as DeadlineType.Date | DeadlineType.Ongoing)
+		} else {
+			setCalendarFor(null)
+			setIsOpen(false)
+		}
+	}
 
-  function handleDateSelect(date: Date | undefined) {
-    onDateChange(date ?? null)
-    setCalendarFor(null)
-    setIsOpen(false)
-  }
+	function handleDateSelect(date: Date | undefined) {
+		onDateChange(date ?? null)
+		setCalendarFor(null)
+		setIsOpen(false)
+	}
 
-  function handleOpenChange(open: boolean) {
-    setIsOpen(open)
-    if (!open) setCalendarFor(null)
-  }
+	function handleOpenChange(open: boolean) {
+		setIsOpen(open)
+		if (!open) setCalendarFor(null)
+	}
 
-  return (
-    <DeadlineCellWrapper $open={isOpen}>
-      <Popover open={isOpen} onOpenChange={handleOpenChange}>
-        <PopoverTrigger asChild>
-          <DeadlineTrigger>
-            {!deadlineType ? (
-              <PlaceholderText>{`תג"ב`}</PlaceholderText>
-            ) : deadlineType === DeadlineType.Immediate ? (
-              <DeadlineTag $type={DeadlineType.Immediate}>{DEADLINE_LABELS[DeadlineType.Immediate]}</DeadlineTag>
-            ) : deadlineType === DeadlineType.Ongoing ? (
-              <DisplayRow>
-                <DeadlineTag $type={DeadlineType.Ongoing}>{DEADLINE_LABELS[DeadlineType.Ongoing]}</DeadlineTag>
-                {dueDate && <DateText>{formatDateShort(dueDate)}</DateText>}
-              </DisplayRow>
-            ) : dueDate ? (
-              <DateText>{formatDateShort(dueDate)}</DateText>
-            ) : (
-              <DeadlineValueText>
-                {DEADLINE_LABELS[deadlineType]}
-              </DeadlineValueText>
-            )}
-          </DeadlineTrigger>
-        </PopoverTrigger>
-        <DeadlineDropdownContent sideOffset={1}>
-          <DropdownRow>
-            <DropdownHeader>{`תג"ב`}</DropdownHeader>
-            {DEADLINE_TYPES.map((type) => (
-              <DeadlineOption
-                key={type}
-                $active={calendarFor === type}
-                onClick={() => handleOptionClick(type)}
-              >
-                <DeadlineOptionText>{DEADLINE_LABELS[type]}</DeadlineOptionText>
+	return (
+		<DeadlineCellWrapper $open={isOpen}>
+			<Popover open={isOpen} onOpenChange={handleOpenChange}>
+				<PopoverTrigger asChild>
+					<DeadlineTrigger>
+						{!deadlineType ? (
+							<PlaceholderText>{`תג"ב`}</PlaceholderText>
+						) : deadlineType === DeadlineType.Immediate ? (
+							<DeadlineTag $type={DeadlineType.Immediate}>
+								{DEADLINE_LABELS[DeadlineType.Immediate]}
+							</DeadlineTag>
+						) : deadlineType === DeadlineType.Ongoing ? (
+							<DisplayRow>
+								<DeadlineTag $type={DeadlineType.Ongoing}>
+									{DEADLINE_LABELS[DeadlineType.Ongoing]}
+								</DeadlineTag>
+								{dueDate && <DateText>{formatDateShort(dueDate)}</DateText>}
+							</DisplayRow>
+						) : dueDate ? (
+							<DateText>{formatDateShort(dueDate)}</DateText>
+						) : (
+							<DeadlineValueText>
+								{DEADLINE_LABELS[deadlineType]}
+							</DeadlineValueText>
+						)}
+					</DeadlineTrigger>
+				</PopoverTrigger>
+				<DeadlineDropdownContent sideOffset={1}>
+					<DropdownRow>
+						<DropdownHeader>{`תג"ב`}</DropdownHeader>
+						{DEADLINE_TYPES.map((type) => (
+							<DeadlineOption
+								key={type}
+								$active={calendarFor === type}
+								onClick={() => handleOptionClick(type)}
+							>
+								<DeadlineOptionText>{DEADLINE_LABELS[type]}</DeadlineOptionText>
 
-                {TYPES_WITH_CALENDAR.includes(type) && (
-                  <ChevronLeft size={12} />
-                )}
-              </DeadlineOption>
-            ))}
-            {calendarFor && (
-              <CalendarPanel>
-                <DatePicker
-                  mode={CalendarMode.Single}
-                  selected={dueDate ?? undefined}
-                  onSelect={handleDateSelect}
-                />
-              </CalendarPanel>
-            )}
-          </DropdownRow>
-        </DeadlineDropdownContent>
-      </Popover>
-    </DeadlineCellWrapper>
-  )
+								{TYPES_WITH_CALENDAR.includes(type) && (
+									<ChevronLeft size={12} />
+								)}
+							</DeadlineOption>
+						))}
+						{calendarFor && (
+							<CalendarPanel>
+								<DatePicker
+									mode={CalendarMode.Single}
+									selected={dueDate ?? undefined}
+									onSelect={handleDateSelect}
+								/>
+							</CalendarPanel>
+						)}
+					</DropdownRow>
+				</DeadlineDropdownContent>
+			</Popover>
+		</DeadlineCellWrapper>
+	)
 }
 
 export default DeadlineCell
@@ -115,7 +131,7 @@ const DeadlineCellWrapper = styled.div<{ $open: boolean }>`
   margin: 0 -12px;
   padding: 0 12px;
   background: transparent;
-  outline: ${({ $open }) => ($open ? '1px solid var(--tab-active-color)' : 'none')};
+  outline: ${({ $open }) => ($open ? "1px solid var(--tab-active-color)" : "none")};
 `
 
 const DeadlineTrigger = styled.button`
@@ -191,7 +207,7 @@ const DeadlineOption = styled.button<{ $active: boolean }>`
   width: 100%;
   height: 32px;
   padding-inline: 12px;
-  background: ${({ $active }) => ($active ? 'rgba(0, 0, 0, 0.04)' : 'transparent')};
+  background: ${({ $active }) => ($active ? "rgba(0, 0, 0, 0.04)" : "transparent")};
   border-radius: 4px;
   cursor: pointer;
   color: var(--text-color-2);

@@ -7,5 +7,5 @@
  */
 
 export type ListTasksParams = {
-	workspaceId: number;
-};
+	workspaceId: number
+}

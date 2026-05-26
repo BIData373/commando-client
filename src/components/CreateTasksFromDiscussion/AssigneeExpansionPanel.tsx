@@ -1,49 +1,49 @@
-import styled from '@emotion/styled'
-import { ChevronUp } from 'lucide-react'
-import AssigneeRowList from '../shared/AssigneeRow'
+import styled from "@emotion/styled"
+import { ChevronUp } from "lucide-react"
+import AssigneeRowList from "../shared/AssigneeRow"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface AssigneeExpansionPanelProps {
-  assigneeIds: number[]
-  directiveTitle: string
-  assigneeDetails: Record<number, string>
-  onDetailChange: (assigneeId: number, value: string) => void
-  onRemoveAssignee: (assigneeId: number) => void
-  onCollapse: () => void
+	assigneeIds: number[]
+	directiveTitle: string
+	assigneeDetails: Record<number, string>
+	onDetailChange: (assigneeId: number, value: string) => void
+	onRemoveAssignee: (assigneeId: number) => void
+	onCollapse: () => void
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function AssigneeExpansionPanel({
-  assigneeIds,
-  directiveTitle,
-  assigneeDetails,
-  onDetailChange,
-  onRemoveAssignee,
-  onCollapse,
+	assigneeIds,
+	directiveTitle,
+	assigneeDetails,
+	onDetailChange,
+	onRemoveAssignee,
+	onCollapse,
 }: AssigneeExpansionPanelProps) {
-  return (
-    <PanelContainer>
-      <PanelHeader>
-        <CollapseCell onClick={onCollapse}>
-          <ChevronUp size={16} />
-        </CollapseCell>
-        <DetailHeaderCell>פירוט</DetailHeaderCell>
-        <AssigneeHeaderCell>שם האחראי</AssigneeHeaderCell>
-      </PanelHeader>
+	return (
+		<PanelContainer>
+			<PanelHeader>
+				<CollapseCell onClick={onCollapse}>
+					<ChevronUp size={16} />
+				</CollapseCell>
+				<DetailHeaderCell>פירוט</DetailHeaderCell>
+				<AssigneeHeaderCell>שם האחראי</AssigneeHeaderCell>
+			</PanelHeader>
 
-      <RowsWrapper>
-        <AssigneeRowList
-          assigneeIds={assigneeIds}
-          directiveTitle={directiveTitle}
-          assigneeDetails={assigneeDetails}
-          onDetailChange={onDetailChange}
-          onRemove={onRemoveAssignee}
-        />
-      </RowsWrapper>
-    </PanelContainer>
-  )
+			<RowsWrapper>
+				<AssigneeRowList
+					assigneeIds={assigneeIds}
+					directiveTitle={directiveTitle}
+					assigneeDetails={assigneeDetails}
+					onDetailChange={onDetailChange}
+					onRemove={onRemoveAssignee}
+				/>
+			</RowsWrapper>
+		</PanelContainer>
+	)
 }
 
 export default AssigneeExpansionPanel

@@ -7,5 +7,5 @@
  */
 
 export type ListWorkspacesParams = {
-	urlName?: string;
-};
+	urlName?: string
+}

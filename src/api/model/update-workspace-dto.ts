@@ -7,9 +7,9 @@
  */
 
 export interface UpdateWorkspaceDto {
-	title?: string;
-	urlName?: string;
-	icon?: string;
-	assigneeStatusEditable?: boolean;
-	pikudId?: number;
+	title?: string
+	urlName?: string
+	icon?: string
+	assigneeStatusEditable?: boolean
+	pikudId?: number
 }

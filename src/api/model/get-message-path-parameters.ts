@@ -7,5 +7,5 @@
  */
 
 export type GetMessagePathParameters = {
-	id: number;
-};
+	id: number
+}

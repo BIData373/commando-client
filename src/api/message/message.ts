@@ -19,9 +19,9 @@ import type {
 	UseMutationResult,
 	UseQueryOptions,
 	UseQueryResult,
-} from "@tanstack/react-query";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "../../axios";
+} from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { apiRequest } from "../../axios"
 import type {
 	CreateMessageDto,
 	DeleteMessagePathParameters,
@@ -30,7 +30,7 @@ import type {
 	MessageDto,
 	UpdateMessageDto,
 	UpdateMessagePathParameters,
-} from "../model";
+} from "../model"
 
 export const createMessage = (
 	createMessageDto: CreateMessageDto,
@@ -42,8 +42,8 @@ export const createMessage = (
 		headers: { "Content-Type": "application/json" },
 		data: createMessageDto,
 		signal,
-	});
-};
+	})
+}
 
 export const getCreateMessageMutationOptions = <
 	TError = unknown,
@@ -54,39 +54,39 @@ export const getCreateMessageMutationOptions = <
 		TError,
 		{ data: CreateMessageDto },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createMessage>>,
 	TError,
 	{ data: CreateMessageDto },
 	TContext
 > => {
-	const mutationKey = ["createMessage"];
+	const mutationKey = ["createMessage"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createMessage>>,
 		{ data: CreateMessageDto }
 	> = (props) => {
-		const { data } = props ?? {};
+		const { data } = props ?? {}
 
-		return createMessage(data);
-	};
+		return createMessage(data)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type CreateMessageMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createMessage>>
->;
-export type CreateMessageMutationBody = CreateMessageDto;
-export type CreateMessageMutationError = unknown;
+>
+export type CreateMessageMutationBody = CreateMessageDto
+export type CreateMessageMutationError = unknown
 
 export const useCreateMessage = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -95,7 +95,7 @@ export const useCreateMessage = <TError = unknown, TContext = unknown>(
 			TError,
 			{ data: CreateMessageDto },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -104,8 +104,8 @@ export const useCreateMessage = <TError = unknown, TContext = unknown>(
 	{ data: CreateMessageDto },
 	TContext
 > => {
-	return useMutation(getCreateMessageMutationOptions(options), queryClient);
-};
+	return useMutation(getCreateMessageMutationOptions(options), queryClient)
+}
 export const listMessages = (
 	params: ListMessagesParams,
 	signal?: AbortSignal,
@@ -115,12 +115,12 @@ export const listMessages = (
 		method: "GET",
 		params,
 		signal,
-	});
-};
+	})
+}
 
 export const getListMessagesQueryKey = (params?: ListMessagesParams) => {
-	return [`/message`, ...(params ? [params] : [])] as const;
-};
+	return [`/message`, ...(params ? [params] : [])] as const
+}
 
 export const getListMessagesQueryOptions = <
 	TData = Awaited<ReturnType<typeof listMessages>>,
@@ -130,28 +130,28 @@ export const getListMessagesQueryOptions = <
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listMessages>>, TError, TData>
-		>;
+		>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {};
+	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getListMessagesQueryKey(params);
+	const queryKey = queryOptions?.queryKey ?? getListMessagesQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof listMessages>>> = ({
 		signal,
-	}) => listMessages(params, signal);
+	}) => listMessages(params, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listMessages>>,
 		TError,
 		TData
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
 
 export type ListMessagesQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listMessages>>
->;
-export type ListMessagesQueryError = unknown;
+>
+export type ListMessagesQueryError = unknown
 
 export function useListMessages<
 	TData = Awaited<ReturnType<typeof listMessages>>,
@@ -169,12 +169,12 @@ export function useListMessages<
 					Awaited<ReturnType<typeof listMessages>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useListMessages<
 	TData = Awaited<ReturnType<typeof listMessages>>,
 	TError = unknown,
@@ -191,12 +191,12 @@ export function useListMessages<
 					Awaited<ReturnType<typeof listMessages>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useListMessages<
 	TData = Awaited<ReturnType<typeof listMessages>>,
 	TError = unknown,
@@ -205,12 +205,12 @@ export function useListMessages<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listMessages>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 
 export function useListMessages<
 	TData = Awaited<ReturnType<typeof listMessages>>,
@@ -220,20 +220,20 @@ export function useListMessages<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listMessages>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
+	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getListMessagesQueryOptions(params, options);
+	const queryOptions = getListMessagesQueryOptions(params, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
 		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-	return { ...query, queryKey: queryOptions.queryKey };
+	return { ...query, queryKey: queryOptions.queryKey }
 }
 
 export const getMessage = (
@@ -244,12 +244,12 @@ export const getMessage = (
 		url: `/message/${id}`,
 		method: "GET",
 		signal,
-	});
-};
+	})
+}
 
 export const getGetMessageQueryKey = ({ id }: GetMessagePathParameters) => {
-	return [`/message/${id}`] as const;
-};
+	return [`/message/${id}`] as const
+}
 
 export const getGetMessageQueryOptions = <
 	TData = Awaited<ReturnType<typeof getMessage>>,
@@ -259,16 +259,16 @@ export const getGetMessageQueryOptions = <
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getMessage>>, TError, TData>
-		>;
+		>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {};
+	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getGetMessageQueryKey({ id });
+	const queryKey = queryOptions?.queryKey ?? getGetMessageQueryKey({ id })
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getMessage>>> = ({
 		signal,
-	}) => getMessage({ id }, signal);
+	}) => getMessage({ id }, signal)
 
 	return {
 		queryKey,
@@ -279,13 +279,13 @@ export const getGetMessageQueryOptions = <
 		Awaited<ReturnType<typeof getMessage>>,
 		TError,
 		TData
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
 
 export type GetMessageQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getMessage>>
->;
-export type GetMessageQueryError = unknown;
+>
+export type GetMessageQueryError = unknown
 
 export function useGetMessage<
 	TData = Awaited<ReturnType<typeof getMessage>>,
@@ -303,12 +303,12 @@ export function useGetMessage<
 					Awaited<ReturnType<typeof getMessage>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetMessage<
 	TData = Awaited<ReturnType<typeof getMessage>>,
 	TError = unknown,
@@ -325,12 +325,12 @@ export function useGetMessage<
 					Awaited<ReturnType<typeof getMessage>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetMessage<
 	TData = Awaited<ReturnType<typeof getMessage>>,
 	TError = unknown,
@@ -339,12 +339,12 @@ export function useGetMessage<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getMessage>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 
 export function useGetMessage<
 	TData = Awaited<ReturnType<typeof getMessage>>,
@@ -354,20 +354,20 @@ export function useGetMessage<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getMessage>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
+	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getGetMessageQueryOptions({ id }, options);
+	const queryOptions = getGetMessageQueryOptions({ id }, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
 		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-	return { ...query, queryKey: queryOptions.queryKey };
+	return { ...query, queryKey: queryOptions.queryKey }
 }
 
 export const updateMessage = (
@@ -381,8 +381,8 @@ export const updateMessage = (
 		headers: { "Content-Type": "application/json" },
 		data: updateMessageDto,
 		signal,
-	});
-};
+	})
+}
 
 export const getUpdateMessageMutationOptions = <
 	TError = unknown,
@@ -393,39 +393,39 @@ export const getUpdateMessageMutationOptions = <
 		TError,
 		{ pathParams: UpdateMessagePathParameters; data: UpdateMessageDto },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateMessage>>,
 	TError,
 	{ pathParams: UpdateMessagePathParameters; data: UpdateMessageDto },
 	TContext
 > => {
-	const mutationKey = ["updateMessage"];
+	const mutationKey = ["updateMessage"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateMessage>>,
 		{ pathParams: UpdateMessagePathParameters; data: UpdateMessageDto }
 	> = (props) => {
-		const { pathParams, data } = props ?? {};
+		const { pathParams, data } = props ?? {}
 
-		return updateMessage(pathParams, data);
-	};
+		return updateMessage(pathParams, data)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type UpdateMessageMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateMessage>>
->;
-export type UpdateMessageMutationBody = UpdateMessageDto;
-export type UpdateMessageMutationError = unknown;
+>
+export type UpdateMessageMutationBody = UpdateMessageDto
+export type UpdateMessageMutationError = unknown
 
 export const useUpdateMessage = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -434,7 +434,7 @@ export const useUpdateMessage = <TError = unknown, TContext = unknown>(
 			TError,
 			{ pathParams: UpdateMessagePathParameters; data: UpdateMessageDto },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -443,8 +443,8 @@ export const useUpdateMessage = <TError = unknown, TContext = unknown>(
 	{ pathParams: UpdateMessagePathParameters; data: UpdateMessageDto },
 	TContext
 > => {
-	return useMutation(getUpdateMessageMutationOptions(options), queryClient);
-};
+	return useMutation(getUpdateMessageMutationOptions(options), queryClient)
+}
 export const deleteMessage = (
 	{ id }: DeleteMessagePathParameters,
 	signal?: AbortSignal,
@@ -453,8 +453,8 @@ export const deleteMessage = (
 		url: `/message/${id}`,
 		method: "DELETE",
 		signal,
-	});
-};
+	})
+}
 
 export const getDeleteMessageMutationOptions = <
 	TError = unknown,
@@ -465,39 +465,39 @@ export const getDeleteMessageMutationOptions = <
 		TError,
 		{ pathParams: DeleteMessagePathParameters },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteMessage>>,
 	TError,
 	{ pathParams: DeleteMessagePathParameters },
 	TContext
 > => {
-	const mutationKey = ["deleteMessage"];
+	const mutationKey = ["deleteMessage"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteMessage>>,
 		{ pathParams: DeleteMessagePathParameters }
 	> = (props) => {
-		const { pathParams } = props ?? {};
+		const { pathParams } = props ?? {}
 
-		return deleteMessage(pathParams);
-	};
+		return deleteMessage(pathParams)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type DeleteMessageMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deleteMessage>>
->;
+>
 
-export type DeleteMessageMutationError = unknown;
+export type DeleteMessageMutationError = unknown
 
 export const useDeleteMessage = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -506,7 +506,7 @@ export const useDeleteMessage = <TError = unknown, TContext = unknown>(
 			TError,
 			{ pathParams: DeleteMessagePathParameters },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -515,5 +515,5 @@ export const useDeleteMessage = <TError = unknown, TContext = unknown>(
 	{ pathParams: DeleteMessagePathParameters },
 	TContext
 > => {
-	return useMutation(getDeleteMessageMutationOptions(options), queryClient);
-};
+	return useMutation(getDeleteMessageMutationOptions(options), queryClient)
+}

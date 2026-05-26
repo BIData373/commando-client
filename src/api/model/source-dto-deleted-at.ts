@@ -9,4 +9,4 @@
 /**
  * @nullable
  */
-export type SourceDtoDeletedAt = { [key: string]: unknown } | null;
+export type SourceDtoDeletedAt = { [key: string]: unknown } | null

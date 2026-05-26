@@ -1,32 +1,45 @@
-import styled from '@emotion/styled'
+import styled from "@emotion/styled"
 
 interface PrimaryButtonProps {
-  onClick?(): void
-  title: string
-  header?: React.ReactNode
-  tail?: React.ReactNode
-  height?: number
-  width?: number
-  disabled?: boolean
+	onClick?(): void
+	title: string
+	header?: React.ReactNode
+	tail?: React.ReactNode
+	height?: number
+	width?: number
+	disabled?: boolean
 }
 
-export const PrimaryButton = ({ onClick, title, header, tail, height, width, disabled }: PrimaryButtonProps) => {
-  return (
-    <Button onClick={onClick} $height={height} $width={width} disabled={disabled}>
-      {header}
-      {title}
-      {tail}
-    </Button>
-  )
+export const PrimaryButton = ({
+	onClick,
+	title,
+	header,
+	tail,
+	height,
+	width,
+	disabled,
+}: PrimaryButtonProps) => {
+	return (
+		<Button
+			onClick={onClick}
+			$height={height}
+			$width={width}
+			disabled={disabled}
+		>
+			{header}
+			{title}
+			{tail}
+		</Button>
+	)
 }
 
-const Button = styled.button<{ $height?: number, $width?: number }>`
+const Button = styled.button<{ $height?: number; $width?: number }>`
   direction: rtl;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: ${({ $height }) => $height ?? '40'}px;
+  height: ${({ $height }) => $height ?? "40"}px;
   width: ${({ $width }) => $width}px;
   padding: 0 15px;
   border: none;

@@ -1,131 +1,167 @@
-import styled from '@emotion/styled'
-import { createFileRoute } from '@tanstack/react-router'
-import { UserPlus } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { DropdownPermission } from '#/components/settings/DropdownPermission'
-import { DropdownUsers } from '#/components/settings/DropdownUsers'
-import { SectionTitle } from '#/components/settings/SectionTitle'
-import { UserPermissionList } from '#/components/settings/UserPermissionList'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
-import { useAddUserToWorkspace, useDeleteUser, useUpdateUser, useWorkspaceUsers } from '#/hooks/useUsers'
-import type { IUser } from '#/types'
-import { UserRole } from '#/types'
-import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
-import { concatName } from '#/utils/userUtils'
+import styled from "@emotion/styled"
+import { createFileRoute } from "@tanstack/react-router"
+import { UserPlus } from "lucide-react"
+import { useMemo, useState } from "react"
+import { PermissionDtoType, type UserDto } from "src/api/model"
+import {
+	useDeletePermission,
+	useGetPermissions,
+	useUpdatePermission,
+} from "src/api/permission/permission"
+import { useListWorkspaces } from "src/api/workspace/workspace"
+import { DropdownPermission } from "src/components/settings/DropdownPermission"
+import { DropdownUsers } from "src/components/settings/DropdownUsers"
+import { SectionTitle } from "src/components/settings/SectionTitle"
+import { UserPermissionList } from "src/components/settings/UserPermissionList"
+import {
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from "src/components/ui/tabs"
+import { SETTINGS_TABS, SettingTabPath } from "src/utils/settingsUtils"
+import { concatName } from "src/utils/userUtils"
 
-export const Route = createFileRoute('/workspace/$urlName/settings/permissions')({ component: SettingsPermissions })
+export const Route = createFileRoute(
+	"/workspace/$urlName/settings/permissions",
+)({ component: SettingsPermissions })
 
 const activeTabLabel = SETTINGS_TABS[SettingTabPath.PERMISSIONS]
 
 enum PermissionsTab {
-  ALL = 'all',
-  ADMINS = 'admins',
-  VIEWERS = 'viewers'
+	ALL = "all",
+	MANAGERS = "admins",
+	VIEWERS = "viewers",
 }
 
 function SettingsPermissions() {
-  const { urlName } = Route.useParams()
-  const [search, setSearch] = useState('')
-  const [activeTab, setActiveTab] = useState(PermissionsTab.ALL)
-  const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
-  const [role, setRole] = useState<UserRole>(UserRole.VIEWER);
+	const { urlName } = Route.useParams()
+	const [search, setSearch] = useState("")
+	const [activeTab, setActiveTab] = useState(PermissionsTab.ALL)
+	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null)
+	const [role, setRole] = useState<PermissionDtoType>(PermissionDtoType.VIEWER)
 
-  const { data: permissionUsers = [] } = useWorkspaceUsers(urlName)
-  const { mutate: userUpdate } = useUpdateUser()
-  const { mutate: addUserToWorkspace } = useAddUserToWorkspace()
-  const { mutate: deleteUser } = useDeleteUser()
+	// FIX Move to provider, move SettingsPermissions permissions to seperate file, render on fetched
+	const { data: workspaces } = useListWorkspaces({ urlName })
+	const workspace = workspaces!.[0]
 
-  const currentTabUsers = useMemo(() => {
-    const taggedRole = activeTab === PermissionsTab.ADMINS ? UserRole.ADMIN : UserRole.VIEWER
-    return activeTab === PermissionsTab.ALL ? permissionUsers : permissionUsers.filter(user => user.role === taggedRole)
-  }, [activeTab, permissionUsers])
+	const { data: permissionUsers = [] } = useGetPermissions({
+		workspaceId: workspace.id,
+	})
+	
+	const { mutate: userUpdate } = useUpdatePermission()
+	const { mutate: deleteUser } = useDeletePermission()
 
+	const currentTabUsers = useMemo(() => {
+		const taggedRole =
+			activeTab === PermissionsTab.MANAGERS
+				? PermissionDtoType.MANAGER
+				: PermissionDtoType.VIEWER
+		return activeTab === PermissionsTab.ALL
+			? permissionUsers
+			: permissionUsers.filter((user) => user.type === taggedRole)
+	}, [activeTab, permissionUsers])
 
-  function handleUserAdd(role: UserRole) {
-    if (!selectedUser) return
-    addUserToWorkspace({ userId: selectedUser.id, urlName })
-    userUpdate({ userId: selectedUser.id, data: { role } })
-    setSearch('')
-    setSelectedUser(null)
-  }
+	function handleUserAdd(type: PermissionDtoType) {
+		if (!selectedUser) return
+		userUpdate({ data: { workspaceId: 1, upn: selectedUser.upn, type } })
+		setSearch("")
+		setSelectedUser(null)
+	}
 
-  function handleDeletePermissionUser(userId: number) {
-    deleteUser({ userId, urlName })
-  }
+	function handleDeletePermission(user: UserDto) {
+		deleteUser({ params: { userId: user.id, workspaceId: workspace.id } })
+	}
 
-  function handleRoleChangePermissionUser(userId: number, role: UserRole) {
-    userUpdate({ userId, data: { role } })
-  }
+	function handleUpdatePermission(
+		userId: number,
+		type: PermissionDtoType,
+	) {
+		userUpdate({ data: { upn, type } })
+	}
 
-  function handleTabChange(value: string) {
-    setActiveTab(value as PermissionsTab)
-  }
+	function handleTabChange(value: string) {
+		setActiveTab(value as PermissionsTab)
+	}
 
-  function handleSearchChange(v: string) {
-    setSearch(v)
-    if (!v) setSelectedUser(null)
-  }
+	function handleSearchChange(v: string) {
+		setSearch(v)
+		if (!v) setSelectedUser(null)
+	}
 
-  function handleSearchSelect(user: IUser | null) {
-    setSelectedUser(user)
-    if (user) {
-      setSearch(concatName(user))
-    }
-  }
+	function handleSearchSelect(user: UserDto | null) {
+		setSelectedUser(user)
+		if (user) {
+			setSearch(concatName(user))
+		}
+	}
 
-  function handleSearchClear() {
-    setSearch('')
-    setSelectedUser(null)
-  }
+	function handleSearchClear() {
+		setSearch("")
+		setSelectedUser(null)
+	}
 
-  return (
-    <PermissionsRoot>
-      <SectionTitle title={activeTabLabel} />
-      <PermissionsInner>
-        <Subtitle>מנהל סביבה יוצר הנחיות, מגדיר אחראיים ומבצע בקרה ומעקב אחר סטטוס ההנחיות בסביבה</Subtitle>
-        <SearchSection>
-          <DropdownUsers
-            value={search}
-            onChange={handleSearchChange}
-            onSelect={handleSearchSelect}
-            onClear={handleSearchClear}
-            placeholder='חפש שם/ תפקיד/ מספר אישי'
-          />
-          <AddUserRow>
-            {search.length > 0 && (
-              <DropdownPermission
-                ghost
-                value={role}
-                onChange={setRole}
-                disabled={!selectedUser}
-              />
-            )}
-            {selectedUser && (
-              <AddAvatarButton onClick={() => handleUserAdd(role)} >
-                <UserPlus size={16} />
-              </AddAvatarButton>
-            )}
-          </AddUserRow>
-        </SearchSection>
-        <StyledTabs value={activeTab} onValueChange={handleTabChange}>
-          <StyledTabsList variant="line">
-            <StyledTabsTrigger value={PermissionsTab.ALL}>כולם</StyledTabsTrigger>
-            <StyledTabsTrigger value={PermissionsTab.ADMINS}>מנהלים</StyledTabsTrigger>
-            <StyledTabsTrigger value={PermissionsTab.VIEWERS}>צופים</StyledTabsTrigger>
-          </StyledTabsList>
-          {Object.values(PermissionsTab).map((tab, i) => (
-            <StyledTabsContent key={i} value={tab}>
-              <UserListScrollArea>
-                <UserListInner>
-                  <UserPermissionList users={currentTabUsers} onDelete={handleDeletePermissionUser} onRoleChange={handleRoleChangePermissionUser} />
-                </UserListInner>
-              </UserListScrollArea>
-            </StyledTabsContent>
-          ))}
-        </StyledTabs>
-      </PermissionsInner>
-    </PermissionsRoot>
-  )
+	return (
+		<PermissionsRoot>
+			<SectionTitle title={activeTabLabel} />
+			<PermissionsInner>
+				<Subtitle>
+					מנהל סביבה יוצר הנחיות, מגדיר אחראיים ומבצע בקרה ומעקב אחר סטטוס
+					ההנחיות בסביבה
+				</Subtitle>
+				<SearchSection>
+					<DropdownUsers
+						value={search}
+						onChange={handleSearchChange}
+						onSelect={handleSearchSelect}
+						onClear={handleSearchClear}
+						placeholder="חפש שם/ תפקיד/ מספר אישי"
+					/>
+					<AddUserRow>
+						{search.length > 0 && (
+							<DropdownPermission
+								ghost
+								value={role}
+								onChange={setRole}
+								disabled={!selectedUser}
+							/>
+						)}
+						{selectedUser && (
+							<AddAvatarButton onClick={() => handleUserAdd(role)}>
+								<UserPlus size={16} />
+							</AddAvatarButton>
+						)}
+					</AddUserRow>
+				</SearchSection>
+				<StyledTabs value={activeTab} onValueChange={handleTabChange}>
+					<StyledTabsList variant="line">
+						<StyledTabsTrigger value={PermissionsTab.ALL}>
+							כולם
+						</StyledTabsTrigger>
+						<StyledTabsTrigger value={PermissionsTab.MANAGERS}>
+							מנהלים
+						</StyledTabsTrigger>
+						<StyledTabsTrigger value={PermissionsTab.VIEWERS}>
+							צופים
+						</StyledTabsTrigger>
+					</StyledTabsList>
+					{Object.values(PermissionsTab).map((tab) => (
+						<StyledTabsContent key={tab} value={tab}>
+							<UserListScrollArea>
+								<UserListInner>
+									<UserPermissionList
+										permissions={currentTabUsers}
+										onDelete={handleDeletePermission}
+										onRoleChange={handleUpdatePermission}
+									/>
+								</UserListInner>
+							</UserListScrollArea>
+						</StyledTabsContent>
+					))}
+				</StyledTabs>
+			</PermissionsInner>
+		</PermissionsRoot>
+	)
 }
 
 const PermissionsRoot = styled.div`
@@ -156,7 +192,6 @@ const AddUserRow = styled.div`
   gap: 8px;
 `
 
-
 const AddAvatarButton = styled.button`
   display: flex;
   align-items: center;
@@ -169,7 +204,6 @@ const AddAvatarButton = styled.button`
   cursor: pointer;
   background: var(--default-linear);
 `
-
 
 const StyledTabs = styled(Tabs)`
   flex: 1;

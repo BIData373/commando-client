@@ -1,32 +1,32 @@
-import styled from '@emotion/styled'
-import { X } from 'lucide-react'
-import type { IUser } from '#/types'
-import { UserItem } from './UserDropdownItem'
+import styled from "@emotion/styled"
+import { X } from "lucide-react"
+import type { UserDto } from "src/api/model"
+import { UserItem } from "./UserDropdownItem"
 
 interface UsersListsProps {
-    users: IUser[]
-    onRemove: (id: number) => void
+	users: UserDto[]
+	onRemove: (id: number) => void
 }
 
 export function UsersLists({ users, onRemove }: UsersListsProps) {
-    return (
-        <UserListArea>
-            {users.length > 0 && (
-                <UserCard>
-                    {users.map(user => (
-                        <UserCardItem key={user.id}>
-                            <UserCardInfo>
-                                <UserItem user={user} />
-                            </UserCardInfo>
-                            <UserCardClose type="button" onClick={() => onRemove(user.id)}>
-                                <X size={12} />
-                            </UserCardClose>
-                        </UserCardItem>
-                    ))}
-                </UserCard>
-            )}
-        </UserListArea>
-    )
+	return (
+		<UserListArea>
+			{users.length > 0 && (
+				<UserCard>
+					{users.map((user) => (
+						<UserCardItem key={user.id}>
+							<UserCardInfo>
+								<UserItem user={user} />
+							</UserCardInfo>
+							<UserCardClose type="button" onClick={() => onRemove(user.id)}>
+								<X size={12} />
+							</UserCardClose>
+						</UserCardItem>
+					))}
+				</UserCard>
+			)}
+		</UserListArea>
+	)
 }
 
 const UserListArea = styled.div`

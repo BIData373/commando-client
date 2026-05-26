@@ -7,5 +7,5 @@
  */
 
 export type UpdatePikudPathParameters = {
-	id: number;
-};
+	id: number
+}

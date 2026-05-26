@@ -9,4 +9,4 @@
 /**
  * @nullable
  */
-export type PikudDtoDeletedAt = { [key: string]: unknown } | null;
+export type PikudDtoDeletedAt = { [key: string]: unknown } | null

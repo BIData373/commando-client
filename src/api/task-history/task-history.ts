@@ -16,10 +16,10 @@ import type {
 	UndefinedInitialDataOptions,
 	UseQueryOptions,
 	UseQueryResult,
-} from "@tanstack/react-query";
-import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "../../axios";
-import type { GetTaskHistoryParams, TaskHistoryDto } from "../model";
+} from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
+import { apiRequest } from "../../axios"
+import type { GetTaskHistoryParams, TaskHistoryDto } from "../model"
 
 export const getTaskHistory = (
 	params: GetTaskHistoryParams,
@@ -30,12 +30,12 @@ export const getTaskHistory = (
 		method: "GET",
 		params,
 		signal,
-	});
-};
+	})
+}
 
 export const getGetTaskHistoryQueryKey = (params?: GetTaskHistoryParams) => {
-	return [`/task-history`, ...(params ? [params] : [])] as const;
-};
+	return [`/task-history`, ...(params ? [params] : [])] as const
+}
 
 export const getGetTaskHistoryQueryOptions = <
 	TData = Awaited<ReturnType<typeof getTaskHistory>>,
@@ -45,28 +45,28 @@ export const getGetTaskHistoryQueryOptions = <
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTaskHistory>>, TError, TData>
-		>;
+		>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {};
+	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getGetTaskHistoryQueryKey(params);
+	const queryKey = queryOptions?.queryKey ?? getGetTaskHistoryQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getTaskHistory>>> = ({
 		signal,
-	}) => getTaskHistory(params, signal);
+	}) => getTaskHistory(params, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof getTaskHistory>>,
 		TError,
 		TData
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
 
 export type GetTaskHistoryQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getTaskHistory>>
->;
-export type GetTaskHistoryQueryError = unknown;
+>
+export type GetTaskHistoryQueryError = unknown
 
 export function useGetTaskHistory<
 	TData = Awaited<ReturnType<typeof getTaskHistory>>,
@@ -84,12 +84,12 @@ export function useGetTaskHistory<
 					Awaited<ReturnType<typeof getTaskHistory>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetTaskHistory<
 	TData = Awaited<ReturnType<typeof getTaskHistory>>,
 	TError = unknown,
@@ -106,12 +106,12 @@ export function useGetTaskHistory<
 					Awaited<ReturnType<typeof getTaskHistory>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetTaskHistory<
 	TData = Awaited<ReturnType<typeof getTaskHistory>>,
 	TError = unknown,
@@ -120,12 +120,12 @@ export function useGetTaskHistory<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTaskHistory>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 
 export function useGetTaskHistory<
 	TData = Awaited<ReturnType<typeof getTaskHistory>>,
@@ -135,18 +135,18 @@ export function useGetTaskHistory<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTaskHistory>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
+	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getGetTaskHistoryQueryOptions(params, options);
+	const queryOptions = getGetTaskHistoryQueryOptions(params, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
 		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-	return { ...query, queryKey: queryOptions.queryKey };
+	return { ...query, queryKey: queryOptions.queryKey }
 }

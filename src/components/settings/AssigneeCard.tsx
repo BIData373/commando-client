@@ -1,69 +1,76 @@
-import styled from '@emotion/styled'
-import { User } from 'lucide-react'
-import { useState } from 'react'
-import type { IAssignee } from '#/types'
-import { AssigneeAvatar } from '../shared/AssigneeAvatar'
-import { Badge } from '../ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Separator } from '../ui/separator'
-import { AssigneeDialog } from './AssigneeDialog'
-import { DeleteAssigneePopconfirm } from './DeleteAssigneePopconfirm'
-
+import styled from "@emotion/styled"
+import { User } from "lucide-react"
+import { useState } from "react"
+import type { IAssignee } from "src/types"
+import { AssigneeAvatar } from "../shared/AssigneeAvatar"
+import { Badge } from "../ui/badge"
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "../ui/card"
+import { Separator } from "../ui/separator"
+import { AssigneeDialog } from "./AssigneeDialog"
+import { DeleteAssigneePopconfirm } from "./DeleteAssigneePopconfirm"
 
 const MAX_VISIBLE_TAGS = 2
 
-
 interface IAssigneeCardProps {
-    assignee: IAssignee
-    userNames: Record<number, string>
+	assignee: IAssignee
+	userNames: Record<number, string>
 }
 
-
 export function AssigneeCard({ assignee, userNames }: IAssigneeCardProps) {
-    const userIds = assignee.userIds ?? []
-    const visibleIds = userIds.slice(0, MAX_VISIBLE_TAGS)
-    const remaining = userIds.length - MAX_VISIBLE_TAGS
-    const [isUpdateCardOpen, setIsUpdateCardOpen] = useState(false)
+	const userIds = assignee.userIds ?? []
+	const visibleIds = userIds.slice(0, MAX_VISIBLE_TAGS)
+	const remaining = userIds.length - MAX_VISIBLE_TAGS
+	const [isUpdateCardOpen, setIsUpdateCardOpen] = useState(false)
 
-    function onCardClick() {
-        setIsUpdateCardOpen(true)
-    }
+	function onCardClick() {
+		setIsUpdateCardOpen(true)
+	}
 
-    return (
-        <>
-            <AssigneeDialog
-                assignee={assignee}
-                open={isUpdateCardOpen}
-                onOpenChange={setIsUpdateCardOpen}
-            />
-            <StyledCard onClick={onCardClick}>
-                <StyledCardHeader>
-                    <CardHeaderRow>
-                        <AssigneeAvatar assignee={assignee} />
-                        <CardWrapper>
-                            <CardMeta>
-                                <CardTitle>{assignee.name}</CardTitle>
-                                <DeleteAssigneePopconfirm assigneeId={assignee.id} />
-                            </CardMeta>
-                            <StyledCardDescription>{userIds.length} משתמשים</StyledCardDescription>
-                        </CardWrapper>
-                    </CardHeaderRow>
-                </StyledCardHeader>
-                <CardContent>
-                    <Separator />
-                    <TagRow>
-                        {visibleIds.map((uid) => (
-                            <StyledBadge key={uid} variant="secondary">
-                                <User size={16} />
-                                {userNames[uid] ?? `#${uid}`}
-                            </StyledBadge>
-                        ))}
-                        {remaining > 0 && <StyledBadge variant="outline">+{remaining}</StyledBadge>}
-                    </TagRow>
-                </CardContent>
-            </StyledCard>
-        </>
-    )
+	return (
+		<>
+			<AssigneeDialog
+				assignee={assignee}
+				open={isUpdateCardOpen}
+				onOpenChange={setIsUpdateCardOpen}
+			/>
+			<StyledCard onClick={onCardClick}>
+				<StyledCardHeader>
+					<CardHeaderRow>
+						<AssigneeAvatar assignee={assignee} />
+						<CardWrapper>
+							<CardMeta>
+								<CardTitle>{assignee.name}</CardTitle>
+								<DeleteAssigneePopconfirm assigneeId={assignee.id} />
+							</CardMeta>
+							<StyledCardDescription>
+								{userIds.length} משתמשים
+							</StyledCardDescription>
+						</CardWrapper>
+					</CardHeaderRow>
+				</StyledCardHeader>
+				<CardContent>
+					<Separator />
+					<TagRow>
+						{visibleIds.map((uid) => (
+							<StyledBadge key={uid} variant="secondary">
+								<User size={16} />
+								{userNames[uid] ?? `#${uid}`}
+							</StyledBadge>
+						))}
+						{remaining > 0 && (
+							<StyledBadge variant="outline">+{remaining}</StyledBadge>
+						)}
+					</TagRow>
+				</CardContent>
+			</StyledCard>
+		</>
+	)
 }
 
 const StyledCard = styled(Card)`

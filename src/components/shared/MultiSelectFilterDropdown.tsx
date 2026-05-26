@@ -1,101 +1,99 @@
-import { useState } from 'react'
-import styled from '@emotion/styled'
-import { ChevronDown } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { Checkbox } from '../ui/checkbox'
-import type { ReactNode } from 'react'
+import styled from "@emotion/styled"
+import { ChevronDown } from "lucide-react"
+import type { ReactNode } from "react"
+import { useState } from "react"
+import { Checkbox } from "../ui/checkbox"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 interface FilterOption<T extends string | number> {
-  value: T
-  label: string
-  icon?: ReactNode
+	value: T
+	label: string
+	icon?: ReactNode
 }
 
 interface MultiSelectFilterDropdownProps<T extends string | number> {
-  label: string
-  options: FilterOption<T>[]
-  activeValues: Set<T>
-  onApply: (selected: Set<T>) => void
-  $active: boolean
+	label: string
+	options: FilterOption<T>[]
+	activeValues: Set<T>
+	onApply: (selected: Set<T>) => void
+	$active: boolean
 }
 
 function MultiSelectFilterDropdown<T extends string | number>({
-  label,
-  options,
-  activeValues,
-  onApply,
-  $active,
+	label,
+	options,
+	activeValues,
+	onApply,
+	$active,
 }: MultiSelectFilterDropdownProps<T>) {
-  const [open, setOpen] = useState(false)
-  const [pending, setPending] = useState<Set<T>>(new Set(activeValues))
+	const [open, setOpen] = useState(false)
+	const [pending, setPending] = useState<Set<T>>(new Set(activeValues))
 
-  function handleOpenChange(nextOpen: boolean) {
-    if (nextOpen) {
-      setPending(new Set(activeValues))
-    }
-    setOpen(nextOpen)
-  }
+	function handleOpenChange(nextOpen: boolean) {
+		if (nextOpen) {
+			setPending(new Set(activeValues))
+		}
+		setOpen(nextOpen)
+	}
 
-  function toggleValue(value: T) {
-    setPending((prev) => {
-      const next = new Set(prev)
-      if (next.has(value)) {
-        next.delete(value)
-      } else {
-        next.add(value)
-      }
-      return next
-    })
-  }
+	function toggleValue(value: T) {
+		setPending((prev) => {
+			const next = new Set(prev)
+			if (next.has(value)) {
+				next.delete(value)
+			} else {
+				next.add(value)
+			}
+			return next
+		})
+	}
 
-  function handleApply() {
-    onApply(pending)
-    setOpen(false)
-  }
+	function handleApply() {
+		onApply(pending)
+		setOpen(false)
+	}
 
-  function handleReset() {
-    onApply(new Set())
-    setOpen(false)
-  }
+	function handleReset() {
+		onApply(new Set())
+		setOpen(false)
+	}
 
-  return (
-    <Popover open={open} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        <TriggerPill $active={$active}>
-          <ChevronDown size={16} />
-          {label}
-        </TriggerPill>
-      </PopoverTrigger>
-      <PopoverContent align="start" sideOffset={8} asChild>
-        <DropdownPanel>
-          <ItemList>
-            {options.map((option) => (
-              <DropdownItem
-                key={option.value}
-                $selected={pending.has(option.value)}
-                onClick={() => toggleValue(option.value)}
-              >
-                <OptionLabel>
-                  {option.icon}
-                  <span>{option.label}</span>
-                </OptionLabel>
-                <Checkbox checked={pending.has(option.value)} />
-              </DropdownItem>
-            ))}
-          </ItemList>
-          <Divider />
-          <FooterRow>
-            <ResetButton onClick={handleReset}>
-              אפס
-            </ResetButton>
-            <ApplyButton onClick={handleApply} disabled={pending.size === 0}>
-              החל ({pending.size})
-            </ApplyButton>
-          </FooterRow>
-        </DropdownPanel>
-      </PopoverContent>
-    </Popover>
-  )
+	return (
+		<Popover open={open} onOpenChange={handleOpenChange}>
+			<PopoverTrigger asChild>
+				<TriggerPill $active={$active}>
+					<ChevronDown size={16} />
+					{label}
+				</TriggerPill>
+			</PopoverTrigger>
+			<PopoverContent align="start" sideOffset={8} asChild>
+				<DropdownPanel>
+					<ItemList>
+						{options.map((option) => (
+							<DropdownItem
+								key={option.value}
+								$selected={pending.has(option.value)}
+								onClick={() => toggleValue(option.value)}
+							>
+								<OptionLabel>
+									{option.icon}
+									<span>{option.label}</span>
+								</OptionLabel>
+								<Checkbox checked={pending.has(option.value)} />
+							</DropdownItem>
+						))}
+					</ItemList>
+					<Divider />
+					<FooterRow>
+						<ResetButton onClick={handleReset}>אפס</ResetButton>
+						<ApplyButton onClick={handleApply} disabled={pending.size === 0}>
+							החל ({pending.size})
+						</ApplyButton>
+					</FooterRow>
+				</DropdownPanel>
+			</PopoverContent>
+		</Popover>
+	)
 }
 
 export { MultiSelectFilterDropdown }
@@ -112,9 +110,9 @@ const TriggerPill = styled.button<{ $active: boolean }>`
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.15s;
-  border: 1px solid ${({ $active }) => ($active ? 'rgba(9, 88, 217, 0.6)' : '#D9D9D9')};
+  border: 1px solid ${({ $active }) => ($active ? "rgba(9, 88, 217, 0.6)" : "#D9D9D9")};
   background: #FFF;
-  color: ${({ $active }) => ($active ? 'rgba(9, 88, 217, 1)' : 'var(--sea-ink)')};
+  color: ${({ $active }) => ($active ? "rgba(9, 88, 217, 1)" : "var(--sea-ink)")};
 
   &:hover {
     background: var(--link-bg-hover);
@@ -150,7 +148,7 @@ const DropdownItem = styled.div<{ $selected: boolean }>`
   height: 32px;
   padding: 5px 12px;
   cursor: pointer;
-  background: ${({ $selected }) => ($selected ? 'rgba(0, 0, 0, 0.04)' : 'transparent')};
+  background: ${({ $selected }) => ($selected ? "rgba(0, 0, 0, 0.04)" : "transparent")};
 
   &:hover {
     background: rgba(0, 0, 0, 0.04);

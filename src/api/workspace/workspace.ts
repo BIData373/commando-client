@@ -19,9 +19,9 @@ import type {
 	UseMutationResult,
 	UseQueryOptions,
 	UseQueryResult,
-} from "@tanstack/react-query";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "../../axios";
+} from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { apiRequest } from "../../axios"
 import type {
 	CreateWorkspaceDto,
 	DeleteWorkspacePathParameters,
@@ -30,7 +30,7 @@ import type {
 	UpdateWorkspaceDto,
 	UpdateWorkspacePathParameters,
 	WorkspaceDto,
-} from "../model";
+} from "../model"
 
 export const createWorkspace = (
 	createWorkspaceDto: CreateWorkspaceDto,
@@ -42,8 +42,8 @@ export const createWorkspace = (
 		headers: { "Content-Type": "application/json" },
 		data: createWorkspaceDto,
 		signal,
-	});
-};
+	})
+}
 
 export const getCreateWorkspaceMutationOptions = <
 	TError = unknown,
@@ -54,39 +54,39 @@ export const getCreateWorkspaceMutationOptions = <
 		TError,
 		{ data: CreateWorkspaceDto },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createWorkspace>>,
 	TError,
 	{ data: CreateWorkspaceDto },
 	TContext
 > => {
-	const mutationKey = ["createWorkspace"];
+	const mutationKey = ["createWorkspace"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createWorkspace>>,
 		{ data: CreateWorkspaceDto }
 	> = (props) => {
-		const { data } = props ?? {};
+		const { data } = props ?? {}
 
-		return createWorkspace(data);
-	};
+		return createWorkspace(data)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type CreateWorkspaceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createWorkspace>>
->;
-export type CreateWorkspaceMutationBody = CreateWorkspaceDto;
-export type CreateWorkspaceMutationError = unknown;
+>
+export type CreateWorkspaceMutationBody = CreateWorkspaceDto
+export type CreateWorkspaceMutationError = unknown
 
 export const useCreateWorkspace = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -95,7 +95,7 @@ export const useCreateWorkspace = <TError = unknown, TContext = unknown>(
 			TError,
 			{ data: CreateWorkspaceDto },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -104,8 +104,8 @@ export const useCreateWorkspace = <TError = unknown, TContext = unknown>(
 	{ data: CreateWorkspaceDto },
 	TContext
 > => {
-	return useMutation(getCreateWorkspaceMutationOptions(options), queryClient);
-};
+	return useMutation(getCreateWorkspaceMutationOptions(options), queryClient)
+}
 export const listWorkspaces = (
 	params?: ListWorkspacesParams,
 	signal?: AbortSignal,
@@ -115,12 +115,12 @@ export const listWorkspaces = (
 		method: "GET",
 		params,
 		signal,
-	});
-};
+	})
+}
 
 export const getListWorkspacesQueryKey = (params?: ListWorkspacesParams) => {
-	return [`/workspace`, ...(params ? [params] : [])] as const;
-};
+	return [`/workspace`, ...(params ? [params] : [])] as const
+}
 
 export const getListWorkspacesQueryOptions = <
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
@@ -130,28 +130,28 @@ export const getListWorkspacesQueryOptions = <
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listWorkspaces>>, TError, TData>
-		>;
+		>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {};
+	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getListWorkspacesQueryKey(params);
+	const queryKey = queryOptions?.queryKey ?? getListWorkspacesQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof listWorkspaces>>> = ({
 		signal,
-	}) => listWorkspaces(params, signal);
+	}) => listWorkspaces(params, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listWorkspaces>>,
 		TError,
 		TData
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
 
 export type ListWorkspacesQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listWorkspaces>>
->;
-export type ListWorkspacesQueryError = unknown;
+>
+export type ListWorkspacesQueryError = unknown
 
 export function useListWorkspaces<
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
@@ -169,12 +169,12 @@ export function useListWorkspaces<
 					Awaited<ReturnType<typeof listWorkspaces>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useListWorkspaces<
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
 	TError = unknown,
@@ -191,12 +191,12 @@ export function useListWorkspaces<
 					Awaited<ReturnType<typeof listWorkspaces>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useListWorkspaces<
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
 	TError = unknown,
@@ -205,12 +205,12 @@ export function useListWorkspaces<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listWorkspaces>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 
 export function useListWorkspaces<
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
@@ -220,20 +220,20 @@ export function useListWorkspaces<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listWorkspaces>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
+	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getListWorkspacesQueryOptions(params, options);
+	const queryOptions = getListWorkspacesQueryOptions(params, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
 		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-	return { ...query, queryKey: queryOptions.queryKey };
+	return { ...query, queryKey: queryOptions.queryKey }
 }
 
 export const getWorkspace = (
@@ -244,12 +244,12 @@ export const getWorkspace = (
 		url: `/workspace/${id}`,
 		method: "GET",
 		signal,
-	});
-};
+	})
+}
 
 export const getGetWorkspaceQueryKey = ({ id }: GetWorkspacePathParameters) => {
-	return [`/workspace/${id}`] as const;
-};
+	return [`/workspace/${id}`] as const
+}
 
 export const getGetWorkspaceQueryOptions = <
 	TData = Awaited<ReturnType<typeof getWorkspace>>,
@@ -259,16 +259,16 @@ export const getGetWorkspaceQueryOptions = <
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getWorkspace>>, TError, TData>
-		>;
+		>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {};
+	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getGetWorkspaceQueryKey({ id });
+	const queryKey = queryOptions?.queryKey ?? getGetWorkspaceQueryKey({ id })
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getWorkspace>>> = ({
 		signal,
-	}) => getWorkspace({ id }, signal);
+	}) => getWorkspace({ id }, signal)
 
 	return {
 		queryKey,
@@ -279,13 +279,13 @@ export const getGetWorkspaceQueryOptions = <
 		Awaited<ReturnType<typeof getWorkspace>>,
 		TError,
 		TData
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
 
 export type GetWorkspaceQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getWorkspace>>
->;
-export type GetWorkspaceQueryError = unknown;
+>
+export type GetWorkspaceQueryError = unknown
 
 export function useGetWorkspace<
 	TData = Awaited<ReturnType<typeof getWorkspace>>,
@@ -303,12 +303,12 @@ export function useGetWorkspace<
 					Awaited<ReturnType<typeof getWorkspace>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetWorkspace<
 	TData = Awaited<ReturnType<typeof getWorkspace>>,
 	TError = unknown,
@@ -325,12 +325,12 @@ export function useGetWorkspace<
 					Awaited<ReturnType<typeof getWorkspace>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetWorkspace<
 	TData = Awaited<ReturnType<typeof getWorkspace>>,
 	TError = unknown,
@@ -339,12 +339,12 @@ export function useGetWorkspace<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getWorkspace>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 
 export function useGetWorkspace<
 	TData = Awaited<ReturnType<typeof getWorkspace>>,
@@ -354,20 +354,20 @@ export function useGetWorkspace<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getWorkspace>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
+	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getGetWorkspaceQueryOptions({ id }, options);
+	const queryOptions = getGetWorkspaceQueryOptions({ id }, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
 		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-	return { ...query, queryKey: queryOptions.queryKey };
+	return { ...query, queryKey: queryOptions.queryKey }
 }
 
 export const updateWorkspace = (
@@ -381,8 +381,8 @@ export const updateWorkspace = (
 		headers: { "Content-Type": "application/json" },
 		data: updateWorkspaceDto,
 		signal,
-	});
-};
+	})
+}
 
 export const getUpdateWorkspaceMutationOptions = <
 	TError = unknown,
@@ -393,39 +393,39 @@ export const getUpdateWorkspaceMutationOptions = <
 		TError,
 		{ pathParams: UpdateWorkspacePathParameters; data: UpdateWorkspaceDto },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateWorkspace>>,
 	TError,
 	{ pathParams: UpdateWorkspacePathParameters; data: UpdateWorkspaceDto },
 	TContext
 > => {
-	const mutationKey = ["updateWorkspace"];
+	const mutationKey = ["updateWorkspace"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateWorkspace>>,
 		{ pathParams: UpdateWorkspacePathParameters; data: UpdateWorkspaceDto }
 	> = (props) => {
-		const { pathParams, data } = props ?? {};
+		const { pathParams, data } = props ?? {}
 
-		return updateWorkspace(pathParams, data);
-	};
+		return updateWorkspace(pathParams, data)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type UpdateWorkspaceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateWorkspace>>
->;
-export type UpdateWorkspaceMutationBody = UpdateWorkspaceDto;
-export type UpdateWorkspaceMutationError = unknown;
+>
+export type UpdateWorkspaceMutationBody = UpdateWorkspaceDto
+export type UpdateWorkspaceMutationError = unknown
 
 export const useUpdateWorkspace = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -434,7 +434,7 @@ export const useUpdateWorkspace = <TError = unknown, TContext = unknown>(
 			TError,
 			{ pathParams: UpdateWorkspacePathParameters; data: UpdateWorkspaceDto },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -443,8 +443,8 @@ export const useUpdateWorkspace = <TError = unknown, TContext = unknown>(
 	{ pathParams: UpdateWorkspacePathParameters; data: UpdateWorkspaceDto },
 	TContext
 > => {
-	return useMutation(getUpdateWorkspaceMutationOptions(options), queryClient);
-};
+	return useMutation(getUpdateWorkspaceMutationOptions(options), queryClient)
+}
 export const deleteWorkspace = (
 	{ id }: DeleteWorkspacePathParameters,
 	signal?: AbortSignal,
@@ -453,8 +453,8 @@ export const deleteWorkspace = (
 		url: `/workspace/${id}`,
 		method: "DELETE",
 		signal,
-	});
-};
+	})
+}
 
 export const getDeleteWorkspaceMutationOptions = <
 	TError = unknown,
@@ -465,39 +465,39 @@ export const getDeleteWorkspaceMutationOptions = <
 		TError,
 		{ pathParams: DeleteWorkspacePathParameters },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteWorkspace>>,
 	TError,
 	{ pathParams: DeleteWorkspacePathParameters },
 	TContext
 > => {
-	const mutationKey = ["deleteWorkspace"];
+	const mutationKey = ["deleteWorkspace"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteWorkspace>>,
 		{ pathParams: DeleteWorkspacePathParameters }
 	> = (props) => {
-		const { pathParams } = props ?? {};
+		const { pathParams } = props ?? {}
 
-		return deleteWorkspace(pathParams);
-	};
+		return deleteWorkspace(pathParams)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type DeleteWorkspaceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deleteWorkspace>>
->;
+>
 
-export type DeleteWorkspaceMutationError = unknown;
+export type DeleteWorkspaceMutationError = unknown
 
 export const useDeleteWorkspace = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -506,7 +506,7 @@ export const useDeleteWorkspace = <TError = unknown, TContext = unknown>(
 			TError,
 			{ pathParams: DeleteWorkspacePathParameters },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -515,5 +515,5 @@ export const useDeleteWorkspace = <TError = unknown, TContext = unknown>(
 	{ pathParams: DeleteWorkspacePathParameters },
 	TContext
 > => {
-	return useMutation(getDeleteWorkspaceMutationOptions(options), queryClient);
-};
+	return useMutation(getDeleteWorkspaceMutationOptions(options), queryClient)
+}

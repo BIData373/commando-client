@@ -9,4 +9,4 @@
 /**
  * @nullable
  */
-export type TaskHistoryDtoValue = { [key: string]: unknown } | null;
+export type TaskHistoryDtoValue = { [key: string]: unknown } | null

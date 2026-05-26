@@ -19,9 +19,9 @@ import type {
 	UseMutationResult,
 	UseQueryOptions,
 	UseQueryResult,
-} from "@tanstack/react-query";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "../../axios";
+} from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { apiRequest } from "../../axios"
 import type {
 	CreateTagDto,
 	DeleteTagPathParameters,
@@ -30,7 +30,7 @@ import type {
 	TagDto,
 	UpdateTagDto,
 	UpdateTagPathParameters,
-} from "../model";
+} from "../model"
 
 export const createTag = (createTagDto: CreateTagDto, signal?: AbortSignal) => {
 	return apiRequest<TagDto>({
@@ -39,8 +39,8 @@ export const createTag = (createTagDto: CreateTagDto, signal?: AbortSignal) => {
 		headers: { "Content-Type": "application/json" },
 		data: createTagDto,
 		signal,
-	});
-};
+	})
+}
 
 export const getCreateTagMutationOptions = <
 	TError = unknown,
@@ -51,39 +51,39 @@ export const getCreateTagMutationOptions = <
 		TError,
 		{ data: CreateTagDto },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createTag>>,
 	TError,
 	{ data: CreateTagDto },
 	TContext
 > => {
-	const mutationKey = ["createTag"];
+	const mutationKey = ["createTag"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createTag>>,
 		{ data: CreateTagDto }
 	> = (props) => {
-		const { data } = props ?? {};
+		const { data } = props ?? {}
 
-		return createTag(data);
-	};
+		return createTag(data)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type CreateTagMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createTag>>
->;
-export type CreateTagMutationBody = CreateTagDto;
-export type CreateTagMutationError = unknown;
+>
+export type CreateTagMutationBody = CreateTagDto
+export type CreateTagMutationError = unknown
 
 export const useCreateTag = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -92,7 +92,7 @@ export const useCreateTag = <TError = unknown, TContext = unknown>(
 			TError,
 			{ data: CreateTagDto },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -101,15 +101,15 @@ export const useCreateTag = <TError = unknown, TContext = unknown>(
 	{ data: CreateTagDto },
 	TContext
 > => {
-	return useMutation(getCreateTagMutationOptions(options), queryClient);
-};
+	return useMutation(getCreateTagMutationOptions(options), queryClient)
+}
 export const listTags = (params: ListTagsParams, signal?: AbortSignal) => {
-	return apiRequest<TagDto[]>({ url: `/tag`, method: "GET", params, signal });
-};
+	return apiRequest<TagDto[]>({ url: `/tag`, method: "GET", params, signal })
+}
 
 export const getListTagsQueryKey = (params?: ListTagsParams) => {
-	return [`/tag`, ...(params ? [params] : [])] as const;
-};
+	return [`/tag`, ...(params ? [params] : [])] as const
+}
 
 export const getListTagsQueryOptions = <
 	TData = Awaited<ReturnType<typeof listTags>>,
@@ -119,28 +119,28 @@ export const getListTagsQueryOptions = <
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTags>>, TError, TData>
-		>;
+		>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {};
+	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getListTagsQueryKey(params);
+	const queryKey = queryOptions?.queryKey ?? getListTagsQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof listTags>>> = ({
 		signal,
-	}) => listTags(params, signal);
+	}) => listTags(params, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listTags>>,
 		TError,
 		TData
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
 
 export type ListTagsQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listTags>>
->;
-export type ListTagsQueryError = unknown;
+>
+export type ListTagsQueryError = unknown
 
 export function useListTags<
 	TData = Awaited<ReturnType<typeof listTags>>,
@@ -158,12 +158,12 @@ export function useListTags<
 					Awaited<ReturnType<typeof listTags>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useListTags<
 	TData = Awaited<ReturnType<typeof listTags>>,
 	TError = unknown,
@@ -180,12 +180,12 @@ export function useListTags<
 					Awaited<ReturnType<typeof listTags>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useListTags<
 	TData = Awaited<ReturnType<typeof listTags>>,
 	TError = unknown,
@@ -194,12 +194,12 @@ export function useListTags<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTags>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 
 export function useListTags<
 	TData = Awaited<ReturnType<typeof listTags>>,
@@ -209,29 +209,29 @@ export function useListTags<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTags>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
+	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getListTagsQueryOptions(params, options);
+	const queryOptions = getListTagsQueryOptions(params, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
 		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-	return { ...query, queryKey: queryOptions.queryKey };
+	return { ...query, queryKey: queryOptions.queryKey }
 }
 
 export const getTag = ({ id }: GetTagPathParameters, signal?: AbortSignal) => {
-	return apiRequest<TagDto>({ url: `/tag/${id}`, method: "GET", signal });
-};
+	return apiRequest<TagDto>({ url: `/tag/${id}`, method: "GET", signal })
+}
 
 export const getGetTagQueryKey = ({ id }: GetTagPathParameters) => {
-	return [`/tag/${id}`] as const;
-};
+	return [`/tag/${id}`] as const
+}
 
 export const getGetTagQueryOptions = <
 	TData = Awaited<ReturnType<typeof getTag>>,
@@ -241,16 +241,16 @@ export const getGetTagQueryOptions = <
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTag>>, TError, TData>
-		>;
+		>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {};
+	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getGetTagQueryKey({ id });
+	const queryKey = queryOptions?.queryKey ?? getGetTagQueryKey({ id })
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getTag>>> = ({
 		signal,
-	}) => getTag({ id }, signal);
+	}) => getTag({ id }, signal)
 
 	return {
 		queryKey,
@@ -258,12 +258,12 @@ export const getGetTagQueryOptions = <
 		enabled: !!id,
 		...queryOptions,
 	} as UseQueryOptions<Awaited<ReturnType<typeof getTag>>, TError, TData> & {
-		queryKey: DataTag<QueryKey, TData, TError>;
-	};
-};
+		queryKey: DataTag<QueryKey, TData, TError>
+	}
+}
 
-export type GetTagQueryResult = NonNullable<Awaited<ReturnType<typeof getTag>>>;
-export type GetTagQueryError = unknown;
+export type GetTagQueryResult = NonNullable<Awaited<ReturnType<typeof getTag>>>
+export type GetTagQueryError = unknown
 
 export function useGetTag<
 	TData = Awaited<ReturnType<typeof getTag>>,
@@ -281,12 +281,12 @@ export function useGetTag<
 					Awaited<ReturnType<typeof getTag>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetTag<
 	TData = Awaited<ReturnType<typeof getTag>>,
 	TError = unknown,
@@ -303,12 +303,12 @@ export function useGetTag<
 					Awaited<ReturnType<typeof getTag>>
 				>,
 				"initialData"
-			>;
+			>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 export function useGetTag<
 	TData = Awaited<ReturnType<typeof getTag>>,
 	TError = unknown,
@@ -317,12 +317,12 @@ export function useGetTag<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTag>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
-};
+	queryKey: DataTag<QueryKey, TData, TError>
+}
 
 export function useGetTag<
 	TData = Awaited<ReturnType<typeof getTag>>,
@@ -332,20 +332,20 @@ export function useGetTag<
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTag>>, TError, TData>
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>;
+	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getGetTagQueryOptions({ id }, options);
+	const queryOptions = getGetTagQueryOptions({ id }, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
 		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> };
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-	return { ...query, queryKey: queryOptions.queryKey };
+	return { ...query, queryKey: queryOptions.queryKey }
 }
 
 export const updateTag = (
@@ -359,8 +359,8 @@ export const updateTag = (
 		headers: { "Content-Type": "application/json" },
 		data: updateTagDto,
 		signal,
-	});
-};
+	})
+}
 
 export const getUpdateTagMutationOptions = <
 	TError = unknown,
@@ -371,39 +371,39 @@ export const getUpdateTagMutationOptions = <
 		TError,
 		{ pathParams: UpdateTagPathParameters; data: UpdateTagDto },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateTag>>,
 	TError,
 	{ pathParams: UpdateTagPathParameters; data: UpdateTagDto },
 	TContext
 > => {
-	const mutationKey = ["updateTag"];
+	const mutationKey = ["updateTag"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateTag>>,
 		{ pathParams: UpdateTagPathParameters; data: UpdateTagDto }
 	> = (props) => {
-		const { pathParams, data } = props ?? {};
+		const { pathParams, data } = props ?? {}
 
-		return updateTag(pathParams, data);
-	};
+		return updateTag(pathParams, data)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type UpdateTagMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateTag>>
->;
-export type UpdateTagMutationBody = UpdateTagDto;
-export type UpdateTagMutationError = unknown;
+>
+export type UpdateTagMutationBody = UpdateTagDto
+export type UpdateTagMutationError = unknown
 
 export const useUpdateTag = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -412,7 +412,7 @@ export const useUpdateTag = <TError = unknown, TContext = unknown>(
 			TError,
 			{ pathParams: UpdateTagPathParameters; data: UpdateTagDto },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -421,14 +421,14 @@ export const useUpdateTag = <TError = unknown, TContext = unknown>(
 	{ pathParams: UpdateTagPathParameters; data: UpdateTagDto },
 	TContext
 > => {
-	return useMutation(getUpdateTagMutationOptions(options), queryClient);
-};
+	return useMutation(getUpdateTagMutationOptions(options), queryClient)
+}
 export const deleteTag = (
 	{ id }: DeleteTagPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<TagDto>({ url: `/tag/${id}`, method: "DELETE", signal });
-};
+	return apiRequest<TagDto>({ url: `/tag/${id}`, method: "DELETE", signal })
+}
 
 export const getDeleteTagMutationOptions = <
 	TError = unknown,
@@ -439,39 +439,39 @@ export const getDeleteTagMutationOptions = <
 		TError,
 		{ pathParams: DeleteTagPathParameters },
 		TContext
-	>;
+	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteTag>>,
 	TError,
 	{ pathParams: DeleteTagPathParameters },
 	TContext
 > => {
-	const mutationKey = ["deleteTag"];
+	const mutationKey = ["deleteTag"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } };
+		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteTag>>,
 		{ pathParams: DeleteTagPathParameters }
 	> = (props) => {
-		const { pathParams } = props ?? {};
+		const { pathParams } = props ?? {}
 
-		return deleteTag(pathParams);
-	};
+		return deleteTag(pathParams)
+	}
 
-	return { mutationFn, ...mutationOptions };
-};
+	return { mutationFn, ...mutationOptions }
+}
 
 export type DeleteTagMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deleteTag>>
->;
+>
 
-export type DeleteTagMutationError = unknown;
+export type DeleteTagMutationError = unknown
 
 export const useDeleteTag = <TError = unknown, TContext = unknown>(
 	options?: {
@@ -480,7 +480,7 @@ export const useDeleteTag = <TError = unknown, TContext = unknown>(
 			TError,
 			{ pathParams: DeleteTagPathParameters },
 			TContext
-		>;
+		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -489,5 +489,5 @@ export const useDeleteTag = <TError = unknown, TContext = unknown>(
 	{ pathParams: DeleteTagPathParameters },
 	TContext
 > => {
-	return useMutation(getDeleteTagMutationOptions(options), queryClient);
-};
+	return useMutation(getDeleteTagMutationOptions(options), queryClient)
+}

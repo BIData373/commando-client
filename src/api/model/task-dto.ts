@@ -5,30 +5,30 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { TaskDtoDeletedAt } from "./task-dto-deleted-at";
-import type { TaskDtoDeletedBy } from "./task-dto-deleted-by";
-import type { TaskDtoDescription } from "./task-dto-description";
-import type { TaskDtoNotes } from "./task-dto-notes";
+import type { TaskDtoDeletedAt } from "./task-dto-deleted-at"
+import type { TaskDtoDeletedBy } from "./task-dto-deleted-by"
+import type { TaskDtoDescription } from "./task-dto-description"
+import type { TaskDtoNotes } from "./task-dto-notes"
 
 export interface TaskDto {
-	createdAt: string;
-	createdBy: number;
-	updatedAt: string;
-	updatedBy: number;
+	createdAt: string
+	createdBy: number
+	updatedAt: string
+	updatedBy: number
 	/** @nullable */
-	deletedAt: TaskDtoDeletedAt;
+	deletedAt: TaskDtoDeletedAt
 	/** @nullable */
-	deletedBy: TaskDtoDeletedBy;
-	id: number;
-	title: string;
+	deletedBy: TaskDtoDeletedBy
+	id: number
+	title: string
 	/** @nullable */
-	description: TaskDtoDescription;
-	flagged: boolean;
-	deadlineType: string;
-	issuedAt: string;
-	dueDate: string;
+	description: TaskDtoDescription
+	flagged: boolean
+	deadlineType: string
+	issuedAt: string
+	dueDate: string
 	/** @nullable */
-	notes: TaskDtoNotes;
-	workspaceId: number;
-	sourceId: number;
+	notes: TaskDtoNotes
+	workspaceId: number
+	sourceId: number
 }

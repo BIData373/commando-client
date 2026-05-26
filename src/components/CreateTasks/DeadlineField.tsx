@@ -1,87 +1,91 @@
-import { useState } from 'react'
-import styled from '@emotion/styled'
-import { Calendar as CalendarIcon } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import DatePicker, { CalendarMode } from '../shared/DatePicker'
-import { DeadlineType } from '../shared/DeadlineTag'
-import { formatDate } from '#/functions/date-utils'
-
+import styled from "@emotion/styled"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { useState } from "react"
+import { formatDate } from "src/functions/date-utils"
+import DatePicker, { CalendarMode } from "../shared/DatePicker"
+import { DeadlineType } from "../shared/DeadlineTag"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface DeadlineFieldProps {
-  deadlineType: DeadlineType
-  dueDate: Date | null
-  onDeadlineTypeChange: (type: DeadlineType) => void
-  onDateChange: (date: Date | null) => void
+	deadlineType: DeadlineType
+	dueDate: Date | null
+	onDeadlineTypeChange: (type: DeadlineType) => void
+	onDateChange: (date: Date | null) => void
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-function DeadlineField({ deadlineType, dueDate, onDeadlineTypeChange, onDateChange }: DeadlineFieldProps) {
-  const [isDateOpen, setIsDateOpen] = useState(false)
+function DeadlineField({
+	deadlineType,
+	dueDate,
+	onDeadlineTypeChange,
+	onDateChange,
+}: DeadlineFieldProps) {
+	const [isDateOpen, setIsDateOpen] = useState(false)
 
-  function handleDateSelect(date: Date | undefined) {
-    onDateChange(date ?? null)
-    setIsDateOpen(false)
-  }
+	function handleDateSelect(date: Date | undefined) {
+		onDateChange(date ?? null)
+		setIsDateOpen(false)
+	}
 
-  const showDatePicker = deadlineType !== DeadlineType.Immediate
+	const showDatePicker = deadlineType !== DeadlineType.Immediate
 
-  return (
-    <FormItem>
-      <FormLabelRow>
-        <LabelText>{`תג"ב`}</LabelText>
-      </FormLabelRow>
-      <DeadlineRow>
-        <SegmentedControl>
-          <SegmentedItem
-            $selected={deadlineType === DeadlineType.Date}
-            onClick={() => onDeadlineTypeChange(DeadlineType.Date)}
-          >
-            תאריך
-          </SegmentedItem>
-          <SegmentedItem
-            $selected={deadlineType === DeadlineType.Immediate}
-            onClick={() => onDeadlineTypeChange(DeadlineType.Immediate)}
-          >
-            מיידי
-          </SegmentedItem>
-          <SegmentedItem
-            $selected={deadlineType === DeadlineType.Ongoing}
-            onClick={() => onDeadlineTypeChange(DeadlineType.Ongoing)}
-          >
-            שוטף
-          </SegmentedItem>
-        </SegmentedControl>
-        {deadlineType === DeadlineType.Immediate && (
-          <HintText>לביצוע בהקדם</HintText>
-        )}
-        {deadlineType === DeadlineType.Ongoing && (
-          <HintText>עד (אופציונלי)</HintText>
-        )}
-        {showDatePicker && (
-          <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
-            <PopoverTrigger asChild>
-              <DatePickerButton>
-                <DatePickerText $hasValue={!!dueDate}>
-                  {dueDate ? formatDate(dueDate) : 'בחר תאריך'}
-                </DatePickerText>
-                <CalendarIcon size={18} />
-              </DatePickerButton>
-            </PopoverTrigger>
-            <DatePopoverContent align="start" sideOffset={4}>
-              <DatePicker
-                mode={CalendarMode.Single}
-                selected={dueDate ?? undefined}
-                onSelect={handleDateSelect}
-              />
-            </DatePopoverContent>
-          </Popover>
-        )}
-      </DeadlineRow>
-    </FormItem>
-  )
+	return (
+		<FormItem>
+			<FormLabelRow>
+				<LabelText>{`תג"ב`}</LabelText>
+			</FormLabelRow>
+			<DeadlineRow>
+				<SegmentedControl>
+					<SegmentedItem
+						$selected={deadlineType === DeadlineType.Date}
+						onClick={() => onDeadlineTypeChange(DeadlineType.Date)}
+					>
+						תאריך
+					</SegmentedItem>
+					<SegmentedItem
+						$selected={deadlineType === DeadlineType.Immediate}
+						onClick={() => onDeadlineTypeChange(DeadlineType.Immediate)}
+					>
+						מיידי
+					</SegmentedItem>
+					<SegmentedItem
+						$selected={deadlineType === DeadlineType.Ongoing}
+						onClick={() => onDeadlineTypeChange(DeadlineType.Ongoing)}
+					>
+						שוטף
+					</SegmentedItem>
+				</SegmentedControl>
+				{deadlineType === DeadlineType.Immediate && (
+					<HintText>לביצוע בהקדם</HintText>
+				)}
+				{deadlineType === DeadlineType.Ongoing && (
+					<HintText>עד (אופציונלי)</HintText>
+				)}
+				{showDatePicker && (
+					<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
+						<PopoverTrigger asChild>
+							<DatePickerButton>
+								<DatePickerText $hasValue={!!dueDate}>
+									{dueDate ? formatDate(dueDate) : "בחר תאריך"}
+								</DatePickerText>
+								<CalendarIcon size={18} />
+							</DatePickerButton>
+						</PopoverTrigger>
+						<DatePopoverContent align="start" sideOffset={4}>
+							<DatePicker
+								mode={CalendarMode.Single}
+								selected={dueDate ?? undefined}
+								onSelect={handleDateSelect}
+							/>
+						</DatePopoverContent>
+					</Popover>
+				)}
+			</DeadlineRow>
+		</FormItem>
+	)
 }
 
 export default DeadlineField
@@ -144,15 +148,15 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   white-space: nowrap;
   cursor: pointer;
   transition: background 0.15s, box-shadow 0.15s;
-  background: ${({ $selected }) => ($selected ? 'white' : 'transparent')};
-  color: ${({ $selected }) => ($selected ? 'rgba(0, 0, 0, 0.88)' : 'rgba(0, 0, 0, 0.65)')};
+  background: ${({ $selected }) => ($selected ? "white" : "transparent")};
+  color: ${({ $selected }) => ($selected ? "rgba(0, 0, 0, 0.88)" : "rgba(0, 0, 0, 0.65)")};
   box-shadow: ${({ $selected }) =>
-    $selected
-      ? '0px 1px 2px rgba(0, 0, 0, 0.03), 0px 1px 6px -1px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.02)'
-      : 'none'};
+		$selected
+			? "0px 1px 2px rgba(0, 0, 0, 0.03), 0px 1px 6px -1px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.02)"
+			: "none"};
 
   &:hover {
-    background: ${({ $selected }) => ($selected ? 'white' : 'rgba(0, 0, 0, 0.06)')};
+    background: ${({ $selected }) => ($selected ? "white" : "rgba(0, 0, 0, 0.06)")};
   }
 `
 
@@ -192,7 +196,7 @@ const DatePickerText = styled.span<{ $hasValue: boolean }>`
   font-size: 14px;
   font-weight: 400;
   line-height: 24px;
-  color: ${({ $hasValue }) => ($hasValue ? 'rgba(0, 0, 0, 0.88)' : 'rgba(0, 0, 0, 0.25)')};
+  color: ${({ $hasValue }) => ($hasValue ? "rgba(0, 0, 0, 0.88)" : "rgba(0, 0, 0, 0.25)")};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -9,4 +9,4 @@
 /**
  * @nullable
  */
-export type AssigneeDtoDeletedAt = { [key: string]: unknown } | null;
+export type AssigneeDtoDeletedAt = { [key: string]: unknown } | null

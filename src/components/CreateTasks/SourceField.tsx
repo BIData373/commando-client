@@ -1,184 +1,203 @@
-import { useState } from 'react'
-import { formatDate } from '../../functions/date-utils'
-import styled from '@emotion/styled'
-import { ChevronDown, Paperclip, Calendar as CalendarIcon } from 'lucide-react'
-import DatePicker, { CalendarMode } from '../shared/DatePicker'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
+import styled from "@emotion/styled"
+import { Calendar as CalendarIcon, ChevronDown, Paperclip } from "lucide-react"
+import { useState } from "react"
+import type { DiscussionSource } from "../../data/Discussions"
+import { MOCK_DISCUSSIONS } from "../../data/Discussions"
+import { formatDate } from "../../functions/date-utils"
+import DatePicker, { CalendarMode } from "../shared/DatePicker"
 
-import HighlightMatch from '../shared/HighlightMatch'
-import { MOCK_DISCUSSIONS } from '../../data/Discussions'
-import type { DiscussionSource } from '../../data/Discussions'
+import HighlightMatch from "../shared/HighlightMatch"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "../ui/tooltip"
 export type { DiscussionSource }
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface SourceFieldProps {
-  source: string
-  sourceDate: Date | null
-  linkedSource: DiscussionSource | null
-  onSourceSelect: (name: string, discussion?: DiscussionSource | null) => void
-  onDateSelect: (date: Date | undefined) => void
-  label?: string
-  uniqueNames?: boolean
+	source: string
+	sourceDate: Date | null
+	linkedSource: DiscussionSource | null
+	onSourceSelect: (name: string, discussion?: DiscussionSource | null) => void
+	onDateSelect: (date: Date | undefined) => void
+	label?: string
+	uniqueNames?: boolean
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function SourceField({
-  source,
-  sourceDate,
-  linkedSource,
-  onSourceSelect,
-  onDateSelect,
-  label = 'מקור',
-  uniqueNames = false,
+	source,
+	sourceDate,
+	linkedSource,
+	onSourceSelect,
+	onDateSelect,
+	label = "מקור",
+	uniqueNames = false,
 }: SourceFieldProps) {
-  const [sourceQuery, setSourceQuery] = useState(source)
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [isDateOpen, setIsDateOpen] = useState(false)
-  const isSourceLinked = linkedSource !== null;
+	const [sourceQuery, setSourceQuery] = useState(source)
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+	const [isDateOpen, setIsDateOpen] = useState(false)
+	const isSourceLinked = linkedSource !== null
 
-  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value
-    setSourceQuery(value)
-    if (linkedSource) {
-      onSourceSelect(value, null)
-    }
-  }
+	function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+		const value = e.target.value
+		setSourceQuery(value)
+		if (linkedSource) {
+			onSourceSelect(value, null)
+		}
+	}
 
-  function handleSelect(discussion: DiscussionSource) {
-    setSourceQuery(discussion.name)
-    setIsDropdownOpen(false)
-    onSourceSelect(discussion.name, discussion)
-  }
+	function handleSelect(discussion: DiscussionSource) {
+		setSourceQuery(discussion.name)
+		setIsDropdownOpen(false)
+		onSourceSelect(discussion.name, discussion)
+	}
 
-  function handleCreateNew() {
-    setIsDropdownOpen(false)
-    onSourceSelect(sourceQuery)
-  }
+	function handleCreateNew() {
+		setIsDropdownOpen(false)
+		onSourceSelect(sourceQuery)
+	}
 
-  const selectedDate = sourceDate ?? undefined
+	const selectedDate = sourceDate ?? undefined
 
-  const allFiltered = MOCK_DISCUSSIONS.filter((d) => d.name.includes(sourceQuery))
-  const filteredDiscussions = uniqueNames
-    ? allFiltered.filter((d, i, arr) => arr.findIndex((x) => x.name === d.name) === i)
-    : allFiltered
+	const allFiltered = MOCK_DISCUSSIONS.filter((d) =>
+		d.name.includes(sourceQuery),
+	)
+	const filteredDiscussions = uniqueNames
+		? allFiltered.filter(
+				(d, i, arr) => arr.findIndex((x) => x.name === d.name) === i,
+			)
+		: allFiltered
 
-  function openDropdown() {
-    setIsDropdownOpen(true)
-  }
+	function openDropdown() {
+		setIsDropdownOpen(true)
+	}
 
-  function handleInputBlur() {
-    setTimeout(() => setIsDropdownOpen(false), 200)
-  }
+	function handleInputBlur() {
+		setTimeout(() => setIsDropdownOpen(false), 200)
+	}
 
-  function handleOptionMouseDown(e: React.MouseEvent, discussion: DiscussionSource) {
-    e.preventDefault()
-    handleSelect(discussion)
-  }
+	function handleOptionMouseDown(
+		e: React.MouseEvent,
+		discussion: DiscussionSource,
+	) {
+		e.preventDefault()
+		handleSelect(discussion)
+	}
 
-  function handleCreateNewMouseDown(e: React.MouseEvent) {
-    e.preventDefault()
-    handleCreateNew()
-  }
+	function handleCreateNewMouseDown(e: React.MouseEvent) {
+		e.preventDefault()
+		handleCreateNew()
+	}
 
-  function handleDateSelect(date: Date | undefined) {
-    onDateSelect(date)
-    setIsDateOpen(false)
-  }
+	function handleDateSelect(date: Date | undefined) {
+		onDateSelect(date)
+		setIsDateOpen(false)
+	}
 
-  return (
-    <SourceDateRow>
-      <SourceFormItem>
-        <FormLabelRow>
-          <LabelText>{label}</LabelText>
-        </FormLabelRow>
-        <SourceFieldWrapper>
-          <SourceInputBox onFocus={openDropdown}>
-            <SourceChevron size={16} />
-            <SourceInputField
-              value={sourceQuery}
-              onChange={handleInputChange}
-              onFocus={openDropdown}
-              onBlur={handleInputBlur}
-              placeholder='לדוגמה: חתמ"צ שבועי'
-              dir="rtl"
-            />
-            {linkedSource && linkedSource?.hasAttachment && (
-              <Paperclip size={16} />
-            )}
-          </SourceInputBox>
-          {isDropdownOpen && (sourceQuery || filteredDiscussions.length > 0) && (
-            <DropdownMenu>
-              {filteredDiscussions.length > 0 && (
-                <>
-                  <DropdownGroupTitle>מקורות קיימים</DropdownGroupTitle>
-                  {filteredDiscussions.map((d) => (
-                    <SourceOption
-                      key={uniqueNames ? d.name : d.id}
-                      onMouseDown={(e) => handleOptionMouseDown(e, d)}
-                    >
-                      {!uniqueNames && <SourceOptionDate>{d.date}</SourceOptionDate>}
-                      <SourceOptionName>
-                        {sourceQuery ? <HighlightMatch text={d.name} query={sourceQuery} /> : d.name}
-                      </SourceOptionName>
-                    </SourceOption>
-                  ))}
-                </>
-              )}
-              {sourceQuery && (
-                <>
-                  <DropdownDivider />
-                  <CreateNewOption onMouseDown={handleCreateNewMouseDown}>
-                    <CreateNewText>
-                      <HighlightedText>{sourceQuery}</HighlightedText>
-                      {' (חדש)'}
-                    </CreateNewText>
-                  </CreateNewOption>
-                </>
-              )}
-            </DropdownMenu>
-          )}
-        </SourceFieldWrapper>
-      </SourceFormItem>
-      <DateFormItem>
-        <FormLabelRow>
-          <LabelText>תאריך</LabelText>
-        </FormLabelRow>
-        <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <PopoverTrigger asChild>
-                  <DatePickerButton $disabled={isSourceLinked}>
-                    <CalendarIcon size={18} />
-                    <DatePickerText $hasValue={!!sourceDate}>
-                      {sourceDate ? formatDate(sourceDate) : 'בחר תאריך'}
-                    </DatePickerText>
-                  </DatePickerButton>
-                </PopoverTrigger>
-              </TooltipTrigger>
-              {isSourceLinked && (
-                <TooltipContent side="top" sideOffset={8}>
-                  לא ניתן לשנות תאריך של מקור קיים
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
-          {!isSourceLinked && (
-            <DatePopoverContent align="start" sideOffset={4}>
-              <DatePicker
-                mode={CalendarMode.Single}
-                selected={selectedDate}
-                onSelect={handleDateSelect}
-              />
-            </DatePopoverContent>
-          )}
-        </Popover>
-      </DateFormItem>
-    </SourceDateRow>
-  )
+	return (
+		<SourceDateRow>
+			<SourceFormItem>
+				<FormLabelRow>
+					<LabelText>{label}</LabelText>
+				</FormLabelRow>
+				<SourceFieldWrapper>
+					<SourceInputBox onFocus={openDropdown}>
+						<SourceChevron size={16} />
+						<SourceInputField
+							value={sourceQuery}
+							onChange={handleInputChange}
+							onFocus={openDropdown}
+							onBlur={handleInputBlur}
+							placeholder='לדוגמה: חתמ"צ שבועי'
+							dir="rtl"
+						/>
+						{linkedSource && linkedSource?.hasAttachment && (
+							<Paperclip size={16} />
+						)}
+					</SourceInputBox>
+					{isDropdownOpen &&
+						(sourceQuery || filteredDiscussions.length > 0) && (
+							<DropdownMenu>
+								{filteredDiscussions.length > 0 && (
+									<>
+										<DropdownGroupTitle>מקורות קיימים</DropdownGroupTitle>
+										{filteredDiscussions.map((d) => (
+											<SourceOption
+												key={uniqueNames ? d.name : d.id}
+												onMouseDown={(e) => handleOptionMouseDown(e, d)}
+											>
+												{!uniqueNames && (
+													<SourceOptionDate>{d.date}</SourceOptionDate>
+												)}
+												<SourceOptionName>
+													{sourceQuery ? (
+														<HighlightMatch text={d.name} query={sourceQuery} />
+													) : (
+														d.name
+													)}
+												</SourceOptionName>
+											</SourceOption>
+										))}
+									</>
+								)}
+								{sourceQuery && (
+									<>
+										<DropdownDivider />
+										<CreateNewOption onMouseDown={handleCreateNewMouseDown}>
+											<CreateNewText>
+												<HighlightedText>{sourceQuery}</HighlightedText>
+												{" (חדש)"}
+											</CreateNewText>
+										</CreateNewOption>
+									</>
+								)}
+							</DropdownMenu>
+						)}
+				</SourceFieldWrapper>
+			</SourceFormItem>
+			<DateFormItem>
+				<FormLabelRow>
+					<LabelText>תאריך</LabelText>
+				</FormLabelRow>
+				<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<PopoverTrigger asChild>
+									<DatePickerButton $disabled={isSourceLinked}>
+										<CalendarIcon size={18} />
+										<DatePickerText $hasValue={!!sourceDate}>
+											{sourceDate ? formatDate(sourceDate) : "בחר תאריך"}
+										</DatePickerText>
+									</DatePickerButton>
+								</PopoverTrigger>
+							</TooltipTrigger>
+							{isSourceLinked && (
+								<TooltipContent side="top" sideOffset={8}>
+									לא ניתן לשנות תאריך של מקור קיים
+								</TooltipContent>
+							)}
+						</Tooltip>
+					</TooltipProvider>
+					{!isSourceLinked && (
+						<DatePopoverContent align="start" sideOffset={4}>
+							<DatePicker
+								mode={CalendarMode.Single}
+								selected={selectedDate}
+								onSelect={handleDateSelect}
+							/>
+						</DatePopoverContent>
+					)}
+				</Popover>
+			</DateFormItem>
+		</SourceDateRow>
+	)
 }
 
 export default SourceField
@@ -382,13 +401,13 @@ const DatePickerButton = styled.button<{ $disabled?: boolean }>`
   background: white;
   border: 1px solid #d9d9d9;
   border-radius: 6px;
-  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
+  cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
   opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
   color: rgba(0, 0, 0, 0.45);
   flex-shrink: 0;
 
   &:hover {
-    border-color: ${({ $disabled }) => ($disabled ? '#d9d9d9' : '#4096ff')};
+    border-color: ${({ $disabled }) => ($disabled ? "#d9d9d9" : "#4096ff")};
   }
 `
 
@@ -398,7 +417,7 @@ const DatePickerText = styled.span<{ $hasValue: boolean }>`
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
-  color: ${({ $hasValue }) => ($hasValue ? 'rgba(0, 0, 0, 0.88)' : 'rgba(0, 0, 0, 0.25)')};
+  color: ${({ $hasValue }) => ($hasValue ? "rgba(0, 0, 0, 0.88)" : "rgba(0, 0, 0, 0.25)")};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

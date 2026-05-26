@@ -7,6 +7,6 @@
  */
 
 export interface CreateSourceDto {
-	workspaceId: number;
-	name: string;
+	workspaceId: number
+	name: string
 }

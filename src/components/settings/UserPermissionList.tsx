@@ -1,38 +1,39 @@
-import styled from '@emotion/styled'
-import type { IUser, UserRole } from '#/types'
-import { TrashButton } from '../shared/TrashButton'
+import styled from "@emotion/styled"
+import type { PermissionDto, PermissionDtoType, UserDto } from "src/api/model"
+import { TrashButton } from "../shared/TrashButton"
 import { DropdownPermission } from "./DropdownPermission"
 
 interface UserPermissionListProps {
-  users: IUser[]
-  onDelete: (userId: number) => void
-  onRoleChange: (userId: number, role: UserRole) => void
+	permissions: PermissionDto[]
+	onDelete: (user: UserDto) => void
+	onRoleChange: (user: UserDto, type: PermissionDtoType) => void
 }
 
-export function UserPermissionList({ users, onDelete, onRoleChange }: UserPermissionListProps) {
-  return (
-    <UserListRoot>
-      {users.map((user) => (
-        <UserRow key={user.id}>
-          <UserInfo>
-            <UserHeader>
-              <UserName>{user.name}</UserName>
-              <UserPersonalId> - {user.id}</UserPersonalId>
-            </UserHeader>
-            <UserSubtext>{user.email}</UserSubtext>
-          </UserInfo>
-          <DropdownPermission
-            value={user.role}
-            onChange={(role) => onRoleChange(user.id, role)}
-          />
-          <TrashButton
-            onClick={() => onDelete(user.id)}
-            size={22}
-          />
-        </UserRow>
-      ))}
-    </UserListRoot>
-  )
+export function UserPermissionList({
+	permissions: permissions,
+	onDelete,
+	onRoleChange,
+}: UserPermissionListProps) {
+	return (
+		<UserListRoot>
+			{permissions.map((permission) => (
+				<UserRow key={permission.id}>
+					<UserInfo>
+						<UserHeader>
+							<UserName>{permission.info?.name}</UserName>
+							<UserPersonalId> - {permission.id}</UserPersonalId>
+						</UserHeader>
+						<UserSubtext>{permission.info?.upn}</UserSubtext>
+					</UserInfo>
+					<DropdownPermission
+						value={permission.}
+						onChange={(type) => onRoleChange(permission.id, type)}
+					/>
+					<TrashButton onClick={() => onDelete(permission.id)} size={22} />
+				</UserRow>
+			))}
+		</UserListRoot>
+	)
 }
 
 const UserListRoot = styled.div`

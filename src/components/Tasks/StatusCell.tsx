@@ -1,42 +1,46 @@
-import styled from '@emotion/styled'
+import styled from "@emotion/styled"
+import type { DirectiveStatus } from "../shared/StatusTag"
+import { STATUS_KEYS, StatusTag } from "../shared/StatusTag"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuItem,
-} from '../ui/dropdown-menu'
-import { StatusTag, STATUS_KEYS } from '../shared/StatusTag'
-import type { DirectiveStatus } from '../shared/StatusTag'
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu"
 
 interface StatusCellProps {
-  status: DirectiveStatus
-  taskId: number
-  onUpdate: (taskId: number, status: DirectiveStatus) => void
+	status: DirectiveStatus
+	taskId: number
+	onUpdate: (taskId: number, status: DirectiveStatus) => void
 }
 
 export function StatusCell({ status, taskId, onUpdate }: StatusCellProps) {
-  function handleSelectStatus(newStatus: DirectiveStatus) {
-    onUpdate(taskId, newStatus)
-  }
+	function handleSelectStatus(newStatus: DirectiveStatus) {
+		onUpdate(taskId, newStatus)
+	}
 
-  return (
-    <CellCenter>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <TriggerWrapper tabIndex={0}>
-            <StatusTag status={status} interactive />
-          </TriggerWrapper>
-        </DropdownMenuTrigger>
-        <StatusDropdownContent align="center" sideOffset={6}>
-          {STATUS_KEYS.map((s) => (
-            <StatusDropdownItem key={s} $selected={s === status} onSelect={() => handleSelectStatus(s)}>
-              <StatusTag status={s} />
-            </StatusDropdownItem>
-          ))}
-        </StatusDropdownContent>
-      </DropdownMenu>
-    </CellCenter>
-  )
+	return (
+		<CellCenter>
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
+					<TriggerWrapper tabIndex={0}>
+						<StatusTag status={status} interactive />
+					</TriggerWrapper>
+				</DropdownMenuTrigger>
+				<StatusDropdownContent align="center" sideOffset={6}>
+					{STATUS_KEYS.map((s) => (
+						<StatusDropdownItem
+							key={s}
+							$selected={s === status}
+							onSelect={() => handleSelectStatus(s)}
+						>
+							<StatusTag status={s} />
+						</StatusDropdownItem>
+					))}
+				</StatusDropdownContent>
+			</DropdownMenu>
+		</CellCenter>
+	)
 }
 
 const CellCenter = styled.div`
@@ -74,7 +78,7 @@ const StatusDropdownItem = styled(DropdownMenuItem)<{ $selected: boolean }>`
   width: 100%;
   padding: 4px;
   border-radius: 4px;
-  background: ${({ $selected }) => ($selected ? 'rgba(230, 244, 255, 1)' : 'transparent')};
+  background: ${({ $selected }) => ($selected ? "rgba(230, 244, 255, 1)" : "transparent")};
   cursor: pointer;
   outline: none;
 

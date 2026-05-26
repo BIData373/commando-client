@@ -1,109 +1,133 @@
-import { useListAssignees } from '#/api/assignee/assignee'
-import { useListUsers } from '#/api/user/user'
-import { AssigneeCard } from '#/components/settings/AssigneeCard'
-import { AssigneeDialog } from '#/components/settings/AssigneeDialog'
-import { SectionTitle } from '#/components/settings/SectionTitle'
-import { PrimaryButton } from '#/components/shared/PrimaryButton'
-import { Checkbox } from '#/components/ui/checkbox'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '#/components/ui/input-group'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/components/ui/tooltip'
-import { useWorkspace } from '#/providers/WorkspaceProvider'
-import { SETTINGS_TABS, SettingTabPath } from '#/utils/settingsUtils'
-import styled from '@emotion/styled'
-import { createFileRoute } from '@tanstack/react-router'
-import { CircleQuestionMarkIcon, Plus, Search } from 'lucide-react'
-import { type ChangeEvent, useState } from 'react'
+import styled from "@emotion/styled"
+import { createFileRoute } from "@tanstack/react-router"
+import { CircleQuestionMarkIcon, Plus, Search } from "lucide-react"
+import { type ChangeEvent, useState } from "react"
+import { useListAssignees } from "src/api/assignee/assignee"
+import { useListUsers } from "src/api/user/user"
+import { AssigneeCard } from "src/components/settings/AssigneeCard"
+import { AssigneeDialog } from "src/components/settings/AssigneeDialog"
+import { SectionTitle } from "src/components/settings/SectionTitle"
+import { PrimaryButton } from "src/components/shared/PrimaryButton"
+import { Checkbox } from "src/components/ui/checkbox"
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupInput,
+} from "src/components/ui/input-group"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "src/components/ui/tooltip"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { SETTINGS_TABS, SettingTabPath } from "src/utils/settingsUtils"
 
-export const Route = createFileRoute('/workspace/$urlName/settings/assignees')({ component: SettingsAssignees })
+export const Route = createFileRoute("/workspace/$urlName/settings/assignees")({
+	component: SettingsAssignees,
+})
 
 const activeTab = SETTINGS_TABS[SettingTabPath.ASSIGNEES]
 
 function SettingsAssignees() {
-  const { workspaceId, assigneeStatusEditable } = useWorkspace()
+	const { workspaceId, assigneeStatusEditable } = useWorkspace()
 
-  const { data: assignees = [] } = useListAssignees({ workspaceId })
-  const { data: users = [] } = useListUsers()
+	const { data: assignees = [] } = useListAssignees({ workspaceId })
+	const { data: users = [] } = useListUsers()
 
-  const [allowAssigneeStatusUpdate, setAllowAssigneeStatusUpdate] = useState(assigneeStatusEditable)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+	const [allowAssigneeStatusUpdate, setAllowAssigneeStatusUpdate] = useState(
+		assigneeStatusEditable,
+	)
+	const [searchQuery, setSearchQuery] = useState("")
+	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
-  const userNames: Record<number, string> = Object.fromEntries(users.map((u) => [u.id, u.upn]))
+	const userNames: Record<number, string> = Object.fromEntries(
+		users.map((u) => [u.id, u.upn]),
+	)
 
-  const filteredAssignees = searchQuery.trim()
-    ? assignees.filter((a) => a.name.includes(searchQuery))
-    : assignees
+	const filteredAssignees = searchQuery.trim()
+		? assignees.filter((a) => a.name.includes(searchQuery))
+		: assignees
 
-  function handleCheckboxChange(checked: boolean) {
-    setAllowAssigneeStatusUpdate(checked)
-  }
+	function handleCheckboxChange(checked: boolean) {
+		setAllowAssigneeStatusUpdate(checked)
+	}
 
-  function handleSearchChange(e: ChangeEvent<HTMLInputElement>) {
-    setSearchQuery(e.target.value)
-  }
+	function handleSearchChange(e: ChangeEvent<HTMLInputElement>) {
+		setSearchQuery(e.target.value)
+	}
 
-  function handleOpenCreateDialog() {
-    setIsCreateDialogOpen(true)
-  }
+	function handleOpenCreateDialog() {
+		setIsCreateDialogOpen(true)
+	}
 
-  return (
-    <AssigneesRoot>
-      <AssigneeDialog
-        open={isCreateDialogOpen}
-        onOpenChange={setIsCreateDialogOpen}
-      />
-      <SectionTitle title={`ניהול אחראים - ${activeTab}`} />
-      <StyledContent>
-        <CheckboxRow>
-          <Checkbox
-            id="allow-status-update"
-            checked={allowAssigneeStatusUpdate}
-            defaultChecked={assigneeStatusEditable}
-            onCheckedChange={handleCheckboxChange}
-          />
-          <CheckboxLabel htmlFor="allow-status-update">
-            אפשר לאחראיים לעדכן סטטוס הנחיות
-          </CheckboxLabel>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <QuestionIcon>
-                  <CircleQuestionMarkIcon size={16} />
-                </QuestionIcon>
-              </TooltipTrigger>
-              <StyledTooltipContent>
-                מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות כבויה – עדכון הסטטוס יתאפשר רק למנהלי הלשכה.
-              </StyledTooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </CheckboxRow>
-        <ToolbarRow>
-          <SearchWrapper>
-            <StyledInputGroup>
-              <InputGroupAddon align="inline-start">
-                <Search size={16} />
-              </InputGroupAddon>
-              <InputGroupInput value={searchQuery} onChange={handleSearchChange} placeholder="חפש קבוצת אחראים" />
-            </StyledInputGroup>
-          </SearchWrapper>
-          <PrimaryButton
-            title='צור אחרי'
-            onClick={handleOpenCreateDialog}
-            header={<Plus size={16} />}
-            height={32}
-          />
-        </ToolbarRow>
-      </StyledContent>
+	return (
+		<AssigneesRoot>
+			<AssigneeDialog
+				open={isCreateDialogOpen}
+				onOpenChange={setIsCreateDialogOpen}
+			/>
+			<SectionTitle title={`ניהול אחראים - ${activeTab}`} />
+			<StyledContent>
+				<CheckboxRow>
+					<Checkbox
+						id="allow-status-update"
+						checked={allowAssigneeStatusUpdate}
+						defaultChecked={assigneeStatusEditable}
+						onCheckedChange={handleCheckboxChange}
+					/>
+					<CheckboxLabel htmlFor="allow-status-update">
+						אפשר לאחראיים לעדכן סטטוס הנחיות
+					</CheckboxLabel>
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<QuestionIcon>
+									<CircleQuestionMarkIcon size={16} />
+								</QuestionIcon>
+							</TooltipTrigger>
+							<StyledTooltipContent>
+								מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות
+								כבויה – עדכון הסטטוס יתאפשר רק למנהלי הלשכה.
+							</StyledTooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+				</CheckboxRow>
+				<ToolbarRow>
+					<SearchWrapper>
+						<StyledInputGroup>
+							<InputGroupAddon align="inline-start">
+								<Search size={16} />
+							</InputGroupAddon>
+							<InputGroupInput
+								value={searchQuery}
+								onChange={handleSearchChange}
+								placeholder="חפש קבוצת אחראים"
+							/>
+						</StyledInputGroup>
+					</SearchWrapper>
+					<PrimaryButton
+						title="צור אחרי"
+						onClick={handleOpenCreateDialog}
+						header={<Plus size={16} />}
+						height={32}
+					/>
+				</ToolbarRow>
+			</StyledContent>
 
-      <CardScrollArea>
-        <AssigneeCardGrid>
-          {filteredAssignees.map((assignee) => (
-            <AssigneeCard key={assignee.id} assignee={assignee} userNames={userNames} />
-          ))}
-        </AssigneeCardGrid>
-      </CardScrollArea>
-    </AssigneesRoot>
-  )
+			<CardScrollArea>
+				<AssigneeCardGrid>
+					{filteredAssignees.map((assignee) => (
+						<AssigneeCard
+							key={assignee.id}
+							assignee={assignee}
+							userNames={userNames}
+						/>
+					))}
+				</AssigneeCardGrid>
+			</CardScrollArea>
+		</AssigneesRoot>
+	)
 }
 
 const SearchWrapper = styled.div`

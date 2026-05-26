@@ -7,6 +7,6 @@
  */
 
 export interface UpdateTagDto {
-	workspaceId?: number;
-	name?: string;
+	workspaceId?: number
+	name?: string
 }

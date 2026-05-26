@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0
  */
 
-export type UpdateTaskDtoNotes = { [key: string]: unknown };
+export type UpdateTaskDtoNotes = { [key: string]: unknown }

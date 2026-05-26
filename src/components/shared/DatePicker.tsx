@@ -1,35 +1,38 @@
-import styled from '@emotion/styled'
-import type { ComponentProps } from 'react'
-import { he as heDayPicker } from 'react-day-picker/locale'
-import { Calendar } from '../ui/calendar'
-import CalendarNav from './CalendarNav'
-import { WeekNumberCell } from './WeekCellNumber'
+import styled from "@emotion/styled"
+import type { ComponentProps } from "react"
+import { he as heDayPicker } from "react-day-picker/locale"
+import { Calendar } from "../ui/calendar"
+import CalendarNav from "./CalendarNav"
+import { WeekNumberCell } from "./WeekCellNumber"
 
 export enum CalendarMode {
-  Range = 'range',
-  Single = 'single',
+	Range = "range",
+	Single = "single",
 }
 
 type DatePickerProps = ComponentProps<typeof Calendar>
 
 function getDefaultMonth(props: DatePickerProps): Date | undefined {
-  return props.mode === 'range' ? props.selected?.from :
-    props.mode === 'single' ? props.selected : undefined
+	return props.mode === "range"
+		? props.selected?.from
+		: props.mode === "single"
+			? props.selected
+			: undefined
 }
 
 function DatePicker(props: DatePickerProps) {
-  const defaultMonth = getDefaultMonth(props)
+	const defaultMonth = getDefaultMonth(props)
 
-  return (
-    <StyledCalendar
-      showWeekNumber
-      fixedWeeks
-      defaultMonth={defaultMonth}
-      {...props}
-      locale={heDayPicker}
-      components={{ WeekNumber: WeekNumberCell, Nav: CalendarNav }}
-    />
-  )
+	return (
+		<StyledCalendar
+			showWeekNumber
+			fixedWeeks
+			defaultMonth={defaultMonth}
+			{...props}
+			locale={heDayPicker}
+			components={{ WeekNumber: WeekNumberCell, Nav: CalendarNav }}
+		/>
+	)
 }
 
 export default DatePicker
@@ -132,4 +135,3 @@ const StyledCalendar = styled(Calendar)`
   }
 
 `
-

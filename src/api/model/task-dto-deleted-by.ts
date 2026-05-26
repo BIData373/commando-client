@@ -9,4 +9,4 @@
 /**
  * @nullable
  */
-export type TaskDtoDeletedBy = { [key: string]: unknown } | null;
+export type TaskDtoDeletedBy = { [key: string]: unknown } | null

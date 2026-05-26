@@ -5,16 +5,16 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { UpdateTaskDtoNotes } from "./update-task-dto-notes";
+import type { UpdateTaskDtoNotes } from "./update-task-dto-notes"
 
 export interface UpdateTaskDto {
-	workspaceId?: number;
-	sourceId?: number;
-	title?: string;
-	description?: string;
-	flagged?: boolean;
-	deadlineType?: string;
-	issuedAt?: string;
-	dueDate?: string;
-	notes?: UpdateTaskDtoNotes;
+	workspaceId?: number
+	sourceId?: number
+	title?: string
+	description?: string
+	flagged?: boolean
+	deadlineType?: string
+	issuedAt?: string
+	dueDate?: string
+	notes?: UpdateTaskDtoNotes
 }

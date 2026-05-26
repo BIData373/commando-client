@@ -7,5 +7,5 @@
  */
 
 export type UpdateTaskPathParameters = {
-	id: number;
-};
+	id: number
+}

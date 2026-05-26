@@ -7,5 +7,5 @@
  */
 
 export type GetWorkspacePathParameters = {
-	id: number;
-};
+	id: number
+}

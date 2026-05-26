@@ -5,11 +5,11 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { UserInfoDto } from "./user-info-dto";
+import type { UserInfoDto } from "./user-info-dto"
 
 export interface UserDto {
-	id: number;
-	upn: string;
+	id: number
+	upn: string
 	/** @nullable */
-	info: UserInfoDto | null;
+	info: UserInfoDto | null
 }

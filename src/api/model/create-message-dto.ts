@@ -7,7 +7,7 @@
  */
 
 export interface CreateMessageDto {
-	content: string;
-	taskId: number;
-	assigneeId: number;
+	content: string
+	taskId: number
+	assigneeId: number
 }

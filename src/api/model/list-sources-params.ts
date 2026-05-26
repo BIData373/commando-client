@@ -7,5 +7,5 @@
  */
 
 export type ListSourcesParams = {
-	workspaceId: number;
-};
+	workspaceId: number
+}

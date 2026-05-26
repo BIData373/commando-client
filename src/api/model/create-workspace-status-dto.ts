@@ -7,8 +7,8 @@
  */
 
 export interface CreateWorkspaceStatusDto {
-	name: string;
-	color: string;
-	statusType: string;
-	workspaceId: number;
+	name: string
+	color: string
+	statusType: string
+	workspaceId: number
 }

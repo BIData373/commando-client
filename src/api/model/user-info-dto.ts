@@ -7,9 +7,9 @@
  */
 
 export interface UserInfoDto {
-	id: number;
-	upn: string;
-	name: string;
-	displayName: string;
-	isBI: boolean;
+	id: number
+	upn: string
+	name: string
+	displayName: string
+	isBI: boolean
 }

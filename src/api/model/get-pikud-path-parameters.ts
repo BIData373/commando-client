@@ -7,5 +7,5 @@
  */
 
 export type GetPikudPathParameters = {
-	id: number;
-};
+	id: number
+}

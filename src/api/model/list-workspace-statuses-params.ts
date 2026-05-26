@@ -7,5 +7,5 @@
  */
 
 export type ListWorkspaceStatusesParams = {
-	workspaceId: number;
-};
+	workspaceId: number
+}

@@ -1,44 +1,50 @@
-import { type ReactNode, useState } from 'react'
-import styled from '@emotion/styled'
-import { CircleAlert } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import styled from "@emotion/styled"
+import { CircleAlert } from "lucide-react"
+import { type ReactNode, useState } from "react"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 interface DeletePopoverProps {
-  count: number
-  trigger: ReactNode
-  side?: 'top' | 'bottom'
-  align?: 'center' | 'start' | 'end'
-  onConfirm: () => void
+	count: number
+	trigger: ReactNode
+	side?: "top" | "bottom"
+	align?: "center" | "start" | "end"
+	onConfirm: () => void
 }
 
-export function DeletePopover({ count, trigger, side = 'top', align = 'center', onConfirm }: DeletePopoverProps) {
-  const [open, setOpen] = useState(false)
+export function DeletePopover({
+	count,
+	trigger,
+	side = "top",
+	align = "center",
+	onConfirm,
+}: DeletePopoverProps) {
+	const [open, setOpen] = useState(false)
 
-  function handleConfirm() {
-    setOpen(false)
-    onConfirm()
-  }
+	function handleConfirm() {
+		setOpen(false)
+		onConfirm()
+	}
 
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>{trigger}</PopoverTrigger>
-      <Content side={side} sideOffset={12} align={align}>
-        <Head>
-          <TextWrapper>
-            <Title>מחיקת {count} הנחיות</Title>
-            <Description>.שים לב לא ניתן לבטל פעולה זו</Description>
-          </TextWrapper>
-          <IconWrapper>
-            <CircleAlert size={16} />
-          </IconWrapper>
-        </Head>
-        <Actions>
-          <DeleteButton onClick={handleConfirm}>מחק הנחיות</DeleteButton>
-          <CancelButton onClick={() => setOpen(false)}>ביטול</CancelButton>
-        </Actions>
-      </Content>
-    </Popover>
-  )
+	return (
+		<Popover open={open} onOpenChange={setOpen}>
+			<PopoverTrigger asChild>{trigger}</PopoverTrigger>
+			<Content side={side} sideOffset={12} align={align}>
+				<Head>
+					<TextWrapper>
+						<Title>מחיקת {count} הנחיות</Title>
+						<Description>.שים לב לא ניתן לבטל פעולה זו</Description>
+					</TextWrapper>
+					<IconWrapper>
+						<CircleAlert size={16} />
+					</IconWrapper>
+				</Head>
+				<Actions>
+					<DeleteButton onClick={handleConfirm}>מחק הנחיות</DeleteButton>
+					<CancelButton onClick={() => setOpen(false)}>ביטול</CancelButton>
+				</Actions>
+			</Content>
+		</Popover>
+	)
 }
 
 const Content = styled(PopoverContent)`

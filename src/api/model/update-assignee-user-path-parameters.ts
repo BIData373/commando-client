@@ -7,6 +7,6 @@
  */
 
 export type UpdateAssigneeUserPathParameters = {
-	assigneeId: number;
-	userId: number;
-};
+	assigneeId: number
+	userId: number
+}

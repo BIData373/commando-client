@@ -7,5 +7,5 @@
  */
 
 export type GetUserPathParameters = {
-	id: number;
-};
+	id: number
+}
