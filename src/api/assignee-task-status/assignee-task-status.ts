@@ -21,7 +21,7 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { apiRequest } from "../../axios"
+import { sendRequest } from "../../axios"
 import type {
 	AssigneeTaskStatusDto,
 	DeleteAssigneeTaskStatusPathParameters,
@@ -33,7 +33,7 @@ export const listAssigneeTaskStatuses = (
 	{ taskId }: ListAssigneeTaskStatusesPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<AssigneeTaskStatusDto[]>({
+	return sendRequest<AssigneeTaskStatusDto[]>({
 		url: `/assignee-task-status/${taskId}`,
 		method: "GET",
 		signal,
@@ -193,7 +193,7 @@ export const upsertAssigneeTaskStatus = (
 	updateAssigneeTaskStatusDto: UpdateAssigneeTaskStatusDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<AssigneeTaskStatusDto>({
+	return sendRequest<AssigneeTaskStatusDto>({
 		url: `/assignee-task-status`,
 		method: "PUT",
 		headers: { "Content-Type": "application/json" },
@@ -273,7 +273,7 @@ export const deleteAssigneeTaskStatus = (
 	{ taskId, assigneeId }: DeleteAssigneeTaskStatusPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<AssigneeTaskStatusDto>({
+	return sendRequest<AssigneeTaskStatusDto>({
 		url: `/assignee-task-status/${taskId}/${assigneeId}`,
 		method: "DELETE",
 		signal,

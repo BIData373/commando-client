@@ -21,7 +21,7 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { apiRequest } from "../../axios"
+import { sendRequest } from "../../axios"
 import type {
 	AssigneeDto,
 	CreateAssigneeDto,
@@ -36,7 +36,7 @@ export const createAssignee = (
 	createAssigneeDto: CreateAssigneeDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<AssigneeDto>({
+	return sendRequest<AssigneeDto>({
 		url: `/assignee`,
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -110,7 +110,7 @@ export const listAssignees = (
 	params: ListAssigneesParams,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<AssigneeDto[]>({
+	return sendRequest<AssigneeDto[]>({
 		url: `/assignee`,
 		method: "GET",
 		params,
@@ -240,7 +240,7 @@ export const getAssignee = (
 	{ id }: GetAssigneePathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<AssigneeDto>({
+	return sendRequest<AssigneeDto>({
 		url: `/assignee/${id}`,
 		method: "GET",
 		signal,
@@ -375,7 +375,7 @@ export const updateAssignee = (
 	updateAssigneeDto: UpdateAssigneeDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<AssigneeDto>({
+	return sendRequest<AssigneeDto>({
 		url: `/assignee/${id}`,
 		method: "PATCH",
 		headers: { "Content-Type": "application/json" },
@@ -449,7 +449,7 @@ export const deleteAssignee = (
 	{ id }: DeleteAssigneePathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<AssigneeDto>({
+	return sendRequest<AssigneeDto>({
 		url: `/assignee/${id}`,
 		method: "DELETE",
 		signal,

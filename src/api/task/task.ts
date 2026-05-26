@@ -21,7 +21,7 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { apiRequest } from "../../axios"
+import { sendRequest } from "../../axios"
 import type {
 	CreateTaskDto,
 	DeleteTaskPathParameters,
@@ -36,7 +36,7 @@ export const createTask = (
 	createTaskDto: CreateTaskDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<TaskDto>({
+	return sendRequest<TaskDto>({
 		url: `/task`,
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -107,7 +107,7 @@ export const useCreateTask = <TError = unknown, TContext = unknown>(
 	return useMutation(getCreateTaskMutationOptions(options), queryClient)
 }
 export const listTasks = (params: ListTasksParams, signal?: AbortSignal) => {
-	return apiRequest<TaskDto[]>({ url: `/task`, method: "GET", params, signal })
+	return sendRequest<TaskDto[]>({ url: `/task`, method: "GET", params, signal })
 }
 
 export const getListTasksQueryKey = (params?: ListTasksParams) => {
@@ -232,7 +232,7 @@ export const getTask = (
 	{ id }: GetTaskPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<TaskDto>({ url: `/task/${id}`, method: "GET", signal })
+	return sendRequest<TaskDto>({ url: `/task/${id}`, method: "GET", signal })
 }
 
 export const getGetTaskQueryKey = ({ id }: GetTaskPathParameters) => {
@@ -361,7 +361,7 @@ export const updateTask = (
 	updateTaskDto: UpdateTaskDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<TaskDto>({
+	return sendRequest<TaskDto>({
 		url: `/task/${id}`,
 		method: "PATCH",
 		headers: { "Content-Type": "application/json" },
@@ -435,7 +435,7 @@ export const deleteTask = (
 	{ id }: DeleteTaskPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<TaskDto>({ url: `/task/${id}`, method: "DELETE", signal })
+	return sendRequest<TaskDto>({ url: `/task/${id}`, method: "DELETE", signal })
 }
 
 export const getDeleteTaskMutationOptions = <

@@ -21,7 +21,7 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { apiRequest } from "../../axios"
+import { sendRequest } from "../../axios"
 import type {
 	CreateMessageDto,
 	DeleteMessagePathParameters,
@@ -36,7 +36,7 @@ export const createMessage = (
 	createMessageDto: CreateMessageDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<MessageDto>({
+	return sendRequest<MessageDto>({
 		url: `/message`,
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -110,7 +110,7 @@ export const listMessages = (
 	params: ListMessagesParams,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<MessageDto[]>({
+	return sendRequest<MessageDto[]>({
 		url: `/message`,
 		method: "GET",
 		params,
@@ -240,7 +240,7 @@ export const getMessage = (
 	{ id }: GetMessagePathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<MessageDto>({
+	return sendRequest<MessageDto>({
 		url: `/message/${id}`,
 		method: "GET",
 		signal,
@@ -375,7 +375,7 @@ export const updateMessage = (
 	updateMessageDto: UpdateMessageDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<MessageDto>({
+	return sendRequest<MessageDto>({
 		url: `/message/${id}`,
 		method: "PATCH",
 		headers: { "Content-Type": "application/json" },
@@ -449,7 +449,7 @@ export const deleteMessage = (
 	{ id }: DeleteMessagePathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<MessageDto>({
+	return sendRequest<MessageDto>({
 		url: `/message/${id}`,
 		method: "DELETE",
 		signal,

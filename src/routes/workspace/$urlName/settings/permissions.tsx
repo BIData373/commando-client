@@ -2,6 +2,9 @@ import styled from "@emotion/styled";
 import { createFileRoute } from "@tanstack/react-router";
 import { UserPlus } from "lucide-react";
 import { useMemo, useState } from "react";
+import { PermissionDtoType, type UserDto } from "src/api/model";
+import { useDeletePermission, useGetPermissions, useUpdatePermission } from "src/api/permission/permission";
+import { useListWorkspaces } from "src/api/workspace/workspace";
 import { DropdownPermission } from "src/components/settings/DropdownPermission";
 import { DropdownUsers } from "src/components/settings/DropdownUsers";
 import { SectionTitle } from "src/components/settings/SectionTitle";
@@ -12,14 +15,6 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "src/components/ui/tabs";
-import {
-	useAddUserToWorkspace,
-	useDeleteUser,
-	useUpdateUser,
-	useWorkspaceUsers,
-} from "src/hooks/useUsers";
-import type { IUser } from "src/types";
-import { UserRole } from "src/types";
 import { SETTINGS_TABS, SettingTabPath } from "src/utils/settingsUtils";
 import { concatName } from "src/utils/userUtils";
 
@@ -31,7 +26,7 @@ const activeTabLabel = SETTINGS_TABS[SettingTabPath.PERMISSIONS];
 
 enum PermissionsTab {
 	ALL = "all",
-	ADMINS = "admins",
+	MANAGERS = "MANAGERs",
 	VIEWERS = "viewers",
 }
 
@@ -39,26 +34,27 @@ function SettingsPermissions() {
 	const { urlName } = Route.useParams();
 	const [search, setSearch] = useState("");
 	const [activeTab, setActiveTab] = useState(PermissionsTab.ALL);
-	const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
-	const [role, setRole] = useState<UserRole>(UserRole.VIEWER);
+	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null);
+	const [role, setRole] = useState<PermissionDtoType>(PermissionDtoType.VIEWER);
 
-	const { data: permissionUsers = [] } = useWorkspaceUsers(urlName);
-	const { mutate: userUpdate } = useUpdateUser();
-	const { mutate: addUserToWorkspace } = useAddUserToWorkspace();
-	const { mutate: deleteUser } = useDeleteUser();
+	const { data: workspaces } = useListWorkspaces({ urlName });
+	const settings = workspaces?.[0]
+
+	const { data: permissionUsers = [] } = useGetPermissions({ workspaceId: settings?.id })
+	const { mutate: userUpdate } = useUpdatePermission();
+	const { mutate: deleteUser } = useDeletePermission();
 
 	const currentTabUsers = useMemo(() => {
 		const taggedRole =
-			activeTab === PermissionsTab.ADMINS ? UserRole.ADMIN : UserRole.VIEWER;
+			activeTab === PermissionsTab.MANAGERS ? PermissionDtoType.MANAGER : PermissionDtoType.VIEWER;
 		return activeTab === PermissionsTab.ALL
 			? permissionUsers
 			: permissionUsers.filter((user) => user.role === taggedRole);
 	}, [activeTab, permissionUsers]);
 
-	function handleUserAdd(role: UserRole) {
+	function handleUserAdd(type: PermissionDtoType) {
 		if (!selectedUser) return;
-		addUserToWorkspace({ userId: selectedUser.id, urlName });
-		userUpdate({ userId: selectedUser.id, data: { role } });
+		userUpdate({ data: { workspaceId: settings?.id, upn: selectedUser.upn, type } });
 		setSearch("");
 		setSelectedUser(null);
 	}
@@ -67,7 +63,7 @@ function SettingsPermissions() {
 		deleteUser({ userId, urlName });
 	}
 
-	function handleRoleChangePermissionUser(userId: number, role: UserRole) {
+	function handleRoleChangePermissionUser(userId: number, role: PermissionDtoType) {
 		userUpdate({ userId, data: { role } });
 	}
 
@@ -80,7 +76,7 @@ function SettingsPermissions() {
 		if (!v) setSelectedUser(null);
 	}
 
-	function handleSearchSelect(user: IUser | null) {
+	function handleSearchSelect(user: UserDto | null) {
 		setSelectedUser(user);
 		if (user) {
 			setSearch(concatName(user));
@@ -129,7 +125,7 @@ function SettingsPermissions() {
 						<StyledTabsTrigger value={PermissionsTab.ALL}>
 							כולם
 						</StyledTabsTrigger>
-						<StyledTabsTrigger value={PermissionsTab.ADMINS}>
+						<StyledTabsTrigger value={PermissionsTab.MANAGERS}>
 							מנהלים
 						</StyledTabsTrigger>
 						<StyledTabsTrigger value={PermissionsTab.VIEWERS}>

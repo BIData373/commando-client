@@ -21,7 +21,7 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { apiRequest } from "../../axios"
+import { sendRequest } from "../../axios"
 import type {
 	CreateUserDto,
 	DeleteUserPathParameters,
@@ -35,7 +35,7 @@ export const createUser = (
 	createUserDto: CreateUserDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<UserDto>({
+	return sendRequest<UserDto>({
 		url: `/user`,
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -106,7 +106,7 @@ export const useCreateUser = <TError = unknown, TContext = unknown>(
 	return useMutation(getCreateUserMutationOptions(options), queryClient)
 }
 export const listUsers = (signal?: AbortSignal) => {
-	return apiRequest<UserDto[]>({ url: `/user`, method: "GET", signal })
+	return sendRequest<UserDto[]>({ url: `/user`, method: "GET", signal })
 }
 
 export const getListUsersQueryKey = () => {
@@ -224,7 +224,7 @@ export const getUser = (
 	{ id }: GetUserPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<UserDto>({ url: `/user/${id}`, method: "GET", signal })
+	return sendRequest<UserDto>({ url: `/user/${id}`, method: "GET", signal })
 }
 
 export const getGetUserQueryKey = ({ id }: GetUserPathParameters) => {
@@ -353,7 +353,7 @@ export const updateUser = (
 	updateUserDto: UpdateUserDto,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<UserDto>({
+	return sendRequest<UserDto>({
 		url: `/user/${id}`,
 		method: "PATCH",
 		headers: { "Content-Type": "application/json" },
@@ -427,7 +427,7 @@ export const deleteUser = (
 	{ id }: DeleteUserPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return apiRequest<UserDto>({ url: `/user/${id}`, method: "DELETE", signal })
+	return sendRequest<UserDto>({ url: `/user/${id}`, method: "DELETE", signal })
 }
 
 export const getDeleteUserMutationOptions = <
