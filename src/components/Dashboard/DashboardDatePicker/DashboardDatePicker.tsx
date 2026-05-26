@@ -28,7 +28,6 @@ export function DashboardDatePicker({
   }
 
   return (
-    // TODO: 
     <DateRangePicker
       onBlur={handleBlur}
       triggerButton={({ range }) => <DashboardDatePickerTriggerButton label={dateType} range={range} />}
