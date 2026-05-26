@@ -1,67 +1,67 @@
-import styled from '@emotion/styled'
-import { Archive, Trash2, X } from 'lucide-react'
-import { DirectiveStatus } from '#/utils/statusUtils'
-import { StatusTag } from '../shared/StatusTag'
+import styled from "@emotion/styled";
+import { Archive, Trash2, X } from "lucide-react";
+import { DirectiveStatus } from "src/utils/statusUtils";
+import { StatusTag } from "../shared/StatusTag";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu'
-import { DeletePopover } from './DeletePopover'
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { DeletePopover } from "./DeletePopover";
 
 interface BulkActionsBarProps {
-  selectedCount: number
-  onChangeStatus: (status: DirectiveStatus) => void
-  onArchive: () => void
-  onDelete: () => void
-  onExitSelect: () => void
+	selectedCount: number;
+	onChangeStatus: (status: DirectiveStatus) => void;
+	onArchive: () => void;
+	onDelete: () => void;
+	onExitSelect: () => void;
 }
 
 export function BulkActionsBar({
-  selectedCount,
-  onChangeStatus,
-  onArchive,
-  onDelete,
-  onExitSelect,
+	selectedCount,
+	onChangeStatus,
+	onArchive,
+	onDelete,
+	onExitSelect,
 }: BulkActionsBarProps) {
-  return (
-    <Bar>
-      <ActionsSection>
-        <DeletePopover
-          count={selectedCount}
-          onConfirm={onDelete}
-          trigger={
-            <GhostButton $danger>
-              מחק הנחיה
-              <Trash2 size={16} />
-            </GhostButton>
-          }
-        />
-        <GhostButton onClick={onArchive}>
-          העבר לארכיון
-          <Archive size={16} />
-        </GhostButton>
-        <BarDivider />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <GhostButton>עדכן סטטוס</GhostButton>
-          </DropdownMenuTrigger>
-          <StatusContent align="start" sideOffset={4}>
-            {Object.values(DirectiveStatus).map((s) => (
-              <StatusItem key={s} onSelect={() => onChangeStatus(s)}>
-                <StatusTag status={s} />
-              </StatusItem>
-            ))}
-          </StatusContent>
-        </DropdownMenu>
-      </ActionsSection>
-      <SelectedButton onClick={onExitSelect}>
-        <X size={16} />
-        {selectedCount} משימות נבחרו
-      </SelectedButton>
-    </Bar>
-  )
+	return (
+		<Bar>
+			<ActionsSection>
+				<DeletePopover
+					count={selectedCount}
+					onConfirm={onDelete}
+					trigger={
+						<GhostButton $danger>
+							מחק הנחיה
+							<Trash2 size={16} />
+						</GhostButton>
+					}
+				/>
+				<GhostButton onClick={onArchive}>
+					העבר לארכיון
+					<Archive size={16} />
+				</GhostButton>
+				<BarDivider />
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<GhostButton>עדכן סטטוס</GhostButton>
+					</DropdownMenuTrigger>
+					<StatusContent align="start" sideOffset={4}>
+						{Object.values(DirectiveStatus).map((s) => (
+							<StatusItem key={s} onSelect={() => onChangeStatus(s)}>
+								<StatusTag status={s} />
+							</StatusItem>
+						))}
+					</StatusContent>
+				</DropdownMenu>
+			</ActionsSection>
+			<SelectedButton onClick={onExitSelect}>
+				<X size={16} />
+				{selectedCount} משימות נבחרו
+			</SelectedButton>
+		</Bar>
+	);
 }
 
 const Bar = styled.div`
@@ -83,14 +83,14 @@ const Bar = styled.div`
     0px 6px 16px 0px rgba(0, 0, 0, 0.08),
     0px 3px 6px -4px rgba(0, 0, 0, 0.12),
     0px 9px 28px 8px rgba(0, 0, 0, 0.05);
-`
+`;
 
 const ActionsSection = styled.div`
   display: flex;
   flex: 1 0 0;
   align-items: center;
   gap: 8px;
-`
+`;
 
 const GhostButton = styled.button<{ $danger?: boolean }>`
   display: flex;
@@ -105,21 +105,21 @@ const GhostButton = styled.button<{ $danger?: boolean }>`
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
-  color: ${({ $danger }) => ($danger ? '#dc4446' : 'rgba(255, 255, 255, 0.85)')};
+  color: ${({ $danger }) => ($danger ? "#dc4446" : "rgba(255, 255, 255, 0.85)")};
   cursor: pointer;
   white-space: nowrap;
 
   &:hover {
     background: rgba(255, 255, 255, 0.08);
   }
-`
+`;
 
 const BarDivider = styled.div`
   width: 1px;
   height: 20px;
   background: rgba(255, 255, 255, 0.2);
   flex-shrink: 0;
-`
+`;
 
 const SelectedButton = styled.button`
 direction: rtl;
@@ -145,7 +145,7 @@ direction: rtl;
     background: #1f1f1f;
     border-color: #535353;
   }
-`
+`;
 
 const StatusContent = styled(DropdownMenuContent)`
   min-width: 120px;
@@ -159,7 +159,7 @@ const StatusContent = styled(DropdownMenuContent)`
     0px 6px 16px rgba(0, 0, 0, 0.08),
     0px 3px 6px rgba(0, 0, 0, 0.12),
     0px 9px 28px rgba(0, 0, 0, 0.05);
-`
+`;
 
 const StatusItem = styled(DropdownMenuItem)`
   display: flex;
@@ -176,5 +176,4 @@ const StatusItem = styled(DropdownMenuItem)`
     background: rgba(230, 244, 255, 1);
     color: inherit;
   }
-`
-
+`;

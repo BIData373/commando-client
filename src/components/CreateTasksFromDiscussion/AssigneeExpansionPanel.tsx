@@ -1,52 +1,52 @@
-import styled from '@emotion/styled'
-import { ChevronUp } from 'lucide-react'
-import AssigneeRowList from '../shared/AssigneeRow'
+import styled from "@emotion/styled";
+import { ChevronUp } from "lucide-react";
+import AssigneeRowList from "../shared/AssigneeRow";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface AssigneeExpansionPanelProps {
-  assigneeIds: number[]
-  directiveTitle: string
-  assigneeDetails: Record<number, string>
-  onDetailChange: (assigneeId: number, value: string) => void
-  onRemoveAssignee: (assigneeId: number) => void
-  onCollapse: () => void
+	assigneeIds: number[];
+	directiveTitle: string;
+	assigneeDetails: Record<number, string>;
+	onDetailChange: (assigneeId: number, value: string) => void;
+	onRemoveAssignee: (assigneeId: number) => void;
+	onCollapse: () => void;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function AssigneeExpansionPanel({
-  assigneeIds,
-  directiveTitle,
-  assigneeDetails,
-  onDetailChange,
-  onRemoveAssignee,
-  onCollapse,
+	assigneeIds,
+	directiveTitle,
+	assigneeDetails,
+	onDetailChange,
+	onRemoveAssignee,
+	onCollapse,
 }: AssigneeExpansionPanelProps) {
-  return (
-    <PanelContainer>
-      <PanelHeader>
-        <CollapseCell onClick={onCollapse}>
-          <ChevronUp size={16} />
-        </CollapseCell>
-        <DetailHeaderCell>פירוט</DetailHeaderCell>
-        <AssigneeHeaderCell>שם האחראי</AssigneeHeaderCell>
-      </PanelHeader>
+	return (
+		<PanelContainer>
+			<PanelHeader>
+				<CollapseCell onClick={onCollapse}>
+					<ChevronUp size={16} />
+				</CollapseCell>
+				<DetailHeaderCell>פירוט</DetailHeaderCell>
+				<AssigneeHeaderCell>שם האחראי</AssigneeHeaderCell>
+			</PanelHeader>
 
-      <RowsWrapper>
-        <AssigneeRowList
-          assigneeIds={assigneeIds}
-          directiveTitle={directiveTitle}
-          assigneeDetails={assigneeDetails}
-          onDetailChange={onDetailChange}
-          onRemove={onRemoveAssignee}
-        />
-      </RowsWrapper>
-    </PanelContainer>
-  )
+			<RowsWrapper>
+				<AssigneeRowList
+					assigneeIds={assigneeIds}
+					directiveTitle={directiveTitle}
+					assigneeDetails={assigneeDetails}
+					onDetailChange={onDetailChange}
+					onRemove={onRemoveAssignee}
+				/>
+			</RowsWrapper>
+		</PanelContainer>
+	);
 }
 
-export default AssigneeExpansionPanel
+export default AssigneeExpansionPanel;
 
 // ─── Styled Components ──────────────────────────────────────────────────────
 
@@ -57,14 +57,14 @@ const PanelContainer = styled.div`
   gap: 12px;
   width: 100%;
   padding-block-end: 8px;
-`
+`;
 
 const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5px;
   padding: 0.5px;
-`
+`;
 
 const CollapseCell = styled.button`
   display: flex;
@@ -82,7 +82,7 @@ const CollapseCell = styled.button`
   &:hover {
     color: var(--text-color-2);
   }
-`
+`;
 
 const DetailHeaderCell = styled.div`
   flex: 1;
@@ -97,7 +97,7 @@ const DetailHeaderCell = styled.div`
   line-height: 22px;
   color: var(--text-color);
   white-space: nowrap;
-`
+`;
 
 const AssigneeHeaderCell = styled.div`
   width: 218px;
@@ -113,8 +113,8 @@ const AssigneeHeaderCell = styled.div`
   color: var(--text-color);
   white-space: nowrap;
   flex-shrink: 0;
-`
+`;
 
 const RowsWrapper = styled.div`
   padding-inline: 24px;
-`
+`;

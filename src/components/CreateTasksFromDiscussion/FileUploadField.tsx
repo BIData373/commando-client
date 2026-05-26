@@ -1,130 +1,133 @@
-import { useState, useRef } from 'react'
-import styled from '@emotion/styled'
-import { Inbox, Trash2, FileText } from 'lucide-react'
+import styled from "@emotion/styled";
+import { FileText, Inbox, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface FileUploadFieldProps {
-  file: File | null
-  onFileChange: (file: File | null) => void
+	file: File | null;
+	onFileChange: (file: File | null) => void;
 }
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
-const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx']
+const ALLOWED_EXTENSIONS = [".pdf", ".doc", ".docx"];
 const ALLOWED_MIME_TYPES = [
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-]
-const MAX_FILE_SIZE = 30 * 1024 * 1024
+	"application/pdf",
+	"application/msword",
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+const MAX_FILE_SIZE = 30 * 1024 * 1024;
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function FileUploadField({ file, onFileChange }: FileUploadFieldProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [isDragOver, setIsDragOver] = useState(false)
-  const [fileError, setFileError] = useState('')
+	const fileInputRef = useRef<HTMLInputElement>(null);
+	const [isDragOver, setIsDragOver] = useState(false);
+	const [fileError, setFileError] = useState("");
 
-  function validateFile(f: File): string | null {
-    const ext = '.' + f.name.split('.').pop()?.toLowerCase()
-    if (!ALLOWED_EXTENSIONS.includes(ext) && !ALLOWED_MIME_TYPES.includes(f.type)) {
-      return 'ניתן להעלות קבצי Word או PDF בלבד'
-    }
-    if (f.size > MAX_FILE_SIZE) {
-      return 'גודל הקובץ חורג מ-30MB'
-    }
-    return null
-  }
+	function validateFile(f: File): string | null {
+		const ext = "." + f.name.split(".").pop()?.toLowerCase();
+		if (
+			!ALLOWED_EXTENSIONS.includes(ext) &&
+			!ALLOWED_MIME_TYPES.includes(f.type)
+		) {
+			return "ניתן להעלות קבצי Word או PDF בלבד";
+		}
+		if (f.size > MAX_FILE_SIZE) {
+			return "גודל הקובץ חורג מ-30MB";
+		}
+		return null;
+	}
 
-  function handleFileSelect(f: File) {
-    const error = validateFile(f)
-    if (error) {
-      setFileError(error)
-      return
-    }
-    setFileError('')
-    onFileChange(f)
-  }
+	function handleFileSelect(f: File) {
+		const error = validateFile(f);
+		if (error) {
+			setFileError(error);
+			return;
+		}
+		setFileError("");
+		onFileChange(f);
+	}
 
-  function handleFileInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0]
-    if (f) handleFileSelect(f)
-    e.target.value = ''
-  }
+	function handleFileInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+		const f = e.target.files?.[0];
+		if (f) handleFileSelect(f);
+		e.target.value = "";
+	}
 
-  function handleDragOver(e: React.DragEvent) {
-    e.preventDefault()
-    setIsDragOver(true)
-  }
+	function handleDragOver(e: React.DragEvent) {
+		e.preventDefault();
+		setIsDragOver(true);
+	}
 
-  function handleDragLeave(e: React.DragEvent) {
-    e.preventDefault()
-    setIsDragOver(false)
-  }
+	function handleDragLeave(e: React.DragEvent) {
+		e.preventDefault();
+		setIsDragOver(false);
+	}
 
-  function handleDrop(e: React.DragEvent) {
-    e.preventDefault()
-    setIsDragOver(false)
-    const f = e.dataTransfer.files[0]
-    if (f) handleFileSelect(f)
-  }
+	function handleDrop(e: React.DragEvent) {
+		e.preventDefault();
+		setIsDragOver(false);
+		const f = e.dataTransfer.files[0];
+		if (f) handleFileSelect(f);
+	}
 
-  function handleUploadClick() {
-    fileInputRef.current?.click()
-  }
+	function handleUploadClick() {
+		fileInputRef.current?.click();
+	}
 
-  function handleRemoveFile() {
-    onFileChange(null)
-    setFileError('')
-  }
+	function handleRemoveFile() {
+		onFileChange(null);
+		setFileError("");
+	}
 
-  return (
-    <FileUploadSection>
-      <FormLabelRow>
-        <LabelText>קובץ סיכום דיון</LabelText>
-      </FormLabelRow>
-      {file ? (
-        <FilePreview>
-          <FileRemoveButton onClick={handleRemoveFile}>
-            <Trash2 size={22} />
-          </FileRemoveButton>
-          <FileName>{file.name}</FileName>
-          <FileThumbnail>
-            <FileText size={24} />
-          </FileThumbnail>
-        </FilePreview>
-      ) : (
-        <UploadDropZone
-          $isDragOver={isDragOver}
-          onClick={handleUploadClick}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-        >
-          <IconInbox size={48} strokeWidth={1} />
-          <UploadTextsWrapper>
-            <UploadMainText>
-              לחץ או גרור את הקובץ לאזור זה כדי להעלות
-            </UploadMainText>
-            <UploadHintText>
-              ניתן להעלות קבצי Word או PDF בלבד, עד גודל מקסימלי של 30MB לקובץ.
-            </UploadHintText>
-          </UploadTextsWrapper>
-        </UploadDropZone>
-      )}
-      {fileError && <FileErrorText>{fileError}</FileErrorText>}
-      <HiddenFileInput
-        ref={fileInputRef}
-        type="file"
-        accept=".pdf,.doc,.docx"
-        onChange={handleFileInputChange}
-      />
-    </FileUploadSection>
-  )
+	return (
+		<FileUploadSection>
+			<FormLabelRow>
+				<LabelText>קובץ סיכום דיון</LabelText>
+			</FormLabelRow>
+			{file ? (
+				<FilePreview>
+					<FileRemoveButton onClick={handleRemoveFile}>
+						<Trash2 size={22} />
+					</FileRemoveButton>
+					<FileName>{file.name}</FileName>
+					<FileThumbnail>
+						<FileText size={24} />
+					</FileThumbnail>
+				</FilePreview>
+			) : (
+				<UploadDropZone
+					$isDragOver={isDragOver}
+					onClick={handleUploadClick}
+					onDragOver={handleDragOver}
+					onDragLeave={handleDragLeave}
+					onDrop={handleDrop}
+				>
+					<IconInbox size={48} strokeWidth={1} />
+					<UploadTextsWrapper>
+						<UploadMainText>
+							לחץ או גרור את הקובץ לאזור זה כדי להעלות
+						</UploadMainText>
+						<UploadHintText>
+							ניתן להעלות קבצי Word או PDF בלבד, עד גודל מקסימלי של 30MB לקובץ.
+						</UploadHintText>
+					</UploadTextsWrapper>
+				</UploadDropZone>
+			)}
+			{fileError && <FileErrorText>{fileError}</FileErrorText>}
+			<HiddenFileInput
+				ref={fileInputRef}
+				type="file"
+				accept=".pdf,.doc,.docx"
+				onChange={handleFileInputChange}
+			/>
+		</FileUploadSection>
+	);
 }
 
-export default FileUploadField
+export default FileUploadField;
 
 // ─── Styled ─────────────────────────────────────────────────────────────────
 
@@ -133,7 +136,7 @@ const FileUploadSection = styled.div`
   flex-direction: column;
   align-items: flex-end;
   width: 100%;
-`
+`;
 
 const FormLabelRow = styled.div`
   display: flex;
@@ -141,7 +144,7 @@ const FormLabelRow = styled.div`
   justify-content: flex-end;
   padding-block-end: 8px;
   width: 100%;
-`
+`;
 
 const LabelText = styled.span`
   font-size: 14px;
@@ -149,7 +152,7 @@ const LabelText = styled.span`
   line-height: 22px;
   color: var(--text-color-2);
   white-space: nowrap;
-`
+`;
 
 const UploadDropZone = styled.div<{ $isDragOver: boolean }>`
   display: flex;
@@ -158,8 +161,8 @@ const UploadDropZone = styled.div<{ $isDragOver: boolean }>`
   gap: 16px;
   width: 100%;
   padding: 16px;
-  background: ${({ $isDragOver }) => ($isDragOver ? 'rgba(5, 145, 255, 0.04)' : 'var(--card-background)')};
-  border: 1px dashed ${({ $isDragOver }) => ($isDragOver ? 'var(--button-color-hover)' : 'var(--card-border)')};
+  background: ${({ $isDragOver }) => ($isDragOver ? "rgba(5, 145, 255, 0.04)" : "var(--card-background)")};
+  border: 1px dashed ${({ $isDragOver }) => ($isDragOver ? "var(--button-color-hover)" : "var(--card-border)")};
   border-radius: 8px;
   cursor: pointer;
   transition: border-color 200ms ease, background 200ms ease;
@@ -168,19 +171,19 @@ const UploadDropZone = styled.div<{ $isDragOver: boolean }>`
   &:hover {
     border-color: var(--button-color-hover);
   }
-`
+`;
 
 const IconInbox = styled(Inbox)`
   color: #6866FF;
   flex-shrink: 0;
-`
+`;
 
 const UploadTextsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-`
+`;
 
 const UploadMainText = styled.p`
   font-size: 16px;
@@ -189,7 +192,7 @@ const UploadMainText = styled.p`
   color: var(--text-color-2);
   text-align: center;
   margin: 0;
-`
+`;
 
 const UploadHintText = styled.p`
   direction: rtl;
@@ -199,7 +202,7 @@ const UploadHintText = styled.p`
   color: rgba(0, 0, 0, 0.45);
   text-align: center;
   margin: 0;
-`
+`;
 
 const FilePreview = styled.div`
   direction: ltr;
@@ -209,7 +212,7 @@ const FilePreview = styled.div`
   padding: 8px;
   border: 1px solid var(--card-border);
   border-radius: 8px;
-`
+`;
 
 const FileThumbnail = styled.div`
   width: 48px;
@@ -220,7 +223,7 @@ const FileThumbnail = styled.div`
   justify-content: center;
   flex-shrink: 0;
   color: rgba(0, 0, 0, 0.25);
-`
+`;
 
 const FileName = styled.span`
   direction: rtl;
@@ -235,7 +238,7 @@ const FileName = styled.span`
   white-space: nowrap;
   text-align: start;
   padding-inline: 8px;
-`
+`;
 
 const FileRemoveButton = styled.button`
   display: flex;
@@ -253,7 +256,7 @@ const FileRemoveButton = styled.button`
   &:hover {
     color: var(--text-color-2);
   }
-`
+`;
 
 const FileErrorText = styled.span`
   direction: rtl;
@@ -261,8 +264,8 @@ const FileErrorText = styled.span`
   line-height: 22px;
   color: #ff4d4f;
   margin-block-start: 4px;
-`
+`;
 
 const HiddenFileInput = styled.input`
   display: none;
-`
+`;

@@ -1,105 +1,116 @@
-import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from '@dnd-kit/core'
+	closestCenter,
+	DndContext,
+	type DragEndEvent,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from "@dnd-kit/core";
 import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
-import styled from '@emotion/styled'
-import { Columns3 } from 'lucide-react'
-import { useState } from 'react'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { SortableColumnItem } from './SortableColumnItem'
-import { TASK_COLUMNS_META, type TaskColumn, type TaskColumnMeta } from '../../hooks/useTaskColumns'
+	restrictToParentElement,
+	restrictToVerticalAxis,
+} from "@dnd-kit/modifiers";
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import styled from "@emotion/styled";
+import { Columns3 } from "lucide-react";
+import { useState } from "react";
+import {
+	TASK_COLUMNS_META,
+	type TaskColumn,
+	type TaskColumnMeta,
+} from "../../hooks/useTaskColumns";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { SortableColumnItem } from "./SortableColumnItem";
 
-export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter((c) => c.id !== 'id')
+export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter(
+	(c) => c.id !== "id",
+);
 
-export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id)
+export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id);
 
 interface ColumnVisibilityDropdownProps {
-  columnOrder: TaskColumn[]
-  hiddenColumns: Set<TaskColumn>
-  onColumnOrderChange: (order: TaskColumn[]) => void
-  onToggleColumn: (columnId: TaskColumn) => void
-  extraColumnsMeta?: TaskColumnMeta[]
+	columnOrder: TaskColumn[];
+	hiddenColumns: Set<TaskColumn>;
+	onColumnOrderChange: (order: TaskColumn[]) => void;
+	onToggleColumn: (columnId: TaskColumn) => void;
+	extraColumnsMeta?: TaskColumnMeta[];
 }
 
 function ColumnVisibilityDropdown({
-  columnOrder,
-  hiddenColumns,
-  onColumnOrderChange,
-  onToggleColumn,
-  extraColumnsMeta,
+	columnOrder,
+	hiddenColumns,
+	onColumnOrderChange,
+	onToggleColumn,
+	extraColumnsMeta,
 }: ColumnVisibilityDropdownProps) {
-  const [open, setOpen] = useState(false)
+	const [open, setOpen] = useState(false);
 
-  const allColumns = extraColumnsMeta
-    ? [...CONFIGURABLE_COLUMNS, ...extraColumnsMeta]
-    : CONFIGURABLE_COLUMNS
+	const allColumns = extraColumnsMeta
+		? [...CONFIGURABLE_COLUMNS, ...extraColumnsMeta]
+		: CONFIGURABLE_COLUMNS;
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-  )
+	const sensors = useSensors(
+		useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		}),
+	);
 
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event
-    if (over && active.id !== over.id) {
-      const oldIndex = columnOrder.indexOf(active.id as TaskColumn)
-      const newIndex = columnOrder.indexOf(over.id as TaskColumn)
-      onColumnOrderChange(arrayMove(columnOrder, oldIndex, newIndex))
-    }
-  }
+	function handleDragEnd(event: DragEndEvent) {
+		const { active, over } = event;
+		if (over && active.id !== over.id) {
+			const oldIndex = columnOrder.indexOf(active.id as TaskColumn);
+			const newIndex = columnOrder.indexOf(over.id as TaskColumn);
+			onColumnOrderChange(arrayMove(columnOrder, oldIndex, newIndex));
+		}
+	}
 
-  const orderedColumns = columnOrder
-    .map((id) => allColumns.find((c) => c.id === id))
-    .filter((c) => c != null)
+	const orderedColumns = columnOrder
+		.map((id) => allColumns.find((c) => c.id === id))
+		.filter((c) => c != null);
 
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <TriggerButton>
-          <Columns3 size={16} />
-          תצוגת עמודות
-        </TriggerButton>
-      </PopoverTrigger>
-      <StyledPopoverContent align="end" sideOffset={4}>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-          modifiers={[restrictToParentElement, restrictToVerticalAxis]}
-        >
-          <SortableContext
-            items={columnOrder}
-            strategy={verticalListSortingStrategy}
-          >
-            {orderedColumns.map((col) => (
-              <SortableColumnItem
-                key={col.id}
-                column={col}
-                isHidden={hiddenColumns.has(col.id)}
-                isLocked={col.id === 'title'}
-                onToggle={() => onToggleColumn(col.id)}
-              />
-            ))}
-          </SortableContext>
-        </DndContext>
-      </StyledPopoverContent>
-    </Popover>
-  )
+	return (
+		<Popover open={open} onOpenChange={setOpen}>
+			<PopoverTrigger asChild>
+				<TriggerButton>
+					<Columns3 size={16} />
+					תצוגת עמודות
+				</TriggerButton>
+			</PopoverTrigger>
+			<StyledPopoverContent align="end" sideOffset={4}>
+				<DndContext
+					sensors={sensors}
+					collisionDetection={closestCenter}
+					onDragEnd={handleDragEnd}
+					modifiers={[restrictToParentElement, restrictToVerticalAxis]}
+				>
+					<SortableContext
+						items={columnOrder}
+						strategy={verticalListSortingStrategy}
+					>
+						{orderedColumns.map((col) => (
+							<SortableColumnItem
+								key={col.id}
+								column={col}
+								isHidden={hiddenColumns.has(col.id)}
+								isLocked={col.id === "title"}
+								onToggle={() => onToggleColumn(col.id)}
+							/>
+						))}
+					</SortableContext>
+				</DndContext>
+			</StyledPopoverContent>
+		</Popover>
+	);
 }
 
-export { ColumnVisibilityDropdown }
+export { ColumnVisibilityDropdown };
 
 // ─── Styled ──────────────────────────────────────────────────────────────────
 
@@ -122,7 +133,7 @@ const TriggerButton = styled.button`
   &:hover {
     background: var(--link-bg-hover);
   }
-`
+`;
 
 const StyledPopoverContent = styled(PopoverContent)`
   direction: rtl;
@@ -134,4 +145,4 @@ const StyledPopoverContent = styled(PopoverContent)`
     0px 6px 16px rgba(0, 0, 0, 0.08),
     0px 3px 6px rgba(0, 0, 0, 0.12),
     0px 9px 28px rgba(0, 0, 0, 0.05);
-`
+`;

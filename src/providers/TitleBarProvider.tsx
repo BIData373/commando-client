@@ -1,39 +1,45 @@
-import { createContext, useContext, useState, useLayoutEffect, type ReactNode } from 'react'
+import {
+	createContext,
+	type ReactNode,
+	useContext,
+	useLayoutEffect,
+	useState,
+} from "react";
 
 interface TitleBarContextValue {
-  actions: ReactNode | null
-  setActions: (actions: ReactNode | null) => void
+	actions: ReactNode | null;
+	setActions: (actions: ReactNode | null) => void;
 }
 
 const TitleBarContext = createContext<TitleBarContextValue>({
-  actions: null,
-  setActions: () => {},
-})
+	actions: null,
+	setActions: () => {},
+});
 
 interface TitleBarProviderProps {
-  children: ReactNode
+	children: ReactNode;
 }
 
 export function TitleBarProvider({ children }: TitleBarProviderProps) {
-  const [actions, setActions] = useState<ReactNode | null>(null)
+	const [actions, setActions] = useState<ReactNode | null>(null);
 
-  return (
-    <TitleBarContext.Provider value={{ actions, setActions }}>
-      {children}
-    </TitleBarContext.Provider>
-  )
+	return (
+		<TitleBarContext.Provider value={{ actions, setActions }}>
+			{children}
+		</TitleBarContext.Provider>
+	);
 }
 
 export function useTitleBarActions() {
-  return useContext(TitleBarContext)
+	return useContext(TitleBarContext);
 }
 
 export function useTitleBar(renderActions: () => ReactNode, deps: unknown[]) {
-  const { setActions } = useTitleBarActions()
+	const { setActions } = useTitleBarActions();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useLayoutEffect(() => {
-    setActions(renderActions())
-    return () => setActions(null)
-  }, [setActions, ...deps])
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	useLayoutEffect(() => {
+		setActions(renderActions());
+		return () => setActions(null);
+	}, [setActions, ...deps, renderActions]);
 }

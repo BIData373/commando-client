@@ -1,48 +1,57 @@
-import styled from '@emotion/styled'
-import { Eye, EyeOff, GripVertical } from 'lucide-react'
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import styled from "@emotion/styled";
+import { Eye, EyeOff, GripVertical } from "lucide-react";
 
-import { type TaskColumnMeta } from '../../hooks/useTaskColumns'
+import type { TaskColumnMeta } from "../../hooks/useTaskColumns";
 
 interface SortableColumnItemProps {
-  column: TaskColumnMeta
-  isHidden: boolean
-  isLocked: boolean
-  onToggle: () => void
+	column: TaskColumnMeta;
+	isHidden: boolean;
+	isLocked: boolean;
+	onToggle: () => void;
 }
 
-function SortableColumnItem({ column, isHidden, isLocked, onToggle }: SortableColumnItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: column.id })
+function SortableColumnItem({
+	column,
+	isHidden,
+	isLocked,
+	onToggle,
+}: SortableColumnItemProps) {
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({ id: column.id });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  }
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+	};
 
-  return (
-    <ItemRow ref={setNodeRef} style={style} $isDragging={isDragging}>
-      <ItemLabel>{column.label}</ItemLabel>
-      <ItemActions>
-        <IconButton onClick={isLocked ? undefined : onToggle} type="button" disabled={isLocked}>
-          {isHidden ? <EyeoffIcon size={16}/> : <Eye size={16} />}
-        </IconButton>
-        <DragHandle data-drag-handle {...attributes} {...listeners}>
-          <GripVertical size={16} />
-        </DragHandle>
-      </ItemActions>
-    </ItemRow>
-  )
+	return (
+		<ItemRow ref={setNodeRef} style={style} $isDragging={isDragging}>
+			<ItemLabel>{column.label}</ItemLabel>
+			<ItemActions>
+				<IconButton
+					onClick={isLocked ? undefined : onToggle}
+					type="button"
+					disabled={isLocked}
+				>
+					{isHidden ? <EyeoffIcon size={16} /> : <Eye size={16} />}
+				</IconButton>
+				<DragHandle data-drag-handle {...attributes} {...listeners}>
+					<GripVertical size={16} />
+				</DragHandle>
+			</ItemActions>
+		</ItemRow>
+	);
 }
 
-export { SortableColumnItem }
+export { SortableColumnItem };
 
 // ─── Styled ──────────────────────────────────────────────────────────────────
 
@@ -61,7 +70,7 @@ const DragHandle = styled.button`
   &:active {
     cursor: grabbing;
   }
-`
+`;
 
 const ItemRow = styled.div<{ $isDragging: boolean }>`
 direction: ltr;
@@ -74,11 +83,11 @@ direction: ltr;
   padding-block: 5px;
   border-radius: 4px;
   cursor: default;
-  background: ${({ $isDragging }) => ($isDragging ? 'rgba(0, 0, 0, 0.04)' : 'transparent')};
+  background: ${({ $isDragging }) => ($isDragging ? "rgba(0, 0, 0, 0.04)" : "transparent")};
   box-shadow: ${({ $isDragging }) =>
-    $isDragging
-      ? '0px 6px 16px rgba(0, 0, 0, 0.08), 0px 3px 6px rgba(0, 0, 0, 0.12), 0px 9px 28px rgba(0, 0, 0, 0.05)'
-      : 'none'};
+		$isDragging
+			? "0px 6px 16px rgba(0, 0, 0, 0.08), 0px 3px 6px rgba(0, 0, 0, 0.12), 0px 9px 28px rgba(0, 0, 0, 0.05)"
+			: "none"};
 
   &:hover {
     background: rgba(0, 0, 0, 0.04);
@@ -87,7 +96,7 @@ direction: ltr;
       opacity: 1;
     }
   }
-`
+`;
 
 const ItemLabel = styled.span`
   direction: rtl;
@@ -99,14 +108,14 @@ const ItemLabel = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`
+`;
 
 const ItemActions = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
   flex-shrink: 0;
-`
+`;
 
 const IconButton = styled.button`
   display: flex;
@@ -126,8 +135,8 @@ const IconButton = styled.button`
     cursor: default;
     color: rgba(0, 0, 0, 0.25);
   }
-`
+`;
 
 const EyeoffIcon = styled(EyeOff)`
   color: rgba(0, 0, 0, 0.25);
-`
+`;

@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "#/lib/utils"
+import { cn } from "src/lib/utils"
 
 interface TableProps extends React.ComponentProps<"table"> {
   containerClassName?: string;

@@ -1,6 +1,6 @@
-import { currentUser } from '../mocks/data/users';
-import { useUser } from './useUsers';
+import { currentUser } from "../mocks/data/users";
+import { useUser } from "./useUsers";
 
 export function useCurrentUser() {
-    return useUser(currentUser.id);
+	return useUser(currentUser.id);
 }

@@ -1,97 +1,97 @@
-import { useState } from 'react'
-import styled from '@emotion/styled'
-import { TbFilter } from 'react-icons/tb'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { Checkbox } from '../ui/checkbox'
-import type { FilterOption } from '../../functions/filter-utils'
+import styled from "@emotion/styled";
+import { useState } from "react";
+import { TbFilter } from "react-icons/tb";
+import type { FilterOption } from "../../functions/filter-utils";
+import { Checkbox } from "../ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface ColumnFilterDropdownProps {
-  options: FilterOption[]
-  activeValues: Set<string>
-  onApply: (values: Set<string>) => void
-  isActive: boolean
-  onOpenChange: (open: boolean) => void
+	options: FilterOption[];
+	activeValues: Set<string>;
+	onApply: (values: Set<string>) => void;
+	isActive: boolean;
+	onOpenChange: (open: boolean) => void;
 }
 
 function ColumnFilterDropdown({
-  options,
-  activeValues,
-  onApply,
-  isActive,
-  onOpenChange,
+	options,
+	activeValues,
+	onApply,
+	isActive,
+	onOpenChange,
 }: ColumnFilterDropdownProps) {
-  const [selectedValues, setSelectedValues] = useState<Set<string>>(new Set(activeValues))
+	const [selectedValues, setSelectedValues] = useState<Set<string>>(
+		new Set(activeValues),
+	);
 
-  function handleOpenChange(open: boolean) {
-    if (open) {
-      setSelectedValues(new Set(activeValues))
-    }
-    onOpenChange(open)
-  }
+	function handleOpenChange(open: boolean) {
+		if (open) {
+			setSelectedValues(new Set(activeValues));
+		}
+		onOpenChange(open);
+	}
 
-  function toggleOption(value: string) {
-    setSelectedValues((prev) => {
-      const next = new Set(prev)
-      if (next.has(value)) {
-        next.delete(value)
-      } else {
-        next.add(value)
-      }
-      return next
-    })
-  }
+	function toggleOption(value: string) {
+		setSelectedValues((prev) => {
+			const next = new Set(prev);
+			if (next.has(value)) {
+				next.delete(value);
+			} else {
+				next.add(value);
+			}
+			return next;
+		});
+	}
 
-  function handleApply() {
-    onApply(selectedValues)
-    onOpenChange(false)
-  }
+	function handleApply() {
+		onApply(selectedValues);
+		onOpenChange(false);
+	}
 
-  function handleReset() {
-    onApply(new Set())
-    onOpenChange(false)
-  }
+	function handleReset() {
+		onApply(new Set());
+		onOpenChange(false);
+	}
 
-  return (
-    <Popover onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        <IconButton
-          $active={isActive}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <TbFilter size={16} />
-          {isActive && <ActiveBadge />}
-        </IconButton>
-      </PopoverTrigger>
-      <PopoverContent align="start" sideOffset={8} asChild>
-        <DropdownPanel>
-          <ItemList>
-            {options.map((option) => (
-              <DropdownItem
-                key={option.value}
-                $selected={selectedValues.has(option.value)}
-                onClick={() => toggleOption(option.value)}
-              >
-                <OptionLabel>{option.label}</OptionLabel>
-                <Checkbox checked={selectedValues.has(option.value)} />
-              </DropdownItem>
-            ))}
-          </ItemList>
-          <Divider />
-          <FooterRow>
-            <ResetButton onClick={handleReset}>
-              אפס
-            </ResetButton>
-            <ApplyButton onClick={handleApply} disabled={selectedValues.size === 0}>
-              החל ({selectedValues.size})
-            </ApplyButton>
-          </FooterRow>
-        </DropdownPanel>
-      </PopoverContent>
-    </Popover>
-  )
+	return (
+		<Popover onOpenChange={handleOpenChange}>
+			<PopoverTrigger asChild>
+				<IconButton $active={isActive} onClick={(e) => e.stopPropagation()}>
+					<TbFilter size={16} />
+					{isActive && <ActiveBadge />}
+				</IconButton>
+			</PopoverTrigger>
+			<PopoverContent align="start" sideOffset={8} asChild>
+				<DropdownPanel>
+					<ItemList>
+						{options.map((option) => (
+							<DropdownItem
+								key={option.value}
+								$selected={selectedValues.has(option.value)}
+								onClick={() => toggleOption(option.value)}
+							>
+								<OptionLabel>{option.label}</OptionLabel>
+								<Checkbox checked={selectedValues.has(option.value)} />
+							</DropdownItem>
+						))}
+					</ItemList>
+					<Divider />
+					<FooterRow>
+						<ResetButton onClick={handleReset}>אפס</ResetButton>
+						<ApplyButton
+							onClick={handleApply}
+							disabled={selectedValues.size === 0}
+						>
+							החל ({selectedValues.size})
+						</ApplyButton>
+					</FooterRow>
+				</DropdownPanel>
+			</PopoverContent>
+		</Popover>
+	);
 }
 
-export { ColumnFilterDropdown }
+export { ColumnFilterDropdown };
 
 // ─── Styled ──────────────────────────────────────────────────────────────────
 
@@ -103,7 +103,7 @@ const ActiveBadge = styled.span`
   height: 6px;
   border-radius: 50%;
   background: #1677FF;
-`
+`;
 
 const IconButton = styled.button<{ $active: boolean }>`
   position: relative;
@@ -116,13 +116,13 @@ const IconButton = styled.button<{ $active: boolean }>`
   background: none;
   padding: 0;
   cursor: pointer;
-  color: ${({ $active }) => ($active ? '#1677FF' : 'rgba(0, 0, 0, 0.45)')};
+  color: ${({ $active }) => ($active ? "#1677FF" : "rgba(0, 0, 0, 0.45)")};
   flex-shrink: 0;
 
   &:hover {
-    color: ${({ $active }) => ($active ? '#1677FF' : 'rgba(0, 0, 0, 0.65)')};
+    color: ${({ $active }) => ($active ? "#1677FF" : "rgba(0, 0, 0, 0.65)")};
   }
-`
+`;
 
 const DropdownPanel = styled.div`
   display: flex;
@@ -135,14 +135,14 @@ const DropdownPanel = styled.div`
     0px 9px 28px 0px rgba(0, 0, 0, 0.05);
   width: auto;
   min-width: 180px;
-`
+`;
 
 const ItemList = styled.div`
   display: flex;
   flex-direction: column;
   max-height: 200px;
   overflow-y: auto;
-`
+`;
 
 const DropdownItem = styled.div<{ $selected: boolean }>`
   direction: ltr;
@@ -153,12 +153,12 @@ const DropdownItem = styled.div<{ $selected: boolean }>`
   height: 32px;
   padding: 5px 12px;
   cursor: pointer;
-  background: ${({ $selected }) => ($selected ? 'rgba(0, 0, 0, 0.04)' : 'transparent')};
+  background: ${({ $selected }) => ($selected ? "rgba(0, 0, 0, 0.04)" : "transparent")};
 
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
-`
+`;
 
 const OptionLabel = styled.span`
   flex: 1;
@@ -170,19 +170,19 @@ const OptionLabel = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`
+`;
 
 const Divider = styled.div`
   height: 1px;
   background: rgba(0, 0, 0, 0.06);
   margin-block: 4px;
-`
+`;
 
 const FooterRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`
+`;
 
 const ApplyButton = styled.button`
   display: flex;
@@ -203,7 +203,7 @@ const ApplyButton = styled.button`
     opacity: 0.5;
     cursor: default;
   }
-`
+`;
 
 const ResetButton = styled.button`
   display: flex;
@@ -222,4 +222,4 @@ const ResetButton = styled.button`
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
-`
+`;

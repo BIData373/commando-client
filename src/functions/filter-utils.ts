@@ -1,87 +1,106 @@
-import { differenceInDays, startOfToday } from 'date-fns'
-import { QuickFilter } from '#/utils/filterUtils'
-import type { Task } from '../data/Tasks'
-import { STATUS_LABELS } from '../components/shared/StatusTag'
-import { DEADLINE_LABELS } from '../components/shared/DeadlineTag'
+import { differenceInDays, startOfToday } from "date-fns";
+import { QuickFilter } from "src/utils/filterUtils";
+import { DEADLINE_LABELS } from "../components/shared/DeadlineTag";
+import { STATUS_LABELS } from "../components/shared/StatusTag";
+import type { Task } from "../data/Tasks";
 // ─── Shared Types ────────────────────────────────────────────────────────────
 
 export interface FilterOption {
-  value: string
-  label: string
+	value: string;
+	label: string;
 }
 
 // ─── Quick Filters ───────────────────────────────────────────────────────────
 
 function matchesQuickFilter(task: Task, filter: QuickFilter): boolean {
-  const today = startOfToday()
-  const daysUntil = task.dueDate ? differenceInDays(task.dueDate, today) : null
-  switch (filter) {
-    case QuickFilter.OVERDUE:
-      return daysUntil !== null && daysUntil < 0 && task.deadlineType !== 'immediate'
-    case QuickFilter.APPROACHING:
-      return daysUntil !== null && daysUntil >= 0 && daysUntil < 2 && !(daysUntil < 0 && task.deadlineType !== 'immediate')
-    case QuickFilter.FLAGGED:
-      return task.flagged
-  }
+	const today = startOfToday();
+	const daysUntil = task.dueDate ? differenceInDays(task.dueDate, today) : null;
+	switch (filter) {
+		case QuickFilter.OVERDUE:
+			return (
+				daysUntil !== null && daysUntil < 0 && task.deadlineType !== "immediate"
+			);
+		case QuickFilter.APPROACHING:
+			return (
+				daysUntil !== null &&
+				daysUntil >= 0 &&
+				daysUntil < 2 &&
+				!(daysUntil < 0 && task.deadlineType !== "immediate")
+			);
+		case QuickFilter.FLAGGED:
+			return !!task.flagged;
+
+		default:
+			return false;
+	}
 }
 
 // ─── Combined ────────────────────────────────────────────────────────────────
 
 function applyAllFilters(
-  tasks: Task[],
-  activeQuickFilters: Set<QuickFilter>,
-  activeTopicFilters: Set<string>,
-  searchQuery: string,
+	tasks: Task[],
+	activeQuickFilters: Set<QuickFilter>,
+	activeTopicFilters: Set<string>,
+	searchQuery: string,
 ): Task[] {
-  const hasQuickFilters = activeQuickFilters.size > 0
-  const hasTopicFilters = activeTopicFilters.size > 0
+	const hasQuickFilters = activeQuickFilters.size > 0;
+	const hasTopicFilters = activeTopicFilters.size > 0;
 
-  let result = tasks
+	let result = tasks;
 
-  if (hasQuickFilters || hasTopicFilters) {
-    result = result.filter((t) => {
-      const matchesQuick = hasQuickFilters && Array.from(activeQuickFilters).some((f) => matchesQuickFilter(t, f))
-      const matchesTopic = hasTopicFilters && t.tags.some((tag) => activeTopicFilters.has(tag))
-      return matchesQuick || matchesTopic
-    })
-  }
+	if (hasQuickFilters || hasTopicFilters) {
+		result = result.filter((t) => {
+			const matchesQuick =
+				hasQuickFilters &&
+				Array.from(activeQuickFilters).some((f) => matchesQuickFilter(t, f));
+			const matchesTopic =
+				hasTopicFilters && t.tags.some((tag) => activeTopicFilters.has(tag));
+			return matchesQuick || matchesTopic;
+		});
+	}
 
-  if (searchQuery) {
-    result = result.filter((t) => t.title.includes(searchQuery) || t.details?.includes(searchQuery) || t.notes.includes(searchQuery))
-  }
+	if (searchQuery) {
+		result = result.filter(
+			(t) =>
+				t.title.includes(searchQuery) ||
+				t.details?.includes(searchQuery) ||
+				t.notes.includes(searchQuery),
+		);
+	}
 
-  return result
+	return result;
 }
 
 function buildFilterOptionsMap(tasks: Task[]): Record<string, FilterOption[]> {
-  const statusSet = new Set<string>()
-  const responsibleSet = new Set<string>()
-  const deadlineTypeSet = new Set<string>()
-  const discussionNameSet = new Set<string>()
-  const tagsSet = new Set<string>()
+	const statusSet = new Set<string>();
+	const responsibleSet = new Set<string>();
+	const deadlineTypeSet = new Set<string>();
+	const discussionNameSet = new Set<string>();
+	const tagsSet = new Set<string>();
 
-  for (const t of tasks) {
-    statusSet.add(t.status)
-    if (t.responsible) responsibleSet.add(t.responsible.name)
-    deadlineTypeSet.add(t.deadlineType)
-    if (t.discussionName) discussionNameSet.add(t.discussionName)
-    t.tags.forEach((tag) => tagsSet.add(tag))
-  }
+	for (const t of tasks) {
+		statusSet.add(t.status);
+		if (t.responsible) responsibleSet.add(t.responsible.name);
+		deadlineTypeSet.add(t.deadlineType);
+		if (t.discussionName) discussionNameSet.add(t.discussionName);
+		t.tags.forEach((tag) => {
+			tagsSet.add(tag);
+		});
+	}
 
-  const toOptions = (set: Set<string>, labelMap?: Record<string, string>): FilterOption[] =>
-    [...set].map((v) => ({ value: v, label: labelMap?.[v] ?? v }))
+	const toOptions = (
+		set: Set<string>,
+		labelMap?: Record<string, string>,
+	): FilterOption[] =>
+		[...set].map((v) => ({ value: v, label: labelMap?.[v] ?? v }));
 
-  return {
-    status: toOptions(statusSet, STATUS_LABELS),
-    responsible: toOptions(responsibleSet),
-    deadlineType: toOptions(deadlineTypeSet, DEADLINE_LABELS),
-    discussionName: toOptions(discussionNameSet),
-    tags: toOptions(tagsSet),
-  }
+	return {
+		status: toOptions(statusSet, STATUS_LABELS),
+		responsible: toOptions(responsibleSet),
+		deadlineType: toOptions(deadlineTypeSet, DEADLINE_LABELS),
+		discussionName: toOptions(discussionNameSet),
+		tags: toOptions(tagsSet),
+	};
 }
 
-export {
-  matchesQuickFilter,
-  applyAllFilters,
-  buildFilterOptionsMap,
-}
+export { matchesQuickFilter, applyAllFilters, buildFilterOptionsMap };

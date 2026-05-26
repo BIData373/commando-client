@@ -1,33 +1,33 @@
 import styled from "@emotion/styled";
 import { MoreVertical } from "lucide-react";
-import { type IUser, UserRole } from "#/types";
+import { type IUser, UserRole } from "src/types";
 import { RowActionsMenu } from "../Tasks/RowActionsMenu";
 
 interface DropdownOptions {
-    currentUser: IUser;
-    onEdit(): void;
-    onArchive(): void;
-    onDelete(): void;
+	currentUser: IUser;
+	onEdit(): void;
+	onArchive(): void;
+	onDelete(): void;
 }
 
 export const DropdownOptions = ({
-    currentUser,
-    onEdit,
-    onArchive,
-    onDelete,
+	currentUser,
+	onEdit,
+	onArchive,
+	onDelete,
 }: DropdownOptions) => {
-    return (
-        <RowActionsMenu
-            trigger={
-                <DotsButton>
-                    <MoreVertical size={16} />
-                </DotsButton>
-            }
-            onDelete={currentUser.role === UserRole.ADMIN ? onDelete : undefined}
-            onArchive={onArchive}
-            onEdit={currentUser.role === UserRole.ADMIN ? onEdit : undefined}
-        />
-    );
+	return (
+		<RowActionsMenu
+			trigger={
+				<DotsButton>
+					<MoreVertical size={16} />
+				</DotsButton>
+			}
+			onDelete={currentUser.role === UserRole.ADMIN ? onDelete : undefined}
+			onArchive={onArchive}
+			onEdit={currentUser.role === UserRole.ADMIN ? onEdit : undefined}
+		/>
+	);
 };
 
 const DotsButton = styled.button`

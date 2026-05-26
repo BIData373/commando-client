@@ -1,109 +1,116 @@
-import { useState, type ReactNode } from 'react'
-import styled from '@emotion/styled'
-import { Plus, Check } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { MOCK_ASSIGNEES } from '../../data/Assignees'
-import type { AvatarColor } from '../Tasks/ResponsibleCell'
-import { AssigneeDialog } from '../settings/AssigneeDialog'
+import styled from "@emotion/styled";
+import { Check, Plus } from "lucide-react";
+import { type ReactNode, useState } from "react";
+import { MOCK_ASSIGNEES } from "../../data/Assignees";
+import { AssigneeDialog } from "../settings/AssigneeDialog";
+import type { AvatarColor } from "../Tasks/ResponsibleCell";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface AssigneePickerProps {
-  selectedAssignees: number[]
-  trigger: ReactNode | ((props: { search: string; onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => ReactNode)
-  onToggle: (id: number) => void
-  closeOnFirstSelect?: boolean
+	selectedAssignees: number[];
+	trigger:
+		| ReactNode
+		| ((props: {
+				search: string;
+				onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+		  }) => ReactNode);
+	onToggle: (id: number) => void;
+	closeOnFirstSelect?: boolean;
 }
 
 function AssigneePicker({
-  selectedAssignees,
-  trigger,
-  onToggle,
-  closeOnFirstSelect = false,
+	selectedAssignees,
+	trigger,
+	onToggle,
+	closeOnFirstSelect = false,
 }: AssigneePickerProps) {
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState('')
-  const [dialogOpen, setDialogOpen] = useState(false)
+	const [open, setOpen] = useState(false);
+	const [search, setSearch] = useState("");
+	const [dialogOpen, setDialogOpen] = useState(false);
 
-  const filteredAssignees = Object.values(MOCK_ASSIGNEES)
-    .filter((assignee) => {
-      if (!search.trim()) return true
-      return assignee.name.includes(search) || assignee.role.includes(search)
-    })
-    .map((assignee) => ({
-      ...assignee,
-      selected: selectedAssignees.includes(assignee.id),
-    }))
+	const filteredAssignees = Object.values(MOCK_ASSIGNEES)
+		.filter((assignee) => {
+			if (!search.trim()) return true;
+			return assignee.name.includes(search) || assignee.role.includes(search);
+		})
+		.map((assignee) => ({
+			...assignee,
+			selected: selectedAssignees.includes(assignee.id),
+		}));
 
-  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setSearch(e.target.value)
-    if (!open) setOpen(true)
-  }
+	function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
+		setSearch(e.target.value);
+		if (!open) setOpen(true);
+	}
 
-  function handleOpenChange(nextOpen: boolean) {
-    setOpen(nextOpen)
-    if (!nextOpen) setSearch('')
-  }
+	function handleOpenChange(nextOpen: boolean) {
+		setOpen(nextOpen);
+		if (!nextOpen) setSearch("");
+	}
 
-  function handleAssigneeClick(id: number) {
-    onToggle(id)
+	function handleAssigneeClick(id: number) {
+		onToggle(id);
 
-    if (closeOnFirstSelect && selectedAssignees.length === 0) {
-      setOpen(false)
-      setSearch('')
-    }
-  }
+		if (closeOnFirstSelect && selectedAssignees.length === 0) {
+			setOpen(false);
+			setSearch("");
+		}
+	}
 
-  function handleCreateNew() {
-    setOpen(false)
-    setSearch('')
-    setDialogOpen(true)
-  }
+	function handleCreateNew() {
+		setOpen(false);
+		setSearch("");
+		setDialogOpen(true);
+	}
 
-  return (
-    <>
-    <Popover open={open} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        {typeof trigger === 'function' ? trigger({ search, onSearchChange: handleSearchChange }) : trigger}
-      </PopoverTrigger>
+	return (
+		<>
+			<Popover open={open} onOpenChange={handleOpenChange}>
+				<PopoverTrigger asChild>
+					{typeof trigger === "function"
+						? trigger({ search, onSearchChange: handleSearchChange })
+						: trigger}
+				</PopoverTrigger>
 
-      <AssigneeDropdown
-        sideOffset={4}
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        onWheel={(e) => e.stopPropagation()}
-      >
-        {filteredAssignees.map((assignee) => (
-          <AssigneeOption
-            key={assignee.id}
-            $selected={assignee.selected}
-            type="button"
-            onClick={() => handleAssigneeClick(assignee.id)}
-          >
-            <AssigneeOptionEnd>
-              <AvatarCircle $color={assignee.colorToken}>
-                {assignee.initials}
-              </AvatarCircle>
+				<AssigneeDropdown
+					sideOffset={4}
+					onOpenAutoFocus={(e) => e.preventDefault()}
+					onWheel={(e) => e.stopPropagation()}
+				>
+					{filteredAssignees.map((assignee) => (
+						<AssigneeOption
+							key={assignee.id}
+							$selected={assignee.selected}
+							type="button"
+							onClick={() => handleAssigneeClick(assignee.id)}
+						>
+							<AssigneeOptionEnd>
+								<AvatarCircle $color={assignee.colorToken}>
+									{assignee.initials}
+								</AvatarCircle>
 
-              <AssigneeOptionName $selected={assignee.selected}>
-                {assignee.name}
-              </AssigneeOptionName>
-            </AssigneeOptionEnd>
+								<AssigneeOptionName $selected={assignee.selected}>
+									{assignee.name}
+								</AssigneeOptionName>
+							</AssigneeOptionEnd>
 
-            {assignee.selected && <StyleCheck size={18} />}
-          </AssigneeOption>
-        ))}
+							{assignee.selected && <StyleCheck size={18} />}
+						</AssigneeOption>
+					))}
 
-        <CreateNewButton type="button" onClick={handleCreateNew}>
-          צור אחראי חדש
-          <Plus size={14} />
-        </CreateNewButton>
-      </AssigneeDropdown>
-    </Popover>
+					<CreateNewButton type="button" onClick={handleCreateNew}>
+						צור אחראי חדש
+						<Plus size={14} />
+					</CreateNewButton>
+				</AssigneeDropdown>
+			</Popover>
 
-    <AssigneeDialog open={dialogOpen} onOpenChange={setDialogOpen} />
-    </>
-  )
+			<AssigneeDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+		</>
+	);
 }
 
-export default AssigneePicker
+export default AssigneePicker;
 
 const AssigneeDropdown = styled(PopoverContent)`
   width: var(--radix-popover-trigger-width);
@@ -111,7 +118,7 @@ const AssigneeDropdown = styled(PopoverContent)`
   overflow-y: auto;
   padding: 4px;
   gap: 1.5px;
-`
+`;
 
 const AssigneeOption = styled.button<{ $selected: boolean }>`
   display: flex;
@@ -119,14 +126,14 @@ const AssigneeOption = styled.button<{ $selected: boolean }>`
   justify-content: space-between;
   width: 100%;
   border: none;
-  background: ${({ $selected }) => ($selected ? '#e6f4ff' : 'transparent')};
+  background: ${({ $selected }) => ($selected ? "#e6f4ff" : "transparent")};
   cursor: pointer;
   border-radius: 2px;
 
   &:hover {
-    background: ${({ $selected }) => ($selected ? '#e6f4ff' : 'rgba(0, 0, 0, 0.04)')};
+    background: ${({ $selected }) => ($selected ? "#e6f4ff" : "rgba(0, 0, 0, 0.04)")};
   }
-`
+`;
 
 const AssigneeOptionEnd = styled.div`
   display: flex;
@@ -134,15 +141,15 @@ const AssigneeOptionEnd = styled.div`
   gap: 8px;
   padding: 0 12px;
   height: 32px;
-`
+`;
 
 const AssigneeOptionName = styled.span<{ $selected: boolean }>`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: ${({ $selected }) => ($selected ? 'var(--tab-active-color)' : 'var(--text-color-2)')};
+  color: ${({ $selected }) => ($selected ? "var(--tab-active-color)" : "var(--text-color-2)")};
   white-space: nowrap;
-`
+`;
 
 const CreateNewButton = styled.button`
   direction: ltr;
@@ -163,7 +170,7 @@ const CreateNewButton = styled.button`
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
-`
+`;
 //TO-DO
 const AvatarCircle = styled.div<{ $color: AvatarColor }>`
   display: inline-flex;
@@ -178,16 +185,21 @@ const AvatarCircle = styled.div<{ $color: AvatarColor }>`
   color: var(--sea-ink);
   flex-shrink: 0;
   ${({ $color }) => {
-    switch ($color) {
-      case 'cyan': return 'background: #87e8de;'
-      case 'blue': return 'background: #91caff;'
-      case 'green': return 'background: #b7eb8f;'
-      case 'orange': return 'background: #ffd591;'
-      case 'gray': return 'background: var(--colors-base-neutral-3);'
-    }
-  }}
-`
+		switch ($color) {
+			case "cyan":
+				return "background: #87e8de;";
+			case "blue":
+				return "background: #91caff;";
+			case "green":
+				return "background: #b7eb8f;";
+			case "orange":
+				return "background: #ffd591;";
+			case "gray":
+				return "background: var(--colors-base-neutral-3);";
+		}
+	}}
+`;
 
 const StyleCheck = styled(Check)`
   color: var(--tab-active-color);
-`
+`;

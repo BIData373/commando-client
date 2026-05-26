@@ -1,210 +1,234 @@
-import styled from '@emotion/styled'
-import { type ColumnDef } from '@tanstack/react-table'
-import { DeadlineType } from '../shared/DeadlineTag'
-import FlagIcon from '../shared/FlagIcon'
-import ImportantFlagTooltip from '../shared/ImportantFlagTooltip'
-import { TrashButton } from '../shared/TrashButton'
-import { Checkbox } from '../ui/checkbox'
-import AssigneeTableCell from './AssigneeTableCell'
-import DeadlineCell from './DeadlineCell'
+import styled from "@emotion/styled";
+import type { ColumnDef } from "@tanstack/react-table";
+import type { DeadlineType } from "../shared/DeadlineTag";
+import FlagIcon from "../shared/FlagIcon";
+import ImportantFlagTooltip from "../shared/ImportantFlagTooltip";
+import { TrashButton } from "../shared/TrashButton";
+import { Checkbox } from "../ui/checkbox";
+import AssigneeTableCell from "./AssigneeTableCell";
+import DeadlineCell from "./DeadlineCell";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 export enum TaskColumnId {
-  Title = 'title',
-  Notes = 'notes',
+	Title = "title",
+	Notes = "notes",
 }
 
 export interface TaskRow {
-  id: number
-  title: string
-  deadlineType: DeadlineType | null
-  dueDate: Date | null
-  assigneeIds: number[]
-  assigneeDetails: Record<number, string>
-  notes: string
-  isImportant: boolean
+	id: number;
+	title: string;
+	deadlineType: DeadlineType | null;
+	dueDate: Date | null;
+	assigneeIds: number[];
+	assigneeDetails: Record<number, string>;
+	notes: string;
+	isImportant: boolean;
 }
 
 export interface TaskTableMeta {
-  updateRow: (id: number, updates: Partial<TaskRow>) => void
-  expandedRows: Set<number>
-  toggleRowExpansion: (id: number) => void
-  deleteRow: (id: number) => void
-  isLastRow: (index: number) => boolean
+	updateRow: (id: number, updates: Partial<TaskRow>) => void;
+	expandedRows: Set<number>;
+	toggleRowExpansion: (id: number) => void;
+	deleteRow: (id: number) => void;
+	isLastRow: (index: number) => boolean;
 }
 
 // ─── Cell Handlers ─────────────────────────────────────────────────────────
 
-const MAX_HEIGHT = 40
+const MAX_HEIGHT = 40;
 
 function handleTextareaChange(
-  e: React.ChangeEvent<HTMLTextAreaElement>,
-  id: number,
-  field: TaskColumnId,
-  updateRow: TaskTableMeta['updateRow'],
+	e: React.ChangeEvent<HTMLTextAreaElement>,
+	id: number,
+	field: TaskColumnId,
+	updateRow: TaskTableMeta["updateRow"],
 ) {
-  const textarea = e.target
-  // Reset height to recalculate scrollHeight, then set to actual content height
-  textarea.style.height = 'auto'
-  textarea.style.height = `${Math.min(textarea.scrollHeight, MAX_HEIGHT)}px`
-  updateRow(id, { [field]: textarea.value })
+	const textarea = e.target;
+	// Reset height to recalculate scrollHeight, then set to actual content height
+	textarea.style.height = "auto";
+	textarea.style.height = `${Math.min(textarea.scrollHeight, MAX_HEIGHT)}px`;
+	updateRow(id, { [field]: textarea.value });
 }
 
 function handleImportantChange(
-  checked: boolean,
-  id: number,
-  updateRow: TaskTableMeta['updateRow'],
+	checked: boolean,
+	id: number,
+	updateRow: TaskTableMeta["updateRow"],
 ) {
-  updateRow(id, { isImportant: checked })
+	updateRow(id, { isImportant: checked });
 }
 
-function handleDelete(id: number, deleteRow: TaskTableMeta['deleteRow']) {
-  deleteRow(id)
+function handleDelete(id: number, deleteRow: TaskTableMeta["deleteRow"]) {
+	deleteRow(id);
 }
 
 function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-  const target = e.target as HTMLElement
-  const row = Number(target.dataset.row)
-  const col = Number(target.dataset.col)
-  if (isNaN(row) || isNaN(col)) return
+	const target = e.target as HTMLElement;
+	const row = Number(target.dataset.row);
+	const col = Number(target.dataset.col);
+	if (isNaN(row) || isNaN(col)) return;
 
-  const container = target.closest('table')
-  if (!container) return
+	const container = target.closest("table");
+	if (!container) return;
 
-  if (e.key === 'Enter') {
-    e.preventDefault()
-    const next = container.querySelector<HTMLElement>(`[data-row="${row + 1}"][data-col="0"]`)
-    next?.focus()
-    return
-  }
+	if (e.key === "Enter") {
+		e.preventDefault();
+		const next = container.querySelector<HTMLElement>(
+			`[data-row="${row + 1}"][data-col="0"]`,
+		);
+		next?.focus();
+		return;
+	}
 
-  if (e.key === 'Tab') {
-    const nextCol = e.shiftKey ? col - 1 : col + 1
-    const next = container.querySelector<HTMLElement>(`[data-row="${row}"][data-col="${nextCol}"]`)
-    if (!next) return
-    e.preventDefault()
-    next.focus()
-  }
+	if (e.key === "Tab") {
+		const nextCol = e.shiftKey ? col - 1 : col + 1;
+		const next = container.querySelector<HTMLElement>(
+			`[data-row="${row}"][data-col="${nextCol}"]`,
+		);
+		if (!next) return;
+		e.preventDefault();
+		next.focus();
+	}
 }
 
 // ─── Columns ────────────────────────────────────────────────────────────────
 
 const columns: ColumnDef<TaskRow>[] = [
-  {
-    id: 'title',
-    size: 655,
-    header: () => (
-      <HeaderLabelGroup>
-        <RequiredMark>*</RequiredMark>
-        <HeaderLabel>הנחיה</HeaderLabel>
-      </HeaderLabelGroup>
-    ),
-    cell: ({ row, table }) => {
-      const { id, title } = row.original
-      const { updateRow } = table.options.meta as TaskTableMeta
-      return (
-        <TextareaCellWrapper>
-          <CellTextarea
-            $color="var(--text-color-2)"
-            data-row={row.index}
-            data-col={0}
-            value={title}
-            onChange={(e) => handleTextareaChange(e, id, TaskColumnId.Title, updateRow)}
-            onKeyDown={handleCellKeyDown}
-            placeholder="הנחיה"
-            rows={1}
-          />
-        </TextareaCellWrapper>
-      )
-    },
-  },
-  {
-    id: 'deadline',
-    size: 138,
-    header: () => <HeaderLabel>{`תג"ב`}</HeaderLabel>,
-    cell: ({ row: { original: { id, dueDate, deadlineType } }, table }) => {
-      const { updateRow } = table.options.meta as TaskTableMeta
-      return (
-        <DeadlineCell
-          deadlineType={deadlineType}
-          dueDate={dueDate}
-          onDeadlineTypeChange={(type) => updateRow(id, { deadlineType: type, dueDate: null })}
-          onDateChange={(date) => updateRow(id, { dueDate: date })}
-        />
-      )
-    },
-  },
-  {
-    id: 'assignee',
-    size: 206,
-    header: () => <HeaderLabel>אחראי</HeaderLabel>,
-    cell: ({ row, table }) => (
-      <AssigneeTableCell
-        row={row.original}
-        meta={table.options.meta as TaskTableMeta}
-      />
-    ),
-  },
-  {
-    id: 'notes',
-    size: 350,
-    header: () => <HeaderLabel>הערות הנחיה</HeaderLabel>,
-    cell: ({ row, table }) => {
-      const { id, notes } = row.original
-      const { updateRow } = table.options.meta as TaskTableMeta
-      return (
-        <TextareaCellWrapper>
-          <CellTextarea
-            data-row={row.index}
-            data-col={1}
-            value={notes}
-            onChange={(e) => handleTextareaChange(e, id, TaskColumnId.Notes, updateRow)}
-            onKeyDown={handleCellKeyDown}
-            placeholder=""
-            rows={1}
-          />
-        </TextareaCellWrapper>
-      )
-    },
-  },
-  {
-    id: 'important',
-    size: 62,
-    header: () => (
-      <HeaderIcons>
-        <FlagIcon />
-        <ImportantFlagTooltip side="top" />
-      </HeaderIcons>
-    ),
-    cell: ({ row: { original: { id, isImportant } }, table }) => {
-      const { updateRow } = table.options.meta as TaskTableMeta
-      return (
-        <CheckboxWrapper>
-          <Checkbox
-            checked={isImportant}
-            onCheckedChange={(checked) => handleImportantChange(checked as boolean, id, updateRow)}
-          />
-        </CheckboxWrapper>
-      )
-    },
-  },
-  {
-    id: 'delete',
-    size: 35,
-    header: () => null,
-    cell: ({ row, table }) => {
-      const { deleteRow, isLastRow } = table.options.meta as TaskTableMeta
+	{
+		id: "title",
+		size: 655,
+		header: () => (
+			<HeaderLabelGroup>
+				<RequiredMark>*</RequiredMark>
+				<HeaderLabel>הנחיה</HeaderLabel>
+			</HeaderLabelGroup>
+		),
+		cell: ({ row, table }) => {
+			const { id, title } = row.original;
+			const { updateRow } = table.options.meta as TaskTableMeta;
+			return (
+				<TextareaCellWrapper>
+					<CellTextarea
+						$color="var(--text-color-2)"
+						data-row={row.index}
+						data-col={0}
+						value={title}
+						onChange={(e) =>
+							handleTextareaChange(e, id, TaskColumnId.Title, updateRow)
+						}
+						onKeyDown={handleCellKeyDown}
+						placeholder="הנחיה"
+						rows={1}
+					/>
+				</TextareaCellWrapper>
+			);
+		},
+	},
+	{
+		id: "deadline",
+		size: 138,
+		header: () => <HeaderLabel>{`תג"ב`}</HeaderLabel>,
+		cell: ({
+			row: {
+				original: { id, dueDate, deadlineType },
+			},
+			table,
+		}) => {
+			const { updateRow } = table.options.meta as TaskTableMeta;
+			return (
+				<DeadlineCell
+					deadlineType={deadlineType}
+					dueDate={dueDate}
+					onDeadlineTypeChange={(type) =>
+						updateRow(id, { deadlineType: type, dueDate: null })
+					}
+					onDateChange={(date) => updateRow(id, { dueDate: date })}
+				/>
+			);
+		},
+	},
+	{
+		id: "assignee",
+		size: 206,
+		header: () => <HeaderLabel>אחראי</HeaderLabel>,
+		cell: ({ row, table }) => (
+			<AssigneeTableCell
+				row={row.original}
+				meta={table.options.meta as TaskTableMeta}
+			/>
+		),
+	},
+	{
+		id: "notes",
+		size: 350,
+		header: () => <HeaderLabel>הערות הנחיה</HeaderLabel>,
+		cell: ({ row, table }) => {
+			const { id, notes } = row.original;
+			const { updateRow } = table.options.meta as TaskTableMeta;
+			return (
+				<TextareaCellWrapper>
+					<CellTextarea
+						data-row={row.index}
+						data-col={1}
+						value={notes}
+						onChange={(e) =>
+							handleTextareaChange(e, id, TaskColumnId.Notes, updateRow)
+						}
+						onKeyDown={handleCellKeyDown}
+						placeholder=""
+						rows={1}
+					/>
+				</TextareaCellWrapper>
+			);
+		},
+	},
+	{
+		id: "important",
+		size: 62,
+		header: () => (
+			<HeaderIcons>
+				<FlagIcon />
+				<ImportantFlagTooltip side="top" />
+			</HeaderIcons>
+		),
+		cell: ({
+			row: {
+				original: { id, isImportant },
+			},
+			table,
+		}) => {
+			const { updateRow } = table.options.meta as TaskTableMeta;
+			return (
+				<CheckboxWrapper>
+					<Checkbox
+						checked={isImportant}
+						onCheckedChange={(checked) =>
+							handleImportantChange(checked as boolean, id, updateRow)
+						}
+					/>
+				</CheckboxWrapper>
+			);
+		},
+	},
+	{
+		id: "delete",
+		size: 35,
+		header: () => null,
+		cell: ({ row, table }) => {
+			const { deleteRow, isLastRow } = table.options.meta as TaskTableMeta;
 
-      return !row.original.title.trim().length || isLastRow(row.index)
-        ? null
-        : (
-          <StyledTrashButton onClick={() => handleDelete(row.original.id, deleteRow)} size={14} />
-        )
-    },
-  },
-]
+			return !row.original.title.trim().length ||
+				isLastRow(row.index) ? null : (
+				<StyledTrashButton
+					onClick={() => handleDelete(row.original.id, deleteRow)}
+					size={14}
+				/>
+			);
+		},
+	},
+];
 
-export default columns
+export default columns;
 
 // ─── Header Elements ────────────────────────────────────────────────────────
 
@@ -214,32 +238,32 @@ const HeaderLabel = styled.span`
   line-height: 24px;
   color: var(--text-color);
   white-space: nowrap;
-`
+`;
 
 const HeaderLabelGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 2px;
-`
+`;
 
 const RequiredMark = styled.span`
   color: var(--Components-Form-Component-labelRequiredMarkColor);
   font-size: 14px;
   line-height: 22px;
-`
+`;
 
 const HeaderIcons = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
   justify-content: center;
-`
+`;
 
 const TextareaCellWrapper = styled.div`
   display: flex;
   align-items: center;
   height: 100%;
-`
+`;
 
 const CellTextarea = styled.textarea<{ $color?: string }>`
   width: 100%;
@@ -247,7 +271,7 @@ const CellTextarea = styled.textarea<{ $color?: string }>`
   font-size: 14px;
   font-weight: 400;
   line-height: 18px;
-  color: ${({ $color }) => $color ?? 'var(--text-color)'};
+  color: ${({ $color }) => $color ?? "var(--text-color)"};
   text-align: right;
   outline: none;
   resize: none;
@@ -257,14 +281,14 @@ const CellTextarea = styled.textarea<{ $color?: string }>`
   &::placeholder {
     color: var(--Text-color-text-placeholder);
   }
-`
+`;
 
 const CheckboxWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-`
+`;
 
 const StyledTrashButton = styled(TrashButton)`
   opacity: 0;
@@ -273,4 +297,4 @@ const StyledTrashButton = styled(TrashButton)`
   tr:hover & {
     opacity: 1;
   }
-`
+`;

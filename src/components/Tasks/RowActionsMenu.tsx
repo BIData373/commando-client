@@ -1,64 +1,71 @@
-import styled from '@emotion/styled'
-import { Archive, CheckCircle2, Pencil, Trash2 } from 'lucide-react'
-import type { ReactNode } from 'react'
+import styled from "@emotion/styled";
+import { Archive, CheckCircle2, Pencil, Trash2 } from "lucide-react";
+import type { ReactNode } from "react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu'
-import { DeletePopover } from './DeletePopover'
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { DeletePopover } from "./DeletePopover";
 
 interface RowActionsMenuProps {
-  trigger: ReactNode
-  onEdit?: () => void
-  onEnterSelect?: () => void
-  onArchive: () => void
-  onDelete?: () => void
+	trigger: ReactNode;
+	onEdit?: () => void;
+	onEnterSelect?: () => void;
+	onArchive: () => void;
+	onDelete?: () => void;
 }
 
-export function RowActionsMenu({ trigger, onEdit, onEnterSelect, onArchive, onDelete }: RowActionsMenuProps) {
-  const hasMoreThanTwo = [onEdit, onEnterSelect, onDelete].filter(Boolean).length >= 2
+export function RowActionsMenu({
+	trigger,
+	onEdit,
+	onEnterSelect,
+	onArchive,
+	onDelete,
+}: RowActionsMenuProps) {
+	const hasMoreThanTwo =
+		[onEdit, onEnterSelect, onDelete].filter(Boolean).length >= 2;
 
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-      <MenuContent align="start" sideOffset={4}>
-        {onEdit && (
-          <MenuItem onSelect={onEdit}>
-            <Pencil size={16} />
-            עריכה
-          </MenuItem>
-        )}
-        {onEnterSelect && (
-          <MenuItem onSelect={onEnterSelect}>
-            <CheckCircle2 size={16} />
-            סמן
-          </MenuItem>
-        )}
-        {hasMoreThanTwo && <MenuSeparator />}
-        <MenuItem onSelect={onArchive}>
-          <Archive size={16} />
-          העבר לארכיון
-        </MenuItem>
-        {onDelete && (
-          <DeletePopover
-            count={1}
-            side="bottom"
-            align="start"
-            onConfirm={onDelete}
-            trigger={
-              <DestructiveMenuItem onSelect={(e) => e.preventDefault()}>
-                <Trash2 size={16} />
-                מחק
-              </DestructiveMenuItem>
-            }
-          />
-        )}
-      </MenuContent>
-    </DropdownMenu>
-  )
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
+			<MenuContent align="start" sideOffset={4}>
+				{onEdit && (
+					<MenuItem onSelect={onEdit}>
+						<Pencil size={16} />
+						עריכה
+					</MenuItem>
+				)}
+				{onEnterSelect && (
+					<MenuItem onSelect={onEnterSelect}>
+						<CheckCircle2 size={16} />
+						סמן
+					</MenuItem>
+				)}
+				{hasMoreThanTwo && <MenuSeparator />}
+				<MenuItem onSelect={onArchive}>
+					<Archive size={16} />
+					העבר לארכיון
+				</MenuItem>
+				{onDelete && (
+					<DeletePopover
+						count={1}
+						side="bottom"
+						align="start"
+						onConfirm={onDelete}
+						trigger={
+							<DestructiveMenuItem onSelect={(e) => e.preventDefault()}>
+								<Trash2 size={16} />
+								מחק
+							</DestructiveMenuItem>
+						}
+					/>
+				)}
+			</MenuContent>
+		</DropdownMenu>
+	);
 }
 
 const MenuContent = styled(DropdownMenuContent)`
@@ -71,7 +78,7 @@ const MenuContent = styled(DropdownMenuContent)`
     0px 6px 16px rgba(0, 0, 0, 0.08),
     0px 3px 6px rgba(0, 0, 0, 0.12),
     0px 9px 28px rgba(0, 0, 0, 0.05);
-`
+`;
 
 const MenuItem = styled(DropdownMenuItem)`
   display: flex;
@@ -93,7 +100,7 @@ const MenuItem = styled(DropdownMenuItem)`
     color: rgba(0, 0, 0, 0.88);
     outline: none;
   }
-`
+`;
 
 const DestructiveMenuItem = styled(MenuItem)`
   color: #ff4d4f;
@@ -103,9 +110,9 @@ const DestructiveMenuItem = styled(MenuItem)`
     background: #fff1f0;
     color: #ff4d4f;
   }
-`
+`;
 
 const MenuSeparator = styled(DropdownMenuSeparator)`
   margin-block: 4px;
   background: rgba(0, 0, 0, 0.06);
-`
+`;
