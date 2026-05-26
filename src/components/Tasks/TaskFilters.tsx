@@ -1,48 +1,37 @@
-import type { ReactNode } from 'react'
-import styled from '@emotion/styled'
-import type { Task } from '../../data/Tasks'
-import { matchesQuickFilter } from '../../functions/filter-utils'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
-import { FilterBar, FilterPill, FilterDivider } from '../shared/FilterBar'
-import type { TaskColumn, TaskColumnMeta } from '../../hooks/useTaskColumns'
 import { QuickFilter } from '#/utils/filterUtils'
+import styled from '@emotion/styled'
+import type { ReactNode } from 'react'
+import { matchesQuickFilter } from '../../functions/filter-utils'
+import type { TaskColumnMeta } from '../../hooks/useTaskColumns'
+import { useTasks } from '../../providers/TasksProvider'
+import { FilterBar, FilterDivider, FilterPill } from '../shared/FilterBar'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 interface TaskFiltersProps {
-  tasks: Task[]
-  activeQuickFilters: Set<QuickFilter>
-  onToggleQuickFilter: (filter: QuickFilter) => void
   onClearAllFilters: () => void
-  searchQuery: string
-  onSearchChange: (value: string) => void
   onExport: () => void
-  columnOrder: TaskColumn[]
-  hiddenColumns: Set<TaskColumn>
-  onColumnOrderChange: (order: TaskColumn[]) => void
-  onToggleColumn: (columnId: TaskColumn) => void
   hasExtraActiveFilters?: boolean
   extraFilters?: ReactNode
   extraColumnsMeta?: TaskColumnMeta[]
 }
 
 function TaskFilters({
-  tasks,
-  activeQuickFilters,
-  onToggleQuickFilter,
   onClearAllFilters,
-  searchQuery,
-  onSearchChange,
   onExport,
-  columnOrder,
-  hiddenColumns,
-  onColumnOrderChange,
-  onToggleColumn,
   hasExtraActiveFilters,
   extraFilters,
   extraColumnsMeta,
 }: TaskFiltersProps) {
+  const {
+    tasks, activeQuickFilters, toggleQuickFilter,
+    searchQuery, setSearchQuery,
+    columnOrder, setColumnOrder,
+    hiddenColumns, toggleColumn,
+  } = useTasks()
+
   const hasActiveFilters = activeQuickFilters.size > 0 || !!hasExtraActiveFilters
 
-  const overdueCount = tasks.filter((t) => matchesQuickFilter(t,QuickFilter.OVERDUE)).length
+  const overdueCount = tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE)).length
   const approachingCount = tasks.filter((t) => matchesQuickFilter(t, QuickFilter.APPROACHING)).length
   const flaggedCount = tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED)).length
 
@@ -51,27 +40,27 @@ function TaskFilters({
       hasActiveFilters={hasActiveFilters}
       onClearAll={onClearAllFilters}
       searchQuery={searchQuery}
-      onSearchChange={onSearchChange}
+      onSearchChange={setSearchQuery}
       onExport={onExport}
       columnOrder={columnOrder}
       hiddenColumns={hiddenColumns}
-      onColumnOrderChange={onColumnOrderChange}
-      onToggleColumn={onToggleColumn}
+      onColumnOrderChange={setColumnOrder}
+      onToggleColumn={toggleColumn}
       extraColumnsMeta={extraColumnsMeta}
     >
-      {extraFilters} 
-      <FilterPill $active={activeQuickFilters.has(QuickFilter.FLAGGED)} onClick={() => onToggleQuickFilter(QuickFilter.FLAGGED)}>
+      {extraFilters}
+      <FilterPill $active={activeQuickFilters.has('flagged')} onClick={() => toggleQuickFilter('flagged')}>
         חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
       </FilterPill>
       <Tooltip>
         <WarningTrigger>
-          <FilterPill $active={activeQuickFilters.has(QuickFilter.APPROACHING)} onClick={() => onToggleQuickFilter(QuickFilter.APPROACHING)}>
+          <FilterPill $active={activeQuickFilters.has('approaching')} onClick={() => toggleQuickFilter('approaching')}>
             תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
           </FilterPill>
         </WarningTrigger>
         <TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
       </Tooltip>
-      <FilterPill $active={activeQuickFilters.has(QuickFilter.OVERDUE)} onClick={() => onToggleQuickFilter(QuickFilter.OVERDUE)}>
+      <FilterPill $active={activeQuickFilters.has('overdue')} onClick={() => toggleQuickFilter('overdue')}>
         חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
       </FilterPill>
       <FilterDivider />
