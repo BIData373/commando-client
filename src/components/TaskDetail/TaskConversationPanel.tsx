@@ -380,7 +380,7 @@ const StyledInput = styled.input`
   outline: none;
 
   &::placeholder {
-    color: rgba(0, 0, 0, 0.25);
+    color: var(--text-color-200);
   }
 
   &:focus {

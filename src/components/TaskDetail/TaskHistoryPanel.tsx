@@ -162,12 +162,12 @@ const CloseBtn = styled.button`
 
   
   &:hover {
-    background: rgba(0, 0, 0, 0.06);
+    background: var(--button-hover);
     color: var(--sea-ink);
   }
   
   &:active {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--button-active);
     color: var(--sea-ink);
   }
 `
@@ -280,7 +280,7 @@ const UserName = styled.span`
 `
 
 const UserSeparetor = styled.span`
-  color: #D9D9D9;
+  color: var(--card-border);
 `
 
 const UserId = styled.span`

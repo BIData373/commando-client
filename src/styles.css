@@ -74,6 +74,10 @@ body,
 
   --card-border: #d9d9d9;
   --background-area: #fafafa;
+  --background-assignee: #fcfcfc;
+  --selected-item: rgba(230, 244, 255, 1);
+  --button-hover: rgba(0, 0, 0, 0.06);
+  --button-active: rgba(0, 0, 0, 0.2);
 
   --default-linear: linear-gradient(135deg, #6866FF 0%, #7604C8 100%);
 
