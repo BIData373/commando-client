@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import { DataTable } from '../ui/data-table'
 import columns, { type TaskRow, type TaskTableMeta } from './TasksColumns'
 import TaskAssigneeExpansion from './TaskAssigneeExpansion'
+import { DATA_CELL_ACTIVE_KEY } from './DeadlineCell'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -226,10 +227,13 @@ const TableOuterContainer = styled.div`
     }
 
     &:focus-within:not(:last-of-type) {
+    &:focus-within,
+    &:has([${DATA_CELL_ACTIVE_KEY}="true"]) {
       outline: 1px solid var(--button-color-hover);
       outline-offset: -2px;
     }
   }
+}
 `
 
 // ─── Footer ─────────────────────────────────────────────────────────────────
