@@ -60,7 +60,8 @@ body,
   --sidebar-accent-foreground: oklch(0.20 0 0);
   --sidebar-border: oklch(0.92 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-
+  
+  --Components-Form-Component-labelRequiredMarkColor: #FF4D4F;
   --Background-color-bg-text-active: rgba(0, 0, 0, 0.15);
   --Components-Dropdown-Global-colorTextDescription: rgba(0, 0, 0, 0.45);
   --Components-Dropdown-Global-controlItemBgHover: rgba(0, 0, 0, 0.04);
