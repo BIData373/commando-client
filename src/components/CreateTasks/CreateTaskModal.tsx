@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import { useRef, useState } from 'react'
 import type { FormState } from '../../data/CreateTaskForm'
-import { INITIAL_FORM } from '../../data/CreateTaskForm'
+import { INITIAL_FORM, buildFormFromTask } from '../../data/CreateTaskForm'
 import { CancelButton } from '../shared/CancelButton'
 import FlagIcon from '../shared/FlagIcon'
 import { PrimaryButton } from '../shared/PrimaryButton'
@@ -17,16 +17,22 @@ import NotesField from './NotesField'
 import type { DiscussionSource } from './SourceField'
 import { useSaveTasks } from '../../hooks/useSaveTasks'
 import { DeadlineType } from '../shared/DeadlineTag'
+import type { DirectiveStatus } from '../shared/StatusTag'
 import { formatDate, parseDate } from '../../functions/date-utils'
+import type { Task } from '../../data/Tasks'
 
 // ─── Component ───────────────────────────────────────────────────────────────
 interface CreateTaskModalProps {
+  task?: Task
   onClose: () => void
 }
 
-function CreateTaskModal({ onClose }: CreateTaskModalProps) {
-  const saveTasks = useSaveTasks()
-  const [form, setForm] = useState<FormState>(INITIAL_FORM)
+function CreateTaskModal({ task, onClose }: CreateTaskModalProps) {
+  const isEditMode = !!task
+  const { saveTasks, editTask } = useSaveTasks()
+  const [form, setForm] = useState<FormState>(() =>
+    task ? buildFormFromTask(task) : INITIAL_FORM,
+  )
   const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }))
 
@@ -54,21 +60,28 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
         ? prev.selectedAssignees.filter((a) => a !== id)
         : [...prev.selectedAssignees, id]
       const nextDetails = { ...prev.assigneeDetails }
+      const nextStatuses = { ...prev.assigneeStatuses }
       if (isRemoving) {
         delete nextDetails[id]
+        delete nextStatuses[id]
+      } else if (isEditMode) {
+        nextStatuses[id] = 'not_started'
       }
-      return { ...prev, selectedAssignees: nextAssignees, assigneeDetails: nextDetails }
+      return { ...prev, selectedAssignees: nextAssignees, assigneeDetails: nextDetails, assigneeStatuses: nextStatuses }
     })
   }
 
   function handleRemoveAssignee(id: number) {
     setForm((prev) => {
       const nextDetails = { ...prev.assigneeDetails }
+      const nextStatuses = { ...prev.assigneeStatuses }
       delete nextDetails[id]
+      delete nextStatuses[id]
       return {
         ...prev,
         selectedAssignees: prev.selectedAssignees.filter((a) => a !== id),
         assigneeDetails: nextDetails,
+        assigneeStatuses: nextStatuses,
       }
     })
   }
@@ -77,6 +90,13 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
     setForm((prev) => ({
       ...prev,
       assigneeDetails: { ...prev.assigneeDetails, [id]: value },
+    }))
+  }
+
+  function handleAssigneeStatusChange(id: number, status: DirectiveStatus) {
+    setForm((prev) => ({
+      ...prev,
+      assigneeStatuses: { ...prev.assigneeStatuses, [id]: status },
     }))
   }
 
@@ -130,23 +150,46 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
   }
 
   function handleSave() {
-    saveTasks(
-      [{
-        title: form.title,
-        assigneeIds: form.selectedAssignees,
-        assigneeDetails: form.assigneeDetails,
-        deadlineType: form.deadlineType,
-        dueDate: form.dueDate,
-        isImportant: form.isImportant,
-        notes: form.notes,
-      }],
-      {
-        discussionName: form.source.trim(),
-        discussionDate: form.sourceDate ? formatDate(form.sourceDate) : '',
-        hasAttachment: form.linkedSource?.hasAttachment ?? false,
-        tags: form.topics,
-      },
-    )
+    if (isEditMode) {
+      editTask(
+        task.id,
+        {
+          title: form.title,
+          assigneeIds: form.selectedAssignees,
+          assigneeDetails: form.assigneeDetails,
+          assigneeStatuses: form.assigneeStatuses,
+          deadlineType: form.deadlineType,
+          dueDate: form.dueDate,
+          isImportant: form.isImportant,
+          notes: form.notes,
+          originalStatus: task.status,
+        },
+        {
+          discussionName: form.source.trim(),
+          discussionDate: form.sourceDate ? formatDate(form.sourceDate) : '',
+          hasAttachment: form.linkedSource?.hasAttachment ?? false,
+          tags: form.topics,
+        },
+      )
+    } else {
+      saveTasks(
+        [{
+          title: form.title,
+          assigneeIds: form.selectedAssignees,
+          assigneeDetails: form.assigneeDetails,
+          deadlineType: form.deadlineType,
+          dueDate: form.dueDate,
+          isImportant: form.isImportant,
+          notes: form.notes,
+        }],
+        {
+          discussionName: form.source.trim(),
+          discussionDate: form.sourceDate ? formatDate(form.sourceDate) : '',
+          hasAttachment: form.linkedSource?.hasAttachment ?? false,
+          tags: form.topics,
+        },
+      )
+    }
     onClose()
   }
 
@@ -184,7 +227,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
           <ModalBody>
             <ModalHeader $shadow={scrollShadow.top}>
-              <ModalTitle>יצירת הנחיה</ModalTitle>
+              <ModalTitle>{isEditMode ? 'עריכת הנחיה' : 'יצירת הנחיה'}</ModalTitle>
             </ModalHeader>
 
             <ScrollableContent ref={scrollRef} onScroll={handleScroll}>
@@ -215,9 +258,12 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
                 <AssigneeField
                   selectedAssignees={form.selectedAssignees}
                   directiveTitle={form.title}
+                  assigneeDetails={isEditMode ? form.assigneeDetails : undefined}
+                  assigneeStatuses={isEditMode ? form.assigneeStatuses : undefined}
                   onToggle={handleAssigneeToggle}
                   onRemove={handleRemoveAssignee}
                   onDetailChange={handleAssigneeDetailChange}
+                  onStatusChange={isEditMode ? handleAssigneeStatusChange : undefined}
                 />
 
                 {/* ─── Important Checkbox ──────────────────────────────────── */}

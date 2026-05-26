@@ -7,6 +7,7 @@ export type NewTaskInput = Omit<Task, 'id' | 'createdAt' | 'updatedAt'> & { grou
 interface TasksContextValue {
   tasks: Task[]
   addTasks: (inputs: NewTaskInput[]) => void
+  updateTask: (taskId: number, updates: Partial<Omit<Task, 'id' | 'createdAt'>>) => void
   updateTaskStatus: (taskId: number, status: DirectiveStatus) => void
   removeTasks: (taskIds: number[]) => void
   bulkUpdateStatus: (taskIds: number[], status: DirectiveStatus) => void
@@ -44,6 +45,14 @@ export function TasksProvider({ children }: TasksProviderProps) {
       })
       return [...newTasks, ...prev]
     })
+  }
+
+  function updateTask(taskId: number, updates: Partial<Omit<Task, 'id' | 'createdAt'>>) {
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === taskId ? { ...t, ...updates, updatedAt: new Date() } : t,
+      ),
+    )
   }
 
   function updateTaskStatus(taskId: number, status: DirectiveStatus) {
@@ -93,7 +102,7 @@ export function TasksProvider({ children }: TasksProviderProps) {
   }
 
   return (
-    <TasksContext.Provider value={{ tasks, addTasks, updateTaskStatus, removeTasks, bulkUpdateStatus }}>
+    <TasksContext.Provider value={{ tasks, addTasks, updateTask, updateTaskStatus, removeTasks, bulkUpdateStatus }}>
       {children}
     </TasksContext.Provider>
   )

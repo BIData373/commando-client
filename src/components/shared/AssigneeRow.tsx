@@ -3,6 +3,8 @@ import styled from '@emotion/styled'
 import { X } from 'lucide-react'
 import { MOCK_ASSIGNEES } from '../../data/Assignees'
 import type { AvatarColor } from '../Tasks/ResponsibleCell'
+import type { DirectiveStatus } from '../shared/StatusTag'
+import { StatusDropdown } from '../shared/StatusDropdown'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -10,10 +12,12 @@ interface AssigneeRowListProps {
   assigneeIds: number[]
   directiveTitle: string
   assigneeDetails?: Record<number, string>
+  assigneeStatuses?: Record<number, DirectiveStatus>
   showDetail?: boolean
   detailPlaceholder?: string
   onDetailChange: (id: number, value: string) => void
   onRemove: (id: number) => void
+  onStatusChange?: (id: number, status: DirectiveStatus) => void
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -22,10 +26,12 @@ function AssigneeRowList({
   assigneeIds,
   directiveTitle,
   assigneeDetails,
+  assigneeStatuses,
   showDetail = true,
   detailPlaceholder = 'פירוט לאחראי',
   onDetailChange,
   onRemove,
+  onStatusChange,
 }: AssigneeRowListProps) {
   const detailRefs = useRef<Record<number, HTMLSpanElement | null>>({})
 
@@ -81,6 +87,13 @@ function AssigneeRowList({
                   data-placeholder={detailPlaceholder}
                 />
               </TextareaWrapper>
+            )}
+
+            {assigneeStatuses && onStatusChange && (
+              <StatusDropdown
+                status={assigneeStatuses[assignee.id] ?? 'not_started'}
+                onStatusChange={(s: DirectiveStatus) => onStatusChange(assignee.id, s)}
+              />
             )}
 
             <InfoBlock>
@@ -236,3 +249,4 @@ const AvatarCircle = styled.div<{ $color: AvatarColor }>`
     }
   }}
 `
+

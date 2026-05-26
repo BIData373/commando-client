@@ -40,7 +40,7 @@ const INITIAL_FORM: DiscussionFormState = {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
-  const saveTasks = useSaveTasks()
+  const { saveTasks } = useSaveTasks()
   const [form, setForm] = useState<DiscussionFormState>(INITIAL_FORM)
   const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
   const setField = <K extends keyof DiscussionFormState>(key: K, value: DiscussionFormState[K]) =>

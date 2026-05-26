@@ -2,15 +2,19 @@ import styled from '@emotion/styled'
 import { ChevronDown } from 'lucide-react'
 import AssigneeRowList from '../shared/AssigneeRow'
 import AssigneePicker from '../shared/AssigneePicker'
+import type { DirectiveStatus } from '../shared/StatusTag'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface AssigneeFieldProps {
   selectedAssignees: number[]
   directiveTitle: string
+  assigneeDetails?: Record<number, string>
+  assigneeStatuses?: Record<number, DirectiveStatus>
   onToggle: (id: number) => void
   onRemove: (id: number) => void
   onDetailChange: (id: number, value: string) => void
+  onStatusChange?: (id: number, status: DirectiveStatus) => void
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -18,9 +22,12 @@ interface AssigneeFieldProps {
 function AssigneeField({
   selectedAssignees,
   directiveTitle,
+  assigneeDetails,
+  assigneeStatuses,
   onToggle,
   onRemove,
   onDetailChange,
+  onStatusChange,
 }: AssigneeFieldProps) {
 
   return (
@@ -55,18 +62,16 @@ function AssigneeField({
           <AssigneeRowList
             assigneeIds={selectedAssignees}
             directiveTitle={directiveTitle}
+            assigneeDetails={assigneeDetails}
+            assigneeStatuses={assigneeStatuses}
             showDetail={selectedAssignees.length > 1}
             detailPlaceholder="פירוט נוסף לאחראי"
             onDetailChange={onDetailChange}
             onRemove={onRemove}
+            onStatusChange={onStatusChange}
           />
         )}
       </AssigneeSection>
-
-      {/* <CreateAssigneeDialog
-        open={isCreateAssigneeOpen}
-        onOpenChange={setIsCreateAssigneeOpen}
-      /> */}
     </>
   )
 }
