@@ -1,34 +1,27 @@
-import styled from "@emotion/styled"
+import { Fragment } from 'react'
+import styled from '@emotion/styled'
 import {
-	type ColumnDef,
-	type ColumnFiltersState,
-	flexRender,
-	getCoreRowModel,
-	getFilteredRowModel,
-	getSortedRowModel,
-	type OnChangeFn,
-	type Row,
-	type RowData,
-	type RowSelectionState,
-	type SortingState,
-	type TableMeta,
-	useReactTable,
-} from "@tanstack/react-table"
-import { Fragment } from "react"
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type ColumnDef,
+  type ColumnFiltersState,
+  type OnChangeFn,
+  type Row,
+  type RowData,
+  type RowSelectionState,
+  type SortingState,
+  type TableMeta,
+} from '@tanstack/react-table'
 
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "./table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
 
-declare module "@tanstack/react-table" {
-	interface ColumnMeta<TData extends RowData, TValue> {
-		grow?: boolean
-	}
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    grow?: boolean
+  }
 }
 
 interface DataTableProps<TData> {
@@ -72,58 +65,55 @@ export function DataTable<TData>({
   containerClassName,
   showHeader = true,
 }: DataTableProps<TData>) {
-	const table = useReactTable({
-		data,
-		columns,
-		getCoreRowModel: getCoreRowModel(),
-		getFilteredRowModel: getFilteredRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-		state: {
-			...(rowSelection !== undefined && { rowSelection }),
-			...(columnFilters !== undefined && { columnFilters }),
-			...(sorting !== undefined && { sorting }),
-		},
-		onRowSelectionChange,
-		onColumnFiltersChange,
-		onSortingChange,
-		getRowId,
-		meta,
-	})
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      ...(rowSelection !== undefined && { rowSelection }),
+      ...(columnFilters !== undefined && { columnFilters }),
+      ...(sorting !== undefined && { sorting }),
+    },
+    onRowSelectionChange,
+    onColumnFiltersChange,
+    onSortingChange,
+    getRowId,
+    meta,
+  })
 
-	const allColumns = table.getAllColumns()
-	const fixedTotal = allColumns.reduce((sum, col) => {
-		const grow = col.columnDef.meta?.grow
-		return grow ? sum : sum + (col.columnDef.size ?? 0)
-	}, 0)
+  const allColumns = table.getAllColumns()
+  const fixedTotal = allColumns.reduce((sum, col) => {
+    const grow = col.columnDef.meta?.grow
+    return grow ? sum : sum + (col.columnDef.size ?? 0)
+  }, 0)
 
-	const colgroup = (
-		<colgroup>
-			{allColumns.map((column) => {
-				const grow = column.columnDef.meta?.grow
-				const size = column.columnDef.size
+  const colgroup = (
+    <colgroup>
+      {allColumns.map((column) => {
+        const grow = column.columnDef.meta?.grow
+        const size = column.columnDef.size
 
-				return grow && size !== undefined ? (
-					<col
-						key={column.id}
-						style={{
-							width: `calc(100% - ${fixedTotal}px)`,
-							minWidth: `${size}px`,
-						}}
-					/>
-				) : (
-					<col
-						key={column.id}
-						style={size !== undefined ? { width: `${size}px` } : undefined}
-					/>
-				)
-			})}
-		</colgroup>
-	)
+      return grow && size !== undefined ? (
+            <col
+              key={column.id}
+              style={{ width: `calc(100% - ${fixedTotal}px)`, minWidth: `${size}px` }}
+            />
+          ) : (
+          <col
+            key={column.id}
+            style={size !== undefined ? { width: `${size}px` } : undefined}
+          />
+        )
+      })}
+    </colgroup>
+  )
 
-	const rows = table.getRowModel().rows.map((row) => ({
-		row,
-		expansionContent: renderRowExpansion?.(row),
-	}))
+  const rows = table.getRowModel().rows.map((row) => ({
+    row,
+    expansionContent: renderRowExpansion?.(row),
+  }))
 
   return (
     <Table containerClassName={containerClassName}>
