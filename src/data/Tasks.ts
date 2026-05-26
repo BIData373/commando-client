@@ -1,8 +1,7 @@
 import { DirectiveStatus } from '#/utils/statusUtils'
 import type { Assignee, RelatedDirective } from '../components/Tasks/ResponsibleCell'
 import { MOCK_ASSIGNEES } from './Assignees'
-
-type DeadlineType = 'date' | 'immediate' | 'ongoing'
+import { DeadlineType } from '../components/shared/DeadlineTag'
 
 export interface Task {
   id: number
@@ -39,7 +38,7 @@ export const INITIAL_TASKS: Task[] = [
       { user: MOCK_ASSIGNEES[8], status: DirectiveStatus.IN_PROGRESS },
       { user: MOCK_ASSIGNEES[8], status: DirectiveStatus.IN_PROGRESS },
     ],
-    deadlineType: 'ongoing',
+    deadlineType: DeadlineType.Ongoing,
     dueDate: new Date('2026-12-03'),
     isOverdue: false,
     discussionName: 'ישיבת מפקדים',
@@ -58,7 +57,7 @@ export const INITIAL_TASKS: Task[] = [
     status: DirectiveStatus.IN_PROGRESS,
     responsible: MOCK_ASSIGNEES[2],
     relatedDirectives: [],
-    deadlineType: 'date',
+    deadlineType: DeadlineType.Date,
     dueDate: new Date('2026-03-30'),
     isOverdue: false,
     discussionName: 'ישיבת מפקדים',
@@ -80,7 +79,7 @@ export const INITIAL_TASKS: Task[] = [
     relatedDirectives: [
       { user: MOCK_ASSIGNEES[4], status: DirectiveStatus.NOT_STARTED },
     ],
-    deadlineType: 'immediate',
+    deadlineType: DeadlineType.Immediate,
     dueDate: null,
     isOverdue: false,
     discussionName: 'ישיבת פיקוד',
@@ -99,7 +98,7 @@ export const INITIAL_TASKS: Task[] = [
     status: DirectiveStatus.COMPLETED,
     responsible: MOCK_ASSIGNEES[5],
     relatedDirectives: [],
-    deadlineType: 'date',
+    deadlineType: DeadlineType.Date,
     dueDate: new Date('2026-03-19'),
     isOverdue: true,
     discussionName: 'דיון שבועי',
@@ -122,7 +121,7 @@ export const INITIAL_TASKS: Task[] = [
       { user: MOCK_ASSIGNEES[8], status: DirectiveStatus.IN_PROGRESS },
       { user: MOCK_ASSIGNEES[9], status: DirectiveStatus.NOT_STARTED },
     ],
-    deadlineType: 'ongoing',
+    deadlineType: DeadlineType.Ongoing,
     dueDate: new Date('2026-12-01'),
     isOverdue: false,
     discussionName: 'ישיבת מפקדים',
@@ -141,7 +140,7 @@ export const INITIAL_TASKS: Task[] = [
     status: DirectiveStatus.NOT_STARTED,
     responsible: null,
     relatedDirectives: [],
-    deadlineType: 'date',
+    deadlineType: DeadlineType.Date,
     dueDate: new Date('2026-03-18'),
     isOverdue: true,
     discussionName: 'בדיקה שוטפת',

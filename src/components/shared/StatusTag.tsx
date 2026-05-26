@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
-import { type DirectiveStatus, statusColors } from '#/utils/statusUtils'
+import { DirectiveStatus, statusColors } from '#/utils/statusUtils'
 
 export const STATUS_LABELS: Record<DirectiveStatus, string> = {
-  not_started: 'טרם בוצע',
-  in_progress: 'בעבודה',
-  completed: 'בוצע',
+  [DirectiveStatus.NOT_STARTED]: 'טרם בוצע',
+  [DirectiveStatus.IN_PROGRESS]: 'בעבודה',
+  [DirectiveStatus.COMPLETED]: 'בוצע',
 }
 
 interface StatusTagProps {

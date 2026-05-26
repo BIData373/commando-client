@@ -1,16 +1,9 @@
 import { differenceInDays, startOfToday } from 'date-fns'
 import { QuickFilter } from '#/utils/filterUtils'
 import type { Task } from '../data/Tasks'
-
+import { STATUS_LABELS } from '../components/shared/StatusTag'
+import { DEADLINE_LABELS } from '../components/shared/DeadlineTag'
 // ─── Shared Types ────────────────────────────────────────────────────────────
-
-export type DeadlineType = 'date' | 'immediate' | 'ongoing'
-
-export const DEADLINE_LABELS: Record<DeadlineType, string> = {
-  date: 'תאריך',
-  immediate: 'מיידי',
-  ongoing: 'שוטף',
-}
 
 export interface FilterOption {
   value: string
@@ -60,7 +53,35 @@ function applyAllFilters(
   return result
 }
 
+function buildFilterOptionsMap(tasks: Task[]): Record<string, FilterOption[]> {
+  const statusSet = new Set<string>()
+  const responsibleSet = new Set<string>()
+  const deadlineTypeSet = new Set<string>()
+  const discussionNameSet = new Set<string>()
+  const tagsSet = new Set<string>()
+
+  for (const t of tasks) {
+    statusSet.add(t.status)
+    if (t.responsible) responsibleSet.add(t.responsible.name)
+    deadlineTypeSet.add(t.deadlineType)
+    if (t.discussionName) discussionNameSet.add(t.discussionName)
+    t.tags.forEach((tag) => tagsSet.add(tag))
+  }
+
+  const toOptions = (set: Set<string>, labelMap?: Record<string, string>): FilterOption[] =>
+    [...set].map((v) => ({ value: v, label: labelMap?.[v] ?? v }))
+
+  return {
+    status: toOptions(statusSet, STATUS_LABELS),
+    responsible: toOptions(responsibleSet),
+    deadlineType: toOptions(deadlineTypeSet, DEADLINE_LABELS),
+    discussionName: toOptions(discussionNameSet),
+    tags: toOptions(tagsSet),
+  }
+}
+
 export {
   matchesQuickFilter,
   applyAllFilters,
+  buildFilterOptionsMap,
 }

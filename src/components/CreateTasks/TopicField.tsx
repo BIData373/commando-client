@@ -188,7 +188,7 @@ const TopicInputBox = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
-  min-height: 40px;
+  height: 40px;
   padding-inline: 11px;
   background: white;
   border: 1px solid #d9d9d9;

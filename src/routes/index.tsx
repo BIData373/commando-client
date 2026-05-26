@@ -67,7 +67,7 @@ function RouteComponent() {
   const navigate = useNavigate()
 
   function handlePersonalClick() {
-    navigate({ to: '/personal' })
+    navigate({ to: '/personal', search: { view: 'TABLE' } })
   }
 
   function handleWorkspaceClick(urlName: string) {
