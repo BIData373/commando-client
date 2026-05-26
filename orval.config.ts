@@ -11,7 +11,10 @@ export default defineConfig({
       mode: 'tags-split',
       target: 'src/api/',
       client: 'react-query',
-      mock: false,
+      mock: {
+        indexMockFiles: true,
+        type: 'msw'
+      },
       httpClient: 'axios',
       namingConvention: 'kebab-case',
       formatter: 'biome',
