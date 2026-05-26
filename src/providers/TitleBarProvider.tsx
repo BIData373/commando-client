@@ -37,9 +37,8 @@ export function useTitleBarActions() {
 export function useTitleBar(renderActions: () => ReactNode, deps: unknown[]) {
 	const { setActions } = useTitleBarActions();
 
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useLayoutEffect(() => {
 		setActions(renderActions());
 		return () => setActions(null);
-	}, [setActions, ...deps, renderActions]);
+	}, [setActions, ...deps]);
 }
