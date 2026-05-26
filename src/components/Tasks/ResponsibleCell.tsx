@@ -105,7 +105,7 @@ const CellRoot = styled.div`
 `
 
 // ─── Avatar ───────────────────────────────────────────────────────────────────
-
+//TO-DO
 const AvatarCircle = styled.button<{ $color: AvatarColor }>`
   display: inline-flex;
   align-items: center;
@@ -127,7 +127,7 @@ const AvatarCircle = styled.button<{ $color: AvatarColor }>`
       case 'blue': return 'background: #91caff;'
       case 'green': return 'background: #b7eb8f;'
       case 'orange': return 'background: #ffd591;'
-      case 'gray': return 'background: #F5F5F5;'
+      case 'gray': return 'background: var(--colors-base-neutral-3);'
     }
   }}
 `

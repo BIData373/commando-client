@@ -19,26 +19,9 @@ import { Columns3 } from 'lucide-react'
 import { useState } from 'react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { SortableColumnItem } from './SortableColumnItem'
-import type { Task } from '#/data/Tasks'
+import { TASK_COLUMNS_META, type TaskColumn, type TaskColumnMeta } from '../../hooks/useTaskColumns'
 
-export type TaskColumn = keyof Task
-
-export interface ColumnConfig {
-  id: TaskColumn
-  label: string
-}
-
-export const CONFIGURABLE_COLUMNS: ColumnConfig[] = [
-  { id: 'title', label: 'שם הנחיה' },
-  { id: 'status', label: 'סטטוס' },
-  { id: 'responsible', label: 'אחראי' },
-  { id: 'deadlineType', label: 'תג"ב' },
-  { id: 'discussionName', label: 'מקור' },
-  { id: 'tags', label: 'נושא' },
-  { id: 'notes', label: 'הערות' },
-  { id: 'updatedAt', label: 'עודכן ב' },
-  { id: 'createdAt', label: 'תאריך יצירה' },
-]
+export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter((c) => c.id !== 'id')
 
 export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id)
 
@@ -47,6 +30,7 @@ interface ColumnVisibilityDropdownProps {
   hiddenColumns: Set<TaskColumn>
   onColumnOrderChange: (order: TaskColumn[]) => void
   onToggleColumn: (columnId: TaskColumn) => void
+  extraColumnsMeta?: TaskColumnMeta[]
 }
 
 function ColumnVisibilityDropdown({
@@ -54,8 +38,13 @@ function ColumnVisibilityDropdown({
   hiddenColumns,
   onColumnOrderChange,
   onToggleColumn,
+  extraColumnsMeta,
 }: ColumnVisibilityDropdownProps) {
   const [open, setOpen] = useState(false)
+
+  const allColumns = extraColumnsMeta
+    ? [...CONFIGURABLE_COLUMNS, ...extraColumnsMeta]
+    : CONFIGURABLE_COLUMNS
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -71,9 +60,9 @@ function ColumnVisibilityDropdown({
     }
   }
 
-  const orderedColumns = columnOrder.map(
-    (id) => CONFIGURABLE_COLUMNS.find((c) => c.id === id)!,
-  )
+  const orderedColumns = columnOrder
+    .map((id) => allColumns.find((c) => c.id === id))
+    .filter((c) => c != null)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

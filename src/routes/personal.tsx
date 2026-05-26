@@ -1,16 +1,23 @@
 import { createFileRoute } from '@tanstack/react-router'
+import PersonalTasksLayout from '../components/Personal/PersonalTasksLayout'
+import type { View } from '../components/Tasks/TasksLayout'
 
 export const Route = createFileRoute('/personal')({
-  component: Personal,
+  component: PersonalPage,
+  validateSearch: (search: Record<string, unknown>): { view: View } => ({
+    view: search.view === 'CARDS' ? 'CARDS' : 'TABLE',
+  }),
   staticData: {
     header: {
-      title: 'אזור אישי',
+      title: 'הנחיות שקיבלתי',
       navigation: false,
       user: true
     }
   }
 })
 
-function Personal() {
-  return <div>Personal</div>
+function PersonalPage() {
+  const { view } = Route.useSearch()
+
+  return <PersonalTasksLayout view={view} urlName="" />
 }
