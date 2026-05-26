@@ -14,6 +14,7 @@ body,
 
 *::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 *::-webkit-scrollbar-track {
@@ -27,16 +28,15 @@ body,
 }
 
 :root {
-  --z-dropdown: 1000;
-
+  --z-dropdown: 10;
   --background: oklch(1.00 0 0);
   --foreground: oklch(0.14 0 0);
   --card: oklch(1.00 0 0);
   --card-foreground: oklch(0.14 0 0);
   --popover: oklch(1.00 0 0);
   --popover-foreground: oklch(0.14 0 0);
-  --primary: oklch(0.60 0.22 277.98);
-  --primary-foreground: oklch(0.98 0.01 264.61);
+  --primary: oklch(59.95% 0.22 277.99);
+  --primary-foreground: oklch(97.58% 0.01 264.67);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.20 0 0);
   --muted: oklch(0.97 0 0);
@@ -61,6 +61,8 @@ body,
   --sidebar-border: oklch(0.92 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
+  --Background-color-bg-text-active: rgba(0, 0, 0, 0.15);
+
   --text-color: rgba(0, 0, 0, 0.65);
   --text-color-2: rgba(0, 0, 0, 0.88);
   --card-background: rgba(0, 0, 0, 0.02);
@@ -71,8 +73,29 @@ body,
 
   --card-border: #d9d9d9;
   --background-area: #fafafa;
+  
+  --default-linear: linear-gradient(135deg, #6866FF 0%, #7604C8 100%);
+
+  --colors-base-neutral-3: oklch(97.02% 0 271.15);
+  --Colors-Base-Volcano-1: oklch(96.86% 0.02 60.01);
+  --Colors-Base-Volcano-6: oklch(66.76% 0.21 36.89);
+  --Colors-Base-Geekblue-1: oklch(96.93% 0.02 264.56);
+  --Colors-Base-Geekblue-6: oklch(52.19% 0.23 266.86);
+  --Colors-Base-Green-1: oklch(98.84% 0.03 128.91);
+  --Colors-Base-Green-6: oklch(72.56% 0.22 138.51);
+
+  --Colors-Base-Red-1: oklch(96.89% 0.02 22.01);
+  --Colors-Base-Red-3: oklch(80.61% 0.11 23.14);
+  --Colors-Base-Red-6: oklch(62.1% 0.24 26.06);
+
+  --Colors-Base-Blue-1: oklch(96% 0.02 241.5);
+  --Colors-Base-Blue-3: oklch(80.61% 0.11 241.5);
+  --Colors-Base-Blue-6: oklch(52.19% 0.23 241.5);
+
+  --Colors-Brand-Warning-colorWarningText: oklch(80.16% 0.17 76);
+
   --button-color-hover: #4096FF;
-  --gradient: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
+  --default-linear: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
   --text-subtitle-color: #8C8C8C;
   --tab-active-color: #1677ff;
 
@@ -91,7 +114,7 @@ body,
   --shadow-lg: 0 1px 3px 0px oklch(0.00 0 0 / 0.10), 0 4px 6px -1px oklch(0.00 0 0 / 0.10);
   --shadow-xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.10), 0 8px 10px -1px oklch(0.00 0 0 / 0.10);
   --shadow-2xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.25);
-
+  --shadow-inset: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .dark {

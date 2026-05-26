@@ -1,32 +1,31 @@
 import styled from '@emotion/styled'
 import { ChevronDown, ChevronUp, X } from 'lucide-react'
-import { Dialog as DialogPrimitive, Tooltip as TooltipPrimitive } from 'radix-ui'
 import { useRef, useState } from 'react'
-import { MOCK_ASSIGNEES } from '../../data/Assignees'
 import type { FormState } from '../../data/CreateTaskForm'
 import { INITIAL_FORM } from '../../data/CreateTaskForm'
-import { useTasks } from '../../providers/TasksProvider'
 import { CancelButton } from '../shared/CancelButton'
 import FlagIcon from '../shared/FlagIcon'
 import { PrimaryButton } from '../shared/PrimaryButton'
 import { Checkbox } from '../ui/checkbox'
-import { Tooltip, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
-import type { DeadlineType } from '../../functions/filter-utils'
 import AssigneeField from './AssigneeField'
+import { Dialog as DialogPrimitive } from 'radix-ui'
+import ImportantFlagTooltip from '../shared/ImportantFlagTooltip'
 import DeadlineField from './DeadlineField'
-import NotesField from './NotesField'
-import type { DiscussionSource } from './SourceField'
 import SourceField from './SourceField'
 import TopicField from './TopicField'
+import NotesField from './NotesField'
+import type { DiscussionSource } from './SourceField'
+import { useSaveTasks } from '../../hooks/useSaveTasks'
+import { DeadlineType } from '../shared/DeadlineTag'
+import { formatDate, parseDate } from '../../functions/date-utils'
 
 // ─── Component ───────────────────────────────────────────────────────────────
-
 interface CreateTaskModalProps {
   onClose: () => void
 }
 
 function CreateTaskModal({ onClose }: CreateTaskModalProps) {
-  const { addTasks } = useTasks()
+  const saveTasks = useSaveTasks()
   const [form, setForm] = useState<FormState>(INITIAL_FORM)
   const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -39,7 +38,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
   function handleDeadlineTypeChange(type: DeadlineType) {
     setField('deadlineType', type)
-    if (type === 'immediate') {
+    if (type === DeadlineType.Immediate) {
       setField('dueDate', null)
     }
   }
@@ -92,7 +91,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
         return {
           ...prev,
           source: discussion.name,
-          sourceDate: discussion.date,
+          sourceDate: parseDate(discussion.date),
           topics: mergedTopics,
           linkedSource: discussion,
         }
@@ -103,7 +102,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
       return {
         ...prev,
         source: name,
-        sourceDate: '',
+        sourceDate: null,
         topics: topicsWithoutPrevSource,
         linkedSource: null,
       }
@@ -112,10 +111,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
   function handleSourceDateSelect(date: Date | undefined) {
     if (date) {
-      const day = date.getDate().toString().padStart(2, '0')
-      const month = (date.getMonth() + 1).toString().padStart(2, '0')
-      const year = date.getFullYear().toString().padStart(2, '0')
-      setField('sourceDate', `${day}/${month}/${year}`)
+      setField('sourceDate', date)
     }
   }
 
@@ -134,46 +130,23 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
   }
 
   function handleSave() {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const isOverdue =
-      form.deadlineType === 'date' && form.dueDate ? form.dueDate < today : false
-
-    const baseTitle = form.title.trim()
-    const sharedFields = {
-      flagged: form.isImportant,
-      status: 'not_started' as const,
-      deadlineType: form.deadlineType,
-      dueDate: form.deadlineType === 'immediate' ? null : form.dueDate,
-      isOverdue,
-      discussionName: form.source.trim(),
-      discussionDate: form.sourceDate,
-      hasAttachment: form.linkedSource?.hasAttachment ?? false,
-      attachmentUrl: null,
-      tags: form.topics,
-      notes: form.notes,
-    }
-
-    if (form.selectedAssignees.length === 0) {
-      addTasks([{ ...sharedFields, title: baseTitle, details: undefined, responsible: null, relatedDirectives: [] }])
-      onClose()
-      return
-    }
-
-    const groupAssignees = form.selectedAssignees.flatMap((id) => {
-      const user = MOCK_ASSIGNEES[id]
-      return user ? [user] : []
-    })
-
-    const newTasks = groupAssignees.map((responsible) => {
-      const perAssigneeDetail = form.assigneeDetails[responsible.id]?.trim() || undefined
-      const relatedDirectives = groupAssignees
-        .filter((u) => u.id !== responsible.id)
-        .map((user) => ({ user, status: 'not_started' as const }))
-      return { ...sharedFields, title: baseTitle, details: perAssigneeDetail, responsible, relatedDirectives }
-    })
-
-    addTasks(newTasks)
+    saveTasks(
+      [{
+        title: form.title,
+        assigneeIds: form.selectedAssignees,
+        assigneeDetails: form.assigneeDetails,
+        deadlineType: form.deadlineType,
+        dueDate: form.dueDate,
+        isImportant: form.isImportant,
+        notes: form.notes,
+      }],
+      {
+        discussionName: form.source.trim(),
+        discussionDate: form.sourceDate ? formatDate(form.sourceDate) : '',
+        hasAttachment: form.linkedSource?.hasAttachment ?? false,
+        tags: form.topics,
+      },
+    )
     onClose()
   }
 
@@ -249,21 +222,8 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
                 {/* ─── Important Checkbox ──────────────────────────────────── */}
                 <ImportantRow>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <FlagIconWrapper>
-                          <FlagIcon />
-                        </FlagIconWrapper>
-                      </TooltipTrigger>
-                      <TooltipPrimitive.Portal>
-                        <ImportantTooltipContent side="left" sideOffset={8}>
-                          הנחיה חשובה תופיע עם סימון של דגל
-                          <FlagIcon />
-                        </ImportantTooltipContent>
-                      </TooltipPrimitive.Portal>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ImportantFlagTooltip side="left" />
+                  <FlagIcon/>
                   <CheckboxRow>
                     <CheckboxLabelText>הגדר כהנחיה חשובה</CheckboxLabelText>
                     <Checkbox
@@ -386,6 +346,7 @@ const ModalCloseButton = styled.button`
   background: transparent;
   cursor: pointer;
   color: rgba(0, 0, 0, 0.45);
+  outline: none;
 
   &:hover {
     color: rgba(0, 0, 0, 0.88);
@@ -434,7 +395,6 @@ const FormContainer = styled.div`
 `
 
 const ModalTitle = styled.h1`
-  font-family: 'Assistant', sans-serif;
   font-weight: 600;
   font-size: 42px;
   line-height: 50px;
@@ -521,38 +481,6 @@ const CheckboxLabelText = styled.span`
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;
   cursor: pointer;
-`
-
-const FlagIconWrapper = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: rgba(0, 0, 0, 0.45);
-  padding: 0;
-
-  &:hover {
-    color: rgba(0, 0, 0, 0.88);
-  }
-`
-
-const ImportantTooltipContent = styled(TooltipPrimitive.Content)`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 12px;
-  background: white;
-  border-radius: 8px;
-  font-size: 14px;
-  line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
-  white-space: nowrap;
-  box-shadow:
-    0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px rgba(0, 0, 0, 0.12),
-    0px 9px 28px rgba(0, 0, 0, 0.05);
 `
 
 // ─── Divider ─────────────────────────────────────────────────────────────────
