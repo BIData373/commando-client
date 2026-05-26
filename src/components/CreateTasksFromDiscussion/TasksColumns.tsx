@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import { type ColumnDef } from '@tanstack/react-table'
-import { Checkbox } from '../ui/checkbox'
-import { TrashButton } from '../shared/TrashButton'
 import { DeadlineType } from '../shared/DeadlineTag'
 import FlagIcon from '../shared/FlagIcon'
 import ImportantFlagTooltip from '../shared/ImportantFlagTooltip'
-import DeadlineCell from './DeadlineCell'
+import { TrashButton } from '../shared/TrashButton'
+import { Checkbox } from '../ui/checkbox'
 import AssigneeTableCell from './AssigneeTableCell'
+import DeadlineCell from './DeadlineCell'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 export enum TaskColumnId {
@@ -195,11 +195,11 @@ const columns: ColumnDef<TaskRow>[] = [
     cell: ({ row, table }) => {
       const { deleteRow, isLastRow } = table.options.meta as TaskTableMeta
 
-      if (!row.original.title.trim().length || isLastRow(row.index)) return null
-
-      return (
-        <StyledTrashButton onClick={() => handleDelete(row.original.id, deleteRow)} size={14} />
-      )
+      return !row.original.title.trim().length || isLastRow(row.index)
+        ? null
+        : (
+          <StyledTrashButton onClick={() => handleDelete(row.original.id, deleteRow)} size={14} />
+        )
     },
   },
 ]
