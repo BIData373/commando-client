@@ -11,14 +11,15 @@ import type { DirectiveStatus } from './StatusTag'
 interface StatusDropdownProps {
   status: DirectiveStatus
   onStatusChange: (status: DirectiveStatus) => void
+  showChevron?: boolean
 }
 
-export function StatusDropdown({ status, onStatusChange }: StatusDropdownProps) {
+export function StatusDropdown({ status, onStatusChange, showChevron }: StatusDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <TriggerWrapper tabIndex={0}>
-          <StatusTag status={status} interactive />
+          <StatusTag status={status} interactive showChevron={showChevron} />
         </TriggerWrapper>
       </DropdownMenuTrigger>
       <MenuContent align="center" sideOffset={6}>

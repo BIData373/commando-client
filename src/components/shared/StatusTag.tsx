@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import { ChevronDown } from 'lucide-react'
 
 export type DirectiveStatus = 'not_started' | 'in_progress' | 'completed'
 
@@ -21,11 +22,13 @@ export function getStatusStyle(status: DirectiveStatus) {
 interface StatusTagProps {
   status: DirectiveStatus
   interactive?: boolean
+  showChevron?: boolean
 }
 
-export function StatusTag({ status, interactive }: StatusTagProps) {
+export function StatusTag({ status, interactive, showChevron }: StatusTagProps) {
   return (
     <Tag $status={status} $interactive={interactive}>
+      {showChevron && <StyledChevron size={12} />}
       {STATUS_LABELS[status]}
     </Tag>
   )
@@ -35,7 +38,8 @@ const Tag = styled.span<{ $status: DirectiveStatus; $interactive?: boolean }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 72px;
+  width: 76px;
+  gap: 2px;
   padding: 1px 8px;
   border-radius: 999px;
   font-size: 12px;
@@ -53,4 +57,8 @@ const Tag = styled.span<{ $status: DirectiveStatus; $interactive?: boolean }>`
   :focus-visible {
     outline: none;
   }
+`
+
+const StyledChevron = styled(ChevronDown)`
+  color: var(--Components-Dropdown-Global-colorTextDescription);
 `

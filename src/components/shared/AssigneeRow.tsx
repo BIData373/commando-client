@@ -93,6 +93,7 @@ function AssigneeRowList({
               <StatusDropdown
                 status={assigneeStatuses[assignee.id] ?? 'not_started'}
                 onStatusChange={(s: DirectiveStatus) => onStatusChange(assignee.id, s)}
+                showChevron
               />
             )}
 
