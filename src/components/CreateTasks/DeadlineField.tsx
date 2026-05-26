@@ -207,4 +207,5 @@ const DatePickerText = styled.span<{ $hasValue: boolean }>`
 const DatePopoverContent = styled(PopoverContent)`
   width: auto;
   padding: 0;
+  z-index: var(--z-dropdown);
 `;
