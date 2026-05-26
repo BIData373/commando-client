@@ -8,15 +8,12 @@ import {
   DropdownMenuItem,
 } from '../ui/dropdown-menu'
 import { TooltipProvider } from '../ui/tooltip'
-import { type DirectiveStatus } from '../shared/StatusTag'
 import { NoResultsFound } from './NoResultsFound'
-import { TaskFilters, type QuickFilter } from './TaskFilters'
+import { TaskFilters } from './TaskFilters'
 import { TaskTable } from './TaskTable'
-import { DEFAULT_COLUMN_ORDER } from './ColumnVisibilityDropdown'
 import { TaskCardGrid } from './TaskCardGrid'
 import { exportTasksToExcel } from '../../functions/export-excel'
 import { applyAllFilters } from '../../functions/filter-utils'
-import type { TaskColumn } from '../../hooks/useTaskColumns'
 import { useTitleBar } from '../../providers/TitleBarProvider'
 import { useMemo, useState } from 'react'
 import { useTasks } from '../../providers/TasksProvider'
@@ -31,66 +28,33 @@ export interface TasksLayoutProps {
 
 function TasksLayout({ view, urlName }: TasksLayoutProps) {
   const navigate = useNavigate()
-  const { tasks, updateTaskStatus, removeTasks, bulkUpdateStatus } = useTasks()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set())
+  const {
+    tasks, activeQuickFilters, clearQuickFilters,
+    searchQuery, columnOrder, hiddenColumns,
+    filteredTasks: baseFilteredTasks,
+  } = useTasks()
   const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(new Set())
-  const [columnOrder, setColumnOrder] = useState<TaskColumn[]>(['id' as TaskColumn, ...DEFAULT_COLUMN_ORDER])
-  const [hiddenColumns, setHiddenColumns] = useState<Set<TaskColumn>>(new Set<TaskColumn>(['notes', 'updatedAt'] as TaskColumn[]))
-  function handleToggleColumn(columnId: TaskColumn) {
-    setHiddenColumns((prev) => {
-      const next = new Set(prev)
-      if (next.has(columnId)) {
-        next.delete(columnId)
-      } else {
-        next.add(columnId)
-      }
-      return next
-    })
-  }
-
-  function toggleQuickFilter(filter: QuickFilter) {
-    setActiveQuickFilters((prev) => {
-      const next = new Set(prev)
-      if (next.has(filter)) {
-        next.delete(filter)
-      } else {
-        next.add(filter)
-      }
-      return next
-    })
-  }
 
   function clearAllFilters() {
-    setActiveQuickFilters(new Set())
+    clearQuickFilters()
     setActiveTopicFilters(new Set())
   }
 
   const allTopics = [...new Set(tasks.flatMap((t) => t.tags))]
 
   const filteredTasks = useMemo(
-    () => applyAllFilters(tasks, activeQuickFilters, activeTopicFilters, searchQuery),
-    [tasks, searchQuery, activeQuickFilters, activeTopicFilters],
+    () => activeTopicFilters.size > 0
+      ? applyAllFilters(tasks, activeQuickFilters, activeTopicFilters, searchQuery)
+      : baseFilteredTasks,
+    [tasks, searchQuery, activeQuickFilters, activeTopicFilters, baseFilteredTasks],
   )
 
   function handleEdit(taskId: number) {
     navigate({ to: '/workspace/$urlName/tasks/$taskId', params: { urlName, taskId: String(taskId) }, search: { view } })
   }
 
-  function handleArchive(taskIds: number[]) {
-    removeTasks(taskIds)
-  }
-
-  function handleDelete(taskIds: number[]) {
-    removeTasks(taskIds)
-  }
-
   function handleExport() {
     exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns })
-  }
-
-  function handleBulkChangeStatus(taskIds: number[], status: DirectiveStatus) {
-    bulkUpdateStatus(taskIds, status)
   }
 
   function handleCreateTaskFromDiscussion() {
@@ -149,17 +113,8 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
     <TooltipProvider>
       <TasksRoot>
         <TaskFilters
-          tasks={tasks}
-          activeQuickFilters={activeQuickFilters}
-          onToggleQuickFilter={toggleQuickFilter}
           onClearAllFilters={clearAllFilters}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
           onExport={handleExport}
-          columnOrder={columnOrder}
-          hiddenColumns={hiddenColumns}
-          onColumnOrderChange={setColumnOrder}
-          onToggleColumn={handleToggleColumn}
           hasExtraActiveFilters={activeTopicFilters.size > 0}
           extraFilters={<MultiSelectFilterDropdown
             label="נושא"
@@ -177,14 +132,7 @@ function TasksLayout({ view, urlName }: TasksLayoutProps) {
         ) : view === 'TABLE' ? (
           <TaskTable
             tasks={filteredTasks}
-            searchQuery={searchQuery}
-            columnOrder={columnOrder}
-            hiddenColumns={hiddenColumns}
-            onUpdateStatus={updateTaskStatus}
             onEdit={handleEdit}
-            onArchive={handleArchive}
-            onDelete={handleDelete}
-            onBulkChangeStatus={handleBulkChangeStatus}
           />
         ) : (
           <TaskCardGrid tasks={filteredTasks} />

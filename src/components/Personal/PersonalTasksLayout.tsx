@@ -6,18 +6,17 @@ import { MetricsBar } from './MetricsBar'
 import { TaskTable } from '../Tasks/TaskTable'
 import { ColumnHeaderWithActions } from '../Tasks/ColumnHeaderWithActions'
 import { MultiSelectFilterDropdown } from '../shared/MultiSelectFilterDropdown'
-import { TaskFilters, type QuickFilter } from '../Tasks/TaskFilters'
+import { TaskFilters } from '../Tasks/TaskFilters'
 import { NoResultsFound } from '../Tasks/NoResultsFound'
 import { useTitleBar } from '../../providers/TitleBarProvider'
 import { PERSONAL_TASKS, type PersonalTask, type Workspace } from '../../data/PersonalTasks'
-import { applyAllFilters } from '../../functions/filter-utils'
-import type { DirectiveStatus } from '../shared/StatusTag'
 import { isThisWeek } from 'date-fns'
 import type { TasksLayoutProps, View } from '../Tasks/TasksLayout'
 import type { Task } from '../../data/Tasks'
 import type { TaskColumn } from '../../hooks/useTaskColumns'
+import { useTasks } from '../../providers/TasksProvider'
 
-const PERSONAL_DEFAULT_COLUMN_ORDER: (TaskColumn | string)[] = [
+const PERSONAL_DEFAULT_COLUMN_ORDER: TaskColumn[] = [
   'title',
   'status',
   'responsible',
@@ -28,9 +27,9 @@ const PERSONAL_DEFAULT_COLUMN_ORDER: (TaskColumn | string)[] = [
   'workspace',
   'createdAt',
   'updatedAt',
-]
+] as TaskColumn[]
 
-const PERSONAL_DEFAULT_HIDDEN = new Set<TaskColumn>(['tags', 'notes', 'updatedAt'])
+const PERSONAL_DEFAULT_HIDDEN = new Set<TaskColumn>(['tags', 'notes', 'updatedAt'] as TaskColumn[])
 
 const WORKSPACE_COLUMN: ColumnDef<Task> = {
   id: 'workspace',
@@ -55,17 +54,22 @@ const WORKSPACE_COLUMN: ColumnDef<Task> = {
 
 const EXTRA_COLUMNS: Record<string, ColumnDef<Task>> = { workspace: WORKSPACE_COLUMN }
 
+export const PERSONAL_PROVIDER_CONFIG = {
+  initialTasks: PERSONAL_TASKS as Task[],
+  defaultColumnOrder: PERSONAL_DEFAULT_COLUMN_ORDER,
+  defaultHiddenColumns: PERSONAL_DEFAULT_HIDDEN,
+}
+
 function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
-  const [tasks, setTasks] = useState<PersonalTask[]>(PERSONAL_TASKS)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeQuickFilters, setActiveQuickFilters] = useState<Set<QuickFilter>>(new Set())
+  const {
+    tasks, clearQuickFilters,
+    searchQuery, filteredTasks: baseFilteredTasks,
+  } = useTasks()
   const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<Set<number>>(new Set())
-  const [columnOrder, setColumnOrder] = useState<TaskColumn[]>(['id' as TaskColumn, ...PERSONAL_DEFAULT_COLUMN_ORDER] as TaskColumn[])
-  const [hiddenColumns, setHiddenColumns] = useState<Set<TaskColumn>>(new Set(PERSONAL_DEFAULT_HIDDEN) as Set<TaskColumn>)
 
   const workspaces = useMemo(() => {
     const map = new Map<number, Workspace>()
-    tasks.forEach((t) => map.set(t.workspace.id, t.workspace))
+    ;(tasks as PersonalTask[]).forEach((t) => map.set(t.workspace.id, t.workspace))
     return [...map.values()]
   }, [tasks])
 
@@ -74,71 +78,27 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
   const inProgressCount = tasks.filter((t) => t.status === 'in_progress').length
   const weeklyNew = tasks.filter((t) => isThisWeek(t.createdAt, { weekStartsOn: 0 })).length
 
-  function handleToggleColumn(columnId: TaskColumn) {
-    setHiddenColumns((prev) => {
-      const next = new Set(prev)
-      if (next.has(columnId)) {
-        next.delete(columnId)
-      } else {
-        next.add(columnId)
-      }
-      return next
-    })
-  }
-
-  function toggleQuickFilter(filter: QuickFilter) {
-    setActiveQuickFilters((prev) => {
-      const next = new Set(prev)
-      if (next.has(filter)) {
-        next.delete(filter)
-      } else {
-        next.add(filter)
-      }
-      return next
-    })
-  }
-
   function clearAllFilters() {
-    setActiveQuickFilters(new Set())
+    clearQuickFilters()
     setActiveWorkspaceFilters(new Set())
   }
 
   const filteredTasks = useMemo(() => {
-    let result = applyAllFilters(tasks, activeQuickFilters, new Set(), searchQuery) as PersonalTask[]
+    let result = baseFilteredTasks as PersonalTask[]
 
     if (activeWorkspaceFilters.size > 0) {
       result = result.filter((t) => activeWorkspaceFilters.has(t.workspace.id))
     }
 
     return result
-  }, [tasks, searchQuery, activeQuickFilters, activeWorkspaceFilters])
-
-  function handleUpdateStatus(taskId: number, status: DirectiveStatus) {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, status, updatedAt: new Date() } : t)),
-    )
-  }
-
-  function handleBulkChangeStatus(taskIds: number[], status: DirectiveStatus) {
-    setTasks((prev) =>
-      prev.map((t) => (taskIds.includes(t.id) ? { ...t, status, updatedAt: new Date() } : t)),
-    )
-  }
-
-  function handleArchive(taskIds: number[]) {
-    setTasks((prev) => prev.filter((t) => !taskIds.includes(t.id)))
-  }
-
-  function handleDelete(taskIds: number[]) {
-    setTasks((prev) => prev.filter((t) => !taskIds.includes(t.id)))
-  }
+  }, [baseFilteredTasks, activeWorkspaceFilters])
 
   function handleExport() {
     // placeholder for export
   }
-  
+
   function handleViewChange(newView: View) {
-    return newView;
+    return newView
     // placeholder for view change
   }
 
@@ -173,17 +133,8 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
         />
 
         <TaskFilters
-          tasks={tasks}
-          activeQuickFilters={activeQuickFilters}
-          onToggleQuickFilter={toggleQuickFilter}
           onClearAllFilters={clearAllFilters}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
           onExport={handleExport}
-          columnOrder={columnOrder}
-          hiddenColumns={hiddenColumns}
-          onColumnOrderChange={setColumnOrder}
-          onToggleColumn={handleToggleColumn}
           hasExtraActiveFilters={activeWorkspaceFilters.size > 0}
           extraColumnsMeta={[{ id: 'workspace' as TaskColumn, label: 'מפקד מנחה' }]}
           extraFilters={
@@ -208,13 +159,6 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
         ) : (
           <TaskTable
             tasks={filteredTasks as Task[]}
-            searchQuery={searchQuery}
-            columnOrder={columnOrder}
-            hiddenColumns={hiddenColumns}
-            onUpdateStatus={handleUpdateStatus}
-            onBulkChangeStatus={handleBulkChangeStatus}
-            onArchive={handleArchive}
-            onDelete={handleDelete}
             extraColumns={EXTRA_COLUMNS}
           />
         )}
