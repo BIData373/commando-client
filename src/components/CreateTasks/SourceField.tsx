@@ -3,6 +3,7 @@ import { formatDate } from '../../functions/date-utils'
 import styled from '@emotion/styled'
 import { ChevronDown, Paperclip, Calendar as CalendarIcon } from 'lucide-react'
 import DatePicker, { CalendarMode } from '../shared/DatePicker'
+import type { DatePickerValue } from '../shared/DatePicker'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 
@@ -83,7 +84,8 @@ function SourceField({
     handleCreateNew()
   }
 
-  function handleDateSelect(date: Date | undefined) {
+  function handleDateSelect(value: DatePickerValue | undefined) {
+    const date = value instanceof Date ? value : undefined
     onDateSelect(date)
     setIsDateOpen(false)
   }
