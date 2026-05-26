@@ -41,7 +41,7 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
       <CollapsedAssigneeLabel>{assigneeIds.length} אחראים</CollapsedAssigneeLabel>
     </CollapsedAssigneeButton>
   ) : (
-    <AssigneeCellOuter $highlighted={hasMultiple && isExpanded}>
+    <AssigneeCellOuter>
       <AssigneePicker
         selectedAssignees={assigneeIds}
         onToggle={handleToggleAssignee}
@@ -85,14 +85,10 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 
 export default AssigneeTableCell
 
-const AssigneeCellOuter = styled.div<{ $highlighted: boolean }>`
+const AssigneeCellOuter = styled.div`
   display: flex;
   align-items: center;
   height: 100%;
-  margin: 0 -12px;
-  padding: 0 12px;
-  ${({ $highlighted }) =>
-    $highlighted ? 'outline: 1px solid var(--button-color-hover); outline-offset: -1px;' : ''}
 `
 
 const CollapsedAssigneeButton = styled.button`
@@ -129,14 +125,14 @@ const CompactTriggerButton = styled.button`
 `
 
 const CompactChevron = styled(ChevronDown)`
-  color: rgba(0, 0, 0, 0.25);
+  color: var(--Text-color-text-placeholder);
   flex-shrink: 0;
 `
 
 const CompactLabel = styled.span`
   font-size: 14px;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.25);
+  color: var(--Text-color-text-placeholder);
   white-space: nowrap;
   text-align: end;
 `

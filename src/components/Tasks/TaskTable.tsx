@@ -4,39 +4,29 @@ import { useMemo, useState } from 'react'
 import { DataTable } from '../ui/data-table'
 import { BulkActionsBar } from './BulkActionsBar'
 import type { Task } from '../../data/Tasks'
-import type { DirectiveStatus } from '../shared/StatusTag'
 import { useTaskColumns, type TaskColumn } from '../../hooks/useTaskColumns'
 import { buildFilterOptionsMap } from '../../functions/filter-utils'
+import { useTasks } from '../../providers/TasksProvider'
 
 interface TaskTableProps {
   tasks: Task[]
-  searchQuery: string
-  columnOrder: TaskColumn[]
-  hiddenColumns: Set<TaskColumn>
-  onUpdateStatus: (taskId: number, status: DirectiveStatus) => void
   onEdit?: (taskId: number) => void
   onDoubleClick?: (taskId: number) => void
-  onArchive: (taskIds: number[]) => void
-  onDelete: (taskIds: number[]) => void
-  onBulkChangeStatus: (taskIds: number[], status: DirectiveStatus) => void
   extraColumns?: Record<string, ColumnDef<Task>>
   showHeader?: boolean
 }
 
 function TaskTable({
   tasks,
-  searchQuery,
-  columnOrder,
-  hiddenColumns,
-  onUpdateStatus,
-  onEdit = () => {},
+  onEdit = () => { },
   onDoubleClick,
-  onArchive,
-  onDelete,
-  onBulkChangeStatus,
   extraColumns,
   showHeader = true,
 }: TaskTableProps) {
+  const {
+    searchQuery, columnOrder, hiddenColumns,
+    updateTaskStatus, removeTasks, bulkUpdateStatus,
+  } = useTasks()
   const [selectMode, setSelectMode] = useState(false)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -77,7 +67,7 @@ function TaskTable({
     visibleColumns,
     searchQuery,
     filterOptionsMap,
-    onUpdateStatus,
+    onUpdateStatus: updateTaskStatus,
     selectMode: {
       enabled: selectMode,
       tasks,
@@ -87,8 +77,8 @@ function TaskTable({
     actions: {
       onEdit,
       onDoubleClick,
-      onArchive,
-      onDelete,
+      onArchive: removeTasks,
+      onDelete: removeTasks,
       onEnterSelectMode: handleEnterSelectMode,
     },
   })
@@ -134,13 +124,13 @@ function TaskTable({
       {selectMode && (
         <BulkActionsBar
           selectedCount={selectedTaskIds.length}
-          onChangeStatus={(status) => onBulkChangeStatus(selectedTaskIds, status)}
+          onChangeStatus={(status) => bulkUpdateStatus(selectedTaskIds, status)}
           onArchive={() => {
-            onArchive(selectedTaskIds)
+            removeTasks(selectedTaskIds)
             handleExitSelectMode()
           }}
           onDelete={() => {
-            onDelete(selectedTaskIds)
+            removeTasks(selectedTaskIds)
             handleExitSelectMode()
           }}
           onExitSelect={handleExitSelectMode}
