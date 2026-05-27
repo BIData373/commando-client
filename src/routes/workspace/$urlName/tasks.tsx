@@ -5,24 +5,25 @@ import { DeadlineType } from "../../../components/shared/DeadlineTag";
 import TasksLayout, { type View } from "../../../components/Tasks/TasksLayout";
 import { TasksProvider } from "../../../providers/TasksProvider";
 
+function parseArrayParam<T>(value: unknown, validValues: readonly T[]): T[] {
+	const arr = Array.isArray(value) ? value : value != null ? [value] : [];
+	return arr.filter((v): v is T => (validValues as unknown[]).includes(v));
+}
+
 export const Route = createFileRoute("/workspace/$urlName/tasks")({
 	component: TasksPage,
 	validateSearch: (
 		search: Record<string, unknown>,
 	): {
 		view: View;
-		tabFilter?: QuickFilter;
-		statusFilter?: DirectiveStatus;
-		deadlineTypeFilter?: DeadlineType;
+		tabFilter: QuickFilter[];
+		statusFilter: DirectiveStatus[];
+		deadlineTypeFilter: DeadlineType[];
 	} => ({
 		view: search.view === "CARDS" ? "CARDS" : "TABLE",
-		tabFilter: Object.values(QuickFilter).find((v) => v === search.tabFilter),
-		statusFilter: Object.values(DirectiveStatus).find(
-			(v) => v === search.statusFilter,
-		),
-		deadlineTypeFilter: Object.values(DeadlineType).find(
-			(v) => v === search.deadlineTypeFilter,
-		),
+		tabFilter: parseArrayParam(search.tabFilter, Object.values(QuickFilter)),
+		statusFilter: parseArrayParam(search.statusFilter, Object.values(DirectiveStatus)),
+		deadlineTypeFilter: parseArrayParam(search.deadlineTypeFilter, Object.values(DeadlineType)),
 	}),
 	staticData: {
 		header: {
