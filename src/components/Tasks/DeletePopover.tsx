@@ -1,14 +1,16 @@
 import styled from "@emotion/styled";
 import { CircleAlert } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import type { ReactNode } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface DeletePopoverProps {
 	count: number;
-	trigger: ReactNode;
-	side?: "top" | "bottom";
+	trigger?: ReactNode;
+	side?: "top" | "bottom" | "left" | "right";
 	align?: "center" | "start" | "end";
 	onConfirm: () => void;
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
 }
 
 export function DeletePopover({
@@ -17,21 +19,27 @@ export function DeletePopover({
 	side = "top",
 	align = "center",
 	onConfirm,
+	open,
+	onOpenChange,
 }: DeletePopoverProps) {
-	const [open, setOpen] = useState(false);
+	function handleCancel() {
+		onOpenChange(false);
+	}
 
 	function handleConfirm() {
-		setOpen(false);
+		onOpenChange(false);
 		onConfirm();
 	}
 
 	return (
-		<Popover open={open} onOpenChange={setOpen}>
+		<Popover open={open}>
 			<PopoverTrigger asChild>{trigger}</PopoverTrigger>
 			<Content side={side} sideOffset={12} align={align}>
 				<Head>
 					<TextWrapper>
-						<Title>מחיקת {count} הנחיות</Title>
+						<Title>
+							{count === 1 ? "מחיקת הנחיה" : `מחיקת ${count} הנחיות`}
+						</Title>
 						<Description>.שים לב לא ניתן לבטל פעולה זו</Description>
 					</TextWrapper>
 					<IconWrapper>
@@ -39,8 +47,10 @@ export function DeletePopover({
 					</IconWrapper>
 				</Head>
 				<Actions>
-					<DeleteButton onClick={handleConfirm}>מחק הנחיות</DeleteButton>
-					<CancelButton onClick={() => setOpen(false)}>ביטול</CancelButton>
+					<DeleteButton onClick={handleConfirm}>
+						{count === 1 ? "מחק הנחיה" : "מחק הנחיות"}
+					</DeleteButton>
+					<CancelButton onClick={handleCancel}>ביטול</CancelButton>
 				</Actions>
 			</Content>
 		</Popover>
@@ -55,12 +65,9 @@ const Content = styled(PopoverContent)`
   gap: 8px;
   padding: 12px;
   border-radius: 4px;
-  background: white;
+  background: var(--background);
   z-index: 1000;
-  box-shadow:
-    0px 6px 16px 0px rgba(0, 0, 0, 0.08),
-    0px 3px 6px -4px rgba(0, 0, 0, 0.12),
-    0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--card-shadow-hover);
 `;
 
 const Head = styled.div`
@@ -82,21 +89,21 @@ const Title = styled.p`
   font-size: 16px;
   font-weight: 600;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
 `;
 
 const Description = styled.p`
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
 `;
 
 const IconWrapper = styled.div`
   display: flex;
   align-items: center;
   padding-block: 2px;
-  color: #faad14;
+  color: var(--Warning-color-warning);
   flex-shrink: 0;
 `;
 
@@ -114,16 +121,16 @@ const DeleteButton = styled.button`
   padding-inline: 8px;
   border: none;
   border-radius: 2px;
-  background: #ff4d4f;
+  background: var(--Components-Form-Component-labelRequiredMarkColor);
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: white;
+  color: var(--background);
   cursor: pointer;
   white-space: nowrap;
 
   &:hover {
-    background: #ff7875;
+    background: var(--Components-Form-Component-labelRequiredMarkColor);
   }
 `;
 
@@ -133,18 +140,18 @@ const CancelButton = styled.button`
   justify-content: center;
   height: 24px;
   padding-inline: 8px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--card-border);
   border-radius: 2px;
-  background: white;
+  background: var(--background);
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   cursor: pointer;
   white-space: nowrap;
 
   &:hover {
-    border-color: #4096ff;
-    color: #4096ff;
+    border-color: var(--button-color-hover);
+    color: var(--button-color-hover);
   }
 `;
