@@ -3,17 +3,20 @@ import { useNavigate } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 import type { QuickFilter } from "src/utils/filterUtils";
 import type { DirectiveStatus } from "src/utils/statusUtils";
+import type { DeadlineType } from "../shared/DeadlineTag";
 
 interface IViewInstruction {
 	urlName: string;
 	tabFilter?: QuickFilter;
 	statusFilter?: DirectiveStatus;
+	deadlineTypeFilter?: DeadlineType;
 }
 
 export const ViewMoreInstructions = ({
 	urlName,
 	tabFilter,
 	statusFilter,
+	deadlineTypeFilter,
 }: IViewInstruction) => {
 	const navigate = useNavigate();
 
@@ -21,7 +24,7 @@ export const ViewMoreInstructions = ({
 		navigate({
 			to: "/workspace/$urlName/tasks",
 			params: { urlName },
-			search: { view: "TABLE", tabFilter, statusFilter },
+			search: { view: "TABLE", tabFilter, statusFilter, deadlineTypeFilter },
 		});
 	}
 

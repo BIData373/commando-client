@@ -7,6 +7,7 @@ import {
 import { useMemo, useState } from "react";
 import { matchesQuickFilter } from "src/functions/filter-utils";
 import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filterUtils";
+import { DeadlineType } from "../shared/DeadlineTag";
 import searchInstruction from "../../assets/icons/searchInstruction.svg";
 import type { Task } from "../../data/Tasks";
 import { useTaskColumns } from "../../hooks/useTaskColumns";
@@ -157,7 +158,11 @@ export default function FocusedInstructions({
 					)}
 				</ContentPanel>
 			</TabsWrapper>
-			<ViewMoreInstructions urlName={urlName} tabFilter={activeTab} />
+			<ViewMoreInstructions
+				urlName={urlName}
+				tabFilter={activeTab === FocusedTab.APPROACHING ? undefined : activeTab}
+				deadlineTypeFilter={activeTab === FocusedTab.APPROACHING ? DeadlineType.Immediate : undefined}
+			/>
 		</Section>
 	);
 }
