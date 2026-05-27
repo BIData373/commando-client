@@ -2,16 +2,15 @@ import styled from "@emotion/styled";
 import { useParams } from "@tanstack/react-router";
 import { type IUser, UserRole } from "src/types";
 import { useWorkspaceSettings } from "../../hooks/useWorkspaceSettings";
-import type { DirectiveStatus } from "../shared/StatusTag";
 import type { RelatedDirective } from "../Tasks/ResponsibleCell";
 import { AssigneeContainer } from "./AssigneeContainer";
+import type { DirectiveStatus } from "src/utils/statusUtils";
 
 interface AssigneeSectionProps {
 	currentUser: IUser;
 	status: DirectiveStatus;
 	relatedDirectives: RelatedDirective[];
 	onDirectiveStatusChange: (
-		assigneeId: number,
 		status: DirectiveStatus,
 	) => void;
 }

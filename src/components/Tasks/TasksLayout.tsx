@@ -46,6 +46,13 @@ function TasksLayout({
 		hiddenColumns,
 		filteredTasks: baseFilteredTasks,
 	} = useTasks();
+
+	const tabFilterSet = new Set<QuickFilter>(tabFilter ? [tabFilter] : []);
+	const quickTabFilter = new Set<QuickFilter>([
+		...activeQuickFilters,
+		...tabFilterSet,
+	]);
+
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
 	);
@@ -59,21 +66,15 @@ function TasksLayout({
 
 	const filteredTasks = useMemo(
 		() =>
-			activeTopicFilters.size > 0
+			quickTabFilter.size > 0 || activeTopicFilters.size > 0
 				? applyAllFilters(
-						tasks,
-						activeQuickFilters,
-						activeTopicFilters,
-						searchQuery,
-					)
+					tasks,
+					quickTabFilter,
+					activeTopicFilters,
+					searchQuery,
+				)
 				: baseFilteredTasks,
-		[
-			tasks,
-			searchQuery,
-			activeQuickFilters,
-			activeTopicFilters,
-			baseFilteredTasks,
-		],
+		[tasks, searchQuery, quickTabFilter, activeTopicFilters, baseFilteredTasks],
 	);
 	function handleEdit(taskId: number) {
 		navigate({
@@ -157,6 +158,7 @@ function TasksLayout({
 				<TaskFilters
 					onClearAllFilters={clearAllFilters}
 					onExport={handleExport}
+					tabFilter={tabFilter}
 					hasExtraActiveFilters={activeTopicFilters.size > 0}
 					extraFilters={
 						<MultiSelectFilterDropdown

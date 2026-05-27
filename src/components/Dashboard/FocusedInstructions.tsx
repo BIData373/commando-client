@@ -56,11 +56,11 @@ const coreRowModel = getCoreRowModel();
 function getFilteredTasks(tab: FocusedTab, tasks: Task[]): Task[] {
 	switch (tab) {
 		case FocusedTab.FLAGGED:
-			return tasks.filter((t) => t.flagged);
+			return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED));
 		case FocusedTab.APPROACHING:
 			return tasks.filter((t) => t.deadlineType === "immediate");
 		case FocusedTab.OVERDUE:
-			return tasks.filter((t) => t.isOverdue);
+			return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE));
 	}
 }
 
@@ -74,6 +74,11 @@ export default function FocusedInstructions({
 		setActiveTab(tabId);
 	}
 
+	const filteredTasks = useMemo(
+		() => getFilteredTasks(activeTab, tasks),
+		[activeTab, tasks],
+	);
+
 	const tabs: TabConfig[] = TAB_LABELS.map((tab) => ({
 		...tab,
 		count:
@@ -82,20 +87,16 @@ export default function FocusedInstructions({
 				: tab.id === FocusedTab.APPROACHING
 					? tasks.filter((t) => t.deadlineType === "immediate").length
 					: tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
-							.length,
+						.length,
 	}));
 
 	const emptyMsg = EMPTY_MESSAGES[activeTab];
-	const filteredTasks = useMemo(
-		() => getFilteredTasks(activeTab, tasks),
-		[activeTab, tasks],
-	);
 
 	const { columns } = useTaskColumns({
 		visibleColumns: ["title", "status", "responsible", "deadlineType"],
 		searchQuery: "",
 		filterOptionsMap: {},
-		onUpdateStatus: () => {},
+		onUpdateStatus: () => { },
 	});
 
 	const table = useReactTable({

@@ -14,11 +14,11 @@ import { MOCK_TASK_MESSAGES } from "../../mocks/data/messages";
 import { useTasks } from "../../providers/TasksProvider";
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag";
 import FlagIcon from "../shared/FlagIcon";
-import type { DirectiveStatus } from "../shared/StatusTag";
 import { AssigneeSection } from "./AssigneeSection";
 import { DropdownOptions } from "./DropdownOptions";
 import TaskConversationPanel from "./TaskConversationPanel";
 import TaskHistoryPanel from "./TaskHistoryPanel";
+import type { DirectiveStatus } from "src/utils/statusUtils";
 
 interface TaskDetailPanelProps {
 	task: Task;
@@ -50,7 +50,7 @@ function TaskDetailPanel({
 	onDelete,
 }: TaskDetailPanelProps) {
 	const { data: loggedInUser } = useCurrentUser();
-	const { updateDirectiveStatus } = useTasks();
+	const { updateTaskStatus } = useTasks();
 
 	const [showHistory, setShowHistory] = useState(false);
 	const [showConversation, setShowConversation] = useState(false);
@@ -85,10 +85,9 @@ function TaskDetailPanel({
 	}
 
 	function handleDirectiveStatusChange(
-		assigneeId: number,
 		newStatus: DirectiveStatus,
 	) {
-		updateDirectiveStatus(id, assigneeId, newStatus);
+		updateTaskStatus(id, newStatus);
 	}
 
 	function handleBottomBarClick() {

@@ -1,22 +1,22 @@
 import styled from "@emotion/styled";
-import type { DateRange } from "react-day-picker";
-import type { DateRangePickerSlotProps } from "src/components/shared/DateRangePicker";
+import type { DatePickerValue } from "src/components/shared/DatePicker";
+import type { DatePickerSlotProps } from "src/components/shared/DatePickerPopover";
 
 interface DashboardDatePickerFooterProps {
-	slots: DateRangePickerSlotProps;
-	onConfirm(range: DateRange | undefined): void;
+	slots: DatePickerSlotProps;
+	onConfirm(range: DatePickerValue | undefined): void;
 }
 
 export function DashboardDatePickerFooter({
-	slots: { onRangeChange, onClose, range },
+	slots: { onChange, onClose, value },
 	onConfirm,
 }: DashboardDatePickerFooterProps) {
 	function handleClear() {
-		onRangeChange(undefined);
+		onChange(undefined);
 	}
 
 	function handleConfirm() {
-		onConfirm(range);
+		onConfirm(value);
 		onClose();
 	}
 
