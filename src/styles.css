@@ -18,12 +18,12 @@ body,
 }
 
 *::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.06);
   border-radius: 36px;
 }
 
 *::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.08);
   border-radius: 36px;
 }
 
@@ -60,7 +60,7 @@ body,
   --sidebar-accent-foreground: oklch(0.20 0 0);
   --sidebar-border: oklch(0.92 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  
+
   --Components-Form-Component-labelRequiredMarkColor: #FF4D4F;
   --Background-color-bg-text-active: rgba(0, 0, 0, 0.15);
   --Components-Dropdown-Global-colorTextDescription: rgba(0, 0, 0, 0.45);
@@ -104,8 +104,6 @@ body,
   --Colors-Brand-Warning-colorWarningText: oklch(80.16% 0.17 76);
 
   --button-color-hover: #4096FF;
-  --button-gradient: linear-gradient(135deg, #6866ff 0%, #7604c8 100%);
-  --default-linear: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
   --text-subtitle-color: #8C8C8C;
   --active-color: #1677ff;
 
