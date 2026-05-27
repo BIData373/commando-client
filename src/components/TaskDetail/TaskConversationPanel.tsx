@@ -7,148 +7,148 @@ import type { IUserSummary } from "../../types";
 import type { TaskMessage } from "../../types/message";
 
 interface TaskConversationPanelProps {
-  messages: TaskMessage[];
-  currentUser: IUserSummary;
-  onClose: () => void;
+	messages: TaskMessage[];
+	currentUser: IUserSummary;
+	onClose: () => void;
 }
 
 interface DateGroup {
-  dateLabel: string;
-  messages: TaskMessage[];
+	dateLabel: string;
+	messages: TaskMessage[];
 }
 
 const HEBREW_MONTHS = [
-  "ינואר",
-  "פברואר",
-  "מרץ",
-  "אפריל",
-  "מאי",
-  "יוני",
-  "יולי",
-  "אוגוסט",
-  "ספטמבר",
-  "אוקטובר",
-  "נובמבר",
-  "דצמבר",
+	"ינואר",
+	"פברואר",
+	"מרץ",
+	"אפריל",
+	"מאי",
+	"יוני",
+	"יולי",
+	"אוגוסט",
+	"ספטמבר",
+	"אוקטובר",
+	"נובמבר",
+	"דצמבר",
 ];
 
 function formatDateLabel(date: Date, today: Date): string {
-  if (isSameDay(date, today)) return "היום";
-  const day = date.getDate();
-  const month = HEBREW_MONTHS[date.getMonth()];
-  const year = date.getFullYear();
-  return `${day} ב${month} ${year}`;
+	if (isSameDay(date, today)) return "היום";
+	const day = date.getDate();
+	const month = HEBREW_MONTHS[date.getMonth()];
+	const year = date.getFullYear();
+	return `${day} ב${month} ${year}`;
 }
 
 function groupMessagesByDate(messages: TaskMessage[]): DateGroup[] {
-  const today = new Date();
-  const groups: DateGroup[] = [];
-  for (const msg of messages) {
-    const label = formatDateLabel(msg.timestamp, today);
-    const last = groups[groups.length - 1];
-    if (last && last.dateLabel === label) {
-      last.messages.push(msg);
-    } else {
-      groups.push({ dateLabel: label, messages: [msg] });
-    }
-  }
-  return groups;
+	const today = new Date();
+	const groups: DateGroup[] = [];
+	for (const msg of messages) {
+		const label = formatDateLabel(msg.timestamp, today);
+		const last = groups[groups.length - 1];
+		if (last && last.dateLabel === label) {
+			last.messages.push(msg);
+		} else {
+			groups.push({ dateLabel: label, messages: [msg] });
+		}
+	}
+	return groups;
 }
 
 function TaskConversationPanel({
-  messages,
-  currentUser,
-  onClose,
+	messages,
+	currentUser,
+	onClose,
 }: TaskConversationPanelProps) {
-  const [localMessages, setLocalMessages] = useState<TaskMessage[]>(messages);
-  const [inputValue, setInputValue] = useState("");
-  const messagesAreaRef = useRef<HTMLDivElement>(null);
+	const [localMessages, setLocalMessages] = useState<TaskMessage[]>(messages);
+	const [inputValue, setInputValue] = useState("");
+	const messagesAreaRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const el = messagesAreaRef.current;
-    if (el && localMessages.length >= 0) el.scrollTop = el.scrollHeight;
-  }, [localMessages]);
+	useEffect(() => {
+		const el = messagesAreaRef.current;
+		if (el && localMessages.length >= 0) el.scrollTop = el.scrollHeight;
+	}, [localMessages]);
 
-  const dateGroups = groupMessagesByDate(localMessages);
+	const dateGroups = groupMessagesByDate(localMessages);
 
-  function handleSend() {
-    const trimmed = inputValue.trim();
-    if (!trimmed) return;
-    const newMsg: TaskMessage = {
-      id: Date.now(),
-      userId: currentUser.id,
-      fullName: currentUser.name,
-      upn: "",
-      emailDisplayName: "",
-      timestamp: new Date(),
-      text: trimmed,
-    };
-    setLocalMessages((prev) => [...prev, newMsg]);
-    setInputValue("");
-  }
+	function handleSend() {
+		const trimmed = inputValue.trim();
+		if (!trimmed) return;
+		const newMsg: TaskMessage = {
+			id: Date.now(),
+			userId: currentUser.id,
+			fullName: currentUser.name,
+			upn: "",
+			emailDisplayName: "",
+			timestamp: new Date(),
+			text: trimmed,
+		};
+		setLocalMessages((prev) => [...prev, newMsg]);
+		setInputValue("");
+	}
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter") handleSend();
-  }
+	function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+		if (e.key === "Enter") handleSend();
+	}
 
-  const displayCount = localMessages.length;
+	const displayCount = localMessages.length;
 
-  return (
-    <ConversationWrapper>
-      <ConversationHeader onClick={onClose}>
-        <ChatGroup>
-          <ChatBadge>{displayCount}</ChatBadge>
-          <ChatLabel>שיחה ועדכונים</ChatLabel>
-        </ChatGroup>
-        <ChevronIcon>
-          <ChevronUp size={20} />
-        </ChevronIcon>
-      </ConversationHeader>
+	return (
+		<ConversationWrapper>
+			<ConversationHeader onClick={onClose}>
+				<ChatGroup>
+					<ChatBadge>{displayCount}</ChatBadge>
+					<ChatLabel>שיחה ועדכונים</ChatLabel>
+				</ChatGroup>
+				<ChevronIcon>
+					<ChevronUp size={20} />
+				</ChevronIcon>
+			</ConversationHeader>
 
-      <ConverstaionContainer>
-        <MessagesArea ref={messagesAreaRef}>
-          {dateGroups.map((group) => (
-            <DateSection key={group.dateLabel}>
-              <DateLabel>{group.dateLabel}</DateLabel>
-              {group.messages.map((msg) => (
-                <MessageOuter
-                  key={msg.id}
-                  $isOwn={msg.userId === currentUser.id}
-                >
-                  <MessageCard>
-                    <MessageHeader>
-                      <AuthorText>
-                        <AuthorName>{msg.fullName} - </AuthorName>
-                        <AuthorUpn>{msg.upn}</AuthorUpn>
-                        <AuthorEmail> - {msg.emailDisplayName} </AuthorEmail>
-                      </AuthorText>
-                      <TimeText>{format(msg.timestamp, "HH:mm")}</TimeText>
-                    </MessageHeader>
-                    <MessageText>{msg.text}</MessageText>
-                  </MessageCard>
-                </MessageOuter>
-              ))}
-            </DateSection>
-          ))}
-        </MessagesArea>
+			<ConverstaionContainer>
+				<MessagesArea ref={messagesAreaRef}>
+					{dateGroups.map((group) => (
+						<DateSection key={group.dateLabel}>
+							<DateLabel>{group.dateLabel}</DateLabel>
+							{group.messages.map((msg) => (
+								<MessageOuter
+									key={msg.id}
+									$isOwn={msg.userId === currentUser.id}
+								>
+									<MessageCard>
+										<MessageHeader>
+											<AuthorText>
+												<AuthorName>{msg.fullName} - </AuthorName>
+												<AuthorUpn>{msg.upn}</AuthorUpn>
+												<AuthorEmail> - {msg.emailDisplayName} </AuthorEmail>
+											</AuthorText>
+											<TimeText>{format(msg.timestamp, "HH:mm")}</TimeText>
+										</MessageHeader>
+										<MessageText>{msg.text}</MessageText>
+									</MessageCard>
+								</MessageOuter>
+							))}
+						</DateSection>
+					))}
+				</MessagesArea>
 
-        <InputArea>
-          <InputRow>
-            <StyledInput
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="הוסף הערה לעדכון הצוות..."
-              dir="auto"
-            />
-            <SendButton onClick={handleSend} aria-label="שלח">
-              <Send size={16} color="white" />
-            </SendButton>
-          </InputRow>
-        </InputArea>
-      </ConverstaionContainer>
-    </ConversationWrapper>
-  );
+				<InputArea>
+					<InputRow>
+						<StyledInput
+							value={inputValue}
+							onChange={(e) => setInputValue(e.target.value)}
+							onKeyDown={handleKeyDown}
+							placeholder="הוסף הערה לעדכון הצוות..."
+							dir="auto"
+						/>
+						<SendButton onClick={handleSend} aria-label="שלח">
+							<Send size={16} color="white" />
+						</SendButton>
+					</InputRow>
+				</InputArea>
+			</ConverstaionContainer>
+		</ConversationWrapper>
+	);
 }
 
 export default TaskConversationPanel;
@@ -268,7 +268,7 @@ const MessageOuter = styled.div<{ $isOwn: boolean }>`
   flex-direction: column;
   align-self: ${({ $isOwn }) => ($isOwn ? "flex-end" : "flex-start")};
 background: ${({ $isOwn }) =>
-    $isOwn ? "rgba(104, 102, 255, 0.1)" : "var(--background)"};
+	$isOwn ? "rgba(104, 102, 255, 0.1)" : "var(--background)"};
   width: 686px;
 `;
 

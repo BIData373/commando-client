@@ -11,79 +11,77 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 export type AvatarColor = "cyan" | "blue" | "green" | "orange" | "gray";
 
 export interface RelatedDirective {
-  user: IAssignee;
-  status: DirectiveStatus;
+	user: IAssignee;
+	status: DirectiveStatus;
 }
 
 interface ResponsibleCellProps {
-  responsible: IAssignee | null;
-  relatedDirectives: RelatedDirective[];
+	responsible: IAssignee | null;
+	relatedDirectives: RelatedDirective[];
 }
 
 export function ResponsibleCell({
-  responsible,
-  relatedDirectives,
+	responsible,
+	relatedDirectives,
 }: ResponsibleCellProps) {
-  return (
-    <CellRoot>
-      {responsible && (
-        <Popover>
-          <PopoverTrigger asChild>
-            <AssigneeAvatar assignee={responsible} cursor />
-          </PopoverTrigger>
-          <DetailedContent side="top" sideOffset={10} align="center">
-            <PopoverArrow width={12} height={6} />
-            <CloseButton>
-              <XIcon size={14} />
-            </CloseButton>
-            <DetailedHeader>
-              <SectionLabel>אחראי :</SectionLabel>
-              <AssigneeAvatar assignee={responsible} />
-              <RoleText>{responsible.role}</RoleText>
-            </DetailedHeader>
-            {relatedDirectives.length > 0 && (
-              <>
-                <SectionLabel>משתמשים מכותבים :</SectionLabel>
-                <UserScrollArea>
-                  <UserList>
-                    {relatedDirectives.map((d) => (
-                      <UserRow key={d.user.id}>
-                        <UserInfo>
-                          <UserName>{d.user.name}</UserName>
-                          <UserEmail>{d.user.email}</UserEmail>
-                        </UserInfo>
-                      </UserRow>
-                    ))}
-                  </UserList>
-                </UserScrollArea>
-              </>
-            )}
-          </DetailedContent>
-        </Popover>
-      )}
-      {relatedDirectives.length > 0 && (
-        <Popover>
-          <PopoverTrigger asChild>
-            <AvatarCircle>
-              {relatedDirectives.length}+
-            </AvatarCircle>
-          </PopoverTrigger>
-          <CompactContent side="top" sideOffset={10} align="center">
-            <PopoverArrow width={12} height={6} />
-            <CompactList>
-              {relatedDirectives.map((d) => (
-                <CompactRow key={d.user.id}>
-                  <StatusTag status={d.status} />
-                  <CompactRole>{d.user.role}</CompactRole>
-                  <AssigneeAvatar assignee={d.user} />
-                </CompactRow>
-              ))}
-            </CompactList>
-          </CompactContent>
-        </Popover>
-      )}
-    </CellRoot>
-  );
+	return (
+		<CellRoot>
+			{responsible && (
+				<Popover>
+					<PopoverTrigger asChild>
+						<AssigneeAvatar assignee={responsible} cursor />
+					</PopoverTrigger>
+					<DetailedContent side="top" sideOffset={10} align="center">
+						<PopoverArrow width={12} height={6} />
+						<CloseButton>
+							<XIcon size={14} />
+						</CloseButton>
+						<DetailedHeader>
+							<SectionLabel>אחראי :</SectionLabel>
+							<AssigneeAvatar assignee={responsible} />
+							<RoleText>{responsible.role}</RoleText>
+						</DetailedHeader>
+						{relatedDirectives.length > 0 && (
+							<>
+								<SectionLabel>משתמשים מכותבים :</SectionLabel>
+								<UserScrollArea>
+									<UserList>
+										{relatedDirectives.map((d) => (
+											<UserRow key={d.user.id}>
+												<UserInfo>
+													<UserName>{d.user.name}</UserName>
+													<UserEmail>{d.user.email}</UserEmail>
+												</UserInfo>
+											</UserRow>
+										))}
+									</UserList>
+								</UserScrollArea>
+							</>
+						)}
+					</DetailedContent>
+				</Popover>
+			)}
+			{relatedDirectives.length > 0 && (
+				<Popover>
+					<PopoverTrigger asChild>
+						<AvatarCircle>{relatedDirectives.length}+</AvatarCircle>
+					</PopoverTrigger>
+					<CompactContent side="top" sideOffset={10} align="center">
+						<PopoverArrow width={12} height={6} />
+						<CompactList>
+							{relatedDirectives.map((d) => (
+								<CompactRow key={d.user.id}>
+									<StatusTag status={d.status} />
+									<CompactRole>{d.user.role}</CompactRole>
+									<AssigneeAvatar assignee={d.user} />
+								</CompactRow>
+							))}
+						</CompactList>
+					</CompactContent>
+				</Popover>
+			)}
+		</CellRoot>
+	);
 }
 
 // ─── Cell layout ──────────────────────────────────────────────────────────────
@@ -162,7 +160,7 @@ const XIcon = styled(X)`
   &:active {
     color: var(--text-color-2);
   }
-`
+`;
 
 const DetailedHeader = styled.div`
 direction: rtl;
