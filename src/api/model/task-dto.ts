@@ -5,9 +5,9 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
+import type { SourceDto } from "./source-dto"
 import type { TaskDtoDeletedAt } from "./task-dto-deleted-at"
 import type { TaskDtoDeletedBy } from "./task-dto-deleted-by"
-import type { TaskDtoDescription } from "./task-dto-description"
 import type { TaskDtoNotes } from "./task-dto-notes"
 
 export interface TaskDto {
@@ -22,7 +22,7 @@ export interface TaskDto {
 	id: number
 	title: string
 	/** @nullable */
-	description: TaskDtoDescription
+	description: string | null
 	flagged: boolean
 	deadlineType: string
 	issuedAt: string
@@ -30,5 +30,6 @@ export interface TaskDto {
 	/** @nullable */
 	notes: TaskDtoNotes
 	workspaceId: number
-	sourceId: number
+	source: SourceDto
+	tags: string[]
 }

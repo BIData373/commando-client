@@ -1,17 +1,18 @@
 import styled from "@emotion/styled";
-import type { IUser } from "src/types";
+import type { UserDto } from "src/api/model";
 
 interface UserItemProps {
-	user: IUser;
+	user: UserDto;
 }
 
-export function UserItem({ user }: UserItemProps) {
+// FIX Optional name?s
+export function UserItem({ user: { id, upn, info } }: UserItemProps) {
 	return (
 		<>
 			<UserName>
-				{user.name} - {user.id}
+				{info?.name} - {id}
 			</UserName>
-			<UserMeta>{user.email}</UserMeta>
+			<UserMeta>{upn}</UserMeta>
 		</>
 	);
 }

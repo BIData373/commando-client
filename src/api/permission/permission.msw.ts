@@ -16,7 +16,22 @@ export const getGetPermissionsResponseMock = (): PermissionDto[] =>
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		userId: faker.number.float({ fractionDigits: 2 }),
+		user: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: faker.helpers.arrayElement([
+				{
+					...{
+						id: faker.number.float({ fractionDigits: 2 }),
+						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						isBI: faker.datatype.boolean(),
+					},
+				},
+				null,
+			]),
+		},
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 		type: faker.helpers.arrayElement(["VIEWER", "MANAGER"] as const),
 	}))
@@ -24,7 +39,22 @@ export const getGetPermissionsResponseMock = (): PermissionDto[] =>
 export const getUpdatePermissionResponseMock = (
 	overrideResponse: Partial<Extract<PermissionDto, object>> = {},
 ): PermissionDto => ({
-	userId: faker.number.float({ fractionDigits: 2 }),
+	user: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: faker.helpers.arrayElement([
+			{
+				...{
+					id: faker.number.float({ fractionDigits: 2 }),
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					isBI: faker.datatype.boolean(),
+				},
+			},
+			null,
+		]),
+	},
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	type: faker.helpers.arrayElement(["VIEWER", "MANAGER"] as const),
 	...overrideResponse,
@@ -33,7 +63,22 @@ export const getUpdatePermissionResponseMock = (
 export const getDeletePermissionResponseMock = (
 	overrideResponse: Partial<Extract<PermissionDto, object>> = {},
 ): PermissionDto => ({
-	userId: faker.number.float({ fractionDigits: 2 }),
+	user: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: faker.helpers.arrayElement([
+			{
+				...{
+					id: faker.number.float({ fractionDigits: 2 }),
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					isBI: faker.datatype.boolean(),
+				},
+			},
+			null,
+		]),
+	},
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	type: faker.helpers.arrayElement(["VIEWER", "MANAGER"] as const),
 	...overrideResponse,
@@ -42,7 +87,22 @@ export const getDeletePermissionResponseMock = (
 export const getGetMyPermissionResponseMock = (
 	overrideResponse: Partial<Extract<PermissionDto, object>> = {},
 ): PermissionDto => ({
-	userId: faker.number.float({ fractionDigits: 2 }),
+	user: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: faker.helpers.arrayElement([
+			{
+				...{
+					id: faker.number.float({ fractionDigits: 2 }),
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					isBI: faker.datatype.boolean(),
+				},
+			},
+			null,
+		]),
+	},
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	type: faker.helpers.arrayElement(["VIEWER", "MANAGER"] as const),
 	...overrideResponse,

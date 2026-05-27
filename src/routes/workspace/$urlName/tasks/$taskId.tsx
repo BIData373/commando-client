@@ -3,6 +3,7 @@ import {
 	useNavigate,
 	useSearch,
 } from "@tanstack/react-router";
+import { WorkspaceProvider } from "src/providers/WorkspaceProvider";
 import TaskDetailPanel from "../../../../components/TaskDetail/TaskDetailPanel";
 import { useTasks } from "../../../../providers/TasksProvider";
 
@@ -14,8 +15,10 @@ function TaskDetail() {
 	const { urlName, taskId } = Route.useParams();
 	const { view } = useSearch({ from: "/workspace/$urlName/tasks" });
 	const navigate = useNavigate();
+
 	const { tasks, removeTasks } = useTasks();
 
+	// FIX Fetch?
 	const task = tasks.find((t) => String(t.id) === taskId);
 
 	function handleClose() {
@@ -42,12 +45,14 @@ function TaskDetail() {
 
 	return (
 		!!task && (
-			<TaskDetailPanel
-				task={task}
-				onClose={handleClose}
-				onArchive={handleArchive}
-				onDelete={handleDelete}
-			/>
+			<WorkspaceProvider>
+				<TaskDetailPanel
+					task={task}
+					onClose={handleClose}
+					onArchive={handleArchive}
+					onDelete={handleDelete}
+				/>
+			</WorkspaceProvider>
 		)
 	);
 }

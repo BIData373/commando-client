@@ -6,14 +6,13 @@
  * OpenAPI spec version: 1.0
  */
 import type { TaskHistoryDtoAction } from "./task-history-dto-action"
-import type { TaskHistoryDtoValue } from "./task-history-dto-value"
 
 export interface TaskHistoryDto {
 	id: number
 	action: TaskHistoryDtoAction
 	field: string
 	/** @nullable */
-	value: TaskHistoryDtoValue
+	value: string | null
 	timestamp: string
 	taskId: number
 	workspaceId: number

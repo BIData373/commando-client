@@ -25,7 +25,10 @@ export const getGetTaskHistoryResponseMock = (): TaskHistoryDto[] =>
 		] as const),
 		field: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		value: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([null]),
+			faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				null,
+			]),
 			null,
 		]),
 		timestamp: faker.date.past().toISOString().slice(0, 19) + "Z",

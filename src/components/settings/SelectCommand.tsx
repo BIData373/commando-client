@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { useListPikuds } from "src/api/pikud/pikud";
 import {
 	Select,
 	SelectContent,
@@ -17,20 +18,26 @@ const COMMAND_OPTIONS = [
 ] as const;
 
 interface SelectCommandProps {
-	command: string;
-	onChange(value: string): void;
+	value: number;
+	onChange(value: number): void;
 }
 
-export function SelectCommand({ command, onChange }: SelectCommandProps) {
+export function SelectCommand({ value, onChange }: SelectCommandProps) {
+	const { data: pikuds } = useListPikuds()
+
+	function handleChange(value: string) {
+		onChange(Number(value))
+	}
+
 	return (
-		<Select value={command} onValueChange={onChange}>
+		<Select value={String(value)} onValueChange={handleChange}>
 			<StyledSelectTrigger>
 				<SelectValue placeholder="בחר פיקוד" />
 			</StyledSelectTrigger>
 			<StyledSelectContent position="popper" side="bottom">
-				{COMMAND_OPTIONS.map((option) => (
-					<StyledSelectItem key={option} value={option}>
-						{option}
+				{pikuds?.map(({ id, name }) => (
+					<StyledSelectItem key={id} value={String(id)}>
+						{name}
 					</StyledSelectItem>
 				))}
 			</StyledSelectContent>

@@ -5,6 +5,7 @@ config()
 
 const API_URL = process.env.VITE_API_BASE_URL ?? 'http://localhost:3000'
 
+// FIX Add pikud initial mock data
 export default defineConfig({
   vector: {
     output: {

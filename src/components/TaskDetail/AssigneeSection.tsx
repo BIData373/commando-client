@@ -1,14 +1,12 @@
 import styled from "@emotion/styled";
-import { useParams } from "@tanstack/react-router";
-import { type IUser, UserRole } from "src/types";
-import { useWorkspaceSettings } from "../../hooks/useWorkspaceSettings";
-import type { DirectiveStatus } from "../shared/StatusTag";
+import { PermissionDtoType, type UserDto } from "src/api/model";
+import { useGetMyPermission } from "src/api/permission/permission";
+import { useWorkspace } from "src/providers/WorkspaceProvider";
 import type { RelatedDirective } from "../Tasks/ResponsibleCell";
 import { AssigneeContainer } from "./AssigneeContainer";
 
 interface AssigneeSectionProps {
-	currentUser: IUser;
-	status: DirectiveStatus;
+	currentUser: UserDto;
 	relatedDirectives: RelatedDirective[];
 	onDirectiveStatusChange: (
 		assigneeId: number,
@@ -21,9 +19,9 @@ export const AssigneeSection = ({
 	relatedDirectives,
 	onDirectiveStatusChange,
 }: AssigneeSectionProps) => {
-	const { urlName } = useParams({ from: "/workspace/$urlName/tasks/$taskId" });
-	const { data: workspaceSettings } = useWorkspaceSettings(urlName);
-	const isAdmin = currentUser.role === UserRole.ADMIN;
+	const { workspace: { id: workspaceId } } = useWorkspace()
+	const { data: permission } = useGetMyPermission({ workspaceId })
+	const isAdmin = permission?.type === PermissionDtoType.MANAGER;
 
 	const myGroups = relatedDirectives.filter((d) =>
 		d.user.userIds.includes(currentUser.id),
@@ -55,7 +53,6 @@ export const AssigneeSection = ({
 								assignee={item}
 								isAdmin={isAdmin}
 								editable={true}
-								workspaceSettings={workspaceSettings}
 								onDirectiveStatusChange={onDirectiveStatusChange}
 							/>
 						))}
@@ -73,7 +70,6 @@ export const AssigneeSection = ({
 									assignee={item}
 									isAdmin={isAdmin}
 									editable={false}
-									workspaceSettings={workspaceSettings}
 									onDirectiveStatusChange={onDirectiveStatusChange}
 								/>
 							))}

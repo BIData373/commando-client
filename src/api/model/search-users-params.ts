@@ -6,7 +6,6 @@
  * OpenAPI spec version: 1.0
  */
 
-/**
- * @nullable
- */
-export type TaskHistoryDtoValue = { [key: string]: unknown } | null
+export type SearchUsersParams = {
+	search: string
+}

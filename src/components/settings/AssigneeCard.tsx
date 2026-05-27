@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { User } from "lucide-react";
 import { useState } from "react";
-import type { IAssignee } from "src/types";
+import type { AssigneeDto } from "src/api/model";
 import { AssigneeAvatar } from "../shared/AssigneeAvatar";
 import { Badge } from "../ui/badge";
 import {
@@ -18,14 +18,16 @@ import { DeleteAssigneePopconfirm } from "./DeleteAssigneePopconfirm";
 const MAX_VISIBLE_TAGS = 2;
 
 interface IAssigneeCardProps {
-	assignee: IAssignee;
-	userNames: Record<number, string>;
+	assignee: AssigneeDto;
 }
 
-export function AssigneeCard({ assignee, userNames }: IAssigneeCardProps) {
-	const userIds = assignee.userIds ?? [];
-	const visibleIds = userIds.slice(0, MAX_VISIBLE_TAGS);
-	const remaining = userIds.length - MAX_VISIBLE_TAGS;
+export function AssigneeCard({
+	assignee,
+	assignee: { users },
+}: IAssigneeCardProps) {
+	const visibleUsers = users.slice(0, MAX_VISIBLE_TAGS);
+	const remainingUsers = users.length - MAX_VISIBLE_TAGS;
+	
 	const [isUpdateCardOpen, setIsUpdateCardOpen] = useState(false);
 
 	function onCardClick() {
@@ -39,32 +41,40 @@ export function AssigneeCard({ assignee, userNames }: IAssigneeCardProps) {
 				open={isUpdateCardOpen}
 				onOpenChange={setIsUpdateCardOpen}
 			/>
+
 			<StyledCard onClick={onCardClick}>
 				<StyledCardHeader>
 					<CardHeaderRow>
 						<AssigneeAvatar assignee={assignee} />
+
 						<CardWrapper>
 							<CardMeta>
 								<CardTitle>{assignee.name}</CardTitle>
+
 								<DeleteAssigneePopconfirm assigneeId={assignee.id} />
 							</CardMeta>
+
 							<StyledCardDescription>
-								{userIds.length} משתמשים
+								{users.length} משתמשים
 							</StyledCardDescription>
 						</CardWrapper>
 					</CardHeaderRow>
 				</StyledCardHeader>
+
 				<CardContent>
 					<Separator />
+
 					<TagRow>
-						{visibleIds.map((uid) => (
-							<StyledBadge key={uid} variant="secondary">
+						{visibleUsers.map(({ id, info }) => (
+							<StyledBadge key={id} variant="secondary">
 								<User size={16} />
-								{userNames[uid] ?? `#${uid}`}
+
+								{info?.name ?? `#${id}`}
 							</StyledBadge>
 						))}
-						{remaining > 0 && (
-							<StyledBadge variant="outline">+{remaining}</StyledBadge>
+
+						{remainingUsers > 0 && (
+							<StyledBadge variant="outline">+{remainingUsers}</StyledBadge>
 						)}
 					</TagRow>
 				</CardContent>

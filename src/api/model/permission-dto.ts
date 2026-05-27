@@ -6,9 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 import type { PermissionDtoType } from "./permission-dto-type"
+import type { UserDto } from "./user-dto"
 
 export interface PermissionDto {
-	userId: number
+	user: UserDto
 	workspaceId: number
 	type: PermissionDtoType
 }

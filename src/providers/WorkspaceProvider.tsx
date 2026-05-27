@@ -9,8 +9,8 @@ import type { WorkspaceDto } from "../api/model/workspace-dto"
 import { useListWorkspaces } from "../api/workspace/workspace"
 import { Spinner } from "../components/ui/spinner"
 
-export interface WorkspaceContext extends WorkspaceDto {
-	workspaceId: number
+export interface WorkspaceContext {
+	workspace: WorkspaceDto
 }
 
 const WorkspaceContext = createContext<WorkspaceContext | null>(null)
@@ -32,7 +32,7 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 	return (
 		workspace && (
 			<WorkspaceContext.Provider
-				value={{ ...workspace, workspaceId: workspace.id }}
+				value={{ workspace }}
 			>
 				{children}
 			</WorkspaceContext.Provider>
