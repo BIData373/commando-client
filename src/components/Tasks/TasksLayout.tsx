@@ -4,11 +4,11 @@ import { ChevronDown, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { QuickFilter } from "src/utils/filterUtils";
 import type { DirectiveStatus } from "src/utils/statusUtils";
-import type { DeadlineType } from "../shared/DeadlineTag";
 import { exportTasksToExcel } from "../../functions/export-excel";
 import { applyAllFilters } from "../../functions/filter-utils";
 import { useTasks } from "../../providers/TasksProvider";
 import { useTitleBar } from "../../providers/TitleBarProvider";
+import type { DeadlineType } from "../shared/DeadlineTag";
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown";
 import {
 	DropdownMenu,
@@ -27,9 +27,9 @@ export type View = "TABLE" | "CARDS";
 export interface TasksLayoutProps {
 	view: View;
 	urlName: string;
-	tabFilter?: QuickFilter;
-	statusFilter?: DirectiveStatus;
-	deadlineTypeFilter?: DeadlineType;
+	tabFilter: QuickFilter[];
+	statusFilter: DirectiveStatus[];
+	deadlineTypeFilter: DeadlineType[];
 }
 
 function TasksLayout({
@@ -42,77 +42,103 @@ function TasksLayout({
 	const navigate = useNavigate();
 	const {
 		tasks,
-		activeQuickFilters,
-		clearQuickFilters,
 		searchQuery,
 		columnOrder,
 		hiddenColumns,
 		filteredTasks: baseFilteredTasks,
 	} = useTasks();
 
-	const tabFilterSet = new Set<QuickFilter>(tabFilter ? [tabFilter] : []);
-	const quickTabFilter = new Set<QuickFilter>([
-		...activeQuickFilters,
-		...tabFilterSet,
-	]);
+	const tabFilterSet = new Set<QuickFilter>(tabFilter);
 
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
 	);
 
+	type PrevSearch = { tabFilter?: QuickFilter[]; statusFilter?: DirectiveStatus[]; deadlineTypeFilter?: DeadlineType[]; view?: View };
+
+	function prevFilters(prev: PrevSearch) {
+		return {
+			tabFilter: prev.tabFilter ?? [],
+			statusFilter: prev.statusFilter ?? [],
+			deadlineTypeFilter: prev.deadlineTypeFilter ?? [],
+		};
+	}
+
+	function navigateToTasks(overrides: { view?: View; tabFilter?: QuickFilter[]; statusFilter?: DirectiveStatus[]; deadlineTypeFilter?: DeadlineType[] } = {}) {
+		navigate({
+			to: "/workspace/$urlName/tasks",
+			params: { urlName },
+			search: (prev) => {
+				const base = prevFilters(prev);
+				return {
+					view: overrides.view ?? prev.view ?? view,
+					tabFilter: overrides.tabFilter ?? base.tabFilter,
+					statusFilter: overrides.statusFilter ?? base.statusFilter,
+					deadlineTypeFilter: overrides.deadlineTypeFilter ?? base.deadlineTypeFilter,
+				};
+			},
+		});
+	}
+
+	function navigateWithMode(mode: "single" | "discussion") {
+		navigate({
+			to: "/workspace/$urlName/tasks/new",
+			params: { urlName },
+			search: (prev) => ({ view, mode, ...prevFilters(prev) }),
+		});
+	}
+
+	function handleEdit(taskId: number) {
+		navigate({
+			to: "/workspace/$urlName/tasks/$taskId",
+			params: { urlName, taskId: String(taskId) },
+			search: (prev) => ({ view, ...prevFilters(prev) }),
+		});
+	}
+
+	function handleCreateTask() {
+		navigateWithMode("single")
+	}
+
+	function handleCreateTaskFromDiscussion() {
+		navigateWithMode("discussion")
+	}
+
+	function handleToggleTabFilter(filter: QuickFilter) {
+		const next = tabFilter.includes(filter)
+			? tabFilter.filter((f) => f !== filter)
+			: [...tabFilter, filter];
+		navigateToTasks({ tabFilter: next });
+	}
+
 	function clearAllFilters() {
-		clearQuickFilters();
 		setActiveTopicFilters(new Set());
+		navigateToTasks({ tabFilter: [], statusFilter: [], deadlineTypeFilter: [] });
+	}
+
+	function handleColumnFiltersChange(
+		newStatusFilter: DirectiveStatus[],
+		newDeadlineTypeFilter: DeadlineType[],
+	) {
+		navigateToTasks({ statusFilter: newStatusFilter, deadlineTypeFilter: newDeadlineTypeFilter });
 	}
 
 	const allTopics = [...new Set(tasks.flatMap((t) => t.tags))];
 
 	const filteredTasks = useMemo(
 		() =>
-			quickTabFilter.size > 0 || activeTopicFilters.size > 0
-				? applyAllFilters(
-					tasks,
-					quickTabFilter,
-					activeTopicFilters,
-					searchQuery,
-				)
+			tabFilterSet.size > 0 || activeTopicFilters.size > 0
+				? applyAllFilters(tasks, tabFilterSet, activeTopicFilters, searchQuery)
 				: baseFilteredTasks,
-		[tasks, searchQuery, quickTabFilter, activeTopicFilters, baseFilteredTasks],
+		[tasks, searchQuery, tabFilterSet, activeTopicFilters, baseFilteredTasks],
 	);
-	function handleEdit(taskId: number) {
-		navigate({
-			to: "/workspace/$urlName/tasks/$taskId",
-			params: { urlName, taskId: String(taskId) },
-			search: { view },
-		});
-	}
 
 	function handleExport() {
 		exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns });
 	}
 
-	function handleCreateTaskFromDiscussion() {
-		navigate({
-			to: "/workspace/$urlName/tasks/new",
-			params: { urlName },
-			search: { view, mode: "discussion" },
-		});
-	}
-
-	function handleCreateTask() {
-		navigate({
-			to: "/workspace/$urlName/tasks/new",
-			params: { urlName },
-			search: { view, mode: "single" },
-		});
-	}
-
 	function handleViewChange(newView: View) {
-		navigate({
-			to: "/workspace/$urlName/tasks",
-			params: { urlName },
-			search: { view: newView },
-		});
+		navigateToTasks({ view: newView });
 	}
 
 	useTitleBar(
@@ -162,6 +188,7 @@ function TasksLayout({
 					onClearAllFilters={clearAllFilters}
 					onExport={handleExport}
 					tabFilter={tabFilter}
+					onToggleTabFilter={handleToggleTabFilter}
 					hasExtraActiveFilters={activeTopicFilters.size > 0}
 					extraFilters={
 						<MultiSelectFilterDropdown
@@ -182,8 +209,9 @@ function TasksLayout({
 					<TaskTable
 						tasks={filteredTasks}
 						onEdit={handleEdit}
-						initialStatusFilter={statusFilter}
-						initialDeadlineTypeFilter={deadlineTypeFilter}
+						statusFilter={statusFilter}
+						deadlineTypeFilter={deadlineTypeFilter}
+						onFiltersChange={handleColumnFiltersChange}
 						onDoubleClick={handleEdit}
 					/>
 				) : (

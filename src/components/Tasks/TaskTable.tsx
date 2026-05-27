@@ -5,6 +5,7 @@ import type {
 	RowSelectionState,
 	SortingState,
 } from "@tanstack/react-table";
+import type React from "react";
 import { useMemo, useState } from "react";
 import type { DirectiveStatus } from "src/utils/statusUtils";
 import type { DeadlineType } from "../shared/DeadlineTag";
@@ -21,8 +22,9 @@ interface TaskTableProps {
 	onDoubleClick?: (taskId: number) => void;
 	extraColumns?: Record<string, ColumnDef<Task>>;
 	showHeader?: boolean;
-	initialStatusFilter?: DirectiveStatus;
-	initialDeadlineTypeFilter?: DeadlineType;
+	statusFilter?: DirectiveStatus[];
+	deadlineTypeFilter?: DeadlineType[];
+	onFiltersChange?: (statusFilter: DirectiveStatus[], deadlineTypeFilter: DeadlineType[]) => void;
 }
 
 function TaskTable({
@@ -31,8 +33,9 @@ function TaskTable({
 	onDoubleClick,
 	extraColumns,
 	showHeader = true,
-	initialStatusFilter,
-	initialDeadlineTypeFilter,
+	statusFilter = [],
+	deadlineTypeFilter = [],
+	onFiltersChange,
 }: TaskTableProps) {
 	const {
 		searchQuery,
@@ -44,10 +47,20 @@ function TaskTable({
 	} = useTasks();
 	const [selectMode, setSelectMode] = useState(false);
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
-		...(initialStatusFilter ? [{ id: "status", value: [initialStatusFilter] }] : []),
-		...(initialDeadlineTypeFilter ? [{ id: "deadlineType", value: [initialDeadlineTypeFilter] }] : []),
-	]);
+	const urlColumnFilters: ColumnFiltersState = [
+		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
+		...(deadlineTypeFilter.length ? [{ id: "deadlineType", value: deadlineTypeFilter }] : []),
+	];
+	const [localColumnFilters, setLocalColumnFilters] = useState<ColumnFiltersState>([]);
+	const columnFilters: ColumnFiltersState = [...urlColumnFilters, ...localColumnFilters];
+
+	function handleColumnFiltersChange(updater: React.SetStateAction<ColumnFiltersState>) {
+		const newFilters = typeof updater === "function" ? updater(columnFilters) : updater;
+		setLocalColumnFilters(newFilters.filter((f) => f.id !== "status" && f.id !== "deadlineType"));
+		const statusValues = (newFilters.find((f) => f.id === "status")?.value as DirectiveStatus[]) ?? [];
+		const deadlineValues = (newFilters.find((f) => f.id === "deadlineType")?.value as DeadlineType[]) ?? [];
+		onFiltersChange?.(statusValues, deadlineValues);
+	}
 	const [sorting, setSorting] = useState<SortingState>([]);
 
 	const selectedTaskIds = Object.keys(rowSelection)
@@ -136,7 +149,7 @@ function TaskTable({
 					rowSelection={selectMode ? rowSelection : undefined}
 					onRowSelectionChange={selectMode ? setRowSelection : undefined}
 					columnFilters={columnFilters}
-					onColumnFiltersChange={setColumnFilters}
+					onColumnFiltersChange={handleColumnFiltersChange}
 					sorting={sorting}
 					onSortingChange={setSorting}
 					getRowId={(row) => String(row.id)}

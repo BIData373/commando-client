@@ -13,7 +13,8 @@ interface TaskFiltersProps {
 	hasExtraActiveFilters?: boolean;
 	extraFilters?: ReactNode;
 	extraColumnsMeta?: TaskColumnMeta[];
-	tabFilter?: QuickFilter;
+	tabFilter: QuickFilter[];
+	onToggleTabFilter: (filter: QuickFilter) => void;
 }
 
 function TaskFilters({
@@ -23,11 +24,10 @@ function TaskFilters({
 	extraFilters,
 	extraColumnsMeta,
 	tabFilter,
+	onToggleTabFilter,
 }: TaskFiltersProps) {
 	const {
 		tasks,
-		activeQuickFilters,
-		toggleQuickFilter,
 		searchQuery,
 		setSearchQuery,
 		columnOrder,
@@ -36,8 +36,7 @@ function TaskFilters({
 		toggleColumn,
 	} = useTasks();
 
-	const hasActiveFilters =
-		activeQuickFilters.size > 0 || !!hasExtraActiveFilters || !!tabFilter;
+	const hasActiveFilters = tabFilter.length > 0 || !!hasExtraActiveFilters;
 
 	const overdueCount = tasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.OVERDUE),
@@ -65,8 +64,8 @@ function TaskFilters({
 			{extraFilters}
 
 			<FilterPill
-				$active={activeQuickFilters.has(QuickFilter.FLAGGED) || tabFilter === QuickFilter.FLAGGED}
-				onClick={() => toggleQuickFilter(QuickFilter.FLAGGED)}
+				$active={tabFilter.includes(QuickFilter.FLAGGED)}
+				onClick={() => onToggleTabFilter(QuickFilter.FLAGGED)}
 			>
 				חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
 			</FilterPill>
@@ -74,8 +73,8 @@ function TaskFilters({
 			<Tooltip>
 				<WarningTrigger>
 					<FilterPill
-						$active={activeQuickFilters.has(QuickFilter.APPROACHING) || tabFilter === QuickFilter.APPROACHING}
-						onClick={() => toggleQuickFilter(QuickFilter.APPROACHING)}
+						$active={tabFilter.includes(QuickFilter.APPROACHING)}
+						onClick={() => onToggleTabFilter(QuickFilter.APPROACHING)}
 					>
 						תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
 					</FilterPill>
@@ -85,8 +84,8 @@ function TaskFilters({
 			</Tooltip>
 
 			<FilterPill
-				$active={activeQuickFilters.has(QuickFilter.OVERDUE) || tabFilter === QuickFilter.OVERDUE}
-				onClick={() => toggleQuickFilter(QuickFilter.OVERDUE)}
+				$active={tabFilter.includes(QuickFilter.OVERDUE)}
+				onClick={() => onToggleTabFilter(QuickFilter.OVERDUE)}
 			>
 				חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
 			</FilterPill>
