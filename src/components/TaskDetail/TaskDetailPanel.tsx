@@ -593,7 +593,7 @@ const ChatBadge = styled.span`
   font-size: 12px;
   font-weight: 400;
   color: var(--background);
-  background: var(--button-gradient);
+  background: var(--default-linear);
   box-shadow: 0 0 0 1px white;
   flex-shrink: 0;
 `;
