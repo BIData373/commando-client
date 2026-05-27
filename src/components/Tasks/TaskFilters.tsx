@@ -13,6 +13,7 @@ interface TaskFiltersProps {
 	hasExtraActiveFilters?: boolean;
 	extraFilters?: ReactNode;
 	extraColumnsMeta?: TaskColumnMeta[];
+	tabFilter?: QuickFilter;
 }
 
 function TaskFilters({
@@ -21,6 +22,7 @@ function TaskFilters({
 	hasExtraActiveFilters,
 	extraFilters,
 	extraColumnsMeta,
+	tabFilter,
 }: TaskFiltersProps) {
 	const {
 		tasks,
@@ -35,7 +37,7 @@ function TaskFilters({
 	} = useTasks();
 
 	const hasActiveFilters =
-		activeQuickFilters.size > 0 || !!hasExtraActiveFilters;
+		activeQuickFilters.size > 0 || !!hasExtraActiveFilters || !!tabFilter;
 
 	const overdueCount = tasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.OVERDUE),
@@ -63,7 +65,7 @@ function TaskFilters({
 			{extraFilters}
 
 			<FilterPill
-				$active={activeQuickFilters.has(QuickFilter.FLAGGED)}
+				$active={activeQuickFilters.has(QuickFilter.FLAGGED) || tabFilter === QuickFilter.FLAGGED}
 				onClick={() => toggleQuickFilter(QuickFilter.FLAGGED)}
 			>
 				חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
@@ -72,7 +74,7 @@ function TaskFilters({
 			<Tooltip>
 				<WarningTrigger>
 					<FilterPill
-						$active={activeQuickFilters.has(QuickFilter.APPROACHING)}
+						$active={activeQuickFilters.has(QuickFilter.APPROACHING) || tabFilter === QuickFilter.APPROACHING}
 						onClick={() => toggleQuickFilter(QuickFilter.APPROACHING)}
 					>
 						תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
@@ -83,7 +85,7 @@ function TaskFilters({
 			</Tooltip>
 
 			<FilterPill
-				$active={activeQuickFilters.has(QuickFilter.OVERDUE)}
+				$active={activeQuickFilters.has(QuickFilter.OVERDUE) || tabFilter === QuickFilter.OVERDUE}
 				onClick={() => toggleQuickFilter(QuickFilter.OVERDUE)}
 			>
 				חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}

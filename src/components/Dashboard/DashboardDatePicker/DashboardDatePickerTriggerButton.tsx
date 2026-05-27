@@ -3,10 +3,11 @@ import { format } from "date-fns";
 import { CalendarDays, ChevronDown } from "lucide-react";
 import { Popover } from "radix-ui";
 import type { DateRange } from "react-day-picker";
+import type { DatePickerValue } from "src/components/shared/DatePicker";
 
 interface DashboardDatePickerTriggerButtonProps {
 	label: string;
-	range: DateRange | undefined;
+	range?: DateRange;
 }
 
 export function DashboardDatePickerTriggerButton({
