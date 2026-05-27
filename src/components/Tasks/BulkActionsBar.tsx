@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { Archive, Trash2, X } from "lucide-react";
+import { useState } from "react";
 import { DirectiveStatus } from "src/utils/statusUtils";
 import { StatusTag } from "../shared/StatusTag";
 import {
@@ -9,7 +10,6 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { DeletePopover } from "./DeletePopover";
-import { useState } from "react";
 
 interface BulkActionsBarProps {
 	selectedCount: number;
