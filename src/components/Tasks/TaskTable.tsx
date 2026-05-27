@@ -7,6 +7,7 @@ import type {
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import type { DirectiveStatus } from "src/utils/statusUtils";
+import type { DeadlineType } from "../shared/DeadlineTag";
 import type { Task } from "../../data/Tasks";
 import { buildFilterOptionsMap } from "../../functions/filter-utils";
 import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns";
@@ -21,6 +22,7 @@ interface TaskTableProps {
 	extraColumns?: Record<string, ColumnDef<Task>>;
 	showHeader?: boolean;
 	initialStatusFilter?: DirectiveStatus;
+	initialDeadlineTypeFilter?: DeadlineType;
 }
 
 function TaskTable({
@@ -30,6 +32,7 @@ function TaskTable({
 	extraColumns,
 	showHeader = true,
 	initialStatusFilter,
+	initialDeadlineTypeFilter,
 }: TaskTableProps) {
 	const {
 		searchQuery,
@@ -41,9 +44,10 @@ function TaskTable({
 	} = useTasks();
 	const [selectMode, setSelectMode] = useState(false);
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-		initialStatusFilter ? [{ id: "status", value: [initialStatusFilter] }] : [],
-	);
+	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+		...(initialStatusFilter ? [{ id: "status", value: [initialStatusFilter] }] : []),
+		...(initialDeadlineTypeFilter ? [{ id: "deadlineType", value: [initialDeadlineTypeFilter] }] : []),
+	]);
 	const [sorting, setSorting] = useState<SortingState>([]);
 
 	const selectedTaskIds = Object.keys(rowSelection)

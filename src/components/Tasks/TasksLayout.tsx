@@ -4,6 +4,7 @@ import { ChevronDown, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { QuickFilter } from "src/utils/filterUtils";
 import type { DirectiveStatus } from "src/utils/statusUtils";
+import type { DeadlineType } from "../shared/DeadlineTag";
 import { exportTasksToExcel } from "../../functions/export-excel";
 import { applyAllFilters } from "../../functions/filter-utils";
 import { useTasks } from "../../providers/TasksProvider";
@@ -28,6 +29,7 @@ export interface TasksLayoutProps {
 	urlName: string;
 	tabFilter?: QuickFilter;
 	statusFilter?: DirectiveStatus;
+	deadlineTypeFilter?: DeadlineType;
 }
 
 function TasksLayout({
@@ -35,6 +37,7 @@ function TasksLayout({
 	urlName,
 	tabFilter,
 	statusFilter,
+	deadlineTypeFilter,
 }: TasksLayoutProps) {
 	const navigate = useNavigate();
 	const {
@@ -180,6 +183,7 @@ function TasksLayout({
 						tasks={filteredTasks}
 						onEdit={handleEdit}
 						initialStatusFilter={statusFilter}
+						initialDeadlineTypeFilter={deadlineTypeFilter}
 						onDoubleClick={handleEdit}
 					/>
 				) : (
