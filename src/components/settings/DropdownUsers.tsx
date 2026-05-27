@@ -1,13 +1,12 @@
-import { useRef } from "react";
-import { useUsers } from "src/hooks/useUsers";
-import type { IUser } from "src/types";
+import type { UserDto } from "src/api/model";
+import { useSearchUsers } from "src/api/user/user";
 import { SearchDropdown } from "./SearchDropdown";
 import { UserItem } from "./UserDropdownItem";
 
 interface DropdownUsersProps {
 	value: string;
 	onChange(value: string): void;
-	onSelect(user: IUser | null): void;
+	onSelect(user: UserDto | null): void;
 	onClear(): void;
 	placeholder?: string;
 }
@@ -19,28 +18,13 @@ export function DropdownUsers({
 	onClear,
 	placeholder,
 }: DropdownUsersProps) {
-	const { data: users = [], isLoading } = useUsers();
-
-	function filterUsers(query: string) {
-		return query.trim()
-			? users.filter((u) => u.name.includes(query) || u.email.includes(query))
-			: [];
-	}
-
-	const filteredUsers = filterUsers(value);
-
-	function handleUserSearch(newValue: string) {
-		onChange(newValue);
-		if (filterUsers(newValue).length === 0) {
-			onSelect(null);
-		}
-	}
+	const { data: users = [], isLoading } = useSearchUsers({ search: value });
 
 	return (
-		<SearchDropdown<IUser>
-			items={filteredUsers}
+		<SearchDropdown<UserDto>
+			items={users}
 			value={value}
-			onChange={handleUserSearch}
+			onChange={onChange}
 			onSelect={onSelect}
 			onClear={onClear}
 			placeholder={placeholder}

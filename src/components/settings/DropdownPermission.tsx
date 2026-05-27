@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { ChevronDown } from "lucide-react";
-import { UserRole } from "src/types";
+import { PermissionDtoType } from "src/api/model";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -8,16 +8,16 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
-const roleNames: Record<UserRole, string> = {
-	[UserRole.ADMIN]: "ניהול",
-	[UserRole.VIEWER]: "צפייה",
+const permissionTypeNames: Record<PermissionDtoType, string> = {
+	[PermissionDtoType.MANAGER]: "ניהול",
+	[PermissionDtoType.VIEWER]: "צפייה",
 };
 
 interface SelectDropdownPermissionProps {
-	value: UserRole;
+	value: PermissionDtoType;
 	ghost?: boolean;
 	disabled?: boolean;
-	onChange?(role: UserRole): void;
+	onChange?(type: PermissionDtoType): void;
 }
 
 export function DropdownPermission({
@@ -27,17 +27,17 @@ export function DropdownPermission({
 	onChange,
 }: SelectDropdownPermissionProps) {
 	function onSelectPermission(value: string) {
-		onChange?.(value as UserRole);
+		onChange?.(value as PermissionDtoType);
 	}
 
 	return (
 		<DropdownMenu>
 			<RoleTrigger $ghost={ghost} disabled={disabled} $enabled={!disabled}>
-				{roleNames[value]}
+				{permissionTypeNames[value]}
 				<ChevronDown size={16} />
 			</RoleTrigger>
 			<StyledDropdownMenuContent>
-				{Object.entries(roleNames).map(([key, value]) => (
+				{Object.entries(permissionTypeNames).map(([key, value]) => (
 					<StyledDropdownMenuItem
 						key={key}
 						onSelect={() => onSelectPermission(key)}
@@ -50,7 +50,7 @@ export function DropdownPermission({
 	);
 }
 
-const RoleTrigger = styled(DropdownMenuTrigger)<{
+const RoleTrigger = styled(DropdownMenuTrigger) <{
 	$ghost?: boolean;
 	$enabled: boolean;
 }>`
@@ -67,8 +67,8 @@ const RoleTrigger = styled(DropdownMenuTrigger)<{
   cursor: ${({ $enabled }) => ($enabled ? "pointer" : "default")};
 
    ${({ $ghost }) =>
-			$ghost &&
-			`
+		$ghost &&
+		`
     border-radius: 6px;
     border: 1px solid var(--card-border);
     background: rgba(0, 0, 0, 0.04);

@@ -52,6 +52,27 @@ export const getListUsersResponseMock = (): UserDto[] =>
 		]),
 	}))
 
+export const getSearchUsersResponseMock = (): UserDto[] =>
+	Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1,
+	).map(() => ({
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: faker.helpers.arrayElement([
+			{
+				...{
+					id: faker.number.float({ fractionDigits: 2 }),
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					isBI: faker.datatype.boolean(),
+				},
+			},
+			null,
+		]),
+	}))
+
 export const getGetUserResponseMock = (
 	overrideResponse: Partial<Extract<UserDto, object>> = {},
 ): UserDto => ({
@@ -160,6 +181,30 @@ export const getListUsersMockHandler = (
 	)
 }
 
+export const getSearchUsersMockHandler = (
+	overrideResponse?:
+		| UserDto[]
+		| ((
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
+		  ) => Promise<UserDto[]> | UserDto[]),
+	options?: RequestHandlerOptions,
+) => {
+	return http.get(
+		"*/user/search",
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+			return HttpResponse.json(
+				overrideResponse !== undefined
+					? typeof overrideResponse === "function"
+						? await overrideResponse(info)
+						: overrideResponse
+					: getSearchUsersResponseMock(),
+				{ status: 200 },
+			)
+		},
+		options,
+	)
+}
+
 export const getGetUserMockHandler = (
 	overrideResponse?:
 		| UserDto
@@ -234,6 +279,7 @@ export const getDeleteUserMockHandler = (
 export const getUserMock = () => [
 	getCreateUserMockHandler(),
 	getListUsersMockHandler(),
+	getSearchUsersMockHandler(),
 	getGetUserMockHandler(),
 	getUpdateUserMockHandler(),
 	getDeleteUserMockHandler(),

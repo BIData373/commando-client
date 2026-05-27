@@ -1,39 +1,39 @@
 import styled from "@emotion/styled";
-import type { IUser, UserRole } from "src/types";
+import type { PermissionDto, PermissionDtoType, UserDto } from "src/api/model";
 import { TrashButton } from "../shared/TrashButton";
 import { DropdownPermission } from "./DropdownPermission";
 
 interface UserPermissionListProps {
-	users: IUser[];
-	onDelete: (userId: number) => void;
-	onRoleChange: (userId: number, role: UserRole) => void;
+  permissions: PermissionDto[];
+  onDelete: (user: UserDto) => void;
+  onTypeChange: (user: UserDto, type: PermissionDtoType) => void;
 }
 
 export function UserPermissionList({
-	users,
-	onDelete,
-	onRoleChange,
+  permissions,
+  onDelete,
+  onTypeChange,
 }: UserPermissionListProps) {
-	return (
-		<UserListRoot>
-			{users.map((user) => (
-				<UserRow key={user.id}>
-					<UserInfo>
-						<UserHeader>
-							<UserName>{user.name}</UserName>
-							<UserPersonalId> - {user.id}</UserPersonalId>
-						</UserHeader>
-						<UserSubtext>{user.email}</UserSubtext>
-					</UserInfo>
-					<DropdownPermission
-						value={user.role}
-						onChange={(role) => onRoleChange(user.id, role)}
-					/>
-					<TrashButton onClick={() => onDelete(user.id)} size={22} />
-				</UserRow>
-			))}
-		</UserListRoot>
-	);
+  return (
+    <UserListRoot>
+      {permissions.map(({ user, type }) => (
+        <UserRow key={user.id}>
+          <UserInfo>
+            <UserHeader>
+              <UserName>{user.info?.name}</UserName>
+              <UserPersonalId> - {user.id}</UserPersonalId>
+            </UserHeader>
+            <UserSubtext>{user.upn}</UserSubtext>
+          </UserInfo>
+          <DropdownPermission
+            value={type}
+            onChange={(type) => onTypeChange(user, type)}
+          />
+          <TrashButton onClick={() => onDelete(user)} size={22} />
+        </UserRow>
+      ))}
+    </UserListRoot>
+  );
 }
 
 const UserListRoot = styled.div`

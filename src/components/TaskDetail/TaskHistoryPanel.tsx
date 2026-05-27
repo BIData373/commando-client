@@ -1,141 +1,143 @@
 import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 import { ChevronsLeft } from "lucide-react";
+import { type TaskHistoryDto, TaskHistoryDtoAction } from "src/api/model";
 import {
-	formatDateToDateMonthFullYear,
-	formatDateToMinutesHours,
+  formatDateToDateMonthFullYear,
+  formatDateToMinutesHours,
 } from "src/utils/timeFormat";
-import type { HistoryAction, HistoryChange } from "../../types/history";
-
-interface TaskHistoryPanelProps {
-	history: HistoryChange[];
-	onClose: () => void;
-}
 
 interface HistoryGroup {
-	userId: number;
-	name: string;
-	timestamp: Date;
-	changes: Array<{
-		id: number;
-		action: HistoryAction;
-		field: string;
-		value: string;
-	}>;
+  userId: number;
+  name: string;
+  timestamp: Date;
+  changes: Array<{
+    id: number;
+    action: TaskHistoryDtoAction;
+    field: string;
+    value: string | null;
+  }>;
 }
 
-function groupHistoryEntries(history: HistoryChange[]): HistoryGroup[] {
-	const groups: HistoryGroup[] = [];
-	for (const entry of history) {
-		const last = groups[groups.length - 1];
-		if (
-			last &&
-			last.userId === entry.userId &&
-			last.timestamp.getTime() === entry.timestamp.getTime()
-		) {
-			last.changes.push({
-				id: entry.id,
-				action: entry.action,
-				field: entry.field,
-				value: entry.value,
-			});
-		} else {
-			groups.push({
-				userId: entry.userId,
-				name: entry.name,
-				timestamp: entry.timestamp,
-				changes: [
-					{
-						id: entry.id,
-						action: entry.action,
-						field: entry.field,
-						value: entry.value,
-					},
-				],
-			});
-		}
-	}
-	return groups;
+function groupHistoryEntries(history: TaskHistoryDto[]): HistoryGroup[] {
+  const groups: HistoryGroup[] = [];
+  for (const entry of history) {
+    const last = groups[groups.length - 1];
+    if (
+      last &&
+      last.userId === entry.userId &&
+      last.timestamp.getTime() === new Date(entry.timestamp).getTime()
+    ) {
+      last.changes.push({
+        id: entry.id,
+        action: entry.action,
+        field: entry.field,
+        value: entry.value,
+      });
+    } else {
+      groups.push({
+        userId: entry.userId,
+        // FIX Name?
+        name: entry.name,
+        timestamp: new Date(entry.timestamp),
+        changes: [
+          {
+            id: entry.id,
+            action: entry.action,
+            field: entry.field,
+            value: entry.value,
+          },
+        ],
+      });
+    }
+  }
+  return groups;
 }
 
-function getActionLabel(action: HistoryAction, field: string): string {
-	if (action === "create") return "יצר את הפריט:";
-	if (action === "delete") return `נמחק ${field}:`;
-	return `עודכן ${field}:`;
+function getActionLabel(action: TaskHistoryDtoAction, field: string): string {
+  if (action === TaskHistoryDtoAction.CREATE) return "יצר את הפריט:";
+  if (action === TaskHistoryDtoAction.DELETE) return `נמחק ${field}:`;
+
+  return `עודכן ${field}:`;
+}
+
+interface TaskHistoryPanelProps {
+  history: TaskHistoryDto[];
+  onClose: () => void;
 }
 
 function TaskHistoryPanel({ history, onClose }: TaskHistoryPanelProps) {
-	const groups = groupHistoryEntries(history);
+  const groups = groupHistoryEntries(history);
 
-	return (
-		<PanelWrapper>
-			<Header>
-				<CloseBtn onClick={onClose} aria-label="סגור היסטוריה">
-					<ChevronsLeft size={16} />
-				</CloseBtn>
-				<Title>היסטורית שינוים</Title>
-			</Header>
+  return (
+    <PanelWrapper>
+      <Header>
+        <CloseBtn onClick={onClose} aria-label="סגור היסטוריה">
+          <ChevronsLeft size={16} />
+        </CloseBtn>
+        <Title>היסטורית שינוים</Title>
+      </Header>
 
-			<Divider />
+      <Divider />
 
-			<ScrollArea>
-				<TimelineList>
-					{groups.map((group, index) => {
-						const isLast = index === groups.length - 1;
-						return (
-							<TimelineItem
-								key={`${group.userId}-${group.timestamp.getTime()}`}
-							>
-								<ConnectorColumn>
-									{isLast ? (
-										<>
-											<ConnectorLine $flex />
-											<Dot />
-										</>
-									) : (
-										<>
-											<Dot />
-											<ConnectorLine $flex />
-										</>
-									)}
-								</ConnectorColumn>
+      <ScrollArea>
+        <TimelineList>
+          {groups.map((group, index) => {
+            const isLast = index === groups.length - 1;
+            return (
+              <TimelineItem
+                key={`${group.userId}-${group.timestamp.getTime()}`}
+              >
+                <ConnectorColumn>
+                  {isLast ? (
+                    <>
+                      <ConnectorLine $flex />
+                      <Dot />
+                    </>
+                  ) : (
+                    <>
+                      <Dot />
+                      <ConnectorLine $flex />
+                    </>
+                  )}
+                </ConnectorColumn>
 
-								<ItemContent>
-									<MetaRow>
-										<UserGroup>
-											<UserName>{group.name}</UserName>
-											<UserSeparetor>-</UserSeparetor>
-											<UserId>{group.userId}</UserId>
-										</UserGroup>
-										<TimeGroup>
-											<DateText>
-												{formatDateToDateMonthFullYear(group.timestamp)}
-											</DateText>
-											<TimeSeparator />
-											<TimeText>
-												{formatDateToMinutesHours(group.timestamp)}
-											</TimeText>
-										</TimeGroup>
-									</MetaRow>
+                <ItemContent>
+                  <MetaRow>
+                    <UserGroup>
+                      <UserName>{group.name}</UserName>
+                      <UserSeparetor>-</UserSeparetor>
+                      <UserId>{group.userId}</UserId>
+                    </UserGroup>
+                    <TimeGroup>
+                      <DateText>
+                        {formatDateToDateMonthFullYear(group.timestamp)}
+                      </DateText>
+                      <TimeSeparator />
+                      <TimeText>
+                        {formatDateToMinutesHours(group.timestamp)}
+                      </TimeText>
+                    </TimeGroup>
+                  </MetaRow>
 
-									<ChangeCard>
-										{group.changes.map((change) => (
-											<ChangeRow key={change.id}>
-												<ChangeLabel>
-													{getActionLabel(change.action, change.field)}
-												</ChangeLabel>
-												<ChangeValue>{change.value}</ChangeValue>
-											</ChangeRow>
-										))}
-									</ChangeCard>
-								</ItemContent>
-							</TimelineItem>
-						);
-					})}
-				</TimelineList>
-			</ScrollArea>
-		</PanelWrapper>
-	);
+                  <ChangeCard>
+                    {group.changes.map((change) => (
+                      <ChangeRow key={change.id}>
+                        <ChangeLabel>
+                          {getActionLabel(change.action, change.field)}
+                        </ChangeLabel>
+                        <ChangeValue>{change.value}</ChangeValue>
+                      </ChangeRow>
+                    ))}
+                  </ChangeCard>
+                </ItemContent>
+              </TimelineItem>
+            );
+          })}
+        </TimelineList>
+      </ScrollArea>
+    </PanelWrapper>
+  );
 }
 
 export default TaskHistoryPanel;

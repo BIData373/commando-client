@@ -2,10 +2,10 @@ import styled from "@emotion/styled";
 import { useForm } from "@tanstack/react-form";
 import { UserPlus } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useCreateAssignee, useUpdateAssignee } from "src/hooks/useAssignees";
+import { useCreateAssignee, useUpdateAssignee } from "src/api/assignee/assignee";
+import type { AssigneeDto, UserDto } from "src/api/model";
 import { type IMesibaIcon, useMesibaIconByName } from "src/hooks/useMesiba";
-import { useUsers } from "src/hooks/useUsers";
-import type { IAssignee, IUser } from "src/types";
+import { useWorkspace } from "src/providers/WorkspaceProvider";
 import { concatName } from "src/utils/userUtils";
 import { CancelButton } from "../shared/CancelButton";
 import { PrimaryButton } from "../shared/PrimaryButton";
@@ -25,7 +25,7 @@ import { UsersLists } from "./UsersLists";
 interface AssigneeDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	assignee?: IAssignee;
+	assignee?: AssigneeDto;
 }
 
 export function AssigneeDialog({
@@ -35,18 +35,19 @@ export function AssigneeDialog({
 }: AssigneeDialogProps) {
 	const isUpdate = !!assignee;
 
-	const createAssignee = useCreateAssignee();
-	const updateAssignee = useUpdateAssignee();
-	const { data: users = [] } = useUsers();
+	const { workspace: { id: workspaceId } } = useWorkspace()
 
-	const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
-	const [localAssignees, setLocalAssignees] = useState<IUser[]>([]);
+	const { mutateAsync: createAssignee } = useCreateAssignee();
+	const { mutateAsync: updateAssignee } = useUpdateAssignee();
+
+	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null);
+	const [localAssignees, setLocalAssignees] = useState<UserDto[]>([]);
 	const [submitError, setSubmitError] = useState<string | null>(null);
 
 	const [iconSearch, setIconSearch] = useState("");
 	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null);
 
-	const { data: existingIcon } = useMesibaIconByName(assignee?.emblem ?? "");
+	const { data: existingIcon } = useMesibaIconByName(assignee?.icon ?? "");
 
 	useEffect(() => {
 		if (existingIcon) setSelectedIcon(existingIcon);
@@ -65,26 +66,26 @@ export function AssigneeDialog({
 		defaultValues: {
 			name: assignee?.name ?? "",
 			color: assignee?.color ?? randomColor,
-			emblem: assignee?.emblem ?? "",
+			icon: assignee?.icon ?? "",
 			userSearch: "",
 		},
 		onSubmit: async ({ value }) => {
 			const payload = {
 				name: value.name.trim(),
 				color: value.color,
-				emblem: value.emblem || null,
+				icon: value.icon || null,
 				userIds: localAssignees.map((u) => u.id),
 				role: 'מג"ד 373',
 				email: "magad373@gmail.com",
 			};
 			try {
 				if (assignee) {
-					await updateAssignee.mutateAsync({
-						assigneeId: assignee.id,
-						data: payload,
+					await updateAssignee({
+						pathParams: { id: assignee.id },
+						data: payload
 					});
 				} else {
-					await createAssignee.mutateAsync(payload);
+					await createAssignee({ data: { workspaceId, ...payload } });
 				}
 				onOpenChange(false);
 			} catch {
@@ -107,7 +108,7 @@ export function AssigneeDialog({
 		setLocalAssignees((prev) => prev.filter((u) => u.id !== id));
 	}
 
-	function handleSearchSelect(user: IUser) {
+	function handleSearchSelect(user: UserDto) {
 		if (user) {
 			form.setFieldValue("userSearch", concatName(user));
 		}
@@ -124,22 +125,19 @@ export function AssigneeDialog({
 	}
 
 	function handleIconSelect(icon: IMesibaIcon) {
-		form.setFieldValue("emblem", icon.iconName);
+		form.setFieldValue("icon", icon.iconName);
 		setSelectedIcon(icon);
 		setIconSearch("");
 	}
 
 	function handleIconClear() {
-		form.setFieldValue("emblem", "");
+		form.setFieldValue("icon", "");
 		setSelectedIcon(null);
 		setIconSearch("");
 	}
 
 	function resetForm() {
-		const savedAssignees = assignee
-			? users.filter((u) => assignee.userIds.includes(u.id))
-			: [];
-		setLocalAssignees(savedAssignees);
+		setLocalAssignees(assignee?.users ?? []);
 		setSubmitError(null);
 		setIconSearch("");
 		setSelectedIcon(existingIcon ?? null);

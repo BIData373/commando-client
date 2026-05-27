@@ -1,5 +1,5 @@
-import type { IUser } from "src/types";
+import type { PermissionDtoType, UserDto } from "src/api/model";
 
-export function concatName(user: IUser) {
-	return `${user.name} ${user.id} ${user.email} / ${user.role}`;
+export function concatName(user: UserDto, type?: PermissionDtoType) {
+	return `${user.info?.name} ${user.id} ${user.upn}${type ? ` / ${type}` : ''}`;
 }

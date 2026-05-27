@@ -26,6 +26,7 @@ import type {
 	CreateUserDto,
 	DeleteUserPathParameters,
 	GetUserPathParameters,
+	SearchUsersParams,
 	UpdateUserDto,
 	UpdateUserPathParameters,
 	UserDto,
@@ -211,6 +212,136 @@ export function useListUsers<
 	queryKey: DataTag<QueryKey, TData, TError>
 } {
 	const queryOptions = getListUsersQueryOptions(options)
+
+	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+		TData,
+		TError
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+	return { ...query, queryKey: queryOptions.queryKey }
+}
+
+export const searchUsers = (
+	params: SearchUsersParams,
+	signal?: AbortSignal,
+) => {
+	return sendRequest<UserDto[]>({
+		url: `/user/search`,
+		method: "GET",
+		params,
+		signal,
+	})
+}
+
+export const getSearchUsersQueryKey = (params?: SearchUsersParams) => {
+	return [`/user/search`, ...(params ? [params] : [])] as const
+}
+
+export const getSearchUsersQueryOptions = <
+	TData = Awaited<ReturnType<typeof searchUsers>>,
+	TError = unknown,
+>(
+	params: SearchUsersParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof searchUsers>>, TError, TData>
+		>
+	},
+) => {
+	const { query: queryOptions } = options ?? {}
+
+	const queryKey = queryOptions?.queryKey ?? getSearchUsersQueryKey(params)
+
+	const queryFn: QueryFunction<Awaited<ReturnType<typeof searchUsers>>> = ({
+		signal,
+	}) => searchUsers(params, signal)
+
+	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+		Awaited<ReturnType<typeof searchUsers>>,
+		TError,
+		TData
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SearchUsersQueryResult = NonNullable<
+	Awaited<ReturnType<typeof searchUsers>>
+>
+export type SearchUsersQueryError = unknown
+
+export function useSearchUsers<
+	TData = Awaited<ReturnType<typeof searchUsers>>,
+	TError = unknown,
+>(
+	params: SearchUsersParams,
+	options: {
+		query: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof searchUsers>>, TError, TData>
+		> &
+			Pick<
+				DefinedInitialDataOptions<
+					Awaited<ReturnType<typeof searchUsers>>,
+					TError,
+					Awaited<ReturnType<typeof searchUsers>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useSearchUsers<
+	TData = Awaited<ReturnType<typeof searchUsers>>,
+	TError = unknown,
+>(
+	params: SearchUsersParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof searchUsers>>, TError, TData>
+		> &
+			Pick<
+				UndefinedInitialDataOptions<
+					Awaited<ReturnType<typeof searchUsers>>,
+					TError,
+					Awaited<ReturnType<typeof searchUsers>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useSearchUsers<
+	TData = Awaited<ReturnType<typeof searchUsers>>,
+	TError = unknown,
+>(
+	params: SearchUsersParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof searchUsers>>, TError, TData>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+
+export function useSearchUsers<
+	TData = Awaited<ReturnType<typeof searchUsers>>,
+	TError = unknown,
+>(
+	params: SearchUsersParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof searchUsers>>, TError, TData>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+} {
+	const queryOptions = getSearchUsersQueryOptions(params, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,

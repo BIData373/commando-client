@@ -1,31 +1,9 @@
-import type { IAssignee } from "src/types";
+import type { TaskDto } from "src/api/model";
 import { DirectiveStatus } from "src/utils/statusUtils";
 import { DeadlineType } from "../components/shared/DeadlineTag";
-import type { RelatedDirective } from "../components/Tasks/ResponsibleCell";
 import { MOCK_ASSIGNEES } from "./Assignees";
 
-export interface Task {
-	id: number;
-	title: string;
-	details?: string;
-	flagged: boolean;
-	status: DirectiveStatus;
-	responsible: IAssignee | null;
-	relatedDirectives: RelatedDirective[];
-	deadlineType: DeadlineType;
-	dueDate: Date | null;
-	isOverdue: boolean;
-	discussionName: string;
-	discussionDate: string;
-	hasAttachment: boolean;
-	attachmentUrl: string | null;
-	tags: string[];
-	notes: string;
-	createdAt: Date;
-	updatedAt: Date;
-}
-
-export const INITIAL_TASKS: Task[] = [
+export const INITIAL_TASKS: TaskDto[] = [
 	{
 		id: 56,
 		title: "בדיקת כשירות רכבים מבצעיים",

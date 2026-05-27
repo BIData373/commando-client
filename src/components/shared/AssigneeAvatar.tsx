@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
-import type { IAssignee } from "src/types";
+import type { AssigneeDto } from "src/api/model";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 
 interface AssigneeAvatarProps {
-	assignee: IAssignee;
+	assignee: AssigneeDto;
 	size?: number;
 	ref?: React.Ref<HTMLButtonElement>;
 	cursor?: boolean;
@@ -26,10 +26,10 @@ export const AssigneeAvatar = ({
 }: AssigneeAvatarProps) => {
 	return (
 		<StyledAvatar $cursor={cursor} ref={ref} {...props}>
-			{assignee.emblem ? (
+			{assignee.icon ? (
 				<EmblemAvatarImg
 					$size={size}
-					src={assignee.emblem}
+					src={assignee.icon}
 					alt={assignee.name}
 				/>
 			) : (
@@ -41,13 +41,13 @@ export const AssigneeAvatar = ({
 	);
 };
 
-const StyledAvatar = styled(Avatar)<{ $cursor?: boolean }>`
+const StyledAvatar = styled(Avatar) <{ $cursor?: boolean }>`
     &:hover {
         cursor: ${({ $cursor }) => ($cursor ? "pointer" : "default")};
     }
 `;
 
-const ColoredFallback = styled(AvatarFallback)<{
+const ColoredFallback = styled(AvatarFallback) <{
 	$color: string | null;
 	$size?: number;
 }>`

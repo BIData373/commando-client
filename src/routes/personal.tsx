@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import PersonalTasksLayout, {
-	PERSONAL_PROVIDER_CONFIG,
-} from "../components/Personal/PersonalTasksLayout";
+import { PERSONAL_TASKS } from "src/data/PersonalTasks";
+import type { Task } from "src/data/Tasks";
+import type { TaskColumn } from "src/hooks/useTaskColumns";
+import PersonalTasksLayout from "../components/Personal/PersonalTasksLayout";
 import type { View } from "../components/Tasks/TasksLayout";
 import { TasksProvider } from "../providers/TasksProvider";
 
@@ -19,11 +20,35 @@ export const Route = createFileRoute("/personal")({
 	},
 });
 
+const PERSONAL_DEFAULT_COLUMN_ORDER: TaskColumn[] = [
+	"title",
+	"status",
+	"responsible",
+	"deadlineType",
+	"discussionName",
+	"tags",
+	"notes",
+	"workspace",
+	"createdAt",
+	"updatedAt",
+] as TaskColumn[];
+
+const PERSONAL_DEFAULT_HIDDEN = new Set<TaskColumn>([
+	"tags",
+	"notes",
+	"updatedAt",
+] as TaskColumn[]);
+
+
 function PersonalPage() {
 	const { view } = Route.useSearch();
 
 	return (
-		<TasksProvider {...PERSONAL_PROVIDER_CONFIG}>
+		<TasksProvider
+			initialTasks={PERSONAL_TASKS as Task[]}
+			defaultColumnOrder={PERSONAL_DEFAULT_COLUMN_ORDER}
+			defaultHiddenColumns={PERSONAL_DEFAULT_HIDDEN}
+		>
 			<PersonalTasksLayout view={view} urlName="" />
 		</TasksProvider>
 	);

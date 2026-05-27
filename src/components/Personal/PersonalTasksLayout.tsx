@@ -20,25 +20,6 @@ import { TaskTable } from "../Tasks/TaskTable";
 import { TooltipProvider } from "../ui/tooltip";
 import { MetricsBar } from "./MetricsBar";
 
-const PERSONAL_DEFAULT_COLUMN_ORDER: TaskColumn[] = [
-	"title",
-	"status",
-	"responsible",
-	"deadlineType",
-	"discussionName",
-	"tags",
-	"notes",
-	"workspace",
-	"createdAt",
-	"updatedAt",
-] as TaskColumn[];
-
-const PERSONAL_DEFAULT_HIDDEN = new Set<TaskColumn>([
-	"tags",
-	"notes",
-	"updatedAt",
-] as TaskColumn[]);
-
 const WORKSPACE_COLUMN: ColumnDef<Task> = {
 	id: "workspace",
 	accessorFn: (row) => (row as PersonalTask).workspace.name,
@@ -65,12 +46,6 @@ const WORKSPACE_COLUMN: ColumnDef<Task> = {
 
 const EXTRA_COLUMNS: Record<string, ColumnDef<Task>> = {
 	workspace: WORKSPACE_COLUMN,
-};
-
-export const PERSONAL_PROVIDER_CONFIG = {
-	initialTasks: PERSONAL_TASKS as Task[],
-	defaultColumnOrder: PERSONAL_DEFAULT_COLUMN_ORDER,
-	defaultHiddenColumns: PERSONAL_DEFAULT_HIDDEN,
 };
 
 function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {

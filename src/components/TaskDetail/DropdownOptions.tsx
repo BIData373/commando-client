@@ -1,21 +1,24 @@
 import styled from "@emotion/styled";
 import { MoreVertical } from "lucide-react";
-import { type IUser, UserRole } from "src/types";
+import { PermissionDtoType } from "src/api/model";
+import { useGetMyPermission } from "src/api/permission/permission";
+import { useWorkspace } from "src/providers/WorkspaceProvider";
 import { RowActionsMenu } from "../Tasks/RowActionsMenu";
 
 interface DropdownOptions {
-	currentUser: IUser;
 	onEdit(): void;
 	onArchive(): void;
 	onDelete(): void;
 }
 
 export const DropdownOptions = ({
-	currentUser,
 	onEdit,
 	onArchive,
 	onDelete,
 }: DropdownOptions) => {
+	const { workspace: { id: workspaceId } } = useWorkspace()
+	const { data: myPermission } = useGetMyPermission({ workspaceId })
+
 	return (
 		<RowActionsMenu
 			trigger={
@@ -23,9 +26,9 @@ export const DropdownOptions = ({
 					<MoreVertical size={16} />
 				</DotsButton>
 			}
-			onDelete={currentUser.role === UserRole.ADMIN ? onDelete : undefined}
+			onDelete={myPermission?.type === PermissionDtoType.MANAGER ? onDelete : undefined}
 			onArchive={onArchive}
-			onEdit={currentUser.role === UserRole.ADMIN ? onEdit : undefined}
+			onEdit={myPermission?.type === PermissionDtoType.MANAGER ? onEdit : undefined}
 		/>
 	);
 };

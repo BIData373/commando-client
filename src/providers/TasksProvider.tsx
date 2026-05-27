@@ -128,14 +128,20 @@ export function TasksProvider({
 		setTasks((prev) => {
 			const target = prev.find((t) => t.id === taskId);
 			if (!target) return prev;
+
 			const responsibleId = target.responsible?.id;
+
 			return prev.map((t) => {
 				if (t.id === taskId) return { ...t, status, updatedAt: new Date() };
+
 				if (responsibleId == null) return t;
+
 				const hasRelated = t.relatedDirectives.some(
 					(d) => d.user.id === responsibleId,
 				);
+
 				if (!hasRelated) return t;
+				
 				return {
 					...t,
 					relatedDirectives: t.relatedDirectives.map((d) =>

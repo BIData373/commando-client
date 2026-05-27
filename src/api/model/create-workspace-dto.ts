@@ -9,7 +9,8 @@
 export interface CreateWorkspaceDto {
 	title: string
 	urlName: string
-	icon?: string
+	/** @nullable */
+	icon?: string | null
 	assigneeStatusEditable?: boolean
 	pikudId: number
 }
