@@ -1,12 +1,12 @@
 import styled from "@emotion/styled";
-import { PermissionDtoType, type UserDto } from "src/api/model";
+import { PermissionDtoType } from "src/api/model";
 import { useGetMyPermission } from "src/api/permission/permission";
+import { useCurrentUser } from "src/hooks/useCurrentUser";
 import { useWorkspace } from "src/providers/WorkspaceProvider";
 import type { RelatedDirective } from "../Tasks/ResponsibleCell";
 import { AssigneeContainer } from "./AssigneeContainer";
 
 interface AssigneeSectionProps {
-	currentUser: UserDto;
 	relatedDirectives: RelatedDirective[];
 	onDirectiveStatusChange: (
 		assigneeId: number,
@@ -15,19 +15,20 @@ interface AssigneeSectionProps {
 }
 
 export const AssigneeSection = ({
-	currentUser,
 	relatedDirectives,
 	onDirectiveStatusChange,
 }: AssigneeSectionProps) => {
+	const currentUser = useCurrentUser()
+
 	const { workspace: { id: workspaceId } } = useWorkspace()
 	const { data: permission } = useGetMyPermission({ workspaceId })
 	const isAdmin = permission?.type === PermissionDtoType.MANAGER;
 
 	const myGroups = relatedDirectives.filter((d) =>
-		d.user.userIds.includes(currentUser.id),
+		d.assignee.userIds.includes(currentUser.id),
 	);
 	const otherGroups = relatedDirectives.filter(
-		(d) => !d.user.userIds.includes(currentUser.id),
+		(d) => !d.assignee.userIds.includes(currentUser.id),
 	);
 
 	const headerGroup = isAdmin ? relatedDirectives : myGroups;
@@ -49,7 +50,7 @@ export const AssigneeSection = ({
 					<AssigneeRowsList>
 						{headerGroup.map((item) => (
 							<AssigneeContainer
-								key={item.user.id}
+								key={item.assignee.id}
 								assignee={item}
 								isAdmin={isAdmin}
 								editable={true}
@@ -66,7 +67,7 @@ export const AssigneeSection = ({
 						<AssigneeRowsList>
 							{otherGroups.map((item) => (
 								<AssigneeContainer
-									key={item.user.id}
+									key={item.assignee.id}
 									assignee={item}
 									isAdmin={isAdmin}
 									editable={false}

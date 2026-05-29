@@ -97,7 +97,7 @@ export const getDeleteAssigneeTaskStatusMockHandler = (
 	options?: RequestHandlerOptions,
 ) => {
 	return http.delete(
-		"*/assignee-task-status/:taskId/:assigneeId",
+		"*/assignee-task-status",
 		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined

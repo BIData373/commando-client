@@ -5,19 +5,19 @@ import {
 	useMemo,
 	useState,
 } from "react";
+import type { TaskDto } from "src/api/model";
 import type { QuickFilter } from "src/utils/filterUtils";
 import type { DirectiveStatus } from "src/utils/statusUtils";
 import { DEFAULT_COLUMN_ORDER } from "../components/Tasks/ColumnVisibilityDropdown";
-import { INITIAL_TASKS, type Task } from "../data/Tasks";
 import { applyAllFilters } from "../functions/filter-utils";
 import type { TaskColumn } from "../hooks/useTaskColumns";
 
-export type NewTaskInput = Omit<Task, "id" | "createdAt" | "updatedAt"> & {
+export type NewTaskInput = Omit<TaskDto, "id" | "createdAt" | "updatedAt"> & {
 	groupKey?: string;
 };
 
 interface TasksContextValue {
-	tasks: Task[];
+	tasks: TaskDto[];
 	addTasks: (inputs: NewTaskInput[]) => void;
 	updateTaskStatus: (taskId: number, status: DirectiveStatus) => void;
 	removeTasks: (taskIds: number[]) => void;
@@ -31,7 +31,7 @@ interface TasksContextValue {
 	setColumnOrder: (order: TaskColumn[]) => void;
 	hiddenColumns: Set<TaskColumn>;
 	toggleColumn: (columnId: TaskColumn) => void;
-	filteredTasks: Task[];
+	filteredTasks: TaskDto[];
 }
 
 const WORKSPACE_DEFAULT_HIDDEN = new Set<TaskColumn>([
@@ -42,19 +42,20 @@ const WORKSPACE_DEFAULT_HIDDEN = new Set<TaskColumn>([
 const TasksContext = createContext<TasksContextValue | null>(null);
 
 interface TasksProviderProps {
-	initialTasks?: Task[];
+	initialTasks?: TaskDto[];
 	defaultColumnOrder?: TaskColumn[];
 	defaultHiddenColumns?: Set<TaskColumn>;
 	children: ReactNode;
 }
 
 export function TasksProvider({
-	initialTasks = INITIAL_TASKS,
+	initialTasks = [],
 	defaultColumnOrder = DEFAULT_COLUMN_ORDER,
 	defaultHiddenColumns = WORKSPACE_DEFAULT_HIDDEN,
 	children,
 }: TasksProviderProps) {
-	const [tasks, setTasks] = useState<Task[]>(initialTasks);
+	// FIX Make tasks state into useMemo, duplicating rows for each task assignee
+	const [tasks, setTasks] = useState<TaskDto[]>(initialTasks);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [activeQuickFilters, setActiveQuickFilters] = useState<
 		Set<QuickFilter>
@@ -105,7 +106,7 @@ export function TasksProvider({
 			let nextId = prev.reduce((max, t) => (t.id > max ? t.id : max), 0);
 			const groupIds = new Map<string, number>();
 			const now = new Date();
-			const newTasks: Task[] = inputs.map(({ groupKey, ...input }) => {
+			const newTasks: TaskDto[] = inputs.map(({ groupKey, ...input }) => {
 				let id: number;
 				if (groupKey) {
 					const existing = groupIds.get(groupKey);
@@ -141,7 +142,7 @@ export function TasksProvider({
 				);
 
 				if (!hasRelated) return t;
-				
+
 				return {
 					...t,
 					relatedDirectives: t.relatedDirectives.map((d) =>
@@ -174,8 +175,8 @@ export function TasksProvider({
 					...(isTarget ? { status, updatedAt: new Date() } : {}),
 					relatedDirectives: updatedRelated
 						? t.relatedDirectives.map((d) =>
-								updatedResponsibleIds.has(d.user.id) ? { ...d, status } : d,
-							)
+							updatedResponsibleIds.has(d.user.id) ? { ...d, status } : d,
+						)
 						: t.relatedDirectives,
 				};
 			});

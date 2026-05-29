@@ -3,6 +3,7 @@ import type { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { differenceInDays, startOfToday } from "date-fns";
 import { AlertTriangle, MoreVertical } from "lucide-react";
 import { BsPaperclip as Paperclip } from "react-icons/bs";
+import type { TaskDto } from "src/api/model";
 import type { DirectiveStatus } from "src/utils/statusUtils";
 import DeadlineTag, {
 	DEADLINE_LABELS,
@@ -22,11 +23,10 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "../components/ui/tooltip";
-import type { Task } from "../data/Tasks";
 import { formatDateShort } from "../functions/date-utils";
 import type { FilterOption } from "../functions/filter-utils";
 
-export type TaskColumn = keyof Task;
+export type TaskColumn = keyof TaskDto;
 
 export interface TaskColumnMeta {
 	id: TaskColumn;
@@ -56,7 +56,7 @@ const STATUS_SORT_ORDER: Record<DirectiveStatus, number> = {
 	completed: 2,
 };
 
-const multiSelectFilter: FilterFn<Task> = (
+const multiSelectFilter: FilterFn<TaskDto> = (
 	row,
 	columnId,
 	filterValue: string[],
@@ -70,7 +70,7 @@ const multiSelectFilter: FilterFn<Task> = (
 
 interface SelectModeConfig {
 	enabled: boolean;
-	tasks: Task[];
+	tasks: TaskDto[];
 	selectedTaskIds: number[];
 	onSelectAll: (checked: boolean) => void;
 }
@@ -93,7 +93,7 @@ interface UseTaskColumnsOptions {
 }
 
 interface UseTaskColumnsReturn {
-	columns: ColumnDef<Task>[];
+	columns: ColumnDef<TaskDto>[];
 	availableColumns: TaskColumnMeta[];
 }
 
@@ -105,35 +105,35 @@ function useTaskColumns({
 	selectMode,
 	actions,
 }: UseTaskColumnsOptions): UseTaskColumnsReturn {
-	const selectColumn: ColumnDef<Task> | null = selectMode?.enabled
+	const selectColumn: ColumnDef<TaskDto> | null = selectMode?.enabled
 		? {
-				id: "select",
-				size: 70,
-				enableSorting: false,
-				enableColumnFilter: false,
-				header: () => (
-					<CheckboxCenter>
-						<Checkbox
-							checked={
-								selectMode.tasks.length > 0 &&
-								selectMode.selectedTaskIds.length === selectMode.tasks.length
-							}
-							onCheckedChange={(checked) => selectMode.onSelectAll(!!checked)}
-						/>
-					</CheckboxCenter>
-				),
-				cell: ({ row }) => (
-					<CheckboxCenter>
-						<Checkbox
-							checked={row.getIsSelected()}
-							onCheckedChange={(checked) => row.toggleSelected(!!checked)}
-						/>
-					</CheckboxCenter>
-				),
-			}
+			id: "select",
+			size: 70,
+			enableSorting: false,
+			enableColumnFilter: false,
+			header: () => (
+				<CheckboxCenter>
+					<Checkbox
+						checked={
+							selectMode.tasks.length > 0 &&
+							selectMode.selectedTaskIds.length === selectMode.tasks.length
+						}
+						onCheckedChange={(checked) => selectMode.onSelectAll(!!checked)}
+					/>
+				</CheckboxCenter>
+			),
+			cell: ({ row }) => (
+				<CheckboxCenter>
+					<Checkbox
+						checked={row.getIsSelected()}
+						onCheckedChange={(checked) => row.toggleSelected(!!checked)}
+					/>
+				</CheckboxCenter>
+			),
+		}
 		: null;
 
-	const columnMap: Partial<Record<TaskColumn, ColumnDef<Task>>> = {
+	const columnMap: Partial<Record<TaskColumn, ColumnDef<TaskDto>>> = {
 		id: {
 			accessorKey: "id",
 			header: ({ column }) => (
@@ -242,7 +242,7 @@ function useTaskColumns({
 			sortingFn: "text",
 			cell: ({
 				row: {
-					original: { responsible, relatedDirectives },
+					original: { assignees },
 				},
 			}) => (
 				<ResponsibleCell
@@ -262,9 +262,9 @@ function useTaskColumns({
 			),
 			size: 160,
 			filterFn: multiSelectFilter,
-			sortingFn: (rowA, rowB) => {
-				const a = rowA.original.dueDate?.getTime() ?? Infinity;
-				const b = rowB.original.dueDate?.getTime() ?? Infinity;
+			sortingFn: ({ original: { dueDate: dueDateA } }, { original: { dueDate: dueDateB } }) => {
+				const a = dueDateA ? new Date(dueDateA).getTime() : Infinity;
+				const b = dueDateB ? new Date(dueDateB).getTime() : Infinity;
 				return a > b ? 1 : a < b ? -1 : 0;
 			},
 			cell: ({
@@ -273,7 +273,7 @@ function useTaskColumns({
 				},
 			}) => {
 				const today = startOfToday();
-				const daysUntil = dueDate ? differenceInDays(dueDate, today) : null;
+				const daysUntil = dueDate ? differenceInDays(new Date(dueDate), today) : null;
 				const isOverdue =
 					daysUntil !== null &&
 					daysUntil < 0 &&
@@ -289,7 +289,7 @@ function useTaskColumns({
 							</DeadlineTag>
 						)}
 						{dueDate && (
-							<DeadlineDateText>{formatDateShort(dueDate)}</DeadlineDateText>
+							<DeadlineDateText>{formatDateShort(new Date(dueDate))}</DeadlineDateText>
 						)}
 						{(isOverdue || isApproaching) && (
 							<DeadlineWarning>
@@ -331,10 +331,10 @@ function useTaskColumns({
 			sortingFn: "text",
 			cell: ({
 				row: {
-					original: { discussionName, discussionDate, hasAttachment },
+					original: { source: { name, date }, hasAttachment },
 				},
 			}) => {
-				const parts = [discussionName, discussionDate].filter(Boolean);
+				const parts = [name, date].filter(Boolean);
 				return (
 					<SourceCell>
 						{hasAttachment && <SourceIcon size={18} />}
@@ -408,37 +408,37 @@ function useTaskColumns({
 		},
 	};
 
-	const actionsColumn: ColumnDef<Task> | null = actions
+	const actionsColumn: ColumnDef<TaskDto> | null = actions
 		? {
-				id: "actions",
-				size: 43,
-				enableSorting: false,
-				enableColumnFilter: false,
-				cell: ({
-					row: {
-						original: { id },
-					},
-				}) => (
-					<RowActionsMenu
-						trigger={
-							<ActionsButton>
-								<MoreVertical size={16} />
-							</ActionsButton>
-						}
-						onEdit={() => actions.onEdit(id)}
-						onEnterSelect={() => actions.onEnterSelectMode(id)}
-						onArchive={() => actions.onArchive([id])}
-						onDelete={() => actions.onDelete([id])}
-					/>
-				),
-			}
+			id: "actions",
+			size: 43,
+			enableSorting: false,
+			enableColumnFilter: false,
+			cell: ({
+				row: {
+					original: { id },
+				},
+			}) => (
+				<RowActionsMenu
+					trigger={
+						<ActionsButton>
+							<MoreVertical size={16} />
+						</ActionsButton>
+					}
+					onEdit={() => actions.onEdit(id)}
+					onEnterSelect={() => actions.onEnterSelectMode(id)}
+					onArchive={() => actions.onArchive([id])}
+					onDelete={() => actions.onDelete([id])}
+				/>
+			),
+		}
 		: null;
 
 	const visibleOrderedColumns = visibleColumns
 		.filter((id) => columnMap[id])
 		.map((id) => (selectColumn && id === "id" ? selectColumn : columnMap[id]!));
 
-	const columns: ColumnDef<Task>[] = [
+	const columns: ColumnDef<TaskDto>[] = [
 		...visibleOrderedColumns,
 		...(actionsColumn ? [actionsColumn] : []),
 	];

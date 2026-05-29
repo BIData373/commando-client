@@ -11,7 +11,7 @@ import { HttpResponse, http } from "msw"
 
 import type { TaskHistoryDto } from "../model"
 
-export const getGetTaskHistoryResponseMock = (): TaskHistoryDto[] =>
+export const getListTaskHistoryResponseMock = (): TaskHistoryDto[] =>
 	Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -37,7 +37,7 @@ export const getGetTaskHistoryResponseMock = (): TaskHistoryDto[] =>
 		userId: faker.number.float({ fractionDigits: 2 }),
 	}))
 
-export const getGetTaskHistoryMockHandler = (
+export const getListTaskHistoryMockHandler = (
 	overrideResponse?:
 		| TaskHistoryDto[]
 		| ((
@@ -53,11 +53,11 @@ export const getGetTaskHistoryMockHandler = (
 					? typeof overrideResponse === "function"
 						? await overrideResponse(info)
 						: overrideResponse
-					: getGetTaskHistoryResponseMock(),
+					: getListTaskHistoryResponseMock(),
 				{ status: 200 },
 			)
 		},
 		options,
 	)
 }
-export const getTaskHistoryMock = () => [getGetTaskHistoryMockHandler()]
+export const getTaskHistoryMock = () => [getListTaskHistoryMockHandler()]

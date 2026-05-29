@@ -1,12 +1,12 @@
 import styled from "@emotion/styled";
 import { Calendar as CalendarIcon, ChevronDown, Paperclip } from "lucide-react";
 import { useState } from "react";
-import type { DiscussionSource } from "../../data/Discussions";
-import { MOCK_DISCUSSIONS } from "../../data/Discussions";
+import type { SourceDto } from "src/api/model";
+import { useListSources } from "src/api/source/source";
+import { useWorkspace } from "src/providers/WorkspaceProvider";
 import { formatDate } from "../../functions/date-utils";
 import type { DatePickerValue } from "../shared/DatePicker";
 import DatePicker, { CalendarMode } from "../shared/DatePicker";
-
 import HighlightMatch from "../shared/HighlightMatch";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {
@@ -15,15 +15,14 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip";
-export type { DiscussionSource };
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface SourceFieldProps {
 	source: string;
 	sourceDate: Date | null;
-	linkedSource: DiscussionSource | null;
-	onSourceSelect: (name: string, discussion?: DiscussionSource | null) => void;
+	linkedSource: SourceDto | null;
+	onSourceSelect: (name: string, discussion?: SourceDto | null) => void;
 	onDateSelect: (date: Date | undefined) => void;
 	label?: string;
 	uniqueNames?: boolean;
@@ -45,6 +44,9 @@ function SourceField({
 	const [isDateOpen, setIsDateOpen] = useState(false);
 	const isSourceLinked = linkedSource !== null;
 
+	const { workspace: { id: workspaceId } } = useWorkspace()
+	const { data: sources = [] } = useListSources({ workspaceId })
+
 	function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const value = e.target.value;
 		setSourceQuery(value);
@@ -53,7 +55,7 @@ function SourceField({
 		}
 	}
 
-	function handleSelect(discussion: DiscussionSource) {
+	function handleSelect(discussion: SourceDto) {
 		setSourceQuery(discussion.name);
 		setIsDropdownOpen(false);
 		onSourceSelect(discussion.name, discussion);
@@ -66,13 +68,13 @@ function SourceField({
 
 	const selectedDate = sourceDate ?? undefined;
 
-	const allFiltered = MOCK_DISCUSSIONS.filter((d) =>
+	const allFiltered = sources.filter((d) =>
 		d.name.includes(sourceQuery),
 	);
 	const filteredDiscussions = uniqueNames
 		? allFiltered.filter(
-				(d, i, arr) => arr.findIndex((x) => x.name === d.name) === i,
-			)
+			(d, i, arr) => arr.findIndex((x) => x.name === d.name) === i,
+		)
 		: allFiltered;
 
 	function openDropdown() {
@@ -85,7 +87,7 @@ function SourceField({
 
 	function handleOptionMouseDown(
 		e: React.MouseEvent,
-		discussion: DiscussionSource,
+		discussion: SourceDto,
 	) {
 		e.preventDefault();
 		handleSelect(discussion);

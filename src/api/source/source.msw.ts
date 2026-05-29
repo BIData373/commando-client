@@ -28,7 +28,12 @@ export const getCreateSourceResponseMock = (
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	date: faker.date.past().toISOString().slice(0, 19) + "Z",
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	tags: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1,
+	).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
 	...overrideResponse,
 })
 
@@ -51,7 +56,12 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 		]),
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		date: faker.date.past().toISOString().slice(0, 19) + "Z",
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		tags: Array.from(
+			{ length: faker.number.int({ min: 1, max: 10 }) },
+			(_, i) => i + 1,
+		).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
 	}))
 
 export const getGetSourceResponseMock = (
@@ -71,7 +81,12 @@ export const getGetSourceResponseMock = (
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	date: faker.date.past().toISOString().slice(0, 19) + "Z",
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	tags: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1,
+	).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
 	...overrideResponse,
 })
 
@@ -92,7 +107,12 @@ export const getUpdateSourceResponseMock = (
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	date: faker.date.past().toISOString().slice(0, 19) + "Z",
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	tags: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1,
+	).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
 	...overrideResponse,
 })
 
@@ -113,7 +133,12 @@ export const getDeleteSourceResponseMock = (
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	date: faker.date.past().toISOString().slice(0, 19) + "Z",
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	tags: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1,
+	).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
 	...overrideResponse,
 })
 

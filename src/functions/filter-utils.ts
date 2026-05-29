@@ -2,7 +2,7 @@ import { differenceInDays, startOfToday } from "date-fns";
 import { QuickFilter } from "src/utils/filterUtils";
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag";
 import { STATUS_LABELS } from "../components/shared/StatusTag";
-import type { Task } from "../data/Tasks";
+import type { TaskDto } from "src/api/model";
 // ─── Shared Types ────────────────────────────────────────────────────────────
 
 export interface FilterOption {
@@ -12,7 +12,7 @@ export interface FilterOption {
 
 // ─── Quick Filters ───────────────────────────────────────────────────────────
 
-function matchesQuickFilter(task: Task, filter: QuickFilter): boolean {
+function matchesQuickFilter(task: TaskDto, filter: QuickFilter): boolean {
 	const today = startOfToday();
 	const daysUntil = task.dueDate ? differenceInDays(task.dueDate, today) : null;
 	switch (filter) {
@@ -38,11 +38,11 @@ function matchesQuickFilter(task: Task, filter: QuickFilter): boolean {
 // ─── Combined ────────────────────────────────────────────────────────────────
 
 function applyAllFilters(
-	tasks: Task[],
+	tasks: TaskDto[],
 	activeQuickFilters: Set<QuickFilter>,
 	activeTopicFilters: Set<string>,
 	searchQuery: string,
-): Task[] {
+): TaskDto[] {
 	const hasQuickFilters = activeQuickFilters.size > 0;
 	const hasTopicFilters = activeTopicFilters.size > 0;
 
@@ -63,15 +63,15 @@ function applyAllFilters(
 		result = result.filter(
 			(t) =>
 				t.title.includes(searchQuery) ||
-				t.details?.includes(searchQuery) ||
-				t.notes.includes(searchQuery),
+				t.description?.includes(searchQuery) ||
+				JSON.stringify(t.notes).includes(searchQuery),
 		);
 	}
 
 	return result;
 }
 
-function buildFilterOptionsMap(tasks: Task[]): Record<string, FilterOption[]> {
+function buildFilterOptionsMap(tasks: TaskDto[]): Record<string, FilterOption[]> {
 	const statusSet = new Set<string>();
 	const responsibleSet = new Set<string>();
 	const deadlineTypeSet = new Set<string>();
@@ -80,9 +80,15 @@ function buildFilterOptionsMap(tasks: Task[]): Record<string, FilterOption[]> {
 
 	for (const t of tasks) {
 		statusSet.add(t.status);
-		if (t.responsible) responsibleSet.add(t.responsible.name);
 		deadlineTypeSet.add(t.deadlineType);
-		if (t.discussionName) discussionNameSet.add(t.discussionName);
+		if (t.responsible) {
+			responsibleSet.add(t.responsible.name);
+		}
+
+		if (t.source.name) {
+			discussionNameSet.add(t.source.name);
+		}
+		
 		t.tags.forEach((tag) => {
 			tagsSet.add(tag);
 		});

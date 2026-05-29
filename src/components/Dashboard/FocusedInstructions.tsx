@@ -5,10 +5,10 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
+import type { TaskDto } from "src/api/model";
 import { matchesQuickFilter } from "src/functions/filter-utils";
 import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filterUtils";
 import searchInstruction from "../../assets/icons/searchInstruction.svg";
-import type { Task } from "../../data/Tasks";
 import { useTaskColumns } from "../../hooks/useTaskColumns";
 import { EmptyCardState } from "./EmptyCardState";
 import { ViewMoreInstructions } from "./ViewMoreInstructions";
@@ -27,7 +27,7 @@ interface EmptyMessage {
 
 interface IFocusedInstruction {
 	urlName: string;
-	tasks: Task[];
+	tasks: TaskDto[];
 }
 
 const TAB_LABELS: Pick<TabConfig, "id" | "label" | "weekDelta">[] = [
@@ -53,7 +53,7 @@ const EMPTY_MESSAGES: Record<FocusedTab, EmptyMessage> = {
 
 const coreRowModel = getCoreRowModel();
 
-function getFilteredTasks(tab: FocusedTab, tasks: Task[]): Task[] {
+function getFilteredTasks(tab: FocusedTab, tasks: TaskDto[]): TaskDto[] {
 	switch (tab) {
 		case FocusedTab.FLAGGED:
 			return tasks.filter((t) => t.flagged);
@@ -82,7 +82,7 @@ export default function FocusedInstructions({
 				: tab.id === FocusedTab.APPROACHING
 					? tasks.filter((t) => t.deadlineType === "immediate").length
 					: tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
-							.length,
+						.length,
 	}));
 
 	const emptyMsg = EMPTY_MESSAGES[activeTab];
@@ -95,7 +95,7 @@ export default function FocusedInstructions({
 		visibleColumns: ["title", "status", "responsible", "deadlineType"],
 		searchQuery: "",
 		filterOptionsMap: {},
-		onUpdateStatus: () => {},
+		onUpdateStatus: () => { },
 	});
 
 	const table = useReactTable({

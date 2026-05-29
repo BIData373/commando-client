@@ -6,8 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface CreateMessageDto {
-	content: string
-	taskId: number
-	userId: number
-}
+/**
+ * @nullable
+ */
+export type TaskWithWorkspaceDtoNotes = { [key: string]: unknown } | null

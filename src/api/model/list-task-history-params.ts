@@ -6,8 +6,6 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface CreateMessageDto {
-	content: string
+export type ListTaskHistoryParams = {
 	taskId: number
-	userId: number
 }

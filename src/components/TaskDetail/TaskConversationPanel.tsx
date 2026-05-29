@@ -3,152 +3,162 @@ import styled from "@emotion/styled";
 import { format, isSameDay } from "date-fns";
 import { ChevronUp, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type { IUserSummary } from "../../types";
-import type { TaskMessage } from "../../types/message";
-
-interface TaskConversationPanelProps {
-	messages: TaskMessage[];
-	currentUser: IUserSummary;
-	onClose: () => void;
-}
+import { useCreateMessage } from "src/api/message/message";
+import type { MessageDto } from "src/api/model";
+import { useCurrentUser } from "src/hooks/useCurrentUser";
 
 interface DateGroup {
-	dateLabel: string;
-	messages: TaskMessage[];
+  dateLabel: string;
+  messages: MessageDto[];
 }
 
 const HEBREW_MONTHS = [
-	"ינואר",
-	"פברואר",
-	"מרץ",
-	"אפריל",
-	"מאי",
-	"יוני",
-	"יולי",
-	"אוגוסט",
-	"ספטמבר",
-	"אוקטובר",
-	"נובמבר",
-	"דצמבר",
+  "ינואר",
+  "פברואר",
+  "מרץ",
+  "אפריל",
+  "מאי",
+  "יוני",
+  "יולי",
+  "אוגוסט",
+  "ספטמבר",
+  "אוקטובר",
+  "נובמבר",
+  "דצמבר",
 ];
 
 function formatDateLabel(date: Date, today: Date): string {
-	if (isSameDay(date, today)) return "היום";
-	const day = date.getDate();
-	const month = HEBREW_MONTHS[date.getMonth()];
-	const year = date.getFullYear();
-	return `${day} ב${month} ${year}`;
+  if (isSameDay(date, today)) return "היום";
+  const day = date.getDate();
+  const month = HEBREW_MONTHS[date.getMonth()];
+  const year = date.getFullYear();
+  return `${day} ב${month} ${year}`;
 }
 
-function groupMessagesByDate(messages: TaskMessage[]): DateGroup[] {
-	const today = new Date();
-	const groups: DateGroup[] = [];
-	for (const msg of messages) {
-		const label = formatDateLabel(msg.timestamp, today);
-		const last = groups[groups.length - 1];
-		if (last && last.dateLabel === label) {
-			last.messages.push(msg);
-		} else {
-			groups.push({ dateLabel: label, messages: [msg] });
-		}
-	}
-	return groups;
+function groupMessagesByDate(messages: MessageDto[]): DateGroup[] {
+  const today = new Date();
+  const groups: DateGroup[] = [];
+  for (const msg of messages) {
+    const label = formatDateLabel(new Date(msg.createdAt), today);
+    const last = groups[groups.length - 1];
+    if (last && last.dateLabel === label) {
+      last.messages.push(msg);
+    } else {
+      groups.push({ dateLabel: label, messages: [msg] });
+    }
+  }
+  return groups;
+}
+
+
+interface TaskConversationPanelProps {
+  taskId: number
+  messages: MessageDto[];
+  onClose: () => void;
 }
 
 function TaskConversationPanel({
-	messages,
-	currentUser,
-	onClose,
+  taskId,
+  messages,
+  onClose,
 }: TaskConversationPanelProps) {
-	const [localMessages, setLocalMessages] = useState<TaskMessage[]>(messages);
-	const [inputValue, setInputValue] = useState("");
-	const messagesAreaRef = useRef<HTMLDivElement>(null);
+  const currentUser = useCurrentUser()
 
-	useEffect(() => {
-		const el = messagesAreaRef.current;
-		if (el && localMessages.length >= 0) el.scrollTop = el.scrollHeight;
-	}, [localMessages]);
+  const { mutateAsync: createMessage } = useCreateMessage()
 
-	const dateGroups = groupMessagesByDate(localMessages);
+  const [localMessages, setLocalMessages] = useState<MessageDto[]>(messages);
+  const [inputValue, setInputValue] = useState("");
+  const messagesAreaRef = useRef<HTMLDivElement>(null);
 
-	function handleSend() {
-		const trimmed = inputValue.trim();
-		if (!trimmed) return;
-		const newMsg: TaskMessage = {
-			id: Date.now(),
-			userId: currentUser.id,
-			fullName: currentUser.name,
-			upn: "",
-			emailDisplayName: "",
-			timestamp: new Date(),
-			text: trimmed,
-		};
-		setLocalMessages((prev) => [...prev, newMsg]);
-		setInputValue("");
-	}
+  useEffect(() => {
+    const el = messagesAreaRef.current;
+    if (el && localMessages.length >= 0) el.scrollTop = el.scrollHeight;
+  }, [localMessages]);
 
-	function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-		if (e.key === "Enter") handleSend();
-	}
+  const dateGroups = groupMessagesByDate(localMessages);
 
-	const displayCount = localMessages.length;
+  function handleSend() {
+    const trimmed = inputValue.trim();
+    if (!trimmed) return;
+    
+    createMessage({
+      data: {
+        // FIX Assignee or user?
+        assigneeId: 1,
+        taskId,
+        content: trimmed,
+      }
+    }, {
+      onSuccess(data) {
+        setLocalMessages((prev) => [...prev, data]);
+      }
+    })
 
-	return (
-		<ConversationWrapper>
-			<ConversationHeader onClick={onClose}>
-				<ChatGroup>
-					<ChatBadge>{displayCount}</ChatBadge>
-					<ChatLabel>שיחה ועדכונים</ChatLabel>
-				</ChatGroup>
-				<ChevronIcon>
-					<ChevronUp size={20} />
-				</ChevronIcon>
-			</ConversationHeader>
+    setInputValue("");
+  }
 
-			<ConverstaionContainer>
-				<MessagesArea ref={messagesAreaRef}>
-					{dateGroups.map((group) => (
-						<DateSection key={group.dateLabel}>
-							<DateLabel>{group.dateLabel}</DateLabel>
-							{group.messages.map((msg) => (
-								<MessageOuter
-									key={msg.id}
-									$isOwn={msg.userId === currentUser.id}
-								>
-									<MessageCard>
-										<MessageHeader>
-											<AuthorText>
-												<AuthorName>{msg.fullName} - </AuthorName>
-												<AuthorUpn>{msg.upn}</AuthorUpn>
-												<AuthorEmail> - {msg.emailDisplayName} </AuthorEmail>
-											</AuthorText>
-											<TimeText>{format(msg.timestamp, "HH:mm")}</TimeText>
-										</MessageHeader>
-										<MessageText>{msg.text}</MessageText>
-									</MessageCard>
-								</MessageOuter>
-							))}
-						</DateSection>
-					))}
-				</MessagesArea>
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") handleSend();
+  }
 
-				<InputArea>
-					<InputRow>
-						<StyledInput
-							value={inputValue}
-							onChange={(e) => setInputValue(e.target.value)}
-							onKeyDown={handleKeyDown}
-							placeholder="הוסף הערה לעדכון הצוות..."
-							dir="auto"
-						/>
-						<SendButton onClick={handleSend} aria-label="שלח">
-							<Send size={16} color="white" />
-						</SendButton>
-					</InputRow>
-				</InputArea>
-			</ConverstaionContainer>
-		</ConversationWrapper>
-	);
+  const displayCount = localMessages.length;
+
+  return (
+    <ConversationWrapper>
+      <ConversationHeader onClick={onClose}>
+        <ChatGroup>
+          <ChatBadge>{displayCount}</ChatBadge>
+          <ChatLabel>שיחה ועדכונים</ChatLabel>
+        </ChatGroup>
+        <ChevronIcon>
+          <ChevronUp size={20} />
+        </ChevronIcon>
+      </ConversationHeader>
+
+      <ConverstaionContainer>
+        <MessagesArea ref={messagesAreaRef}>
+          {dateGroups.map((group) => (
+            <DateSection key={group.dateLabel}>
+              <DateLabel>{group.dateLabel}</DateLabel>
+              {group.messages.map((msg) => (
+                <MessageOuter
+                  key={msg.id}
+                  $isOwn={msg.userId === currentUser.id}
+                >
+                  <MessageCard>
+                    <MessageHeader>
+                      <AuthorText>
+                        <AuthorName>{msg.fullName} - </AuthorName>
+                        <AuthorUpn>{msg.upn}</AuthorUpn>
+                        <AuthorEmail> - {msg.emailDisplayName} </AuthorEmail>
+                      </AuthorText>
+                      <TimeText>{format(msg.timestamp, "HH:mm")}</TimeText>
+                    </MessageHeader>
+                    <MessageText>{msg.text}</MessageText>
+                  </MessageCard>
+                </MessageOuter>
+              ))}
+            </DateSection>
+          ))}
+        </MessagesArea>
+
+        <InputArea>
+          <InputRow>
+            <StyledInput
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="הוסף הערה לעדכון הצוות..."
+              dir="auto"
+            />
+            <SendButton onClick={handleSend} aria-label="שלח">
+              <Send size={16} color="white" />
+            </SendButton>
+          </InputRow>
+        </InputArea>
+      </ConverstaionContainer>
+    </ConversationWrapper>
+  );
 }
 
 export default TaskConversationPanel;
@@ -268,7 +278,7 @@ const MessageOuter = styled.div<{ $isOwn: boolean }>`
   flex-direction: column;
   align-self: ${({ $isOwn }) => ($isOwn ? "flex-end" : "flex-start")};
 background: ${({ $isOwn }) =>
-	$isOwn ? "rgba(104, 102, 255, 0.1)" : "var(--background)"};
+    $isOwn ? "rgba(104, 102, 255, 0.1)" : "var(--background)"};
   width: 686px;
 `;
 

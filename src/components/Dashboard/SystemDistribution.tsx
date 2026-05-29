@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { Users } from "lucide-react";
 import { useMemo, useState } from "react";
-import type { Task } from "src/data/Tasks";
+import type { TaskDto } from "src/api/model";
 import addAssignee from "../../assets/icons/addPerson.svg";
 import subject from "../../assets/icons/subjects.svg";
 import { Button } from "../ui/button";
@@ -19,7 +19,7 @@ interface DistributionTabConfig {
 
 interface SystemDistributionProps {
 	onSetAssignees?: () => void;
-	tasks: Task[];
+	tasks: TaskDto[];
 }
 
 const TABS: DistributionTabConfig[] = [

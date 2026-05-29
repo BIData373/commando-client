@@ -28,6 +28,7 @@ import type {
 	GetTaskPathParameters,
 	ListTasksParams,
 	TaskDto,
+	TaskWithWorkspaceDto,
 	UpdateTaskDto,
 	UpdateTaskPathParameters,
 } from "../model"
@@ -36,7 +37,7 @@ export const createTask = (
 	createTaskDto: CreateTaskDto,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskDto>({
+	return sendRequest<TaskWithWorkspaceDto>({
 		url: `/task`,
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -228,11 +229,154 @@ export function useListTasks<
 	return { ...query, queryKey: queryOptions.queryKey }
 }
 
+export const listPersonalTasks = (signal?: AbortSignal) => {
+	return sendRequest<TaskWithWorkspaceDto[]>({
+		url: `/task/personal`,
+		method: "GET",
+		signal,
+	})
+}
+
+export const getListPersonalTasksQueryKey = () => {
+	return [`/task/personal`] as const
+}
+
+export const getListPersonalTasksQueryOptions = <
+	TData = Awaited<ReturnType<typeof listPersonalTasks>>,
+	TError = unknown,
+>(options?: {
+	query?: Partial<
+		UseQueryOptions<
+			Awaited<ReturnType<typeof listPersonalTasks>>,
+			TError,
+			TData
+		>
+	>
+}) => {
+	const { query: queryOptions } = options ?? {}
+
+	const queryKey = queryOptions?.queryKey ?? getListPersonalTasksQueryKey()
+
+	const queryFn: QueryFunction<
+		Awaited<ReturnType<typeof listPersonalTasks>>
+	> = ({ signal }) => listPersonalTasks(signal)
+
+	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+		Awaited<ReturnType<typeof listPersonalTasks>>,
+		TError,
+		TData
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListPersonalTasksQueryResult = NonNullable<
+	Awaited<ReturnType<typeof listPersonalTasks>>
+>
+export type ListPersonalTasksQueryError = unknown
+
+export function useListPersonalTasks<
+	TData = Awaited<ReturnType<typeof listPersonalTasks>>,
+	TError = unknown,
+>(
+	options: {
+		query: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listPersonalTasks>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				DefinedInitialDataOptions<
+					Awaited<ReturnType<typeof listPersonalTasks>>,
+					TError,
+					Awaited<ReturnType<typeof listPersonalTasks>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useListPersonalTasks<
+	TData = Awaited<ReturnType<typeof listPersonalTasks>>,
+	TError = unknown,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listPersonalTasks>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				UndefinedInitialDataOptions<
+					Awaited<ReturnType<typeof listPersonalTasks>>,
+					TError,
+					Awaited<ReturnType<typeof listPersonalTasks>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useListPersonalTasks<
+	TData = Awaited<ReturnType<typeof listPersonalTasks>>,
+	TError = unknown,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listPersonalTasks>>,
+				TError,
+				TData
+			>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+
+export function useListPersonalTasks<
+	TData = Awaited<ReturnType<typeof listPersonalTasks>>,
+	TError = unknown,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listPersonalTasks>>,
+				TError,
+				TData
+			>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+} {
+	const queryOptions = getListPersonalTasksQueryOptions(options)
+
+	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+		TData,
+		TError
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+	return { ...query, queryKey: queryOptions.queryKey }
+}
+
 export const getTask = (
 	{ id }: GetTaskPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskDto>({ url: `/task/${id}`, method: "GET", signal })
+	return sendRequest<TaskWithWorkspaceDto>({
+		url: `/task/${id}`,
+		method: "GET",
+		signal,
+	})
 }
 
 export const getGetTaskQueryKey = ({ id }: GetTaskPathParameters) => {
@@ -361,7 +505,7 @@ export const updateTask = (
 	updateTaskDto: UpdateTaskDto,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskDto>({
+	return sendRequest<TaskWithWorkspaceDto>({
 		url: `/task/${id}`,
 		method: "PATCH",
 		headers: { "Content-Type": "application/json" },
@@ -435,7 +579,11 @@ export const deleteTask = (
 	{ id }: DeleteTaskPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskDto>({ url: `/task/${id}`, method: "DELETE", signal })
+	return sendRequest<TaskWithWorkspaceDto>({
+		url: `/task/${id}`,
+		method: "DELETE",
+		signal,
+	})
 }
 
 export const getDeleteTaskMutationOptions = <

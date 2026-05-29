@@ -1,9 +1,9 @@
 import { differenceInDays, startOfToday } from "date-fns";
+import type { TaskDto } from "src/api/model";
 import { statusColors } from "src/utils/statusUtils";
 import * as XLSX from "xlsx-js-style";
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag";
 import { STATUS_LABELS } from "../components/shared/StatusTag";
-import type { Task } from "../data/Tasks";
 import type { TaskColumn } from "../hooks/useTaskColumns";
 import { formatDateShort } from "./date-utils";
 
@@ -32,7 +32,7 @@ const RTL_ALIGNMENT = {
 	readingOrder: 2,
 };
 
-function getDeadlineDateStyle(task: Task) {
+function getDeadlineDateStyle(task: TaskDto) {
 	if (!task.dueDate || task.deadlineType === "immediate") return {};
 	const today = startOfToday();
 	const daysUntil = differenceInDays(task.dueDate, today);
@@ -41,10 +41,10 @@ function getDeadlineDateStyle(task: Task) {
 	return {};
 }
 
-const COLUMN_DEFS: Record<string, ExportColumn<Task>> = {
+const COLUMN_DEFS: Record<string, ExportColumn<TaskDto>> = {
 	title: {
 		header: "ההנחיה",
-		accessor: (t) => (t.details ? `${t.title} – ${t.details}` : t.title),
+		accessor: (t) => (t.description ? `${t.title} – ${t.description}` : t.title),
 	},
 	status: {
 		header: "סטטוס",
@@ -58,7 +58,7 @@ const COLUMN_DEFS: Record<string, ExportColumn<Task>> = {
 		header: 'תג"ב',
 		accessor: (t) => {
 			const typeStr = DEADLINE_LABELS[t.deadlineType];
-			const dateStr = t.dueDate ? formatDateShort(t.dueDate) : "";
+			const dateStr = t.dueDate ? formatDateShort(new Date(t.dueDate)) : "";
 			const value = dateStr ? `${typeStr} | ${dateStr}` : typeStr;
 			return { value, ...getDeadlineDateStyle(t) };
 		},
@@ -66,7 +66,7 @@ const COLUMN_DEFS: Record<string, ExportColumn<Task>> = {
 	discussionName: {
 		header: "מקור",
 		accessor: (t) => {
-			const source = `${t.discussionName} | ${t.discussionDate}`;
+			const source = `${t.source.name} | ${t.source.date}`;
 			return t.attachmentUrl
 				? { value: source, link: t.attachmentUrl }
 				: source;
@@ -76,11 +76,11 @@ const COLUMN_DEFS: Record<string, ExportColumn<Task>> = {
 	notes: { header: "הערות", accessor: (t) => t.notes },
 	createdAt: {
 		header: "תאריך יצירה",
-		accessor: (t) => formatDateShort(t.createdAt),
+		accessor: (t) => formatDateShort(new Date(t.createdAt)),
 	},
 	updatedAt: {
 		header: "עודכן ב",
-		accessor: (t) => formatDateShort(t.updatedAt),
+		accessor: (t) => formatDateShort(new Date(t.updatedAt)),
 	},
 };
 
@@ -89,10 +89,10 @@ interface ExportOptions {
 	hiddenColumns: Set<TaskColumn>;
 }
 
-export function exportTasksToExcel(tasks: Task[], options: ExportOptions) {
+export function exportTasksToExcel(tasks: TaskDto[], options: ExportOptions) {
 	const { columnOrder, hiddenColumns } = options;
 
-	const idColumn: ExportColumn<Task> = {
+	const idColumn: ExportColumn<TaskDto> = {
 		header: 'מס"ד',
 		accessor: (t) => String(t.id),
 	};
@@ -101,7 +101,7 @@ export function exportTasksToExcel(tasks: Task[], options: ExportOptions) {
 		.filter((id) => !hiddenColumns.has(id) && COLUMN_DEFS[id])
 		.map((id) => COLUMN_DEFS[id]);
 
-	exportToExcel<Task>(tasks, [idColumn, ...visibleColumns], "הנחיות");
+	exportToExcel<TaskDto>(tasks, [idColumn, ...visibleColumns], "הנחיות");
 }
 
 function exportToExcel<T>(

@@ -5,16 +5,16 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 import { useMemo } from "react";
+import type { TaskDto } from "src/api/model";
 import { DirectiveStatus } from "src/utils/statusUtils";
 import compleateInstruction from "../../assets/icons/completeInstruction.svg";
-import type { Task } from "../../data/Tasks";
 import { useTaskColumns } from "../../hooks/useTaskColumns";
 import { EmptyCardState } from "./EmptyCardState";
 import { ViewMoreInstructions } from "./ViewMoreInstructions";
 
 interface RecentlyCompletedProps {
 	urlName: string;
-	tasks: Task[];
+	tasks: TaskDto[];
 }
 
 const coreRowModel = getCoreRowModel();
@@ -32,7 +32,7 @@ export default function RecentlyCompleted({
 		visibleColumns: ["title", "status", "responsible"],
 		searchQuery: "",
 		filterOptionsMap: {},
-		onUpdateStatus: () => {},
+		onUpdateStatus: () => { },
 	});
 
 	const table = useReactTable({

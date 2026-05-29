@@ -11,7 +11,7 @@ import { HttpResponse, http } from "msw"
 
 import type { PermissionDto } from "../model"
 
-export const getGetPermissionsResponseMock = (): PermissionDto[] =>
+export const getListPermissionsResponseMock = (): PermissionDto[] =>
 	Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -108,7 +108,7 @@ export const getGetMyPermissionResponseMock = (
 	...overrideResponse,
 })
 
-export const getGetPermissionsMockHandler = (
+export const getListPermissionsMockHandler = (
 	overrideResponse?:
 		| PermissionDto[]
 		| ((
@@ -124,7 +124,7 @@ export const getGetPermissionsMockHandler = (
 					? typeof overrideResponse === "function"
 						? await overrideResponse(info)
 						: overrideResponse
-					: getGetPermissionsResponseMock(),
+					: getListPermissionsResponseMock(),
 				{ status: 200 },
 			)
 		},
@@ -204,7 +204,7 @@ export const getGetMyPermissionMockHandler = (
 	)
 }
 export const getPermissionMock = () => [
-	getGetPermissionsMockHandler(),
+	getListPermissionsMockHandler(),
 	getUpdatePermissionMockHandler(),
 	getDeletePermissionMockHandler(),
 	getGetMyPermissionMockHandler(),

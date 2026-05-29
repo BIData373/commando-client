@@ -1,95 +1,99 @@
 import styled from "@emotion/styled";
 import { X } from "lucide-react";
 import { useRef } from "react";
-import { MOCK_ASSIGNEES } from "../../data/Assignees";
 import type { AvatarColor } from "../Tasks/ResponsibleCell";
+import { useListAssignees } from "src/api/assignee/assignee";
+import { useWorkspace } from "src/providers/WorkspaceProvider";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface AssigneeRowListProps {
-	assigneeIds: number[];
-	directiveTitle: string;
-	assigneeDetails?: Record<number, string>;
-	showDetail?: boolean;
-	detailPlaceholder?: string;
-	onDetailChange: (id: number, value: string) => void;
-	onRemove: (id: number) => void;
+  assigneeIds: number[];
+  directiveTitle: string;
+  assigneeDetails?: Record<number, string>;
+  showDetail?: boolean;
+  detailPlaceholder?: string;
+  onDetailChange: (id: number, value: string) => void;
+  onRemove: (id: number) => void;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function AssigneeRowList({
-	assigneeIds,
-	directiveTitle,
-	assigneeDetails,
-	showDetail = true,
-	detailPlaceholder = "פירוט לאחראי",
-	onDetailChange,
-	onRemove,
+  assigneeIds,
+  directiveTitle,
+  assigneeDetails,
+  showDetail = true,
+  detailPlaceholder = "פירוט לאחראי",
+  onDetailChange,
+  onRemove,
 }: AssigneeRowListProps) {
-	const detailRefs = useRef<Record<number, HTMLSpanElement | null>>({});
+  const detailRefs = useRef<Record<number, HTMLSpanElement | null>>({});
 
-	const assignees = assigneeIds.map((id) => MOCK_ASSIGNEES[id]).filter(Boolean);
+  // const { workspace: { id: workspaceId } } = useWorkspace()
+  // const { data: assignees } = useListAssignees({ workspaceId })
 
-	function handleDetailInput(id: number, e: React.FormEvent<HTMLSpanElement>) {
-		onDetailChange(id, e.currentTarget.textContent ?? "");
-	}
+  const assignees = assigneeIds.map((id) => MOCK_ASSIGNEES[id]).filter(Boolean);
 
-	function handleDetailKeyDown(e: React.KeyboardEvent<HTMLSpanElement>) {
-		if (e.key === "Enter") {
-			e.preventDefault();
-		}
-	}
+  function handleDetailInput(id: number, e: React.FormEvent<HTMLSpanElement>) {
+    onDetailChange(id, e.currentTarget.textContent ?? "");
+  }
 
-	function handleWrapperClick(id: number) {
-		detailRefs.current[id]?.focus();
-	}
+  function handleDetailKeyDown(e: React.KeyboardEvent<HTMLSpanElement>) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  }
 
-	function handleDetailRef(id: number, el: HTMLSpanElement | null) {
-		detailRefs.current[id] = el;
-		if (el && assigneeDetails?.[id] && !el.textContent) {
-			el.textContent = assigneeDetails[id];
-		}
-	}
+  function handleWrapperClick(id: number) {
+    detailRefs.current[id]?.focus();
+  }
 
-	return (
-		<RowsList>
-			{assignees.map((assignee) => (
-				<RowItem key={assignee.id}>
-					<RemoveButton onClick={() => onRemove(assignee.id)}>
-						<X size={14} />
-					</RemoveButton>
+  function handleDetailRef(id: number, el: HTMLSpanElement | null) {
+    detailRefs.current[id] = el;
+    if (el && assigneeDetails?.[id] && !el.textContent) {
+      el.textContent = assigneeDetails[id];
+    }
+  }
 
-					<RowContainer>
-						{showDetail && (
-							<TextareaWrapper onClick={() => handleWrapperClick(assignee.id)}>
-								{directiveTitle && (
-									<DirectiveTitleText>
-										{directiveTitle} -&nbsp;
-									</DirectiveTitleText>
-								)}
-								<DetailEditable
-									ref={(el) => handleDetailRef(assignee.id, el)}
-									contentEditable
-									suppressContentEditableWarning
-									onInput={(e) => handleDetailInput(assignee.id, e)}
-									onKeyDown={handleDetailKeyDown}
-									data-placeholder={detailPlaceholder}
-								/>
-							</TextareaWrapper>
-						)}
+  return (
+    <RowsList>
+      {assignees.map((assignee) => (
+        <RowItem key={assignee.id}>
+          <RemoveButton onClick={() => onRemove(assignee.id)}>
+            <X size={14} />
+          </RemoveButton>
 
-						<InfoBlock>
-							<RoleText>{assignee.role}</RoleText>
-							<AvatarCircle $color={assignee.colorToken}>
-								{assignee.initials}
-							</AvatarCircle>
-						</InfoBlock>
-					</RowContainer>
-				</RowItem>
-			))}
-		</RowsList>
-	);
+          <RowContainer>
+            {showDetail && (
+              <TextareaWrapper onClick={() => handleWrapperClick(assignee.id)}>
+                {directiveTitle && (
+                  <DirectiveTitleText>
+                    {directiveTitle} -&nbsp;
+                  </DirectiveTitleText>
+                )}
+                <DetailEditable
+                  ref={(el) => handleDetailRef(assignee.id, el)}
+                  contentEditable
+                  suppressContentEditableWarning
+                  onInput={(e) => handleDetailInput(assignee.id, e)}
+                  onKeyDown={handleDetailKeyDown}
+                  data-placeholder={detailPlaceholder}
+                />
+              </TextareaWrapper>
+            )}
+
+            <InfoBlock>
+              <RoleText>{assignee.role}</RoleText>
+              <AvatarCircle $color={assignee.colorToken}>
+                {assignee.initials}
+              </AvatarCircle>
+            </InfoBlock>
+          </RowContainer>
+        </RowItem>
+      ))}
+    </RowsList>
+  );
 }
 
 export default AssigneeRowList;
@@ -210,6 +214,7 @@ const RoleText = styled.span`
   text-align: center;
 `;
 
+// FIX Use AssigneeAvatar
 const AvatarCircle = styled.div<{ $color: AvatarColor }>`
   display: inline-flex;
   align-items: center;
@@ -223,17 +228,17 @@ const AvatarCircle = styled.div<{ $color: AvatarColor }>`
   color: rgba(0, 0, 0, 0.88);
   flex-shrink: 0;
   ${({ $color }) => {
-		switch ($color) {
-			case "cyan":
-				return "background: #87e8de;";
-			case "blue":
-				return "background: #91caff;";
-			case "green":
-				return "background: #b7eb8f;";
-			case "orange":
-				return "background: #ffd591;";
-			case "gray":
-				return "background: var(--colors-base-neutral-3);";
-		}
-	}}
+    switch ($color) {
+      case "cyan":
+        return "background: #87e8de;";
+      case "blue":
+        return "background: #91caff;";
+      case "green":
+        return "background: #b7eb8f;";
+      case "orange":
+        return "background: #ffd591;";
+      case "gray":
+        return "background: var(--colors-base-neutral-3);";
+    }
+  }}
 `;

@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
 import { Check, Plus } from "lucide-react";
 import { type ReactNode, useState } from "react";
-import { MOCK_ASSIGNEES } from "../../data/Assignees";
+import { useListAssignees } from "src/api/assignee/assignee";
+import { useWorkspace } from "src/providers/WorkspaceProvider";
 import { AssigneeDialog } from "../settings/AssigneeDialog";
 import type { AvatarColor } from "../Tasks/ResponsibleCell";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -9,11 +10,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 interface AssigneePickerProps {
 	selectedAssignees: number[];
 	trigger:
-		| ReactNode
-		| ((props: {
-				search: string;
-				onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-		  }) => ReactNode);
+	| ReactNode
+	| ((props: {
+		search: string;
+		onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	}) => ReactNode);
 	onToggle: (id: number) => void;
 	closeOnFirstSelect?: boolean;
 }
@@ -28,7 +29,10 @@ function AssigneePicker({
 	const [search, setSearch] = useState("");
 	const [dialogOpen, setDialogOpen] = useState(false);
 
-	const filteredAssignees = Object.values(MOCK_ASSIGNEES)
+	const { workspace: { id: workspaceId } } = useWorkspace()
+	const { data: assignees = [] } = useListAssignees({ workspaceId })
+
+	const filteredAssignees = Object.values(assignees)
 		.filter((assignee) => {
 			if (!search.trim()) return true;
 			return assignee.name.includes(search) || assignee.role.includes(search);
@@ -85,7 +89,7 @@ function AssigneePicker({
 							onClick={() => handleAssigneeClick(assignee.id)}
 						>
 							<AssigneeOptionEnd>
-								<AvatarCircle $color={assignee.colorToken}>
+								<AvatarCircle $color={assignee.color}>
 									{assignee.initials}
 								</AvatarCircle>
 
@@ -171,7 +175,7 @@ const CreateNewButton = styled.button`
     background: rgba(0, 0, 0, 0.04);
   }
 `;
-//TO-DO
+// FIX Use AssigneeAvatar
 const AvatarCircle = styled.div<{ $color: AvatarColor }>`
   display: inline-flex;
   align-items: center;

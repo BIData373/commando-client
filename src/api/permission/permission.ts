@@ -25,13 +25,13 @@ import { sendRequest } from "../../axios"
 import type {
 	DeletePermissionParams,
 	GetMyPermissionParams,
-	GetPermissionsParams,
+	ListPermissionsParams,
 	PermissionDto,
 	UpdatePermissionDto,
 } from "../model"
 
-export const getPermissions = (
-	params: GetPermissionsParams,
+export const listPermissions = (
+	params: ListPermissionsParams,
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<PermissionDto[]>({
@@ -42,55 +42,63 @@ export const getPermissions = (
 	})
 }
 
-export const getGetPermissionsQueryKey = (params?: GetPermissionsParams) => {
+export const getListPermissionsQueryKey = (params?: ListPermissionsParams) => {
 	return [`/permission`, ...(params ? [params] : [])] as const
 }
 
-export const getGetPermissionsQueryOptions = <
-	TData = Awaited<ReturnType<typeof getPermissions>>,
+export const getListPermissionsQueryOptions = <
+	TData = Awaited<ReturnType<typeof listPermissions>>,
 	TError = unknown,
 >(
-	params: GetPermissionsParams,
+	params: ListPermissionsParams,
 	options?: {
 		query?: Partial<
-			UseQueryOptions<Awaited<ReturnType<typeof getPermissions>>, TError, TData>
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listPermissions>>,
+				TError,
+				TData
+			>
 		>
 	},
 ) => {
 	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getGetPermissionsQueryKey(params)
+	const queryKey = queryOptions?.queryKey ?? getListPermissionsQueryKey(params)
 
-	const queryFn: QueryFunction<Awaited<ReturnType<typeof getPermissions>>> = ({
+	const queryFn: QueryFunction<Awaited<ReturnType<typeof listPermissions>>> = ({
 		signal,
-	}) => getPermissions(params, signal)
+	}) => listPermissions(params, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-		Awaited<ReturnType<typeof getPermissions>>,
+		Awaited<ReturnType<typeof listPermissions>>,
 		TError,
 		TData
 	> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetPermissionsQueryResult = NonNullable<
-	Awaited<ReturnType<typeof getPermissions>>
+export type ListPermissionsQueryResult = NonNullable<
+	Awaited<ReturnType<typeof listPermissions>>
 >
-export type GetPermissionsQueryError = unknown
+export type ListPermissionsQueryError = unknown
 
-export function useGetPermissions<
-	TData = Awaited<ReturnType<typeof getPermissions>>,
+export function useListPermissions<
+	TData = Awaited<ReturnType<typeof listPermissions>>,
 	TError = unknown,
 >(
-	params: GetPermissionsParams,
+	params: ListPermissionsParams,
 	options: {
 		query: Partial<
-			UseQueryOptions<Awaited<ReturnType<typeof getPermissions>>, TError, TData>
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listPermissions>>,
+				TError,
+				TData
+			>
 		> &
 			Pick<
 				DefinedInitialDataOptions<
-					Awaited<ReturnType<typeof getPermissions>>,
+					Awaited<ReturnType<typeof listPermissions>>,
 					TError,
-					Awaited<ReturnType<typeof getPermissions>>
+					Awaited<ReturnType<typeof listPermissions>>
 				>,
 				"initialData"
 			>
@@ -99,20 +107,24 @@ export function useGetPermissions<
 ): DefinedUseQueryResult<TData, TError> & {
 	queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useGetPermissions<
-	TData = Awaited<ReturnType<typeof getPermissions>>,
+export function useListPermissions<
+	TData = Awaited<ReturnType<typeof listPermissions>>,
 	TError = unknown,
 >(
-	params: GetPermissionsParams,
+	params: ListPermissionsParams,
 	options?: {
 		query?: Partial<
-			UseQueryOptions<Awaited<ReturnType<typeof getPermissions>>, TError, TData>
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listPermissions>>,
+				TError,
+				TData
+			>
 		> &
 			Pick<
 				UndefinedInitialDataOptions<
-					Awaited<ReturnType<typeof getPermissions>>,
+					Awaited<ReturnType<typeof listPermissions>>,
 					TError,
-					Awaited<ReturnType<typeof getPermissions>>
+					Awaited<ReturnType<typeof listPermissions>>
 				>,
 				"initialData"
 			>
@@ -121,14 +133,18 @@ export function useGetPermissions<
 ): UseQueryResult<TData, TError> & {
 	queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useGetPermissions<
-	TData = Awaited<ReturnType<typeof getPermissions>>,
+export function useListPermissions<
+	TData = Awaited<ReturnType<typeof listPermissions>>,
 	TError = unknown,
 >(
-	params: GetPermissionsParams,
+	params: ListPermissionsParams,
 	options?: {
 		query?: Partial<
-			UseQueryOptions<Awaited<ReturnType<typeof getPermissions>>, TError, TData>
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listPermissions>>,
+				TError,
+				TData
+			>
 		>
 	},
 	queryClient?: QueryClient,
@@ -136,21 +152,25 @@ export function useGetPermissions<
 	queryKey: DataTag<QueryKey, TData, TError>
 }
 
-export function useGetPermissions<
-	TData = Awaited<ReturnType<typeof getPermissions>>,
+export function useListPermissions<
+	TData = Awaited<ReturnType<typeof listPermissions>>,
 	TError = unknown,
 >(
-	params: GetPermissionsParams,
+	params: ListPermissionsParams,
 	options?: {
 		query?: Partial<
-			UseQueryOptions<Awaited<ReturnType<typeof getPermissions>>, TError, TData>
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listPermissions>>,
+				TError,
+				TData
+			>
 		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
 	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getGetPermissionsQueryOptions(params, options)
+	const queryOptions = getListPermissionsQueryOptions(params, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
