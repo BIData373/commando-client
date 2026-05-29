@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
+import { debounce } from "lodash";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { UpdateWorkspaceDto } from "src/api/model";
 import { useUpdateWorkspace } from "src/api/workspace/workspace";
 import type { IMesibaIcon } from "src/hooks/useMesiba";
@@ -10,21 +11,31 @@ import { IconDropdown } from "./IconDropdown";
 import { SelectCommand } from "./SelectCommand";
 
 const NAME_MAX_LENGTH = 50;
+const DEBOUNCE_MS = 300
 
 export function SettingsForm() {
-    const { workspace: { id, title, pikudId, icon } } = useWorkspace();
+    const { workspace: { id, title, pikudId, icon }, setWorkspace } = useWorkspace();
     const { mutate: updateSettings } = useUpdateWorkspace();
 
     const [form, setForm] = useState<UpdateWorkspaceDto>({ title, pikudId, icon });
     const [iconSearch, setIconSearch] = useState("");
     const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null);
 
+    const updateSettingsDebounced = useMemo(
+        () => debounce(updateSettings, DEBOUNCE_MS),
+        [updateSettings]
+    )
+
     const setField = <K extends keyof UpdateWorkspaceDto>(key: K, value: UpdateWorkspaceDto[K]) => {
         const next = { ...form, [key]: value };
         setForm(next);
-        updateSettings({
+        updateSettingsDebounced({
             pathParams: { id },
             data: next
+        }, {
+            onSuccess(data) {
+                setWorkspace(data)
+            }
         });
     };
 

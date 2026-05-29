@@ -1,11 +1,11 @@
 import styled from "@emotion/styled";
 import { X } from "lucide-react";
-import type { UserDto } from "src/api/model";
+import type { CreateUserDto, UserDto } from "src/api/model";
 import { UserItem } from "./UserDropdownItem";
 
 interface UsersListsProps {
-    users: UserDto[];
-    onRemove: (id: number) => void;
+    users: CreateUserDto[];
+    onRemove: (upn: string) => void;
 }
 
 export function UsersLists({ users, onRemove }: UsersListsProps) {
@@ -14,11 +14,11 @@ export function UsersLists({ users, onRemove }: UsersListsProps) {
             {users.length > 0 && (
                 <UserCard>
                     {users.map((user) => (
-                        <UserCardItem key={user.id}>
+                        <UserCardItem key={user.upn}>
                             <UserCardInfo>
                                 <UserItem user={user} />
                             </UserCardInfo>
-                            <UserCardClose type="button" onClick={() => onRemove(user.id)}>
+                            <UserCardClose type="button" onClick={() => onRemove(user.upn)}>
                                 <X size={12} />
                             </UserCardClose>
                         </UserCardItem>

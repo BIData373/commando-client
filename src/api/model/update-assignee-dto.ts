@@ -5,6 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
+import type { CreateUserDto } from "./create-user-dto"
 
 export interface UpdateAssigneeDto {
 	workspaceId?: number
@@ -12,5 +13,5 @@ export interface UpdateAssigneeDto {
 	color?: string
 	/** @nullable */
 	icon?: string | null
-	userIds?: number[]
+	users?: CreateUserDto[]
 }

@@ -1,16 +1,15 @@
 import styled from "@emotion/styled";
-import type { UserDto } from "src/api/model";
+import type { CreateUserDto } from "src/api/model";
 
 interface UserItemProps {
-	user: UserDto;
+	user: CreateUserDto;
 }
 
-// FIX Optional name?s
-export function UserItem({ user: { id, upn, info } }: UserItemProps) {
+export function UserItem({ user: { upn, info } }: UserItemProps) {
 	return (
 		<>
 			<UserName>
-				{info?.name} - {id}
+				{info?.name}{!!info?.displayName ? ' - ' : ''}{info?.displayName}
 			</UserName>
 			<UserMeta>{upn}</UserMeta>
 		</>

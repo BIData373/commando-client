@@ -5,39 +5,47 @@ import {
 	type PropsWithChildren,
 	useContext
 } from "react"
+import type { UpdateWorkspaceDto } from "src/api/model"
+import { queryClient } from "src/queryClient"
 import type { WorkspaceDto } from "../api/model/workspace-dto"
 import { useListWorkspaces } from "../api/workspace/workspace"
 import { Spinner } from "../components/ui/spinner"
 
 export interface WorkspaceContext {
 	workspace: WorkspaceDto
+	setWorkspace(data: UpdateWorkspaceDto): void
 }
 
 const WorkspaceContext = createContext<WorkspaceContext | null>(null)
 
 export function WorkspaceProvider({ children }: PropsWithChildren) {
 	const { urlName } = useParams({ from: "/workspace/$urlName" })
-	const { data, isLoading } = useListWorkspaces({ urlName })
+	const { data, isLoading, queryKey } = useListWorkspaces({ urlName })
 
 	const workspace = data?.[0]
 
-	if (isLoading) {
-		return (
+	const setWorkspace = (data: UpdateWorkspaceDto) => {
+		queryClient.setQueryData(queryKey, (prev) => prev && [{
+			...(prev[0] ?? {}),
+			...data
+		}])
+	}
+
+	return isLoading
+		? (
 			<LoadingContainer>
 				<Spinner />
 			</LoadingContainer>
 		)
-	}
-
-	return (
-		workspace && (
-			<WorkspaceContext.Provider
-				value={{ workspace }}
-			>
-				{children}
-			</WorkspaceContext.Provider>
+		: (
+			workspace && (
+				<WorkspaceContext.Provider
+					value={{ workspace, setWorkspace }}
+				>
+					{children}
+				</WorkspaceContext.Provider>
+			)
 		)
-	)
 }
 
 export function useWorkspace() {

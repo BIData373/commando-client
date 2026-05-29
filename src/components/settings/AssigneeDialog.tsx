@@ -2,10 +2,11 @@ import styled from "@emotion/styled";
 import { useForm } from "@tanstack/react-form";
 import { UserPlus } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useCreateAssignee, useUpdateAssignee } from "src/api/assignee/assignee";
+import { useCreateAssignee, useListAssignees, useUpdateAssignee } from "src/api/assignee/assignee";
 import type { AssigneeDto, UserDto } from "src/api/model";
 import { type IMesibaIcon, useMesibaIconByName } from "src/hooks/useMesiba";
 import { useWorkspace } from "src/providers/WorkspaceProvider";
+import { queryClient } from "src/queryClient";
 import { concatName } from "src/utils/userUtils";
 import { CancelButton } from "../shared/CancelButton";
 import { PrimaryButton } from "../shared/PrimaryButton";
@@ -37,12 +38,14 @@ export function AssigneeDialog({
 
 	const { workspace: { id: workspaceId } } = useWorkspace()
 
+	const { queryKey } = useListAssignees({ workspaceId })
 	const { mutateAsync: createAssignee } = useCreateAssignee();
 	const { mutateAsync: updateAssignee } = useUpdateAssignee();
 
 	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null);
-	const [localAssignees, setLocalAssignees] = useState<UserDto[]>([]);
+	// const [localAssignees, setLocalAssignees] = useState<UserDto[]>([]);
 	const [submitError, setSubmitError] = useState<string | null>(null);
+	const [searchValue, setSearchValue] = useState<string>('');
 
 	const [iconSearch, setIconSearch] = useState("");
 	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null);
@@ -53,40 +56,64 @@ export function AssigneeDialog({
 		if (existingIcon) setSelectedIcon(existingIcon);
 	}, [existingIcon]);
 
-	const randomColor =
-		useMemo(() => {
-			if (!open) return;
-			const randomColorIdx = Math.floor(
-				Math.random() * (PRESET_COLORS.length - 1),
-			);
-			return PRESET_COLORS[randomColorIdx];
-		}, [open]) ?? "";
+	const randomColor = useMemo(() => {
+		if (!open) return;
+		const randomColorIdx = Math.floor(
+			Math.random() * (PRESET_COLORS.length - 1),
+		);
+		return PRESET_COLORS[randomColorIdx];
+	}, [open]) ?? "";
+
+	const handleSubmitSuccess = (data: AssigneeDto) => {
+		queryClient.setQueryData(queryKey, (prev?: AssigneeDto[]) => {
+			let updated = [...(prev ?? [])]
+			const foundIndex = updated.findIndex(({ id }) => id === data.id)
+
+			if (foundIndex >= 0) {
+				updated[foundIndex] = data
+			}
+
+			else {
+				updated = [...updated, data]
+			}
+
+			return updated
+		})
+	}
 
 	const form = useForm({
 		defaultValues: {
 			name: assignee?.name ?? "",
 			color: assignee?.color ?? randomColor,
 			icon: assignee?.icon ?? "",
-			userSearch: "",
+			users: assignee?.users ?? []
 		},
 		onSubmit: async ({ value }) => {
 			const payload = {
 				name: value.name.trim(),
 				color: value.color,
 				icon: value.icon || null,
-				userIds: localAssignees.map((u) => u.id),
-				role: 'מג"ד 373',
-				email: "magad373@gmail.com",
-			};
+				users: value.users
+			}
+
 			try {
 				if (assignee) {
 					await updateAssignee({
 						pathParams: { id: assignee.id },
 						data: payload
+					}, {
+						onSuccess: handleSubmitSuccess
 					});
-				} else {
-					await createAssignee({ data: { workspaceId, ...payload } });
 				}
+
+				else {
+					await createAssignee({
+						data: { workspaceId, ...payload }
+					}, {
+						onSuccess: handleSubmitSuccess
+					});
+				}
+
 				onOpenChange(false);
 			} catch {
 				setSubmitError("אירעה שגיאה, נסה שנית");
@@ -95,28 +122,33 @@ export function AssigneeDialog({
 	});
 
 	function handleAddUserList() {
-		if (!selectedUser) return;
-		const alreadyAdded = localAssignees.some((u) => u.id === selectedUser.id);
-		if (!alreadyAdded) {
-			setLocalAssignees((prev) => [...prev, selectedUser]);
+		if (!selectedUser) {
+			return
 		}
-		form.setFieldValue("userSearch", "");
+
+		form.setFieldValue("users", (prev) => prev.some((user) => user.upn === selectedUser.upn)
+			? prev
+			: [...prev, selectedUser]
+		)
+
+		setSearchValue('')
 		setSelectedUser(null);
 	}
 
-	function handleRemoveAssignee(id: number) {
-		setLocalAssignees((prev) => prev.filter((u) => u.id !== id));
+	function handleRemoveAssignee(upn: string) {
+		form.setFieldValue('users', ((prev) => prev.filter((user) => user.upn !== upn)))
 	}
 
 	function handleSearchSelect(user: UserDto) {
 		if (user) {
-			form.setFieldValue("userSearch", concatName(user));
+			setSearchValue(concatName(user))
 		}
-		setSelectedUser(user);
+
+		setSelectedUser(user)
 	}
 
 	function handleSearchClear() {
-		form.setFieldValue("userSearch", "");
+		setSearchValue('')
 		setSelectedUser(null);
 	}
 
@@ -137,7 +169,7 @@ export function AssigneeDialog({
 	}
 
 	function resetForm() {
-		setLocalAssignees(assignee?.users ?? []);
+		form.setFieldValue('users', assignee?.users ?? []);
 		setSubmitError(null);
 		setIconSearch("");
 		setSelectedIcon(existingIcon ?? null);
@@ -229,19 +261,19 @@ export function AssigneeDialog({
 							{submitError && <ErrorText>{submitError}</ErrorText>}
 						</FieldGroup>
 
-						<form.Field name="userSearch">
+						<form.Field name="users">
 							{(field) => (
 								<FieldGroup>
 									<FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
 									<SearchRow>
 										<DropdownUsers
-											value={field.state.value}
-											onChange={field.handleChange}
+											value={searchValue}
+											onChange={setSearchValue}
 											onSelect={handleSearchSelect}
 											onClear={handleSearchClear}
 											placeholder="חפש שם/ תפקיד/ מספר אישי"
 										/>
-										{field.state.value.length > 0 && (
+										{searchValue.length > 0 && (
 											<AddUserButton
 												type="button"
 												$enabled={!!selectedUser}
@@ -253,7 +285,7 @@ export function AssigneeDialog({
 										)}
 									</SearchRow>
 									<UsersLists
-										users={localAssignees}
+										users={field.state.value}
 										onRemove={handleRemoveAssignee}
 									/>
 								</FieldGroup>

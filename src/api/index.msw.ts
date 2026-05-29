@@ -1,6 +1,5 @@
 export { getAssigneeMock } from "./assignee/assignee.msw"
 export { getAssigneeTaskStatusMock } from "./assignee-task-status/assignee-task-status.msw"
-export { getAssigneeUserMock } from "./assignee-user/assignee-user.msw"
 export { getMessageMock } from "./message/message.msw"
 export { getPermissionMock } from "./permission/permission.msw"
 export { getPikudMock } from "./pikud/pikud.msw"
