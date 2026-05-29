@@ -6,6 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
-export type ListAssigneeUsersPathParameters = {
+export interface GetUserInfoDto {
 	id: number
+	upn: string
+	name?: string
+	displayName?: string
+	isBI: boolean
 }

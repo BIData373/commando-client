@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import { CircleQuestionMarkIcon, Plus, Search } from "lucide-react";
 import { type ChangeEvent, useState } from "react";
 import { useListAssignees } from "src/api/assignee/assignee";
-import type { UpdateWorkspaceDto } from "src/api/model";
 import { useUpdateWorkspace } from "src/api/workspace/workspace";
 import { AssigneeCard } from "src/components/settings/AssigneeCard";
 import { AssigneeDialog } from "src/components/settings/AssigneeDialog";
@@ -22,13 +21,17 @@ import {
 import { useWorkspace } from "src/providers/WorkspaceProvider";
 
 export function AssigneesContent() {
-	const { workspace: { id, assigneeStatusEditable } } = useWorkspace();
-	const { mutate: updateSettings } = useUpdateWorkspace();
+	const {
+		workspace: { id: workspaceId, assigneeStatusEditable },
+		setWorkspace
+	} = useWorkspace();
+
+	const { mutateAsync: updateSettings } = useUpdateWorkspace();
 
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
-	const { data: assignees = [] } = useListAssignees({ workspaceId: id });
+	const { data: assignees = [] } = useListAssignees({ workspaceId });
 
 	const filteredAssignees = searchQuery.trim()
 		? assignees.filter((a) => a.name.includes(searchQuery))
@@ -36,8 +39,12 @@ export function AssigneesContent() {
 
 	function handleCheckboxChange(checked: boolean) {
 		updateSettings({
-			pathParams: { id },
-			data: { assigneeStatusEditable: checked } satisfies UpdateWorkspaceDto,
+			pathParams: { id: workspaceId },
+			data: { assigneeStatusEditable: checked },
+		}, {
+			onSuccess(data) {
+				setWorkspace(data)
+			}
 		});
 	}
 
@@ -93,7 +100,7 @@ export function AssigneesContent() {
 						</StyledInputGroup>
 					</SearchWrapper>
 					<PrimaryButton
-						title="צור אחרי"
+						title="צור אחראי"
 						onClick={handleOpenCreateDialog}
 						header={<Plus size={16} />}
 						height={32}
