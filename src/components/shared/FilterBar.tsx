@@ -179,7 +179,7 @@ const SearchField = styled.input`
   }
 `;
 
-export const FilterPill = styled.button<{ $active: boolean }>`
+export const FilterPill = styled.div<{ $active: boolean }>`
   display: flex;
   align-items: center;
   gap: 4px;
