@@ -6,8 +6,8 @@ import type {
 	SortingState,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
+import type { TaskDto } from "src/api/model";
 import type { DirectiveStatus } from "src/utils/statusUtils";
-import type { Task } from "../../data/Tasks";
 import { buildFilterOptionsMap } from "../../functions/filter-utils";
 import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns";
 import { useTasks } from "../../providers/TasksProvider";
@@ -15,17 +15,17 @@ import { DataTable } from "../ui/data-table";
 import { BulkActionsBar } from "./BulkActionsBar";
 
 interface TaskTableProps {
-	tasks: Task[];
+	tasks: TaskDto[];
 	onEdit?: (taskId: number) => void;
 	onDoubleClick?: (taskId: number) => void;
-	extraColumns?: Record<string, ColumnDef<Task>>;
+	extraColumns?: Record<string, ColumnDef<TaskDto>>;
 	showHeader?: boolean;
 	initialStatusFilter?: DirectiveStatus;
 }
 
 function TaskTable({
 	tasks,
-	onEdit = () => {},
+	onEdit = () => { },
 	onDoubleClick,
 	extraColumns,
 	showHeader = true,
@@ -116,7 +116,7 @@ function TaskTable({
 					.slice(0, orderIndex)
 					.filter((colId) => !hiddenColumns.has(colId)).length;
 
-				result.splice(visibleBeforeCount, 0, colDef as ColumnDef<Task>);
+				result.splice(visibleBeforeCount, 0, colDef as ColumnDef<TaskDto>);
 			}
 		}
 

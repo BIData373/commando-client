@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { ChevronDown } from "lucide-react";
-import { MOCK_ASSIGNEES } from "src/data/Assignees";
+import { useListAssignees } from "src/api/assignee/assignee";
+import { useWorkspace } from "src/providers/WorkspaceProvider";
 import type {
 	TaskRow,
 	TaskTableMeta,
@@ -18,6 +19,9 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 	const hasMultiple = assigneeIds.length > 1;
 	const isExpanded = meta.expandedRows.has(row.id);
 
+	// const { workspace: { id: workspaceId } } = useWorkspace()
+	// const { data: assignees = [] } = useListAssignees({ workspaceId })
+
 	function handleToggleAssignee(assigneeId: number) {
 		const isRemoving = assigneeIds.includes(assigneeId);
 		const nextIds = isRemoving
@@ -26,10 +30,10 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 
 		const nextDetails = isRemoving
 			? Object.fromEntries(
-					Object.entries(row.assigneeDetails).filter(
-						([id]) => Number(id) !== assigneeId,
-					),
-				)
+				Object.entries(row.assigneeDetails).filter(
+					([id]) => Number(id) !== assigneeId,
+				),
+			)
 			: row.assigneeDetails;
 
 		meta.updateRow(row.id, {

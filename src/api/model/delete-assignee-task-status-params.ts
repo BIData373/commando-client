@@ -6,6 +6,6 @@
  * OpenAPI spec version: 1.0
  */
 
-export type GetTaskHistoryParams = {
-	taskId: number
+export type DeleteAssigneeTaskStatusParams = {
+	assigneeId: number
 }

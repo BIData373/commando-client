@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
 import { ChevronDown, Tag, X } from "lucide-react";
 import { useRef, useState } from "react";
-import { ALL_TOPICS } from "../../data/Topics";
+import { useListTags } from "src/api/tag/tag";
+import { useWorkspace } from "src/providers/WorkspaceProvider";
 import HighlightMatch from "../shared/HighlightMatch";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -15,6 +16,7 @@ interface TopicFieldProps {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
+// FIX Rename to tags
 function TopicField({
 	topics,
 	lockedTopics,
@@ -25,12 +27,15 @@ function TopicField({
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const filteredTopics = ALL_TOPICS.filter(
-		(t) => t.includes(topicQuery) && !topics.includes(t),
+	const { workspace: { id: workspaceId } } = useWorkspace()
+	const { data: tags = [] } = useListTags({ workspaceId })
+
+	const filteredTopics = tags.filter(
+		(tag) => tag.name.includes(topicQuery) && !topics.includes(tag.name),
 	);
 
 	const isNewTopic =
-		topicQuery.trim() !== "" && !ALL_TOPICS.includes(topicQuery.trim());
+		topicQuery.trim() !== "" && !tags.some(({ name }) => name === topicQuery.trim());
 	const showDropdown =
 		isDropdownOpen && (filteredTopics.length > 0 || isNewTopic);
 
@@ -50,9 +55,9 @@ function TopicField({
 		if (e.key === "Enter") {
 			e.preventDefault();
 			if (topicQuery.trim()) {
-				const existing = filteredTopics.find((t) => t === topicQuery.trim());
+				const existing = filteredTopics.find(({ name }) => name === topicQuery.trim());
 				if (existing) {
-					handleSelect(existing);
+					handleSelect(existing.name);
 				} else {
 					handleCreateNew();
 				}
@@ -134,15 +139,15 @@ function TopicField({
 						{filteredTopics.length > 0 && topicQuery && (
 							<SuggestionsHeader>הצעות</SuggestionsHeader>
 						)}
-						{filteredTopics.map((topic) => (
+						{filteredTopics.map(({ name }) => (
 							<TopicOption
-								key={topic}
-								onMouseDown={(e) => handleSelectMouseDown(e, topic)}
+								key={name}
+								onMouseDown={(e) => handleSelectMouseDown(e, name)}
 							>
 								{topicQuery ? (
-									<HighlightMatch text={topic} query={topicQuery} />
+									<HighlightMatch text={name} query={topicQuery} />
 								) : (
-									topic
+									name
 								)}
 							</TopicOption>
 						))}

@@ -2,8 +2,6 @@ import styled from "@emotion/styled";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { useRef, useState } from "react";
-import type { FormState } from "../../data/CreateTaskForm";
-import { INITIAL_FORM } from "../../data/CreateTaskForm";
 import { formatDate, parseDate } from "../../functions/date-utils";
 import { useSaveTasks } from "../../hooks/useSaveTasks";
 import { CancelButton } from "../shared/CancelButton";
@@ -18,6 +16,36 @@ import NotesField from "./NotesField";
 import type { DiscussionSource } from "./SourceField";
 import SourceField from "./SourceField";
 import TopicField from "./TopicField";
+
+interface FormState {
+	title: string;
+	deadlineType: DeadlineType;
+	dueDate: Date | null;
+	selectedAssignees: number[];
+	assigneeDetails: Record<number, string>;
+	isImportant: boolean;
+	source: string;
+	sourceDate: Date | null;
+	topics: string[];
+	notes: string;
+	isDetailsExpanded: boolean;
+	linkedSource: DiscussionSource | null;
+}
+
+const INITIAL_FORM: FormState = {
+	title: "",
+	deadlineType: DeadlineType.Date,
+	dueDate: null,
+	selectedAssignees: [],
+	assigneeDetails: {},
+	isImportant: false,
+	source: "",
+	sourceDate: null,
+	topics: [],
+	notes: "",
+	isDetailsExpanded: false,
+	linkedSource: null,
+};
 
 // ─── Component ───────────────────────────────────────────────────────────────
 interface CreateTaskModalProps {

@@ -35,10 +35,10 @@ export const AssigneeContainer = ({
     (isAdmin || (assigneeStatusEditable ?? false));
 
   return (
-    <AssigneeRowContainer key={assignee.user.id} $white={editable && !isAdmin}>
+    <AssigneeRowContainer key={assignee.assignee.id} $white={editable && !isAdmin}>
       <AssigneeInfoBlock>
-        <AssigneeAvatar assignee={assignee.user} />
-        <AssigneeRoleText>{assignee.user.role}</AssigneeRoleText>
+        <AssigneeAvatar assignee={assignee.assignee} />
+        <AssigneeRoleText>{assignee.assignee.role}</AssigneeRoleText>
       </AssigneeInfoBlock>
       {canEdit ? (
         <DropdownMenu>
@@ -53,7 +53,7 @@ export const AssigneeContainer = ({
               <StatusDropdownItem
                 key={s}
                 $selected={s === assignee.status}
-                onSelect={() => onDirectiveStatusChange(assignee.user.id, s)}
+                onSelect={() => onDirectiveStatusChange(assignee.assignee.id, s)}
               >
                 <StatusTag status={s} />
               </StatusDropdownItem>

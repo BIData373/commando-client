@@ -97,7 +97,7 @@ function TaskFilters({
 		</FilterBar>
 	);
 }
-
+		
 export { TaskFilters };
 
 const WarningTrigger = styled(TooltipTrigger)`

@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { UserPlus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PermissionDtoType, type UserDto } from "src/api/model";
-import { useDeletePermission, useGetPermissions, useUpdatePermission } from "src/api/permission/permission";
+import { useDeletePermission, useListPermissions, useUpdatePermission } from "src/api/permission/permission";
 import { DropdownPermission } from "src/components/settings/DropdownPermission";
 import { DropdownUsers } from "src/components/settings/DropdownUsers";
 import { UserPermissionList } from "src/components/settings/UserPermissionList";
@@ -29,7 +29,7 @@ export function PermissionsContent() {
 	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null);
 	const [type, setType] = useState<PermissionDtoType>(PermissionDtoType.VIEWER);
 
-	const { data: permissions = [] } = useGetPermissions({ workspaceId });
+	const { data: permissions = [] } = useListPermissions({ workspaceId });
 	const { mutate: updatePermission } = useUpdatePermission();
 	const { mutate: deletePermission } = useDeletePermission();
 

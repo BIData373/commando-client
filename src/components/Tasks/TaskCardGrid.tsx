@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Flag } from "lucide-react";
-import type { Task } from "../../data/Tasks";
+import type { TaskDto } from "src/api/model";
 import { formatDateShort } from "../../functions/date-utils";
 import DeadlineTag, {
 	DEADLINE_LABELS,
@@ -16,7 +16,7 @@ import {
 } from "../ui/card";
 
 interface TaskCardGridProps {
-	tasks: Task[];
+	tasks: TaskDto[];
 }
 
 function TaskCardGrid({ tasks }: TaskCardGridProps) {

@@ -3,13 +3,12 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import { Calendar, ChevronUp, History, Paperclip, X } from "lucide-react";
 import { useRef, useState } from "react";
 import type { TaskDto } from "src/api/model";
-import { useGetTaskHistory } from "src/api/task-history/task-history";
+import { useListTaskHistory } from "src/api/task-history/task-history";
 import {
   formatDateToDateMonthYear,
   formatDateToMinutesHours,
 } from "src/utils/timeFormat";
 import { EditorExtensions } from "src/utils/tiptapExtensions";
-import { useCurrentUser } from "../../hooks/useCurrentUser";
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag";
 import FlagIcon from "../shared/FlagIcon";
 import type { DirectiveStatus } from "../shared/StatusTag";
@@ -45,10 +44,9 @@ function TaskDetailPanel({
   onArchive,
   onDelete,
 }: TaskDetailPanelProps) {
-  const currentUser = useCurrentUser();
   // const { updateTaskStatus } = useTasks();
 
-  const { data: history = [] } = useGetTaskHistory({ taskId: id })
+  const { data: history = [] } = useListTaskHistory({ taskId: id })
 
   const [showHistory, setShowHistory] = useState(false);
   const [showConversation, setShowConversation] = useState(false);
@@ -96,153 +94,150 @@ function TaskDetailPanel({
   }
 
   return (
-    currentUser && (
-      <Overlay onClick={onClose}>
-        <Panel onClick={handlePanelClick}>
-          <TaskIdLabel>#{id}</TaskIdLabel>
-          <CloseBtn onClick={onClose} aria-label="סגור">
-            <X size={16} />
-          </CloseBtn>
+    <Overlay onClick={onClose}>
+      <Panel onClick={handlePanelClick}>
+        <TaskIdLabel>#{id}</TaskIdLabel>
+        <CloseBtn onClick={onClose} aria-label="סגור">
+          <X size={16} />
+        </CloseBtn>
 
-          <HeaderRow $shadow={scrollShadow.top}>
-            <TextWrapper>
-              {flagged && <FlagIcon />}
-              <TitleText>
-                {title}
-                {description ? ` - ${description}` : ""}
-              </TitleText>
-            </TextWrapper>
-            <DropdownOptions
-              onEdit={onClose}
-              onArchive={onArchive}
-              onDelete={onDelete}
-            />
-          </HeaderRow>
+        <HeaderRow $shadow={scrollShadow.top}>
+          <TextWrapper>
+            {flagged && <FlagIcon />}
+            <TitleText>
+              {title}
+              {description ? ` - ${description}` : ""}
+            </TitleText>
+          </TextWrapper>
+          <DropdownOptions
+            onEdit={onClose}
+            onArchive={onArchive}
+            onDelete={onDelete}
+          />
+        </HeaderRow>
 
-          <ScrollContent
-            $noScroll={showConversation}
-            ref={scrollRef}
-            onScroll={handleScroll}
-          >
-            <DeadlineSection>
-              <SectionLabel>תג"ב</SectionLabel>
-              <MetaRow>
-                <DueDateGroup>
-                  {deadlineType !== "date" && (
-                    <DeadlineTag $type={deadlineType}>
-                      {DEADLINE_LABELS[deadlineType]}
-                    </DeadlineTag>
-                  )}
-                  {dueDate && (
-                    <DateContainer>
-                      <MetaLabel>עד</MetaLabel>
-                      <DueDateText>
-                        {formatDateToDateMonthYear(new Date(dueDate))}
-                      </DueDateText>
-                      <Calendar size={16} />
-                    </DateContainer>
-                  )}
-                </DueDateGroup>
-                <CreatedGroup>
-                  <HistoryButton onClick={() => setShowHistory(true)}>
-                    <History size={16} />
-                  </HistoryButton>
-                  <MetaText>
-                    {formatDateToMinutesHours(new Date(createdAt))} -{" "}
-                    {formatDateToDateMonthYear(new Date(createdAt))}
-                  </MetaText>
-                </CreatedGroup>
-              </MetaRow>
-            </DeadlineSection>
-
-            <AssigneeSection
-              currentUser={currentUser}
-              relatedDirectives={relatedDirectives}
-              onDirectiveStatusChange={handleDirectiveStatusChange}
-            />
-
-            {hasTagOrAttacment && (
-              <>
-                <DividerRow>
-                  <DividerLine />
-                  <DividerText>פרטים נוספים</DividerText>
-                  <DividerLine />
-                </DividerRow>
-
-                <InfoGrid>
-                  {source && (
-                    <InfoBlock>
-                      <SectionLabel>מקור</SectionLabel>
-                      <SourceRow>
-                        <SourceName>{source.name}</SourceName>
-                        {/* // FIX Source date */}
-                        <SourceDate>{null}</SourceDate>
-                      </SourceRow>
-                      <InfoAttachment>
-                        {hasAttachment && (
-                          <>
-                            <Paperclip size={16} />
-                            {attacmentFile}
-                          </>
-                        )}
-                      </InfoAttachment>
-                    </InfoBlock>
-                  )}
-                  <InfoBlock>
-                    <SectionLabel>נושא</SectionLabel>
-                    <TagsRow>
-                      {tags.map((tag) => (
-                        <TagChip key={tag}>{tag}</TagChip>
-                      ))}
-                    </TagsRow>
-                  </InfoBlock>
-                </InfoGrid>
-
-                {notes && (
-                  <NotesSection>
-                    <SectionLabel>הערות הנחיה</SectionLabel>
-                    <NotesText>
-                      <StyledEditorContent editor={editor} />
-                    </NotesText>
-                  </NotesSection>
+        <ScrollContent
+          $noScroll={showConversation}
+          ref={scrollRef}
+          onScroll={handleScroll}
+        >
+          <DeadlineSection>
+            <SectionLabel>תג"ב</SectionLabel>
+            <MetaRow>
+              <DueDateGroup>
+                {deadlineType !== "date" && (
+                  <DeadlineTag $type={deadlineType}>
+                    {DEADLINE_LABELS[deadlineType]}
+                  </DeadlineTag>
                 )}
-              </>
-            )}
-          </ScrollContent>
+                {dueDate && (
+                  <DateContainer>
+                    <MetaLabel>עד</MetaLabel>
+                    <DueDateText>
+                      {formatDateToDateMonthYear(new Date(dueDate))}
+                    </DueDateText>
+                    <Calendar size={16} />
+                  </DateContainer>
+                )}
+              </DueDateGroup>
+              <CreatedGroup>
+                <HistoryButton onClick={() => setShowHistory(true)}>
+                  <History size={16} />
+                </HistoryButton>
+                <MetaText>
+                  {formatDateToMinutesHours(new Date(createdAt))} -{" "}
+                  {formatDateToDateMonthYear(new Date(createdAt))}
+                </MetaText>
+              </CreatedGroup>
+            </MetaRow>
+          </DeadlineSection>
 
-          <BottomBar
-            onClick={handleBottomBarClick}
-            $hidden={showConversation}
-            $shadow={scrollShadow.bottom}
-          >
-            <ChatGroup>
-              <ChatBadge>{taskMessages.length}</ChatBadge>
-              <ChatLabel>שיחה ועדכונים</ChatLabel>
-            </ChatGroup>
-            <ChevronUp size={20} />
-          </BottomBar>
-          {showHistory && (
+          <AssigneeSection
+            relatedDirectives={relatedDirectives}
+            onDirectiveStatusChange={handleDirectiveStatusChange}
+          />
+
+          {hasTagOrAttacment && (
             <>
-              <HistoryOverlay />
-              <TaskHistoryPanel
-                history={history}
-                onClose={() => setShowHistory(false)}
-              />
+              <DividerRow>
+                <DividerLine />
+                <DividerText>פרטים נוספים</DividerText>
+                <DividerLine />
+              </DividerRow>
+
+              <InfoGrid>
+                {source && (
+                  <InfoBlock>
+                    <SectionLabel>מקור</SectionLabel>
+                    <SourceRow>
+                      <SourceName>{source.name}</SourceName>
+                      {/* // FIX Source date */}
+                      <SourceDate>{null}</SourceDate>
+                    </SourceRow>
+                    <InfoAttachment>
+                      {hasAttachment && (
+                        <>
+                          <Paperclip size={16} />
+                          {attacmentFile}
+                        </>
+                      )}
+                    </InfoAttachment>
+                  </InfoBlock>
+                )}
+                <InfoBlock>
+                  <SectionLabel>נושא</SectionLabel>
+                  <TagsRow>
+                    {tags.map((tag) => (
+                      <TagChip key={tag}>{tag}</TagChip>
+                    ))}
+                  </TagsRow>
+                </InfoBlock>
+              </InfoGrid>
+
+              {notes && (
+                <NotesSection>
+                  <SectionLabel>הערות הנחיה</SectionLabel>
+                  <NotesText>
+                    <StyledEditorContent editor={editor} />
+                  </NotesText>
+                </NotesSection>
+              )}
             </>
           )}
-          {showConversation && (
-            <>
-              <HistoryOverlay />
-              <TaskConversationPanel
-                messages={taskMessages}
-                currentUser={currentUser}
-                onClose={() => setShowConversation(false)}
-              />
-            </>
-          )}
-        </Panel>
-      </Overlay>
-    )
+        </ScrollContent>
+
+        <BottomBar
+          onClick={handleBottomBarClick}
+          $hidden={showConversation}
+          $shadow={scrollShadow.bottom}
+        >
+          <ChatGroup>
+            <ChatBadge>{taskMessages.length}</ChatBadge>
+            <ChatLabel>שיחה ועדכונים</ChatLabel>
+          </ChatGroup>
+          <ChevronUp size={20} />
+        </BottomBar>
+        {showHistory && (
+          <>
+            <HistoryOverlay />
+            <TaskHistoryPanel
+              history={history}
+              onClose={() => setShowHistory(false)}
+            />
+          </>
+        )}
+        {showConversation && (
+          <>
+            <HistoryOverlay />
+            <TaskConversationPanel
+              taskId={id}
+              messages={taskMessages}
+              onClose={() => setShowConversation(false)}
+            />
+          </>
+        )}
+      </Panel>
+    </Overlay>
   );
 }
 

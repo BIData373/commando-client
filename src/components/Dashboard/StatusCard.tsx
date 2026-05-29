@@ -1,86 +1,86 @@
 import styled from "@emotion/styled";
 import { useMemo } from "react";
 import { Cell, Pie, PieChart } from "recharts";
-import type { Task } from "src/data/Tasks";
+import type { TaskDto } from "src/api/model";
 import { DirectiveStatus, statusColors } from "src/utils/statusUtils";
 
 interface StatusCardProps {
-	tasks: Task[];
+  tasks: TaskDto[];
 }
 
 const CHART_EMPTY_COLOR = "var(--chip-bg)";
 
 export default function StatusCard({ tasks }: StatusCardProps) {
-	const statusCounts = useMemo(
-		() => ({
-			done: tasks.filter((t) => t.status === DirectiveStatus.COMPLETED).length,
-			inProgress: tasks.filter((t) => t.status === DirectiveStatus.IN_PROGRESS)
-				.length,
-			pending: tasks.filter((t) => t.status === DirectiveStatus.NOT_STARTED)
-				.length,
-		}),
-		[tasks],
-	);
+  const statusCounts = useMemo(
+    () => ({
+      done: tasks.filter((t) => t.status === DirectiveStatus.COMPLETED).length,
+      inProgress: tasks.filter((t) => t.status === DirectiveStatus.IN_PROGRESS)
+        .length,
+      pending: tasks.filter((t) => t.status === DirectiveStatus.NOT_STARTED)
+        .length,
+    }),
+    [tasks],
+  );
 
-	const { done, inProgress, pending } = statusCounts;
-	const total = done + inProgress + pending;
+  const { done, inProgress, pending } = statusCounts;
+  const total = done + inProgress + pending;
 
-	const chartData =
-		total === 0
-			? [{ key: "all", value: 1 }]
-			: Object.entries(statusCounts).map(([key, value]) => ({ key, value }));
+  const chartData =
+    total === 0
+      ? [{ key: "all", value: 1 }]
+      : Object.entries(statusCounts).map(([key, value]) => ({ key, value }));
 
-	const cellFills =
-		total === 0
-			? [CHART_EMPTY_COLOR]
-			: Object.values(statusColors).map((color) => color.bgColor);
+  const cellFills =
+    total === 0
+      ? [CHART_EMPTY_COLOR]
+      : Object.values(statusColors).map((color) => color.bgColor);
 
-	return (
-		<Section>
-			<SectionTitle>סטטוס הנחיות</SectionTitle>
-			<Card>
-				<ChartWrapper>
-					<StyledPieChart width={250} height={300}>
-						<Pie
-							style={{ outline: "none" }}
-							data={chartData}
-							innerRadius={88}
-							outerRadius={130}
-							dataKey="value"
-							startAngle={0}
-							endAngle={360}
-						>
-							{chartData.map(({ key }, i) => (
-								<Cell key={key} fill={cellFills[i] ?? CHART_EMPTY_COLOR} />
-							))}
-						</Pie>
-					</StyledPieChart>
-					<ChartCenter>
-						<CenterCount>{total}</CenterCount>
-						<CenterLabel>הנחיות בסביבה</CenterLabel>
-					</ChartCenter>
-				</ChartWrapper>
-				<StatusRow>
-					<StatusItem>
-						<StatusCount>{pending}</StatusCount>
-						<StatusBadge $variant={DirectiveStatus.NOT_STARTED}>
-							טרם בוצע
-						</StatusBadge>
-					</StatusItem>
-					<StatusItem>
-						<StatusCount>{inProgress}</StatusCount>
-						<StatusBadge $variant={DirectiveStatus.IN_PROGRESS}>
-							בעבודה
-						</StatusBadge>
-					</StatusItem>
-					<StatusItem>
-						<StatusCount>{done}</StatusCount>
-						<StatusBadge $variant={DirectiveStatus.COMPLETED}>בוצע</StatusBadge>
-					</StatusItem>
-				</StatusRow>
-			</Card>
-		</Section>
-	);
+  return (
+    <Section>
+      <SectionTitle>סטטוס הנחיות</SectionTitle>
+      <Card>
+        <ChartWrapper>
+          <StyledPieChart width={250} height={300}>
+            <Pie
+              style={{ outline: "none" }}
+              data={chartData}
+              innerRadius={88}
+              outerRadius={130}
+              dataKey="value"
+              startAngle={0}
+              endAngle={360}
+            >
+              {chartData.map(({ key }, i) => (
+                <Cell key={key} fill={cellFills[i] ?? CHART_EMPTY_COLOR} />
+              ))}
+            </Pie>
+          </StyledPieChart>
+          <ChartCenter>
+            <CenterCount>{total}</CenterCount>
+            <CenterLabel>הנחיות בסביבה</CenterLabel>
+          </ChartCenter>
+        </ChartWrapper>
+        <StatusRow>
+          <StatusItem>
+            <StatusCount>{pending}</StatusCount>
+            <StatusBadge $variant={DirectiveStatus.NOT_STARTED}>
+              טרם בוצע
+            </StatusBadge>
+          </StatusItem>
+          <StatusItem>
+            <StatusCount>{inProgress}</StatusCount>
+            <StatusBadge $variant={DirectiveStatus.IN_PROGRESS}>
+              בעבודה
+            </StatusBadge>
+          </StatusItem>
+          <StatusItem>
+            <StatusCount>{done}</StatusCount>
+            <StatusBadge $variant={DirectiveStatus.COMPLETED}>בוצע</StatusBadge>
+          </StatusItem>
+        </StatusRow>
+      </Card>
+    </Section>
+  );
 }
 
 const StyledPieChart = styled(PieChart)`

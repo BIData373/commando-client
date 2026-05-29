@@ -9,4 +9,6 @@
 export interface CreateSourceDto {
 	workspaceId: number
 	name: string
+	date: string
+	tags: string[]
 }

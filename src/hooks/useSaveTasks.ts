@@ -1,6 +1,5 @@
 import { startOfDay } from "date-fns";
 import { DeadlineType } from "../components/shared/DeadlineTag";
-import { MOCK_ASSIGNEES } from "../data/Assignees";
 import { type NewTaskInput, useTasks } from "../providers/TasksProvider";
 
 interface TaskInput {

@@ -19,10 +19,10 @@ import type {
 } from "@tanstack/react-query"
 import { useQuery } from "@tanstack/react-query"
 import { sendRequest } from "../../axios"
-import type { GetTaskHistoryParams, TaskHistoryDto } from "../model"
+import type { ListTaskHistoryParams, TaskHistoryDto } from "../model"
 
-export const getTaskHistory = (
-	params: GetTaskHistoryParams,
+export const listTaskHistory = (
+	params: ListTaskHistoryParams,
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<TaskHistoryDto[]>({
@@ -33,55 +33,63 @@ export const getTaskHistory = (
 	})
 }
 
-export const getGetTaskHistoryQueryKey = (params?: GetTaskHistoryParams) => {
+export const getListTaskHistoryQueryKey = (params?: ListTaskHistoryParams) => {
 	return [`/task-history`, ...(params ? [params] : [])] as const
 }
 
-export const getGetTaskHistoryQueryOptions = <
-	TData = Awaited<ReturnType<typeof getTaskHistory>>,
+export const getListTaskHistoryQueryOptions = <
+	TData = Awaited<ReturnType<typeof listTaskHistory>>,
 	TError = unknown,
 >(
-	params: GetTaskHistoryParams,
+	params: ListTaskHistoryParams,
 	options?: {
 		query?: Partial<
-			UseQueryOptions<Awaited<ReturnType<typeof getTaskHistory>>, TError, TData>
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listTaskHistory>>,
+				TError,
+				TData
+			>
 		>
 	},
 ) => {
 	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getGetTaskHistoryQueryKey(params)
+	const queryKey = queryOptions?.queryKey ?? getListTaskHistoryQueryKey(params)
 
-	const queryFn: QueryFunction<Awaited<ReturnType<typeof getTaskHistory>>> = ({
+	const queryFn: QueryFunction<Awaited<ReturnType<typeof listTaskHistory>>> = ({
 		signal,
-	}) => getTaskHistory(params, signal)
+	}) => listTaskHistory(params, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-		Awaited<ReturnType<typeof getTaskHistory>>,
+		Awaited<ReturnType<typeof listTaskHistory>>,
 		TError,
 		TData
 	> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetTaskHistoryQueryResult = NonNullable<
-	Awaited<ReturnType<typeof getTaskHistory>>
+export type ListTaskHistoryQueryResult = NonNullable<
+	Awaited<ReturnType<typeof listTaskHistory>>
 >
-export type GetTaskHistoryQueryError = unknown
+export type ListTaskHistoryQueryError = unknown
 
-export function useGetTaskHistory<
-	TData = Awaited<ReturnType<typeof getTaskHistory>>,
+export function useListTaskHistory<
+	TData = Awaited<ReturnType<typeof listTaskHistory>>,
 	TError = unknown,
 >(
-	params: GetTaskHistoryParams,
+	params: ListTaskHistoryParams,
 	options: {
 		query: Partial<
-			UseQueryOptions<Awaited<ReturnType<typeof getTaskHistory>>, TError, TData>
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listTaskHistory>>,
+				TError,
+				TData
+			>
 		> &
 			Pick<
 				DefinedInitialDataOptions<
-					Awaited<ReturnType<typeof getTaskHistory>>,
+					Awaited<ReturnType<typeof listTaskHistory>>,
 					TError,
-					Awaited<ReturnType<typeof getTaskHistory>>
+					Awaited<ReturnType<typeof listTaskHistory>>
 				>,
 				"initialData"
 			>
@@ -90,20 +98,24 @@ export function useGetTaskHistory<
 ): DefinedUseQueryResult<TData, TError> & {
 	queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useGetTaskHistory<
-	TData = Awaited<ReturnType<typeof getTaskHistory>>,
+export function useListTaskHistory<
+	TData = Awaited<ReturnType<typeof listTaskHistory>>,
 	TError = unknown,
 >(
-	params: GetTaskHistoryParams,
+	params: ListTaskHistoryParams,
 	options?: {
 		query?: Partial<
-			UseQueryOptions<Awaited<ReturnType<typeof getTaskHistory>>, TError, TData>
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listTaskHistory>>,
+				TError,
+				TData
+			>
 		> &
 			Pick<
 				UndefinedInitialDataOptions<
-					Awaited<ReturnType<typeof getTaskHistory>>,
+					Awaited<ReturnType<typeof listTaskHistory>>,
 					TError,
-					Awaited<ReturnType<typeof getTaskHistory>>
+					Awaited<ReturnType<typeof listTaskHistory>>
 				>,
 				"initialData"
 			>
@@ -112,14 +124,18 @@ export function useGetTaskHistory<
 ): UseQueryResult<TData, TError> & {
 	queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useGetTaskHistory<
-	TData = Awaited<ReturnType<typeof getTaskHistory>>,
+export function useListTaskHistory<
+	TData = Awaited<ReturnType<typeof listTaskHistory>>,
 	TError = unknown,
 >(
-	params: GetTaskHistoryParams,
+	params: ListTaskHistoryParams,
 	options?: {
 		query?: Partial<
-			UseQueryOptions<Awaited<ReturnType<typeof getTaskHistory>>, TError, TData>
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listTaskHistory>>,
+				TError,
+				TData
+			>
 		>
 	},
 	queryClient?: QueryClient,
@@ -127,21 +143,25 @@ export function useGetTaskHistory<
 	queryKey: DataTag<QueryKey, TData, TError>
 }
 
-export function useGetTaskHistory<
-	TData = Awaited<ReturnType<typeof getTaskHistory>>,
+export function useListTaskHistory<
+	TData = Awaited<ReturnType<typeof listTaskHistory>>,
 	TError = unknown,
 >(
-	params: GetTaskHistoryParams,
+	params: ListTaskHistoryParams,
 	options?: {
 		query?: Partial<
-			UseQueryOptions<Awaited<ReturnType<typeof getTaskHistory>>, TError, TData>
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listTaskHistory>>,
+				TError,
+				TData
+			>
 		>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
 	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getGetTaskHistoryQueryOptions(params, options)
+	const queryOptions = getListTaskHistoryQueryOptions(params, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,

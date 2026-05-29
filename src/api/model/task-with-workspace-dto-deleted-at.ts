@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export type DeleteAssigneeTaskStatusPathParameters = {
-	taskId: number
-	assigneeId: number
-}
+/**
+ * @nullable
+ */
+export type TaskWithWorkspaceDtoDeletedAt = { [key: string]: unknown } | null

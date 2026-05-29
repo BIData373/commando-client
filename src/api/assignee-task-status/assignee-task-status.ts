@@ -24,7 +24,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { sendRequest } from "../../axios"
 import type {
 	AssigneeTaskStatusDto,
-	DeleteAssigneeTaskStatusPathParameters,
+	DeleteAssigneeTaskStatusParams,
 	ListAssigneeTaskStatusesPathParameters,
 	UpdateAssigneeTaskStatusDto,
 } from "../model"
@@ -270,12 +270,13 @@ export const useUpsertAssigneeTaskStatus = <
 	)
 }
 export const deleteAssigneeTaskStatus = (
-	{ taskId, assigneeId }: DeleteAssigneeTaskStatusPathParameters,
+	params: DeleteAssigneeTaskStatusParams,
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<AssigneeTaskStatusDto>({
-		url: `/assignee-task-status/${taskId}/${assigneeId}`,
+		url: `/assignee-task-status`,
 		method: "DELETE",
+		params,
 		signal,
 	})
 }
@@ -287,13 +288,13 @@ export const getDeleteAssigneeTaskStatusMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
 		TError,
-		{ pathParams: DeleteAssigneeTaskStatusPathParameters },
+		{ params: DeleteAssigneeTaskStatusParams },
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
 	TError,
-	{ pathParams: DeleteAssigneeTaskStatusPathParameters },
+	{ params: DeleteAssigneeTaskStatusParams },
 	TContext
 > => {
 	const mutationKey = ["deleteAssigneeTaskStatus"]
@@ -307,11 +308,11 @@ export const getDeleteAssigneeTaskStatusMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
-		{ pathParams: DeleteAssigneeTaskStatusPathParameters }
+		{ params: DeleteAssigneeTaskStatusParams }
 	> = (props) => {
-		const { pathParams } = props ?? {}
+		const { params } = props ?? {}
 
-		return deleteAssigneeTaskStatus(pathParams)
+		return deleteAssigneeTaskStatus(params)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -331,7 +332,7 @@ export const useDeleteAssigneeTaskStatus = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
 			TError,
-			{ pathParams: DeleteAssigneeTaskStatusPathParameters },
+			{ params: DeleteAssigneeTaskStatusParams },
 			TContext
 		>
 	},
@@ -339,7 +340,7 @@ export const useDeleteAssigneeTaskStatus = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
 	TError,
-	{ pathParams: DeleteAssigneeTaskStatusPathParameters },
+	{ params: DeleteAssigneeTaskStatusParams },
 	TContext
 > => {
 	return useMutation(

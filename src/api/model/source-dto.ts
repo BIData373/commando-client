@@ -19,5 +19,7 @@ export interface SourceDto {
 	deletedBy: SourceDtoDeletedBy
 	id: number
 	name: string
+	date: string
 	workspaceId: number
+	tags: string[]
 }

@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { WorkspaceProvider } from "src/providers/WorkspaceProvider";
 import CreateTaskModal from "../../../../components/CreateTasks/CreateTaskModal";
 import CreateDiscussionModal from "../../../../components/CreateTasksFromDiscussion/CreateDiscussionModal";
 import type { View } from "../../../../components/Tasks/TasksLayout";
@@ -31,9 +32,13 @@ function NewTask() {
 		});
 	}
 
-	return mode === "discussion" ? (
-		<CreateDiscussionModal onClose={handleClose} />
-	) : (
-		<CreateTaskModal onClose={handleClose} />
-	);
+	return (
+		<WorkspaceProvider>
+			{mode === "discussion" ? (
+				<CreateDiscussionModal onClose={handleClose} />
+			) : (
+				<CreateTaskModal onClose={handleClose} />
+			)}
+		</WorkspaceProvider>
+	)
 }

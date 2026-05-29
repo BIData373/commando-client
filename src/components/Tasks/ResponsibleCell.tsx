@@ -1,16 +1,16 @@
 import styled from "@emotion/styled";
 import { X } from "lucide-react";
 import { Popover as PopoverPrimitive } from "radix-ui";
+import type { AssigneeDto } from "src/api/model";
 import type { DirectiveStatus } from "src/utils/statusUtils";
 import { AssigneeAvatar } from "../shared/AssigneeAvatar";
 import { StatusTag } from "../shared/StatusTag";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import type { AssigneeDto } from "src/api/model";
 
 export type AvatarColor = "cyan" | "blue" | "green" | "orange" | "gray";
 
 export interface RelatedDirective {
-  user: AssigneeDto;
+  assignee: AssigneeDto;
   status: DirectiveStatus;
 }
 
@@ -48,10 +48,10 @@ export function ResponsibleCell({
                 <UserScrollArea>
                   <UserList>
                     {relatedDirectives.map((d) => (
-                      <UserRow key={d.user.id}>
+                      <UserRow key={d.assignee.id}>
                         <UserInfo>
-                          <UserName>{d.user.name}</UserName>
-                          <UserEmail>{d.user.email}</UserEmail>
+                          <UserName>{d.assignee.name}</UserName>
+                          <UserEmail>{d.assignee.upn}</UserEmail>
                         </UserInfo>
                       </UserRow>
                     ))}
@@ -73,10 +73,10 @@ export function ResponsibleCell({
             <PopoverArrow width={12} height={6} />
             <CompactList>
               {relatedDirectives.map((d) => (
-                <CompactRow key={d.user.id}>
+                <CompactRow key={d.assignee.id}>
                   <StatusTag status={d.status} />
-                  <CompactRole>{d.user.role}</CompactRole>
-                  <AssigneeAvatar assignee={d.user} />
+                  <CompactRole>{d.assignee.role}</CompactRole>
+                  <AssigneeAvatar assignee={d.assignee} />
                 </CompactRow>
               ))}
             </CompactList>
@@ -95,6 +95,7 @@ const CellRoot = styled.div`
   gap: 4px;
 `;
 
+// FIX Use AssigneeAvatar
 const AvatarCircle = styled.button<{ $color: AvatarColor }>`
   display: inline-flex;
   align-items: center;
@@ -110,20 +111,7 @@ const AvatarCircle = styled.button<{ $color: AvatarColor }>`
   cursor: pointer;
   border: none;
   padding: 0;
-  ${({ $color }) => {
-    switch ($color) {
-      case "cyan":
-        return "background: #87e8de;";
-      case "blue":
-        return "background: #91caff;";
-      case "green":
-        return "background: #b7eb8f;";
-      case "orange":
-        return "background: #ffd591;";
-      case "gray":
-        return "background: var(--colors-base-neutral-3);";
-    }
-  }}
+  ${({ $color }) => `background: ${$color}`}
 `;
 
 // ─── Shared popover styles ─────────────────────────────────────────────────────

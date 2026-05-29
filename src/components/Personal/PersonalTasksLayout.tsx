@@ -2,12 +2,7 @@ import styled from "@emotion/styled";
 import type { ColumnDef } from "@tanstack/react-table";
 import { isThisWeek } from "date-fns";
 import { useMemo, useState } from "react";
-import {
-	PERSONAL_TASKS,
-	type PersonalTask,
-	type Workspace,
-} from "../../data/PersonalTasks";
-import type { Task } from "../../data/Tasks";
+import type { TaskDto, TaskWithWorkspaceDto, WorkspaceDto } from "src/api/model";
 import type { TaskColumn } from "../../hooks/useTaskColumns";
 import { useTasks } from "../../providers/TasksProvider";
 import { useTitleBar } from "../../providers/TitleBarProvider";
@@ -20,31 +15,31 @@ import { TaskTable } from "../Tasks/TaskTable";
 import { TooltipProvider } from "../ui/tooltip";
 import { MetricsBar } from "./MetricsBar";
 
-const WORKSPACE_COLUMN: ColumnDef<Task> = {
+const WORKSPACE_COLUMN: ColumnDef<TaskDto> = {
 	id: "workspace",
-	accessorFn: (row) => (row as PersonalTask).workspace.name,
+	accessorFn: (row) => (row as TaskWithWorkspaceDto).workspace.title,
 	header: ({ column }) => (
 		<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
 	),
 	size: 170,
 	enableColumnFilter: false,
 	sortingFn: (rowA, rowB) =>
-		(rowA.original as PersonalTask).workspace.name.localeCompare(
-			(rowB.original as PersonalTask).workspace.name,
+		(rowA.original as TaskWithWorkspaceDto).workspace.title.localeCompare(
+			(rowB.original as TaskWithWorkspaceDto).workspace.title,
 			"he",
 		),
 	cell: ({ row }) => {
-		const { workspace } = row.original as PersonalTask;
+		const { workspace } = row.original as TaskWithWorkspaceDto;
 		return (
 			<WorkspaceCell>
-				<WorkspaceIconImg src={workspace.iconUrl} alt={workspace.name} />
-				<WorkspaceCellName>{workspace.name}</WorkspaceCellName>
+				<WorkspaceIconImg src={workspace.icon ?? undefined} alt={workspace.title} />
+				<WorkspaceCellName>{workspace.title}</WorkspaceCellName>
 			</WorkspaceCell>
 		);
 	},
 };
 
-const EXTRA_COLUMNS: Record<string, ColumnDef<Task>> = {
+const EXTRA_COLUMNS: Record<string, ColumnDef<TaskDto>> = {
 	workspace: WORKSPACE_COLUMN,
 };
 
@@ -60,8 +55,8 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 	>(new Set());
 
 	const workspaces = useMemo(() => {
-		const map = new Map<number, Workspace>();
-		(tasks as PersonalTask[]).forEach((t) => {
+		const map = new Map<number, WorkspaceDto>();
+		(tasks as TaskWithWorkspaceDto[]).forEach((t) => {
 			map.set(t.workspace.id, t.workspace);
 		});
 		return [...map.values()];
@@ -84,7 +79,7 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 	}
 
 	const filteredTasks = useMemo(() => {
-		let result = baseFilteredTasks as PersonalTask[];
+		let result = baseFilteredTasks as TaskWithWorkspaceDto[];
 
 		if (activeWorkspaceFilters.size > 0) {
 			result = result.filter((t) => activeWorkspaceFilters.has(t.workspace.id));
@@ -148,8 +143,8 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 							}
 							options={workspaces.map((ws) => ({
 								value: ws.id,
-								label: ws.name,
-								icon: <WorkspaceIcon src={ws.iconUrl} alt={ws.name} />,
+								label: ws.title,
+								icon: <WorkspaceIcon src={ws.icon ?? undefined} alt={ws.title} />,
 							}))}
 							activeValues={activeWorkspaceFilters}
 							onApply={setActiveWorkspaceFilters}
@@ -164,7 +159,7 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 					<NoResultsFound variant="no-search-results" />
 				) : (
 					<TaskTable
-						tasks={filteredTasks as Task[]}
+						tasks={filteredTasks as TaskDto[]}
 						extraColumns={EXTRA_COLUMNS}
 					/>
 				)}
