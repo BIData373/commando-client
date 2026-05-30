@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { Archive, Trash2, X } from "lucide-react";
+import { useState } from "react";
 import { DirectiveStatus } from "src/utils/statusUtils";
 import { StatusTag } from "../shared/StatusTag";
 import {
@@ -25,14 +26,22 @@ export function BulkActionsBar({
 	onDelete,
 	onExitSelect,
 }: BulkActionsBarProps) {
+	const [popoverOpen, setPopoverOpen] = useState(false);
+
+	function handleDeleteClick() {
+		setPopoverOpen(true);
+	}
+
 	return (
 		<Bar>
 			<ActionsSection>
 				<DeletePopover
 					count={selectedCount}
 					onConfirm={onDelete}
+					open={popoverOpen}
+					onOpenChange={setPopoverOpen}
 					trigger={
-						<GhostButton $danger>
+						<GhostButton $danger onClick={handleDeleteClick}>
 							מחק הנחיה
 							<Trash2 size={16} />
 						</GhostButton>
@@ -47,7 +56,7 @@ export function BulkActionsBar({
 					<DropdownMenuTrigger asChild>
 						<GhostButton>עדכן סטטוס</GhostButton>
 					</DropdownMenuTrigger>
-					<StatusContent align="start" sideOffset={4}>
+					<StatusContent align="start" sideOffset={12}>
 						{Object.values(DirectiveStatus).map((s) => (
 							<StatusItem key={s} onSelect={() => onChangeStatus(s)}>
 								<StatusTag status={s} />
@@ -76,13 +85,10 @@ const Bar = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 8px 11px;
-  background: #131629;
-  border: 1px solid #303030;
+  background: var(--Colors-Base-Geekblue-1);
+  border: 1px solid var(--Border-color-border-secondary);
   border-radius: 8px;
-  box-shadow:
-    0px 6px 16px 0px rgba(0, 0, 0, 0.08),
-    0px 3px 6px -4px rgba(0, 0, 0, 0.12),
-    0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--card-shadow-hover);
 `;
 
 const ActionsSection = styled.div`
@@ -105,19 +111,20 @@ const GhostButton = styled.button<{ $danger?: boolean }>`
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
-  color: ${({ $danger }) => ($danger ? "#dc4446" : "rgba(255, 255, 255, 0.85)")};
+  color: ${({ $danger }) => ($danger ? "var(--Error-color-error)" : "var(--Text-color-text)")};
   cursor: pointer;
   white-space: nowrap;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.08);
+  &:hover,
+  &[data-state="open"] {
+    background: var(--Background-color-bg-text-active-bar);
   }
 `;
 
 const BarDivider = styled.div`
   width: 1px;
   height: 20px;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--Border-color-border);
   flex-shrink: 0;
 `;
 
@@ -129,36 +136,32 @@ direction: rtl;
   gap: 8px;
   height: 32px;
   padding-inline: 15px;
-  background: #141414;
-  border: 1px solid #424242;
+  background: var(--Components-Button-Component-defaultBg);
+  border: 1px solid var(--Border-color-border);
   border-radius: 6px;
-  box-shadow: 0px 2px 0px 0px rgba(255, 255, 255, 0.04);
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--Text-color-text);
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
 
   &:hover {
-    background: #1f1f1f;
-    border-color: #535353;
+    background: var(--Background-color-bg-text-active-bar);
+    border-color: var(--Border-color-border);
   }
 `;
 
 const StatusContent = styled(DropdownMenuContent)`
-  min-width: 120px;
+  min-width: 100px;
   padding: 8px 4px;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
   gap: 4px;
   align-items: center;
-  box-shadow:
-    0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px rgba(0, 0, 0, 0.12),
-    0px 9px 28px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--card-shadow-hover);
 `;
 
 const StatusItem = styled(DropdownMenuItem)`
@@ -173,7 +176,7 @@ const StatusItem = styled(DropdownMenuItem)`
 
   &[data-highlighted],
   &:hover {
-    background: rgba(230, 244, 255, 1);
+    background: var(--selected-item);
     color: inherit;
   }
 `;

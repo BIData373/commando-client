@@ -122,6 +122,7 @@ const AssigneeDropdown = styled(PopoverContent)`
   overflow-y: auto;
   padding: 4px;
   gap: 1.5px;
+  z-index: var(--z-dropdown);
 `;
 
 const AssigneeOption = styled.button<{ $selected: boolean }>`

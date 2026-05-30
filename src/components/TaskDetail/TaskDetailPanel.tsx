@@ -9,9 +9,10 @@ import {
   formatDateToMinutesHours,
 } from "src/utils/timeFormat";
 import { EditorExtensions } from "src/utils/tiptapExtensions";
+import { MOCK_TASK_MESSAGES } from "../../mocks/data/messages";
+import type { DirectiveStatus } from "../../utils/statusUtils";
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag";
 import FlagIcon from "../shared/FlagIcon";
-import type { DirectiveStatus } from "../shared/StatusTag";
 import { AssigneeSection } from "./AssigneeSection";
 import { DropdownOptions } from "./DropdownOptions";
 import TaskConversationPanel from "./TaskConversationPanel";
@@ -586,7 +587,7 @@ const ChatBadge = styled.span`
   font-size: 12px;
   font-weight: 400;
   color: var(--background);
-  background: var(--button-gradient);
+  background: var(--default-linear);
   box-shadow: 0 0 0 1px white;
   flex-shrink: 0;
 `;

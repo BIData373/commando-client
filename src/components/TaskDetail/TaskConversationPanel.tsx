@@ -244,7 +244,7 @@ const ChatBadge = styled.span`
   font-size: 12px;
   font-weight: 400;
   color: var(--background);
-  background: var(--button-gradient);
+  background: var(--default-linear);
   box-shadow: 0 0 0 1px var(--background);
   flex-shrink: 0;
 `;
@@ -376,7 +376,7 @@ const SendButton = styled.button`
   height: 32px;
   border-radius: 6px;
   flex-shrink: 0;
-  background: var(--button-gradient);
+  background: var(--default-linear);
   cursor: pointer;
   transition: opacity 0.15s;
 

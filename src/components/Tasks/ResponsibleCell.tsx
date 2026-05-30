@@ -7,6 +7,7 @@ import { AssigneeAvatar } from "../shared/AssigneeAvatar";
 import { StatusTag } from "../shared/StatusTag";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
+//delete after replace assigneeAvatar
 export type AvatarColor = "cyan" | "blue" | "green" | "orange" | "gray";
 
 export interface RelatedDirective {
@@ -33,17 +34,16 @@ export function ResponsibleCell({
           <DetailedContent side="top" sideOffset={10} align="center">
             <PopoverArrow width={12} height={6} />
             <CloseButton>
-              <X size={14} />
+              <XIcon size={14} />
             </CloseButton>
             <DetailedHeader>
               <SectionLabel>אחראי :</SectionLabel>
               <AssigneeAvatar assignee={responsible} />
               <RoleText>{responsible.role}</RoleText>
             </DetailedHeader>
-            <Separator />
+
             {relatedDirectives.length > 0 && (
               <>
-                <Separator />
                 <SectionLabel>משתמשים מכותבים :</SectionLabel>
                 <UserScrollArea>
                   <UserList>
@@ -65,7 +65,7 @@ export function ResponsibleCell({
       {relatedDirectives.length > 0 && (
         <Popover>
           <PopoverTrigger asChild>
-            <AvatarCircle $color={"gray"}>
+            <AvatarCircle>
               {relatedDirectives.length}+
             </AvatarCircle>
           </PopoverTrigger>
@@ -96,7 +96,7 @@ const CellRoot = styled.div`
 `;
 
 // FIX Use AssigneeAvatar
-const AvatarCircle = styled.button<{ $color: AvatarColor }>`
+const AvatarCircle = styled.button<{ $color?: AvatarColor }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -111,29 +111,26 @@ const AvatarCircle = styled.button<{ $color: AvatarColor }>`
   cursor: pointer;
   border: none;
   padding: 0;
-  ${({ $color }) => `background: ${$color}`}
+  ${({ $color }) => `background: ${$color ?? 'var(--colors-base-neutral-3)'};`}
 `;
 
 // ─── Shared popover styles ─────────────────────────────────────────────────────
 
 const POPOVER_SHADOW = `
-  box-shadow:
-    0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px rgba(0, 0, 0, 0.12),
-    0px 9px 28px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--card-shadow-hover);
 `;
 
 const PopoverArrow = styled(PopoverPrimitive.Arrow)`
-  fill: white;
+  fill: var(--background);
 `;
 
 // ─── Detailed popover ─────────────────────────────────────────────────────────
 
 const DetailedContent = styled(PopoverContent)`
   position: relative;
-  width: 260px;
+  width: 397px;
   padding: 12px;
-  background: white;
+  background: var(--background);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -157,8 +154,15 @@ const CloseButton = styled(PopoverPrimitive.Close)`
   cursor: pointer;
 
   &:hover {
-    background: var(--link-bg-hover);
-    color: var(--sea-ink);
+    background: var(--icon-hover);
+  }
+  `;
+
+const XIcon = styled(X)`
+  color: var(--Components-Dropdown-Global-controlItemBgHover);
+
+  &:active {
+    color: var(--text-color-2);
   }
 `;
 
@@ -171,21 +175,16 @@ direction: rtl;
 `;
 
 const RoleText = styled.span`
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--sea-ink);
-`;
-
-const Separator = styled.div`
-  height: 0.5px;
-  background: var(--line);
 `;
 
 const SectionLabel = styled.span`
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
-  color: var(--Colors-Base-Neutral-7, #8C8C8C);
+  color: var(--text-subtitle-color);
 `;
 
 const UserRow = styled.div`
@@ -218,25 +217,9 @@ const UserEmail = styled.span`
 `;
 
 const UserScrollArea = styled.div`
+  direction: ltr;
   overflow-y: auto;
   max-height: 110px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.06);
-
-  &::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.06);
-    border-radius: 51px;
-    }
-    
-  &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 31px;
-    }
-    
 `;
 
 const UserList = styled.div`
@@ -244,20 +227,19 @@ const UserList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-inline-end: 8px;
+  padding-inline-start: 8px;
 `;
 
 // ─── Compact popover ──────────────────────────────────────────────────────────
 
 const CompactContent = styled(PopoverContent)`
-  width: auto;
-  min-width: 200px;
+  width: 236px;
   padding: 12px;
-  background: white;
+  background: var(--background);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 8px;
   ${POPOVER_SHADOW}
 `;
 
@@ -266,15 +248,21 @@ const CompactList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-height: 120px;
+  overflow-y: auto;
 `;
 
 const CompactRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-inline-end: 8px;
 `;
 
 const CompactRole = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   font-size: 14px;
   color: var(--sea-ink);
   flex: 1;
