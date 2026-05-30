@@ -6,15 +6,15 @@ export enum DirectiveStatus {
 
 export const statusColors = {
 	[DirectiveStatus.NOT_STARTED]: {
-		fontColor: "var(--status-pending)",
-		bgColor: "var(--status-pending-bg)",
+		fontColor: "var(--Colors-Base-Volcano-6)",
+		bgColor: "var(--Colors-Base-Volcano-1)",
 	},
 	[DirectiveStatus.IN_PROGRESS]: {
-		fontColor: "var(--status-progress)",
-		bgColor: "var(--status-progress-bg)",
+		fontColor: "var(--Colors-Base-Geekblue-6)",
+		bgColor: "var(--Colors-Base-Geekblue-1)",
 	},
 	[DirectiveStatus.COMPLETED]: {
-		fontColor: "var(--status-done)",
-		bgColor: "var(--status-done-bg)",
+		fontColor: "var(--Colors-Base-Green-6)",
+		bgColor: "var(--Colors-Base-Green-1)",
 	},
 };
