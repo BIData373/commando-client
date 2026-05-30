@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { UserPlus } from "lucide-react";
 import { useMemo, useState } from "react";
-import { PermissionDtoType, type UserDto } from "src/api/model";
+import { PermissionDtoType, type PermissionDto, type UserDto } from "src/api/model";
 import { useDeletePermission, useListPermissions, useUpdatePermission } from "src/api/permission/permission";
 import { DropdownPermission } from "src/components/settings/DropdownPermission";
 import { DropdownUsers } from "src/components/settings/DropdownUsers";
@@ -13,12 +13,19 @@ import {
 	TabsTrigger,
 } from "src/components/ui/tabs";
 import { useWorkspace } from "src/providers/WorkspaceProvider";
+import { queryClient } from "src/queryClient";
 import { concatName } from "src/utils/userUtils";
 
 enum PermissionsTab {
 	ALL = "all",
 	MANAGERS = "managers",
 	VIEWERS = "viewers",
+}
+
+const PermissionTabNames: Record<PermissionsTab, string> = {
+	[PermissionsTab.ALL]: "כולם",
+	[PermissionsTab.MANAGERS]: "מנהלים",
+	[PermissionsTab.VIEWERS]: "צופים"
 }
 
 export function PermissionsContent() {
@@ -29,7 +36,7 @@ export function PermissionsContent() {
 	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null);
 	const [type, setType] = useState<PermissionDtoType>(PermissionDtoType.VIEWER);
 
-	const { data: permissions = [] } = useListPermissions({ workspaceId });
+	const { data: permissions = [], queryKey } = useListPermissions({ workspaceId });
 	const { mutate: updatePermission } = useUpdatePermission();
 	const { mutate: deletePermission } = useDeletePermission();
 
@@ -44,19 +51,70 @@ export function PermissionsContent() {
 			: permissions.filter((user) => user.type === taggedType);
 	}, [activeTab, permissions]);
 
+	function handleSuccess(
+		data: PermissionDto,
+		mutate: (arr: PermissionDto[], index: number) => void
+	) {
+		queryClient.setQueryData(queryKey, prev => {
+			if (!prev) {
+				return
+			}
+
+			const updated = [...prev]
+			const index = updated.findIndex(({ user: { id } }) => id === data.user.id)
+
+			mutate(updated, index)
+
+			return updated
+		})
+	}
+
+	function handleSuccessUpsert(data: PermissionDto) {
+		handleSuccess(data, (arr, index) => arr.splice(
+			index === -1
+				? arr.length
+				: index,
+			index === -1
+				? 0
+				: 1,
+			data
+		))
+	}
+
 	function handleUserAdd(type: PermissionDtoType) {
-		if (!selectedUser) return;
-		updatePermission({ data: { workspaceId, upn: selectedUser.upn, type } });
+		if (!selectedUser) {
+			return
+		}
+
+		updatePermission({
+			data: { workspaceId, upn: selectedUser.upn, type }
+		}, {
+			onSuccess: handleSuccessUpsert
+		});
+
 		setSearch("");
 		setSelectedUser(null);
 	}
 
 	function handleDeletePermissionUser({ id }: UserDto) {
-		deletePermission({ params: { userId: id, workspaceId } });
+		deletePermission({
+			params: { userId: id, workspaceId }
+		}, {
+			onSuccess: data => handleSuccess(
+				data,
+				(arr, index) => index >= 0
+					? arr.splice(index, 1)
+					: arr
+			)
+		});
 	}
 
 	function handleTypeChangePermissionUser({ upn }: UserDto, type: PermissionDtoType) {
-		updatePermission({ data: { upn, workspaceId, type } });
+		updatePermission({
+			data: { upn, workspaceId, type }
+		}, {
+			onSuccess: handleSuccessUpsert
+		})
 	}
 
 	function handleTabChange(value: string) {
@@ -86,6 +144,7 @@ export function PermissionsContent() {
 				מנהל סביבה יוצר הנחיות, מגדיר אחראיים ומבצע בקרה ומעקב אחר סטטוס
 				ההנחיות בסביבה
 			</Subtitle>
+
 			<SearchSection>
 				<DropdownUsers
 					value={search}
@@ -94,6 +153,7 @@ export function PermissionsContent() {
 					onClear={handleSearchClear}
 					placeholder="חפש שם/ תפקיד/ מספר אישי"
 				/>
+
 				<AddUserRow>
 					{search.length > 0 && (
 						<DropdownPermission
@@ -103,6 +163,7 @@ export function PermissionsContent() {
 							disabled={!selectedUser}
 						/>
 					)}
+
 					{selectedUser && (
 						<AddAvatarButton onClick={() => handleUserAdd(type)}>
 							<UserPlus size={16} />
@@ -110,18 +171,16 @@ export function PermissionsContent() {
 					)}
 				</AddUserRow>
 			</SearchSection>
+
 			<StyledTabs value={activeTab} onValueChange={handleTabChange}>
 				<StyledTabsList variant="line">
-					<StyledTabsTrigger value={PermissionsTab.ALL}>
-						כולם
-					</StyledTabsTrigger>
-					<StyledTabsTrigger value={PermissionsTab.MANAGERS}>
-						מנהלים
-					</StyledTabsTrigger>
-					<StyledTabsTrigger value={PermissionsTab.VIEWERS}>
-						צופים
-					</StyledTabsTrigger>
+					{Object.entries(PermissionTabNames).map(([key, value]) => (
+						<StyledTabsTrigger value={key}>
+							{value}
+						</StyledTabsTrigger>
+					))}
 				</StyledTabsList>
+
 				{Object.values(PermissionsTab).map((tab) => (
 					<StyledTabsContent key={tab} value={tab}>
 						<UserListScrollArea>
@@ -186,6 +245,7 @@ const UserListScrollArea = styled.div`
   overflow-x: hidden;
   direction: ltr;
   padding-inline-end: 8px;
+  scrollbar-gutter: stable;
 `;
 
 const UserListInner = styled.div`
