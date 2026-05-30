@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { useRef, useState } from "react";
+import type { SourceDto } from "src/api/model";
 import { formatDate, parseDate } from "../../functions/date-utils";
 import { useSaveTasks } from "../../hooks/useSaveTasks";
 import { CancelButton } from "../shared/CancelButton";
@@ -13,7 +14,6 @@ import { Checkbox } from "../ui/checkbox";
 import AssigneeField from "./AssigneeField";
 import DeadlineField from "./DeadlineField";
 import NotesField from "./NotesField";
-import type { DiscussionSource } from "./SourceField";
 import SourceField from "./SourceField";
 import TopicField from "./TopicField";
 
@@ -29,7 +29,7 @@ interface FormState {
 	topics: string[];
 	notes: string;
 	isDetailsExpanded: boolean;
-	linkedSource: DiscussionSource | null;
+	linkedSource: SourceDto | null;
 }
 
 const INITIAL_FORM: FormState = {
@@ -120,7 +120,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
 	function handleSourceSelect(
 		name: string,
-		discussion?: DiscussionSource | null,
+		discussion?: SourceDto | null,
 	) {
 		setForm((prev) => {
 			if (discussion) {
