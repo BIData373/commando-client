@@ -7,8 +7,8 @@
  */
 
 export interface UpdateWorkspaceDto {
-	title?: string
 	urlName?: string
+	title?: string
 	/** @nullable */
 	icon?: string | null
 	assigneeStatusEditable?: boolean

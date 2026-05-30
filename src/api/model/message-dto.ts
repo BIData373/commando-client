@@ -7,6 +7,7 @@
  */
 import type { MessageDtoDeletedAt } from "./message-dto-deleted-at"
 import type { MessageDtoDeletedBy } from "./message-dto-deleted-by"
+import type { UserDto } from "./user-dto"
 
 export interface MessageDto {
 	createdAt: string
@@ -19,6 +20,6 @@ export interface MessageDto {
 	deletedBy: MessageDtoDeletedBy
 	id: number
 	content: string
-	assigneeId: number
+	user: UserDto
 	taskId: number
 }
