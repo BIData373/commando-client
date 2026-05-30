@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { X } from "lucide-react";
-import type { CreateUserDto, UserDto } from "src/api/model";
-import { UserItem } from "./UserDropdownItem";
+import type { CreateUserDto } from "src/api/model";
+import { UserItem } from "./UserItem";
 
 interface UsersListsProps {
     users: CreateUserDto[];
