@@ -3,9 +3,10 @@ import styled from "@emotion/styled";
 import { format, isSameDay } from "date-fns";
 import { ChevronUp, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useCreateMessage } from "src/api/message/message";
+import { useCreateMessage, useListMessages } from "src/api/message/message";
 import type { MessageDto } from "src/api/model";
 import { useCurrentUser } from "src/hooks/useCurrentUser";
+import { queryClient } from "src/queryClient";
 
 interface DateGroup {
   dateLabel: string;
@@ -53,44 +54,39 @@ function groupMessagesByDate(messages: MessageDto[]): DateGroup[] {
 
 interface TaskConversationPanelProps {
   taskId: number
-  messages: MessageDto[];
   onClose: () => void;
 }
 
 function TaskConversationPanel({
   taskId,
-  messages,
   onClose,
 }: TaskConversationPanelProps) {
   const currentUser = useCurrentUser()
 
+  const { data: messages = [], queryKey } = useListMessages({ taskId })
   const { mutateAsync: createMessage } = useCreateMessage()
 
-  const [localMessages, setLocalMessages] = useState<MessageDto[]>(messages);
   const [inputValue, setInputValue] = useState("");
   const messagesAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = messagesAreaRef.current;
-    if (el && localMessages.length >= 0) el.scrollTop = el.scrollHeight;
-  }, [localMessages]);
+    if (el && messages.length >= 0) el.scrollTop = el.scrollHeight;
+  }, [messages]);
 
-  const dateGroups = groupMessagesByDate(localMessages);
+  const dateGroups = groupMessagesByDate(messages);
 
   function handleSend() {
-    const trimmed = inputValue.trim();
-    if (!trimmed) return;
-    
+    const content = inputValue.trim();
+    if (!content) {
+      return
+    }
+
     createMessage({
-      data: {
-        // FIX Assignee or user?
-        assigneeId: 1,
-        taskId,
-        content: trimmed,
-      }
+      data: { taskId, content }
     }, {
       onSuccess(data) {
-        setLocalMessages((prev) => [...prev, data]);
+        queryClient.setQueryData(queryKey, (prev) => prev && [...prev, data])
       }
     })
 
@@ -98,18 +94,22 @@ function TaskConversationPanel({
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter") handleSend();
+    if (e.key === "Enter") {
+      handleSend()
+    }
   }
 
-  const displayCount = localMessages.length;
+  const displayCount = messages.length;
 
   return (
     <ConversationWrapper>
       <ConversationHeader onClick={onClose}>
         <ChatGroup>
           <ChatBadge>{displayCount}</ChatBadge>
+
           <ChatLabel>שיחה ועדכונים</ChatLabel>
         </ChatGroup>
+
         <ChevronIcon>
           <ChevronUp size={20} />
         </ChevronIcon>
@@ -120,21 +120,26 @@ function TaskConversationPanel({
           {dateGroups.map((group) => (
             <DateSection key={group.dateLabel}>
               <DateLabel>{group.dateLabel}</DateLabel>
-              {group.messages.map((msg) => (
+
+              {group.messages.map(({ id, user, content, createdAt }) => (
                 <MessageOuter
-                  key={msg.id}
-                  $isOwn={msg.userId === currentUser.id}
+                  key={id}
+                  $isOwn={user.id === currentUser.id}
                 >
                   <MessageCard>
                     <MessageHeader>
                       <AuthorText>
-                        <AuthorName>{msg.fullName} - </AuthorName>
-                        <AuthorUpn>{msg.upn}</AuthorUpn>
-                        <AuthorEmail> - {msg.emailDisplayName} </AuthorEmail>
+                        <AuthorName>{user.info?.name} - </AuthorName>
+
+                        <AuthorUpn>{user.upn}</AuthorUpn>
+
+                        <AuthorEmail> - {user.info?.displayName} </AuthorEmail>
                       </AuthorText>
-                      <TimeText>{format(msg.timestamp, "HH:mm")}</TimeText>
+
+                      <TimeText>{format(new Date(createdAt), "HH:mm")}</TimeText>
                     </MessageHeader>
-                    <MessageText>{msg.text}</MessageText>
+
+                    <MessageText>{content}</MessageText>
                   </MessageCard>
                 </MessageOuter>
               ))}
@@ -151,6 +156,7 @@ function TaskConversationPanel({
               placeholder="הוסף הערה לעדכון הצוות..."
               dir="auto"
             />
+
             <SendButton onClick={handleSend} aria-label="שלח">
               <Send size={16} color="white" />
             </SendButton>

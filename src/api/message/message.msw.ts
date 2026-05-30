@@ -28,7 +28,22 @@ export const getCreateMessageResponseMock = (
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
 	content: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	assigneeId: faker.number.float({ fractionDigits: 2 }),
+	user: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: faker.helpers.arrayElement([
+			{
+				...{
+					id: faker.number.float({ fractionDigits: 2 }),
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					isBI: faker.datatype.boolean(),
+				},
+			},
+			null,
+		]),
+	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
 	...overrideResponse,
 })
@@ -52,7 +67,22 @@ export const getListMessagesResponseMock = (): MessageDto[] =>
 		]),
 		id: faker.number.float({ fractionDigits: 2 }),
 		content: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		assigneeId: faker.number.float({ fractionDigits: 2 }),
+		user: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: faker.helpers.arrayElement([
+				{
+					...{
+						id: faker.number.float({ fractionDigits: 2 }),
+						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						isBI: faker.datatype.boolean(),
+					},
+				},
+				null,
+			]),
+		},
 		taskId: faker.number.float({ fractionDigits: 2 }),
 	}))
 
@@ -73,7 +103,22 @@ export const getGetMessageResponseMock = (
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
 	content: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	assigneeId: faker.number.float({ fractionDigits: 2 }),
+	user: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: faker.helpers.arrayElement([
+			{
+				...{
+					id: faker.number.float({ fractionDigits: 2 }),
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					isBI: faker.datatype.boolean(),
+				},
+			},
+			null,
+		]),
+	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
 	...overrideResponse,
 })
@@ -95,7 +140,22 @@ export const getUpdateMessageResponseMock = (
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
 	content: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	assigneeId: faker.number.float({ fractionDigits: 2 }),
+	user: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: faker.helpers.arrayElement([
+			{
+				...{
+					id: faker.number.float({ fractionDigits: 2 }),
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					isBI: faker.datatype.boolean(),
+				},
+			},
+			null,
+		]),
+	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
 	...overrideResponse,
 })
@@ -117,7 +177,22 @@ export const getDeleteMessageResponseMock = (
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
 	content: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	assigneeId: faker.number.float({ fractionDigits: 2 }),
+	user: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: faker.helpers.arrayElement([
+			{
+				...{
+					id: faker.number.float({ fractionDigits: 2 }),
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					isBI: faker.datatype.boolean(),
+				},
+			},
+			null,
+		]),
+	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
 	...overrideResponse,
 })

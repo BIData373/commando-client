@@ -9,7 +9,6 @@ import {
   formatDateToMinutesHours,
 } from "src/utils/timeFormat";
 import { EditorExtensions } from "src/utils/tiptapExtensions";
-import { MOCK_TASK_MESSAGES } from "../../mocks/data/messages";
 import type { DirectiveStatus } from "../../utils/statusUtils";
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag";
 import FlagIcon from "../shared/FlagIcon";
@@ -17,6 +16,7 @@ import { AssigneeSection } from "./AssigneeSection";
 import { DropdownOptions } from "./DropdownOptions";
 import TaskConversationPanel from "./TaskConversationPanel";
 import TaskHistoryPanel from "./TaskHistoryPanel";
+import { useListMessages } from "src/api/message/message";
 
 interface TaskDetailPanelProps {
   task: TaskDto;
@@ -48,6 +48,7 @@ function TaskDetailPanel({
   // const { updateTaskStatus } = useTasks();
 
   const { data: history = [] } = useListTaskHistory({ taskId: id })
+  const { data: messages = [] } = useListMessages({ taskId: id })
 
   const [showHistory, setShowHistory] = useState(false);
   const [showConversation, setShowConversation] = useState(false);
@@ -74,8 +75,6 @@ function TaskDetailPanel({
   }
 
   const hasTagOrAttacment = tags.length > 0 || hasAttachment;
-
-  const taskMessages = MOCK_TASK_MESSAGES[id] ?? [];
 
   function handlePanelClick(e: React.MouseEvent) {
     e.stopPropagation();
@@ -213,7 +212,7 @@ function TaskDetailPanel({
           $shadow={scrollShadow.bottom}
         >
           <ChatGroup>
-            <ChatBadge>{taskMessages.length}</ChatBadge>
+            <ChatBadge>{messages.length}</ChatBadge>
             <ChatLabel>שיחה ועדכונים</ChatLabel>
           </ChatGroup>
           <ChevronUp size={20} />
@@ -232,7 +231,6 @@ function TaskDetailPanel({
             <HistoryOverlay />
             <TaskConversationPanel
               taskId={id}
-              messages={taskMessages}
               onClose={() => setShowConversation(false)}
             />
           </>
