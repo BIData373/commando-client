@@ -32,10 +32,10 @@ function AssigneePicker({
 	const { workspace: { id: workspaceId } } = useWorkspace()
 	const { data: assignees = [] } = useListAssignees({ workspaceId })
 
-	const filteredAssignees = Object.values(assignees)
+	const filteredAssignees = assignees
 		.filter((assignee) => {
 			if (!search.trim()) return true;
-			return assignee.name.includes(search) || assignee.role.includes(search);
+			return assignee.name.includes(search)
 		})
 		.map((assignee) => ({
 			...assignee,
@@ -177,7 +177,7 @@ const CreateNewButton = styled.button`
   }
 `;
 // FIX Use AssigneeAvatar
-const AvatarCircle = styled.div<{ $color: AvatarColor }>`
+const AvatarCircle = styled.div<{ $color: string }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;

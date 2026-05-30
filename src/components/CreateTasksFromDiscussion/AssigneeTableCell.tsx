@@ -1,7 +1,5 @@
 import styled from "@emotion/styled";
 import { ChevronDown } from "lucide-react";
-import { useListAssignees } from "src/api/assignee/assignee";
-import { useWorkspace } from "src/providers/WorkspaceProvider";
 import type {
 	TaskRow,
 	TaskTableMeta,

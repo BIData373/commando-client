@@ -143,7 +143,7 @@ const DropdownContent = styled(PopoverPrimitive.Content)`
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 4px 0;
-  z-index: var(--z-dropdown);
+  z-index: 1000;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   max-height: 240px;
   overflow-y: auto;
