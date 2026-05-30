@@ -1,10 +1,9 @@
 import { debounce } from "lodash";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { UserDto } from "src/api/model";
 import { useSearchUsers } from "src/api/user/user";
 import { SearchDropdown } from "./SearchDropdown";
-import { UserItem } from "./UserDropdownItem";
-import { useEffect } from 'react'
+import { UserItem } from "./UserItem";
 
 interface DropdownUsersProps {
 	value: string;
