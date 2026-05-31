@@ -36,11 +36,20 @@ export const createSource = (
 	createSourceDto: CreateSourceDto,
 	signal?: AbortSignal,
 ) => {
+	const formData = new FormData()
+	formData.append(`workspaceId`, createSourceDto.workspaceId.toString())
+	formData.append(`name`, createSourceDto.name)
+	formData.append(`date`, createSourceDto.date)
+	createSourceDto.tags.forEach((value) => formData.append(`tags`, value))
+	if (createSourceDto.attachment !== undefined) {
+		formData.append(`attachment`, createSourceDto.attachment)
+	}
+
 	return sendRequest<SourceDto>({
 		url: `/source`,
 		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		data: createSourceDto,
+		headers: { "Content-Type": "multipart/form-data" },
+		data: formData,
 		signal,
 	})
 }
@@ -369,11 +378,28 @@ export const updateSource = (
 	updateSourceDto: UpdateSourceDto,
 	signal?: AbortSignal,
 ) => {
+	const formData = new FormData()
+	if (updateSourceDto.workspaceId !== undefined) {
+		formData.append(`workspaceId`, updateSourceDto.workspaceId.toString())
+	}
+	if (updateSourceDto.name !== undefined) {
+		formData.append(`name`, updateSourceDto.name)
+	}
+	if (updateSourceDto.date !== undefined) {
+		formData.append(`date`, updateSourceDto.date)
+	}
+	if (updateSourceDto.tags !== undefined) {
+		updateSourceDto.tags.forEach((value) => formData.append(`tags`, value))
+	}
+	if (updateSourceDto.attachment !== undefined) {
+		formData.append(`attachment`, updateSourceDto.attachment)
+	}
+
 	return sendRequest<SourceDto>({
 		url: `/source/${id}`,
 		method: "PATCH",
-		headers: { "Content-Type": "application/json" },
-		data: updateSourceDto,
+		headers: { "Content-Type": "multipart/form-data" },
+		data: formData,
 		signal,
 	})
 }

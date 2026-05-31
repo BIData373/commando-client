@@ -3,9 +3,9 @@ import {
 	useNavigate,
 	useSearch,
 } from "@tanstack/react-router";
+import { useGetTask } from "src/api/task/task";
 import { WorkspaceProvider } from "src/providers/WorkspaceProvider";
 import TaskDetailPanel from "../../../../components/TaskDetail/TaskDetailPanel";
-import { useTasks } from "../../../../providers/TasksProvider";
 
 export const Route = createFileRoute("/workspace/$urlName/tasks/$taskId")({
 	component: TaskDetail,
@@ -16,10 +16,7 @@ function TaskDetail() {
 	const { view } = useSearch({ from: "/workspace/$urlName/tasks" });
 	const navigate = useNavigate();
 
-	const { tasks, removeTasks } = useTasks();
-
-	// FIX Fetch?
-	const task = tasks.find((t) => String(t.id) === taskId);
+	const { data: task } = useGetTask({ id: Number(taskId) });
 
 	function handleClose() {
 		navigate({
@@ -30,16 +27,16 @@ function TaskDetail() {
 	}
 
 	function handleArchive() {
-		if (task) {
-			removeTasks([task.id]);
-		}
+		// if (task) {
+		// 	removeTasks([task.id]);
+		// }
 		handleClose();
 	}
 
 	function handleDelete() {
-		if (task) {
-			removeTasks([task.id]);
-		}
+		// if (task) {
+		// 	removeTasks([task.id]);
+		// }
 		handleClose();
 	}
 

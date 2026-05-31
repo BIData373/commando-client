@@ -1,39 +1,37 @@
 import styled from "@emotion/styled";
-import { PermissionDtoType } from "src/api/model";
+import { type AssigneeStatusDto, PermissionDtoType } from "src/api/model";
 import { useGetMyPermission } from "src/api/permission/permission";
 import { useCurrentUser } from "src/hooks/useCurrentUser";
 import { useWorkspace } from "src/providers/WorkspaceProvider";
-import type { RelatedDirective } from "../Tasks/ResponsibleCell";
 import { AssigneeContainer } from "./AssigneeContainer";
 
 interface AssigneeSectionProps {
-	relatedDirectives: RelatedDirective[];
-	onDirectiveStatusChange: (
-		assigneeId: number,
-		status: DirectiveStatus,
-	) => void;
+	taskId: number
+	assigneeStatuses: AssigneeStatusDto[]
 }
 
-export const AssigneeSection = ({
-	relatedDirectives,
-	onDirectiveStatusChange,
-}: AssigneeSectionProps) => {
+export const AssigneeSection = ({ taskId, assigneeStatuses }: AssigneeSectionProps) => {
 	const currentUser = useCurrentUser()
-
 	const { workspace: { id: workspaceId } } = useWorkspace()
+
 	const { data: permission } = useGetMyPermission({ workspaceId })
+
 	const isAdmin = permission?.type === PermissionDtoType.MANAGER;
 
-	const myGroups = relatedDirectives.filter((d) =>
-		d.assignee.userIds.includes(currentUser.id),
-	);
-	const otherGroups = relatedDirectives.filter(
-		(d) => !d.assignee.userIds.includes(currentUser.id),
-	);
+	const currentUserAssigneStatuses = isAdmin
+		? assigneeStatuses
+		: assigneeStatuses.filter(
+			({ assignee: { users } }) => users.some(({ id }) => id === currentUser.id)
+		)
 
-	const headerGroup = isAdmin ? relatedDirectives : myGroups;
+	const otherUsersAssigneeStatuses = assigneeStatuses.filter(
+		({ assignee: otherAssignee }) => !currentUserAssigneStatuses.some(
+			({ assignee: currentAssignee }) => otherAssignee.id === currentAssignee.id
+		)
+	)
 
-	const isMultiple = relatedDirectives.length >= 2;
+	const isMultiple = assigneeStatuses.length >= 2;
+
 	return (
 		<Section>
 			<SectionLabel>
@@ -43,35 +41,35 @@ export const AssigneeSection = ({
 						: "אחראי לביצוע"
 					: "אחריותך לבצע"}
 			</SectionLabel>
-			{headerGroup.length === 0 ? (
+			{currentUserAssigneStatuses.length === 0 ? (
 				<SectionValue>לא הוגדר</SectionValue>
 			) : (
 				<AssigneesContainer>
 					<AssigneeRowsList>
-						{headerGroup.map((item) => (
+						{currentUserAssigneStatuses.map((item) => (
 							<AssigneeContainer
 								key={item.assignee.id}
-								assignee={item}
+								taskId={taskId}
+								assigneeStatus={item}
 								isAdmin={isAdmin}
 								editable={true}
-								onDirectiveStatusChange={onDirectiveStatusChange}
 							/>
 						))}
 					</AssigneeRowsList>
 				</AssigneesContainer>
 			)}
-			{!isAdmin && otherGroups.length > 0 && (
+			{!isAdmin && otherUsersAssigneeStatuses.length > 0 && (
 				<>
 					<SectionLabel>אחראים נוספים לביצוע</SectionLabel>
 					<AssigneesContainer>
 						<AssigneeRowsList>
-							{otherGroups.map((item) => (
+							{otherUsersAssigneeStatuses.map((item) => (
 								<AssigneeContainer
 									key={item.assignee.id}
-									assignee={item}
+									taskId={taskId}
+									assigneeStatus={item}
 									isAdmin={isAdmin}
 									editable={false}
-									onDirectiveStatusChange={onDirectiveStatusChange}
 								/>
 							))}
 						</AssigneeRowsList>

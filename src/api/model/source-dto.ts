@@ -7,6 +7,7 @@
  */
 import type { SourceDtoDeletedAt } from "./source-dto-deleted-at"
 import type { SourceDtoDeletedBy } from "./source-dto-deleted-by"
+import type { TagDto } from "./tag-dto"
 
 export interface SourceDto {
 	createdAt: string
@@ -21,5 +22,7 @@ export interface SourceDto {
 	name: string
 	date: string
 	workspaceId: number
-	tags: string[]
+	/** @nullable */
+	attachmentKey: string | null
+	tags: TagDto[]
 }

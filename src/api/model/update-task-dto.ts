@@ -5,7 +5,6 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { UpdateTaskDtoNotes } from "./update-task-dto-notes"
 
 export interface UpdateTaskDto {
 	workspaceId?: number
@@ -16,5 +15,5 @@ export interface UpdateTaskDto {
 	deadlineType?: string
 	issuedAt?: string
 	dueDate?: string
-	notes?: UpdateTaskDtoNotes
+	notes?: string
 }

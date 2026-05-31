@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { Calendar, ChevronUp, History, Paperclip, X } from "lucide-react";
 import { useRef, useState } from "react";
+import { useListMessages } from "src/api/message/message";
 import type { TaskDto } from "src/api/model";
 import { useListTaskHistory } from "src/api/task-history/task-history";
 import {
@@ -9,14 +10,12 @@ import {
   formatDateToMinutesHours,
 } from "src/utils/timeFormat";
 import { EditorExtensions } from "src/utils/tiptapExtensions";
-import type { DirectiveStatus } from "../../utils/statusUtils";
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag";
 import FlagIcon from "../shared/FlagIcon";
 import { AssigneeSection } from "./AssigneeSection";
 import { DropdownOptions } from "./DropdownOptions";
 import TaskConversationPanel from "./TaskConversationPanel";
 import TaskHistoryPanel from "./TaskHistoryPanel";
-import { useListMessages } from "src/api/message/message";
 
 interface TaskDetailPanelProps {
   task: TaskDto;
@@ -34,19 +33,15 @@ function TaskDetailPanel({
     deadlineType,
     dueDate,
     createdAt,
-    relatedDirectives,
+    assigneeStatuses,
     tags,
     source,
-    hasAttachment,
-    attachmentUrl,
     notes,
   },
   onClose,
   onArchive,
   onDelete,
 }: TaskDetailPanelProps) {
-  // const { updateTaskStatus } = useTasks();
-
   const { data: history = [] } = useListTaskHistory({ taskId: id })
   const { data: messages = [] } = useListMessages({ taskId: id })
 
@@ -64,7 +59,7 @@ function TaskDetailPanel({
     content: notes,
   });
 
-  const attacmentFile = attachmentUrl?.split("/").pop()?.split(".")[0];
+  const attacmentFile = source?.attachmentKey?.split("/").pop()?.split(".")[0];
 
   function handleScroll() {
     const el = scrollRef.current;
@@ -74,18 +69,10 @@ function TaskDetailPanel({
     setScrollShadow({ top: !atTop, bottom: !atBottom });
   }
 
-  const hasTagOrAttacment = tags.length > 0 || hasAttachment;
+  const hasTagOrAttacment = tags.length > 0 || !!attacmentFile;
 
   function handlePanelClick(e: React.MouseEvent) {
     e.stopPropagation();
-  }
-
-  function handleDirectiveStatusChange(
-    assigneeId: number,
-    newStatus: DirectiveStatus,
-  ) {
-    // FIX Change provider
-    // updateTaskStatus(id, assigneeId, newStatus);
   }
 
   function handleBottomBarClick() {
@@ -97,6 +84,7 @@ function TaskDetailPanel({
     <Overlay onClick={onClose}>
       <Panel onClick={handlePanelClick}>
         <TaskIdLabel>#{id}</TaskIdLabel>
+
         <CloseBtn onClick={onClose} aria-label="סגור">
           <X size={16} />
         </CloseBtn>
@@ -104,11 +92,13 @@ function TaskDetailPanel({
         <HeaderRow $shadow={scrollShadow.top}>
           <TextWrapper>
             {flagged && <FlagIcon />}
+
             <TitleText>
               {title}
               {description ? ` - ${description}` : ""}
             </TitleText>
           </TextWrapper>
+
           <DropdownOptions
             onEdit={onClose}
             onArchive={onArchive}
@@ -123,6 +113,7 @@ function TaskDetailPanel({
         >
           <DeadlineSection>
             <SectionLabel>תג"ב</SectionLabel>
+
             <MetaRow>
               <DueDateGroup>
                 {deadlineType !== "date" && (
@@ -130,20 +121,25 @@ function TaskDetailPanel({
                     {DEADLINE_LABELS[deadlineType]}
                   </DeadlineTag>
                 )}
+
                 {dueDate && (
                   <DateContainer>
                     <MetaLabel>עד</MetaLabel>
+
                     <DueDateText>
                       {formatDateToDateMonthYear(new Date(dueDate))}
                     </DueDateText>
+
                     <Calendar size={16} />
                   </DateContainer>
                 )}
               </DueDateGroup>
+
               <CreatedGroup>
                 <HistoryButton onClick={() => setShowHistory(true)}>
                   <History size={16} />
                 </HistoryButton>
+
                 <MetaText>
                   {formatDateToMinutesHours(new Date(createdAt))} -{" "}
                   {formatDateToDateMonthYear(new Date(createdAt))}
@@ -152,16 +148,15 @@ function TaskDetailPanel({
             </MetaRow>
           </DeadlineSection>
 
-          <AssigneeSection
-            relatedDirectives={relatedDirectives}
-            onDirectiveStatusChange={handleDirectiveStatusChange}
-          />
+          <AssigneeSection taskId={id} assigneeStatuses={assigneeStatuses} />
 
           {hasTagOrAttacment && (
             <>
               <DividerRow>
                 <DividerLine />
+
                 <DividerText>פרטים נוספים</DividerText>
+
                 <DividerLine />
               </DividerRow>
 
@@ -169,13 +164,16 @@ function TaskDetailPanel({
                 {source && (
                   <InfoBlock>
                     <SectionLabel>מקור</SectionLabel>
+
                     <SourceRow>
                       <SourceName>{source.name}</SourceName>
+
                       {/* // FIX Source date */}
                       <SourceDate>{null}</SourceDate>
                     </SourceRow>
+
                     <InfoAttachment>
-                      {hasAttachment && (
+                      {attacmentFile && (
                         <>
                           <Paperclip size={16} />
                           {attacmentFile}
@@ -184,11 +182,13 @@ function TaskDetailPanel({
                     </InfoAttachment>
                   </InfoBlock>
                 )}
+
                 <InfoBlock>
                   <SectionLabel>נושא</SectionLabel>
+
                   <TagsRow>
-                    {tags.map((tag) => (
-                      <TagChip key={tag}>{tag}</TagChip>
+                    {tags.map(({ id, name }) => (
+                      <TagChip key={id}>{name}</TagChip>
                     ))}
                   </TagsRow>
                 </InfoBlock>
@@ -197,6 +197,7 @@ function TaskDetailPanel({
               {notes && (
                 <NotesSection>
                   <SectionLabel>הערות הנחיה</SectionLabel>
+
                   <NotesText>
                     <StyledEditorContent editor={editor} />
                   </NotesText>
@@ -213,13 +214,17 @@ function TaskDetailPanel({
         >
           <ChatGroup>
             <ChatBadge>{messages.length}</ChatBadge>
+
             <ChatLabel>שיחה ועדכונים</ChatLabel>
           </ChatGroup>
+
           <ChevronUp size={20} />
         </BottomBar>
+
         {showHistory && (
           <>
             <HistoryOverlay />
+
             <TaskHistoryPanel
               history={history}
               onClose={() => setShowHistory(false)}
@@ -229,6 +234,7 @@ function TaskDetailPanel({
         {showConversation && (
           <>
             <HistoryOverlay />
+
             <TaskConversationPanel
               taskId={id}
               onClose={() => setShowConversation(false)}
