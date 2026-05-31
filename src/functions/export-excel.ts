@@ -1,10 +1,9 @@
 import { differenceInDays, startOfToday } from "date-fns";
 import type { TaskDto } from "src/api/model";
+import { DEADLINE_LABELS } from "src/components/shared/DeadlineTag";
+import type { TaskColumn } from "src/hooks/useTaskColumns";
+import type { TaskRow } from "src/providers/TasksProvider";
 import { statusColors } from "src/utils/statusUtils";
-import * as XLSX from "xlsx-js-style";
-import { DEADLINE_LABELS } from "../components/shared/DeadlineTag";
-import { STATUS_LABELS } from "../components/shared/StatusTag";
-import type { TaskColumn } from "../hooks/useTaskColumns";
 import { formatDateShort } from "./date-utils";
 
 interface CellValue {
@@ -67,13 +66,13 @@ const COLUMN_DEFS: Record<string, ExportColumn<TaskDto>> = {
 		header: "מקור",
 		accessor: (t) => {
 			const source = `${t.source.name} | ${t.source.date}`;
-			return t.attachmentUrl
-				? { value: source, link: t.attachmentUrl }
+			return t.source.attachmentKey
+				? { value: source, link: t.source.attachmentKey }
 				: source;
 		},
 	},
 	tags: { header: "נושא", accessor: (t) => t.tags.join(", ") },
-	notes: { header: "הערות", accessor: (t) => t.notes },
+	notes: { header: "הערות", accessor: (t) => t.notes ?? {} },
 	createdAt: {
 		header: "תאריך יצירה",
 		accessor: (t) => formatDateShort(new Date(t.createdAt)),
@@ -89,10 +88,10 @@ interface ExportOptions {
 	hiddenColumns: Set<TaskColumn>;
 }
 
-export function exportTasksToExcel(tasks: TaskDto[], options: ExportOptions) {
+export function exportTasksToExcel(tasks: TaskRow[], options: ExportOptions) {
 	const { columnOrder, hiddenColumns } = options;
 
-	const idColumn: ExportColumn<TaskDto> = {
+	const idColumn: ExportColumn<TaskRow> = {
 		header: 'מס"ד',
 		accessor: (t) => String(t.id),
 	};
@@ -101,7 +100,7 @@ export function exportTasksToExcel(tasks: TaskDto[], options: ExportOptions) {
 		.filter((id) => !hiddenColumns.has(id) && COLUMN_DEFS[id])
 		.map((id) => COLUMN_DEFS[id]);
 
-	exportToExcel<TaskDto>(tasks, [idColumn, ...visibleColumns], "הנחיות");
+	exportToExcel<TaskRow>(tasks, [idColumn, ...visibleColumns], "הנחיות");
 }
 
 function exportToExcel<T>(

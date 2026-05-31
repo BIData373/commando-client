@@ -1,10 +1,11 @@
 import styled from "@emotion/styled";
 import { ChevronDown } from "lucide-react";
+import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status";
+import type { AssigneeStatusDto } from "src/api/model";
+import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status";
 import { useWorkspace } from "src/providers/WorkspaceProvider";
-import { DirectiveStatus, statusColors } from "src/utils/statusUtils";
 import { AssigneeAvatar } from "../shared/AssigneeAvatar";
 import { StatusTag } from "../shared/StatusTag";
-import type { RelatedDirective } from "../Tasks/ResponsibleCell";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,61 +14,75 @@ import {
 } from "../ui/dropdown-menu";
 
 interface AsiggneeContainerProps {
+  taskId: number
+  assigneeStatus: AssigneeStatusDto;
   isAdmin: boolean;
   editable: boolean;
-  assignee: RelatedDirective;
-  onDirectiveStatusChange: (
-    assigneeId: number,
-    status: DirectiveStatus,
-  ) => void;
 }
 
 export const AssigneeContainer = ({
+  taskId,
+  assigneeStatus,
   isAdmin,
   editable,
-  assignee,
-  onDirectiveStatusChange,
 }: AsiggneeContainerProps) => {
-  const { workspace: { assigneeStatusEditable } } = useWorkspace()
+  const { workspace: { id: workspaceId, assigneeStatusEditable } } = useWorkspace()
+  const { data: statuses = [] } = useListWorkspaceStatuses({ workspaceId })
 
-  const canEdit =
+  const { mutateAsync: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus()
+
+  const canEdit = (
     editable &&
-    (isAdmin || (assigneeStatusEditable ?? false));
+    (isAdmin || (assigneeStatusEditable ?? false))
+  )
+
+  function handleUpdateAssigneeStatus(statusId: number) {
+    upsertAssigneeTaskStatus({ data: { taskId, assigneeId: assigneeStatus.assignee.id, statusId } })
+  }
+
+  const currentStatus = statuses.find(({ id }) => id === assigneeStatus.statusId)
 
   return (
-    <AssigneeRowContainer key={assignee.assignee.id} $white={editable && !isAdmin}>
+    <AssigneeRowContainer key={assigneeStatus.assignee.id} $white={editable && !isAdmin}>
       <AssigneeInfoBlock>
-        <AssigneeAvatar assignee={assignee.assignee} />
-        <AssigneeRoleText>{assignee.assignee.role}</AssigneeRoleText>
+        <AssigneeAvatar assignee={assigneeStatus.assignee} />
+
+        <AssigneeRoleText>{assigneeStatus.assignee.role}</AssigneeRoleText>
       </AssigneeInfoBlock>
+
       {canEdit ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <StatusPillTrigger $status={assignee.status}>
-              {STATUS_LABELS[assignee.status]}
-              <ChevronDown size={12} />
-            </StatusPillTrigger>
+            {currentStatus && (
+              <StatusPillTrigger $fontColor={currentStatus.color} $backgroundColor={currentStatus.color}>
+                {currentStatus.name}
+
+                <ChevronDown size={12} />
+              </StatusPillTrigger>
+            )}
           </DropdownMenuTrigger>
+
           <StatusDropdownContent align="center" sideOffset={6}>
-            {Object.values(DirectiveStatus).map((s) => (
+            {statuses.map((status) => (
               <StatusDropdownItem
-                key={s}
-                $selected={s === assignee.status}
-                onSelect={() => onDirectiveStatusChange(assignee.assignee.id, s)}
+                key={status.id}
+                $selected={status.id === currentStatus?.id}
+                onSelect={() => handleUpdateAssigneeStatus(status.id)}
               >
-                <StatusTag status={s} />
+                <StatusTag status={status} />
               </StatusDropdownItem>
             ))}
+
           </StatusDropdownContent>
         </DropdownMenu>
-      ) : (
-        <StatusTag status={assignee.status} />
+      ) : currentStatus && (
+        <StatusTag status={currentStatus} />
       )}
     </AssigneeRowContainer>
   );
 };
 
-const StatusPillTrigger = styled.button<{ $status: DirectiveStatus }>`
+const StatusPillTrigger = styled.button<{ $fontColor: string, $backgroundColor: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -81,10 +96,8 @@ const StatusPillTrigger = styled.button<{ $status: DirectiveStatus }>`
   line-height: 20px;
   white-space: nowrap;
   cursor: pointer;
-  ${({ $status }) => {
-    const { fontColor, bgColor } = statusColors[$status];
-    return `background: ${bgColor}; color: ${fontColor};`;
-  }}
+  ${({ $fontColor }) => `color: ${$fontColor}`}
+  ${({ $backgroundColor }) => `background: ${$backgroundColor}`}
 
   &:focus-visible {
     outline: none;

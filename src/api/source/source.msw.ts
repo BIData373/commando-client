@@ -30,10 +30,25 @@ export const getCreateSourceResponseMock = (
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	date: faker.date.past().toISOString().slice(0, 19) + "Z",
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	attachmentKey: faker.helpers.arrayElement([
+		faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
+			null,
+		]),
+		null,
+	]),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
-	).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
+	).map(() => ({
+		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		createdBy: faker.number.float({ fractionDigits: 2 }),
+		updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		updatedBy: faker.number.float({ fractionDigits: 2 }),
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		workspaceId: faker.number.float({ fractionDigits: 2 }),
+	})),
 	...overrideResponse,
 })
 
@@ -58,10 +73,25 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		date: faker.date.past().toISOString().slice(0, 19) + "Z",
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		attachmentKey: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				null,
+			]),
+			null,
+		]),
 		tags: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
-		).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
+		).map(() => ({
+			createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+			createdBy: faker.number.float({ fractionDigits: 2 }),
+			updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+			updatedBy: faker.number.float({ fractionDigits: 2 }),
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		})),
 	}))
 
 export const getGetSourceResponseMock = (
@@ -83,10 +113,25 @@ export const getGetSourceResponseMock = (
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	date: faker.date.past().toISOString().slice(0, 19) + "Z",
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	attachmentKey: faker.helpers.arrayElement([
+		faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
+			null,
+		]),
+		null,
+	]),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
-	).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
+	).map(() => ({
+		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		createdBy: faker.number.float({ fractionDigits: 2 }),
+		updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		updatedBy: faker.number.float({ fractionDigits: 2 }),
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		workspaceId: faker.number.float({ fractionDigits: 2 }),
+	})),
 	...overrideResponse,
 })
 
@@ -109,10 +154,25 @@ export const getUpdateSourceResponseMock = (
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	date: faker.date.past().toISOString().slice(0, 19) + "Z",
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	attachmentKey: faker.helpers.arrayElement([
+		faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
+			null,
+		]),
+		null,
+	]),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
-	).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
+	).map(() => ({
+		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		createdBy: faker.number.float({ fractionDigits: 2 }),
+		updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		updatedBy: faker.number.float({ fractionDigits: 2 }),
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		workspaceId: faker.number.float({ fractionDigits: 2 }),
+	})),
 	...overrideResponse,
 })
 
@@ -135,10 +195,25 @@ export const getDeleteSourceResponseMock = (
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	date: faker.date.past().toISOString().slice(0, 19) + "Z",
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	attachmentKey: faker.helpers.arrayElement([
+		faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
+			null,
+		]),
+		null,
+	]),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
-	).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
+	).map(() => ({
+		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		createdBy: faker.number.float({ fractionDigits: 2 }),
+		updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		updatedBy: faker.number.float({ fractionDigits: 2 }),
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		workspaceId: faker.number.float({ fractionDigits: 2 }),
+	})),
 	...overrideResponse,
 })
 

@@ -38,13 +38,12 @@ function TasksLayout({
 }: TasksLayoutProps) {
 	const navigate = useNavigate();
 	const {
-		tasks,
+		taskRows: baseFilteredTasks,
 		activeQuickFilters,
 		clearQuickFilters,
 		searchQuery,
 		columnOrder,
-		hiddenColumns,
-		filteredTasks: baseFilteredTasks,
+		hiddenColumns
 	} = useTasks();
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
@@ -84,7 +83,7 @@ function TasksLayout({
 	}
 
 	function handleExport() {
-		exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns });
+		exportTasksToExcel(taskRows, { columnOrder, hiddenColumns });
 	}
 
 	function handleCreateTaskFromDiscussion() {

@@ -5,10 +5,11 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
+import type { AssigneeStatusDto } from "./assignee-status-dto"
 import type { SourceDto } from "./source-dto"
+import type { TagDto } from "./tag-dto"
 import type { TaskWithWorkspaceDtoDeletedAt } from "./task-with-workspace-dto-deleted-at"
 import type { TaskWithWorkspaceDtoDeletedBy } from "./task-with-workspace-dto-deleted-by"
-import type { TaskWithWorkspaceDtoNotes } from "./task-with-workspace-dto-notes"
 import type { WorkspaceDto } from "./workspace-dto"
 
 export interface TaskWithWorkspaceDto {
@@ -29,9 +30,10 @@ export interface TaskWithWorkspaceDto {
 	issuedAt: string
 	dueDate: string
 	/** @nullable */
-	notes: TaskWithWorkspaceDtoNotes
+	notes: string | null
 	workspaceId: number
 	source: SourceDto
-	tags: string[]
+	tags: TagDto[]
+	assigneeStatuses: AssigneeStatusDto[]
 	workspace: WorkspaceDto
 }

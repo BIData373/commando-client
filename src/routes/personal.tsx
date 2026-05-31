@@ -47,7 +47,7 @@ function PersonalPage() {
 
 	return (
 		<TasksProvider
-			initialTasks={tasks as TaskDto[]}
+			tasks={tasks as TaskDto[]}
 			defaultColumnOrder={PERSONAL_DEFAULT_COLUMN_ORDER}
 			defaultHiddenColumns={PERSONAL_DEFAULT_HIDDEN}
 		>

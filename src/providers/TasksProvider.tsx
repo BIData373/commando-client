@@ -1,14 +1,17 @@
+import type { Updater } from "@tanstack/react-query";
 import {
 	createContext,
-	type ReactNode,
+	type PropsWithChildren,
+	useCallback,
 	useContext,
-	useMemo,
-	useState,
+	useState
 } from "react";
-import type { TaskDto } from "src/api/model";
+import type { AssigneeStatusDto, TaskDto } from "src/api/model";
+import { queryClient } from "src/queryClient";
 import type { QuickFilter } from "src/utils/filterUtils";
-import type { DirectiveStatus } from "src/utils/statusUtils";
+import { DirectiveStatus } from "src/utils/statusUtils";
 import { DEFAULT_COLUMN_ORDER } from "../components/Tasks/ColumnVisibilityDropdown";
+import type { RelatedDirective } from "../components/Tasks/ResponsibleCell";
 import { applyAllFilters } from "../functions/filter-utils";
 import type { TaskColumn } from "../hooks/useTaskColumns";
 
@@ -16,10 +19,15 @@ export type NewTaskInput = Omit<TaskDto, "id" | "createdAt" | "updatedAt"> & {
 	groupKey?: string;
 };
 
+export type TaskRow<TTask extends TaskDto> = Omit<TTask, 'assigneeStatuses'> & {
+	rowKey: string;
+	assigneeId: number;
+	statusId: number;
+	otherAssignees: AssigneeStatusDto[];
+}
+
 interface TasksContextValue {
-	tasks: TaskDto[];
-	addTasks: (inputs: NewTaskInput[]) => void;
-	updateTaskStatus: (taskId: number, status: DirectiveStatus) => void;
+	updateTaskStatus: (taskId: number, assigneeId: number, status: DirectiveStatus) => void;
 	removeTasks: (taskIds: number[]) => void;
 	bulkUpdateStatus: (taskIds: number[], status: DirectiveStatus) => void;
 	searchQuery: string;
@@ -31,7 +39,6 @@ interface TasksContextValue {
 	setColumnOrder: (order: TaskColumn[]) => void;
 	hiddenColumns: Set<TaskColumn>;
 	toggleColumn: (columnId: TaskColumn) => void;
-	filteredTasks: TaskDto[];
 }
 
 const WORKSPACE_DEFAULT_HIDDEN = new Set<TaskColumn>([
@@ -41,21 +48,22 @@ const WORKSPACE_DEFAULT_HIDDEN = new Set<TaskColumn>([
 
 const TasksContext = createContext<TasksContextValue | null>(null);
 
-interface TasksProviderProps {
-	initialTasks?: TaskDto[];
+type TaskWithAssignees = TaskDto & { assignees?: RelatedDirective[] };
+
+interface TasksProviderProps extends PropsWithChildren {
 	defaultColumnOrder?: TaskColumn[];
 	defaultHiddenColumns?: Set<TaskColumn>;
-	children: ReactNode;
+}
+
+export function formatTaskRowId(taskId: number, assigneeId: number) {
+	return `${taskId}_${assigneeId}`
 }
 
 export function TasksProvider({
-	initialTasks = [],
 	defaultColumnOrder = DEFAULT_COLUMN_ORDER,
 	defaultHiddenColumns = WORKSPACE_DEFAULT_HIDDEN,
 	children,
 }: TasksProviderProps) {
-	// FIX Make tasks state into useMemo, duplicating rows for each task assignee
-	const [tasks, setTasks] = useState<TaskDto[]>(initialTasks);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [activeQuickFilters, setActiveQuickFilters] = useState<
 		Set<QuickFilter>
@@ -66,6 +74,23 @@ export function TasksProvider({
 	]);
 	const [hiddenColumns, setHiddenColumns] =
 		useState<Set<TaskColumn>>(defaultHiddenColumns);
+
+	const taskRows = useCallback(<TTask extends TaskDto>(tasks: TTask) =>
+		applyAllFilters(tasks, activeQuickFilters, new Set(), searchQuery)
+			.flatMap(({ id, assigneeStatuses, ...task }) => (
+				assigneeStatuses.map(({ assigneeId, statusId }) => ({
+					...task,
+					id,
+					rowKey: formatTaskRowId(id, assigneeId),
+					assigneeId,
+					statusId,
+					otherAssignees: assigneeStatuses.filter((assigneeStatus) => (
+						assigneeStatus.assigneeId !== assigneeId
+					))
+				}))
+			)),
+		[searchQuery, activeQuickFilters]
+	)
 
 	function toggleColumn(columnId: TaskColumn) {
 		setHiddenColumns((prev) => {
@@ -95,99 +120,51 @@ export function TasksProvider({
 		setActiveQuickFilters(new Set());
 	}
 
-	const filteredTasks = useMemo(
-		() => applyAllFilters(tasks, activeQuickFilters, new Set(), searchQuery),
-		[tasks, searchQuery, activeQuickFilters],
-	);
-
-	function addTasks(inputs: NewTaskInput[]) {
-		if (inputs.length === 0) return;
-		setTasks((prev) => {
-			let nextId = prev.reduce((max, t) => (t.id > max ? t.id : max), 0);
-			const groupIds = new Map<string, number>();
-			const now = new Date();
-			const newTasks: TaskDto[] = inputs.map(({ groupKey, ...input }) => {
-				let id: number;
-				if (groupKey) {
-					const existing = groupIds.get(groupKey);
-					if (existing) {
-						id = existing;
-					} else {
-						id = ++nextId;
-						groupIds.set(groupKey, id);
-					}
-				} else {
-					id = ++nextId;
-				}
-				return { ...input, id, createdAt: now, updatedAt: now };
-			});
-			return [...newTasks, ...prev];
-		});
+	function setTasks(updater: Updater<TTask[] | undefined, TTask[] | undefined>) {
+		queryClient.setQueryData(queryKey, updater)
 	}
 
-	function updateTaskStatus(taskId: number, status: DirectiveStatus) {
-		setTasks((prev) => {
-			const target = prev.find((t) => t.id === taskId);
-			if (!target) return prev;
-
-			const responsibleId = target.responsible?.id;
-
-			return prev.map((t) => {
-				if (t.id === taskId) return { ...t, status, updatedAt: new Date() };
-
-				if (responsibleId == null) return t;
-
-				const hasRelated = t.relatedDirectives.some(
-					(d) => d.user.id === responsibleId,
-				);
-
-				if (!hasRelated) return t;
-
+	function updateTaskStatus(taskId: number, assigneeId: number, status: DirectiveStatus) {
+		if (!queryKey) return;
+		queryClient.setQueryData(queryKey, (prev: TTask[] | undefined) =>
+			prev?.map((task) => {
+				if (task.id !== taskId) return task;
+				const t = task as TaskWithAssignees;
 				return {
-					...t,
-					relatedDirectives: t.relatedDirectives.map((d) =>
-						d.user.id === responsibleId ? { ...d, status } : d,
+					...task,
+					assignees: t.assignees?.map((e) =>
+						e.assignee.id === assigneeId ? { ...e, status } : e,
 					),
-				};
-			});
-		});
+				} as TTask;
+			}),
+		);
 	}
 
 	function removeTasks(taskIds: number[]) {
-		setTasks((prev) => prev.filter((t) => !taskIds.includes(t.id)));
+		if (!queryKey) return;
+		queryClient.setQueryData(queryKey, (prev: TTask[] | undefined) =>
+			prev?.filter((t) => !taskIds.includes(t.id)),
+		);
 	}
 
+	// FIX Move to TaskTable
 	function bulkUpdateStatus(taskIds: number[], status: DirectiveStatus) {
-		setTasks((prev) => {
-			const updatedResponsibleIds = new Set(
-				prev
-					.filter((t) => taskIds.includes(t.id) && t.responsible)
-					.map((t) => t.responsible!.id),
-			);
-			return prev.map((t) => {
-				const isTarget = taskIds.includes(t.id);
-				const updatedRelated = t.relatedDirectives.some((d) =>
-					updatedResponsibleIds.has(d.user.id),
-				);
-				if (!isTarget && !updatedRelated) return t;
+		if (!queryKey) return;
+		queryClient.setQueryData(queryKey, (prev: TTask[] | undefined) =>
+			prev?.map((task) => {
+				if (!taskIds.includes(task.id)) return task;
+				const t = task as TaskWithAssignees;
 				return {
-					...t,
-					...(isTarget ? { status, updatedAt: new Date() } : {}),
-					relatedDirectives: updatedRelated
-						? t.relatedDirectives.map((d) =>
-							updatedResponsibleIds.has(d.user.id) ? { ...d, status } : d,
-						)
-						: t.relatedDirectives,
-				};
-			});
-		});
+					...task,
+					assignees: t.assignees?.map((e) => ({ ...e, status })),
+				} as TTask;
+			}),
+		);
 	}
 
 	return (
 		<TasksContext.Provider
 			value={{
-				tasks,
-				addTasks,
 				updateTaskStatus,
 				removeTasks,
 				bulkUpdateStatus,
@@ -199,8 +176,7 @@ export function TasksProvider({
 				columnOrder,
 				setColumnOrder,
 				hiddenColumns,
-				toggleColumn,
-				filteredTasks,
+				toggleColumn
 			}}
 		>
 			{children}

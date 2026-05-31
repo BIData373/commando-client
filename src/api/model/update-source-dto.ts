@@ -7,5 +7,9 @@
  */
 
 export interface UpdateSourceDto {
+	workspaceId?: number
 	name?: string
+	date?: string
+	tags?: string[]
+	attachment?: Blob
 }

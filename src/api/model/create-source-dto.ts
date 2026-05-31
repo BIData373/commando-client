@@ -11,4 +11,5 @@ export interface CreateSourceDto {
 	name: string
 	date: string
 	tags: string[]
+	attachment?: Blob
 }
