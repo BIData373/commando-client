@@ -1,5 +1,7 @@
 import { format } from "date-fns";
 
+export const formatDateToDay = (date: Date) =>
+	format(date, "dd")
 export const formatDateToDateMonthYear = (date: Date) =>
 	format(date, "dd/MM/yy");
 export const formatDateToDateMonthFullYear = (date: Date) =>

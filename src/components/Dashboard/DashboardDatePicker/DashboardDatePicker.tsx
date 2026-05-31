@@ -1,11 +1,11 @@
 import { useState } from "react";
-import type { DateRange } from "react-day-picker";
+import { type DateRange, isDateRange } from "react-day-picker";
+import { CalendarMode } from "src/components/shared/DatePicker";
+import DatePickerPopover from "src/components/shared/DatePickerPopover";
 import type { DATE_TYPE } from "src/utils/dataTypeUtils";
 import { DashboardDatePickerFooter } from "./DashboardDatePickerFooter";
 import { DashboardDatePickerHeader } from "./DashboardDatePickerHeader";
 import { DashboardDatePickerTriggerButton } from "./DashboardDatePickerTriggerButton";
-import DatePickerPopover from "src/components/shared/DatePickerPopover";
-import { CalendarMode } from "src/components/shared/DatePicker";
 
 interface DashboardDatePickerProps {
 	dateType: DATE_TYPE;
@@ -29,7 +29,10 @@ export function DashboardDatePicker({
 		<DatePickerPopover
 			mode={CalendarMode.Range}
 			triggerButton={({ value }) => (
-				<DashboardDatePickerTriggerButton label={dateType} range={value as DateRange} />
+				<DashboardDatePickerTriggerButton
+					label={dateType}
+					range={isDateRange(value) ? value : undefined}
+				/>
 			)}
 			header={() => (
 				<DashboardDatePickerHeader

@@ -8,11 +8,11 @@ import type {
 import type React from "react";
 import { useMemo, useState } from "react";
 import type { DirectiveStatus } from "src/utils/statusUtils";
-import type { DeadlineType } from "../shared/DeadlineTag";
 import type { Task } from "../../data/Tasks";
 import { buildFilterOptionsMap } from "../../functions/filter-utils";
 import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns";
 import { useTasks } from "../../providers/TasksProvider";
+import type { DeadlineType } from "../shared/DeadlineTag";
 import { DataTable } from "../ui/data-table";
 import { BulkActionsBar } from "./BulkActionsBar";
 
@@ -24,12 +24,15 @@ interface TaskTableProps {
 	showHeader?: boolean;
 	statusFilter?: DirectiveStatus[];
 	deadlineTypeFilter?: DeadlineType[];
-	onFiltersChange?: (statusFilter: DirectiveStatus[], deadlineTypeFilter: DeadlineType[]) => void;
+	onFiltersChange?: (
+		statusFilter: DirectiveStatus[],
+		deadlineTypeFilter: DeadlineType[],
+	) => void;
 }
 
 function TaskTable({
 	tasks,
-	onEdit = () => {},
+	onEdit = () => { },
 	onDoubleClick,
 	extraColumns,
 	showHeader = true,
@@ -49,17 +52,42 @@ function TaskTable({
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 	const urlColumnFilters: ColumnFiltersState = [
 		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
-		...(deadlineTypeFilter.length ? [{ id: "deadlineType", value: deadlineTypeFilter }] : []),
+		...(deadlineTypeFilter.length
+			? [{ id: "deadlineType", value: deadlineTypeFilter }]
+			: []),
 	];
-	const [localColumnFilters, setLocalColumnFilters] = useState<ColumnFiltersState>([]);
-	const columnFilters: ColumnFiltersState = [...urlColumnFilters, ...localColumnFilters];
+	const [localColumnFilters, setLocalColumnFilters] =
+		useState<ColumnFiltersState>([]);
+	const columnFilters: ColumnFiltersState = [
+		...urlColumnFilters,
+		...localColumnFilters,
+	];
 
-	function handleColumnFiltersChange(updater: React.SetStateAction<ColumnFiltersState>) {
-		const newFilters = typeof updater === "function" ? updater(columnFilters) : updater;
-		setLocalColumnFilters(newFilters.filter((f) => f.id !== "status" && f.id !== "deadlineType"));
-		const statusValues = (newFilters.find((f) => f.id === "status")?.value as DirectiveStatus[]) ?? [];
-		const deadlineValues = (newFilters.find((f) => f.id === "deadlineType")?.value as DeadlineType[]) ?? [];
-		onFiltersChange?.(statusValues, deadlineValues);
+	function getColumnFilter(columnFilters: ColumnFiltersState, id: string) {
+		return columnFilters.find((column) => column.id === id)?.value ?? [];
+	}
+
+	function handleColumnFiltersChange(
+		updater: React.SetStateAction<ColumnFiltersState>,
+	) {
+		const newFilters =
+			typeof updater === "function" ? updater(columnFilters) : updater;
+
+		const tableStatusColumnValue = getColumnFilter(
+			newFilters,
+			"status",
+		) as DirectiveStatus[];
+		const tableDeadlineColumnValue = getColumnFilter(
+			newFilters,
+			"deadlineType",
+		) as DeadlineType[];
+
+		const tableTabFilter = newFilters.filter(
+			(column) => column.id !== "status" && column.value !== "deadlineType",
+		);
+		setLocalColumnFilters(tableTabFilter);
+
+		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue);
 	}
 	const [sorting, setSorting] = useState<SortingState>([]);
 
