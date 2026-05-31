@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { Outlet, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
+import type { searchSchemaType } from "src/routes/workspace/$urlName/tasks";
 import type { QuickFilter } from "src/utils/filterUtils";
 import type { DirectiveStatus } from "src/utils/statusUtils";
 import { exportTasksToExcel } from "../../functions/export-excel";
@@ -54,29 +55,14 @@ function TasksLayout({
 		new Set(),
 	);
 
-	type PrevSearch = { tabFilter?: QuickFilter[]; statusFilter?: DirectiveStatus[]; deadlineTypeFilter?: DeadlineType[]; view?: View };
-
-	function prevFilters(prev: PrevSearch) {
-		return {
-			tabFilter: prev.tabFilter ?? [],
-			statusFilter: prev.statusFilter ?? [],
-			deadlineTypeFilter: prev.deadlineTypeFilter ?? [],
-		};
-	}
-
-	function navigateToTasks(overrides: { view?: View; tabFilter?: QuickFilter[]; statusFilter?: DirectiveStatus[]; deadlineTypeFilter?: DeadlineType[] } = {}) {
+	function navigateToTasks(taskFilter: Partial<searchSchemaType>) {
 		navigate({
 			to: "/workspace/$urlName/tasks",
 			params: { urlName },
-			search: (prev) => {
-				const base = prevFilters(prev);
-				return {
-					view: overrides.view ?? prev.view ?? view,
-					tabFilter: overrides.tabFilter ?? base.tabFilter,
-					statusFilter: overrides.statusFilter ?? base.statusFilter,
-					deadlineTypeFilter: overrides.deadlineTypeFilter ?? base.deadlineTypeFilter,
-				};
-			},
+			search: (prev) => ({
+				...prev,
+				...taskFilter,
+			}),
 		});
 	}
 
@@ -84,7 +70,7 @@ function TasksLayout({
 		navigate({
 			to: "/workspace/$urlName/tasks/new",
 			params: { urlName },
-			search: (prev) => ({ view, mode, ...prevFilters(prev) }),
+			search: (prev) => ({ view, mode, ...prev }),
 		});
 	}
 
@@ -92,16 +78,16 @@ function TasksLayout({
 		navigate({
 			to: "/workspace/$urlName/tasks/$taskId",
 			params: { urlName, taskId: String(taskId) },
-			search: (prev) => ({ view, ...prevFilters(prev) }),
+			search: (prev) => ({ view, ...prev }),
 		});
 	}
 
 	function handleCreateTask() {
-		navigateWithMode("single")
+		navigateWithMode("single");
 	}
 
 	function handleCreateTaskFromDiscussion() {
-		navigateWithMode("discussion")
+		navigateWithMode("discussion");
 	}
 
 	function handleToggleTabFilter(filter: QuickFilter) {
@@ -113,14 +99,21 @@ function TasksLayout({
 
 	function clearAllFilters() {
 		setActiveTopicFilters(new Set());
-		navigateToTasks({ tabFilter: [], statusFilter: [], deadlineTypeFilter: [] });
+		navigateToTasks({
+			tabFilter: [],
+			statusFilter: [],
+			deadlineTypeFilter: [],
+		});
 	}
 
 	function handleColumnFiltersChange(
 		newStatusFilter: DirectiveStatus[],
 		newDeadlineTypeFilter: DeadlineType[],
 	) {
-		navigateToTasks({ statusFilter: newStatusFilter, deadlineTypeFilter: newDeadlineTypeFilter });
+		navigateToTasks({
+			statusFilter: newStatusFilter,
+			deadlineTypeFilter: newDeadlineTypeFilter,
+		});
 	}
 
 	const allTopics = [...new Set(tasks.flatMap((t) => t.tags))];
