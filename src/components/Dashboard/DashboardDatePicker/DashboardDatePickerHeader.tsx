@@ -25,7 +25,7 @@ export function DashboardDatePickerHeader({
 					{dateType}
 					<ChevronDown size={16} />
 				</DateTypeTrigger>
-				<DropdownMenuContent align="end">
+				<StyledDropdownMenuContent align="end">
 					{Object.values(DATE_TYPE).map((type) => (
 						<DropdownMenuItem
 							key={type}
@@ -34,11 +34,15 @@ export function DashboardDatePickerHeader({
 							{type}
 						</DropdownMenuItem>
 					))}
-				</DropdownMenuContent>
+				</StyledDropdownMenuContent>
 			</DropdownMenu>
 		</PopupHeader>
 	);
 }
+
+const StyledDropdownMenuContent = styled(DropdownMenuContent)`
+	z-index: 1000;
+`
 
 const PopupHeader = styled.div`
   display: flex;
