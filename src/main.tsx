@@ -9,7 +9,7 @@ import { USE_MOCK_API } from "./utils/envUtils";
 const handlers = Object.values(mockHandlers).flatMap((getHandlers) => getHandlers())
 
 async function enableMocking() {
-	if (!USE_MOCK_API) {
+	if (USE_MOCK_API) {
 		const { setupWorker } = await import('msw/browser');
 		const worker = setupWorker(...handlers);
 
