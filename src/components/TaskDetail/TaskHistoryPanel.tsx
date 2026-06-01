@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { ChevronsLeft } from "lucide-react";
 import {
   formatDateMonthFullYear,
-  formatDateToMinutesHours,
+  formatMinutesHours,
 } from "src/utils/timeFormat";
 import type { HistoryAction, HistoryChange } from "../../types/history";
 
@@ -113,7 +113,7 @@ function TaskHistoryPanel({ history, onClose }: TaskHistoryPanelProps) {
                       </DateText>
                       <TimeSeparator />
                       <TimeText>
-                        {formatDateToMinutesHours(group.timestamp)}
+                        {formatMinutesHours(group.timestamp)}
                       </TimeText>
                     </TimeGroup>
                   </MetaRow>
