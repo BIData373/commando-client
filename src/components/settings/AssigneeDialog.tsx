@@ -3,9 +3,9 @@ import { useForm } from "@tanstack/react-form"
 import { UserPlus } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import {
-	useCreateAssignee,
-	useListAssignees,
-	useUpdateAssignee,
+  useCreateAssignee,
+  useListAssignees,
+  useUpdateAssignee,
 } from "src/api/assignee/assignee"
 import type { AssigneeDto, UserDto } from "src/api/model"
 import { type IMesibaIcon, useMesibaIconByName } from "src/hooks/useMesiba"
@@ -15,11 +15,11 @@ import { concatName } from "src/utils/user-utils"
 import { CancelButton } from "../shared/CancelButton"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import {
-	Dialog,
-	DialogClose,
-	DialogContent,
-	DialogDescription,
-	DialogTitle,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
 } from "../ui/dialog"
 import { Input } from "../ui/input"
 import { ColorPicker, PRESET_COLORS } from "./ColorPicker"
@@ -28,296 +28,296 @@ import { IconDropdown } from "./IconDropdown"
 import { UsersLists } from "./UsersLists"
 
 interface AssigneeDialogProps {
-	open: boolean
-	onOpenChange: (open: boolean) => void
-	assignee?: AssigneeDto
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  assignee?: AssigneeDto
 }
 
 export function AssigneeDialog({
-	assignee,
-	open,
-	onOpenChange,
+  assignee,
+  open,
+  onOpenChange,
 }: AssigneeDialogProps) {
-	const isUpdate = !!assignee
+  const isUpdate = !!assignee
 
-	const {
-		workspace: { id: workspaceId },
-	} = useWorkspace()
+  const {
+    workspace: { id: workspaceId },
+  } = useWorkspace()
 
-	const { queryKey } = useListAssignees({ workspaceId })
-	const { mutateAsync: createAssignee } = useCreateAssignee()
-	const { mutateAsync: updateAssignee } = useUpdateAssignee()
+  const { queryKey } = useListAssignees({ workspaceId })
+  const { mutateAsync: createAssignee } = useCreateAssignee()
+  const { mutateAsync: updateAssignee } = useUpdateAssignee()
 
-	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null)
-	// const [localAssignees, setLocalAssignees] = useState<UserDto[]>([]);
-	const [submitError, setSubmitError] = useState<string | null>(null)
-	const [searchValue, setSearchValue] = useState<string>("")
+  const [selectedUser, setSelectedUser] = useState<UserDto | null>(null)
+  // const [localAssignees, setLocalAssignees] = useState<UserDto[]>([]);
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [searchValue, setSearchValue] = useState<string>("")
 
-	const [iconSearch, setIconSearch] = useState("")
-	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
+  const [iconSearch, setIconSearch] = useState("")
+  const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
 
-	const { data: existingIcon } = useMesibaIconByName(assignee?.icon ?? "")
+  const { data: existingIcon } = useMesibaIconByName(assignee?.icon ?? "")
 
-	useEffect(() => {
-		if (existingIcon) setSelectedIcon(existingIcon)
-	}, [existingIcon])
+  useEffect(() => {
+    if (existingIcon) setSelectedIcon(existingIcon)
+  }, [existingIcon])
 
-	const randomColor =
-		useMemo(() => {
-			if (!open) return
-			const randomColorIdx = Math.floor(
-				Math.random() * (PRESET_COLORS.length - 1),
-			)
-			return PRESET_COLORS[randomColorIdx]
-		}, [open]) ?? ""
+  const randomColor =
+    useMemo(() => {
+      if (!open) return
+      const randomColorIdx = Math.floor(
+        Math.random() * (PRESET_COLORS.length - 1),
+      )
+      return PRESET_COLORS[randomColorIdx]
+    }, [open])
 
-	const handleSubmitSuccess = (data: AssigneeDto) => {
-		queryClient.setQueryData(queryKey, (prev?: AssigneeDto[]) => {
-			let updated = [...(prev ?? [])]
-			const foundIndex = updated.findIndex(({ id }) => id === data.id)
+  const handleSubmitSuccess = (data: AssigneeDto) => {
+    queryClient.setQueryData(queryKey, (prev?: AssigneeDto[]) => {
+      let updated = [...(prev ?? [])]
+      const foundIndex = updated.findIndex(({ id }) => id === data.id)
 
-			if (foundIndex >= 0) {
-				updated[foundIndex] = data
-			} else {
-				updated = [...updated, data]
-			}
+      if (foundIndex >= 0) {
+        updated[foundIndex] = data
+      } else {
+        updated = [...updated, data]
+      }
 
-			return updated
-		})
-	}
+      return updated
+    })
+  }
 
-	const form = useForm({
-		defaultValues: {
-			name: assignee?.name ?? "",
-			color: assignee?.color ?? randomColor,
-			icon: assignee?.icon ?? "",
-			users: assignee?.users ?? [],
-		},
-		onSubmit: async ({ value }) => {
-			const payload = {
-				name: value.name.trim(),
-				color: value.color,
-				icon: value.icon || null,
-				users: value.users,
-			}
+  const form = useForm({
+    defaultValues: {
+      name: assignee?.name ?? "",
+      color: assignee?.color ?? randomColor,
+      icon: assignee?.icon ?? "",
+      users: assignee?.users ?? [],
+    },
+    onSubmit: async ({ value }) => {
+      const payload = {
+        name: value.name.trim(),
+        color: value.color,
+        icon: value.icon || null,
+        users: value.users,
+      }
 
-			try {
-				if (assignee) {
-					await updateAssignee(
-						{
-							pathParams: { id: assignee.id },
-							data: payload,
-						},
-						{
-							onSuccess: handleSubmitSuccess,
-						},
-					)
-				} else {
-					await createAssignee(
-						{
-							data: { workspaceId, ...payload },
-						},
-						{
-							onSuccess: handleSubmitSuccess,
-						},
-					)
-				}
+      try {
+        if (assignee) {
+          await updateAssignee(
+            {
+              pathParams: { id: assignee.id },
+              data: payload,
+            },
+            {
+              onSuccess: handleSubmitSuccess,
+            },
+          )
+        } else {
+          await createAssignee(
+            {
+              data: { workspaceId, ...payload },
+            },
+            {
+              onSuccess: handleSubmitSuccess,
+            },
+          )
+        }
 
-				onOpenChange(false)
-			} catch {
-				setSubmitError("אירעה שגיאה, נסה שנית")
-			}
-		},
-	})
+        onOpenChange(false)
+      } catch {
+        setSubmitError("אירעה שגיאה, נסה שנית")
+      }
+    },
+  })
 
-	function handleAddUserList() {
-		if (!selectedUser) {
-			return
-		}
+  function handleAddUserList() {
+    if (!selectedUser) {
+      return
+    }
 
-		form.setFieldValue("users", (prev) =>
-			prev.some((user) => user.upn === selectedUser.upn)
-				? prev
-				: [...prev, selectedUser],
-		)
+    form.setFieldValue("users", (prev) =>
+      prev.some((user) => user.upn === selectedUser.upn)
+        ? prev
+        : [...prev, selectedUser],
+    )
 
-		setSearchValue("")
-		setSelectedUser(null)
-	}
+    setSearchValue("")
+    setSelectedUser(null)
+  }
 
-	function handleRemoveAssignee(upn: string) {
-		form.setFieldValue("users", (prev) =>
-			prev.filter((user) => user.upn !== upn),
-		)
-	}
+  function handleRemoveAssignee(upn: string) {
+    form.setFieldValue("users", (prev) =>
+      prev.filter((user) => user.upn !== upn),
+    )
+  }
 
-	function handleSearchSelect(user: UserDto) {
-		if (user) {
-			setSearchValue(concatName(user))
-		}
+  function handleSearchSelect(user: UserDto) {
+    if (user) {
+      setSearchValue(concatName(user))
+    }
 
-		setSelectedUser(user)
-	}
+    setSelectedUser(user)
+  }
 
-	function handleSearchClear() {
-		setSearchValue("")
-		setSelectedUser(null)
-	}
+  function handleSearchClear() {
+    setSearchValue("")
+    setSelectedUser(null)
+  }
 
-	function handleColorChange(color: string) {
-		form.setFieldValue("color", color)
-	}
+  function handleColorChange(color: string) {
+    form.setFieldValue("color", color)
+  }
 
-	function handleIconSelect(icon: IMesibaIcon) {
-		form.setFieldValue("icon", icon.iconName)
-		setSelectedIcon(icon)
-		setIconSearch("")
-	}
+  function handleIconSelect(icon: IMesibaIcon) {
+    form.setFieldValue("icon", icon.iconName)
+    setSelectedIcon(icon)
+    setIconSearch("")
+  }
 
-	function handleIconClear() {
-		form.setFieldValue("icon", "")
-		setSelectedIcon(null)
-		setIconSearch("")
-	}
+  function handleIconClear() {
+    form.setFieldValue("icon", "")
+    setSelectedIcon(null)
+    setIconSearch("")
+  }
 
-	function resetForm() {
-		form.setFieldValue("users", assignee?.users ?? [])
-		setSubmitError(null)
-		setIconSearch("")
-		setSelectedIcon(existingIcon ?? null)
-		form.reset()
-	}
+  function resetForm() {
+    form.setFieldValue("users", assignee?.users ?? [])
+    setSubmitError(null)
+    setIconSearch("")
+    setSelectedIcon(existingIcon ?? null)
+    form.reset()
+  }
 
-	const scrollRef = useRef<HTMLDivElement>(null)
-	const [scrollShadow, setScrollShadow] = useState({
-		top: false,
-		bottom: false,
-	})
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [scrollShadow, setScrollShadow] = useState({
+    top: false,
+    bottom: false,
+  })
 
-	function handleScroll() {
-		const el = scrollRef.current
-		if (!el) return
-		const atTop = el.scrollTop <= 0
-		const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
-		setScrollShadow({ top: !atTop, bottom: !atBottom })
-	}
+  function handleScroll() {
+    const el = scrollRef.current
+    if (!el) return
+    const atTop = el.scrollTop <= 0
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
+    setScrollShadow({ top: !atTop, bottom: !atBottom })
+  }
 
-	function handleOpenChange(open: boolean) {
-		resetForm()
-		onOpenChange(open)
-	}
+  function handleOpenChange(open: boolean) {
+    resetForm()
+    onOpenChange(open)
+  }
 
-	return (
-		<Dialog open={open} onOpenChange={handleOpenChange}>
-			<WideDialogContent>
-				<DialogHeader $shadow={scrollShadow.top}>
-					<DialogTitleLarge>
-						{isUpdate ? "עריכת אחראי" : "יצירת אחראי"}
-					</DialogTitleLarge>
-					<StyledDialogDescription>
-						'אחראי' אליו ניתן לשייך הנחיות.
-						<br />
-						לכל אחראי ניתן לכתב מספר משתמשים, אשר יקבלו את ההנחיות לאזור האישי
-						שלהם.
-					</StyledDialogDescription>
-				</DialogHeader>
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <WideDialogContent>
+        <DialogHeader $shadow={scrollShadow.top}>
+          <DialogTitleLarge>
+            {isUpdate ? "עריכת אחראי" : "יצירת אחראי"}
+          </DialogTitleLarge>
+          <StyledDialogDescription>
+            'אחראי' אליו ניתן לשייך הנחיות.
+            <br />
+            לכל אחראי ניתן לכתב מספר משתמשים, אשר יקבלו את ההנחיות לאזור האישי
+            שלהם.
+          </StyledDialogDescription>
+        </DialogHeader>
 
-				<ScrollableContent ref={scrollRef} onScroll={handleScroll}>
-					<DialogBody>
-						<form.Field
-							name="name"
-							validators={{
-								onSubmit: ({ value }) =>
-									!value.trim() ? "שם אחראי הוא שדה חובה" : undefined,
-							}}
-						>
-							{(field) => (
-								<FieldGroup>
-									<FieldLabel>שם אחראי</FieldLabel>
-									<Input
-										value={field.state.value}
-										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder='לדוגמה: מג"ד, רע"ן מפקדים, קמב"צ...'
-									/>
-									{field.state.meta.errors.length > 0 && (
-										<ErrorText>{field.state.meta.errors[0]}</ErrorText>
-									)}
-								</FieldGroup>
-							)}
-						</form.Field>
+        <ScrollableContent ref={scrollRef} onScroll={handleScroll}>
+          <DialogBody>
+            <form.Field
+              name="name"
+              validators={{
+                onSubmit: ({ value }) =>
+                  !value.trim() ? "שם אחראי הוא שדה חובה" : undefined,
+              }}
+            >
+              {(field) => (
+                <FieldGroup>
+                  <FieldLabel>שם אחראי</FieldLabel>
+                  <Input
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder='לדוגמה: מג"ד, רע"ן מפקדים, קמב"צ...'
+                  />
+                  {field.state.meta.errors.length > 0 && (
+                    <ErrorText>{field.state.meta.errors[0]}</ErrorText>
+                  )}
+                </FieldGroup>
+              )}
+            </form.Field>
 
-						<FieldGroup>
-							<EitherOrRow>
-								<form.Subscribe selector={(s) => s.values.color}>
-									{(color) => (
-										<ColorRow>
-											<ColorLabel>בחר צבע לאחראי</ColorLabel>
-											<ColorPicker
-												selectedColor={color}
-												onChange={handleColorChange}
-											/>
-										</ColorRow>
-									)}
-								</form.Subscribe>
-								<OrSeparator>או</OrSeparator>
-								<EmblemSection>
-									<IconDropdown
-										value={iconSearch}
-										onChange={setIconSearch}
-										onSelect={handleIconSelect}
-										onClear={handleIconClear}
-										selectedItem={selectedIcon ?? undefined}
-									/>
-								</EmblemSection>
-							</EitherOrRow>
-							{submitError && <ErrorText>{submitError}</ErrorText>}
-						</FieldGroup>
+            <FieldGroup>
+              <EitherOrRow>
+                <form.Subscribe selector={(s) => s.values.color}>
+                  {(color) => (
+                    <ColorRow>
+                      <ColorLabel>בחר צבע לאחראי</ColorLabel>
+                      <ColorPicker
+                        selectedColor={color}
+                        onChange={handleColorChange}
+                      />
+                    </ColorRow>
+                  )}
+                </form.Subscribe>
+                <OrSeparator>או</OrSeparator>
+                <EmblemSection>
+                  <IconDropdown
+                    value={iconSearch}
+                    onChange={setIconSearch}
+                    onSelect={handleIconSelect}
+                    onClear={handleIconClear}
+                    selectedItem={selectedIcon ?? undefined}
+                  />
+                </EmblemSection>
+              </EitherOrRow>
+              {submitError && <ErrorText>{submitError}</ErrorText>}
+            </FieldGroup>
 
-						<form.Field name="users">
-							{(field) => (
-								<FieldGroup>
-									<FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
-									<SearchRow>
-										<DropdownUsers
-											value={searchValue}
-											onChange={setSearchValue}
-											onSelect={handleSearchSelect}
-											onClear={handleSearchClear}
-											placeholder="חפש שם/ תפקיד/ מספר אישי"
-										/>
-										{searchValue.length > 0 && (
-											<AddUserButton
-												type="button"
-												$enabled={!!selectedUser}
-												disabled={!selectedUser}
-												onClick={handleAddUserList}
-											>
-												<UserPlus size={16} />
-											</AddUserButton>
-										)}
-									</SearchRow>
-									<UsersLists
-										users={field.state.value}
-										onRemove={handleRemoveAssignee}
-									/>
-								</FieldGroup>
-							)}
-						</form.Field>
-					</DialogBody>
-				</ScrollableContent>
+            <form.Field name="users">
+              {(field) => (
+                <FieldGroup>
+                  <FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
+                  <SearchRow>
+                    <DropdownUsers
+                      value={searchValue}
+                      onChange={setSearchValue}
+                      onSelect={handleSearchSelect}
+                      onClear={handleSearchClear}
+                      placeholder="חפש שם/ תפקיד/ מספר אישי"
+                    />
+                    {searchValue.length > 0 && (
+                      <AddUserButton
+                        type="button"
+                        $enabled={!!selectedUser}
+                        disabled={!selectedUser}
+                        onClick={handleAddUserList}
+                      >
+                        <UserPlus size={16} />
+                      </AddUserButton>
+                    )}
+                  </SearchRow>
+                  <UsersLists
+                    users={field.state.value}
+                    onRemove={handleRemoveAssignee}
+                  />
+                </FieldGroup>
+              )}
+            </form.Field>
+          </DialogBody>
+        </ScrollableContent>
 
-				<DialogActions $shadow={scrollShadow.bottom}>
-					<DialogClose asChild>
-						<CancelButton title="ביטול" />
-					</DialogClose>
-					<PrimaryButton
-						title={isUpdate ? "שמור" : "צור"}
-						onClick={form.handleSubmit}
-					/>
-				</DialogActions>
-			</WideDialogContent>
-		</Dialog>
-	)
+        <DialogActions $shadow={scrollShadow.bottom}>
+          <DialogClose asChild>
+            <CancelButton title="ביטול" />
+          </DialogClose>
+          <PrimaryButton
+            title={isUpdate ? "שמור" : "צור"}
+            onClick={form.handleSubmit}
+          />
+        </DialogActions>
+      </WideDialogContent>
+    </Dialog>
+  )
 }
 
 const WideDialogContent = styled(DialogContent)`
