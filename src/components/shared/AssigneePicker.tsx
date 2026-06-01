@@ -4,7 +4,7 @@ import { type ReactNode, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AssigneeDialog } from "../settings/AssigneeDialog"
-import type { AvatarColor } from "../Tasks/ResponsibleCell"
+import type { AvatarColor } from "../Tasks/AssigneeCell"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 interface AssigneePickerProps {

@@ -16,7 +16,6 @@ interface StatusCellProps {
 	onUpdate: (taskId: number, assigneeId: number, statusId: number) => void
 }
 
-// TODO - validate that this doesn't break tasks from other spaces
 export function StatusCell({
 	status,
 	taskId,

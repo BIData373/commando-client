@@ -14,11 +14,6 @@ import type { QuickFilter } from "src/utils/filter-utils"
 import { DEFAULT_COLUMN_ORDER } from "../components/Tasks/ColumnVisibilityDropdown"
 import type { TaskColumn } from "../hooks/useTaskColumns"
 
-// TODO:
-// - remove the CRUD helpers (make it happen in the actual place)
-// - rename to TasksFiltersProvider
-// - see what we can offload to tanstack
-
 export type NewTaskInput = Omit<TaskDto, "id" | "createdAt" | "updatedAt"> & {
 	groupKey?: string
 }
