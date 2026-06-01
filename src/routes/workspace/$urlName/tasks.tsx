@@ -1,24 +1,30 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { QuickFilter } from "src/utils/filterUtils";
 import { DirectiveStatus } from "src/utils/statusUtils";
-import TasksLayout, { type View } from "../../../components/Tasks/TasksLayout";
+import { z } from "zod";
+import { DeadlineType } from "../../../components/shared/DeadlineTag";
+import TasksLayout from "../../../components/Tasks/TasksLayout";
 import { TasksProvider } from "../../../providers/TasksProvider";
+
+const queryArray = <T extends z.ZodTypeAny>(schema: T) =>
+	z.preprocess(
+		(v) => (Array.isArray(v) ? v : v == null ? [] : [v]),
+		z.array(schema),
+	);
+
+const TasksSearchSchema = z.object({
+	view: z.enum(["CARDS", "TABLE"]).default("TABLE"),
+	tabFilter: queryArray(z.nativeEnum(QuickFilter)).default([]),
+	statusFilter: queryArray(z.nativeEnum(DirectiveStatus)).default([]),
+	deadlineTypeFilter: queryArray(z.nativeEnum(DeadlineType)).default([]),
+});
+
+export type TasksSearchSchemaType = z.infer<typeof TasksSearchSchema>;
+
 
 export const Route = createFileRoute("/workspace/$urlName/tasks")({
 	component: TasksPage,
-	validateSearch: (
-		search: Record<string, unknown>,
-	): {
-		view: View;
-		tabFilter?: QuickFilter;
-		statusFilter?: DirectiveStatus;
-	} => ({
-		view: search.view === "CARDS" ? "CARDS" : "TABLE",
-		tabFilter: Object.values(QuickFilter).find((v) => v === search.tabFilter),
-		statusFilter: Object.values(DirectiveStatus).find(
-			(v) => v === search.statusFilter,
-		),
-	}),
+	validateSearch: TasksSearchSchema,
 	staticData: {
 		header: {
 			title: "הנחיות",
@@ -30,7 +36,8 @@ export const Route = createFileRoute("/workspace/$urlName/tasks")({
 });
 
 function TasksPage() {
-	const { view, tabFilter, statusFilter } = Route.useSearch();
+	const { view, tabFilter, statusFilter, deadlineTypeFilter } =
+		Route.useSearch();
 	const { urlName } = Route.useParams();
 
 	return (
@@ -40,6 +47,7 @@ function TasksPage() {
 				urlName={urlName}
 				tabFilter={tabFilter}
 				statusFilter={statusFilter}
+				deadlineTypeFilter={deadlineTypeFilter}
 			/>
 		</TasksProvider>
 	);
