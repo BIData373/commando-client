@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import type { QueryKey } from "@tanstack/react-query";
 import {
   flexRender,
   getCoreRowModel,
@@ -13,6 +14,7 @@ import { EmptyCardState } from "./EmptyCardState";
 import { ViewMoreInstructions } from "./ViewMoreInstructions";
 
 interface RecentlyCompletedProps {
+	queryKey: QueryKey;
 	urlName: string;
 	tasks: TaskRow[];
 }
@@ -20,6 +22,7 @@ interface RecentlyCompletedProps {
 const coreRowModel = getCoreRowModel();
 
 export default function RecentlyCompleted({
+	queryKey,
 	urlName,
 	tasks,
 }: RecentlyCompletedProps) {
@@ -29,10 +32,10 @@ export default function RecentlyCompleted({
 	);
 
 	const { columns } = useTaskColumns({
+		queryKey,
 		visibleColumns: ["title", "status", "assigneeStatuses"],
 		searchQuery: "",
 		filterOptionsMap: {},
-		onUpdateStatus: () => { },
 	});
 
 	const table = useReactTable({
