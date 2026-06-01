@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { Outlet, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
-import type { searchSchemaType } from "src/routes/workspace/$urlName/tasks";
+import type { TasksSearchSchemaType } from "src/routes/workspace/$urlName/tasks";
 import type { QuickFilter } from "src/utils/filterUtils";
 import type { DirectiveStatus } from "src/utils/statusUtils";
 import { exportTasksToExcel } from "../../functions/export-excel";
@@ -55,7 +55,7 @@ function TasksLayout({
 		new Set(),
 	);
 
-	function navigateToTasks(taskFilter: Partial<searchSchemaType>) {
+	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
 			to: "/workspace/$urlName/tasks",
 			params: { urlName },

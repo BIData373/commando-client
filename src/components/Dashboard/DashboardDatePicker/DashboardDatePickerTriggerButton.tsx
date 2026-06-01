@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { CalendarDays, ChevronDown } from "lucide-react";
 import type { DateRange } from "react-day-picker";
-import { formatDateToDateMonthFullYear, formatDateToDay } from "src/utils/timeFormat";
+import { formatDateMonthFullYear, formatDay } from "src/utils/timeFormat";
 
 interface DashboardDatePickerTriggerButtonProps {
   label: string;
@@ -9,13 +9,13 @@ interface DashboardDatePickerTriggerButtonProps {
   ref?: React.Ref<HTMLButtonElement>;
 }
 
-export const DashboardDatePickerTriggerButton = ({ label, range, ref, ...props} : DashboardDatePickerTriggerButtonProps) => {
+export const DashboardDatePickerTriggerButton = ({ label, range, ref, ...props }: DashboardDatePickerTriggerButtonProps) => {
   return (
     <TriggerButton ref={ref} {...props}>
       <CalendarDays size={16} />
       {label && range?.from && range.to ? (
         <RangeLabel>
-          {label}: {formatDateToDay(range.from)}-{formatDateToDateMonthFullYear(range.to)}
+          {label}: {formatDay(range.from)}-{formatDateMonthFullYear(range.to)}
         </RangeLabel>
       ) : (
         <RangeLabel>טווח תאריכים</RangeLabel>
