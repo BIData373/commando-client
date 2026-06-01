@@ -13,8 +13,8 @@ import DeadlineTag, {
 } from "../components/shared/DeadlineTag"
 import FlagIcon from "../components/shared/FlagIcon"
 import HighlightMatch from "../components/shared/HighlightMatch"
+import { AssigneeCell } from "../components/Tasks/AssigneeCell"
 import { ColumnHeaderWithActions } from "../components/Tasks/ColumnHeaderWithActions"
-import { ResponsibleCell } from "../components/Tasks/ResponsibleCell"
 import { RowActionsMenu } from "../components/Tasks/RowActionsMenu"
 import { StatusCell } from "../components/Tasks/StatusCell"
 import { TopicCell } from "../components/Tasks/TopicCell"
@@ -283,7 +283,7 @@ function useTaskColumns({
 					status: s.status,
 				}))
 				return (
-					<ResponsibleCell
+					<AssigneeCell
 						responsible={assignee}
 						relatedDirectives={relatedDirectives}
 					/>

@@ -14,16 +14,15 @@ export interface RelatedDirective {
 	status: WorkspaceStatusDto
 }
 
-interface ResponsibleCellProps {
+interface AssigneeCellProps {
 	responsible: AssigneeDto | null
 	relatedDirectives: RelatedDirective[]
 }
 
-// TODO - rename this and all the related types
-export function ResponsibleCell({
+export function AssigneeCell({
 	responsible,
 	relatedDirectives,
-}: ResponsibleCellProps) {
+}: AssigneeCellProps) {
 	return (
 		<CellRoot>
 			{responsible && (

@@ -3,7 +3,7 @@ import { X } from "lucide-react"
 import { useRef } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import type { AvatarColor } from "../Tasks/ResponsibleCell"
+import type { AvatarColor } from "../Tasks/AssigneeCell"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

@@ -5,7 +5,7 @@ import type {
 	TaskTableMeta,
 } from "../CreateTasksFromDiscussion/TasksColumns"
 import AssigneePicker from "../shared/AssigneePicker"
-import type { AvatarColor } from "../Tasks/ResponsibleCell"
+import type { AvatarColor } from "../Tasks/AssigneeCell"
 
 interface AssigneeTableCellProps {
 	row: TaskRow
