@@ -100,7 +100,7 @@ const StatusPillTrigger = styled.button<{
   white-space: nowrap;
   cursor: pointer;
   ${({ $fontColor }) => `color: ${$fontColor}`}
-  ${({ $backgroundColor }) => `background: ${$backgroundColor}`}
+  ${({ $backgroundColor }) => `background:  rgb(from ${$backgroundColor} r g b / 0.1);`}
 
   &:focus-visible {
     outline: none;

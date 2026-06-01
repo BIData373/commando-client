@@ -99,26 +99,6 @@ export function TasksFiltersProvider({
 		setActiveQuickFilters(new Set())
 	}
 
-	// function setTasks(updater: Updater<TTask[] | undefined, TTask[] | undefined>) {
-	//   queryClient.setQueryData(queryKey, updater)
-	// }
-
-	// function updateTaskStatus(taskId: number, assigneeId: number, status: DirectiveStatus) {
-	//   if (!queryKey) return;
-	//   queryClient.setQueryData(queryKey, (prev: TTask[] | undefined) =>
-	//     prev?.map((task) => {
-	//       if (task.id !== taskId) return task;
-	//       const t = task as TaskWithAssignees;
-	//       return {
-	//         ...task,
-	//         assignees: t.assignees?.map((e) =>
-	//           e.assignee.id === assigneeId ? { ...e, status } : e,
-	//         ),
-	//       } as TTask;
-	//     }),
-	//   );
-	// }
-
 	// function removeTasks(taskIds: number[]) {
 	//   if (!queryKey) return;
 	//   queryClient.setQueryData(queryKey, (prev: TTask[] | undefined) =>
