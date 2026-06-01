@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 import { isWithinInterval, setYear, subMonths } from "date-fns";
 import { useMemo, useState } from "react";
 import type { DateRange } from "react-day-picker";
-import { useListTasks } from "src/api/task/task";
+import { getListTasksQueryKey, useListTasks } from "src/api/task/task";
 import { toTaskRows } from "src/functions/tasks-table";
 import type { TaskRow } from "src/providers/TasksFiltersProvider";
 import { useWorkspace } from "src/providers/WorkspaceProvider";
@@ -21,6 +21,7 @@ export function DashboardContent() {
 	const [dataType, setDataType] = useState(DATE_TYPE.CREATION_DATE);
 	const [range, setRange] = useState<DateRange | undefined>();
 
+	const tasksQueryKey = getListTasksQueryKey({ workspaceId: id });
 	const { data: rawTasks = [] } = useListTasks({ workspaceId: id });
 	const tasks = useMemo(() => toTaskRows(rawTasks), [rawTasks]);
 
@@ -78,9 +79,9 @@ export function DashboardContent() {
       /> */}
 
 			<GridLayout>
-				<FocusedInstructions urlName={urlName} tasks={filteredTasks} />
+				<FocusedInstructions queryKey={tasksQueryKey} urlName={urlName} tasks={filteredTasks} />
 				<StatusCard tasks={filteredTasks} />
-				<RecentlyCompleted urlName={urlName} tasks={filteredTasks} />
+				<RecentlyCompleted queryKey={tasksQueryKey} urlName={urlName} tasks={filteredTasks} />
 				<SystemDistribution
 					onSetAssignees={handleSetAssignees}
 					tasks={filteredTasks}

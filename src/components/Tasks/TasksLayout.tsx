@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { WorkspaceStatusDtoType } from "src/api/model";
-import { useListTasks } from "src/api/task/task";
+import { getListTasksQueryKey, useListTasks } from "src/api/task/task";
 import { useWorkspace } from "src/providers/WorkspaceProvider";
 import type { QuickFilter } from "src/utils/filter-utils";
 import { exportTasksToExcel } from "../../functions/export-excel";
@@ -42,6 +42,7 @@ function TasksLayout({
   const { workspace: { id: workspaceId } } = useWorkspace()
   const navigate = useNavigate();
 
+  const tasksQueryKey = getListTasksQueryKey({ workspaceId });
   const { data: tasks = [], isLoading } = useListTasks({ workspaceId })
 
   const {
@@ -180,6 +181,7 @@ function TasksLayout({
           <NoResultsFound variant="no-search-results" />
         ) : view === "TABLE" ? (
           <TaskTable
+            queryKey={tasksQueryKey}
             tasks={filteredTasks}
             onEdit={handleEdit}
             initialStatusFilter={statusFilter}

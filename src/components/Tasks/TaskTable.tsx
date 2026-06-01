@@ -5,8 +5,8 @@ import type {
   RowSelectionState,
   SortingState,
 } from "@tanstack/react-table";
+import type { QueryKey } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status";
 import type { WorkspaceStatusDtoType } from "src/api/model";
 import type { TaskRow } from "src/providers/TasksFiltersProvider";
 import { buildFilterOptionsMap } from "../../functions/filter-utils";
@@ -16,6 +16,7 @@ import { DataTable } from "../ui/data-table";
 import { BulkActionsBar } from "./BulkActionsBar";
 
 interface TaskTableProps<T extends TaskRow> {
+  queryKey: QueryKey;
   tasks: TaskRow[];
   onEdit?: (taskId: number) => void;
   onDoubleClick?: (taskId: number) => void;
@@ -25,6 +26,7 @@ interface TaskTableProps<T extends TaskRow> {
 }
 
 function TaskTable<T extends TaskRow>({
+  queryKey,
   tasks,
   onEdit = () => { },
   onDoubleClick,
@@ -33,11 +35,6 @@ function TaskTable<T extends TaskRow>({
   initialStatusFilter,
 }: TaskTableProps<T>) {
   const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters();
-  const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus();
-
-  function handleUpdateStatus(taskId: number, assigneeId: number, statusId: number) {
-    upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } });
-  }
   const [selectMode, setSelectMode] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
@@ -82,10 +79,10 @@ function TaskTable<T extends TaskRow>({
   ) as TaskColumn[];
 
   const { columns: baseColumns } = useTaskColumns({
+    queryKey,
     visibleColumns,
     searchQuery,
     filterOptionsMap,
-    onUpdateStatus: handleUpdateStatus,
     selectMode: {
       enabled: selectMode,
       tasks,

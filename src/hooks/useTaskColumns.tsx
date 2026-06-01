@@ -1,8 +1,10 @@
 import styled from "@emotion/styled";
 import type { ColumnDef, FilterFn } from "@tanstack/react-table";
+import { useQueryClient, type QueryKey } from "@tanstack/react-query";
 import { differenceInDays, startOfToday } from "date-fns";
 import { AlertTriangle, MoreVertical } from "lucide-react";
 import { BsPaperclip as Paperclip } from "react-icons/bs";
+import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status";
 import type { TaskDto } from "src/api/model";
 import type { TaskRow } from "src/providers/TasksFiltersProvider";
 import DeadlineTag, {
@@ -79,10 +81,10 @@ interface ActionsConfig {
 }
 
 interface UseTaskColumnsOptions {
+  queryKey: QueryKey;
   visibleColumns: TaskColumn[];
   searchQuery: string;
   filterOptionsMap: Record<string, FilterOption[]>;
-  onUpdateStatus: (taskId: number, assigneeId: number, statusId: number) => void;
   selectMode?: SelectModeConfig;
   actions?: ActionsConfig;
 }
@@ -93,13 +95,34 @@ interface UseTaskColumnsReturn {
 }
 
 function useTaskColumns({
+  queryKey,
   visibleColumns,
   searchQuery,
   filterOptionsMap,
-  onUpdateStatus,
   selectMode,
   actions,
 }: UseTaskColumnsOptions): UseTaskColumnsReturn {
+  const queryClient = useQueryClient();
+  const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
+    mutation: {
+      onSuccess: ({ taskId, assigneeId, status }) => {
+        queryClient.setQueryData<TaskDto[]>(queryKey, (tasks) =>
+          tasks?.map((t) =>
+            t.id !== taskId ? t : {
+              ...t,
+              assigneeStatuses: t.assigneeStatuses.map((as) =>
+                as.assignee.id !== assigneeId ? as : { ...as, status }
+              ),
+            }
+          )
+        );
+      },
+    },
+  });
+
+  function onUpdateStatus(taskId: number, assigneeId: number, statusId: number) {
+    upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } });
+  }
 
   const selectColumn: ColumnDef<TaskRow> | null = selectMode?.enabled
     ? {

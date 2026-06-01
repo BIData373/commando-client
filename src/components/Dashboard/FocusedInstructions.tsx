@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import type { QueryKey } from "@tanstack/react-query";
 import {
 	flexRender,
 	getCoreRowModel,
@@ -26,6 +27,7 @@ interface EmptyMessage {
 }
 
 interface IFocusedInstruction {
+	queryKey: QueryKey;
 	urlName: string;
 	tasks: TaskRow[];
 }
@@ -65,6 +67,7 @@ function getFilteredTasks(tab: FocusedTab, tasks: TaskRow[]): TaskRow[] {
 }
 
 export default function FocusedInstructions({
+	queryKey,
 	urlName,
 	tasks,
 }: IFocusedInstruction) {
@@ -92,10 +95,10 @@ export default function FocusedInstructions({
 	);
 
 	const { columns } = useTaskColumns({
+		queryKey,
 		visibleColumns: ["title", "status", "assigneeStatuses", "deadlineType"],
 		searchQuery: "",
 		filterOptionsMap: {},
-		onUpdateStatus: () => { },
 	});
 
 	const table = useReactTable({
