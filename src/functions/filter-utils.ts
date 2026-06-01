@@ -1,8 +1,7 @@
 import { differenceInDays, startOfToday } from "date-fns";
-import { QuickFilter } from "src/utils/filterUtils";
-import { DEADLINE_LABELS } from "../components/shared/DeadlineTag";
-import { STATUS_LABELS } from "../components/shared/StatusTag";
 import type { TaskDto } from "src/api/model";
+import { QuickFilter } from "src/utils/filter-utils";
+import { DEADLINE_LABELS } from "../components/shared/DeadlineTag";
 // ─── Shared Types ────────────────────────────────────────────────────────────
 
 export interface FilterOption {
@@ -54,7 +53,7 @@ function applyAllFilters(
 				hasQuickFilters &&
 				Array.from(activeQuickFilters).some((f) => matchesQuickFilter(t, f));
 			const matchesTopic =
-				hasTopicFilters && t.tags.some((tag) => activeTopicFilters.has(tag));
+				hasTopicFilters && t.tags.some((tag) => activeTopicFilters.has(tag.name));
 			return matchesQuick || matchesTopic;
 		});
 	}
@@ -72,25 +71,21 @@ function applyAllFilters(
 }
 
 function buildFilterOptionsMap(tasks: TaskDto[]): Record<string, FilterOption[]> {
-	const statusSet = new Set<string>();
-	const responsibleSet = new Set<string>();
+	const assigneeSet = new Set<string>();
 	const deadlineTypeSet = new Set<string>();
 	const discussionNameSet = new Set<string>();
 	const tagsSet = new Set<string>();
 
 	for (const t of tasks) {
-		statusSet.add(t.status);
 		deadlineTypeSet.add(t.deadlineType);
-		if (t.responsible) {
-			responsibleSet.add(t.responsible.name);
+		for (const { assignee } of t.assigneeStatuses) {
+			assigneeSet.add(assignee.name);
 		}
-
 		if (t.source.name) {
 			discussionNameSet.add(t.source.name);
 		}
-		
 		t.tags.forEach((tag) => {
-			tagsSet.add(tag);
+			tagsSet.add(tag.name);
 		});
 	}
 
@@ -101,12 +96,11 @@ function buildFilterOptionsMap(tasks: TaskDto[]): Record<string, FilterOption[]>
 		[...set].map((v) => ({ value: v, label: labelMap?.[v] ?? v }));
 
 	return {
-		status: toOptions(statusSet, STATUS_LABELS),
-		responsible: toOptions(responsibleSet),
+		assigneeStatuses: toOptions(assigneeSet),
 		deadlineType: toOptions(deadlineTypeSet, DEADLINE_LABELS),
 		discussionName: toOptions(discussionNameSet),
 		tags: toOptions(tagsSet),
 	};
 }
 
-export { matchesQuickFilter, applyAllFilters, buildFilterOptionsMap };
+export { applyAllFilters, buildFilterOptionsMap, matchesQuickFilter };

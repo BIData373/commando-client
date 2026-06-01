@@ -17,7 +17,11 @@ export const getCreateWorkspaceStatusResponseMock = (
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	statusType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	type: faker.helpers.arrayElement([
+		"NOT_STARTED",
+		"IN_PROGRESS",
+		"COMPLETED",
+	] as const),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	...overrideResponse,
 })
@@ -30,7 +34,11 @@ export const getListWorkspaceStatusesResponseMock = (): WorkspaceStatusDto[] =>
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		statusType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		type: faker.helpers.arrayElement([
+			"NOT_STARTED",
+			"IN_PROGRESS",
+			"COMPLETED",
+		] as const),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 	}))
 
@@ -40,7 +48,11 @@ export const getGetWorkspaceStatusResponseMock = (
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	statusType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	type: faker.helpers.arrayElement([
+		"NOT_STARTED",
+		"IN_PROGRESS",
+		"COMPLETED",
+	] as const),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	...overrideResponse,
 })
@@ -51,7 +63,11 @@ export const getUpdateWorkspaceStatusResponseMock = (
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	statusType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	type: faker.helpers.arrayElement([
+		"NOT_STARTED",
+		"IN_PROGRESS",
+		"COMPLETED",
+	] as const),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	...overrideResponse,
 })
@@ -62,7 +78,11 @@ export const getDeleteWorkspaceStatusResponseMock = (
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	statusType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	type: faker.helpers.arrayElement([
+		"NOT_STARTED",
+		"IN_PROGRESS",
+		"COMPLETED",
+	] as const),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	...overrideResponse,
 })

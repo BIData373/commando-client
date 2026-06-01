@@ -6,8 +6,9 @@
  * OpenAPI spec version: 1.0
  */
 import type { AssigneeDto } from "./assignee-dto"
+import type { WorkspaceStatusDto } from "./workspace-status-dto"
 
 export interface AssigneeStatusDto {
 	assignee: AssigneeDto
-	statusId: number
+	status: WorkspaceStatusDto
 }

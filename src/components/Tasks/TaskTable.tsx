@@ -1,161 +1,155 @@
 import styled from "@emotion/styled";
 import type {
-	ColumnDef,
-	ColumnFiltersState,
-	RowSelectionState,
-	SortingState,
+  ColumnDef,
+  ColumnFiltersState,
+  RowSelectionState,
+  SortingState,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
-import type { TaskDto } from "src/api/model";
-import type { DirectiveStatus } from "src/utils/statusUtils";
+import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status";
+import type { WorkspaceStatusDtoType } from "src/api/model";
+import type { TaskRow } from "src/providers/TasksFiltersProvider";
 import { buildFilterOptionsMap } from "../../functions/filter-utils";
 import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns";
-import { useTasks } from "../../providers/TasksProvider";
+import { useTasksFilters } from "../../providers/TasksFiltersProvider";
 import { DataTable } from "../ui/data-table";
 import { BulkActionsBar } from "./BulkActionsBar";
 
-interface TaskTableProps {
-	tasks: TaskDto[];
-	onEdit?: (taskId: number) => void;
-	onDoubleClick?: (taskId: number) => void;
-	extraColumns?: Record<string, ColumnDef<TaskDto>>;
-	showHeader?: boolean;
-	initialStatusFilter?: DirectiveStatus;
+interface TaskTableProps<T extends TaskRow> {
+  tasks: TaskRow[];
+  onEdit?: (taskId: number) => void;
+  onDoubleClick?: (taskId: number) => void;
+  extraColumns?: Record<string, ColumnDef<T>>;
+  showHeader?: boolean;
+  initialStatusFilter?: WorkspaceStatusDtoType;
 }
 
-function TaskTable({
-	tasks,
-	onEdit = () => { },
-	onDoubleClick,
-	extraColumns,
-	showHeader = true,
-	initialStatusFilter,
-}: TaskTableProps) {
-	const {
-		searchQuery,
-		columnOrder,
-		hiddenColumns,
-		updateTaskStatus,
-		removeTasks,
-		bulkUpdateStatus,
-	} = useTasks();
-	const [selectMode, setSelectMode] = useState(false);
-	const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-		initialStatusFilter ? [{ id: "status", value: [initialStatusFilter] }] : [],
-	);
-	const [sorting, setSorting] = useState<SortingState>([]);
+function TaskTable<T extends TaskRow>({
+  tasks,
+  onEdit = () => { },
+  onDoubleClick,
+  extraColumns,
+  showHeader = true,
+  initialStatusFilter,
+}: TaskTableProps<T>) {
+  const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters();
+  const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus();
 
-	const selectedTaskIds = Object.keys(rowSelection)
-		.filter((key) => rowSelection[key])
-		.map(Number);
+  function handleUpdateStatus(taskId: number, assigneeId: number, statusId: number) {
+    upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } });
+  }
+  const [selectMode, setSelectMode] = useState(false);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+    initialStatusFilter ? [{ id: "status", value: [initialStatusFilter] }] : [],
+  );
+  const [sorting, setSorting] = useState<SortingState>([]);
 
-	function handleEnterSelectMode(taskId?: number) {
-		setSelectMode(true);
-		setRowSelection(taskId !== undefined ? { [String(taskId)]: true } : {});
-	}
+  const selectedTaskIds = Object.keys(rowSelection)
+    .filter((key) => rowSelection[key])
+    .map(Number);
 
-	function handleExitSelectMode() {
-		setSelectMode(false);
-		setRowSelection({});
-	}
+  function handleEnterSelectMode(taskId?: number) {
+    setSelectMode(true);
+    setRowSelection(taskId !== undefined ? { [String(taskId)]: true } : {});
+  }
 
-	function handleSelectAll(checked: boolean) {
-		if (checked) {
-			const all: RowSelectionState = {};
-			tasks.forEach((t) => {
-				all[String(t.id)] = true;
-			});
-			setRowSelection(all);
-		} else {
-			setRowSelection({});
-		}
-	}
+  function handleExitSelectMode() {
+    setSelectMode(false);
+    setRowSelection({});
+  }
 
-	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks]);
+  function handleSelectAll(checked: boolean) {
+    if (checked) {
+      const all: RowSelectionState = {};
+      tasks.forEach((t) => {
+        all[String(t.id)] = true;
+      });
+      setRowSelection(all);
+    } else {
+      setRowSelection({});
+    }
+  }
 
-	const extraColumnIds = extraColumns
-		? new Set(Object.keys(extraColumns))
-		: new Set<string>();
+  const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks]);
 
-	const visibleColumns = columnOrder.filter(
-		(id) => !hiddenColumns.has(id) && !extraColumnIds.has(id),
-	) as TaskColumn[];
+  const extraColumnIds = extraColumns
+    ? new Set(Object.keys(extraColumns))
+    : new Set<string>();
 
-	const { columns: baseColumns } = useTaskColumns({
-		visibleColumns,
-		searchQuery,
-		filterOptionsMap,
-		onUpdateStatus: updateTaskStatus,
-		selectMode: {
-			enabled: selectMode,
-			tasks,
-			selectedTaskIds,
-			onSelectAll: handleSelectAll,
-		},
-		actions: {
-			onEdit,
-			onDoubleClick,
-			onArchive: removeTasks,
-			onDelete: removeTasks,
-			onEnterSelectMode: handleEnterSelectMode,
-		},
-	});
+  const visibleColumns = columnOrder.filter(
+    (id) => !hiddenColumns.has(id) && !extraColumnIds.has(id),
+  ) as TaskColumn[];
 
-	const columns = useMemo(() => {
-		const result = [...baseColumns];
+  const { columns: baseColumns } = useTaskColumns({
+    visibleColumns,
+    searchQuery,
+    filterOptionsMap,
+    onUpdateStatus: handleUpdateStatus,
+    selectMode: {
+      enabled: selectMode,
+      tasks,
+      selectedTaskIds,
+      onSelectAll: handleSelectAll,
+    },
+    // TODO - implement
+    actions: {
+      onEdit,
+      onDoubleClick,
+      onArchive: () => { },
+      onDelete: () => { },
+      onEnterSelectMode: handleEnterSelectMode,
+    },
+  });
 
-		if (extraColumns) {
-			for (const [id, colDef] of Object.entries(extraColumns)) {
-				const colId = id as TaskColumn;
-				const isVisible = !hiddenColumns.has(colId);
-				const orderIndex = columnOrder.indexOf(colId);
-				if (!isVisible || orderIndex === -1) continue;
+  const columns = useMemo(() => {
+    const result = [...baseColumns];
 
-				const visibleBeforeCount = columnOrder
-					.slice(0, orderIndex)
-					.filter((colId) => !hiddenColumns.has(colId)).length;
+    if (extraColumns) {
+      for (const [id, colDef] of Object.entries(extraColumns)) {
+        const colId = id as TaskColumn;
+        const isVisible = !hiddenColumns.has(colId);
+        const orderIndex = columnOrder.indexOf(colId);
+        if (!isVisible || orderIndex === -1) continue;
 
-				result.splice(visibleBeforeCount, 0, colDef as ColumnDef<TaskDto>);
-			}
-		}
+        const visibleBeforeCount = columnOrder
+          .slice(0, orderIndex)
+          .filter((colId) => !hiddenColumns.has(colId)).length;
 
-		return result;
-	}, [baseColumns, extraColumns, columnOrder, hiddenColumns]);
+        result.splice(visibleBeforeCount, 0, colDef as ColumnDef<TaskRow>);
+      }
+    }
 
-	return (
-		<>
-			<TableWrapper>
-				<DataTable
-					columns={columns}
-					data={tasks}
-					rowSelection={selectMode ? rowSelection : undefined}
-					onRowSelectionChange={selectMode ? setRowSelection : undefined}
-					columnFilters={columnFilters}
-					onColumnFiltersChange={setColumnFilters}
-					sorting={sorting}
-					onSortingChange={setSorting}
-					getRowId={(row) => String(row.id)}
-					showHeader={showHeader}
-				/>
-			</TableWrapper>
-			{selectMode && (
-				<BulkActionsBar
-					selectedCount={selectedTaskIds.length}
-					onChangeStatus={(status) => bulkUpdateStatus(selectedTaskIds, status)}
-					onArchive={() => {
-						removeTasks(selectedTaskIds);
-						handleExitSelectMode();
-					}}
-					onDelete={() => {
-						removeTasks(selectedTaskIds);
-						handleExitSelectMode();
-					}}
-					onExitSelect={handleExitSelectMode}
-				/>
-			)}
-		</>
-	);
+    return result;
+  }, [baseColumns, extraColumns, columnOrder, hiddenColumns]);
+
+  return (
+    <>
+      <TableWrapper>
+        <DataTable
+          columns={columns}
+          data={tasks}
+          rowSelection={selectMode ? rowSelection : undefined}
+          onRowSelectionChange={selectMode ? setRowSelection : undefined}
+          columnFilters={columnFilters}
+          onColumnFiltersChange={setColumnFilters}
+          sorting={sorting}
+          onSortingChange={setSorting}
+          getRowId={(row) => String(row.id)}
+          showHeader={showHeader}
+        />
+      </TableWrapper>
+      {selectMode && (
+        <BulkActionsBar
+          selectedCount={selectedTaskIds.length}
+          onChangeStatus={() => { }}
+          onArchive={handleExitSelectMode}
+          onDelete={handleExitSelectMode}
+          onExitSelect={handleExitSelectMode}
+        />
+      )}
+    </>
+  );
 }
 
 export { TaskTable };

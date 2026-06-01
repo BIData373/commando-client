@@ -5,7 +5,7 @@ import {
 	useNavigate,
 	useRouterState,
 } from "@tanstack/react-router";
-import { SETTINGS_TABS, SettingTabPath } from "src/utils/settingsUtils";
+import { SETTINGS_TABS, SettingTabPath } from "src/utils/settings-utils";
 import { Tabs, TabsList, TabsTrigger } from "../../../components/ui/tabs";
 
 export const Route = createFileRoute("/workspace/$urlName/settings")({

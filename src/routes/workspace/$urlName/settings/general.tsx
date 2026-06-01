@@ -2,8 +2,7 @@ import styled from "@emotion/styled";
 import { createFileRoute } from "@tanstack/react-router";
 import { SectionTitle } from "src/components/settings/SectionTitle";
 import { SettingsForm } from "src/components/settings/SettingsForm";
-import { WorkspaceProvider } from "src/providers/WorkspaceProvider";
-import { SETTINGS_TABS, SettingTabPath } from "src/utils/settingsUtils";
+import { SETTINGS_TABS, SettingTabPath } from "src/utils/settings-utils";
 
 export const Route = createFileRoute("/workspace/$urlName/settings/general")({
 	component: SettingsGeneral,
@@ -17,9 +16,7 @@ function SettingsGeneral() {
 			<SectionTitle title={activeTabLabel} />
 
 			<GeneralScrollArea>
-				<WorkspaceProvider>
 					<SettingsForm />
-				</WorkspaceProvider>
 			</GeneralScrollArea>
 		</GeneralRootPage >
 	);

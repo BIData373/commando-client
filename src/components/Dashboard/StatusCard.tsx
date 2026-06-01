@@ -1,11 +1,11 @@
 import styled from "@emotion/styled";
 import { useMemo } from "react";
 import { Cell, Pie, PieChart } from "recharts";
-import type { TaskDto } from "src/api/model";
-import { DirectiveStatus, statusColors } from "src/utils/statusUtils";
+import { WorkspaceStatusDtoType } from "src/api/model";
+import type { TaskRow } from "src/providers/TasksFiltersProvider";
 
 interface StatusCardProps {
-  tasks: TaskDto[];
+  tasks: TaskRow[];
 }
 
 const CHART_EMPTY_COLOR = "var(--chip-bg)";
@@ -13,11 +13,9 @@ const CHART_EMPTY_COLOR = "var(--chip-bg)";
 export default function StatusCard({ tasks }: StatusCardProps) {
   const statusCounts = useMemo(
     () => ({
-      done: tasks.filter((t) => t.status === DirectiveStatus.COMPLETED).length,
-      inProgress: tasks.filter((t) => t.status === DirectiveStatus.IN_PROGRESS)
-        .length,
-      pending: tasks.filter((t) => t.status === DirectiveStatus.NOT_STARTED)
-        .length,
+      done: tasks.filter((t) => t.status.type === WorkspaceStatusDtoType.COMPLETED).length,
+      inProgress: tasks.filter((t) => t.status.type === WorkspaceStatusDtoType.IN_PROGRESS).length,
+      pending: tasks.filter((t) => t.status.type === WorkspaceStatusDtoType.NOT_STARTED).length,
     }),
     [tasks],
   );
@@ -33,7 +31,9 @@ export default function StatusCard({ tasks }: StatusCardProps) {
   const cellFills =
     total === 0
       ? [CHART_EMPTY_COLOR]
-      : Object.values(statusColors).map((color) => color.bgColor);
+      // TODO - figure this out
+      // : Object.values(statusColors).map((color) => color.bgColor);
+      : []
 
   return (
     <Section>
@@ -63,19 +63,19 @@ export default function StatusCard({ tasks }: StatusCardProps) {
         <StatusRow>
           <StatusItem>
             <StatusCount>{pending}</StatusCount>
-            <StatusBadge $variant={DirectiveStatus.NOT_STARTED}>
+            <StatusBadge $variant={WorkspaceStatusDtoType.NOT_STARTED}>
               טרם בוצע
             </StatusBadge>
           </StatusItem>
           <StatusItem>
             <StatusCount>{inProgress}</StatusCount>
-            <StatusBadge $variant={DirectiveStatus.IN_PROGRESS}>
+            <StatusBadge $variant={WorkspaceStatusDtoType.IN_PROGRESS}>
               בעבודה
             </StatusBadge>
           </StatusItem>
           <StatusItem>
             <StatusCount>{done}</StatusCount>
-            <StatusBadge $variant={DirectiveStatus.COMPLETED}>בוצע</StatusBadge>
+            <StatusBadge $variant={WorkspaceStatusDtoType.COMPLETED}>בוצע</StatusBadge>
           </StatusItem>
         </StatusRow>
       </Card>
@@ -174,7 +174,7 @@ const StatusCount = styled.span`
   color: var(--foreground);
 `;
 
-const StatusBadge = styled.span<{ $variant: DirectiveStatus }>`
+const StatusBadge = styled.span<{ $variant: WorkspaceStatusDtoType }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -184,6 +184,7 @@ const StatusBadge = styled.span<{ $variant: DirectiveStatus }>`
   font-size: 20px;
   font-weight: 400;
   white-space: nowrap;
-  color: ${({ $variant }) => statusColors[$variant].fontColor};
-  background: ${({ $variant }) => statusColors[$variant].bgColor};
 `;
+/* TODO - need to figure out what to do here */
+/* color: ${({ $variant }) => statusColors[$variant].fontColor};
+background: ${({ $variant }) => statusColors[$variant].bgColor}; */

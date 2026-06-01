@@ -1,6 +1,6 @@
 import { startOfDay } from "date-fns";
 import { DeadlineType } from "../components/shared/DeadlineTag";
-import { type NewTaskInput, useTasks } from "../providers/TasksProvider";
+import { type NewTaskInput, useTasksFilters } from "../providers/TasksFiltersProvider";
 
 interface TaskInput {
 	title: string;
@@ -21,7 +21,7 @@ interface DiscussionFields {
 }
 
 export function useSaveTasks() {
-	const { addTasks } = useTasks();
+	const { addTasks } = useTasksFilters();
 
 	function saveTasks(inputs: TaskInput[], discussion: DiscussionFields) {
 		const today = startOfDay(new Date());

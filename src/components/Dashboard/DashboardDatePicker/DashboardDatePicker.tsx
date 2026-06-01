@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
-import type { DATE_TYPE } from "src/utils/dataTypeUtils";
+import type { DATE_TYPE } from "src/utils/data-type-utils";
 import { DashboardDatePickerFooter } from "./DashboardDatePickerFooter";
 import { DashboardDatePickerHeader } from "./DashboardDatePickerHeader";
 import { DashboardDatePickerTriggerButton } from "./DashboardDatePickerTriggerButton";

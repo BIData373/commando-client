@@ -3,10 +3,11 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 import { isWithinInterval, setYear, subMonths } from "date-fns";
 import { useMemo, useState } from "react";
 import type { DateRange } from "react-day-picker";
-import type { TaskDto } from "src/api/model";
 import { useListTasks } from "src/api/task/task";
-import { DATE_TYPE } from "src/utils/dataTypeUtils";
+import { toTaskRows } from "src/functions/tasks-table";
+import type { TaskRow } from "src/providers/TasksFiltersProvider";
 import { useWorkspace } from "src/providers/WorkspaceProvider";
+import { DATE_TYPE } from "src/utils/data-type-utils";
 import FocusedInstructions from "./FocusedInstructions";
 import RecentlyCompleted from "./RecentlyCompleted";
 import StatusCard from "./StatusCard";
@@ -20,12 +21,13 @@ export function DashboardContent() {
 	const [dataType, setDataType] = useState(DATE_TYPE.CREATION_DATE);
 	const [range, setRange] = useState<DateRange | undefined>();
 
-	const { data: tasks = [] } = useListTasks({ workspaceId: id });
+	const { data: rawTasks = [] } = useListTasks({ workspaceId: id });
+	const tasks = useMemo(() => toTaskRows(rawTasks), [rawTasks]);
 
 	const filteredTasks = useMemo(() => {
 		const refYear = range?.from?.getFullYear() ?? new Date().getFullYear();
 
-		function getTaskDate(task: TaskDto, year: number): Date | null {
+		function getTaskDate(task: TaskRow, year: number): Date | null {
 			switch (dataType) {
 				case DATE_TYPE.CREATION_DATE:
 					return new Date(task.createdAt);

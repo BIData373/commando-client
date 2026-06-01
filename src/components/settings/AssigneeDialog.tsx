@@ -7,7 +7,7 @@ import type { AssigneeDto, UserDto } from "src/api/model";
 import { type IMesibaIcon, useMesibaIconByName } from "src/hooks/useMesiba";
 import { useWorkspace } from "src/providers/WorkspaceProvider";
 import { queryClient } from "src/queryClient";
-import { concatName } from "src/utils/userUtils";
+import { concatName } from "src/utils/user-utils";
 import { CancelButton } from "../shared/CancelButton";
 import { PrimaryButton } from "../shared/PrimaryButton";
 import {

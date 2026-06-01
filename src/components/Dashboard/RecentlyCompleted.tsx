@@ -1,12 +1,12 @@
 import styled from "@emotion/styled";
 import {
-	flexRender,
-	getCoreRowModel,
-	useReactTable,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
 import { useMemo } from "react";
-import type { TaskDto } from "src/api/model";
-import { DirectiveStatus } from "src/utils/statusUtils";
+import { WorkspaceStatusDtoType } from "src/api/model";
+import type { TaskRow } from "src/providers/TasksFiltersProvider";
 import compleateInstruction from "../../assets/icons/completeInstruction.svg";
 import { useTaskColumns } from "../../hooks/useTaskColumns";
 import { EmptyCardState } from "./EmptyCardState";
@@ -14,7 +14,7 @@ import { ViewMoreInstructions } from "./ViewMoreInstructions";
 
 interface RecentlyCompletedProps {
 	urlName: string;
-	tasks: TaskDto[];
+	tasks: TaskRow[];
 }
 
 const coreRowModel = getCoreRowModel();
@@ -24,12 +24,12 @@ export default function RecentlyCompleted({
 	tasks,
 }: RecentlyCompletedProps) {
 	const completedTasks = useMemo(
-		() => tasks.filter((t) => t.status === DirectiveStatus.COMPLETED),
+		() => tasks.filter((t) => t.status.type === WorkspaceStatusDtoType.COMPLETED),
 		[tasks],
 	);
 
 	const { columns } = useTaskColumns({
-		visibleColumns: ["title", "status", "responsible"],
+		visibleColumns: ["title", "status", "assigneeStatuses"],
 		searchQuery: "",
 		filterOptionsMap: {},
 		onUpdateStatus: () => { },
@@ -79,7 +79,7 @@ export default function RecentlyCompleted({
 			</Card>
 			<ViewMoreInstructions
 				urlName={urlName}
-				statusFilter={DirectiveStatus.COMPLETED}
+				statusFilter={WorkspaceStatusDtoType.COMPLETED}
 			/>
 		</Section>
 	);
