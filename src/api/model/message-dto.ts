@@ -5,19 +5,17 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { MessageDtoDeletedAt } from "./message-dto-deleted-at"
-import type { MessageDtoDeletedBy } from "./message-dto-deleted-by"
 import type { UserDto } from "./user-dto"
 
 export interface MessageDto {
-	createdAt: string
+	createdAt: Date
 	createdBy: number
-	updatedAt: string
+	updatedAt: Date
 	updatedBy: number
 	/** @nullable */
-	deletedAt: MessageDtoDeletedAt
+	deletedAt: Date | null
 	/** @nullable */
-	deletedBy: MessageDtoDeletedBy
+	deletedBy: number | null
 	id: number
 	content: string
 	user: UserDto

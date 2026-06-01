@@ -44,6 +44,7 @@ function TasksLayout({
 
   const tasksQueryKey = getListTasksQueryKey({ workspaceId });
   const { data: tasks = [], isLoading } = useListTasks({ workspaceId })
+  console.log(tasks)
 
   const {
     activeQuickFilters,

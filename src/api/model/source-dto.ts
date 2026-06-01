@@ -5,22 +5,20 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { SourceDtoDeletedAt } from "./source-dto-deleted-at"
-import type { SourceDtoDeletedBy } from "./source-dto-deleted-by"
 import type { TagDto } from "./tag-dto"
 
 export interface SourceDto {
-	createdAt: string
+	createdAt: Date
 	createdBy: number
-	updatedAt: string
+	updatedAt: Date
 	updatedBy: number
 	/** @nullable */
-	deletedAt: SourceDtoDeletedAt
+	deletedAt: Date | null
 	/** @nullable */
-	deletedBy: SourceDtoDeletedBy
+	deletedBy: number | null
 	id: number
 	name: string
-	date: string
+	date: Date
 	workspaceId: number
 	/** @nullable */
 	attachmentKey: string | null

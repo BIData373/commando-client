@@ -6,7 +6,6 @@ import type { TaskWithWorkspaceDto, WorkspaceDto } from "src/api/model";
 import { useListPersonalTasks } from "src/api/task/task";
 import { applyAllFilters } from "../../functions/filter-utils";
 import { toTaskRows } from "../../functions/tasks-table";
-import type { TaskColumn } from "../../hooks/useTaskColumns";
 import { type TaskRow, useTasksFilters } from "../../providers/TasksFiltersProvider";
 import { useTitleBar } from "../../providers/TitleBarProvider";
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown";

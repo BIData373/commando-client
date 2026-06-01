@@ -17,9 +17,6 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 	const hasMultiple = assigneeIds.length > 1;
 	const isExpanded = meta.expandedRows.has(row.id);
 
-	// const { workspace: { id: workspaceId } } = useWorkspace()
-	// const { data: assignees = [] } = useListAssignees({ workspaceId })
-
 	function handleToggleAssignee(assigneeId: number) {
 		const isRemoving = assigneeIds.includes(assigneeId);
 		const nextIds = isRemoving

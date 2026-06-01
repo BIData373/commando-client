@@ -5,18 +5,16 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { WorkspaceDtoDeletedAt } from "./workspace-dto-deleted-at"
-import type { WorkspaceDtoDeletedBy } from "./workspace-dto-deleted-by"
 
 export interface WorkspaceDto {
-	createdAt: string
+	createdAt: Date
 	createdBy: number
-	updatedAt: string
+	updatedAt: Date
 	updatedBy: number
 	/** @nullable */
-	deletedAt: WorkspaceDtoDeletedAt
+	deletedAt: Date | null
 	/** @nullable */
-	deletedBy: WorkspaceDtoDeletedBy
+	deletedBy: number | null
 	id: number
 	title: string
 	urlName: string

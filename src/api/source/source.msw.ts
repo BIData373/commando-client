@@ -14,21 +14,27 @@ import type { SourceDto } from "../model"
 export const getCreateSourceResponseMock = (
 	overrideResponse: Partial<Extract<SourceDto, object>> = {},
 ): SourceDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	deletedAt: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		null,
 	]),
 	deletedBy: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	date: faker.date.past().toISOString().slice(0, 19) + "Z",
+	date: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	attachmentKey: faker.helpers.arrayElement([
 		faker.helpers.arrayElement([
@@ -41,9 +47,9 @@ export const getCreateSourceResponseMock = (
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		createdBy: faker.number.float({ fractionDigits: 2 }),
-		updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: faker.number.float({ fractionDigits: 2 }),
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -57,21 +63,27 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		createdBy: faker.number.float({ fractionDigits: 2 }),
-		updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: faker.number.float({ fractionDigits: 2 }),
 		deletedAt: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([null]),
+			faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
 			null,
 		]),
 		deletedBy: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([null]),
+			faker.helpers.arrayElement([
+				faker.number.float({ fractionDigits: 2 }),
+				null,
+			]),
 			null,
 		]),
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		date: faker.date.past().toISOString().slice(0, 19) + "Z",
+		date: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 		attachmentKey: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
@@ -84,9 +96,9 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
 		).map(() => ({
-			createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+			createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			createdBy: faker.number.float({ fractionDigits: 2 }),
-			updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: faker.number.float({ fractionDigits: 2 }),
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -97,21 +109,27 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 export const getGetSourceResponseMock = (
 	overrideResponse: Partial<Extract<SourceDto, object>> = {},
 ): SourceDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	deletedAt: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		null,
 	]),
 	deletedBy: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	date: faker.date.past().toISOString().slice(0, 19) + "Z",
+	date: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	attachmentKey: faker.helpers.arrayElement([
 		faker.helpers.arrayElement([
@@ -124,9 +142,9 @@ export const getGetSourceResponseMock = (
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		createdBy: faker.number.float({ fractionDigits: 2 }),
-		updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: faker.number.float({ fractionDigits: 2 }),
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -138,21 +156,27 @@ export const getGetSourceResponseMock = (
 export const getUpdateSourceResponseMock = (
 	overrideResponse: Partial<Extract<SourceDto, object>> = {},
 ): SourceDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	deletedAt: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		null,
 	]),
 	deletedBy: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	date: faker.date.past().toISOString().slice(0, 19) + "Z",
+	date: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	attachmentKey: faker.helpers.arrayElement([
 		faker.helpers.arrayElement([
@@ -165,9 +189,9 @@ export const getUpdateSourceResponseMock = (
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		createdBy: faker.number.float({ fractionDigits: 2 }),
-		updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: faker.number.float({ fractionDigits: 2 }),
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -179,21 +203,27 @@ export const getUpdateSourceResponseMock = (
 export const getDeleteSourceResponseMock = (
 	overrideResponse: Partial<Extract<SourceDto, object>> = {},
 ): SourceDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	deletedAt: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		null,
 	]),
 	deletedBy: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	date: faker.date.past().toISOString().slice(0, 19) + "Z",
+	date: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	attachmentKey: faker.helpers.arrayElement([
 		faker.helpers.arrayElement([
@@ -206,9 +236,9 @@ export const getDeleteSourceResponseMock = (
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		createdBy: faker.number.float({ fractionDigits: 2 }),
-		updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: faker.number.float({ fractionDigits: 2 }),
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),

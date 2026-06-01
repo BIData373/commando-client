@@ -8,27 +8,25 @@
 import type { AssigneeStatusDto } from "./assignee-status-dto"
 import type { SourceDto } from "./source-dto"
 import type { TagDto } from "./tag-dto"
-import type { TaskWithWorkspaceDtoDeletedAt } from "./task-with-workspace-dto-deleted-at"
-import type { TaskWithWorkspaceDtoDeletedBy } from "./task-with-workspace-dto-deleted-by"
 import type { WorkspaceDto } from "./workspace-dto"
 
 export interface TaskWithWorkspaceDto {
-	createdAt: string
+	createdAt: Date
 	createdBy: number
-	updatedAt: string
+	updatedAt: Date
 	updatedBy: number
 	/** @nullable */
-	deletedAt: TaskWithWorkspaceDtoDeletedAt
+	deletedAt: Date | null
 	/** @nullable */
-	deletedBy: TaskWithWorkspaceDtoDeletedBy
+	deletedBy: number | null
 	id: number
 	title: string
 	/** @nullable */
 	description: string | null
 	flagged: boolean
 	deadlineType: string
-	issuedAt: string
-	dueDate: string
+	issuedAt: Date
+	dueDate: Date
 	/** @nullable */
 	notes: string | null
 	workspaceId: number

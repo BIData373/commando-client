@@ -7,9 +7,9 @@
  */
 
 export interface TagDto {
-	createdAt: string
+	createdAt: Date
 	createdBy: number
-	updatedAt: string
+	updatedAt: Date
 	updatedBy: number
 	id: number
 	name: string

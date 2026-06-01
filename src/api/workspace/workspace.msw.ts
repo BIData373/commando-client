@@ -14,16 +14,22 @@ import type { WorkspaceDto } from "../model"
 export const getCreateWorkspaceResponseMock = (
 	overrideResponse: Partial<Extract<WorkspaceDto, object>> = {},
 ): WorkspaceDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	deletedAt: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		null,
 	]),
 	deletedBy: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -46,16 +52,22 @@ export const getListWorkspacesResponseMock = (): WorkspaceDto[] =>
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		createdBy: faker.number.float({ fractionDigits: 2 }),
-		updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: faker.number.float({ fractionDigits: 2 }),
 		deletedAt: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([null]),
+			faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
 			null,
 		]),
 		deletedBy: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([null]),
+			faker.helpers.arrayElement([
+				faker.number.float({ fractionDigits: 2 }),
+				null,
+			]),
 			null,
 		]),
 		id: faker.number.float({ fractionDigits: 2 }),
@@ -75,16 +87,22 @@ export const getListWorkspacesResponseMock = (): WorkspaceDto[] =>
 export const getGetWorkspaceResponseMock = (
 	overrideResponse: Partial<Extract<WorkspaceDto, object>> = {},
 ): WorkspaceDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	deletedAt: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		null,
 	]),
 	deletedBy: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -105,16 +123,22 @@ export const getGetWorkspaceResponseMock = (
 export const getUpdateWorkspaceResponseMock = (
 	overrideResponse: Partial<Extract<WorkspaceDto, object>> = {},
 ): WorkspaceDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	deletedAt: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		null,
 	]),
 	deletedBy: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -135,16 +159,22 @@ export const getUpdateWorkspaceResponseMock = (
 export const getDeleteWorkspaceResponseMock = (
 	overrideResponse: Partial<Extract<WorkspaceDto, object>> = {},
 ): WorkspaceDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	deletedAt: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		null,
 	]),
 	deletedBy: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
