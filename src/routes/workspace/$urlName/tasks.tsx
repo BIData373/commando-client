@@ -12,19 +12,19 @@ const queryArray = <T extends z.ZodTypeAny>(schema: T) =>
 		z.array(schema),
 	);
 
-const searchSchema = z.object({
+const TasksSearchSchema = z.object({
 	view: z.enum(["CARDS", "TABLE"]).default("TABLE"),
 	tabFilter: queryArray(z.nativeEnum(QuickFilter)).default([]),
 	statusFilter: queryArray(z.nativeEnum(DirectiveStatus)).default([]),
 	deadlineTypeFilter: queryArray(z.nativeEnum(DeadlineType)).default([]),
 });
 
-export type searchSchemaType = z.infer<typeof searchSchema>;
+export type TasksSearchSchemaType = z.infer<typeof TasksSearchSchema>;
 
 
 export const Route = createFileRoute("/workspace/$urlName/tasks")({
 	component: TasksPage,
-	validateSearch: searchSchema,
+	validateSearch: TasksSearchSchema,
 	staticData: {
 		header: {
 			title: "הנחיות",
