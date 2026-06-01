@@ -2,12 +2,14 @@ import styled from "@emotion/styled";
 import { Outlet, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
+import type { TasksSearchSchemaType } from "src/routes/workspace/$urlName/tasks";
 import type { QuickFilter } from "src/utils/filterUtils";
 import type { DirectiveStatus } from "src/utils/statusUtils";
 import { exportTasksToExcel } from "../../functions/export-excel";
 import { applyAllFilters } from "../../functions/filter-utils";
 import { useTasks } from "../../providers/TasksProvider";
 import { useTitleBar } from "../../providers/TitleBarProvider";
+import type { DeadlineType } from "../shared/DeadlineTag";
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown";
 import {
 	DropdownMenu,
@@ -26,8 +28,9 @@ export type View = "TABLE" | "CARDS";
 export interface TasksLayoutProps {
 	view: View;
 	urlName: string;
-	tabFilter?: QuickFilter;
-	statusFilter?: DirectiveStatus;
+	tabFilter: QuickFilter[];
+	statusFilter: DirectiveStatus[];
+	deadlineTypeFilter: DeadlineType[];
 }
 
 function TasksLayout({
@@ -35,80 +38,100 @@ function TasksLayout({
 	urlName,
 	tabFilter,
 	statusFilter,
+	deadlineTypeFilter,
 }: TasksLayoutProps) {
 	const navigate = useNavigate();
 	const {
 		tasks,
-		activeQuickFilters,
-		clearQuickFilters,
 		searchQuery,
 		columnOrder,
 		hiddenColumns,
 		filteredTasks: baseFilteredTasks,
 	} = useTasks();
+
+	const tabFilterSet = new Set<QuickFilter>(tabFilter);
+
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
 	);
 
+	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
+		navigate({
+			to: "/workspace/$urlName/tasks",
+			params: { urlName },
+			search: (prev) => ({
+				...prev,
+				...taskFilter,
+			}),
+		});
+	}
+
+	function navigateWithMode(mode: "single" | "discussion") {
+		navigate({
+			to: "/workspace/$urlName/tasks/new",
+			params: { urlName },
+			search: (prev) => ({ view, mode, ...prev }),
+		});
+	}
+
+	function handleEdit(taskId: number) {
+		navigate({
+			to: "/workspace/$urlName/tasks/$taskId",
+			params: { urlName, taskId: String(taskId) },
+			search: (prev) => ({ view, ...prev }),
+		});
+	}
+
+	function handleCreateTask() {
+		navigateWithMode("single");
+	}
+
+	function handleCreateTaskFromDiscussion() {
+		navigateWithMode("discussion");
+	}
+
+	function handleToggleTabFilter(filter: QuickFilter) {
+		const next = tabFilter.includes(filter)
+			? tabFilter.filter((f) => f !== filter)
+			: [...tabFilter, filter];
+		navigateToTasks({ tabFilter: next });
+	}
+
 	function clearAllFilters() {
-		clearQuickFilters();
 		setActiveTopicFilters(new Set());
+		navigateToTasks({
+			tabFilter: [],
+			statusFilter: [],
+			deadlineTypeFilter: [],
+		});
+	}
+
+	function handleColumnFiltersChange(
+		newStatusFilter: DirectiveStatus[],
+		newDeadlineTypeFilter: DeadlineType[],
+	) {
+		navigateToTasks({
+			statusFilter: newStatusFilter,
+			deadlineTypeFilter: newDeadlineTypeFilter,
+		});
 	}
 
 	const allTopics = [...new Set(tasks.flatMap((t) => t.tags))];
 
 	const filteredTasks = useMemo(
 		() =>
-			activeTopicFilters.size > 0
-				? applyAllFilters(
-						tasks,
-						activeQuickFilters,
-						activeTopicFilters,
-						searchQuery,
-					)
+			tabFilterSet.size > 0 || activeTopicFilters.size > 0
+				? applyAllFilters(tasks, tabFilterSet, activeTopicFilters, searchQuery)
 				: baseFilteredTasks,
-		[
-			tasks,
-			searchQuery,
-			activeQuickFilters,
-			activeTopicFilters,
-			baseFilteredTasks,
-		],
+		[tasks, searchQuery, tabFilterSet, activeTopicFilters, baseFilteredTasks],
 	);
-	function handleEdit(taskId: number) {
-		navigate({
-			to: "/workspace/$urlName/tasks/$taskId",
-			params: { urlName, taskId: String(taskId) },
-			search: { view },
-		});
-	}
 
 	function handleExport() {
 		exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns });
 	}
 
-	function handleCreateTaskFromDiscussion() {
-		navigate({
-			to: "/workspace/$urlName/tasks/new",
-			params: { urlName },
-			search: { view, mode: "discussion" },
-		});
-	}
-
-	function handleCreateTask() {
-		navigate({
-			to: "/workspace/$urlName/tasks/new",
-			params: { urlName },
-			search: { view, mode: "single" },
-		});
-	}
-
 	function handleViewChange(newView: View) {
-		navigate({
-			to: "/workspace/$urlName/tasks",
-			params: { urlName },
-			search: { view: newView },
-		});
+		navigateToTasks({ view: newView });
 	}
 
 	useTitleBar(
@@ -157,6 +180,8 @@ function TasksLayout({
 				<TaskFilters
 					onClearAllFilters={clearAllFilters}
 					onExport={handleExport}
+					tabFilter={tabFilter}
+					onToggleTabFilter={handleToggleTabFilter}
 					hasExtraActiveFilters={activeTopicFilters.size > 0}
 					extraFilters={
 						<MultiSelectFilterDropdown
@@ -177,7 +202,9 @@ function TasksLayout({
 					<TaskTable
 						tasks={filteredTasks}
 						onEdit={handleEdit}
-						initialStatusFilter={statusFilter}
+						statusFilter={statusFilter}
+						deadlineTypeFilter={deadlineTypeFilter}
+						onFiltersChange={handleColumnFiltersChange}
 						onDoubleClick={handleEdit}
 					/>
 				) : (

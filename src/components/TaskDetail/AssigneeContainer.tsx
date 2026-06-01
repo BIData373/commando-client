@@ -18,7 +18,6 @@ interface AsiggneeContainerProps {
 	assignee: RelatedDirective;
 	workspaceSettings?: IWorkspaceSettings;
 	onDirectiveStatusChange: (
-		assigneeId: number,
 		status: DirectiveStatus,
 	) => void;
 }
@@ -52,7 +51,7 @@ export const AssigneeContainer = ({
 							<StatusDropdownItem
 								key={s}
 								$selected={s === assignee.status}
-								onSelect={() => onDirectiveStatusChange(assignee.user.id, s)}
+								onSelect={() => onDirectiveStatusChange(s)}
 							>
 								<StatusTag status={s} />
 							</StatusDropdownItem>

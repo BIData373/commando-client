@@ -1,33 +1,28 @@
 import styled from "@emotion/styled";
-import { format } from "date-fns";
 import { CalendarDays, ChevronDown } from "lucide-react";
-import { Popover } from "radix-ui";
 import type { DateRange } from "react-day-picker";
+import { formatDateMonthFullYear, formatDay } from "src/utils/timeFormat";
 
 interface DashboardDatePickerTriggerButtonProps {
-	label: string;
-	range: DateRange | undefined;
+  label: string;
+  range?: DateRange;
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
-export function DashboardDatePickerTriggerButton({
-	label,
-	range,
-}: DashboardDatePickerTriggerButtonProps) {
-	return (
-		<Popover.Trigger asChild>
-			<TriggerButton>
-				<CalendarDays size={16} />
-				{label && range?.from && range.to ? (
-					<RangeLabel>
-						{label}: {format(range.from, "dd")}-{format(range.to, "dd/MM/y")}
-					</RangeLabel>
-				) : (
-					<RangeLabel>טווח תאריכים</RangeLabel>
-				)}
-				<ChevronDown size={16} />
-			</TriggerButton>
-		</Popover.Trigger>
-	);
+export const DashboardDatePickerTriggerButton = ({ label, range, ref, ...props }: DashboardDatePickerTriggerButtonProps) => {
+  return (
+    <TriggerButton ref={ref} {...props}>
+      <CalendarDays size={16} />
+      {label && range?.from && range.to ? (
+        <RangeLabel>
+          {label}: {formatDay(range.from)}-{formatDateMonthFullYear(range.to)}
+        </RangeLabel>
+      ) : (
+        <RangeLabel>טווח תאריכים</RangeLabel>
+      )}
+      <ChevronDown size={16} />
+    </TriggerButton>
+  );
 }
 
 const RangeLabel = styled.span`

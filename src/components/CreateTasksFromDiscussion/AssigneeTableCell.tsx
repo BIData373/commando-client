@@ -5,8 +5,8 @@ import type {
 	TaskRow,
 	TaskTableMeta,
 } from "../CreateTasksFromDiscussion/TasksColumns";
+import { AssigneeAvatar } from "../shared/AssigneeAvatar";
 import AssigneePicker from "../shared/AssigneePicker";
-import type { AvatarColor } from "../Tasks/ResponsibleCell";
 
 interface AssigneeTableCellProps {
 	row: TaskRow;
@@ -26,10 +26,10 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 
 		const nextDetails = isRemoving
 			? Object.fromEntries(
-					Object.entries(row.assigneeDetails).filter(
-						([id]) => Number(id) !== assigneeId,
-					),
-				)
+				Object.entries(row.assigneeDetails).filter(
+					([id]) => Number(id) !== assigneeId,
+				),
+			)
 			: row.assigneeDetails;
 
 		meta.updateRow(row.id, {
@@ -61,12 +61,11 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 							<CompactAvatarStack>
 								{assigneeIds.map((id) =>
 									MOCK_ASSIGNEES[id] ? (
-										<CompactStackedAvatar
+										<StackedAssigneeAvatar
 											key={id}
-											$color={MOCK_ASSIGNEES[id].colorToken}
-										>
-											{MOCK_ASSIGNEES[id].initials}
-										</CompactStackedAvatar>
+											assignee={MOCK_ASSIGNEES[id]}
+											size={22}
+										/>
 									) : null,
 								)}
 							</CompactAvatarStack>
@@ -75,11 +74,10 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 								<AssigneeTagRole>
 									{MOCK_ASSIGNEES[assigneeIds[0]]?.role}
 								</AssigneeTagRole>
-								<AssigneeTagAvatar
-									$color={MOCK_ASSIGNEES[assigneeIds[0]]?.colorToken}
-								>
-									{MOCK_ASSIGNEES[assigneeIds[0]]?.initials}
-								</AssigneeTagAvatar>
+								<AssigneeAvatar
+									assignee={MOCK_ASSIGNEES[assigneeIds[0]]}
+									size={18}
+								/>
 							</AssigneeTag>
 						) : (
 							<CompactLabel>בחר אחראי</CompactLabel>
@@ -151,23 +149,12 @@ const CompactAvatarStack = styled.div`
   flex-direction: row-reverse;
 `;
 
-const CompactStackedAvatar = styled.div<{ $color?: AvatarColor }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  font-size: 10px;
-  color: var(--text-color-2);
-  border: 1.5px solid var(--background);
-  margin-inline-start: -6px;
+const StackedAssigneeAvatar = styled(AssigneeAvatar)`
+  margin-inline-start: -14px;
 
   &:last-of-type {
     margin-inline-start: 0;
   }
-
-  ${({ $color }) => getAvatarBackground($color)}
 `;
 
 const AssigneeTag = styled.div`
@@ -183,34 +170,3 @@ const AssigneeTagRole = styled.span`
   color: var(--text-color-2);
   white-space: nowrap;
 `;
-
-const AssigneeTagAvatar = styled.div<{ $color?: AvatarColor }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  font-size: 9.5px;
-  color: var(--text-color-2);
-  flex-shrink: 0;
-
-  ${({ $color }) => getAvatarBackground($color)}
-`;
-//TO-DO
-function getAvatarBackground(color?: AvatarColor) {
-	switch (color) {
-		case "cyan":
-			return "background: #87e8de;";
-		case "blue":
-			return "background: #91caff;";
-		case "green":
-			return "background: #b7eb8f;";
-		case "orange":
-			return "background: #ffd591;";
-		case "gray":
-			return "background: var(--colors-base-neutral-3);";
-		default:
-			return "background: var(--colors-base-neutral-3);";
-	}
-}

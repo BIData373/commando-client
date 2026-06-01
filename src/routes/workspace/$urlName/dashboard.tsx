@@ -57,11 +57,11 @@ function Dashboard() {
 		let tasks =
 			from && to
 				? INITIAL_TASKS.filter((task) => {
-						const date = getTaskDate(task, refYear);
-						return (
-							date !== null && isWithinInterval(date, { start: from, end: to })
-						);
-					})
+					const date = getTaskDate(task, refYear);
+					return (
+						date !== null && isWithinInterval(date, { start: from, end: to })
+					);
+				})
 				: [...INITIAL_TASKS];
 
 		if (dataType === DATE_TYPE.UPDATING_DATE) {
@@ -83,11 +83,11 @@ function Dashboard() {
 	return (
 		<PageWrapper>
 			<ContentArea>
-				{/* <DashboardDatePicker
-          dateType={dataType}
-          onDateTypeChange={setDataType}
-          setRange={setRange}
-        /> */}
+				<DashboardDatePicker
+					dateType={dataType}
+					onDateTypeChange={setDataType}
+					setRange={setRange}
+				/>
 
 				<GridLayout>
 					<FocusedInstructions urlName={urlName} tasks={filteredTasks} />
