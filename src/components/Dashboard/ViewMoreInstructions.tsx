@@ -1,13 +1,13 @@
-import styled from "@emotion/styled";
-import { useNavigate } from "@tanstack/react-router";
-import { ChevronLeft } from "lucide-react";
-import type { WorkspaceStatusDtoType } from "src/api/model";
-import type { QuickFilter } from "src/utils/filter-utils";
+import styled from "@emotion/styled"
+import { useNavigate } from "@tanstack/react-router"
+import { ChevronLeft } from "lucide-react"
+import type { WorkspaceStatusDtoType } from "src/api/model"
+import type { QuickFilter } from "src/utils/filter-utils"
 
 interface IViewInstruction {
-	urlName: string;
-	tabFilter?: QuickFilter;
-	statusFilter?: WorkspaceStatusDtoType;
+	urlName: string
+	tabFilter?: QuickFilter
+	statusFilter?: WorkspaceStatusDtoType
 }
 
 export const ViewMoreInstructions = ({
@@ -15,14 +15,14 @@ export const ViewMoreInstructions = ({
 	tabFilter,
 	statusFilter,
 }: IViewInstruction) => {
-	const navigate = useNavigate();
+	const navigate = useNavigate()
 
 	function handleViewMore() {
 		navigate({
 			to: "/workspace/$urlName/tasks",
 			params: { urlName },
 			search: { view: "TABLE", tabFilter, statusFilter },
-		});
+		})
 	}
 
 	return (
@@ -30,8 +30,8 @@ export const ViewMoreInstructions = ({
 			צפה בעוד הנחיות
 			<ChevronLeft size={16} />
 		</ViewMoreButton>
-	);
-};
+	)
+}
 
 const ViewMoreButton = styled.button`
   display: inline-flex;
@@ -49,4 +49,4 @@ const ViewMoreButton = styled.button`
   &:hover {
     background: var(--chip-bg);
   }
-`;
+`

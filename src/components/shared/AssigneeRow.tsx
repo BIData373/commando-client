@@ -1,102 +1,102 @@
-import styled from "@emotion/styled";
-import { X } from "lucide-react";
-import { useRef } from "react";
-import type { AvatarColor } from "../Tasks/ResponsibleCell";
-import { useListAssignees } from "src/api/assignee/assignee";
-import { useWorkspace } from "src/providers/WorkspaceProvider";
+import styled from "@emotion/styled"
+import { X } from "lucide-react"
+import { useRef } from "react"
+import { useListAssignees } from "src/api/assignee/assignee"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import type { AvatarColor } from "../Tasks/ResponsibleCell"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface AssigneeRowListProps {
-  assigneeIds: number[];
-  directiveTitle: string;
-  assigneeDetails?: Record<number, string>;
-  showDetail?: boolean;
-  detailPlaceholder?: string;
-  onDetailChange: (id: number, value: string) => void;
-  onRemove: (id: number) => void;
+	assigneeIds: number[]
+	directiveTitle: string
+	assigneeDetails?: Record<number, string>
+	showDetail?: boolean
+	detailPlaceholder?: string
+	onDetailChange: (id: number, value: string) => void
+	onRemove: (id: number) => void
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function AssigneeRowList({
-  assigneeIds,
-  directiveTitle,
-  assigneeDetails,
-  showDetail = true,
-  detailPlaceholder = "פירוט לאחראי",
-  onDetailChange,
-  onRemove,
+	assigneeIds,
+	directiveTitle,
+	assigneeDetails,
+	showDetail = true,
+	detailPlaceholder = "פירוט לאחראי",
+	onDetailChange,
+	onRemove,
 }: AssigneeRowListProps) {
-  const detailRefs = useRef<Record<number, HTMLSpanElement | null>>({});
+	const detailRefs = useRef<Record<number, HTMLSpanElement | null>>({})
 
-  // const { workspace: { id: workspaceId } } = useWorkspace()
-  // const { data: assignees } = useListAssignees({ workspaceId })
+	// const { workspace: { id: workspaceId } } = useWorkspace()
+	// const { data: assignees } = useListAssignees({ workspaceId })
 
-  const assignees = assigneeIds.map((id) => MOCK_ASSIGNEES[id]).filter(Boolean);
+	const assignees = assigneeIds.map((id) => MOCK_ASSIGNEES[id]).filter(Boolean)
 
-  function handleDetailInput(id: number, e: React.FormEvent<HTMLSpanElement>) {
-    onDetailChange(id, e.currentTarget.textContent ?? "");
-  }
+	function handleDetailInput(id: number, e: React.FormEvent<HTMLSpanElement>) {
+		onDetailChange(id, e.currentTarget.textContent ?? "")
+	}
 
-  function handleDetailKeyDown(e: React.KeyboardEvent<HTMLSpanElement>) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-    }
-  }
+	function handleDetailKeyDown(e: React.KeyboardEvent<HTMLSpanElement>) {
+		if (e.key === "Enter") {
+			e.preventDefault()
+		}
+	}
 
-  function handleWrapperClick(id: number) {
-    detailRefs.current[id]?.focus();
-  }
+	function handleWrapperClick(id: number) {
+		detailRefs.current[id]?.focus()
+	}
 
-  function handleDetailRef(id: number, el: HTMLSpanElement | null) {
-    detailRefs.current[id] = el;
-    if (el && assigneeDetails?.[id] && !el.textContent) {
-      el.textContent = assigneeDetails[id];
-    }
-  }
+	function handleDetailRef(id: number, el: HTMLSpanElement | null) {
+		detailRefs.current[id] = el
+		if (el && assigneeDetails?.[id] && !el.textContent) {
+			el.textContent = assigneeDetails[id]
+		}
+	}
 
-  return (
-    <RowsList>
-      {assignees.map((assignee) => (
-        <RowItem key={assignee.id}>
-          <RemoveButton onClick={() => onRemove(assignee.id)}>
-            <X size={14} />
-          </RemoveButton>
+	return (
+		<RowsList>
+			{assignees.map((assignee) => (
+				<RowItem key={assignee.id}>
+					<RemoveButton onClick={() => onRemove(assignee.id)}>
+						<X size={14} />
+					</RemoveButton>
 
-          <RowContainer>
-            {showDetail && (
-              <TextareaWrapper onClick={() => handleWrapperClick(assignee.id)}>
-                {directiveTitle && (
-                  <DirectiveTitleText>
-                    {directiveTitle} -&nbsp;
-                  </DirectiveTitleText>
-                )}
-                <DetailEditable
-                  ref={(el) => handleDetailRef(assignee.id, el)}
-                  contentEditable
-                  suppressContentEditableWarning
-                  onInput={(e) => handleDetailInput(assignee.id, e)}
-                  onKeyDown={handleDetailKeyDown}
-                  data-placeholder={detailPlaceholder}
-                />
-              </TextareaWrapper>
-            )}
+					<RowContainer>
+						{showDetail && (
+							<TextareaWrapper onClick={() => handleWrapperClick(assignee.id)}>
+								{directiveTitle && (
+									<DirectiveTitleText>
+										{directiveTitle} -&nbsp;
+									</DirectiveTitleText>
+								)}
+								<DetailEditable
+									ref={(el) => handleDetailRef(assignee.id, el)}
+									contentEditable
+									suppressContentEditableWarning
+									onInput={(e) => handleDetailInput(assignee.id, e)}
+									onKeyDown={handleDetailKeyDown}
+									data-placeholder={detailPlaceholder}
+								/>
+							</TextareaWrapper>
+						)}
 
-            <InfoBlock>
-              <RoleText>{assignee.role}</RoleText>
-              <AvatarCircle $color={assignee.colorToken}>
-                {assignee.initials}
-              </AvatarCircle>
-            </InfoBlock>
-          </RowContainer>
-        </RowItem>
-      ))}
-    </RowsList>
-  );
+						<InfoBlock>
+							<RoleText>{assignee.role}</RoleText>
+							<AvatarCircle $color={assignee.colorToken}>
+								{assignee.initials}
+							</AvatarCircle>
+						</InfoBlock>
+					</RowContainer>
+				</RowItem>
+			))}
+		</RowsList>
+	)
 }
 
-export default AssigneeRowList;
+export default AssigneeRowList
 
 // ─── Styled Components ──────────────────────────────────────────────────────
 
@@ -105,14 +105,14 @@ const RowsList = styled.div`
   flex-direction: column;
   gap: 4px;
   width: 100%;
-`;
+`
 
 const RowItem = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
-`;
+`
 
 const RemoveButton = styled.button`
   display: flex;
@@ -132,7 +132,7 @@ const RemoveButton = styled.button`
     color: rgba(0, 0, 0, 0.88);
     background: rgba(0, 0, 0, 0.04);
   }
-`;
+`
 
 const RowContainer = styled.div`
   flex: 1;
@@ -145,7 +145,7 @@ const RowContainer = styled.div`
   background: #fafafa;
   border: 0.8px solid var(--colors-base-neutral-3);
   border-radius: 8px;
-`;
+`
 
 const TextareaWrapper = styled.div`
   direction: rtl;
@@ -165,7 +165,7 @@ const TextareaWrapper = styled.div`
     border-color: #4096ff;
     box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
   }
-`;
+`
 
 const DirectiveTitleText = styled.span`
   font-size: 14px;
@@ -174,7 +174,7 @@ const DirectiveTitleText = styled.span`
   color: rgba(0, 0, 0, 0.45);
   word-break: break-word;
   pointer-events: none;
-`;
+`
 
 const DetailEditable = styled.span`
   display: inline-block;
@@ -194,7 +194,7 @@ const DetailEditable = styled.span`
     content: attr(data-placeholder);
     color: rgba(0, 0, 0, 0.25);
   }
-`;
+`
 
 const InfoBlock = styled.div`
   display: flex;
@@ -203,7 +203,7 @@ const InfoBlock = styled.div`
   width: 161px;
   flex-shrink: 0;
   justify-content: flex-end;
-`;
+`
 
 const RoleText = styled.span`
   font-size: 14px;
@@ -212,7 +212,7 @@ const RoleText = styled.span`
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;
   text-align: center;
-`;
+`
 
 // FIX Use AssigneeAvatar
 const AvatarCircle = styled.div<{ $color: AvatarColor }>`
@@ -228,17 +228,17 @@ const AvatarCircle = styled.div<{ $color: AvatarColor }>`
   color: rgba(0, 0, 0, 0.88);
   flex-shrink: 0;
   ${({ $color }) => {
-    switch ($color) {
-      case "cyan":
-        return "background: #87e8de;";
-      case "blue":
-        return "background: #91caff;";
-      case "green":
-        return "background: #b7eb8f;";
-      case "orange":
-        return "background: #ffd591;";
-      case "gray":
-        return "background: var(--colors-base-neutral-3);";
-    }
-  }}
-`;
+		switch ($color) {
+			case "cyan":
+				return "background: #87e8de;"
+			case "blue":
+				return "background: #91caff;"
+			case "green":
+				return "background: #b7eb8f;"
+			case "orange":
+				return "background: #ffd591;"
+			case "gray":
+				return "background: var(--colors-base-neutral-3);"
+		}
+	}}
+`

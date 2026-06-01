@@ -1,37 +1,37 @@
-import styled from "@emotion/styled";
-import { User } from "lucide-react";
-import { useState } from "react";
-import type { AssigneeDto } from "src/api/model";
-import { AssigneeAvatar } from "../shared/AssigneeAvatar";
-import { Badge } from "../ui/badge";
+import styled from "@emotion/styled"
+import { User } from "lucide-react"
+import { useState } from "react"
+import type { AssigneeDto } from "src/api/model"
+import { AssigneeAvatar } from "../shared/AssigneeAvatar"
+import { Badge } from "../ui/badge"
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "../ui/card";
-import { Separator } from "../ui/separator";
-import { AssigneeDialog } from "./AssigneeDialog";
-import { DeleteAssigneePopconfirm } from "./DeleteAssigneePopconfirm";
+} from "../ui/card"
+import { Separator } from "../ui/separator"
+import { AssigneeDialog } from "./AssigneeDialog"
+import { DeleteAssigneePopconfirm } from "./DeleteAssigneePopconfirm"
 
-const MAX_VISIBLE_TAGS = 2;
+const MAX_VISIBLE_TAGS = 2
 
 interface IAssigneeCardProps {
-	assignee: AssigneeDto;
+	assignee: AssigneeDto
 }
 
 export function AssigneeCard({
 	assignee,
 	assignee: { users },
 }: IAssigneeCardProps) {
-	const visibleUsers = users.slice(0, MAX_VISIBLE_TAGS);
-	const remainingUsers = users.length - MAX_VISIBLE_TAGS;
-	
-	const [isUpdateCardOpen, setIsUpdateCardOpen] = useState(false);
+	const visibleUsers = users.slice(0, MAX_VISIBLE_TAGS)
+	const remainingUsers = users.length - MAX_VISIBLE_TAGS
+
+	const [isUpdateCardOpen, setIsUpdateCardOpen] = useState(false)
 
 	function onCardClick() {
-		setIsUpdateCardOpen(true);
+		setIsUpdateCardOpen(true)
 	}
 
 	return (
@@ -80,7 +80,7 @@ export function AssigneeCard({
 				</CardContent>
 			</StyledCard>
 		</>
-	);
+	)
 }
 
 const StyledCard = styled(Card)`
@@ -103,44 +103,44 @@ const StyledCard = styled(Card)`
         opacity: 1;
     }
   }
-`;
+`
 
 const StyledCardHeader = styled(CardHeader)`
     padding: 0 8px;
-`;
+`
 
 const StyledCardDescription = styled(CardDescription)`
   color: #BFBFBF;
   font-size: 14px;
   font-weight: 400;
-`;
+`
 
 const CardHeaderRow = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 8px;
-`;
+`
 
 const CardWrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
   gap: 12px;
-`;
+`
 
 const CardMeta = styled.div`
   display: flex;
   justify-content: space-between;
   flex: 1;
   gap: 4px;
-`;
+`
 
 const TagRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   padding-block-start: 6px;
-`;
+`
 
 const StyledBadge = styled(Badge)`
     border-radius: 9999px;
@@ -148,4 +148,4 @@ const StyledBadge = styled(Badge)`
     padding: 0 7px;
     background: rgba(0, 0, 0, 0.04);
     font-weight: 400;
-`;
+`

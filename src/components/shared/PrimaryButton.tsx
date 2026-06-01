@@ -1,13 +1,13 @@
-import styled from "@emotion/styled";
+import styled from "@emotion/styled"
 
 interface PrimaryButtonProps {
-	onClick?(): void;
-	title: string;
-	header?: React.ReactNode;
-	tail?: React.ReactNode;
-	height?: number;
-	width?: number;
-	disabled?: boolean;
+	onClick?(): void
+	title: string
+	header?: React.ReactNode
+	tail?: React.ReactNode
+	height?: number
+	width?: number
+	disabled?: boolean
 }
 
 export const PrimaryButton = ({
@@ -30,8 +30,8 @@ export const PrimaryButton = ({
 			{title}
 			{tail}
 		</Button>
-	);
-};
+	)
+}
 
 const Button = styled.button<{ $height?: number; $width?: number }>`
   direction: rtl;
@@ -75,4 +75,4 @@ const Button = styled.button<{ $height?: number; $width?: number }>`
   &:active {
     opacity: 0.85;
   }
-`;
+`

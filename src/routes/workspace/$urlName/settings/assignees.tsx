@@ -1,14 +1,14 @@
-import styled from "@emotion/styled";
-import { createFileRoute } from "@tanstack/react-router";
-import { AssigneesContent } from "src/components/settings/AssigneesContent";
-import { SectionTitle } from "src/components/settings/SectionTitle";
-import { SETTINGS_TABS, SettingTabPath } from "src/utils/settings-utils";
+import styled from "@emotion/styled"
+import { createFileRoute } from "@tanstack/react-router"
+import { AssigneesContent } from "src/components/settings/AssigneesContent"
+import { SectionTitle } from "src/components/settings/SectionTitle"
+import { SETTINGS_TABS, SettingTabPath } from "src/utils/settings-utils"
 
 export const Route = createFileRoute("/workspace/$urlName/settings/assignees")({
 	component: SettingsAssignees,
-});
+})
 
-const activeTab = SETTINGS_TABS[SettingTabPath.ASSIGNEES];
+const activeTab = SETTINGS_TABS[SettingTabPath.ASSIGNEES]
 
 function SettingsAssignees() {
 	return (
@@ -16,10 +16,10 @@ function SettingsAssignees() {
 			<SectionTitle title={`ניהול אחראים - ${activeTab}`} />
 
 			<CardScrollArea>
-					<AssigneesContent />
+				<AssigneesContent />
 			</CardScrollArea>
 		</AssigneesRoot>
-	);
+	)
 }
 
 const AssigneesRoot = styled.div`
@@ -29,7 +29,7 @@ const AssigneesRoot = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-`;
+`
 
 const CardScrollArea = styled.div`
   flex: 1;
@@ -37,4 +37,4 @@ const CardScrollArea = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   direction: ltr;
-`;
+`

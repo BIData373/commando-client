@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-import type { TaskColumn } from "src/hooks/useTaskColumns";
-import PersonalTasksLayout from "../components/Personal/PersonalTasksLayout";
-import type { View } from "../components/Tasks/TasksLayout";
-import { TasksFiltersProvider } from "../providers/TasksFiltersProvider";
+import { createFileRoute } from "@tanstack/react-router"
+import type { TaskColumn } from "src/hooks/useTaskColumns"
+import PersonalTasksLayout from "../components/Personal/PersonalTasksLayout"
+import type { View } from "../components/Tasks/TasksLayout"
+import { TasksFiltersProvider } from "../providers/TasksFiltersProvider"
 
 export const Route = createFileRoute("/personal")({
 	component: PersonalPage,
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/personal")({
 			user: true,
 		},
 	},
-});
+})
 
 const PERSONAL_DEFAULT_COLUMN_ORDER: TaskColumn[] = [
 	"title",
@@ -29,17 +29,16 @@ const PERSONAL_DEFAULT_COLUMN_ORDER: TaskColumn[] = [
 	"workspace",
 	"createdAt",
 	"updatedAt",
-] as TaskColumn[];
+] as TaskColumn[]
 
 const PERSONAL_DEFAULT_HIDDEN = new Set<TaskColumn>([
 	"tags",
 	"notes",
 	"updatedAt",
-] as TaskColumn[]);
-
+] as TaskColumn[])
 
 function PersonalPage() {
-	const { view } = Route.useSearch();
+	const { view } = Route.useSearch()
 
 	return (
 		<TasksFiltersProvider
@@ -48,5 +47,5 @@ function PersonalPage() {
 		>
 			<PersonalTasksLayout view={view} urlName="" />
 		</TasksFiltersProvider>
-	);
+	)
 }

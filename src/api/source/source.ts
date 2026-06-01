@@ -37,10 +37,12 @@ export const createSource = (
 	signal?: AbortSignal,
 ) => {
 	const formData = new FormData()
-	formData.append(`workspaceId`, createSourceDto.workspaceId.toString())
-	formData.append(`name`, createSourceDto.name)
-	formData.append(`date`, createSourceDto.date)
-	createSourceDto.tags.forEach((value) => formData.append(`tags`, value))
+	formData.append("workspaceId", createSourceDto.workspaceId.toString())
+	formData.append("name", createSourceDto.name)
+	formData.append("date", createSourceDto.date.toISOString())
+	createSourceDto.tags.forEach((value) => {
+		formData.append("tags", value)
+	})
 	if (createSourceDto.attachment !== undefined) {
 		formData.append(`attachment`, createSourceDto.attachment)
 	}
@@ -380,19 +382,21 @@ export const updateSource = (
 ) => {
 	const formData = new FormData()
 	if (updateSourceDto.workspaceId !== undefined) {
-		formData.append(`workspaceId`, updateSourceDto.workspaceId.toString())
+		formData.append("workspaceId", updateSourceDto.workspaceId.toString())
 	}
 	if (updateSourceDto.name !== undefined) {
-		formData.append(`name`, updateSourceDto.name)
+		formData.append("name", updateSourceDto.name)
 	}
 	if (updateSourceDto.date !== undefined) {
-		formData.append(`date`, updateSourceDto.date)
+		formData.append("date", updateSourceDto.date.toISOString())
 	}
 	if (updateSourceDto.tags !== undefined) {
-		updateSourceDto.tags.forEach((value) => formData.append(`tags`, value))
+		updateSourceDto.tags.forEach((value) => {
+			formData.append("tags", value)
+		})
 	}
 	if (updateSourceDto.attachment !== undefined) {
-		formData.append(`attachment`, updateSourceDto.attachment)
+		formData.append("attachment", updateSourceDto.attachment)
 	}
 
 	return sendRequest<SourceDto>({

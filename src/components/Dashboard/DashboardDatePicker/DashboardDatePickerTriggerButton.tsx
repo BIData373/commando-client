@@ -1,12 +1,12 @@
-import styled from "@emotion/styled";
-import { format } from "date-fns";
-import { CalendarDays, ChevronDown } from "lucide-react";
-import { Popover } from "radix-ui";
-import type { DateRange } from "react-day-picker";
+import styled from "@emotion/styled"
+import { format } from "date-fns"
+import { CalendarDays, ChevronDown } from "lucide-react"
+import { Popover } from "radix-ui"
+import type { DateRange } from "react-day-picker"
 
 interface DashboardDatePickerTriggerButtonProps {
-	label: string;
-	range: DateRange | undefined;
+	label: string
+	range: DateRange | undefined
 }
 
 export function DashboardDatePickerTriggerButton({
@@ -27,12 +27,12 @@ export function DashboardDatePickerTriggerButton({
 				<ChevronDown size={16} />
 			</TriggerButton>
 		</Popover.Trigger>
-	);
+	)
 }
 
 const RangeLabel = styled.span`
     font-size: 16px;
-`;
+`
 
 const TriggerButton = styled.button`
   display: flex;
@@ -61,4 +61,4 @@ const TriggerButton = styled.button`
   &:hover {
     opacity: 0.8;
   }
-`;
+`

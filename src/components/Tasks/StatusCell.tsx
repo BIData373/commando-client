@@ -1,58 +1,63 @@
-import styled from "@emotion/styled";
-import type { WorkspaceStatusDto } from "src/api/model";
-import { useWorkspace } from "src/providers/WorkspaceProvider";
-import { StatusTag } from "../shared/StatusTag";
+import styled from "@emotion/styled"
+import type { WorkspaceStatusDto } from "src/api/model"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { StatusTag } from "../shared/StatusTag"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu"
 
 interface StatusCellProps {
-  status: WorkspaceStatusDto;
-  taskId: number;
-  assigneeId: number;
-  onUpdate: (taskId: number, assigneeId: number, statusId: number) => void;
+	status: WorkspaceStatusDto
+	taskId: number
+	assigneeId: number
+	onUpdate: (taskId: number, assigneeId: number, statusId: number) => void
 }
 
 // TODO - validate that this doesn't break tasks from other spaces
-export function StatusCell({ status, taskId, assigneeId, onUpdate }: StatusCellProps) {
-  const { statuses } = useWorkspace()
+export function StatusCell({
+	status,
+	taskId,
+	assigneeId,
+	onUpdate,
+}: StatusCellProps) {
+	const { statuses } = useWorkspace()
 
-  function handleSelectStatus(newStatusId: number) {
-    onUpdate(taskId, assigneeId, newStatusId);
-  }
+	function handleSelectStatus(newStatusId: number) {
+		onUpdate(taskId, assigneeId, newStatusId)
+	}
 
-  return (
-    <CellCenter>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <TriggerWrapper tabIndex={0}>
-            <StatusTag status={status} interactive />
-          </TriggerWrapper>
-        </DropdownMenuTrigger>
-        <StatusDropdownContent align="center" sideOffset={6}>
-          {Object.values(statuses).map((s) => (
-            <StatusDropdownItem
-              key={s.id}
-              $selected={s.id === status.id}
-              onSelect={() => handleSelectStatus(s.id)}
-            >
-              <StatusTag status={s} />
-            </StatusDropdownItem>
-          ))}
-        </StatusDropdownContent>
-      </DropdownMenu>
-    </CellCenter>
-  );
+	return (
+		<CellCenter>
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
+					<TriggerWrapper tabIndex={0}>
+						<StatusTag status={status} interactive />
+					</TriggerWrapper>
+				</DropdownMenuTrigger>
+				<StatusDropdownContent align="center" sideOffset={6}>
+					{Object.values(statuses).map((s) => (
+						<StatusDropdownItem
+							key={s.id}
+							$selected={s.id === status.id}
+							onSelect={() => handleSelectStatus(s.id)}
+						>
+							<StatusTag status={s} />
+						</StatusDropdownItem>
+					))}
+				</StatusDropdownContent>
+			</DropdownMenu>
+		</CellCenter>
+	)
 }
 
 const CellCenter = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-`;
+`
 
 const TriggerWrapper = styled.span`
   cursor: pointer;
@@ -60,7 +65,7 @@ const TriggerWrapper = styled.span`
   &:focus-visible {
     outline: none;
   }
-`;
+`
 
 const StatusDropdownContent = styled(DropdownMenuContent)`
   width: 100px;
@@ -74,9 +79,9 @@ const StatusDropdownContent = styled(DropdownMenuContent)`
   box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.08),
     0px 3px 6px rgba(0, 0, 0, 0.12),
     0px 9px 28px rgba(0, 0, 0, 0.05);
-`;
+`
 
-const StatusDropdownItem = styled(DropdownMenuItem) <{ $selected: boolean }>`
+const StatusDropdownItem = styled(DropdownMenuItem)<{ $selected: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,4 +97,4 @@ const StatusDropdownItem = styled(DropdownMenuItem) <{ $selected: boolean }>`
     background: rgba(230, 244, 255, 1);
     color: inherit;
   }
-`;
+`

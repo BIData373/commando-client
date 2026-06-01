@@ -1,36 +1,36 @@
-import styled from "@emotion/styled";
-import type React from "react";
-import type { DateRange } from "react-day-picker";
-import { he as heDayPicker } from "react-day-picker/locale";
-import { Calendar } from "../ui/calendar";
-import CalendarNav from "./CalendarNav";
-import { WeekNumberCell } from "./WeekCellNumber";
+import styled from "@emotion/styled"
+import type React from "react"
+import type { DateRange } from "react-day-picker"
+import { he as heDayPicker } from "react-day-picker/locale"
+import { Calendar } from "../ui/calendar"
+import CalendarNav from "./CalendarNav"
+import { WeekNumberCell } from "./WeekCellNumber"
 
 export enum CalendarMode {
 	Range = "range",
 	Single = "single",
 }
 
-export type DatePickerValue = Date | DateRange;
+export type DatePickerValue = Date | DateRange
 
 interface DatePickerProps {
-	mode: CalendarMode;
-	selected?: DatePickerValue;
-	onSelect?: (val: DatePickerValue | undefined) => void;
+	mode: CalendarMode
+	selected?: DatePickerValue
+	onSelect?: (val: DatePickerValue | undefined) => void
 }
 
 function getDefaultMonth(props: DatePickerProps): Date | undefined {
 	if (props.mode === CalendarMode.Range) {
 		return props.selected && "from" in props.selected
 			? props.selected.from
-			: undefined;
+			: undefined
 	}
-	return props.selected instanceof Date ? props.selected : undefined;
+	return props.selected instanceof Date ? props.selected : undefined
 }
 
 function DatePicker(props: DatePickerProps) {
-	const defaultMonth = getDefaultMonth(props);
-	const { mode, selected, onSelect } = props;
+	const defaultMonth = getDefaultMonth(props)
+	const { mode, selected, onSelect } = props
 
 	return (
 		<StyledCalendar
@@ -43,10 +43,10 @@ function DatePicker(props: DatePickerProps) {
 			locale={heDayPicker}
 			components={{ WeekNumber: WeekNumberCell, Nav: CalendarNav }}
 		/>
-	);
+	)
 }
 
-export default DatePicker;
+export default DatePicker
 
 const StyledCalendar = styled(Calendar)`
   width: 100%;
@@ -145,4 +145,4 @@ const StyledCalendar = styled(Calendar)`
     color: rgba(0, 0, 0, 0.88) !important;
   }
 
-`;
+`
