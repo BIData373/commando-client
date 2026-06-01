@@ -2,10 +2,9 @@ import styled from "@emotion/styled";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { Calendar, ChevronUp, History, Paperclip, X } from "lucide-react";
 import { useRef, useState } from "react";
-import type { DirectiveStatus } from "src/utils/statusUtils";
 import {
   formatDateMonthYear,
-  formatDateToMinutesHours,
+  formatMinutesHours,
 } from "src/utils/timeFormat";
 import { EditorExtensions } from "src/utils/tiptapExtensions";
 import type { Task } from "../../data/Tasks";
@@ -146,7 +145,7 @@ function TaskDetailPanel({
                     <History size={16} />
                   </HistoryButton>
                   <MetaText>
-                    {formatDateToMinutesHours(createdAt)} -{" "}
+                    {formatMinutesHours(createdAt)} -{" "}
                     {formatDateMonthYear(createdAt)}
                   </MetaText>
                 </CreatedGroup>
