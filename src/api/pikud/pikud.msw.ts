@@ -14,16 +14,22 @@ import type { PikudDto } from "../model"
 export const getCreatePikudResponseMock = (
 	overrideResponse: Partial<Extract<PikudDto, object>> = {},
 ): PikudDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	deletedAt: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		null,
 	]),
 	deletedBy: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -43,16 +49,22 @@ export const getListPikudsResponseMock = (): PikudDto[] =>
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		createdBy: faker.number.float({ fractionDigits: 2 }),
-		updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: faker.number.float({ fractionDigits: 2 }),
 		deletedAt: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([null]),
+			faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
 			null,
 		]),
 		deletedBy: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([null]),
+			faker.helpers.arrayElement([
+				faker.number.float({ fractionDigits: 2 }),
+				null,
+			]),
 			null,
 		]),
 		id: faker.number.float({ fractionDigits: 2 }),
@@ -69,16 +81,22 @@ export const getListPikudsResponseMock = (): PikudDto[] =>
 export const getGetPikudResponseMock = (
 	overrideResponse: Partial<Extract<PikudDto, object>> = {},
 ): PikudDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	deletedAt: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		null,
 	]),
 	deletedBy: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -96,16 +114,22 @@ export const getGetPikudResponseMock = (
 export const getUpdatePikudResponseMock = (
 	overrideResponse: Partial<Extract<PikudDto, object>> = {},
 ): PikudDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	deletedAt: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		null,
 	]),
 	deletedBy: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -123,16 +147,22 @@ export const getUpdatePikudResponseMock = (
 export const getDeletePikudResponseMock = (
 	overrideResponse: Partial<Extract<PikudDto, object>> = {},
 ): PikudDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	deletedAt: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		null,
 	]),
 	deletedBy: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null]),
+		faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),

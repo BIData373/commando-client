@@ -5,19 +5,17 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { AssigneeDtoDeletedAt } from "./assignee-dto-deleted-at"
-import type { AssigneeDtoDeletedBy } from "./assignee-dto-deleted-by"
 import type { UserDto } from "./user-dto"
 
 export interface AssigneeDto {
-	createdAt: string
+	createdAt: Date
 	createdBy: number
-	updatedAt: string
+	updatedAt: Date
 	updatedBy: number
 	/** @nullable */
-	deletedAt: AssigneeDtoDeletedAt
+	deletedAt: Date | null
 	/** @nullable */
-	deletedBy: AssigneeDtoDeletedBy
+	deletedBy: number | null
 	id: number
 	name: string
 	color: string

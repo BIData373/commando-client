@@ -13,7 +13,7 @@ export interface TaskHistoryDto {
 	field: string
 	/** @nullable */
 	value: string | null
-	timestamp: string
+	timestamp: Date
 	taskId: number
 	workspaceId: number
 	userId: number

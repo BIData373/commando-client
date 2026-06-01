@@ -14,9 +14,9 @@ import type { TagDto } from "../model"
 export const getCreateTagResponseMock = (
 	overrideResponse: Partial<Extract<TagDto, object>> = {},
 ): TagDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -29,9 +29,9 @@ export const getListTagsResponseMock = (): TagDto[] =>
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		createdBy: faker.number.float({ fractionDigits: 2 }),
-		updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: faker.number.float({ fractionDigits: 2 }),
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -41,9 +41,9 @@ export const getListTagsResponseMock = (): TagDto[] =>
 export const getGetTagResponseMock = (
 	overrideResponse: Partial<Extract<TagDto, object>> = {},
 ): TagDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -54,9 +54,9 @@ export const getGetTagResponseMock = (
 export const getUpdateTagResponseMock = (
 	overrideResponse: Partial<Extract<TagDto, object>> = {},
 ): TagDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -67,9 +67,9 @@ export const getUpdateTagResponseMock = (
 export const getDeleteTagResponseMock = (
 	overrideResponse: Partial<Extract<TagDto, object>> = {},
 ): TagDto => ({
-	createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
-	updatedAt: faker.date.past().toISOString().slice(0, 19) + "Z",
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: faker.number.float({ fractionDigits: 2 }),
 	id: faker.number.float({ fractionDigits: 2 }),
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),

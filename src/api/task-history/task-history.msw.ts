@@ -31,7 +31,7 @@ export const getListTaskHistoryResponseMock = (): TaskHistoryDto[] =>
 			]),
 			null,
 		]),
-		timestamp: faker.date.past().toISOString().slice(0, 19) + "Z",
+		timestamp: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		taskId: faker.number.float({ fractionDigits: 2 }),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 		userId: faker.number.float({ fractionDigits: 2 }),

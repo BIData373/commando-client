@@ -26,6 +26,7 @@ export default defineConfig({
         type: 'typescript'
       },
       override: {
+        useDates: true,
         useDeprecatedOperations: false,
         useNamedParameters: true,
         preserveReadonlyRequestBodies: 'strip',
