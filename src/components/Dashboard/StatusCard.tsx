@@ -1,8 +1,10 @@
 import styled from "@emotion/styled";
+import { groupBy, mapValues } from "lodash";
 import { useMemo } from "react";
 import { Cell, Pie, PieChart } from "recharts";
 import { WorkspaceStatusDtoType } from "src/api/model";
 import type { TaskRow } from "src/providers/TasksFiltersProvider";
+import { useWorkspace } from "src/providers/WorkspaceProvider";
 
 interface StatusCardProps {
   tasks: TaskRow[];
@@ -11,29 +13,29 @@ interface StatusCardProps {
 const CHART_EMPTY_COLOR = "var(--chip-bg)";
 
 export default function StatusCard({ tasks }: StatusCardProps) {
+  const { statuses } = useWorkspace()
   const statusCounts = useMemo(
-    () => ({
-      done: tasks.filter((t) => t.status.type === WorkspaceStatusDtoType.COMPLETED).length,
-      inProgress: tasks.filter((t) => t.status.type === WorkspaceStatusDtoType.IN_PROGRESS).length,
-      pending: tasks.filter((t) => t.status.type === WorkspaceStatusDtoType.NOT_STARTED).length,
-    }),
-    [tasks],
+    () => mapValues(
+      groupBy(tasks, 'status.id'),
+      (tasks, id) => ({
+        count: tasks.length,
+        ...statuses[Number(id)]
+      }),
+    ),
+    [tasks]
   );
 
-  const { done, inProgress, pending } = statusCounts;
-  const total = done + inProgress + pending;
+  const total = tasks.length
 
   const chartData =
     total === 0
       ? [{ key: "all", value: 1 }]
-      : Object.entries(statusCounts).map(([key, value]) => ({ key, value }));
+      : Object.values(statusCounts).map(({ id, count }) => ({ key: id, value: count }));
 
   const cellFills =
     total === 0
       ? [CHART_EMPTY_COLOR]
-      // TODO - figure this out
-      // : Object.values(statusColors).map((color) => color.bgColor);
-      : []
+      : Object.values(statuses).map(({ color }) => color);
 
   return (
     <Section>
@@ -61,22 +63,14 @@ export default function StatusCard({ tasks }: StatusCardProps) {
           </ChartCenter>
         </ChartWrapper>
         <StatusRow>
-          <StatusItem>
-            <StatusCount>{pending}</StatusCount>
-            <StatusBadge $variant={WorkspaceStatusDtoType.NOT_STARTED}>
-              טרם בוצע
-            </StatusBadge>
-          </StatusItem>
-          <StatusItem>
-            <StatusCount>{inProgress}</StatusCount>
-            <StatusBadge $variant={WorkspaceStatusDtoType.IN_PROGRESS}>
-              בעבודה
-            </StatusBadge>
-          </StatusItem>
-          <StatusItem>
-            <StatusCount>{done}</StatusCount>
-            <StatusBadge $variant={WorkspaceStatusDtoType.COMPLETED}>בוצע</StatusBadge>
-          </StatusItem>
+          {Object.values(statusCounts).map(status => (
+            <StatusItem>
+              <StatusCount>{status.count}</StatusCount>
+              <StatusBadge $variant={status.type}>
+                {status.name}
+              </StatusBadge>
+            </StatusItem>
+          ))}
         </StatusRow>
       </Card>
     </Section>
