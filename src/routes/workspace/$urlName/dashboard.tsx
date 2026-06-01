@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import { createFileRoute } from "@tanstack/react-router";
 import { DashboardContent } from "src/components/Dashboard/DashboardContent";
 import { TitleSection } from "src/components/Dashboard/TileSection";
-import { WorkspaceProvider } from "src/providers/WorkspaceProvider";
 
 export const Route = createFileRoute("/workspace/$urlName/dashboard")({
 	component: Dashboard,
@@ -19,9 +18,7 @@ export const Route = createFileRoute("/workspace/$urlName/dashboard")({
 function Dashboard() {
 	return (
 		<PageWrapper>
-			<WorkspaceProvider>
 				<DashboardContent />
-			</WorkspaceProvider>
 		</PageWrapper>
 	);
 }

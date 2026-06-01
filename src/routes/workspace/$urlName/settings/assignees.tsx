@@ -2,8 +2,7 @@ import styled from "@emotion/styled";
 import { createFileRoute } from "@tanstack/react-router";
 import { AssigneesContent } from "src/components/settings/AssigneesContent";
 import { SectionTitle } from "src/components/settings/SectionTitle";
-import { WorkspaceProvider } from "src/providers/WorkspaceProvider";
-import { SETTINGS_TABS, SettingTabPath } from "src/utils/settingsUtils";
+import { SETTINGS_TABS, SettingTabPath } from "src/utils/settings-utils";
 
 export const Route = createFileRoute("/workspace/$urlName/settings/assignees")({
 	component: SettingsAssignees,
@@ -17,9 +16,7 @@ function SettingsAssignees() {
 			<SectionTitle title={`ניהול אחראים - ${activeTab}`} />
 
 			<CardScrollArea>
-				<WorkspaceProvider>
 					<AssigneesContent />
-				</WorkspaceProvider>
 			</CardScrollArea>
 		</AssigneesRoot>
 	);

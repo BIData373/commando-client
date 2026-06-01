@@ -144,7 +144,17 @@ export const getCreateTaskResponseMock = (
 				]),
 			})),
 		},
-		statusId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement([
+				"NOT_STARTED",
+				"IN_PROGRESS",
+				"COMPLETED",
+			] as const),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 	})),
 	workspace: {
 		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -312,7 +322,17 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 					]),
 				})),
 			},
-			statusId: faker.number.float({ fractionDigits: 2 }),
+			status: {
+				id: faker.number.float({ fractionDigits: 2 }),
+				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				type: faker.helpers.arrayElement([
+					"NOT_STARTED",
+					"IN_PROGRESS",
+					"COMPLETED",
+				] as const),
+				workspaceId: faker.number.float({ fractionDigits: 2 }),
+			},
 		})),
 	}))
 
@@ -453,7 +473,17 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 					]),
 				})),
 			},
-			statusId: faker.number.float({ fractionDigits: 2 }),
+			status: {
+				id: faker.number.float({ fractionDigits: 2 }),
+				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				type: faker.helpers.arrayElement([
+					"NOT_STARTED",
+					"IN_PROGRESS",
+					"COMPLETED",
+				] as const),
+				workspaceId: faker.number.float({ fractionDigits: 2 }),
+			},
 		})),
 		workspace: {
 			createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -616,7 +646,17 @@ export const getGetTaskResponseMock = (
 				]),
 			})),
 		},
-		statusId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement([
+				"NOT_STARTED",
+				"IN_PROGRESS",
+				"COMPLETED",
+			] as const),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 	})),
 	workspace: {
 		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -780,7 +820,17 @@ export const getUpdateTaskResponseMock = (
 				]),
 			})),
 		},
-		statusId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement([
+				"NOT_STARTED",
+				"IN_PROGRESS",
+				"COMPLETED",
+			] as const),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 	})),
 	workspace: {
 		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -944,7 +994,17 @@ export const getDeleteTaskResponseMock = (
 				]),
 			})),
 		},
-		statusId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement([
+				"NOT_STARTED",
+				"IN_PROGRESS",
+				"COMPLETED",
+			] as const),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 	})),
 	workspace: {
 		createdAt: faker.date.past().toISOString().slice(0, 19) + "Z",

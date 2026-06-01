@@ -1,13 +1,13 @@
 import styled from "@emotion/styled";
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
-import type { QuickFilter } from "src/utils/filterUtils";
-import type { DirectiveStatus } from "src/utils/statusUtils";
+import type { WorkspaceStatusDtoType } from "src/api/model";
+import type { QuickFilter } from "src/utils/filter-utils";
 
 interface IViewInstruction {
 	urlName: string;
 	tabFilter?: QuickFilter;
-	statusFilter?: DirectiveStatus;
+	statusFilter?: WorkspaceStatusDtoType;
 }
 
 export const ViewMoreInstructions = ({

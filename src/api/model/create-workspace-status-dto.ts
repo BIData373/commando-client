@@ -5,10 +5,11 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
+import type { CreateWorkspaceStatusDtoType } from "./create-workspace-status-dto-type"
 
 export interface CreateWorkspaceStatusDto {
 	name: string
 	color: string
-	statusType: string
+	type: CreateWorkspaceStatusDtoType
 	workspaceId: number
 }

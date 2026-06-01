@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { MESIBA_BASE_API_URL, USE_MOCK_API } from "../utils/envUtils";
+import { MESIBA_BASE_API_URL, USE_MOCK_API } from "../utils/env-utils";
 
 export interface IMesibaIcon {
 	id: number;

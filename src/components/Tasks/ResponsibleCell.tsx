@@ -1,8 +1,7 @@
 import styled from "@emotion/styled";
 import { X } from "lucide-react";
 import { Popover as PopoverPrimitive } from "radix-ui";
-import type { AssigneeDto } from "src/api/model";
-import type { DirectiveStatus } from "src/utils/statusUtils";
+import type { AssigneeDto, WorkspaceStatusDto } from "src/api/model";
 import { AssigneeAvatar } from "../shared/AssigneeAvatar";
 import { StatusTag } from "../shared/StatusTag";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -12,7 +11,7 @@ export type AvatarColor = "cyan" | "blue" | "green" | "orange" | "gray";
 
 export interface RelatedDirective {
   assignee: AssigneeDto;
-  status: DirectiveStatus;
+  status: WorkspaceStatusDto;
 }
 
 interface ResponsibleCellProps {
@@ -20,6 +19,7 @@ interface ResponsibleCellProps {
   relatedDirectives: RelatedDirective[];
 }
 
+// TODO - rename this and all the related types
 export function ResponsibleCell({
   responsible,
   relatedDirectives,
@@ -39,19 +39,19 @@ export function ResponsibleCell({
             <DetailedHeader>
               <SectionLabel>אחראי :</SectionLabel>
               <AssigneeAvatar assignee={responsible} />
-              <RoleText>{responsible.role}</RoleText>
+              <RoleText>{responsible.name}</RoleText>
             </DetailedHeader>
 
-            {relatedDirectives.length > 0 && (
+            {responsible.users.length > 0 && (
               <>
-                <SectionLabel>משתמשים מכותבים :</SectionLabel>
+                <SectionLabel>משתמשים :</SectionLabel>
                 <UserScrollArea>
                   <UserList>
-                    {relatedDirectives.map((d) => (
-                      <UserRow key={d.assignee.id}>
+                    {responsible.users.map((u) => (
+                      <UserRow key={u.id}>
                         <UserInfo>
-                          <UserName>{d.assignee.name}</UserName>
-                          <UserEmail>{d.assignee.upn}</UserEmail>
+                          <UserName>{u.info?.name}</UserName>
+                          <UserEmail>{u.upn}</UserEmail>
                         </UserInfo>
                       </UserRow>
                     ))}
@@ -75,7 +75,7 @@ export function ResponsibleCell({
               {relatedDirectives.map((d) => (
                 <CompactRow key={d.assignee.id}>
                   <StatusTag status={d.status} />
-                  <CompactRole>{d.assignee.role}</CompactRole>
+                  <CompactRole>{d.assignee.name}</CompactRole>
                   <AssigneeAvatar assignee={d.assignee} />
                 </CompactRow>
               ))}

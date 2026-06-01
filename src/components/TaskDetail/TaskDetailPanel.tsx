@@ -8,8 +8,8 @@ import { useListTaskHistory } from "src/api/task-history/task-history";
 import {
   formatDateToDateMonthYear,
   formatDateToMinutesHours,
-} from "src/utils/timeFormat";
-import { EditorExtensions } from "src/utils/tiptapExtensions";
+} from "src/utils/time-format";
+import { EditorExtensions } from "src/utils/tiptap-extensions";
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag";
 import FlagIcon from "../shared/FlagIcon";
 import { AssigneeSection } from "./AssigneeSection";

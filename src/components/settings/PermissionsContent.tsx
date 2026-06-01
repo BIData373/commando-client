@@ -14,7 +14,7 @@ import {
 } from "src/components/ui/tabs";
 import { useWorkspace } from "src/providers/WorkspaceProvider";
 import { queryClient } from "src/queryClient";
-import { concatName } from "src/utils/userUtils";
+import { concatName } from "src/utils/user-utils";
 
 enum PermissionsTab {
 	ALL = "all",

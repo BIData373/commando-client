@@ -25,8 +25,8 @@ const Tag = styled.span<{ $fontColor: string, $backgroundColor: string, $interac
   line-height: 20px;
   white-space: nowrap;
   cursor: ${({ $interactive }) => ($interactive ? "pointer" : "default")};
-  ${({ $fontColor }) => `color: ${$fontColor}`}
-  ${({ $backgroundColor }) => `background: ${$backgroundColor}`}
+  ${({ $fontColor }) => `color: ${$fontColor};`}
+  ${({ $backgroundColor }) => `background:  rgb(from ${$backgroundColor} r g b / 0.1);`}
 
   :focus-visible {
     outline: none;

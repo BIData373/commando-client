@@ -5,7 +5,7 @@ import { type TaskHistoryDto, TaskHistoryDtoAction } from "src/api/model";
 import {
   formatDateToDateMonthFullYear,
   formatDateToMinutesHours,
-} from "src/utils/timeFormat";
+} from "src/utils/time-format";
 
 interface HistoryGroup {
   userId: number;

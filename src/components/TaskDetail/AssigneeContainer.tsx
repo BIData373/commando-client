@@ -22,7 +22,7 @@ interface AsiggneeContainerProps {
 
 export const AssigneeContainer = ({
   taskId,
-  assigneeStatus,
+  assigneeStatus: {assignee, status},
   isAdmin,
   editable,
 }: AsiggneeContainerProps) => {
@@ -37,26 +37,22 @@ export const AssigneeContainer = ({
   )
 
   function handleUpdateAssigneeStatus(statusId: number) {
-    upsertAssigneeTaskStatus({ data: { taskId, assigneeId: assigneeStatus.assignee.id, statusId } })
+    upsertAssigneeTaskStatus({ data: { taskId, assigneeId: assignee.id, statusId } })
   }
 
-  const currentStatus = statuses.find(({ id }) => id === assigneeStatus.statusId)
-
   return (
-    <AssigneeRowContainer key={assigneeStatus.assignee.id} $white={editable && !isAdmin}>
+    <AssigneeRowContainer key={assignee.id} $white={editable && !isAdmin}>
       <AssigneeInfoBlock>
-        <AssigneeAvatar assignee={assigneeStatus.assignee} />
-
-        <AssigneeRoleText>{assigneeStatus.assignee.role}</AssigneeRoleText>
+        <AssigneeAvatar assignee={assignee} />
+        <AssigneeRoleText>{assignee.name}</AssigneeRoleText>
       </AssigneeInfoBlock>
 
       {canEdit ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            {currentStatus && (
-              <StatusPillTrigger $fontColor={currentStatus.color} $backgroundColor={currentStatus.color}>
-                {currentStatus.name}
-
+            {status && (
+              <StatusPillTrigger $fontColor={status.color} $backgroundColor={status.color}>
+                {status.name}
                 <ChevronDown size={12} />
               </StatusPillTrigger>
             )}
@@ -66,7 +62,7 @@ export const AssigneeContainer = ({
             {statuses.map((status) => (
               <StatusDropdownItem
                 key={status.id}
-                $selected={status.id === currentStatus?.id}
+                $selected={status.id === status?.id}
                 onSelect={() => handleUpdateAssigneeStatus(status.id)}
               >
                 <StatusTag status={status} />
@@ -75,8 +71,8 @@ export const AssigneeContainer = ({
 
           </StatusDropdownContent>
         </DropdownMenu>
-      ) : currentStatus && (
-        <StatusTag status={currentStatus} />
+      ) : status && (
+        <StatusTag status={status} />
       )}
     </AssigneeRowContainer>
   );

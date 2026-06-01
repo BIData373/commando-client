@@ -1,76 +1,78 @@
 import styled from "@emotion/styled";
 import { Archive, Trash2, X } from "lucide-react";
 import { useState } from "react";
-import { DirectiveStatus } from "src/utils/statusUtils";
+import type { WorkspaceStatusDto } from "src/api/model";
+import { useWorkspace } from "src/providers/WorkspaceProvider";
 import { StatusTag } from "../shared/StatusTag";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { DeletePopover } from "./DeletePopover";
 
 interface BulkActionsBarProps {
-	selectedCount: number;
-	onChangeStatus: (status: DirectiveStatus) => void;
-	onArchive: () => void;
-	onDelete: () => void;
-	onExitSelect: () => void;
+  selectedCount: number;
+  onChangeStatus: (status: WorkspaceStatusDto) => void;
+  onArchive: () => void;
+  onDelete: () => void;
+  onExitSelect: () => void;
 }
 
 export function BulkActionsBar({
-	selectedCount,
-	onChangeStatus,
-	onArchive,
-	onDelete,
-	onExitSelect,
+  selectedCount,
+  onChangeStatus,
+  onArchive,
+  onDelete,
+  onExitSelect,
 }: BulkActionsBarProps) {
-	const [popoverOpen, setPopoverOpen] = useState(false);
+  const { statuses } = useWorkspace()
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
-	function handleDeleteClick() {
-		setPopoverOpen(true);
-	}
+  function handleDeleteClick() {
+    setPopoverOpen(true);
+  }
 
-	return (
-		<Bar>
-			<ActionsSection>
-				<DeletePopover
-					count={selectedCount}
-					onConfirm={onDelete}
-					open={popoverOpen}
-					onOpenChange={setPopoverOpen}
-					trigger={
-						<GhostButton $danger onClick={handleDeleteClick}>
-							מחק הנחיה
-							<Trash2 size={16} />
-						</GhostButton>
-					}
-				/>
-				<GhostButton onClick={onArchive}>
-					העבר לארכיון
-					<Archive size={16} />
-				</GhostButton>
-				<BarDivider />
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<GhostButton>עדכן סטטוס</GhostButton>
-					</DropdownMenuTrigger>
-					<StatusContent align="start" sideOffset={12}>
-						{Object.values(DirectiveStatus).map((s) => (
-							<StatusItem key={s} onSelect={() => onChangeStatus(s)}>
-								<StatusTag status={s} />
-							</StatusItem>
-						))}
-					</StatusContent>
-				</DropdownMenu>
-			</ActionsSection>
-			<SelectedButton onClick={onExitSelect}>
-				<X size={16} />
-				{selectedCount} משימות נבחרו
-			</SelectedButton>
-		</Bar>
-	);
+  return (
+    <Bar>
+      <ActionsSection>
+        <DeletePopover
+          count={selectedCount}
+          onConfirm={onDelete}
+          open={popoverOpen}
+          onOpenChange={setPopoverOpen}
+          trigger={
+            <GhostButton $danger onClick={handleDeleteClick}>
+              מחק הנחיה
+              <Trash2 size={16} />
+            </GhostButton>
+          }
+        />
+        <GhostButton onClick={onArchive}>
+          העבר לארכיון
+          <Archive size={16} />
+        </GhostButton>
+        <BarDivider />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <GhostButton>עדכן סטטוס</GhostButton>
+          </DropdownMenuTrigger>
+          <StatusContent align="start" sideOffset={12}>
+            {Object.values(statuses).map((s) => (
+              <StatusItem key={s.id} onSelect={() => onChangeStatus(s)}>
+                <StatusTag status={s} />
+              </StatusItem>
+            ))}
+          </StatusContent>
+        </DropdownMenu>
+      </ActionsSection>
+      <SelectedButton onClick={onExitSelect}>
+        <X size={16} />
+        {selectedCount} משימות נבחרו
+      </SelectedButton>
+    </Bar>
+  );
 }
 
 const Bar = styled.div`
