@@ -1,59 +1,62 @@
-import styled from "@emotion/styled";
-import { CircleQuestionMarkIcon, Plus, Search } from "lucide-react";
-import { type ChangeEvent, useState } from "react";
-import { useListAssignees } from "src/api/assignee/assignee";
-import { useUpdateWorkspace } from "src/api/workspace/workspace";
-import { AssigneeCard } from "src/components/settings/AssigneeCard";
-import { AssigneeDialog } from "src/components/settings/AssigneeDialog";
-import { PrimaryButton } from "src/components/shared/PrimaryButton";
-import { Checkbox } from "src/components/ui/checkbox";
+import styled from "@emotion/styled"
+import { CircleQuestionMarkIcon, Plus, Search } from "lucide-react"
+import { type ChangeEvent, useState } from "react"
+import { useListAssignees } from "src/api/assignee/assignee"
+import { useUpdateWorkspace } from "src/api/workspace/workspace"
+import { AssigneeCard } from "src/components/settings/AssigneeCard"
+import { AssigneeDialog } from "src/components/settings/AssigneeDialog"
+import { PrimaryButton } from "src/components/shared/PrimaryButton"
+import { Checkbox } from "src/components/ui/checkbox"
 import {
 	InputGroup,
 	InputGroupAddon,
 	InputGroupInput,
-} from "src/components/ui/input-group";
+} from "src/components/ui/input-group"
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-} from "src/components/ui/tooltip";
-import { useWorkspace } from "src/providers/WorkspaceProvider";
+} from "src/components/ui/tooltip"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 
 export function AssigneesContent() {
 	const {
 		workspace: { id: workspaceId, assigneeStatusEditable },
-		setWorkspace
-	} = useWorkspace();
+		setWorkspace,
+	} = useWorkspace()
 
-	const { mutateAsync: updateSettings } = useUpdateWorkspace();
+	const { mutateAsync: updateSettings } = useUpdateWorkspace()
 
-	const [searchQuery, setSearchQuery] = useState("");
-	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+	const [searchQuery, setSearchQuery] = useState("")
+	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
-	const { data: assignees = [] } = useListAssignees({ workspaceId });
+	const { data: assignees = [] } = useListAssignees({ workspaceId })
 
 	const filteredAssignees = searchQuery.trim()
 		? assignees.filter((a) => a.name.includes(searchQuery))
-		: assignees;
+		: assignees
 
 	function handleCheckboxChange(checked: boolean) {
-		updateSettings({
-			pathParams: { id: workspaceId },
-			data: { assigneeStatusEditable: checked },
-		}, {
-			onSuccess(data) {
-				setWorkspace(data)
-			}
-		});
+		updateSettings(
+			{
+				pathParams: { id: workspaceId },
+				data: { assigneeStatusEditable: checked },
+			},
+			{
+				onSuccess(data) {
+					setWorkspace(data)
+				},
+			},
+		)
 	}
 
 	function handleSearchChange(e: ChangeEvent<HTMLInputElement>) {
-		setSearchQuery(e.target.value);
+		setSearchQuery(e.target.value)
 	}
 
 	function handleOpenCreateDialog() {
-		setIsCreateDialogOpen(true);
+		setIsCreateDialogOpen(true)
 	}
 
 	return (
@@ -110,27 +113,24 @@ export function AssigneesContent() {
 
 			<AssigneeCardGrid>
 				{filteredAssignees.map((assignee) => (
-					<AssigneeCard
-						key={assignee.id}
-						assignee={assignee}
-					/>
+					<AssigneeCard key={assignee.id} assignee={assignee} />
 				))}
 			</AssigneeCardGrid>
 		</>
-	);
+	)
 }
 
 const SearchWrapper = styled.div`
   max-width: 300px;
   flex: 1;
-`;
+`
 
 const ToolbarRow = styled.div`
   display: flex;
   align-items: center;
   margin-right: 12px;
   gap: 12px;
-`;
+`
 
 const StyledTooltipContent = styled(TooltipContent)`
   background: var(--background);
@@ -139,31 +139,31 @@ const StyledTooltipContent = styled(TooltipContent)`
   svg {
     opacity: 0;
   }
-`;
+`
 
 const StyledContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-`;
+`
 
 const CheckboxRow = styled.div`
   display: flex;
   align-items: center;
   margin-right: 12px;
   gap: 8px;
-`;
+`
 
 const CheckboxLabel = styled.label`
   font-size: 14px;
   font-weight: 400;
   color: var(--sea-ink);
   cursor: pointer;
-`;
+`
 
 const StyledInputGroup = styled(InputGroup)`
   background: var(--background);
-`;
+`
 
 const QuestionIcon = styled.button`
   display: flex;
@@ -173,7 +173,7 @@ const QuestionIcon = styled.button`
   padding: 0;
   color: rgba(0, 0, 0, 0.25);
   cursor: pointer;
-`;
+`
 
 const AssigneeCardGrid = styled.div`
   padding: 20px 10px;
@@ -182,4 +182,4 @@ const AssigneeCardGrid = styled.div`
   flex: 1;
   gap: 18px;
   direction: rtl;
-`;
+`

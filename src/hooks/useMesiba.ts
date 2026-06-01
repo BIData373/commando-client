@@ -1,17 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { MESIBA_BASE_API_URL, USE_MOCK_API } from "../utils/env-utils";
+import { useQuery } from "@tanstack/react-query"
+import axios from "axios"
+import { MESIBA_BASE_API_URL, USE_MOCK_API } from "../utils/env-utils"
 
 export interface IMesibaIcon {
-	id: number;
-	iconName: string;
-	heb_name: string;
+	id: number
+	iconName: string
+	heb_name: string
 }
 
-const delay = (ms = 200) => new Promise((r) => setTimeout(r, ms));
+const delay = (ms = 200) => new Promise((r) => setTimeout(r, ms))
 
 function svgIcon(color: string) {
-	return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="${color}"/></svg>`;
+	return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="${color}"/></svg>`
 }
 
 const mockMesibaIcons: IMesibaIcon[] = [
@@ -27,19 +27,19 @@ const mockMesibaIcons: IMesibaIcon[] = [
 	{ id: 10, iconName: svgIcon("darkorange"), heb_name: "חיל ההנדסה" },
 	{ id: 11, iconName: svgIcon("hotpink"), heb_name: "חיל הקשר" },
 	{ id: 12, iconName: svgIcon("indigo"), heb_name: "חיל המודיעין" },
-];
+]
 
 const mesibaApi = {
 	async search(query: string): Promise<IMesibaIcon[]> {
-		await delay();
-		if (!query.trim()) return [];
-		return mockMesibaIcons.filter((icon) => icon.heb_name.includes(query));
+		await delay()
+		if (!query.trim()) return []
+		return mockMesibaIcons.filter((icon) => icon.heb_name.includes(query))
 	},
 	async getByIconName(iconName: string): Promise<IMesibaIcon | null> {
-		await delay();
-		return mockMesibaIcons.find((icon) => icon.iconName === iconName) ?? null;
+		await delay()
+		return mockMesibaIcons.find((icon) => icon.iconName === iconName) ?? null
 	},
-};
+}
 
 export function useSearchMesibaIcons(search: string) {
 	return useQuery<IMesibaIcon[]>({
@@ -49,10 +49,10 @@ export function useSearchMesibaIcons(search: string) {
 				? mesibaApi.search(search)
 				: search
 					? axios
-						.get<IMesibaIcon[]>(`${MESIBA_BASE_API_URL}${search}`)
-						.then((r) => r.data)
+							.get<IMesibaIcon[]>(`${MESIBA_BASE_API_URL}${search}`)
+							.then((r) => r.data)
 					: Promise.resolve([]),
-	});
+	})
 }
 
 export function useMesibaIconByName(iconName?: string) {
@@ -62,8 +62,8 @@ export function useMesibaIconByName(iconName?: string) {
 			USE_MOCK_API
 				? mesibaApi.getByIconName(iconName as string)
 				: axios
-					.get<IMesibaIcon>(`${MESIBA_BASE_API_URL}by-name/${iconName}`)
-					.then((r) => r.data),
+						.get<IMesibaIcon>(`${MESIBA_BASE_API_URL}by-name/${iconName}`)
+						.then((r) => r.data),
 		enabled: !!iconName,
-	});
+	})
 }

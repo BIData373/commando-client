@@ -1,21 +1,21 @@
-import styled from "@emotion/styled";
-import { Archive, CheckCircle2, Pencil, Trash2 } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import styled from "@emotion/styled"
+import { Archive, CheckCircle2, Pencil, Trash2 } from "lucide-react"
+import { type ReactNode, useState } from "react"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { DeletePopover } from "./DeletePopover";
+} from "../ui/dropdown-menu"
+import { DeletePopover } from "./DeletePopover"
 
 interface RowActionsMenuProps {
-	trigger: ReactNode;
-	onEdit?: () => void;
-	onEnterSelect?: () => void;
-	onArchive: () => void;
-	onDelete?: () => void;
+	trigger: ReactNode
+	onEdit?: () => void
+	onEnterSelect?: () => void
+	onArchive: () => void
+	onDelete?: () => void
 }
 
 export function RowActionsMenu({
@@ -25,24 +25,24 @@ export function RowActionsMenu({
 	onArchive,
 	onDelete,
 }: RowActionsMenuProps) {
-	const [dropdownOpen, setDropdownOpen] = useState(false);
-	const [popoverOpen, setPopoverOpen] = useState(false);
+	const [dropdownOpen, setDropdownOpen] = useState(false)
+	const [popoverOpen, setPopoverOpen] = useState(false)
 
 	const hasMoreThanTwo =
-		[onEdit, onEnterSelect, onDelete].filter(Boolean).length >= 2;
+		[onEdit, onEnterSelect, onDelete].filter(Boolean).length >= 2
 
 	function handleDropdownOpenChange(open: boolean) {
-		if (!open && popoverOpen) return;
-		setDropdownOpen(open);
+		if (!open && popoverOpen) return
+		setDropdownOpen(open)
 	}
 
 	function handleDeleteClick() {
-		setPopoverOpen(true);
+		setPopoverOpen(true)
 	}
 
 	function handlePopoverOpenChange(open: boolean) {
-		setPopoverOpen(open);
-		if (!open) setDropdownOpen(false);
+		setPopoverOpen(open)
+		if (!open) setDropdownOpen(false)
 	}
 
 	return (
@@ -87,7 +87,7 @@ export function RowActionsMenu({
 				)}
 			</MenuContent>
 		</DropdownMenu>
-	);
+	)
 }
 
 const MenuContent = styled(DropdownMenuContent)`
@@ -97,7 +97,7 @@ const MenuContent = styled(DropdownMenuContent)`
   border-radius: 8px;
   z-index: calc(var(--z-dropdown) + 1);
   box-shadow: var(--card-shadow-hover);
-`;
+`
 
 const MenuItem = styled(DropdownMenuItem)`
   display: flex;
@@ -119,7 +119,7 @@ const MenuItem = styled(DropdownMenuItem)`
     color: var(--text-color-2);
     outline: none;
   }
-`;
+`
 
 const DestructiveMenuItem = styled(MenuItem)`
   color: var(--Components-Form-Component-labelRequiredMarkColor);
@@ -129,9 +129,9 @@ const DestructiveMenuItem = styled(MenuItem)`
     background: var(--secondary);
     color: var(--Components-Form-Component-labelRequiredMarkColor);
   }
-`;
+`
 
 const MenuSeparator = styled(DropdownMenuSeparator)`
   margin-block: 4px;
   background: var(--button-hover);
-`;
+`

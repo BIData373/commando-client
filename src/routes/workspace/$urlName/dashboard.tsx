@@ -1,7 +1,7 @@
-import styled from "@emotion/styled";
-import { createFileRoute } from "@tanstack/react-router";
-import { DashboardContent } from "src/components/Dashboard/DashboardContent";
-import { TitleSection } from "src/components/Dashboard/TileSection";
+import styled from "@emotion/styled"
+import { createFileRoute } from "@tanstack/react-router"
+import { DashboardContent } from "src/components/Dashboard/DashboardContent"
+import { TitleSection } from "src/components/Dashboard/TileSection"
 
 export const Route = createFileRoute("/workspace/$urlName/dashboard")({
 	component: Dashboard,
@@ -13,18 +13,18 @@ export const Route = createFileRoute("/workspace/$urlName/dashboard")({
 			workspace: true,
 		},
 	},
-});
+})
 
 function Dashboard() {
 	return (
 		<PageWrapper>
-				<DashboardContent />
+			<DashboardContent />
 		</PageWrapper>
-	);
+	)
 }
 
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100%;
-`;
+`

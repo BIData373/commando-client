@@ -1,125 +1,135 @@
-import styled from "@emotion/styled";
-import { debounce } from "lodash";
-import { X } from "lucide-react";
-import { useMemo, useState } from "react";
-import type { UpdateWorkspaceDto } from "src/api/model";
-import { useUpdateWorkspace } from "src/api/workspace/workspace";
-import type { IMesibaIcon } from "src/hooks/useMesiba";
-import { useWorkspace } from "src/providers/WorkspaceProvider";
-import { Input } from "../ui/input";
-import { IconDropdown } from "./IconDropdown";
-import { SelectCommand } from "./SelectCommand";
+import styled from "@emotion/styled"
+import { debounce } from "lodash"
+import { X } from "lucide-react"
+import { useMemo, useState } from "react"
+import type { UpdateWorkspaceDto } from "src/api/model"
+import { useUpdateWorkspace } from "src/api/workspace/workspace"
+import type { IMesibaIcon } from "src/hooks/useMesiba"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { Input } from "../ui/input"
+import { IconDropdown } from "./IconDropdown"
+import { SelectCommand } from "./SelectCommand"
 
-const NAME_MAX_LENGTH = 50;
+const NAME_MAX_LENGTH = 50
 const DEBOUNCE_MS = 300
 
 export function SettingsForm() {
-    const { workspace: { id, title, pikudId, icon }, setWorkspace } = useWorkspace();
-    const { mutate: updateSettings } = useUpdateWorkspace();
+	const {
+		workspace: { id, title, pikudId, icon },
+		setWorkspace,
+	} = useWorkspace()
+	const { mutate: updateSettings } = useUpdateWorkspace()
 
-    const [form, setForm] = useState<UpdateWorkspaceDto>({ title, pikudId, icon });
-    const [iconSearch, setIconSearch] = useState("");
-    const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null);
+	const [form, setForm] = useState<UpdateWorkspaceDto>({ title, pikudId, icon })
+	const [iconSearch, setIconSearch] = useState("")
+	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
 
-    const updateSettingsDebounced = useMemo(
-        () => debounce(updateSettings, DEBOUNCE_MS),
-        [updateSettings]
-    )
+	const updateSettingsDebounced = useMemo(
+		() => debounce(updateSettings, DEBOUNCE_MS),
+		[updateSettings],
+	)
 
-    const setField = <K extends keyof UpdateWorkspaceDto>(key: K, value: UpdateWorkspaceDto[K]) => {
-        const next = { ...form, [key]: value };
-        setForm(next);
-        updateSettingsDebounced({
-            pathParams: { id },
-            data: next
-        }, {
-            onSuccess(data) {
-                setWorkspace(data)
-            }
-        });
-    };
+	const setField = <K extends keyof UpdateWorkspaceDto>(
+		key: K,
+		value: UpdateWorkspaceDto[K],
+	) => {
+		const next = { ...form, [key]: value }
+		setForm(next)
+		updateSettingsDebounced(
+			{
+				pathParams: { id },
+				data: next,
+			},
+			{
+				onSuccess(data) {
+					setWorkspace(data)
+				},
+			},
+		)
+	}
 
-    function handleIconSelect(icon: IMesibaIcon) {
-        setField("icon", icon.iconName);
-        setSelectedIcon(icon);
-        setIconSearch("");
-    }
+	function handleIconSelect(icon: IMesibaIcon) {
+		setField("icon", icon.iconName)
+		setSelectedIcon(icon)
+		setIconSearch("")
+	}
 
-    function handleNameChange(
-        e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
-    ) {
-        setField("title", e.target.value.slice(0, NAME_MAX_LENGTH));
-    }
+	function handleNameChange(
+		e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
+	) {
+		setField("title", e.target.value.slice(0, NAME_MAX_LENGTH))
+	}
 
-    function handleCommandChange(value: number) {
-        setField("pikudId", value);
-    }
+	function handleCommandChange(value: number) {
+		setField("pikudId", value)
+	}
 
-    function handleIconClear() {
-        setField("icon", "");
-        setSelectedIcon(null);
-        setIconSearch("");
-    }
+	function handleIconClear() {
+		setField("icon", "")
+		setSelectedIcon(null)
+		setIconSearch("")
+	}
 
-    function handleImageNotFound(e: React.SyntheticEvent<HTMLImageElement>) {
-        e.currentTarget.onerror = null;
-        e.currentTarget.src = "/workspace-icon.png";
-    }
+	function handleImageNotFound(e: React.SyntheticEvent<HTMLImageElement>) {
+		e.currentTarget.onerror = null
+		e.currentTarget.src = "/workspace-icon.png"
+	}
 
-    return (
+	return (
+		<FormRoot>
+			<FieldRow>
+				<FieldLabel>שם סביבה</FieldLabel>
+				<InputWrapper>
+					<StyledInput
+						value={form.title}
+						onChange={handleNameChange}
+						placeholder="הזן שם סביבה"
+						maxLength={NAME_MAX_LENGTH}
+					/>
+					<CharCounter
+						$atLimit={!!form.title && form.title.length >= NAME_MAX_LENGTH}
+					>
+						{form?.title?.length ?? 0}/{NAME_MAX_LENGTH}
+					</CharCounter>
+				</InputWrapper>
+			</FieldRow>
 
-        <FormRoot>
-            <FieldRow>
-                <FieldLabel>שם סביבה</FieldLabel>
-                <InputWrapper>
-                    <StyledInput
-                        value={form.title}
-                        onChange={handleNameChange}
-                        placeholder="הזן שם סביבה"
-                        maxLength={NAME_MAX_LENGTH}
-                    />
-                    <CharCounter $atLimit={!!form.title && form.title.length >= NAME_MAX_LENGTH}>
-                        {form?.title?.length ?? 0}/{NAME_MAX_LENGTH}
-                    </CharCounter>
-                </InputWrapper>
-            </FieldRow>
+			<FieldRow>
+				<FieldLabel>שיוך פיקודי ארגוני</FieldLabel>
+				<SelectCommand
+					value={form.pikudId ?? pikudId}
+					onChange={handleCommandChange}
+				/>
+			</FieldRow>
 
-            <FieldRow>
-                <FieldLabel>שיוך פיקודי ארגוני</FieldLabel>
-                <SelectCommand
-                    value={form.pikudId ?? pikudId}
-                    onChange={handleCommandChange}
-                />
-            </FieldRow>
-
-            <FieldRow>
-                <FieldLabel>סמל</FieldLabel>
-                <IconDropdown
-                    value={iconSearch}
-                    onChange={setIconSearch}
-                    onClear={handleIconClear}
-                    onSelect={handleIconSelect}
-                    selectedItem={selectedIcon ?? undefined}
-                />
-                <IconPreview>
-                    {form.icon ? (
-                        <>
-                            <IconClearButton type="button" onClick={handleIconClear}>
-                                <X size={16} />
-                            </IconClearButton>
-                            <img
-                                src={form.icon}
-                                alt="סמל לשכה"
-                                onError={handleImageNotFound}
-                            />
-                        </>
-                    ) : (
-                        <IconPlaceholder>בחר סמל</IconPlaceholder>
-                    )}
-                </IconPreview>
-            </FieldRow>
-        </FormRoot>
-    );
+			<FieldRow>
+				<FieldLabel>סמל</FieldLabel>
+				<IconDropdown
+					value={iconSearch}
+					onChange={setIconSearch}
+					onClear={handleIconClear}
+					onSelect={handleIconSelect}
+					selectedItem={selectedIcon ?? undefined}
+				/>
+				<IconPreview>
+					{form.icon ? (
+						<>
+							<IconClearButton type="button" onClick={handleIconClear}>
+								<X size={16} />
+							</IconClearButton>
+							<img
+								src={form.icon}
+								alt="סמל לשכה"
+								onError={handleImageNotFound}
+							/>
+						</>
+					) : (
+						<IconPlaceholder>בחר סמל</IconPlaceholder>
+					)}
+				</IconPreview>
+			</FieldRow>
+		</FormRoot>
+	)
 }
 
 const FormRoot = styled.div`
@@ -128,35 +138,35 @@ const FormRoot = styled.div`
   gap: 16px;
   width: 400px;
   direction: rtl;
-`;
+`
 
 const InputWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-`;
+`
 
 const StyledInput = styled(Input)`
   background: var(--background);
-`;
+`
 
 const CharCounter = styled.span<{ $atLimit: boolean }>`
   font-size: 12px;
   color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger, #e53e3e)" : "var(--sea-ink-soft)")};
   text-align: end;
-`;
+`
 
 const FieldRow = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-`;
+`
 
 const FieldLabel = styled.label`
   font-size: 16px;
   font-weight: 400;
   color: rgba(0, 0, 0, 0.65);
-`;
+`
 
 const IconPreview = styled.div`
   position: relative;
@@ -176,12 +186,12 @@ const IconPreview = styled.div`
     object-fit: contain;
     border-radius: 50%;
   }
-`;
+`
 
 const IconPlaceholder = styled.span`
   font-size: 13px;
   color: var(--sea-ink-soft);
-`;
+`
 
 const IconClearButton = styled.button`
   position: absolute;
@@ -201,4 +211,4 @@ const IconClearButton = styled.button`
     background: var(--link-bg-hover);
     color: var(--sea-ink);
   }
-`;
+`

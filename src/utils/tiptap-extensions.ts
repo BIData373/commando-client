@@ -1,6 +1,6 @@
-import Placeholder from "@tiptap/extension-placeholder";
-import UnderlineExtension from "@tiptap/extension-underline";
-import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder"
+import UnderlineExtension from "@tiptap/extension-underline"
+import StarterKit from "@tiptap/starter-kit"
 
 export const EditorExtensions = {
 	extensions: [
@@ -18,4 +18,4 @@ export const EditorExtensions = {
 			placeholder: "הערות ודגשים",
 		}),
 	],
-};
+}

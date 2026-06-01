@@ -1,84 +1,91 @@
-import styled from "@emotion/styled";
-import { ChevronDown } from "lucide-react";
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status";
-import type { AssigneeStatusDto } from "src/api/model";
-import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status";
-import { useWorkspace } from "src/providers/WorkspaceProvider";
-import { AssigneeAvatar } from "../shared/AssigneeAvatar";
-import { StatusTag } from "../shared/StatusTag";
+import styled from "@emotion/styled"
+import { ChevronDown } from "lucide-react"
+import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
+import type { AssigneeStatusDto } from "src/api/model"
+import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { AssigneeAvatar } from "../shared/AssigneeAvatar"
+import { StatusTag } from "../shared/StatusTag"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu"
 
 interface AsiggneeContainerProps {
-  taskId: number
-  assigneeStatus: AssigneeStatusDto;
-  isAdmin: boolean;
-  editable: boolean;
+	taskId: number
+	assigneeStatus: AssigneeStatusDto
+	isAdmin: boolean
+	editable: boolean
 }
 
 export const AssigneeContainer = ({
-  taskId,
-  assigneeStatus: {assignee, status},
-  isAdmin,
-  editable,
+	taskId,
+	assigneeStatus: { assignee, status },
+	isAdmin,
+	editable,
 }: AsiggneeContainerProps) => {
-  const { workspace: { id: workspaceId, assigneeStatusEditable } } = useWorkspace()
-  const { data: statuses = [] } = useListWorkspaceStatuses({ workspaceId })
+	const {
+		workspace: { id: workspaceId, assigneeStatusEditable },
+	} = useWorkspace()
+	const { data: statuses = [] } = useListWorkspaceStatuses({ workspaceId })
 
-  const { mutateAsync: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus()
+	const { mutateAsync: upsertAssigneeTaskStatus } =
+		useUpsertAssigneeTaskStatus()
 
-  const canEdit = (
-    editable &&
-    (isAdmin || (assigneeStatusEditable ?? false))
-  )
+	const canEdit = editable && (isAdmin || (assigneeStatusEditable ?? false))
 
-  function handleUpdateAssigneeStatus(statusId: number) {
-    upsertAssigneeTaskStatus({ data: { taskId, assigneeId: assignee.id, statusId } })
-  }
+	function handleUpdateAssigneeStatus(statusId: number) {
+		upsertAssigneeTaskStatus({
+			data: { taskId, assigneeId: assignee.id, statusId },
+		})
+	}
 
-  return (
-    <AssigneeRowContainer key={assignee.id} $white={editable && !isAdmin}>
-      <AssigneeInfoBlock>
-        <AssigneeAvatar assignee={assignee} />
-        <AssigneeRoleText>{assignee.name}</AssigneeRoleText>
-      </AssigneeInfoBlock>
+	return (
+		<AssigneeRowContainer key={assignee.id} $white={editable && !isAdmin}>
+			<AssigneeInfoBlock>
+				<AssigneeAvatar assignee={assignee} />
+				<AssigneeRoleText>{assignee.name}</AssigneeRoleText>
+			</AssigneeInfoBlock>
 
-      {canEdit ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            {status && (
-              <StatusPillTrigger $fontColor={status.color} $backgroundColor={status.color}>
-                {status.name}
-                <ChevronDown size={12} />
-              </StatusPillTrigger>
-            )}
-          </DropdownMenuTrigger>
+			{canEdit ? (
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						{status && (
+							<StatusPillTrigger
+								$fontColor={status.color}
+								$backgroundColor={status.color}
+							>
+								{status.name}
+								<ChevronDown size={12} />
+							</StatusPillTrigger>
+						)}
+					</DropdownMenuTrigger>
 
-          <StatusDropdownContent align="center" sideOffset={6}>
-            {statuses.map((status) => (
-              <StatusDropdownItem
-                key={status.id}
-                $selected={status.id === status?.id}
-                onSelect={() => handleUpdateAssigneeStatus(status.id)}
-              >
-                <StatusTag status={status} />
-              </StatusDropdownItem>
-            ))}
+					<StatusDropdownContent align="center" sideOffset={6}>
+						{statuses.map((status) => (
+							<StatusDropdownItem
+								key={status.id}
+								$selected={status.id === status?.id}
+								onSelect={() => handleUpdateAssigneeStatus(status.id)}
+							>
+								<StatusTag status={status} />
+							</StatusDropdownItem>
+						))}
+					</StatusDropdownContent>
+				</DropdownMenu>
+			) : (
+				status && <StatusTag status={status} />
+			)}
+		</AssigneeRowContainer>
+	)
+}
 
-          </StatusDropdownContent>
-        </DropdownMenu>
-      ) : status && (
-        <StatusTag status={status} />
-      )}
-    </AssigneeRowContainer>
-  );
-};
-
-const StatusPillTrigger = styled.button<{ $fontColor: string, $backgroundColor: string }>`
+const StatusPillTrigger = styled.button<{
+	$fontColor: string
+	$backgroundColor: string
+}>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,7 +105,7 @@ const StatusPillTrigger = styled.button<{ $fontColor: string, $backgroundColor: 
   &:focus-visible {
     outline: none;
   }
-`;
+`
 
 const StatusDropdownContent = styled(DropdownMenuContent)`
   width: 100px;
@@ -113,9 +120,9 @@ const StatusDropdownContent = styled(DropdownMenuContent)`
   box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.08),
     0px 3px 6px rgba(0, 0, 0, 0.12),
     0px 9px 28px rgba(0, 0, 0, 0.05);
-`;
+`
 
-const StatusDropdownItem = styled(DropdownMenuItem) <{ $selected: boolean }>`
+const StatusDropdownItem = styled(DropdownMenuItem)<{ $selected: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -131,7 +138,7 @@ const StatusDropdownItem = styled(DropdownMenuItem) <{ $selected: boolean }>`
     background: var(--selected-item);
     color: inherit;
   }
-`;
+`
 
 const AssigneeRowContainer = styled.div<{ $white?: boolean }>`
   display: flex;
@@ -143,7 +150,7 @@ const AssigneeRowContainer = styled.div<{ $white?: boolean }>`
   border: 0.5px solid var(--line);
   border-radius: 8px;
   width: 100%;
-`;
+`
 
 const AssigneeInfoBlock = styled.div`
   display: flex;
@@ -152,7 +159,7 @@ const AssigneeInfoBlock = styled.div`
   flex-shrink: 0;
   justify-content: flex-start;
   width: 161px;
-`;
+`
 
 const AssigneeRoleText = styled.span`
   font-size: 14px;
@@ -160,4 +167,4 @@ const AssigneeRoleText = styled.span`
   line-height: 22px;
   color: var(--text-color-2);
   white-space: nowrap;
-`;
+`

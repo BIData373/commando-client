@@ -1,14 +1,14 @@
-import styled from "@emotion/styled";
-import { createFileRoute } from "@tanstack/react-router";
-import { PermissionsContent } from "src/components/settings/PermissionsContent";
-import { SectionTitle } from "src/components/settings/SectionTitle";
-import { SETTINGS_TABS, SettingTabPath } from "src/utils/settings-utils";
+import styled from "@emotion/styled"
+import { createFileRoute } from "@tanstack/react-router"
+import { PermissionsContent } from "src/components/settings/PermissionsContent"
+import { SectionTitle } from "src/components/settings/SectionTitle"
+import { SETTINGS_TABS, SettingTabPath } from "src/utils/settings-utils"
 
 export const Route = createFileRoute(
 	"/workspace/$urlName/settings/permissions",
-)({ component: SettingsPermissions });
+)({ component: SettingsPermissions })
 
-const activeTabLabel = SETTINGS_TABS[SettingTabPath.PERMISSIONS];
+const activeTabLabel = SETTINGS_TABS[SettingTabPath.PERMISSIONS]
 
 function SettingsPermissions() {
 	return (
@@ -16,10 +16,10 @@ function SettingsPermissions() {
 			<SectionTitle title={activeTabLabel} />
 
 			<PermissionsScrollArea>
-					<PermissionsContent />
+				<PermissionsContent />
 			</PermissionsScrollArea>
 		</PermissionsRoot>
-	);
+	)
 }
 
 const PermissionsRoot = styled.div`
@@ -29,7 +29,7 @@ const PermissionsRoot = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-`;
+`
 
 const PermissionsScrollArea = styled.div`
   flex: 1;
@@ -37,4 +37,4 @@ const PermissionsScrollArea = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-`;
+`

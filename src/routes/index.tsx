@@ -1,15 +1,15 @@
-import styled from "@emotion/styled";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import type { WorkspaceDto } from "src/api/model";
-import { useListWorkspaces } from 'src/api/workspace/workspace';
-import { Avatar, AvatarFallback, AvatarImage } from "src/components/ui/avatar";
+import styled from "@emotion/styled"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import type { WorkspaceDto } from "src/api/model"
+import { useListWorkspaces } from "src/api/workspace/workspace"
+import { Avatar, AvatarFallback, AvatarImage } from "src/components/ui/avatar"
 import {
 	Card,
 	CardAction,
 	CardDescription,
 	CardHeader,
-	CardTitle
-} from "src/components/ui/card";
+	CardTitle,
+} from "src/components/ui/card"
 
 export const Route = createFileRoute("/")({
 	component: RouteComponent,
@@ -20,21 +20,23 @@ export const Route = createFileRoute("/")({
 			user: false,
 		},
 	},
-});
+})
 
 // FIX Move to file?
 interface WorkspaceCardProps {
-	workspace: WorkspaceDto;
+	workspace: WorkspaceDto
 }
 
-function WorkspaceCard({ workspace: { title, urlName, icon} }: WorkspaceCardProps) {
-	const navigate = useNavigate();
+function WorkspaceCard({
+	workspace: { title, urlName, icon },
+}: WorkspaceCardProps) {
+	const navigate = useNavigate()
 
 	function handleWorkspaceClick() {
 		navigate({
 			to: "/workspace/$urlName",
 			params: { urlName },
-		});
+		})
 	}
 
 	return (
@@ -47,7 +49,7 @@ function WorkspaceCard({ workspace: { title, urlName, icon} }: WorkspaceCardProp
 				<CardAction>
 					<Avatar>
 						<AvatarImage
-							src={icon ?? '/workspace-icon.png'}
+							src={icon ?? "/workspace-icon.png"}
 							alt="@shadcn"
 							className="grayscale"
 						/>
@@ -58,16 +60,16 @@ function WorkspaceCard({ workspace: { title, urlName, icon} }: WorkspaceCardProp
 			{/* // FIX Check if needed */}
 			{/* <CardFooter>{memberCount} משתמשים</CardFooter> */}
 		</Card>
-	);
+	)
 }
 
 function RouteComponent() {
-	const navigate = useNavigate();
+	const navigate = useNavigate()
 
 	const { data: workspaces = [] } = useListWorkspaces()
 
 	function handlePersonalClick() {
-		navigate({ to: "/personal", search: { view: "TABLE" } });
+		navigate({ to: "/personal", search: { view: "TABLE" } })
 	}
 
 	return (
@@ -85,7 +87,7 @@ function RouteComponent() {
 				))}
 			</WorkspaceGrid>
 		</PageRoot>
-	);
+	)
 }
 
 const PageRoot = styled.div`
@@ -93,7 +95,7 @@ const PageRoot = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-`;
+`
 
 const PersonalBanner = styled.button`
   display: flex;
@@ -111,18 +113,18 @@ const PersonalBanner = styled.button`
   &:hover {
     background: var(--link-bg-hover);
   }
-`;
+`
 
 const PersonalLabel = styled.span`
   font-size: 18px;
   font-weight: 600;
   color: var(--sea-ink);
-`;
+`
 
 const PersonalSub = styled.span`
   font-size: 14px;
   color: var(--sea-ink-soft);
-`;
+`
 
 const SectionTitle = styled.h2`
   font-size: 14px;
@@ -131,10 +133,10 @@ const SectionTitle = styled.h2`
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0;
-`;
+`
 
 const WorkspaceGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
-`;
+`

@@ -1,16 +1,16 @@
-import styled from "@emotion/styled";
-import { CircleAlert } from "lucide-react";
-import type { ReactNode } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import styled from "@emotion/styled"
+import { CircleAlert } from "lucide-react"
+import type { ReactNode } from "react"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 interface DeletePopoverProps {
-	count: number;
-	trigger?: ReactNode;
-	side?: "top" | "bottom" | "left" | "right";
-	align?: "center" | "start" | "end";
-	onConfirm: () => void;
-	open: boolean;
-	onOpenChange: (open: boolean) => void;
+	count: number
+	trigger?: ReactNode
+	side?: "top" | "bottom" | "left" | "right"
+	align?: "center" | "start" | "end"
+	onConfirm: () => void
+	open: boolean
+	onOpenChange: (open: boolean) => void
 }
 
 export function DeletePopover({
@@ -23,12 +23,12 @@ export function DeletePopover({
 	onOpenChange,
 }: DeletePopoverProps) {
 	function handleCancel() {
-		onOpenChange(false);
+		onOpenChange(false)
 	}
 
 	function handleConfirm() {
-		onOpenChange(false);
-		onConfirm();
+		onOpenChange(false)
+		onConfirm()
 	}
 
 	return (
@@ -54,7 +54,7 @@ export function DeletePopover({
 				</Actions>
 			</Content>
 		</Popover>
-	);
+	)
 }
 
 const Content = styled(PopoverContent)`
@@ -68,14 +68,14 @@ const Content = styled(PopoverContent)`
   background: var(--background);
   z-index: 1000;
   box-shadow: var(--card-shadow-hover);
-`;
+`
 
 const Head = styled.div`
   display: flex;
   gap: 8px;
   align-items: start;
   justify-content: flex-end;
-`;
+`
 
 const TextWrapper = styled.div`
   display: flex;
@@ -83,21 +83,21 @@ const TextWrapper = styled.div`
   flex: 1 0 0;
   gap: 4px;
   text-align: end;
-`;
+`
 
 const Title = styled.p`
   font-size: 16px;
   font-weight: 600;
   line-height: 22px;
   color: var(--text-color-2);
-`;
+`
 
 const Description = styled.p`
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-2);
-`;
+`
 
 const IconWrapper = styled.div`
   display: flex;
@@ -105,13 +105,13 @@ const IconWrapper = styled.div`
   padding-block: 2px;
   color: var(--Warning-color-warning);
   flex-shrink: 0;
-`;
+`
 
 const Actions = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
-`;
+`
 
 const DeleteButton = styled.button`
   display: flex;
@@ -132,7 +132,7 @@ const DeleteButton = styled.button`
   &:hover {
     background: var(--Components-Form-Component-labelRequiredMarkColor);
   }
-`;
+`
 
 const CancelButton = styled.button`
   display: flex;
@@ -154,4 +154,4 @@ const CancelButton = styled.button`
     border-color: var(--button-color-hover);
     color: var(--button-color-hover);
   }
-`;
+`

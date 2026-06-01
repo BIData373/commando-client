@@ -1,20 +1,27 @@
-import styled from "@emotion/styled";
-import type { WorkspaceStatusDto } from "src/api/model";
+import styled from "@emotion/styled"
+import type { WorkspaceStatusDto } from "src/api/model"
 
 interface StatusTagProps {
-  status: WorkspaceStatusDto;
-  interactive?: boolean;
+	status: WorkspaceStatusDto
+	interactive?: boolean
 }
 
-export function StatusTag({ status: { name, color }, interactive }: StatusTagProps) {
-  return (
-    <Tag $fontColor={color} $backgroundColor={color} $interactive={interactive}>
-      {name}
-    </Tag>
-  );
+export function StatusTag({
+	status: { name, color },
+	interactive,
+}: StatusTagProps) {
+	return (
+		<Tag $fontColor={color} $backgroundColor={color} $interactive={interactive}>
+			{name}
+		</Tag>
+	)
 }
 
-const Tag = styled.span<{ $fontColor: string, $backgroundColor: string, $interactive?: boolean }>`
+const Tag = styled.span<{
+	$fontColor: string
+	$backgroundColor: string
+	$interactive?: boolean
+}>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -31,4 +38,4 @@ const Tag = styled.span<{ $fontColor: string, $backgroundColor: string, $interac
   :focus-visible {
     outline: none;
   }
-`;
+`

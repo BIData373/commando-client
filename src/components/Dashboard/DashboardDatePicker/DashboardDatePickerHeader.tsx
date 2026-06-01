@@ -1,16 +1,16 @@
-import styled from "@emotion/styled";
-import { ChevronDown } from "lucide-react";
-import { DATE_TYPE } from "src/utils/data-type-utils";
+import styled from "@emotion/styled"
+import { ChevronDown } from "lucide-react"
+import { DATE_TYPE } from "src/utils/data-type-utils"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
+} from "../../ui/dropdown-menu"
 
 interface DashboardDatePickerHeaderProps {
-	dateType: string;
-	onDateTypeChange: (type: DATE_TYPE) => void;
+	dateType: string
+	onDateTypeChange: (type: DATE_TYPE) => void
 }
 
 export function DashboardDatePickerHeader({
@@ -37,20 +37,20 @@ export function DashboardDatePickerHeader({
 				</DropdownMenuContent>
 			</DropdownMenu>
 		</PopupHeader>
-	);
+	)
 }
 
 const PopupHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`;
+`
 
 const FilterLabel = styled.span`
   font-size: 14px;
   color: var(--sea-ink-soft);
   white-space: nowrap;
-`;
+`
 
 const DateTypeTrigger = styled(DropdownMenuTrigger)`
   display: inline-flex;
@@ -69,4 +69,4 @@ const DateTypeTrigger = styled(DropdownMenuTrigger)`
   &:hover {
     background: var(--chip-bg);
   }
-`;
+`

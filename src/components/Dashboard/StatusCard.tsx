@@ -1,85 +1,84 @@
-import styled from "@emotion/styled";
-import { groupBy, mapValues } from "lodash";
-import { useMemo } from "react";
-import { Cell, Pie, PieChart } from "recharts";
-import { WorkspaceStatusDtoType } from "src/api/model";
-import type { TaskRow } from "src/providers/TasksFiltersProvider";
-import { useWorkspace } from "src/providers/WorkspaceProvider";
+import styled from "@emotion/styled"
+import { groupBy, mapValues } from "lodash"
+import { useMemo } from "react"
+import { Cell, Pie, PieChart } from "recharts"
+import { WorkspaceStatusDtoType } from "src/api/model"
+import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 
 interface StatusCardProps {
-  tasks: TaskRow[];
+	tasks: TaskRow[]
 }
 
-const CHART_EMPTY_COLOR = "var(--chip-bg)";
+const CHART_EMPTY_COLOR = "var(--chip-bg)"
 
 export default function StatusCard({ tasks }: StatusCardProps) {
-  const { statuses } = useWorkspace()
-  const statusCounts = useMemo(
-    () => mapValues(
-      groupBy(tasks, 'status.id'),
-      (tasks, id) => ({
-        count: tasks.length,
-        ...statuses[Number(id)]
-      }),
-    ),
-    [tasks]
-  );
+	const { statuses } = useWorkspace()
+	const statusCounts = useMemo(
+		() =>
+			mapValues(groupBy(tasks, "status.id"), (tasks, id) => ({
+				count: tasks.length,
+				...statuses[Number(id)],
+			})),
+		[tasks],
+	)
 
-  const total = tasks.length
+	const total = tasks.length
 
-  const chartData =
-    total === 0
-      ? [{ key: "all", value: 1 }]
-      : Object.values(statusCounts).map(({ id, count }) => ({ key: id, value: count }));
+	const chartData =
+		total === 0
+			? [{ key: "all", value: 1 }]
+			: Object.values(statusCounts).map(({ id, count }) => ({
+					key: id,
+					value: count,
+				}))
 
-  const cellFills =
-    total === 0
-      ? [CHART_EMPTY_COLOR]
-      : Object.values(statuses).map(({ color }) => color);
+	const cellFills =
+		total === 0
+			? [CHART_EMPTY_COLOR]
+			: Object.values(statuses).map(({ color }) => color)
 
-  return (
-    <Section>
-      <SectionTitle>סטטוס הנחיות</SectionTitle>
-      <Card>
-        <ChartWrapper>
-          <StyledPieChart width={250} height={300}>
-            <Pie
-              style={{ outline: "none" }}
-              data={chartData}
-              innerRadius={88}
-              outerRadius={130}
-              dataKey="value"
-              startAngle={0}
-              endAngle={360}
-            >
-              {chartData.map(({ key }, i) => (
-                <Cell key={key} fill={cellFills[i] ?? CHART_EMPTY_COLOR} />
-              ))}
-            </Pie>
-          </StyledPieChart>
-          <ChartCenter>
-            <CenterCount>{total}</CenterCount>
-            <CenterLabel>הנחיות בסביבה</CenterLabel>
-          </ChartCenter>
-        </ChartWrapper>
-        <StatusRow>
-          {Object.values(statusCounts).map(status => (
-            <StatusItem>
-              <StatusCount>{status.count}</StatusCount>
-              <StatusBadge $variant={status.type}>
-                {status.name}
-              </StatusBadge>
-            </StatusItem>
-          ))}
-        </StatusRow>
-      </Card>
-    </Section>
-  );
+	return (
+		<Section>
+			<SectionTitle>סטטוס הנחיות</SectionTitle>
+			<Card>
+				<ChartWrapper>
+					<StyledPieChart width={250} height={300}>
+						<Pie
+							style={{ outline: "none" }}
+							data={chartData}
+							innerRadius={88}
+							outerRadius={130}
+							dataKey="value"
+							startAngle={0}
+							endAngle={360}
+						>
+							{chartData.map(({ key }, i) => (
+								<Cell key={key} fill={cellFills[i] ?? CHART_EMPTY_COLOR} />
+							))}
+						</Pie>
+					</StyledPieChart>
+					<ChartCenter>
+						<CenterCount>{total}</CenterCount>
+						<CenterLabel>הנחיות בסביבה</CenterLabel>
+					</ChartCenter>
+				</ChartWrapper>
+				<StatusRow>
+					{Object.values(statusCounts).map((status) => (
+						<StatusItem key={status.id}>
+							<StatusCount>{status.count}</StatusCount>
+							<StatusBadge $color={status.color}>{status.name}</StatusBadge>
+						</StatusItem>
+					))}
+				</StatusRow>
+			</Card>
+		</Section>
+	)
 }
 
 const StyledPieChart = styled(PieChart)`
   width: 300px !important;
-`;
+`
 
 const Section = styled.div`
   display: flex;
@@ -93,7 +92,7 @@ const Section = styled.div`
     grid-column: 1;
     grid-row: 2;
   }
-`;
+`
 
 const SectionTitle = styled.h2`
   margin: 0;
@@ -101,7 +100,7 @@ const SectionTitle = styled.h2`
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
-`;
+`
 
 const Card = styled.div`
   flex: 1;
@@ -112,14 +111,14 @@ const Card = styled.div`
   align-items: center;
   justify-content: center;
   gap: 20px;
-`;
+`
 
 const ChartWrapper = styled.div`
   position: relative;
   width: 300px !important;
   height: 300px !important;
   flex-shrink: 0;
-`;
+`
 
 const ChartCenter = styled.div`
   position: absolute;
@@ -132,26 +131,26 @@ const ChartCenter = styled.div`
   gap: 2px;
   text-align: center;
   pointer-events: none;
-`;
+`
 
 const CenterCount = styled.span`
   font-size: 38px;
   font-weight: 400;
   line-height: 1;
   color: var(--foreground);
-`;
+`
 
 const CenterLabel = styled.span`
   white-space: nowrap;
   font-size: 17px;
   color: var(--foreground);
-`;
+`
 
 const StatusRow = styled.div`
   display: flex;
   gap: 30px;
   align-items: center;
-`;
+`
 
 const StatusItem = styled.div`
   display: flex;
@@ -160,15 +159,15 @@ const StatusItem = styled.div`
   gap: 8px;
   padding: 8px;
   width: 80px;
-`;
+`
 
 const StatusCount = styled.span`
   font-size: 20px;
   font-weight: 400;
   color: var(--foreground);
-`;
+`
 
-const StatusBadge = styled.span<{ $variant: WorkspaceStatusDtoType }>`
+const StatusBadge = styled.span<{ $color: string }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -178,7 +177,6 @@ const StatusBadge = styled.span<{ $variant: WorkspaceStatusDtoType }>`
   font-size: 20px;
   font-weight: 400;
   white-space: nowrap;
-`;
-/* TODO - need to figure out what to do here */
-/* color: ${({ $variant }) => statusColors[$variant].fontColor};
-background: ${({ $variant }) => statusColors[$variant].bgColor}; */
+  ${({ $color }) => `color: ${$color};`}
+  ${({ $color }) => `background:  rgb(from ${$color} r g b / 0.1);`}
+`
