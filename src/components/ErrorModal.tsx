@@ -6,6 +6,7 @@ import { PermissionDtoType } from "src/api/model"
 import { useListPermissions } from "src/api/permission/permission"
 import { useErrorModal } from "src/providers/ErrorModalProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { CHAT_LINK } from "src/utils/env-utils"
 
 interface ErrorContent {
   title: string
@@ -68,8 +69,7 @@ export function ErrorModal() {
 
   function navigateToChat() {
     error?.setErrorCode(null)
-    // TODO: CHAT link
-    window.open("https://chatLink")
+    window.open(CHAT_LINK)
   }
 
   const content = error?.errorCode ? ERROR_CONTENT[error.errorCode] : null
