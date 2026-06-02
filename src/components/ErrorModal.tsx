@@ -7,27 +7,28 @@ import { useListPermissions } from "src/api/permission/permission"
 import { useErrorModal } from "src/providers/ErrorModalProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { CHAT_LINK } from "src/utils/env-utils"
+import { ErrorCode, isErrorCode } from "src/utils/error-utils"
 
 interface ErrorContent {
   title: string
   description: string
 }
 
-const ERROR_CONTENT: Record<number, ErrorContent> = {
-  400: {
+const ERROR_CONTENT: Record<ErrorCode, ErrorContent> = {
+  [ErrorCode.BAD_REQUEST]: {
     title: "משהו השתבש בתקשורת",
     description:
       "כדאי לנסות שוב בעוד מספר רגעים אם הבעיה נמשכת, פנו אלינו לעזרה",
   },
-  403: {
+  [ErrorCode.UNAUTHORIZED]: {
     title: "נראה שאין לך הרשאות לפה",
     description: "לקבלת הרשאות פנה למנהל הסביבה ובמידת הצורך ניתן לפנות אלינו",
   },
-  404: {
+  [ErrorCode.NOT_FOUND]: {
     title: "אופס, נראה שהעמוד שחיפשת לא נמצא",
     description: "ייתכן שהוא הוסר, הועבר או שהקישור שגוי",
   },
-  500: {
+  [ErrorCode.SERVER_ERROR]: {
     title: "משהו השתבש בתקשורת",
     description:
       "כדאי לנסות שוב בעוד מספר רגעים אם הבעיה נמשכת, פנו אלינו לעזרה",
@@ -49,7 +50,7 @@ export function ErrorModal() {
     { workspaceId },
     {
       query: {
-        enabled: error?.errorCode === 403 && !!urlName,
+        enabled: error?.errorCode === ErrorCode.UNAUTHORIZED && !!urlName,
       },
     },
   )
@@ -72,7 +73,7 @@ export function ErrorModal() {
     window.open(CHAT_LINK)
   }
 
-  const content = error?.errorCode ? ERROR_CONTENT[error.errorCode] : null
+  const content = error?.errorCode && isErrorCode(error.errorCode) ? ERROR_CONTENT[error.errorCode as ErrorCode] : null
 
   return (
     content &&
@@ -80,12 +81,12 @@ export function ErrorModal() {
       <Overlay onClick={handleClose}>
         <Card onClick={(e) => e.stopPropagation()}>
           <ContentContainer>
-            <ErrorCode>{error.errorCode}</ErrorCode>
+            <ErrorCodeDisplay>{error.errorCode}</ErrorCodeDisplay>
             <ErrorText>
               <ErrorTitle>{content.title}</ErrorTitle>
               <ErrorDescription>{content.description}</ErrorDescription>
             </ErrorText>
-            {error.errorCode === 403 && admins.length > 0 && (
+            {error.errorCode === ErrorCode.UNAUTHORIZED && admins.length > 0 && (
               <AdminContactsBox>
                 <AdminContactsContent>
                   <AdminContactsTitle>
@@ -167,7 +168,7 @@ const ContentContainer = styled.div`
   gap: 48px;
 `
 
-const ErrorCode = styled.div`
+const ErrorCodeDisplay = styled.div`
   font-size: 300px;
   font-weight: 700;
   line-height: 1;
