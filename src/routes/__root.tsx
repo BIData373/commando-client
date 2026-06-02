@@ -3,36 +3,66 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { StrictMode } from "react";
+import { ErrorModal } from "../components/ErrorModal";
 import Header from "../components/Header";
+import { ErrorModalProvider, useErrorModal } from "../providers/ErrorModalProvider";
 import { TitleBarProvider } from "../providers/TitleBarProvider";
 import "../styles.css";
+import { isErrorCode } from "src/utils/errorUtils";
+
+function NotFoundComponent() {
+	const error = useErrorModal()
+	error?.setErrorCode(404);
+	return null;
+}
+
+interface RouteError {
+	status?: number;
+	response?: { status?: number };
+}
+
+function RootErrorComponent({ error }: { error: Error }) {
+	const errorModal = useErrorModal()
+
+	const routeError = error as unknown as RouteError;
+	const status = routeError?.status ?? routeError?.response?.status;
+	const code = status && isErrorCode(status) ? status : 500;
+	errorModal?.setErrorCode(code);
+
+	return null;
+}
 
 export const Route = createRootRoute({
 	component: RootComponent,
+	notFoundComponent: NotFoundComponent,
+	errorComponent: RootErrorComponent,
 });
 
 function RootComponent() {
 	return (
 		<StrictMode>
-			<TitleBarProvider>
-				<AppShell>
-					<Header />
-					<PageContainer>
-						<Outlet />
-					</PageContainer>
-				</AppShell>
-			</TitleBarProvider>
-			<TanStackDevtools
-				config={{
-					position: "bottom-right",
-				}}
-				plugins={[
-					{
-						name: "TanStack Router",
-						render: <TanStackRouterDevtoolsPanel />,
-					},
-				]}
-			/>
+			<ErrorModalProvider>
+				<TitleBarProvider>
+					<AppShell>
+						<Header />
+						<PageContainer>
+							<Outlet />
+						</PageContainer>
+					</AppShell>
+				</TitleBarProvider>
+				<ErrorModal />
+				<TanStackDevtools
+					config={{
+						position: "bottom-right",
+					}}
+					plugins={[
+						{
+							name: "TanStack Router",
+							render: <TanStackRouterDevtoolsPanel />,
+						},
+					]}
+				/>
+			</ErrorModalProvider>
 		</StrictMode>
 	);
 }
