@@ -1,15 +1,15 @@
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import styled from "@emotion/styled";
-import { Eye, EyeOff, GripVertical } from "lucide-react";
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import styled from "@emotion/styled"
+import { Eye, EyeOff, GripVertical } from "lucide-react"
 
-import type { TaskColumnMeta } from "../../hooks/useTaskColumns";
+import type { TaskColumnMeta } from "../../hooks/useTaskColumns"
 
 interface SortableColumnItemProps {
-	column: TaskColumnMeta;
-	isHidden: boolean;
-	isLocked: boolean;
-	onToggle: () => void;
+	column: TaskColumnMeta
+	isHidden: boolean
+	isLocked: boolean
+	onToggle: () => void
 }
 
 function SortableColumnItem({
@@ -25,12 +25,12 @@ function SortableColumnItem({
 		transform,
 		transition,
 		isDragging,
-	} = useSortable({ id: column.id });
+	} = useSortable({ id: column.id })
 
 	const style = {
 		transform: CSS.Transform.toString(transform),
 		transition,
-	};
+	}
 
 	return (
 		<ItemRow ref={setNodeRef} style={style} $isDragging={isDragging}>
@@ -48,10 +48,10 @@ function SortableColumnItem({
 				</DragHandle>
 			</ItemActions>
 		</ItemRow>
-	);
+	)
 }
 
-export { SortableColumnItem };
+export { SortableColumnItem }
 
 // ─── Styled ──────────────────────────────────────────────────────────────────
 
@@ -70,7 +70,7 @@ const DragHandle = styled.button`
   &:active {
     cursor: grabbing;
   }
-`;
+`
 
 const ItemRow = styled.div<{ $isDragging: boolean }>`
 direction: ltr;
@@ -96,7 +96,7 @@ direction: ltr;
       opacity: 1;
     }
   }
-`;
+`
 
 const ItemLabel = styled.span`
   direction: rtl;
@@ -108,14 +108,14 @@ const ItemLabel = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`;
+`
 
 const ItemActions = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
   flex-shrink: 0;
-`;
+`
 
 const IconButton = styled.button`
   display: flex;
@@ -135,8 +135,8 @@ const IconButton = styled.button`
     cursor: default;
     color: rgba(0, 0, 0, 0.25);
   }
-`;
+`
 
 const EyeoffIcon = styled(EyeOff)`
   color: rgba(0, 0, 0, 0.25);
-`;
+`

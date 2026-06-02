@@ -64,14 +64,14 @@ function RootComponent() {
 				/>
 			</ErrorModalProvider>
 		</StrictMode>
-	);
+	)
 }
 
 const AppShell = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
-`;
+`
 
 const PageContainer = styled.div`
   flex: 1;
@@ -79,4 +79,4 @@ const PageContainer = styled.div`
   min-height: 0;
   background: var(--primary-foreground);
   padding-inline: 24px;
-`;
+`

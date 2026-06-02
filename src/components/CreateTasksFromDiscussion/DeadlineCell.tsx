@@ -1,33 +1,33 @@
-import styled from "@emotion/styled";
-import { ChevronLeft } from "lucide-react";
-import { useState } from "react";
-import { formatDateShort } from "../../functions/date-utils";
-import type { DatePickerValue } from "../shared/DatePicker";
-import { CalendarMode } from "../shared/DatePicker";
-import DatePickerPopover from "../shared/DatePickerPopover";
+import styled from "@emotion/styled"
+import { ChevronLeft } from "lucide-react"
+import { useState } from "react"
+import { formatDateShort } from "../../functions/date-utils"
+import type { DatePickerValue } from "../shared/DatePicker"
+import { CalendarMode } from "../shared/DatePicker"
+import DatePickerPopover from "../shared/DatePickerPopover"
 import DeadlineTag, {
 	DEADLINE_LABELS,
 	DeadlineType,
-} from "../shared/DeadlineTag";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+} from "../shared/DeadlineTag"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface DeadlineCellProps {
-	deadlineType: DeadlineType | null;
-	dueDate: Date | null;
-	onDeadlineTypeChange: (type: DeadlineType) => void;
-	onDateChange: (date: Date | null) => void;
+	deadlineType: DeadlineType | null
+	dueDate: Date | null
+	onDeadlineTypeChange: (type: DeadlineType) => void
+	onDateChange: (date: Date | null) => void
 }
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
-const DEADLINE_TYPES = Object.keys(DEADLINE_LABELS) as DeadlineType[];
+const DEADLINE_TYPES = Object.keys(DEADLINE_LABELS) as DeadlineType[]
 const TYPES_WITH_CALENDAR: DeadlineType[] = [
 	DeadlineType.Date,
 	DeadlineType.Ongoing,
-];
-export const DATA_CELL_ACTIVE_KEY = "data-cell-active";
+]
+export const DATA_CELL_ACTIVE_KEY = "data-cell-active"
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
@@ -37,24 +37,24 @@ function DeadlineCell({
 	onDeadlineTypeChange,
 	onDateChange,
 }: DeadlineCellProps) {
-	const [isOpen, setIsOpen] = useState(false);
+	const [isOpen, setIsOpen] = useState(false)
 
 	function handleOptionClick(type: DeadlineType) {
-		onDeadlineTypeChange(type);
+		onDeadlineTypeChange(type)
 		if (!TYPES_WITH_CALENDAR.includes(type)) {
-			setIsOpen(false);
+			setIsOpen(false)
 		}
 	}
 
 	function handleSetDate(value: DatePickerValue | undefined) {
-		const date = value instanceof Date ? value : undefined;
-		onDateChange(date ?? null);
-		setIsOpen(false);
+		const date = value instanceof Date ? value : undefined
+		onDateChange(date ?? null)
+		setIsOpen(false)
 	}
 
 	function handleSetWithoutDate() {
-		onDateChange(null);
-		setIsOpen(false);
+		onDateChange(null)
+		setIsOpen(false)
 	}
 
 	return (
@@ -133,10 +133,10 @@ function DeadlineCell({
 				</DeadlineDropdownContent>
 			</Popover>
 		</DeadlineCellWrapper>
-	);
+	)
 }
 
-export default DeadlineCell;
+export default DeadlineCell
 
 // ─── Styled ─────────────────────────────────────────────────────────────────
 
@@ -147,7 +147,7 @@ const DeadlineCellWrapper = styled.div`
   height: 100%;
   background: transparent;
   z-index: var(--z-dropdown);
-`;
+`
 
 const DeadlineTrigger = styled.button`
   display: flex;
@@ -159,7 +159,7 @@ const DeadlineTrigger = styled.button`
   background: transparent;
   cursor: pointer;
   outline: none;
-`;
+`
 
 const PlaceholderText = styled.span`
   font-size: 14px;
@@ -169,13 +169,13 @@ const PlaceholderText = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-`;
+`
 
 const DisplayRow = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-`;
+`
 
 const DateText = styled.span`
   font-size: 14px;
@@ -183,7 +183,7 @@ const DateText = styled.span`
   line-height: 22px;
   color: var(--text-color);
   white-space: nowrap;
-`;
+`
 
 const DeadlineDropdownContent = styled(PopoverContent)`
   width:138px !important;
@@ -191,11 +191,11 @@ const DeadlineDropdownContent = styled(PopoverContent)`
   padding: 4px;
   overflow: visible;
   z-index: var(--z-dropdown);
-`;
+`
 
 const DropdownRow = styled.div`
   position: relative;
-`;
+`
 
 const DropdownHeader = styled.div`
   display: flex;
@@ -206,7 +206,7 @@ const DropdownHeader = styled.div`
   font-weight: 400;
   line-height: 22px;
   color: var(--Components-Dropdown-Global-colorTextDescription);
-`;
+`
 
 const DeadlineOption = styled.button<{ $active: boolean }>`
   display: flex;
@@ -223,7 +223,7 @@ const DeadlineOption = styled.button<{ $active: boolean }>`
   &:hover {
     background: var(--Components-Dropdown-Global-controlItemBgHover);
   }
-`;
+`
 
 const DeadlineOptionText = styled.span`
   flex: 1;
@@ -232,13 +232,13 @@ const DeadlineOptionText = styled.span`
   line-height: 22px;
   color: var(--text-color-2);
   text-align: start;
-`;
+`
 
 const HiddenAnchor = styled.div`
   position: absolute;
   inset-block-start: 0;
   inset-inline-end: 0;
-`;
+`
 
 const PopoverHeaderText = styled.span`
   direction: ltr;
@@ -247,13 +247,13 @@ const PopoverHeaderText = styled.span`
   line-height: 22px;
   color: var(--text-color-2);
   text-align: end;
-`;
+`
 
 const PopoverFooter = styled.div`
   direction: ltr;
   display: flex;
   gap: 8px;
-`;
+`
 
 const SetButton = styled.button`
   display: flex;
@@ -270,7 +270,7 @@ const SetButton = styled.button`
   line-height: 22px;
   cursor: pointer;
   white-space: nowrap;
-`;
+`
 
 const SetWithoutDateButton = styled.button`
   display: flex;
@@ -290,4 +290,4 @@ const SetWithoutDateButton = styled.button`
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-`;
+`

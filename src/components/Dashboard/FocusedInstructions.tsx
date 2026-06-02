@@ -1,41 +1,43 @@
-import styled from "@emotion/styled";
+import styled from "@emotion/styled"
+import type { QueryKey } from "@tanstack/react-query"
 import {
 	flexRender,
 	getCoreRowModel,
 	useReactTable,
-} from "@tanstack/react-table";
-import { useMemo, useState } from "react";
-import { matchesQuickFilter } from "src/functions/filter-utils";
-import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filterUtils";
-import { DeadlineType } from "../shared/DeadlineTag";
-import searchInstruction from "../../assets/icons/searchInstruction.svg";
-import type { Task } from "../../data/Tasks";
-import { useTaskColumns } from "../../hooks/useTaskColumns";
-import { EmptyCardState } from "./EmptyCardState";
-import { ViewMoreInstructions } from "./ViewMoreInstructions";
+} from "@tanstack/react-table"
+import { useMemo, useState } from "react"
+import { matchesQuickFilter } from "src/functions/filter-utils"
+import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filter-utils"
+import searchInstruction from "../../assets/icons/searchInstruction.svg"
+import { useTaskColumns } from "../../hooks/useTaskColumns"
+import { DeadlineType } from "../shared/DeadlineTag"
+import { EmptyCardState } from "./EmptyCardState"
+import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface TabConfig {
-	id: FocusedTab;
-	label: string;
-	count: number;
-	weekDelta: number;
+	id: FocusedTab
+	label: string
+	count: number
+	weekDelta: number
 }
 
 interface EmptyMessage {
-	title: string;
-	description: string;
+	title: string
+	description: string
 }
 
 interface IFocusedInstruction {
-	urlName: string;
-	tasks: Task[];
+	queryKey: QueryKey
+	urlName: string
+	tasks: TaskRow[]
 }
 
 const TAB_LABELS: Pick<TabConfig, "id" | "label" | "weekDelta">[] = [
 	{ id: FocusedTab.FLAGGED, label: "הנחיות חשובות", weekDelta: 0 },
 	{ id: FocusedTab.APPROACHING, label: "הנחיות לביצוע מידיות", weekDelta: 0 },
 	{ id: FocusedTab.OVERDUE, label: 'חריגות מתג"ב', weekDelta: 0 },
-];
+]
 
 const EMPTY_MESSAGES: Record<FocusedTab, EmptyMessage> = {
 	[FocusedTab.FLAGGED]: {
@@ -50,35 +52,36 @@ const EMPTY_MESSAGES: Record<FocusedTab, EmptyMessage> = {
 		title: 'לא נמצאו חריגות מתג"ב',
 		description: 'חריגות מתג"ב יופיעו כאן',
 	},
-};
+}
 
-const coreRowModel = getCoreRowModel();
+const coreRowModel = getCoreRowModel()
 
-function getFilteredTasks(tab: FocusedTab, tasks: Task[]): Task[] {
+function getFilteredTasks(tab: FocusedTab, tasks: TaskRow[]): TaskRow[] {
 	switch (tab) {
 		case FocusedTab.FLAGGED:
-			return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED));
+			return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED))
 		case FocusedTab.APPROACHING:
-			return tasks.filter((t) => t.deadlineType === "immediate");
+			return tasks.filter((t) => t.deadlineType === "immediate")
 		case FocusedTab.OVERDUE:
-			return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE));
+			return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
 	}
 }
 
 export default function FocusedInstructions({
+	queryKey,
 	urlName,
 	tasks,
 }: IFocusedInstruction) {
-	const [activeTab, setActiveTab] = useState<FocusedTab>(FocusedTab.FLAGGED);
+	const [activeTab, setActiveTab] = useState<FocusedTab>(FocusedTab.FLAGGED)
 
 	function handleTabClick(tabId: FocusedTab) {
-		setActiveTab(tabId);
+		setActiveTab(tabId)
 	}
 
 	const filteredTasks = useMemo(
 		() => getFilteredTasks(activeTab, tasks),
 		[activeTab, tasks],
-	);
+	)
 
 	const tabs: TabConfig[] = TAB_LABELS.map((tab) => ({
 		...tab,
@@ -88,23 +91,23 @@ export default function FocusedInstructions({
 				: tab.id === FocusedTab.APPROACHING
 					? tasks.filter((t) => t.deadlineType === "immediate").length
 					: tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
-						.length,
-	}));
+							.length,
+	}))
 
-	const emptyMsg = EMPTY_MESSAGES[activeTab];
+	const emptyMsg = EMPTY_MESSAGES[activeTab]
 
 	const { columns } = useTaskColumns({
-		visibleColumns: ["title", "status", "responsible", "deadlineType"],
+		queryKey,
+		visibleColumns: ["title", "status", "assigneeStatuses", "deadlineType"],
 		searchQuery: "",
 		filterOptionsMap: {},
-		onUpdateStatus: () => { },
-	});
+	})
 
 	const table = useReactTable({
 		data: filteredTasks,
 		columns,
 		getCoreRowModel: coreRowModel,
-	});
+	})
 
 	return (
 		<Section>
@@ -134,7 +137,7 @@ export default function FocusedInstructions({
 					) : (
 						<TaskList>
 							{table.getRowModel().rows.map((row) => (
-								<TaskRow key={row.id}>
+								<TaskTableRow key={row.id}>
 									{row.getVisibleCells().map((cell) =>
 										cell.column.id === "title" ? (
 											<TitleCellWrapper key={cell.id}>
@@ -152,7 +155,7 @@ export default function FocusedInstructions({
 											</FixedCell>
 										),
 									)}
-								</TaskRow>
+								</TaskTableRow>
 							))}
 						</TaskList>
 					)}
@@ -161,10 +164,14 @@ export default function FocusedInstructions({
 			<ViewMoreInstructions
 				urlName={urlName}
 				tabFilter={activeTab === FocusedTab.APPROACHING ? undefined : activeTab}
-				deadlineTypeFilter={activeTab === FocusedTab.APPROACHING ? DeadlineType.Immediate : undefined}
+				deadlineTypeFilter={
+					activeTab === FocusedTab.APPROACHING
+						? DeadlineType.Immediate
+						: undefined
+				}
 			/>
 		</Section>
-	);
+	)
 }
 
 const Section = styled.div`
@@ -178,7 +185,7 @@ const Section = styled.div`
     grid-column: 1 / -1;
     grid-row: 1;
   }
-`;
+`
 
 const SectionTitle = styled.h2`
   margin: 0;
@@ -186,20 +193,20 @@ const SectionTitle = styled.h2`
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
-`;
+`
 
 const TabsWrapper = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-`;
+`
 
 const TabsHeader = styled.div`
   display: flex;
   gap: 2px;
   position: relative;
   max-width: 840px;
-`;
+`
 
 const TabItem = styled.button<{ $active: boolean }>`
   word-wrap: break-word;
@@ -219,7 +226,7 @@ const TabItem = styled.button<{ $active: boolean }>`
   margin-bottom: -1px;
   align-items: flex-start;
   flex: 1;
-`;
+`
 
 const TabTitle = styled.span<{ $active: boolean }>`
   font-size: 20px;
@@ -233,14 +240,14 @@ const TabTitle = styled.span<{ $active: boolean }>`
       background-clip: text;
     `
 			: `color: var(--sea-ink);`}
-`;
+`
 
 const TabBottom = styled.div`
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   width: 100%;
-`;
+`
 
 const TabCount = styled.span<{ $active: boolean }>`
   font-size: 38px;
@@ -255,7 +262,7 @@ const TabCount = styled.span<{ $active: boolean }>`
       background-clip: text;
     `
 			: `color: var(--foreground);`}
-`;
+`
 
 const ContentPanel = styled.div<{ $hasContent: boolean }>`
   flex: 1;
@@ -279,15 +286,15 @@ const ContentPanel = styled.div<{ $hasContent: boolean }>`
       align-items: center;
       justify-content: center;
     `}
-`;
+`
 
 const TaskList = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-`;
+`
 
-const TaskRow = styled.div`
+const TaskTableRow = styled.div`
   display: flex;
   align-items: center;
   height: 44px;
@@ -296,7 +303,7 @@ const TaskRow = styled.div`
   &:nth-of-type(even) {
     background: rgba(0, 0, 0, 0);
   }
-`;
+`
 
 const TitleCellWrapper = styled.div`
   flex: 1;
@@ -309,7 +316,7 @@ const TitleCellWrapper = styled.div`
   background: var(--background);
   direction: rtl;
   border: 0.5px solid rgba(0, 0, 0, 0.01);
-`;
+`
 
 const FixedCell = styled.div<{ $width: number }>`
   width: ${({ $width }) => $width}px;
@@ -323,4 +330,4 @@ const FixedCell = styled.div<{ $width: number }>`
   background: var(--background);
   direction: rtl;
   border: 0.5px solid rgba(0, 0, 0, 0.01);
-`;
+`
