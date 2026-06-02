@@ -1,5 +1,4 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { WorkspaceProvider } from "src/providers/WorkspaceProvider"
 import CreateTaskModal from "../../../../components/CreateTasks/CreateTaskModal"
 import CreateDiscussionModal from "../../../../components/CreateTasksFromDiscussion/CreateDiscussionModal"
 import type { View } from "../../../../components/Tasks/TasksLayout"

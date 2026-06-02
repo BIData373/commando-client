@@ -3,7 +3,7 @@ import { X } from "lucide-react"
 import { useRef } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import type { AvatarColor } from "../Tasks/AssigneeCell"
+import { AssigneeAvatar } from "./AssigneeAvatar"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -30,10 +30,14 @@ function AssigneeRowList({
 }: AssigneeRowListProps) {
 	const detailRefs = useRef<Record<number, HTMLSpanElement | null>>({})
 
-	// const { workspace: { id: workspaceId } } = useWorkspace()
-	// const { data: assignees } = useListAssignees({ workspaceId })
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+	const { data: assignees } = useListAssignees({ workspaceId })
 
-	const assignees = assigneeIds.map((id) => MOCK_ASSIGNEES[id]).filter(Boolean)
+	const filteredAssignees = (assignees ?? []).filter(({ id }) =>
+		assigneeIds.includes(id),
+	)
 
 	function handleDetailInput(id: number, e: React.FormEvent<HTMLSpanElement>) {
 		onDetailChange(id, e.currentTarget.textContent ?? "")
@@ -58,7 +62,7 @@ function AssigneeRowList({
 
 	return (
 		<RowsList>
-			{assignees.map((assignee) => (
+			{filteredAssignees.map((assignee) => (
 				<RowItem key={assignee.id}>
 					<RemoveButton onClick={() => onRemove(assignee.id)}>
 						<X size={14} />
@@ -84,10 +88,8 @@ function AssigneeRowList({
 						)}
 
 						<InfoBlock>
-							<RoleText>{assignee.role}</RoleText>
-							<AvatarCircle $color={assignee.colorToken}>
-								{assignee.initials}
-							</AvatarCircle>
+							<RoleText>{assignee.name}</RoleText>
+							<AssigneeAvatar assignee={assignee} />
 						</InfoBlock>
 					</RowContainer>
 				</RowItem>
@@ -212,33 +214,4 @@ const RoleText = styled.span`
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;
   text-align: center;
-`
-
-// FIX Use AssigneeAvatar
-const AvatarCircle = styled.div<{ $color: AvatarColor }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 29px;
-  height: 29px;
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 20px;
-  color: rgba(0, 0, 0, 0.88);
-  flex-shrink: 0;
-  ${({ $color }) => {
-		switch ($color) {
-			case "cyan":
-				return "background: #87e8de;"
-			case "blue":
-				return "background: #91caff;"
-			case "green":
-				return "background: #b7eb8f;"
-			case "orange":
-				return "background: #ffd591;"
-			case "gray":
-				return "background: var(--colors-base-neutral-3);"
-		}
-	}}
 `

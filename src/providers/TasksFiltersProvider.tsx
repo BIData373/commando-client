@@ -1,3 +1,4 @@
+import type { QueryKey } from "@tanstack/react-query"
 import {
 	createContext,
 	type PropsWithChildren,
@@ -26,6 +27,8 @@ export type TaskRow = TaskDto & {
 }
 
 interface TasksFiltersContextValue {
+	queryKey: QueryKey
+
 	searchQuery: string
 	setSearchQuery: (query: string) => void
 
@@ -98,28 +101,6 @@ export function TasksFiltersProvider({
 	function clearQuickFilters() {
 		setActiveQuickFilters(new Set())
 	}
-
-	// function removeTasks(taskIds: number[]) {
-	//   if (!queryKey) return;
-	//   queryClient.setQueryData(queryKey, (prev: TTask[] | undefined) =>
-	//     prev?.filter((t) => !taskIds.includes(t.id)),
-	//   );
-	// }
-
-	// // FIX Move to TaskTable
-	// function bulkUpdateStatus(taskIds: number[], status: DirectiveStatus) {
-	//   if (!queryKey) return;
-	//   queryClient.setQueryData(queryKey, (prev: TTask[] | undefined) =>
-	//     prev?.map((task) => {
-	//       if (!taskIds.includes(task.id)) return task;
-	//       const t = task as TaskWithAssignees;
-	//       return {
-	//         ...task,
-	//         assignees: t.assignees?.map((e) => ({ ...e, status })),
-	//       } as TTask;
-	//     }),
-	//   );
-	// }
 
 	return (
 		<TasksFiltersContext.Provider

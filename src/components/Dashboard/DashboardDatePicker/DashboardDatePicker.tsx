@@ -1,5 +1,7 @@
 import { useState } from "react"
-import type { DateRange } from "react-day-picker"
+import { type DateRange, isDateRange } from "react-day-picker"
+import { CalendarMode } from "src/components/shared/DatePicker"
+import DatePickerPopover from "src/components/shared/DatePickerPopover"
 import type { DATE_TYPE } from "src/utils/data-type-utils"
 import { DashboardDatePickerFooter } from "./DashboardDatePickerFooter"
 import { DashboardDatePickerHeader } from "./DashboardDatePickerHeader"
@@ -18,20 +20,19 @@ export function DashboardDatePicker({
 }: DashboardDatePickerProps) {
 	const [pendingDataType, setPendingDataType] = useState(dateType)
 
-	function handleBlur() {
-		setPendingDataType(dateType)
-	}
-
 	function handleConfirm(range: DateRange | undefined) {
 		onDateTypeChange(pendingDataType)
 		setRange(range)
 	}
 
 	return (
-		<DateRangePicker
-			onBlur={handleBlur}
-			triggerButton={({ range }) => (
-				<DashboardDatePickerTriggerButton label={dateType} range={range} />
+		<DatePickerPopover
+			mode={CalendarMode.Range}
+			triggerButton={({ value }) => (
+				<DashboardDatePickerTriggerButton
+					label={dateType}
+					range={isDateRange(value) ? value : undefined}
+				/>
 			)}
 			header={() => (
 				<DashboardDatePickerHeader

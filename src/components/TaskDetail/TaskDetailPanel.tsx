@@ -2,15 +2,14 @@ import styled from "@emotion/styled"
 import { EditorContent, useEditor } from "@tiptap/react"
 import { Calendar, ChevronUp, History, Paperclip, X } from "lucide-react"
 import { useRef, useState } from "react"
-import { useListMessages } from "src/api/message/message"
-import type { TaskDto } from "src/api/model"
+import type { TaskWithWorkspaceDto } from "src/api/model"
 import { useListTaskHistory } from "src/api/task-history/task-history"
-import {
-	formatDateToDateMonthYear,
-	formatDateToMinutesHours,
-} from "src/utils/time-format"
+import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import { EditorExtensions } from "src/utils/tiptap-extensions"
-import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
+import DeadlineTag, {
+	DEADLINE_LABELS,
+	DeadlineType,
+} from "../shared/DeadlineTag"
 import FlagIcon from "../shared/FlagIcon"
 import { AssigneeSection } from "./AssigneeSection"
 import { DropdownOptions } from "./DropdownOptions"
@@ -18,7 +17,7 @@ import TaskConversationPanel from "./TaskConversationPanel"
 import TaskHistoryPanel from "./TaskHistoryPanel"
 
 interface TaskDetailPanelProps {
-	task: TaskDto
+	task: TaskWithWorkspaceDto
 	onClose: () => void
 	onArchive: () => void
 	onDelete: () => void
@@ -28,23 +27,19 @@ function TaskDetailPanel({
 	task: {
 		id,
 		title,
-		description,
 		flagged,
 		deadlineType,
 		dueDate,
 		createdAt,
-		assigneeStatuses,
-		tags,
-		source,
 		notes,
+		source,
+		tags,
+		assigneeStatuses,
 	},
 	onClose,
 	onArchive,
 	onDelete,
 }: TaskDetailPanelProps) {
-	const { data: history = [] } = useListTaskHistory({ taskId: id })
-	const { data: messages = [] } = useListMessages({ taskId: id })
-
 	const [showHistory, setShowHistory] = useState(false)
 	const [showConversation, setShowConversation] = useState(false)
 
@@ -54,12 +49,15 @@ function TaskDetailPanel({
 		bottom: false,
 	})
 
+	const { data: history } = useListTaskHistory({ taskId: id })
+
 	const editor = useEditor({
 		...EditorExtensions,
 		content: notes,
 	})
 
-	const attacmentFile = source?.attachmentKey?.split("/").pop()?.split(".")[0]
+	const attachmentFile = source.attachmentKey?.split("/").pop()?.split(".")[0]
+	const hasTagOrAttachment = tags.length > 0 || !!source.attachmentKey
 
 	function handleScroll() {
 		const el = scrollRef.current
@@ -68,8 +66,6 @@ function TaskDetailPanel({
 		const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
 		setScrollShadow({ top: !atTop, bottom: !atBottom })
 	}
-
-	const hasTagOrAttacment = tags.length > 0 || !!attacmentFile
 
 	function handlePanelClick(e: React.MouseEvent) {
 		e.stopPropagation()
@@ -84,7 +80,6 @@ function TaskDetailPanel({
 		<Overlay onClick={onClose}>
 			<Panel onClick={handlePanelClick}>
 				<TaskIdLabel>#{id}</TaskIdLabel>
-
 				<CloseBtn onClick={onClose} aria-label="סגור">
 					<X size={16} />
 				</CloseBtn>
@@ -92,13 +87,8 @@ function TaskDetailPanel({
 				<HeaderRow $shadow={scrollShadow.top}>
 					<TextWrapper>
 						{flagged && <FlagIcon />}
-
-						<TitleText>
-							{title}
-							{description ? ` - ${description}` : ""}
-						</TitleText>
+						<TitleText>{title}</TitleText>
 					</TextWrapper>
-
 					<DropdownOptions
 						onEdit={onClose}
 						onArchive={onArchive}
@@ -113,36 +103,28 @@ function TaskDetailPanel({
 				>
 					<DeadlineSection>
 						<SectionLabel>תג"ב</SectionLabel>
-
 						<MetaRow>
 							<DueDateGroup>
-								{deadlineType !== "date" && (
-									<DeadlineTag $type={deadlineType}>
-										{DEADLINE_LABELS[deadlineType]}
+								{deadlineType !== DeadlineType.Date && (
+									<DeadlineTag $type={deadlineType as DeadlineType}>
+										{DEADLINE_LABELS[deadlineType as DeadlineType]}
 									</DeadlineTag>
 								)}
-
 								{dueDate && (
 									<DateContainer>
 										<MetaLabel>עד</MetaLabel>
-
-										<DueDateText>
-											{formatDateToDateMonthYear(new Date(dueDate))}
-										</DueDateText>
-
+										<DueDateText>{formatDateMonthYear(dueDate)}</DueDateText>
 										<Calendar size={16} />
 									</DateContainer>
 								)}
 							</DueDateGroup>
-
 							<CreatedGroup>
 								<HistoryButton onClick={() => setShowHistory(true)}>
 									<History size={16} />
 								</HistoryButton>
-
 								<MetaText>
-									{formatDateToMinutesHours(new Date(createdAt))} -{" "}
-									{formatDateToDateMonthYear(new Date(createdAt))}
+									{formatMinutesHours(createdAt)} -{" "}
+									{formatDateMonthYear(createdAt)}
 								</MetaText>
 							</CreatedGroup>
 						</MetaRow>
@@ -150,54 +132,49 @@ function TaskDetailPanel({
 
 					<AssigneeSection taskId={id} assigneeStatuses={assigneeStatuses} />
 
-					{hasTagOrAttacment && (
+					{hasTagOrAttachment && (
 						<>
 							<DividerRow>
 								<DividerLine />
-
 								<DividerText>פרטים נוספים</DividerText>
-
 								<DividerLine />
 							</DividerRow>
 
 							<InfoGrid>
-								{source && (
+								{source.name && (
 									<InfoBlock>
 										<SectionLabel>מקור</SectionLabel>
-
 										<SourceRow>
 											<SourceName>{source.name}</SourceName>
-
-											{/* // FIX Source date */}
-											<SourceDate>{null}</SourceDate>
+											<SourceDate>
+												{formatDateMonthYear(source.date)}
+											</SourceDate>
 										</SourceRow>
-
 										<InfoAttachment>
-											{attacmentFile && (
+											{source.attachmentKey && (
 												<>
 													<Paperclip size={16} />
-													{attacmentFile}
+													{attachmentFile}
 												</>
 											)}
 										</InfoAttachment>
 									</InfoBlock>
 								)}
-
-								<InfoBlock>
-									<SectionLabel>נושא</SectionLabel>
-
-									<TagsRow>
-										{tags.map(({ id, name }) => (
-											<TagChip key={id}>{name}</TagChip>
-										))}
-									</TagsRow>
-								</InfoBlock>
+								{tags.length > 0 && (
+									<InfoBlock>
+										<SectionLabel>נושא</SectionLabel>
+										<TagsRow>
+											{tags.map((tag) => (
+												<TagChip key={tag.id}>{tag.name}</TagChip>
+											))}
+										</TagsRow>
+									</InfoBlock>
+								)}
 							</InfoGrid>
 
 							{notes && (
 								<NotesSection>
 									<SectionLabel>הערות הנחיה</SectionLabel>
-
 									<NotesText>
 										<StyledEditorContent editor={editor} />
 									</NotesText>
@@ -213,20 +190,16 @@ function TaskDetailPanel({
 					$shadow={scrollShadow.bottom}
 				>
 					<ChatGroup>
-						<ChatBadge>{messages.length}</ChatBadge>
-
 						<ChatLabel>שיחה ועדכונים</ChatLabel>
 					</ChatGroup>
-
 					<ChevronUp size={20} />
 				</BottomBar>
 
 				{showHistory && (
 					<>
 						<HistoryOverlay />
-
 						<TaskHistoryPanel
-							history={history}
+							history={history ?? []}
 							onClose={() => setShowHistory(false)}
 						/>
 					</>
@@ -234,7 +207,6 @@ function TaskDetailPanel({
 				{showConversation && (
 					<>
 						<HistoryOverlay />
-
 						<TaskConversationPanel
 							taskId={id}
 							onClose={() => setShowConversation(false)}
@@ -452,7 +424,7 @@ const HistoryButton = styled.button`
     background: var(--button-hover);
     color: var(--sea-ink);
   }
-  
+
   &:active {
     background: var(--button-active);
     color: var(--sea-ink);
@@ -513,8 +485,7 @@ const TagChip = styled.span`
   border-radius: 4px;
   font-size: 12px;
   line-height: 20px;
-  background:var(--card-background);
-  border-radius: 4px;
+  background: var(--card-background);
   border: 1px solid var(--chip-line);
   color: var(--sea-ink);
   white-space: nowrap;
@@ -581,21 +552,6 @@ const ChatLabel = styled.span`
   color: var(--sea-ink);
 `
 
-const ChatBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--background);
-  background: var(--default-linear);
-  box-shadow: 0 0 0 1px white;
-  flex-shrink: 0;
-`
-
 const NotesText = styled.div`
   font-size: 14px;
   line-height: 20px;
@@ -634,6 +590,5 @@ const StyledEditorContent = styled(EditorContent)`
       outline: none;
       border: none;
     }
-
   }
 `

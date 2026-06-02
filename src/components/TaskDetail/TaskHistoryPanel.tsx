@@ -3,20 +3,26 @@ import styled from "@emotion/styled"
 import { ChevronsLeft } from "lucide-react"
 import { type TaskHistoryDto, TaskHistoryDtoAction } from "src/api/model"
 import {
-	formatDateToDateMonthFullYear,
-	formatDateToMinutesHours,
+	formatDateMonthFullYear,
+	formatMinutesHours,
 } from "src/utils/time-format"
 
+interface TaskHistoryPanelProps {
+	history: TaskHistoryDto[]
+	onClose: () => void
+}
+
+// TODO - fix this up
 interface HistoryGroup {
 	userId: number
 	name: string
 	timestamp: Date
-	changes: Array<{
+	changes: {
 		id: number
 		action: TaskHistoryDtoAction
 		field: string
 		value: string | null
-	}>
+	}[]
 }
 
 function groupHistoryEntries(history: TaskHistoryDto[]): HistoryGroup[] {
@@ -26,7 +32,7 @@ function groupHistoryEntries(history: TaskHistoryDto[]): HistoryGroup[] {
 		if (
 			last &&
 			last.userId === entry.userId &&
-			last.timestamp.getTime() === new Date(entry.timestamp).getTime()
+			last.timestamp.getTime() === entry.timestamp.getTime()
 		) {
 			last.changes.push({
 				id: entry.id,
@@ -37,9 +43,10 @@ function groupHistoryEntries(history: TaskHistoryDto[]): HistoryGroup[] {
 		} else {
 			groups.push({
 				userId: entry.userId,
-				// FIX Name?
-				name: entry.name,
-				timestamp: new Date(entry.timestamp),
+				// name: entry.name,
+				// TODO - name
+				name: "",
+				timestamp: entry.timestamp,
 				changes: [
 					{
 						id: entry.id,
@@ -55,15 +62,13 @@ function groupHistoryEntries(history: TaskHistoryDto[]): HistoryGroup[] {
 }
 
 function getActionLabel(action: TaskHistoryDtoAction, field: string): string {
-	if (action === TaskHistoryDtoAction.CREATE) return "יצר את הפריט:"
-	if (action === TaskHistoryDtoAction.DELETE) return `נמחק ${field}:`
-
+	if (action === TaskHistoryDtoAction.CREATE) {
+		return "יצר את הפריט:"
+	}
+	if (action === TaskHistoryDtoAction.DELETE) {
+		return `נמחק ${field}:`
+	}
 	return `עודכן ${field}:`
-}
-
-interface TaskHistoryPanelProps {
-	history: TaskHistoryDto[]
-	onClose: () => void
 }
 
 function TaskHistoryPanel({ history, onClose }: TaskHistoryPanelProps) {
@@ -111,12 +116,10 @@ function TaskHistoryPanel({ history, onClose }: TaskHistoryPanelProps) {
 										</UserGroup>
 										<TimeGroup>
 											<DateText>
-												{formatDateToDateMonthFullYear(group.timestamp)}
+												{formatDateMonthFullYear(group.timestamp)}
 											</DateText>
 											<TimeSeparator />
-											<TimeText>
-												{formatDateToMinutesHours(group.timestamp)}
-											</TimeText>
+											<TimeText>{formatMinutesHours(group.timestamp)}</TimeText>
 										</TimeGroup>
 									</MetaRow>
 

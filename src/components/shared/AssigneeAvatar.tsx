@@ -38,9 +38,17 @@ export const AssigneeAvatar = ({
 }
 
 const StyledAvatar = styled(Avatar)<{ $cursor?: boolean }>`
-    &:hover {
-        cursor: ${({ $cursor }) => ($cursor ? "pointer" : "default")};
+	display: flex;
+	align-items: center;
+
+	&:hover {
+      cursor: ${({ $cursor }) => ($cursor ? "pointer" : "default")};
     }
+
+	::after {
+      content: none;
+      border: none;
+  	}
 `
 
 const ColoredFallback = styled(AvatarFallback)<{
