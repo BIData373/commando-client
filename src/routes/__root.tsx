@@ -8,11 +8,11 @@ import Header from "../components/Header";
 import { ErrorModalProvider, useErrorModal } from "../providers/ErrorModalProvider";
 import { TitleBarProvider } from "../providers/TitleBarProvider";
 import "../styles.css";
-import { isErrorCode } from "src/utils/error-utils";
+import { ErrorCode, isErrorCode } from "src/utils/error-utils";
 
 function NotFoundComponent() {
 	const error = useErrorModal()
-	error?.setErrorCode(404);
+	error?.setErrorCode(ErrorCode.NOT_FOUND);
 	return null;
 }
 
@@ -30,7 +30,7 @@ function RootErrorComponent({ error } : RootErrorComponentProps) {
 
 	const routeError = error as RouteError;
 	const status = routeError?.status ?? routeError?.response?.status;
-	const code = status && isErrorCode(status) ? status : 500;
+	const code = status && isErrorCode(status) ? status : ErrorCode.SERVER_ERROR;
 	errorModal?.setErrorCode(code);
 
 	return null;
