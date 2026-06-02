@@ -3,19 +3,19 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { useState } from "react"
 import {
-	type TaskWithWorkspaceDto,
-	type WorkspaceDto,
-	WorkspaceStatusDtoType,
+  type TaskWithWorkspaceDto,
+  type WorkspaceDto,
+  WorkspaceStatusDtoType,
 } from "src/api/model"
 import {
-	getListPersonalTasksQueryKey,
-	useListPersonalTasks,
+  getListPersonalTasksQueryKey,
+  useListPersonalTasks,
 } from "src/api/task/task"
 import { applyAllFilters } from "../../functions/filter-utils"
 import { toTaskRows } from "../../functions/tasks-table"
 import {
-	type TaskRow,
-	useTasksFilters,
+  type TaskRow,
+  useTasksFilters,
 } from "../../providers/TasksFiltersProvider"
 import { useTitleBar } from "../../providers/TitleBarProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
@@ -26,8 +26,8 @@ import type { View } from "../Tasks/TasksLayout"
 
 interface PersonalTasksLayoutProps {
 	view: View
-	urlName: string
 }
+
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
@@ -71,7 +71,7 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 	workspace: WORKSPACE_COLUMN,
 }
 
-function PersonalTasksLayout({ view, urlName }: PersonalTasksLayoutProps) {
+function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 	const { searchQuery, activeQuickFilters, clearQuickFilters } =
 		useTasksFilters()
 	const queryKey = getListPersonalTasksQueryKey()
@@ -144,7 +144,7 @@ function PersonalTasksLayout({ view, urlName }: PersonalTasksLayoutProps) {
 				</SegmentedItem>
 			</SegmentedControl>
 		),
-		[view, urlName],
+		[view],
 	)
 
 	return (
