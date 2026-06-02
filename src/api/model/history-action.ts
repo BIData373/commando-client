@@ -6,10 +6,9 @@
  * OpenAPI spec version: 1.0
  */
 
-export type TaskHistoryDtoAction =
-	(typeof TaskHistoryDtoAction)[keyof typeof TaskHistoryDtoAction]
+export type HistoryAction = (typeof HistoryAction)[keyof typeof HistoryAction]
 
-export const TaskHistoryDtoAction = {
+export const HistoryAction = {
 	CREATE: "CREATE",
 	UPDATE: "UPDATE",
 	DUPLICATE: "DUPLICATE",

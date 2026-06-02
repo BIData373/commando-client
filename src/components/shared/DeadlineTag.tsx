@@ -1,15 +1,10 @@
 import styled from "@emotion/styled"
-
-export enum DeadlineType {
-	Date = "date",
-	Immediate = "immediate",
-	Ongoing = "ongoing",
-}
+import { DeadlineType } from "src/api/model"
 
 export const DEADLINE_LABELS: Record<DeadlineType, string> = {
-	[DeadlineType.Date]: "תאריך",
-	[DeadlineType.Ongoing]: "שוטף",
-	[DeadlineType.Immediate]: "מיידי",
+	[DeadlineType.DATE]: "תאריך",
+	[DeadlineType.ROLLING]: "שוטף",
+	[DeadlineType.IMMEDIATE]: "מיידי",
 }
 
 const DeadlineTag = styled.span<{ $type: DeadlineType }>`
@@ -21,19 +16,19 @@ const DeadlineTag = styled.span<{ $type: DeadlineType }>`
   white-space: nowrap;
   ${({ $type }) => {
 		switch ($type) {
-			case DeadlineType.Ongoing:
+			case DeadlineType.ROLLING:
 				return `
           background: var(--Colors-Base-Blue-1);
           border: 1px solid var(--Colors-Base-Blue-3);
           color: var(--Colors-Base-Blue-6);
         `
-			case DeadlineType.Immediate:
+			case DeadlineType.IMMEDIATE:
 				return `
           background: var(--Colors-Base-Red-1);
           border: 1px solid var(--Colors-Base-Red-3);
           color: var(--Colors-Base-Red-6);
         `
-			case DeadlineType.Date:
+			case DeadlineType.DATE:
 				return `
           background: var(--chip-bg);
           border: 1px solid var(--chip-line);

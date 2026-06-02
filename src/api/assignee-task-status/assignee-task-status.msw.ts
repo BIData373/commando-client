@@ -8,8 +8,8 @@
 import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
-
 import type { AssigneeTaskStatusDto } from "../model"
+import { DeadlineType, WorkspaceStatusType } from "../model"
 
 export const getListAssigneeTaskStatusesResponseMock =
 	(): AssigneeTaskStatusDto[] =>
@@ -46,7 +46,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 					null,
 				]),
 				flagged: faker.datatype.boolean(),
-				deadlineType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
 				issuedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				dueDate: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				notes: faker.helpers.arrayElement([
@@ -188,11 +188,9 @@ export const getListAssigneeTaskStatusesResponseMock =
 						id: faker.number.float({ fractionDigits: 2 }),
 						name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 						color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-						type: faker.helpers.arrayElement([
-							"NOT_STARTED",
-							"IN_PROGRESS",
-							"COMPLETED",
-						] as const),
+						type: faker.helpers.arrayElement(
+							Object.values(WorkspaceStatusType),
+						),
 						workspaceId: faker.number.float({ fractionDigits: 2 }),
 					},
 				})),
@@ -255,11 +253,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 				id: faker.number.float({ fractionDigits: 2 }),
 				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				type: faker.helpers.arrayElement([
-					"NOT_STARTED",
-					"IN_PROGRESS",
-					"COMPLETED",
-				] as const),
+				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 			statusId: faker.number.float({ fractionDigits: 2 }),
@@ -297,7 +291,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 			null,
 		]),
 		flagged: faker.datatype.boolean(),
-		deadlineType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
 		issuedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		dueDate: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		notes: faker.helpers.arrayElement([
@@ -423,11 +417,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 				id: faker.number.float({ fractionDigits: 2 }),
 				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				type: faker.helpers.arrayElement([
-					"NOT_STARTED",
-					"IN_PROGRESS",
-					"COMPLETED",
-				] as const),
+				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 		})),
@@ -488,11 +478,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		type: faker.helpers.arrayElement([
-			"NOT_STARTED",
-			"IN_PROGRESS",
-			"COMPLETED",
-		] as const),
+		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 	},
 	statusId: faker.number.float({ fractionDigits: 2 }),
@@ -531,7 +517,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 			null,
 		]),
 		flagged: faker.datatype.boolean(),
-		deadlineType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
 		issuedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		dueDate: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		notes: faker.helpers.arrayElement([
@@ -657,11 +643,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 				id: faker.number.float({ fractionDigits: 2 }),
 				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				type: faker.helpers.arrayElement([
-					"NOT_STARTED",
-					"IN_PROGRESS",
-					"COMPLETED",
-				] as const),
+				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 		})),
@@ -722,11 +704,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		type: faker.helpers.arrayElement([
-			"NOT_STARTED",
-			"IN_PROGRESS",
-			"COMPLETED",
-		] as const),
+		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 	},
 	statusId: faker.number.float({ fractionDigits: 2 }),

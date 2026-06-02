@@ -22,6 +22,7 @@ import type {
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { sendRequest } from "../../axios"
+import { serializeFormData } from "../../form-data"
 import type {
 	CreateSourceDto,
 	DeleteSourcePathParameters,
@@ -36,17 +37,7 @@ export const createSource = (
 	createSourceDto: CreateSourceDto,
 	signal?: AbortSignal,
 ) => {
-	const formData = new FormData()
-	formData.append("workspaceId", createSourceDto.workspaceId.toString())
-	formData.append("name", createSourceDto.name)
-	formData.append("date", createSourceDto.date.toISOString())
-	createSourceDto.tags.forEach((value) => {
-		formData.append("tags", value)
-	})
-	if (createSourceDto.attachment !== undefined) {
-		formData.append(`attachment`, createSourceDto.attachment)
-	}
-
+	const formData = serializeFormData(createSourceDto)
 	return sendRequest<SourceDto>({
 		url: `/source`,
 		method: "POST",
@@ -380,25 +371,7 @@ export const updateSource = (
 	updateSourceDto: UpdateSourceDto,
 	signal?: AbortSignal,
 ) => {
-	const formData = new FormData()
-	if (updateSourceDto.workspaceId !== undefined) {
-		formData.append("workspaceId", updateSourceDto.workspaceId.toString())
-	}
-	if (updateSourceDto.name !== undefined) {
-		formData.append("name", updateSourceDto.name)
-	}
-	if (updateSourceDto.date !== undefined) {
-		formData.append("date", updateSourceDto.date.toISOString())
-	}
-	if (updateSourceDto.tags !== undefined) {
-		updateSourceDto.tags.forEach((value) => {
-			formData.append("tags", value)
-		})
-	}
-	if (updateSourceDto.attachment !== undefined) {
-		formData.append("attachment", updateSourceDto.attachment)
-	}
-
+	const formData = serializeFormData(updateSourceDto)
 	return sendRequest<SourceDto>({
 		url: `/source/${id}`,
 		method: "PATCH",

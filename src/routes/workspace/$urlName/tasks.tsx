@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { WorkspaceStatusDtoType } from "src/api/model"
-import { DeadlineType } from "src/components/shared/DeadlineTag"
+import { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { QuickFilter } from "src/utils/filter-utils"
 import { z } from "zod"
-import TasksLayout, { type View } from "../../../components/Tasks/TasksLayout"
+import TasksLayout from "../../../components/Tasks/TasksLayout"
 import { TasksFiltersProvider } from "../../../providers/TasksFiltersProvider"
 
 const queryArray = <T extends z.ZodTypeAny>(schema: T) =>
@@ -15,7 +14,7 @@ const queryArray = <T extends z.ZodTypeAny>(schema: T) =>
 const TasksSearchSchema = z.object({
   view: z.enum(["CARDS", "TABLE"]).default("TABLE"),
   tabFilter: queryArray(z.nativeEnum(QuickFilter)).default([]),
-  statusFilter: queryArray(z.nativeEnum(WorkspaceStatusDtoType)).default([]),
+  statusFilter: queryArray(z.nativeEnum(WorkspaceStatusType)).default([]),
   deadlineTypeFilter: queryArray(z.nativeEnum(DeadlineType)).default([]),
 });
 

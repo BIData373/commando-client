@@ -34,6 +34,10 @@ export default defineConfig({
           path: 'src/axios.ts',
           name: 'sendRequest'
         },
+        formData: {
+          path: 'src/form-data.ts',
+          name: 'serializeFormData'
+        },
         query: {
           useQuery: true,
           useMutation: true,

@@ -8,8 +8,8 @@
 import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
-
 import type { PermissionDto } from "../model"
+import { PermissionType } from "../model"
 
 export const getListPermissionsResponseMock = (): PermissionDto[] =>
 	Array.from(
@@ -33,7 +33,7 @@ export const getListPermissionsResponseMock = (): PermissionDto[] =>
 			]),
 		},
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
-		type: faker.helpers.arrayElement(["VIEWER", "MANAGER"] as const),
+		type: faker.helpers.arrayElement(Object.values(PermissionType)),
 	}))
 
 export const getUpdatePermissionResponseMock = (
@@ -56,7 +56,7 @@ export const getUpdatePermissionResponseMock = (
 		]),
 	},
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	type: faker.helpers.arrayElement(["VIEWER", "MANAGER"] as const),
+	type: faker.helpers.arrayElement(Object.values(PermissionType)),
 	...overrideResponse,
 })
 
@@ -80,7 +80,7 @@ export const getDeletePermissionResponseMock = (
 		]),
 	},
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	type: faker.helpers.arrayElement(["VIEWER", "MANAGER"] as const),
+	type: faker.helpers.arrayElement(Object.values(PermissionType)),
 	...overrideResponse,
 })
 
@@ -104,7 +104,7 @@ export const getGetMyPermissionResponseMock = (
 		]),
 	},
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	type: faker.helpers.arrayElement(["VIEWER", "MANAGER"] as const),
+	type: faker.helpers.arrayElement(Object.values(PermissionType)),
 	...overrideResponse,
 })
 

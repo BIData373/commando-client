@@ -5,11 +5,11 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { TaskHistoryDtoAction } from "./task-history-dto-action"
+import type { HistoryAction } from "./history-action"
 
 export interface TaskHistoryDto {
 	id: number
-	action: TaskHistoryDtoAction
+	action: HistoryAction
 	field: string
 	/** @nullable */
 	value: string | null
