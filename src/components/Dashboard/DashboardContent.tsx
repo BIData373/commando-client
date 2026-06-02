@@ -1,17 +1,20 @@
 import styled from "@emotion/styled"
 import { useNavigate, useParams } from "@tanstack/react-router"
 import { isWithinInterval, setYear, subMonths } from "date-fns"
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import type { DateRange } from "react-day-picker"
 import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
+import { useLocalStorage } from "src/hooks/useLocalStorage"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { DATE_TYPE } from "src/utils/data-type-utils"
+import { DashboardDatePicker } from "./DashboardDatePicker/DashboardDatePicker"
 import FocusedInstructions from "./FocusedInstructions"
 import RecentlyCompleted from "./RecentlyCompleted"
 import StatusCard from "./StatusCard"
 import SystemDistribution from "./SystemDistribution"
+
 
 export function DashboardContent() {
 	const {
@@ -20,8 +23,28 @@ export function DashboardContent() {
 	const { urlName } = useParams({ from: "/workspace/$urlName" })
 	const navigate = useNavigate()
 
-	const [dataType, setDataType] = useState(DATE_TYPE.CREATION_DATE)
-	const [range, setRange] = useState<DateRange | undefined>()
+	const filterKey = `dashboard-filter-${urlName}`
+
+	const [dataType, setDataType] = useLocalStorage<DATE_TYPE>(
+		`${filterKey}-type`,
+		DATE_TYPE.CREATION_DATE,
+	)
+
+	const [persistedRange, setPersistedRange] = useLocalStorage<DateRange | undefined>(
+		`${filterKey}-range`,
+		undefined,
+	)
+
+	const range: DateRange | undefined = persistedRange
+		? {
+			from: persistedRange.from ? new Date(persistedRange.from) : undefined,
+			to: persistedRange.to ? new Date(persistedRange.to) : undefined,
+		}
+		: undefined
+
+	function handleSetRange(newRange?: DateRange) {
+		setPersistedRange(newRange)
+	}
 
 	const tasksQueryKey = getListTasksQueryKey({ workspaceId: id })
 	const { data: rawTasks = [] } = useListTasks({ workspaceId: id })
@@ -51,11 +74,11 @@ export function DashboardContent() {
 		let filtered =
 			from && to
 				? tasks.filter((task) => {
-						const date = getTaskDate(task, refYear)
-						return (
-							date !== null && isWithinInterval(date, { start: from, end: to })
-						)
-					})
+					const date = getTaskDate(task, refYear)
+					return (
+						date !== null && isWithinInterval(date, { start: from, end: to })
+					)
+				})
 				: [...tasks]
 
 		if (dataType === DATE_TYPE.UPDATING_DATE) {
@@ -77,11 +100,12 @@ export function DashboardContent() {
 
 	return (
 		<ContentArea>
-			{/* <DashboardDatePicker
-        dateType={dataType}
-        onDateTypeChange={setDataType}
-        setRange={setRange}
-      /> */}
+			<DashboardDatePicker
+				dateType={dataType}
+				onDateTypeChange={setDataType}
+				setRange={handleSetRange}
+				range={range}
+			/>
 
 			<GridLayout>
 				<FocusedInstructions
