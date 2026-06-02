@@ -16,10 +16,21 @@ export type NewTaskInput = Omit<Task, "id" | "createdAt" | "updatedAt"> & {
 	groupKey?: string;
 };
 
+export interface DiscussionDetailsUpdate {
+	discussionName: string;
+	discussionDate: string;
+	hasAttachment: boolean;
+	tags: string[];
+}
+
 interface TasksContextValue {
 	tasks: Task[];
 	addTasks: (inputs: NewTaskInput[]) => void;
 	updateTaskStatus: (taskId: number, status: DirectiveStatus) => void;
+	updateDiscussionDetails: (
+		oldDiscussionName: string,
+		details: DiscussionDetailsUpdate,
+	) => void;
 	removeTasks: (taskIds: number[]) => void;
 	bulkUpdateStatus: (taskIds: number[], status: DirectiveStatus) => void;
 	searchQuery: string;
@@ -146,6 +157,26 @@ export function TasksProvider({
 		});
 	}
 
+	function updateDiscussionDetails(
+		oldDiscussionName: string,
+		details: DiscussionDetailsUpdate,
+	) {
+		setTasks((prev) =>
+			prev.map((t) =>
+				t.discussionName === oldDiscussionName
+					? {
+							...t,
+							discussionName: details.discussionName,
+							discussionDate: details.discussionDate,
+							hasAttachment: details.hasAttachment,
+							tags: details.tags,
+							updatedAt: new Date(),
+						}
+					: t,
+			),
+		);
+	}
+
 	function removeTasks(taskIds: number[]) {
 		setTasks((prev) => prev.filter((t) => !taskIds.includes(t.id)));
 	}
@@ -182,6 +213,7 @@ export function TasksProvider({
 				tasks,
 				addTasks,
 				updateTaskStatus,
+				updateDiscussionDetails,
 				removeTasks,
 				bulkUpdateStatus,
 				searchQuery,

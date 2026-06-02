@@ -41,8 +41,11 @@ function Dashboard() {
 				case DATE_TYPE.EXPECTED_END:
 					return task.dueDate;
 				case DATE_TYPE.INSTRUCTION_DATE: {
-					const [day, month] = task.discussionDate.split("/").map(Number);
-					return new Date(year, month - 1, day);
+					const parts = task.discussionDate.split("/").map(Number);
+					const day = parts[0];
+					const month = parts[1];
+					const parsedYear = parts[2] ?? year;
+					return new Date(parsedYear, month - 1, day);
 				}
 				case DATE_TYPE.UPDATING_DATE:
 					return task.updatedAt;

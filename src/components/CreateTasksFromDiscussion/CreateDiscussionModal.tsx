@@ -1,11 +1,16 @@
 import styled from "@emotion/styled";
-import { Check, Paperclip, X } from "lucide-react";
-import { Dialog as DialogPrimitive } from "radix-ui";
+import { AlertCircle, Check, Paperclip, X } from "lucide-react";
+import {
+	Dialog as DialogPrimitive,
+	Popover as PopoverPrimitive,
+} from "radix-ui";
 import { useState } from "react";
-import { formatDate } from "../../functions/date-utils";
+import { formatDate, parseDate } from "../../functions/date-utils";
 import { useSaveTasks } from "../../hooks/useSaveTasks";
+import { useTasks } from "../../providers/TasksProvider";
 import SourceField from "../CreateTasks/SourceField";
 import TopicField from "../CreateTasks/TopicField";
+import { Popover, PopoverTrigger } from "../ui/popover";
 import CreateTasksTable from "./CreateTasksTable";
 import FileUploadField from "./FileUploadField";
 import type { TaskRow } from "./TasksColumns";
@@ -24,8 +29,17 @@ interface DiscussionFormState {
 	file: File | null;
 }
 
+export interface EditDiscussionData {
+	discussionName: string;
+	discussionDate: string;
+	hasAttachment: boolean;
+	attachmentFileName?: string;
+	tags: string[];
+}
+
 interface CreateDiscussionModalProps {
 	onClose: () => void;
+	editData?: EditDiscussionData;
 }
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -39,16 +53,50 @@ const INITIAL_FORM: DiscussionFormState = {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
+function CreateDiscussionModal({
+	onClose,
+	editData,
+}: CreateDiscussionModalProps) {
+	const isEditMode = !!editData;
 	const saveTasks = useSaveTasks();
-	const [form, setForm] = useState<DiscussionFormState>(INITIAL_FORM);
+	const { updateDiscussionDetails } = useTasks();
+
+	function safeParseDateString(dateStr: string): Date | null {
+		if (!dateStr) return null;
+		const parsed = parseDate(dateStr);
+		if (Number.isNaN(parsed.getTime())) return null;
+		return parsed;
+	}
+
+	const initialEditForm: DiscussionFormState = editData
+		? {
+				name: editData.discussionName,
+				sourceDate: safeParseDateString(editData.discussionDate),
+				topics: editData.tags,
+				file: null,
+			}
+		: INITIAL_FORM;
+
+	const [form, setForm] = useState<DiscussionFormState>(
+		isEditMode ? initialEditForm : INITIAL_FORM,
+	);
 	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion);
+	const [showConfirmation, setShowConfirmation] = useState(false);
 	const setField = <K extends keyof DiscussionFormState>(
 		key: K,
 		value: DiscussionFormState[K],
 	) => setForm((prev) => ({ ...prev, [key]: value }));
 
 	const isCurrentStepTasks = currentStep === Steps.Tasks;
+
+	const hasChanges = isEditMode
+		? form.name !== editData.discussionName ||
+			(form.sourceDate
+				? formatDate(form.sourceDate) !== editData.discussionDate
+				: editData.discussionDate !== "") ||
+			form.file !== null ||
+			JSON.stringify(form.topics) !== JSON.stringify(editData.tags)
+		: false;
 	// ─── Source / Name Handlers ───────────────────────────────────────────────
 
 	function handleSourceSelect(name: string) {
@@ -117,44 +165,64 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 		onClose();
 	}
 
+	function handleEditConfirm() {
+		if (!editData) return;
+		updateDiscussionDetails(editData.discussionName, {
+			discussionName: form.name.trim(),
+			discussionDate: form.sourceDate ? formatDate(form.sourceDate) : "",
+			hasAttachment: form.file !== null || editData.hasAttachment,
+			tags: form.topics,
+		});
+		setShowConfirmation(false);
+		onClose();
+	}
+
+	function handleEditCancel() {
+		setShowConfirmation(false);
+	}
+
 	// ─── Render ───────────────────────────────────────────────────────────────
 
 	return (
 		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
 			<DialogPrimitive.Portal>
 				<Overlay />
-				<ModalCard $step={currentStep}>
+				<ModalCard $step={isEditMode ? Steps.Discussion : currentStep}>
 					<ModalCloseButton onClick={onClose}>
 						<X size={16} />
 					</ModalCloseButton>
 
 					<ModalBody>
 						<HeaderSection>
-							<ModalTitle>יצירת הנחיות מתוך דיון</ModalTitle>
+							<ModalTitle>
+								{isEditMode ? "עריכת פרטי דיון" : "יצירת הנחיות מתוך דיון"}
+							</ModalTitle>
 
-							<StepsRow>
-								<StepItem>
-									<StepLabel $active>פרטי הדיון</StepLabel>
-									{isCurrentStepTasks ? (
-										<StepCircleCompleted>
-											<Check size={12} />
-										</StepCircleCompleted>
-									) : (
-										<StepCircleActive>1</StepCircleActive>
-									)}
-								</StepItem>
+							{!isEditMode && (
+								<StepsRow>
+									<StepItem>
+										<StepLabel $active>פרטי הדיון</StepLabel>
+										{isCurrentStepTasks ? (
+											<StepCircleCompleted>
+												<Check size={12} />
+											</StepCircleCompleted>
+										) : (
+											<StepCircleActive>1</StepCircleActive>
+										)}
+									</StepItem>
 
-								<StepTail $completed={isCurrentStepTasks} />
+									<StepTail $completed={isCurrentStepTasks} />
 
-								<StepItem>
-									<StepLabel $active={isCurrentStepTasks}>
-										יצירת הנחיות
-									</StepLabel>
-									<StepCircle $active={isCurrentStepTasks}>2</StepCircle>
-								</StepItem>
-							</StepsRow>
+									<StepItem>
+										<StepLabel $active={isCurrentStepTasks}>
+											יצירת הנחיות
+										</StepLabel>
+										<StepCircle $active={isCurrentStepTasks}>2</StepCircle>
+									</StepItem>
+								</StepsRow>
+							)}
 
-							{isCurrentStepTasks && (
+							{isCurrentStepTasks && !isEditMode && (
 								<DiscussionInfoRow>
 									<DiscussionInfoText>
 										<DiscussionDate>
@@ -167,7 +235,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 							)}
 						</HeaderSection>
 
-						{currentStep === Steps.Discussion ? (
+						{isEditMode || currentStep === Steps.Discussion ? (
 							<>
 								<FormContainer>
 									<SourceField
@@ -189,18 +257,68 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 
 									<FileUploadField
 										file={form.file}
+										hasExistingFile={editData?.hasAttachment}
+										existingFileName={editData?.attachmentFileName}
 										onFileChange={handleFileChange}
 									/>
 								</FormContainer>
 
-								<ModalFooter>
-									<ContinueButton
-										onClick={handleContinue}
-										disabled={!form.name.trim()}
-									>
-										המשך
-									</ContinueButton>
-								</ModalFooter>
+								{isEditMode ? (
+									<EditFooter>
+										<Popover
+											open={showConfirmation}
+											onOpenChange={setShowConfirmation}
+										>
+											<PopoverTrigger asChild>
+												<SaveButton
+													$disabled={!hasChanges}
+													onClick={(e) => {
+														if (!hasChanges) {
+															e.preventDefault();
+														}
+													}}
+												>
+													שמור שינויים
+												</SaveButton>
+											</PopoverTrigger>
+											<ConfirmationContent
+												side="top"
+												align="start"
+												sideOffset={13}
+											>
+												<ConfirmationHeader>
+													<AlertCircleIcon size={16} />
+													<TextWrapper>
+														<ConfirmationTitle>
+															עריכת פרטי דיון לכל ההנחיות
+														</ConfirmationTitle>
+														<ConfirmationText>
+															כלל ההנחיות תחת דיון זה יתעדכנו בשינויים.
+														</ConfirmationText>
+													</TextWrapper>
+												</ConfirmationHeader>
+												<ConfirmationActions>
+													<ConfirmButton onClick={handleEditConfirm}>
+														בטוח
+													</ConfirmButton>
+													<CancelConfirmButton onClick={handleEditCancel}>
+														לא
+													</CancelConfirmButton>
+												</ConfirmationActions>
+											</ConfirmationContent>
+										</Popover>
+										<CancelButton onClick={onClose}>ביטול</CancelButton>
+									</EditFooter>
+								) : (
+									<ModalFooter>
+										<ContinueButton
+											onClick={handleContinue}
+											disabled={!form.name.trim()}
+										>
+											המשך
+										</ContinueButton>
+									</ModalFooter>
+								)}
 							</>
 						) : (
 							<CreateTasksTable onSave={handleSave} onBack={handleBack} />
@@ -444,4 +562,186 @@ const StepTail = styled.div<{ $completed: boolean }>`
   flex: 1;
   height: 1px;
   border-block-start: 1px ${({ $completed }) => ($completed ? "solid #6866ff" : "dashed var(--card-border)")};
+`;
+
+// ─── Edit Mode Footer ──────────────────────────────────────────────────────
+
+const EditFooter = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-shrink: 0;
+`;
+
+const SaveButton = styled.button<{ $disabled?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 24px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #6866ff 0%, #7604c8 100%);
+  color: white;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
+  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
+  white-space: nowrap;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: var(--shadow-inset);
+    pointer-events: none;
+  }
+
+  &:hover {
+    opacity: ${({ $disabled }) => ($disabled ? 0.5 : 0.9)};
+  }
+`;
+
+const CancelButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 133px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--sea-ink);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--link-bg-hover);
+  }
+`;
+
+const ConfirmationContent = styled(PopoverPrimitive.Content)`
+  direction: rtl;
+  display: flex;
+  padding: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  align-self: stretch;
+  width: 224px;
+  background: var(--background);
+  border-radius: 8px;
+  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.08),
+    0px 3px 6px rgba(0, 0, 0, 0.12),
+    0px 9px 28px rgba(0, 0, 0, 0.05);
+  z-index: var(--z-dropdown);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset-block-end: -8px;
+    inset-inline-end: 16px;
+    width: 16px;
+    height: 8px;
+    background: var(--background);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+  }
+`;
+
+const ConfirmationHeader = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 8px;
+  align-self: stretch;
+`;
+
+const TextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex: 1 0 0;
+`;
+
+const AlertCircleIcon = styled(AlertCircle)`
+  display: flex;
+  margin-top: 3px;
+  align-items: center;
+  gap: 6px;
+  color: #faad14;
+`;
+
+const ConfirmationTitle = styled.span`
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  color: var(--sea-ink);
+  align-self: stretch;
+`;
+
+const ConfirmationText = styled.span`
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--sea-ink);
+  align-self: stretch;
+`;
+
+const ConfirmationActions = styled.div`
+  direction: ltr;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  gap: 8px;
+`;
+
+const ConfirmButton = styled.button`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 7px;
+  gap: 8px;
+  width: 43px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #6866ff 0%, #7604c8 100%);
+  color: white;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+const CancelConfirmButton = styled.button`
+  display: flex;
+padding: 0 var(--Components-Button-Component-paddingInlineSM, 7px);
+flex-direction: column;
+justify-content: center;
+align-items: center;
+gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--sea-ink);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--link-bg-hover);
+  }
 `;

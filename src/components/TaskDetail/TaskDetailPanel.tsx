@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { EditorContent, useEditor } from "@tiptap/react";
-import { Calendar, ChevronUp, History, Paperclip, X } from "lucide-react";
+import { Calendar, ChevronUp, History, Paperclip, Pencil, X } from "lucide-react";
 import { useRef, useState } from "react";
 import {
   formatDateMonthYear,
@@ -17,6 +17,7 @@ import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag";
 import FlagIcon from "../shared/FlagIcon";
 import { AssigneeSection } from "./AssigneeSection";
 import { DropdownOptions } from "./DropdownOptions";
+import CreateDiscussionModal from "../CreateTasksFromDiscussion/CreateDiscussionModal";
 import TaskConversationPanel from "./TaskConversationPanel";
 import TaskHistoryPanel from "./TaskHistoryPanel";
 
@@ -54,6 +55,7 @@ function TaskDetailPanel({
 
   const [showHistory, setShowHistory] = useState(false);
   const [showConversation, setShowConversation] = useState(false);
+  const [showEditDiscussion, setShowEditDiscussion] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [scrollShadow, setScrollShadow] = useState({
@@ -172,6 +174,9 @@ function TaskDetailPanel({
                     <InfoBlock>
                       <SectionLabel>מקור</SectionLabel>
                       <SourceRow>
+                        <PencilButton onClick={() => setShowEditDiscussion(true)}>
+                          <Pencil size={14} />
+                        </PencilButton>
                         <SourceName>{discussionName}</SourceName>
                         <SourceDate>{discussionDate}</SourceDate>
                       </SourceRow>
@@ -236,6 +241,18 @@ function TaskDetailPanel({
                 onClose={() => setShowConversation(false)}
               />
             </>
+          )}
+          {showEditDiscussion && (
+            <CreateDiscussionModal
+              onClose={() => setShowEditDiscussion(false)}
+              editData={{
+                discussionName: discussionName ?? "",
+                discussionDate: discussionDate ?? "",
+                hasAttachment,
+                attachmentFileName: attachmentUrl?.split("/").pop(),
+                tags,
+              }}
+            />
           )}
         </Panel>
       </Overlay>
@@ -543,6 +560,18 @@ const SourceDate = styled.span`
   font-weight: 400;
   line-height: 22px;
   color: var(--sea-ink-soft);
+`;
+
+const PencilButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sea-ink-soft);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--sea-ink);
+  }
 `;
 
 // ─── Notes ─────────────────────────────────────────────────────────────────────

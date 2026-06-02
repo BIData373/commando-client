@@ -6,6 +6,8 @@ import { useRef, useState } from "react";
 
 interface FileUploadFieldProps {
 	file: File | null;
+	hasExistingFile?: boolean;
+	existingFileName?: string;
 	onFileChange: (file: File | null) => void;
 }
 
@@ -21,10 +23,13 @@ const MAX_FILE_SIZE = 30 * 1024 * 1024;
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-function FileUploadField({ file, onFileChange }: FileUploadFieldProps) {
+function FileUploadField({ file, hasExistingFile, existingFileName, onFileChange }: FileUploadFieldProps) {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [isDragOver, setIsDragOver] = useState(false);
 	const [fileError, setFileError] = useState("");
+	const [existingFileRemoved, setExistingFileRemoved] = useState(false);
+
+	const showExistingFile = hasExistingFile && !file && !existingFileRemoved;
 
 	function validateFile(f: File): string | null {
 		const ext = "." + f.name.split(".").pop()?.toLowerCase();
@@ -79,6 +84,7 @@ function FileUploadField({ file, onFileChange }: FileUploadFieldProps) {
 
 	function handleRemoveFile() {
 		onFileChange(null);
+		setExistingFileRemoved(true);
 		setFileError("");
 	}
 
@@ -93,6 +99,16 @@ function FileUploadField({ file, onFileChange }: FileUploadFieldProps) {
 						<Trash2 size={22} />
 					</FileRemoveButton>
 					<FileName>{file.name}</FileName>
+					<FileThumbnail>
+						<FileText size={24} />
+					</FileThumbnail>
+				</FilePreview>
+			) : showExistingFile ? (
+				<FilePreview>
+					<FileRemoveButton onClick={handleRemoveFile}>
+						<Trash2 size={22} />
+					</FileRemoveButton>
+					<FileName>{existingFileName ?? "קובץ מצורף"}</FileName>
 					<FileThumbnail>
 						<FileText size={24} />
 					</FileThumbnail>
@@ -232,7 +248,7 @@ const FileName = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: var(--tab-active-color);
+  color: var(--Components-Upload-Global-colorPrimary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
