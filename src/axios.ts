@@ -1,13 +1,13 @@
-import axios, { type AxiosRequestConfig } from "axios";
+import axios, { type AxiosRequestConfig } from 'axios';
 
 export const axiosInstance = axios.create({
-	baseURL: import.meta.env.VITE_API_BASE_URL!,
+	baseURL: import.meta.env.VITE_API_BASE_URL,
+	withCredentials: true,
 	headers: {
-		"Content-Type": "application/json",
+		'Content-Type': 'application/json',
 	},
 });
 
-// FIX Add cookie removing for sso
-export async function sendRequest<T>(config: AxiosRequestConfig) {
+export async function sendRequest<T>(config: AxiosRequestConfig): Promise<T> {
 	return (await axiosInstance<T>(config)).data;
 }
