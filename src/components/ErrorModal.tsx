@@ -5,7 +5,7 @@ import { MessageCircle } from "lucide-react"
 import { PermissionDtoType } from "src/api/model"
 import { useListPermissions } from "src/api/permission/permission"
 import { useErrorModal } from "src/providers/ErrorModalProvider"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { useWorkspaceSafe } from "src/providers/WorkspaceProvider"
 import { CHAT_LINK } from "src/utils/env-utils"
 import { ErrorCode, isErrorCode } from "src/utils/error-utils"
 
@@ -42,9 +42,8 @@ export function ErrorModal() {
 
   const { urlName } = useParams({ strict: false })
 
-  const {
-    workspace: { id: workspaceId },
-  } = useWorkspace()
+  const workspaceContext = useWorkspaceSafe()
+  const workspaceId = workspaceContext?.workspace.id ?? -1
 
   const { data: usersPermissions = [] } = useListPermissions(
     { workspaceId },
