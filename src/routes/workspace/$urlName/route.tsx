@@ -1,4 +1,5 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router"
+import { WorkspaceProvider } from "src/providers/WorkspaceProvider"
 
 export const Route = createFileRoute("/workspace/$urlName")({
 	component: RouteComponent,
@@ -9,12 +10,12 @@ export const Route = createFileRoute("/workspace/$urlName")({
 			workspace: true,
 		},
 	},
-});
+})
 
 function RouteComponent() {
 	return (
-		<>
+		<WorkspaceProvider>
 			<Outlet />
-		</>
-	);
+		</WorkspaceProvider>
+	)
 }

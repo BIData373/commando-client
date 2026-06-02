@@ -1,21 +1,21 @@
-import styled from "@emotion/styled";
-import { Download, FilterX, Search } from "lucide-react";
-import type { ReactNode } from "react";
-import type { TaskColumn, TaskColumnMeta } from "../../hooks/useTaskColumns";
-import { ColumnVisibilityDropdown } from "../Tasks/ColumnVisibilityDropdown";
+import styled from "@emotion/styled"
+import { Download, FilterX, Search } from "lucide-react"
+import type { ReactNode } from "react"
+import type { TaskColumn, TaskColumnMeta } from "../../hooks/useTaskColumns"
+import { ColumnVisibilityDropdown } from "../Tasks/ColumnVisibilityDropdown"
 
 interface FilterBarProps {
-	children: ReactNode;
-	hasActiveFilters: boolean;
-	onClearAll: () => void;
-	searchQuery: string;
-	onSearchChange: (value: string) => void;
-	onExport: () => void;
-	columnOrder: TaskColumn[];
-	hiddenColumns: Set<TaskColumn>;
-	onColumnOrderChange: (order: TaskColumn[]) => void;
-	onToggleColumn: (columnId: TaskColumn) => void;
-	extraColumnsMeta?: TaskColumnMeta[];
+	children: ReactNode
+	hasActiveFilters: boolean
+	onClearAll: () => void
+	searchQuery: string
+	onSearchChange: (value: string) => void
+	onExport: () => void
+	columnOrder: TaskColumn[]
+	hiddenColumns: Set<TaskColumn>
+	onColumnOrderChange: (order: TaskColumn[]) => void
+	onToggleColumn: (columnId: TaskColumn) => void
+	extraColumnsMeta?: TaskColumnMeta[]
 }
 
 function FilterBar({
@@ -66,10 +66,10 @@ function FilterBar({
 				{children}
 			</BarEnd>
 		</BarRoot>
-	);
+	)
 }
 
-export { FilterBar };
+export { FilterBar }
 
 const BarRoot = styled.div`
   direction: ltr;
@@ -77,19 +77,19 @@ const BarRoot = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 40px;
-`;
+`
 
 const BarStart = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-`;
+`
 
 const BarEnd = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-`;
+`
 
 const ClearButton = styled.button`
   direction: rtl;
@@ -108,7 +108,7 @@ const ClearButton = styled.button`
   &:hover {
     background: var(--link-bg-hover);
   }
-`;
+`
 
 const ActionButton = styled.button`
   direction: rtl;
@@ -129,7 +129,7 @@ const ActionButton = styled.button`
   &:hover {
     background: var(--link-bg-hover);
   }
-`;
+`
 
 const SearchInputWrapper = styled.div`
   direction: rtl;
@@ -145,7 +145,7 @@ const SearchInputWrapper = styled.div`
   &:focus-within {
     border-color: rgba(9, 88, 217, 0.6);
   }
-`;
+`
 
 const SearchIconBox = styled.div`
   display: flex;
@@ -154,11 +154,11 @@ const SearchIconBox = styled.div`
   justify-content: center;
   align-items: center;
   gap: 8px;
-`;
+`
 
 const SearchIcon = styled(Search)`
   color: rgba(0, 0, 0, 0.25);
-`;
+`
 
 const SearchField = styled.input`
   flex: 1;
@@ -177,9 +177,9 @@ const SearchField = styled.input`
   &::placeholder {
     color: rgba(0, 0, 0, 0.25);
   }
-`;
+`
 
-export const FilterPill = styled.button<{ $active: boolean }>`
+export const FilterPill = styled.div<{ $active: boolean }>`
   display: flex;
   align-items: center;
   gap: 4px;
@@ -197,10 +197,10 @@ export const FilterPill = styled.button<{ $active: boolean }>`
   &:hover {
     background: var(--link-bg-hover);
   }
-`;
+`
 
 export const FilterDivider = styled.div`
   width: 1px;
   height: 25px;
   background: var(--Colors-Neutral-Text-colorTextQuaternary, rgba(0, 0, 0, 0.25));
-`;
+`

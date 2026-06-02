@@ -1,14 +1,14 @@
-import styled from "@emotion/styled";
-import type { Column } from "@tanstack/react-table";
-import { useState } from "react";
-import { TbArrowsSort } from "react-icons/tb";
-import type { FilterOption } from "../../functions/filter-utils";
-import { ColumnFilterDropdown } from "./ColumnFilterDropdown";
+import styled from "@emotion/styled"
+import type { Column } from "@tanstack/react-table"
+import { useState } from "react"
+import { TbArrowsSort } from "react-icons/tb"
+import type { FilterOption } from "../../functions/filter-utils"
+import { ColumnFilterDropdown } from "./ColumnFilterDropdown"
 
 interface ColumnHeaderWithActionsProps<TData> {
-	label: string;
-	column: Column<TData, unknown>;
-	filterOptions?: FilterOption[];
+	label: string
+	column: Column<TData, unknown>
+	filterOptions?: FilterOption[]
 }
 
 function ColumnHeaderWithActions<TData>({
@@ -16,16 +16,16 @@ function ColumnHeaderWithActions<TData>({
 	column,
 	filterOptions = [],
 }: ColumnHeaderWithActionsProps<TData>) {
-	const [filterOpen, setFilterOpen] = useState(false);
-	const canFilter = column.getCanFilter() && filterOptions.length > 0;
-	const canSort = column.getCanSort();
-	const filterValue = (column.getFilterValue() as string[] | undefined) ?? [];
-	const isFilterActive = filterValue.length > 0;
-	const isSortActive = column.getIsSorted() !== false;
-	const alwaysShow = isFilterActive || isSortActive || filterOpen;
+	const [filterOpen, setFilterOpen] = useState(false)
+	const canFilter = column.getCanFilter() && filterOptions.length > 0
+	const canSort = column.getCanSort()
+	const filterValue = (column.getFilterValue() as string[] | undefined) ?? []
+	const isFilterActive = filterValue.length > 0
+	const isSortActive = column.getIsSorted() !== false
+	const alwaysShow = isFilterActive || isSortActive || filterOpen
 
 	function handleApplyFilter(values: Set<string>) {
-		column.setFilterValue(values.size > 0 ? [...values] : undefined);
+		column.setFilterValue(values.size > 0 ? [...values] : undefined)
 	}
 
 	return (
@@ -52,10 +52,10 @@ function ColumnHeaderWithActions<TData>({
 				)}
 			</ActionsArea>
 		</HeaderWrapper>
-	);
+	)
 }
 
-export { ColumnHeaderWithActions };
+export { ColumnHeaderWithActions }
 
 // ─── Styled ──────────────────────────────────────────────────────────────────
 
@@ -67,7 +67,7 @@ const ActiveBadge = styled.span`
   height: 6px;
   border-radius: 50%;
   background: #1677FF;
-`;
+`
 
 const SortIconButton = styled.button<{ $active: boolean }>`
   position: relative;
@@ -86,7 +86,7 @@ const SortIconButton = styled.button<{ $active: boolean }>`
   &:hover {
     color: ${({ $active }) => ($active ? "#1677FF" : "rgba(0, 0, 0, 0.65)")};
   }
-`;
+`
 
 const ActionsArea = styled.div<{ $show: boolean }>`
   display: flex;
@@ -95,7 +95,7 @@ const ActionsArea = styled.div<{ $show: boolean }>`
   flex-shrink: 0;
   opacity: ${({ $show }) => ($show ? 1 : 0)};
   transition: opacity 0.15s;
-`;
+`
 
 const HeaderWrapper = styled.div<{ $alwaysShow: boolean }>`
   display: flex;
@@ -105,4 +105,4 @@ const HeaderWrapper = styled.div<{ $alwaysShow: boolean }>`
   &:hover [data-slot="actions-area"] {
     opacity: 1;
   }
-`;
+`

@@ -1,21 +1,22 @@
-import styled from "@emotion/styled";
-import { Check, Plus } from "lucide-react";
-import { type ReactNode, useState } from "react";
-import { MOCK_ASSIGNEES } from "../../data/Assignees";
-import { AssigneeDialog } from "../settings/AssigneeDialog";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { AssigneeAvatar } from "./AssigneeAvatar";
+import styled from "@emotion/styled"
+import { Check, Plus } from "lucide-react"
+import { type ReactNode, useState } from "react"
+import { useListAssignees } from "src/api/assignee/assignee"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { AssigneeDialog } from "../settings/AssigneeDialog"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { AssigneeAvatar } from "./AssigneeAvatar"
 
 interface AssigneePickerProps {
-	selectedAssignees: number[];
+	selectedAssignees: number[]
 	trigger:
-	| ReactNode
-	| ((props: {
-		search: string;
-		onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-	}) => ReactNode);
-	onToggle: (id: number) => void;
-	closeOnFirstSelect?: boolean;
+		| ReactNode
+		| ((props: {
+				search: string
+				onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+		  }) => ReactNode)
+	onToggle: (id: number) => void
+	closeOnFirstSelect?: boolean
 }
 
 function AssigneePicker({
@@ -24,43 +25,48 @@ function AssigneePicker({
 	onToggle,
 	closeOnFirstSelect = false,
 }: AssigneePickerProps) {
-	const [open, setOpen] = useState(false);
-	const [search, setSearch] = useState("");
-	const [dialogOpen, setDialogOpen] = useState(false);
+	const [open, setOpen] = useState(false)
+	const [search, setSearch] = useState("")
+	const [dialogOpen, setDialogOpen] = useState(false)
 
-	const filteredAssignees = Object.values(MOCK_ASSIGNEES)
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+	const { data: assignees = [] } = useListAssignees({ workspaceId })
+
+	const filteredAssignees = assignees
 		.filter((assignee) => {
-			if (!search.trim()) return true;
-			return assignee.name.includes(search) || assignee.role.includes(search);
+			if (!search.trim()) return true
+			return assignee.name.includes(search)
 		})
 		.map((assignee) => ({
 			...assignee,
 			selected: selectedAssignees.includes(assignee.id),
-		}));
+		}))
 
 	function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-		setSearch(e.target.value);
-		if (!open) setOpen(true);
+		setSearch(e.target.value)
+		if (!open) setOpen(true)
 	}
 
 	function handleOpenChange(nextOpen: boolean) {
-		setOpen(nextOpen);
-		if (!nextOpen) setSearch("");
+		setOpen(nextOpen)
+		if (!nextOpen) setSearch("")
 	}
 
 	function handleAssigneeClick(id: number) {
-		onToggle(id);
+		onToggle(id)
 
 		if (closeOnFirstSelect && selectedAssignees.length === 0) {
-			setOpen(false);
-			setSearch("");
+			setOpen(false)
+			setSearch("")
 		}
 	}
 
 	function handleCreateNew() {
-		setOpen(false);
-		setSearch("");
-		setDialogOpen(true);
+		setOpen(false)
+		setSearch("")
+		setDialogOpen(true)
 	}
 
 	return (
@@ -85,10 +91,7 @@ function AssigneePicker({
 							onClick={() => handleAssigneeClick(assignee.id)}
 						>
 							<AssigneeOptionEnd>
-								<AssigneeAvatar
-									assignee={assignee}
-									size={20}
-								/>
+								<AssigneeAvatar assignee={assignee} size={20} />
 
 								<AssigneeOptionName $selected={assignee.selected}>
 									{assignee.name}
@@ -108,10 +111,10 @@ function AssigneePicker({
 
 			<AssigneeDialog open={dialogOpen} onOpenChange={setDialogOpen} />
 		</>
-	);
+	)
 }
 
-export default AssigneePicker;
+export default AssigneePicker
 
 const AssigneeDropdown = styled(PopoverContent)`
   width: var(--radix-popover-trigger-width);
@@ -120,7 +123,7 @@ const AssigneeDropdown = styled(PopoverContent)`
   padding: 4px;
   gap: 1.5px;
   z-index: var(--z-dropdown);
-`;
+`
 
 const AssigneeOption = styled.button<{ $selected: boolean }>`
   display: flex;
@@ -135,7 +138,7 @@ const AssigneeOption = styled.button<{ $selected: boolean }>`
   &:hover {
     background: ${({ $selected }) => ($selected ? "#e6f4ff" : "rgba(0, 0, 0, 0.04)")};
   }
-`;
+`
 
 const AssigneeOptionEnd = styled.div`
   display: flex;
@@ -143,7 +146,7 @@ const AssigneeOptionEnd = styled.div`
   gap: 8px;
   padding: 0 12px;
   height: 32px;
-`;
+`
 
 const AssigneeOptionName = styled.span<{ $selected: boolean }>`
   font-size: 14px;
@@ -151,7 +154,7 @@ const AssigneeOptionName = styled.span<{ $selected: boolean }>`
   line-height: 22px;
   color: ${({ $selected }) => ($selected ? "var(--tab-active-color)" : "var(--text-color-2)")};
   white-space: nowrap;
-`;
+`
 
 const CreateNewButton = styled.button`
   direction: ltr;
@@ -172,8 +175,8 @@ const CreateNewButton = styled.button`
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
-`;
+`
 
 const StyleCheck = styled(Check)`
   color: var(--tab-active-color);
-`;
+`

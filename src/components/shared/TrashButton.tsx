@@ -1,11 +1,11 @@
-import styled from "@emotion/styled";
-import { Trash2 } from "lucide-react";
+import styled from "@emotion/styled"
+import { Trash2 } from "lucide-react"
 
 interface TrashButtonProps {
-	onClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-	size?: number;
-	ref?: React.Ref<HTMLButtonElement>;
-	className?: string;
+	onClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void
+	size?: number
+	ref?: React.Ref<HTMLButtonElement>
+	className?: string
 }
 
 export const TrashButton = ({
@@ -18,8 +18,8 @@ export const TrashButton = ({
 		<DeleteButton ref={ref} onClick={onClick} className={className}>
 			<Trash2 size={size ?? 16} />
 		</DeleteButton>
-	);
-};
+	)
+}
 
 const DeleteButton = styled.button`
   display: flex;
@@ -42,4 +42,4 @@ const DeleteButton = styled.button`
     color: var(--text-color-2);
     background: rgba(0, 0, 0, 0.15);
   }
-`;
+`

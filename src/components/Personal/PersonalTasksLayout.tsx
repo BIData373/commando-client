@@ -1,129 +1,129 @@
-import styled from "@emotion/styled";
-import type { ColumnDef } from "@tanstack/react-table";
-import { isThisWeek } from "date-fns";
-import { useMemo, useState } from "react";
+import styled from "@emotion/styled"
+import type { ColumnDef } from "@tanstack/react-table"
+import { isThisWeek } from "date-fns"
+import { useState } from "react"
 import {
-	PERSONAL_TASKS,
-	type PersonalTask,
-	type Workspace,
-} from "../../data/PersonalTasks";
-import type { Task } from "../../data/Tasks";
-import type { TaskColumn } from "../../hooks/useTaskColumns";
-import { useTasks } from "../../providers/TasksProvider";
-import { useTitleBar } from "../../providers/TitleBarProvider";
-import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown";
-import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions";
-import { NoResultsFound } from "../Tasks/NoResultsFound";
-import { TaskFilters } from "../Tasks/TaskFilters";
-import type { TasksLayoutProps, View } from "../Tasks/TasksLayout";
-import { TaskTable } from "../Tasks/TaskTable";
-import { TooltipProvider } from "../ui/tooltip";
-import { MetricsBar } from "./MetricsBar";
+  type TaskWithWorkspaceDto,
+  type WorkspaceDto,
+  WorkspaceStatusDtoType,
+} from "src/api/model"
+import {
+  getListPersonalTasksQueryKey,
+  useListPersonalTasks,
+} from "src/api/task/task"
+import { applyAllFilters } from "../../functions/filter-utils"
+import { toTaskRows } from "../../functions/tasks-table"
+import {
+  type TaskRow,
+  useTasksFilters,
+} from "../../providers/TasksFiltersProvider"
+import { useTitleBar } from "../../providers/TitleBarProvider"
+import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
+import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
+import { NoResultsFound } from "../Tasks/NoResultsFound"
+import { TaskFilters } from "../Tasks/TaskFilters"
+import type { View } from "../Tasks/TasksLayout"
 
-const PERSONAL_DEFAULT_COLUMN_ORDER: TaskColumn[] = [
-	"title",
-	"status",
-	"responsible",
-	"deadlineType",
-	"discussionName",
-	"tags",
-	"notes",
-	"workspace",
-	"createdAt",
-	"updatedAt",
-] as TaskColumn[];
+interface PersonalTasksLayoutProps {
+	view: View
+}
 
-const PERSONAL_DEFAULT_HIDDEN = new Set<TaskColumn>([
-	"tags",
-	"notes",
-	"updatedAt",
-] as TaskColumn[]);
+import { TaskTable } from "../Tasks/TaskTable"
+import { TooltipProvider } from "../ui/tooltip"
+import { MetricsBar } from "./MetricsBar"
 
-const WORKSPACE_COLUMN: ColumnDef<Task> = {
+type PersonalTaskRow = TaskRow & { workspace: WorkspaceDto }
+
+function toPersonalTaskRows(
+	rawTasks: TaskWithWorkspaceDto[],
+): PersonalTaskRow[] {
+	return toTaskRows(rawTasks) as PersonalTaskRow[]
+}
+
+const WORKSPACE_COLUMN: ColumnDef<PersonalTaskRow> = {
 	id: "workspace",
-	accessorFn: (row) => (row as PersonalTask).workspace.name,
+	accessorFn: (row) => row.workspace.title,
 	header: ({ column }) => (
 		<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
 	),
 	size: 170,
 	enableColumnFilter: false,
 	sortingFn: (rowA, rowB) =>
-		(rowA.original as PersonalTask).workspace.name.localeCompare(
-			(rowB.original as PersonalTask).workspace.name,
+		rowA.original.workspace.title.localeCompare(
+			rowB.original.workspace.title,
 			"he",
 		),
 	cell: ({ row }) => {
-		const { workspace } = row.original as PersonalTask;
+		const { workspace } = row.original
 		return (
 			<WorkspaceCell>
-				<WorkspaceIconImg src={workspace.iconUrl} alt={workspace.name} />
-				<WorkspaceCellName>{workspace.name}</WorkspaceCellName>
+				<WorkspaceIconImg
+					src={workspace.icon ?? undefined}
+					alt={workspace.title}
+				/>
+				<WorkspaceCellName>{workspace.title}</WorkspaceCellName>
 			</WorkspaceCell>
-		);
+		)
 	},
-};
+}
 
-const EXTRA_COLUMNS: Record<string, ColumnDef<Task>> = {
+const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 	workspace: WORKSPACE_COLUMN,
-};
+}
 
-export const PERSONAL_PROVIDER_CONFIG = {
-	initialTasks: PERSONAL_TASKS as Task[],
-	defaultColumnOrder: PERSONAL_DEFAULT_COLUMN_ORDER,
-	defaultHiddenColumns: PERSONAL_DEFAULT_HIDDEN,
-};
+function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
+	const { searchQuery, activeQuickFilters, clearQuickFilters } =
+		useTasksFilters()
+	const queryKey = getListPersonalTasksQueryKey()
+	const { data: rawTasks = [] } = useListPersonalTasks()
 
-function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
-	const {
-		tasks,
-		clearQuickFilters,
-		searchQuery,
-		filteredTasks: baseFilteredTasks,
-	} = useTasks();
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
-	>(new Set());
+	>(new Set())
 
-	const workspaces = useMemo(() => {
-		const map = new Map<number, Workspace>();
-		(tasks as PersonalTask[]).forEach((t) => {
-			map.set(t.workspace.id, t.workspace);
-		});
-		return [...map.values()];
-	}, [tasks]);
+	const taskRows = toPersonalTaskRows(rawTasks)
 
-	const totalCount = tasks.length;
-	const notStartedCount = tasks.filter(
-		(t) => t.status === "not_started",
-	).length;
-	const inProgressCount = tasks.filter(
-		(t) => t.status === "in_progress",
-	).length;
-	const weeklyNew = tasks.filter((t) =>
+	const workspaceMap = new Map<number, WorkspaceDto>()
+	taskRows.forEach((t) => {
+		workspaceMap.set(t.workspace.id, t.workspace)
+	})
+	const workspaces = [...workspaceMap.values()]
+
+	const totalCount = taskRows.length
+	const notStartedCount = taskRows.filter(
+		(t) => t.status.type === WorkspaceStatusDtoType.NOT_STARTED,
+	).length
+	const inProgressCount = taskRows.filter(
+		(t) => t.status.type === WorkspaceStatusDtoType.IN_PROGRESS,
+	).length
+	const weeklyNew = taskRows.filter((t) =>
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
-	).length;
+	).length
 
-	function clearAllFilters() {
-		clearQuickFilters();
-		setActiveWorkspaceFilters(new Set());
+	let filteredTaskRows = applyAllFilters(
+		taskRows,
+		activeQuickFilters,
+		new Set(),
+		searchQuery,
+	) as PersonalTaskRow[]
+
+	if (activeWorkspaceFilters.size > 0) {
+		filteredTaskRows = filteredTaskRows.filter((t) =>
+			activeWorkspaceFilters.has(t.workspace.id),
+		)
 	}
 
-	const filteredTasks = useMemo(() => {
-		let result = baseFilteredTasks as PersonalTask[];
-
-		if (activeWorkspaceFilters.size > 0) {
-			result = result.filter((t) => activeWorkspaceFilters.has(t.workspace.id));
-		}
-
-		return result;
-	}, [baseFilteredTasks, activeWorkspaceFilters]);
+	function clearAllFilters() {
+		clearQuickFilters()
+		setActiveWorkspaceFilters(new Set())
+	}
 
 	function handleExport() {
 		// placeholder for export
 	}
 
 	function handleViewChange(newView: View) {
-		return newView;
+		return newView
 		// placeholder for view change
 	}
 
@@ -144,8 +144,8 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 				</SegmentedItem>
 			</SegmentedControl>
 		),
-		[view, urlName],
-	);
+		[view],
+	)
 
 	return (
 		<TooltipProvider>
@@ -158,12 +158,11 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 				/>
 
 				<TaskFilters
+					tasks={taskRows}
 					onClearAllFilters={clearAllFilters}
 					onExport={handleExport}
 					hasExtraActiveFilters={activeWorkspaceFilters.size > 0}
-					extraColumnsMeta={[
-						{ id: "workspace" as TaskColumn, label: "מפקד מנחה" },
-					]}
+					extraColumnsMeta={[{ id: "workspace", label: "מפקד מנחה" }]}
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label={
@@ -173,8 +172,10 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 							}
 							options={workspaces.map((ws) => ({
 								value: ws.id,
-								label: ws.name,
-								icon: <WorkspaceIcon src={ws.iconUrl} alt={ws.name} />,
+								label: ws.title,
+								icon: (
+									<WorkspaceIcon src={ws.icon ?? undefined} alt={ws.title} />
+								),
 							}))}
 							activeValues={activeWorkspaceFilters}
 							onApply={setActiveWorkspaceFilters}
@@ -183,22 +184,23 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 					}
 				/>
 
-				{tasks.length === 0 ? (
+				{rawTasks.length === 0 ? (
 					<NoResultsFound variant="empty" />
-				) : searchQuery && filteredTasks.length === 0 ? (
+				) : searchQuery && filteredTaskRows.length === 0 ? (
 					<NoResultsFound variant="no-search-results" />
 				) : (
 					<TaskTable
-						tasks={filteredTasks as Task[]}
-						extraColumns={EXTRA_COLUMNS}
+						queryKey={queryKey}
+						tasks={filteredTaskRows}
+						extraColumns={EXTRA_COLUMNS as Record<string, ColumnDef<TaskRow>>}
 					/>
 				)}
 			</PageRoot>
 		</TooltipProvider>
-	);
+	)
 }
 
-export default PersonalTasksLayout;
+export default PersonalTasksLayout
 
 const PageRoot = styled.div`
   display: flex;
@@ -207,7 +209,7 @@ const PageRoot = styled.div`
   gap: 28px;
   height: 100%;
   overflow: hidden;
-`;
+`
 
 const SegmentedControl = styled.div`
   display: flex;
@@ -218,7 +220,7 @@ const SegmentedControl = styled.div`
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-`;
+`
 
 const SegmentedItem = styled.button<{ $selected: boolean }>`
   display: flex;
@@ -241,21 +243,21 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   &:hover {
     background: ${({ $selected }) => ($selected ? "var(--background)" : "rgba(0, 0, 0, 0.06)")};
   }
-`;
+`
 
 const WorkspaceIcon = styled.img`
   width: 20px;
   height: 20px;
   border-radius: 50%;
   object-fit: cover;
-`;
+`
 
 const WorkspaceCell = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
   justify-content: flex-start;
-`;
+`
 
 const WorkspaceCellName = styled.span`
   font-size: 14px;
@@ -265,7 +267,7 @@ const WorkspaceCellName = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`;
+`
 
 const WorkspaceIconImg = styled.img`
   width: 24px;
@@ -273,4 +275,4 @@ const WorkspaceIconImg = styled.img`
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
-`;
+`
