@@ -384,7 +384,7 @@ function useTaskColumns({
 					},
 				},
 			}) => {
-				const parts = [name, date].filter(Boolean)
+				const parts = [name, formatDateShort(date)].filter(Boolean)
 				return (
 					<SourceCell>
 						{attachmentKey && <SourceIcon size={18} />}

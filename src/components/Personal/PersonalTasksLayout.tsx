@@ -22,7 +22,12 @@ import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { NoResultsFound } from "../Tasks/NoResultsFound"
 import { TaskFilters } from "../Tasks/TaskFilters"
-import type { TasksLayoutProps, View } from "../Tasks/TasksLayout"
+import type { View } from "../Tasks/TasksLayout"
+
+interface PersonalTasksLayoutProps {
+	view: View
+	urlName: string
+}
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
@@ -66,7 +71,7 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 	workspace: WORKSPACE_COLUMN,
 }
 
-function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
+function PersonalTasksLayout({ view, urlName }: PersonalTasksLayoutProps) {
 	const { searchQuery, activeQuickFilters, clearQuickFilters } =
 		useTasksFilters()
 	const queryKey = getListPersonalTasksQueryKey()
@@ -187,7 +192,7 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 					<TaskTable
 						queryKey={queryKey}
 						tasks={filteredTaskRows}
-						extraColumns={EXTRA_COLUMNS}
+						extraColumns={EXTRA_COLUMNS as Record<string, ColumnDef<TaskRow>>}
 					/>
 				)}
 			</PageRoot>

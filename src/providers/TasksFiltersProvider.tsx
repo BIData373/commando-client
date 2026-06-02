@@ -1,4 +1,3 @@
-import type { QueryKey } from "@tanstack/react-query"
 import {
 	createContext,
 	type PropsWithChildren,
@@ -27,8 +26,6 @@ export type TaskRow = TaskDto & {
 }
 
 interface TasksFiltersContextValue {
-	queryKey: QueryKey
-
 	searchQuery: string
 	setSearchQuery: (query: string) => void
 

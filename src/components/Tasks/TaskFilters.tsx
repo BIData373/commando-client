@@ -15,6 +15,8 @@ interface TaskFiltersProps {
 	hasExtraActiveFilters?: boolean
 	extraFilters?: ReactNode
 	extraColumnsMeta?: TaskColumnMeta[]
+	tabFilter?: QuickFilter[]
+	onToggleTabFilter?: (filter: QuickFilter) => void
 }
 
 function TaskFilters({
@@ -24,6 +26,8 @@ function TaskFilters({
 	hasExtraActiveFilters,
 	extraFilters,
 	extraColumnsMeta,
+	tabFilter,
+	onToggleTabFilter,
 }: TaskFiltersProps) {
 	const {
 		activeQuickFilters,
@@ -36,8 +40,11 @@ function TaskFilters({
 		toggleColumn,
 	} = useTasksFilters()
 
-	const hasActiveFilters =
-		activeQuickFilters.size > 0 || !!hasExtraActiveFilters
+	const activeFilters =
+		tabFilter !== undefined ? new Set(tabFilter) : activeQuickFilters
+	const handleToggle = onToggleTabFilter ?? toggleQuickFilter
+
+	const hasActiveFilters = activeFilters.size > 0 || !!hasExtraActiveFilters
 
 	const overdueCount = tasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.OVERDUE),
@@ -65,8 +72,8 @@ function TaskFilters({
 			{extraFilters}
 
 			<FilterPill
-				$active={activeQuickFilters.has(QuickFilter.FLAGGED)}
-				onClick={() => toggleQuickFilter(QuickFilter.FLAGGED)}
+				$active={activeFilters.has(QuickFilter.FLAGGED)}
+				onClick={() => handleToggle(QuickFilter.FLAGGED)}
 			>
 				חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
 			</FilterPill>
@@ -74,8 +81,8 @@ function TaskFilters({
 			<Tooltip>
 				<WarningTrigger>
 					<FilterPill
-						$active={activeQuickFilters.has(QuickFilter.APPROACHING)}
-						onClick={() => toggleQuickFilter(QuickFilter.APPROACHING)}
+						$active={activeFilters.has(QuickFilter.APPROACHING)}
+						onClick={() => handleToggle(QuickFilter.APPROACHING)}
 					>
 						תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
 					</FilterPill>
@@ -85,8 +92,8 @@ function TaskFilters({
 			</Tooltip>
 
 			<FilterPill
-				$active={activeQuickFilters.has(QuickFilter.OVERDUE)}
-				onClick={() => toggleQuickFilter(QuickFilter.OVERDUE)}
+				$active={activeFilters.has(QuickFilter.OVERDUE)}
+				onClick={() => handleToggle(QuickFilter.OVERDUE)}
 			>
 				חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
 			</FilterPill>
@@ -94,7 +101,7 @@ function TaskFilters({
 			<FilterDivider />
 
 			<FilterPill $active={!hasActiveFilters} onClick={onClearAllFilters}>
-				{tasks.length}
+				הכל ({tasks.length})
 			</FilterPill>
 		</FilterBar>
 	)

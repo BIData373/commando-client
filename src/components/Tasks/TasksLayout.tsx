@@ -1,219 +1,239 @@
-import styled from "@emotion/styled"
-import { Outlet, useNavigate } from "@tanstack/react-router"
-import { ChevronDown, Plus } from "lucide-react"
-import { useMemo, useState } from "react"
-import type { WorkspaceStatusDtoType } from "src/api/model"
-import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
-import type { QuickFilter } from "src/utils/filter-utils"
-import { exportTasksToExcel } from "../../functions/export-excel"
-import { applyAllFilters } from "../../functions/filter-utils"
-import { toTaskRows } from "../../functions/tasks-table"
-import { useTasksFilters } from "../../providers/TasksFiltersProvider"
-import { useTitleBar } from "../../providers/TitleBarProvider"
-import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
+import styled from "@emotion/styled";
+import { Outlet, useNavigate } from "@tanstack/react-router";
+import { ChevronDown, Plus } from "lucide-react";
+import { useMemo, useState } from "react";
+import type { WorkspaceStatusDtoType } from "src/api/model";
+import { getListTasksQueryKey, useListTasks } from "src/api/task/task";
+import { toTaskRows } from "src/functions/tasks-table";
+import { useWorkspace } from "src/providers/WorkspaceProvider";
+import type { TasksSearchSchemaType } from "src/routes/workspace/$urlName/tasks";
+import type { QuickFilter } from "src/utils/filter-utils";
+import { exportTasksToExcel } from "../../functions/export-excel";
+import { applyAllFilters } from "../../functions/filter-utils";
+import { useTasksFilters } from "../../providers/TasksFiltersProvider";
+import { useTitleBar } from "../../providers/TitleBarProvider";
+import type { DeadlineType } from "../shared/DeadlineTag";
+import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
-import { TooltipProvider } from "../ui/tooltip"
-import { NoResultsFound } from "./NoResultsFound"
-import { TaskCardGrid } from "./TaskCardGrid"
-import { TaskFilters } from "./TaskFilters"
-import { TaskTable } from "./TaskTable"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { TooltipProvider } from "../ui/tooltip";
+import { NoResultsFound } from "./NoResultsFound";
+import { TaskCardGrid } from "./TaskCardGrid";
+import { TaskFilters } from "./TaskFilters";
+import { TaskTable } from "./TaskTable";
 
-export type View = "TABLE" | "CARDS"
+export type View = "TABLE" | "CARDS";
 
 export interface TasksLayoutProps {
-	view: View
-	urlName: string
-	tabFilter?: QuickFilter
-	statusFilter?: WorkspaceStatusDtoType
+  view: View;
+  urlName: string;
+  tabFilter: QuickFilter[];
+  statusFilter: WorkspaceStatusDtoType[];
+  deadlineTypeFilter: DeadlineType[];
 }
 
 function TasksLayout({
-	view,
-	urlName,
-	tabFilter,
-	statusFilter,
+  view,
+  urlName,
+  tabFilter,
+  statusFilter,
+  deadlineTypeFilter,
 }: TasksLayoutProps) {
-	const {
-		workspace: { id: workspaceId },
-	} = useWorkspace()
-	const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters();
+  const { workspace: { id: workspaceId } } = useWorkspace()
 
-	const tasksQueryKey = getListTasksQueryKey({ workspaceId })
-	const { data: tasks = [], isLoading } = useListTasks({ workspaceId })
+  const tasksQueryKey = getListTasksQueryKey({ workspaceId })
+  const { data: tasks = [] } = useListTasks({ workspaceId })
 
-	const {
-		activeQuickFilters,
-		clearQuickFilters,
-		searchQuery,
-		columnOrder,
-		hiddenColumns,
-	} = useTasksFilters()
+  const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
+    new Set(),
+  );
+  const allTopics = [...new Set(tasks.flatMap((t) => t.tags.map((tag) => tag.name)))];
 
-	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
-		new Set(),
-	)
+  const tabFilterSet = useMemo(() => new Set<QuickFilter>(tabFilter), [tabFilter])
 
-	function clearAllFilters() {
-		clearQuickFilters()
-		setActiveTopicFilters(new Set())
-	}
+  const baseFilteredTasks = useMemo(
+    () =>
+      toTaskRows(
+        applyAllFilters(tasks, tabFilterSet, new Set(), searchQuery),
+      ),
+    [tasks, searchQuery, tabFilterSet],
+  )
 
-	const allTopics = [
-		...new Set(tasks.flatMap((t) => t.tags.map((tag) => tag.name))),
-	]
+  const filteredTasks = useMemo(
+    () =>
+      activeTopicFilters.size > 0
+        ? toTaskRows(
+          applyAllFilters(
+            tasks,
+            tabFilterSet,
+            activeTopicFilters,
+            searchQuery,
+          ),
+        )
+        : baseFilteredTasks,
+    [tasks, searchQuery, tabFilterSet, activeTopicFilters, baseFilteredTasks],
+  )
 
-	const baseFilteredTasks = useMemo(
-		() =>
-			toTaskRows(
-				applyAllFilters(tasks, activeQuickFilters, new Set(), searchQuery),
-			),
-		[tasks, searchQuery, activeQuickFilters],
-	)
+  function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
+    navigate({
+      to: "/workspace/$urlName/tasks",
+      params: { urlName },
+      search: (prev) => ({
+        ...prev,
+        ...taskFilter,
+      }),
+    });
+  }
 
-	const filteredTasks = useMemo(
-		() =>
-			activeTopicFilters.size > 0
-				? toTaskRows(
-						applyAllFilters(
-							tasks,
-							activeQuickFilters,
-							activeTopicFilters,
-							searchQuery,
-						),
-					)
-				: baseFilteredTasks,
-		[
-			tasks,
-			searchQuery,
-			activeQuickFilters,
-			activeTopicFilters,
-			baseFilteredTasks,
-		],
-	)
+  function navigateWithMode(mode: "single" | "discussion") {
+    navigate({
+      to: "/workspace/$urlName/tasks/new",
+      params: { urlName },
+      search: (prev) => ({ view, mode, ...prev }),
+    });
+  }
 
-	function handleEdit(taskId: number) {
-		navigate({
-			to: "/workspace/$urlName/tasks/$taskId",
-			params: { urlName, taskId: String(taskId) },
-			search: { view },
-		})
-	}
+  function handleEdit(taskId: number) {
+    navigate({
+      to: "/workspace/$urlName/tasks/$taskId",
+      params: { urlName, taskId: String(taskId) },
+      search: (prev) => ({ view, ...prev }),
+    });
+  }
 
-	async function handleExport() {
-		await exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns })
-	}
+  function handleCreateTask() {
+    navigateWithMode("single");
+  }
 
-	function handleCreateTaskFromDiscussion() {
-		navigate({
-			to: "/workspace/$urlName/tasks/new",
-			params: { urlName },
-			search: { view, mode: "discussion" },
-		})
-	}
+  function handleCreateTaskFromDiscussion() {
+    navigateWithMode("discussion");
+  }
 
-	function handleCreateTask() {
-		navigate({
-			to: "/workspace/$urlName/tasks/new",
-			params: { urlName },
-			search: { view, mode: "single" },
-		})
-	}
+  function handleToggleTabFilter(filter: QuickFilter) {
+    const next = tabFilter.includes(filter)
+      ? tabFilter.filter((f) => f !== filter)
+      : [...tabFilter, filter];
+    navigateToTasks({ tabFilter: next });
+  }
 
-	function handleViewChange(newView: View) {
-		navigate({
-			to: "/workspace/$urlName/tasks",
-			params: { urlName },
-			search: { view: newView },
-		})
-	}
+  function clearAllFilters() {
+    setActiveTopicFilters(new Set());
+    navigateToTasks({
+      tabFilter: [],
+      statusFilter: [],
+      deadlineTypeFilter: [],
+    });
+  }
 
-	useTitleBar(
-		() => (
-			<ButtonGroup>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<CreateButton>
-							<Plus size={18} color="white" />
-							<CreateButtonText>צור הנחייה</CreateButtonText>
-							<ChevronDown size={18} color="white" />
-						</CreateButton>
-					</DropdownMenuTrigger>
-					<StyledDropdownContent align="end" sideOffset={6}>
-						<StyledDropdownItem onSelect={handleCreateTaskFromDiscussion}>
-							הנחיות מתוך דיון
-						</StyledDropdownItem>
-						<StyledDropdownItem onSelect={handleCreateTask}>
-							הנחייה בודדת
-						</StyledDropdownItem>
-					</StyledDropdownContent>
-				</DropdownMenu>
-				<SectionDivider />
-				<SegmentedControl>
-					<SegmentedItem
-						$selected={view === "CARDS"}
-						onClick={() => handleViewChange("CARDS")}
-					>
-						כרטיסיות
-					</SegmentedItem>
-					<SegmentedItem
-						$selected={view === "TABLE"}
-						onClick={() => handleViewChange("TABLE")}
-					>
-						טבלה
-					</SegmentedItem>
-				</SegmentedControl>
-			</ButtonGroup>
-		),
-		[view, urlName],
-	)
+  function handleColumnFiltersChange(
+    newStatusFilter: WorkspaceStatusDtoType[],
+    newDeadlineTypeFilter: DeadlineType[],
+  ) {
+    navigateToTasks({
+      statusFilter: newStatusFilter,
+      deadlineTypeFilter: newDeadlineTypeFilter,
+    });
+  }
 
-	return (
-		<TooltipProvider>
-			<TasksRoot>
-				<TaskFilters
-					tasks={toTaskRows(tasks)}
-					onClearAllFilters={clearAllFilters}
-					onExport={handleExport}
-					hasExtraActiveFilters={activeTopicFilters.size > 0}
-					extraFilters={
-						<MultiSelectFilterDropdown
-							label="נושא"
-							options={allTopics.map((t) => ({ value: t, label: t }))}
-							activeValues={activeTopicFilters}
-							onApply={setActiveTopicFilters}
-							$active={activeTopicFilters.size > 0}
-						/>
-					}
-				/>
+  function handleExport() {
+    exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns });
+  }
 
-				{tasks.length === 0 ? (
-					<NoResultsFound variant="empty" />
-				) : searchQuery && filteredTasks.length === 0 ? (
-					<NoResultsFound variant="no-search-results" />
-				) : view === "TABLE" ? (
-					<TaskTable
-						queryKey={tasksQueryKey}
-						tasks={filteredTasks}
-						onEdit={handleEdit}
-						initialStatusFilter={statusFilter}
-						onDoubleClick={handleEdit}
-					/>
-				) : (
-					<TaskCardGrid tasks={filteredTasks} />
-				)}
-			</TasksRoot>
-			<Outlet />
-		</TooltipProvider>
-	)
+  function handleViewChange(newView: View) {
+    navigateToTasks({ view: newView });
+  }
+
+  useTitleBar(
+    () => (
+      <ButtonGroup>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <CreateButton>
+              <Plus size={18} color="white" />
+              <CreateButtonText>צור הנחייה</CreateButtonText>
+              <ChevronDown size={18} color="white" />
+            </CreateButton>
+          </DropdownMenuTrigger>
+          <StyledDropdownContent align="end" sideOffset={6}>
+            <StyledDropdownItem onSelect={handleCreateTaskFromDiscussion}>
+              הנחיות מתוך דיון
+            </StyledDropdownItem>
+            <StyledDropdownItem onSelect={handleCreateTask}>
+              הנחייה בודדת
+            </StyledDropdownItem>
+          </StyledDropdownContent>
+        </DropdownMenu>
+        <SectionDivider />
+        <SegmentedControl>
+          <SegmentedItem
+            $selected={view === "CARDS"}
+            onClick={() => handleViewChange("CARDS")}
+          >
+            כרטיסיות
+          </SegmentedItem>
+          <SegmentedItem
+            $selected={view === "TABLE"}
+            onClick={() => handleViewChange("TABLE")}
+          >
+            טבלה
+          </SegmentedItem>
+        </SegmentedControl>
+      </ButtonGroup>
+    ),
+    [view, urlName],
+  );
+
+  return (
+    <TooltipProvider>
+      <TasksRoot>
+        <TaskFilters
+          tasks={toTaskRows(tasks)}
+          onClearAllFilters={clearAllFilters}
+          onExport={handleExport}
+          tabFilter={tabFilter}
+          onToggleTabFilter={handleToggleTabFilter}
+          hasExtraActiveFilters={activeTopicFilters.size > 0}
+          extraFilters={
+            <MultiSelectFilterDropdown
+              label="נושא"
+              options={allTopics.map((t) => ({ value: t, label: t }))}
+              activeValues={activeTopicFilters}
+              onApply={setActiveTopicFilters}
+              $active={activeTopicFilters.size > 0}
+            />
+          }
+        />
+
+        {tasks.length === 0 ? (
+          <NoResultsFound variant="empty" />
+        ) : searchQuery && filteredTasks.length === 0 ? (
+          <NoResultsFound variant="no-search-results" />
+        ) : view === "TABLE" ? (
+          <TaskTable
+            queryKey={tasksQueryKey}
+            tasks={filteredTasks}
+            onEdit={handleEdit}
+            statusFilter={statusFilter}
+            deadlineTypeFilter={deadlineTypeFilter}
+            onFiltersChange={handleColumnFiltersChange}
+            onDoubleClick={handleEdit}
+          />
+        ) : (
+          <TaskCardGrid tasks={filteredTasks} />
+        )}
+      </TasksRoot>
+      <Outlet />
+    </TooltipProvider>
+  );
 }
 
-export default TasksLayout
+export default TasksLayout;
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
@@ -222,7 +242,7 @@ const TasksRoot = styled.div`
   display: flex;
   flex-direction: column;
   gap: 28px;
-`
+`;
 
 // ─── Title Bar Actions ───────────────────────────────────────────────────────
 
@@ -231,7 +251,7 @@ const ButtonGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-`
+`;
 
 const CreateButton = styled.button`
   direction: rtl;
@@ -262,19 +282,24 @@ const CreateButton = styled.button`
     pointer-events: none;
   }
 
-  &:hover { opacity: 0.9; }
-  &:active { opacity: 0.85; }
-`
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:active {
+    opacity: 0.85;
+  }
+`;
 
 const CreateButtonText = styled.span`
   direction: rtl;
-`
+`;
 
 const SectionDivider = styled.div`
   width: 1px;
   height: 39px;
   background: rgba(0, 0, 0, 0.15);
-`
+`;
 
 const SegmentedControl = styled.div`
   display: flex;
@@ -285,7 +310,7 @@ const SegmentedControl = styled.div`
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-`
+`;
 
 const SegmentedItem = styled.button<{ $selected: boolean }>`
   display: flex;
@@ -305,13 +330,13 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   background: ${({ $selected }) => ($selected ? "white" : "transparent")};
   color: ${({ $selected }) => ($selected ? "rgba(0, 0, 0, 0.88)" : "rgba(0, 0, 0, 0.65)")};
   box-shadow: ${({ $selected }) =>
-		$selected
-			? "0px 1px 2px 0px rgba(0, 0, 0, 0.03), 0px 1px 6px -1px rgba(0, 0, 0, 0.02), 0px 2px 4px 0px rgba(0, 0, 0, 0.02)"
-			: "none"};
+    $selected
+      ? "0px 1px 2px 0px rgba(0, 0, 0, 0.03), 0px 1px 6px -1px rgba(0, 0, 0, 0.02), 0px 2px 4px 0px rgba(0, 0, 0, 0.02)"
+      : "none"};
   &:hover {
     background: ${({ $selected }) => ($selected ? "white" : "rgba(0, 0, 0, 0.06)")};
   }
-`
+`;
 
 // ─── Create Dropdown ─────────────────────────────────────────────────────────
 
@@ -324,7 +349,7 @@ const StyledDropdownContent = styled(DropdownMenuContent)`
     0px 9px 28px 0px rgba(0, 0, 0, 0.05),
     0px 3px 6px -4px rgba(0, 0, 0, 0.12),
     0px 6px 16px 0px rgba(0, 0, 0, 0.08);
-`
+`;
 
 const StyledDropdownItem = styled(DropdownMenuItem)`
   direction: rtl;
@@ -341,4 +366,4 @@ const StyledDropdownItem = styled(DropdownMenuItem)`
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;
   cursor: pointer;
-`
+`;
