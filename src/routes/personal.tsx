@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
 import type { TaskColumn } from "src/hooks/useTaskColumns"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
 import PersonalTasksLayout from "../components/Personal/PersonalTasksLayout"
 import type { View } from "../components/Tasks/TasksLayout"
 import { TasksFiltersProvider } from "../providers/TasksFiltersProvider"
@@ -39,7 +38,6 @@ const PERSONAL_DEFAULT_HIDDEN = new Set<TaskColumn>([
 ] as TaskColumn[])
 
 function PersonalPage() {
-  const { workspace: { urlName } } = useWorkspace()
   const { view } = Route.useSearch()
 
   return (
@@ -47,7 +45,7 @@ function PersonalPage() {
       defaultColumnOrder={PERSONAL_DEFAULT_COLUMN_ORDER}
       defaultHiddenColumns={PERSONAL_DEFAULT_HIDDEN}
     >
-      <PersonalTasksLayout view={view} urlName={urlName} />
+      <PersonalTasksLayout view={view}/>
     </TasksFiltersProvider>
   )
 }
