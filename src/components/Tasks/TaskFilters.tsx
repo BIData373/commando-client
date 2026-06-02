@@ -1,13 +1,15 @@
 import styled from "@emotion/styled"
 import type { ReactNode } from "react"
+import { matchesQuickFilter } from "src/functions/filter-utils"
 import { QuickFilter } from "src/utils/filter-utils"
-import { matchesQuickFilter } from "../../functions/filter-utils"
 import type { TaskColumnMeta } from "../../hooks/useTaskColumns"
+import type { TaskRow } from "../../providers/TasksFiltersProvider"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { FilterBar, FilterDivider, FilterPill } from "../shared/FilterBar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface TaskFiltersProps {
+	tasks: TaskRow[]
 	onClearAllFilters: () => void
 	onExport: () => void
 	hasExtraActiveFilters?: boolean
@@ -16,6 +18,7 @@ interface TaskFiltersProps {
 }
 
 function TaskFilters({
+	tasks,
 	onClearAllFilters,
 	onExport,
 	hasExtraActiveFilters,
@@ -36,19 +39,15 @@ function TaskFilters({
 	const hasActiveFilters =
 		activeQuickFilters.size > 0 || !!hasExtraActiveFilters
 
-	// TODO - implement
-	const overdueCount = 0
-	// const overdueCount = tasks.filter((t) =>
-	// 	matchesQuickFilter(t, QuickFilter.OVERDUE),
-	// ).length;
-	const approachingCount = 0
-	// const approachingCount = tasks.filter((t) =>
-	// 	matchesQuickFilter(t, QuickFilter.APPROACHING),
-	// ).length;
-	const flaggedCount = 0
-	// const flaggedCount = tasks.filter((t) =>
-	// 	matchesQuickFilter(t, QuickFilter.FLAGGED),
-	// ).length;
+	const overdueCount = tasks.filter((t) =>
+		matchesQuickFilter(t, QuickFilter.OVERDUE),
+	).length
+	const approachingCount = tasks.filter((t) =>
+		matchesQuickFilter(t, QuickFilter.APPROACHING),
+	).length
+	const flaggedCount = tasks.filter((t) =>
+		matchesQuickFilter(t, QuickFilter.FLAGGED),
+	).length
 
 	return (
 		<FilterBar
@@ -95,8 +94,7 @@ function TaskFilters({
 			<FilterDivider />
 
 			<FilterPill $active={!hasActiveFilters} onClick={onClearAllFilters}>
-				0{/* TODO - implement */}
-				{/* הכל ({tasks.length}) */}
+				{tasks.length}
 			</FilterPill>
 		</FilterBar>
 	)

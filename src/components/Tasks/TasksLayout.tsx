@@ -54,6 +54,7 @@ function TasksLayout({
 		columnOrder,
 		hiddenColumns,
 	} = useTasksFilters()
+
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
 	)
@@ -95,6 +96,7 @@ function TasksLayout({
 			baseFilteredTasks,
 		],
 	)
+
 	function handleEdit(taskId: number) {
 		navigate({
 			to: "/workspace/$urlName/tasks/$taskId",
@@ -175,6 +177,7 @@ function TasksLayout({
 		<TooltipProvider>
 			<TasksRoot>
 				<TaskFilters
+					tasks={toTaskRows(tasks)}
 					onClearAllFilters={clearAllFilters}
 					onExport={handleExport}
 					hasExtraActiveFilters={activeTopicFilters.size > 0}
@@ -259,13 +262,8 @@ const CreateButton = styled.button`
     pointer-events: none;
   }
 
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:active {
-    opacity: 0.85;
-  }
+  &:hover { opacity: 0.9; }
+  &:active { opacity: 0.85; }
 `
 
 const CreateButtonText = styled.span`

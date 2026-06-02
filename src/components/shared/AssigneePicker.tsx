@@ -4,8 +4,8 @@ import { type ReactNode, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AssigneeDialog } from "../settings/AssigneeDialog"
-import type { AvatarColor } from "../Tasks/AssigneeCell"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { AssigneeAvatar } from "./AssigneeAvatar"
 
 interface AssigneePickerProps {
 	selectedAssignees: number[]
@@ -91,9 +91,7 @@ function AssigneePicker({
 							onClick={() => handleAssigneeClick(assignee.id)}
 						>
 							<AssigneeOptionEnd>
-								<AvatarCircle $color={assignee.color}>
-									{assignee.initials}
-								</AvatarCircle>
+								<AssigneeAvatar assignee={assignee} size={20} />
 
 								<AssigneeOptionName $selected={assignee.selected}>
 									{assignee.name}
@@ -177,34 +175,6 @@ const CreateNewButton = styled.button`
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
-`
-// FIX Use AssigneeAvatar
-const AvatarCircle = styled.div<{ $color: string }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 20px;
-  color: var(--sea-ink);
-  flex-shrink: 0;
-  ${({ $color }) => {
-		switch ($color) {
-			case "cyan":
-				return "background: #87e8de;"
-			case "blue":
-				return "background: #91caff;"
-			case "green":
-				return "background: #b7eb8f;"
-			case "orange":
-				return "background: #ffd591;"
-			case "gray":
-				return "background: var(--colors-base-neutral-3);"
-		}
-	}}
 `
 
 const StyleCheck = styled(Check)`

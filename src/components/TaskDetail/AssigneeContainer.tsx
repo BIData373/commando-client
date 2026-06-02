@@ -2,7 +2,6 @@ import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import type { AssigneeStatusDto } from "src/api/model"
-import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { StatusTag } from "../shared/StatusTag"
@@ -13,23 +12,23 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
 
-interface AsiggneeContainerProps {
+interface AssigneeContainerProps {
 	taskId: number
-	assigneeStatus: AssigneeStatusDto
 	isAdmin: boolean
 	editable: boolean
+	assignee: AssigneeStatusDto
 }
 
 export const AssigneeContainer = ({
 	taskId,
-	assigneeStatus: { assignee, status },
+	assignee: { assignee, status },
 	isAdmin,
 	editable,
-}: AsiggneeContainerProps) => {
+}: AssigneeContainerProps) => {
 	const {
-		workspace: { id: workspaceId, assigneeStatusEditable },
+		workspace: { assigneeStatusEditable },
+		statuses,
 	} = useWorkspace()
-	const { data: statuses = [] } = useListWorkspaceStatuses({ workspaceId })
 
 	const { mutateAsync: upsertAssigneeTaskStatus } =
 		useUpsertAssigneeTaskStatus()
@@ -52,19 +51,13 @@ export const AssigneeContainer = ({
 			{canEdit ? (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						{status && (
-							<StatusPillTrigger
-								$fontColor={status.color}
-								$backgroundColor={status.color}
-							>
-								{status.name}
-								<ChevronDown size={12} />
-							</StatusPillTrigger>
-						)}
+						<StatusPillTrigger $color={status.color}>
+							{status.name}
+							<ChevronDown size={12} />
+						</StatusPillTrigger>
 					</DropdownMenuTrigger>
-
 					<StatusDropdownContent align="center" sideOffset={6}>
-						{statuses.map((status) => (
+						{Object.values(statuses).map((status) => (
 							<StatusDropdownItem
 								key={status.id}
 								$selected={status.id === status?.id}
@@ -82,10 +75,7 @@ export const AssigneeContainer = ({
 	)
 }
 
-const StatusPillTrigger = styled.button<{
-	$fontColor: string
-	$backgroundColor: string
-}>`
+const StatusPillTrigger = styled.button<{ $color: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -99,8 +89,8 @@ const StatusPillTrigger = styled.button<{
   line-height: 20px;
   white-space: nowrap;
   cursor: pointer;
-  ${({ $fontColor }) => `color: ${$fontColor}`}
-  ${({ $backgroundColor }) => `background:  rgb(from ${$backgroundColor} r g b / 0.1);`}
+  ${({ $color }) => `color: ${$color}`}
+  ${({ $color }) => `background:  rgb(from ${$color} r g b / 0.1);`}
 
   &:focus-visible {
     outline: none;

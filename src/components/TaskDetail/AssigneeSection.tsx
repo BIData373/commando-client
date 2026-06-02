@@ -57,7 +57,7 @@ export const AssigneeSection = ({
 							<AssigneeContainer
 								key={item.assignee.id}
 								taskId={taskId}
-								assigneeStatus={item}
+								assignee={item}
 								isAdmin={isAdmin}
 								editable={true}
 							/>
@@ -74,7 +74,7 @@ export const AssigneeSection = ({
 								<AssigneeContainer
 									key={item.assignee.id}
 									taskId={taskId}
-									assigneeStatus={item}
+									assignee={item}
 									isAdmin={isAdmin}
 									editable={false}
 								/>

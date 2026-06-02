@@ -1,11 +1,14 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
+import { useListAssignees } from "src/api/assignee/assignee"
+import type { AssigneeDto } from "src/api/model"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import type {
 	TaskRow,
 	TaskTableMeta,
 } from "../CreateTasksFromDiscussion/TasksColumns"
+import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import AssigneePicker from "../shared/AssigneePicker"
-import type { AvatarColor } from "../Tasks/AssigneeCell"
 
 interface AssigneeTableCellProps {
 	row: TaskRow
@@ -13,6 +16,15 @@ interface AssigneeTableCellProps {
 }
 
 function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
+
+	const assigneeMap = Object.fromEntries(
+		assignees.map((a) => [a.id, a]),
+	) as Record<number, AssigneeDto>
+
 	const assigneeIds = row.assigneeIds
 	const hasMultiple = assigneeIds.length > 1
 	const isExpanded = meta.expandedRows.has(row.id)
@@ -37,7 +49,7 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 		})
 	}
 
-	return hasMultiple && !isExpanded ? (
+	return hasMultiple && !isExpanded && !isLoading ? (
 		<CollapsedAssigneeButton
 			type="button"
 			onClick={() => meta.toggleRowExpansion(row.id)}
@@ -59,26 +71,24 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 						{hasMultiple ? (
 							<CompactAvatarStack>
 								{assigneeIds.map((id) =>
-									MOCK_ASSIGNEES[id] ? (
-										<CompactStackedAvatar
+									assigneeMap[id] ? (
+										<StackedAssigneeAvatar
 											key={id}
-											$color={MOCK_ASSIGNEES[id].colorToken}
-										>
-											{MOCK_ASSIGNEES[id].initials}
-										</CompactStackedAvatar>
+											assignee={assigneeMap[id]}
+											size={22}
+										/>
 									) : null,
 								)}
 							</CompactAvatarStack>
-						) : assigneeIds.length === 1 ? (
+						) : assigneeIds.length === 1 && assigneeMap[assigneeIds[0]] ? (
 							<AssigneeTag>
-								<AssigneeTagRole>
-									{MOCK_ASSIGNEES[assigneeIds[0]]?.role}
-								</AssigneeTagRole>
-								<AssigneeTagAvatar
-									$color={MOCK_ASSIGNEES[assigneeIds[0]]?.colorToken}
-								>
-									{MOCK_ASSIGNEES[assigneeIds[0]]?.initials}
-								</AssigneeTagAvatar>
+								<AssigneeTagName>
+									{assigneeMap[assigneeIds[0]].name}
+								</AssigneeTagName>
+								<AssigneeAvatar
+									assignee={assigneeMap[assigneeIds[0]]}
+									size={18}
+								/>
 							</AssigneeTag>
 						) : (
 							<CompactLabel>בחר אחראי</CompactLabel>
@@ -150,23 +160,12 @@ const CompactAvatarStack = styled.div`
   flex-direction: row-reverse;
 `
 
-const CompactStackedAvatar = styled.div<{ $color?: AvatarColor }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  font-size: 10px;
-  color: var(--text-color-2);
-  border: 1.5px solid var(--background);
-  margin-inline-start: -6px;
+const StackedAssigneeAvatar = styled(AssigneeAvatar)`
+  margin-inline-start: -14px;
 
   &:last-of-type {
     margin-inline-start: 0;
   }
-
-  ${({ $color }) => getAvatarBackground($color)}
 `
 
 const AssigneeTag = styled.div`
@@ -176,40 +175,9 @@ const AssigneeTag = styled.div`
   padding: 2px 4px;
 `
 
-const AssigneeTagRole = styled.span`
+const AssigneeTagName = styled.span`
   font-size: 12px;
   line-height: 20px;
   color: var(--text-color-2);
   white-space: nowrap;
 `
-
-const AssigneeTagAvatar = styled.div<{ $color?: AvatarColor }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  font-size: 9.5px;
-  color: var(--text-color-2);
-  flex-shrink: 0;
-
-  ${({ $color }) => getAvatarBackground($color)}
-`
-//TO-DO
-function getAvatarBackground(color?: AvatarColor) {
-	switch (color) {
-		case "cyan":
-			return "background: #87e8de;"
-		case "blue":
-			return "background: #91caff;"
-		case "green":
-			return "background: #b7eb8f;"
-		case "orange":
-			return "background: #ffd591;"
-		case "gray":
-			return "background: var(--colors-base-neutral-3);"
-		default:
-			return "background: var(--colors-base-neutral-3);"
-	}
-}

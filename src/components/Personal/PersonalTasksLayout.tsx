@@ -7,7 +7,10 @@ import {
 	type WorkspaceDto,
 	WorkspaceStatusDtoType,
 } from "src/api/model"
-import { useListPersonalTasks } from "src/api/task/task"
+import {
+	getListPersonalTasksQueryKey,
+	useListPersonalTasks,
+} from "src/api/task/task"
 import { applyAllFilters } from "../../functions/filter-utils"
 import { toTaskRows } from "../../functions/tasks-table"
 import {
@@ -25,6 +28,12 @@ import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
 
 type PersonalTaskRow = TaskRow & { workspace: WorkspaceDto }
+
+function toPersonalTaskRows(
+	rawTasks: TaskWithWorkspaceDto[],
+): PersonalTaskRow[] {
+	return toTaskRows(rawTasks) as PersonalTaskRow[]
+}
 
 const WORKSPACE_COLUMN: ColumnDef<PersonalTaskRow> = {
 	id: "workspace",
@@ -57,26 +66,20 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 	workspace: WORKSPACE_COLUMN,
 }
 
-function toPersonalTaskRows(
-	rawTasks: TaskWithWorkspaceDto[],
-): PersonalTaskRow[] {
-	return toTaskRows(rawTasks) as PersonalTaskRow[]
-}
-
 function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 	const { searchQuery, activeQuickFilters, clearQuickFilters } =
 		useTasksFilters()
-	const { data: rawTasks = [], queryKey } = useListPersonalTasks()
+	const queryKey = getListPersonalTasksQueryKey()
+	const { data: rawTasks = [] } = useListPersonalTasks()
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
 	>(new Set())
 
-	const tasks = rawTasks as TaskWithWorkspaceDto[]
-	const taskRows = toPersonalTaskRows(tasks)
+	const taskRows = toPersonalTaskRows(rawTasks)
 
 	const workspaceMap = new Map<number, WorkspaceDto>()
-	tasks.forEach((t) => {
+	taskRows.forEach((t) => {
 		workspaceMap.set(t.workspace.id, t.workspace)
 	})
 	const workspaces = [...workspaceMap.values()]
@@ -150,6 +153,7 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 				/>
 
 				<TaskFilters
+					tasks={taskRows}
 					onClearAllFilters={clearAllFilters}
 					onExport={handleExport}
 					hasExtraActiveFilters={activeWorkspaceFilters.size > 0}
@@ -175,14 +179,14 @@ function PersonalTasksLayout({ view, urlName }: TasksLayoutProps) {
 					}
 				/>
 
-				{tasks.length === 0 ? (
+				{rawTasks.length === 0 ? (
 					<NoResultsFound variant="empty" />
 				) : searchQuery && filteredTaskRows.length === 0 ? (
 					<NoResultsFound variant="no-search-results" />
 				) : (
 					<TaskTable
 						queryKey={queryKey}
-						tasks={taskRows}
+						tasks={filteredTaskRows}
 						extraColumns={EXTRA_COLUMNS}
 					/>
 				)}

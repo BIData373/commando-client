@@ -11,6 +11,7 @@ import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filter-utils"
 import searchInstruction from "../../assets/icons/searchInstruction.svg"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
+import { DeadlineType } from "../shared/DeadlineTag"
 import { EmptyCardState } from "./EmptyCardState"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
@@ -58,7 +59,7 @@ const coreRowModel = getCoreRowModel()
 function getFilteredTasks(tab: FocusedTab, tasks: TaskRow[]): TaskRow[] {
 	switch (tab) {
 		case FocusedTab.FLAGGED:
-			return tasks.filter((t) => t.flagged)
+			return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED))
 		case FocusedTab.APPROACHING:
 			return tasks.filter((t) => t.deadlineType === "immediate")
 		case FocusedTab.OVERDUE:
@@ -77,6 +78,11 @@ export default function FocusedInstructions({
 		setActiveTab(tabId)
 	}
 
+	const filteredTasks = useMemo(
+		() => getFilteredTasks(activeTab, tasks),
+		[activeTab, tasks],
+	)
+
 	const tabs: TabConfig[] = TAB_LABELS.map((tab) => ({
 		...tab,
 		count:
@@ -89,10 +95,6 @@ export default function FocusedInstructions({
 	}))
 
 	const emptyMsg = EMPTY_MESSAGES[activeTab]
-	const filteredTasks = useMemo(
-		() => getFilteredTasks(activeTab, tasks),
-		[activeTab, tasks],
-	)
 
 	const { columns } = useTaskColumns({
 		queryKey,
@@ -159,7 +161,15 @@ export default function FocusedInstructions({
 					)}
 				</ContentPanel>
 			</TabsWrapper>
-			<ViewMoreInstructions urlName={urlName} tabFilter={activeTab} />
+			<ViewMoreInstructions
+				urlName={urlName}
+				tabFilter={activeTab === FocusedTab.APPROACHING ? undefined : activeTab}
+				deadlineTypeFilter={
+					activeTab === FocusedTab.APPROACHING
+						? DeadlineType.Immediate
+						: undefined
+				}
+			/>
 		</Section>
 	)
 }
