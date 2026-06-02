@@ -1,23 +1,26 @@
-import styled from "@emotion/styled";
-import type { ReactNode } from "react";
-import { QuickFilter } from "src/utils/filterUtils";
-import { matchesQuickFilter } from "../../functions/filter-utils";
-import type { TaskColumnMeta } from "../../hooks/useTaskColumns";
-import { useTasks } from "../../providers/TasksProvider";
-import { FilterBar, FilterDivider, FilterPill } from "../shared/FilterBar";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import styled from "@emotion/styled"
+import type { ReactNode } from "react"
+import { matchesQuickFilter } from "src/functions/filter-utils"
+import { QuickFilter } from "src/utils/filter-utils"
+import type { TaskColumnMeta } from "../../hooks/useTaskColumns"
+import type { TaskRow } from "../../providers/TasksFiltersProvider"
+import { useTasksFilters } from "../../providers/TasksFiltersProvider"
+import { FilterBar, FilterDivider, FilterPill } from "../shared/FilterBar"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface TaskFiltersProps {
-	onClearAllFilters: () => void;
-	onExport: () => void;
-	hasExtraActiveFilters?: boolean;
-	extraFilters?: ReactNode;
-	extraColumnsMeta?: TaskColumnMeta[];
-	tabFilter: QuickFilter[];
-	onToggleTabFilter: (filter: QuickFilter) => void;
+	tasks: TaskRow[]
+	onClearAllFilters: () => void
+	onExport: () => void
+	hasExtraActiveFilters?: boolean
+	extraFilters?: ReactNode
+	extraColumnsMeta?: TaskColumnMeta[]
+	tabFilter?: QuickFilter[]
+	onToggleTabFilter?: (filter: QuickFilter) => void
 }
 
 function TaskFilters({
+	tasks,
 	onClearAllFilters,
 	onExport,
 	hasExtraActiveFilters,
@@ -27,26 +30,31 @@ function TaskFilters({
 	onToggleTabFilter,
 }: TaskFiltersProps) {
 	const {
-		tasks,
+		activeQuickFilters,
+		toggleQuickFilter,
 		searchQuery,
 		setSearchQuery,
 		columnOrder,
 		setColumnOrder,
 		hiddenColumns,
 		toggleColumn,
-	} = useTasks();
+	} = useTasksFilters()
 
-	const hasActiveFilters = tabFilter.length > 0 || !!hasExtraActiveFilters;
+	const activeFilters =
+		tabFilter !== undefined ? new Set(tabFilter) : activeQuickFilters
+	const handleToggle = onToggleTabFilter ?? toggleQuickFilter
+
+	const hasActiveFilters = activeFilters.size > 0 || !!hasExtraActiveFilters
 
 	const overdueCount = tasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.OVERDUE),
-	).length;
+	).length
 	const approachingCount = tasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.APPROACHING),
-	).length;
+	).length
 	const flaggedCount = tasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.FLAGGED),
-	).length;
+	).length
 
 	return (
 		<FilterBar
@@ -64,8 +72,8 @@ function TaskFilters({
 			{extraFilters}
 
 			<FilterPill
-				$active={tabFilter.includes(QuickFilter.FLAGGED)}
-				onClick={() => onToggleTabFilter(QuickFilter.FLAGGED)}
+				$active={activeFilters.has(QuickFilter.FLAGGED)}
+				onClick={() => handleToggle(QuickFilter.FLAGGED)}
 			>
 				חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
 			</FilterPill>
@@ -73,8 +81,8 @@ function TaskFilters({
 			<Tooltip>
 				<WarningTrigger>
 					<FilterPill
-						$active={tabFilter.includes(QuickFilter.APPROACHING)}
-						onClick={() => onToggleTabFilter(QuickFilter.APPROACHING)}
+						$active={activeFilters.has(QuickFilter.APPROACHING)}
+						onClick={() => handleToggle(QuickFilter.APPROACHING)}
 					>
 						תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
 					</FilterPill>
@@ -84,8 +92,8 @@ function TaskFilters({
 			</Tooltip>
 
 			<FilterPill
-				$active={tabFilter.includes(QuickFilter.OVERDUE)}
-				onClick={() => onToggleTabFilter(QuickFilter.OVERDUE)}
+				$active={activeFilters.has(QuickFilter.OVERDUE)}
+				onClick={() => handleToggle(QuickFilter.OVERDUE)}
 			>
 				חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
 			</FilterPill>
@@ -96,10 +104,10 @@ function TaskFilters({
 				הכל ({tasks.length})
 			</FilterPill>
 		</FilterBar>
-	);
+	)
 }
 
-export { TaskFilters };
+export { TaskFilters }
 
 const WarningTrigger = styled(TooltipTrigger)`
   display: inline-flex;
@@ -109,4 +117,4 @@ const WarningTrigger = styled(TooltipTrigger)`
   padding: 0;
   cursor: default;
   line-height: 0;
-`;
+`

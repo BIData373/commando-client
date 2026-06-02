@@ -1,26 +1,27 @@
-import styled from "@emotion/styled";
-import { DirectiveStatus, statusColors } from "src/utils/statusUtils";
-
-export const STATUS_LABELS: Record<DirectiveStatus, string> = {
-	[DirectiveStatus.NOT_STARTED]: "טרם בוצע",
-	[DirectiveStatus.IN_PROGRESS]: "בעבודה",
-	[DirectiveStatus.COMPLETED]: "בוצע",
-};
+import styled from "@emotion/styled"
+import type { WorkspaceStatusDto } from "src/api/model"
 
 interface StatusTagProps {
-	status: DirectiveStatus;
-	interactive?: boolean;
+	status: WorkspaceStatusDto
+	interactive?: boolean
 }
 
-export function StatusTag({ status, interactive }: StatusTagProps) {
+export function StatusTag({
+	status: { name, color },
+	interactive,
+}: StatusTagProps) {
 	return (
-		<Tag $status={status} $interactive={interactive}>
-			{STATUS_LABELS[status]}
+		<Tag $fontColor={color} $backgroundColor={color} $interactive={interactive}>
+			{name}
 		</Tag>
-	);
+	)
 }
 
-const Tag = styled.span<{ $status: DirectiveStatus; $interactive?: boolean }>`
+const Tag = styled.span<{
+	$fontColor: string
+	$backgroundColor: string
+	$interactive?: boolean
+}>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -31,15 +32,10 @@ const Tag = styled.span<{ $status: DirectiveStatus; $interactive?: boolean }>`
   line-height: 20px;
   white-space: nowrap;
   cursor: ${({ $interactive }) => ($interactive ? "pointer" : "default")};
-  ${({ $status }) => {
-		const { fontColor, bgColor } = statusColors[$status];
-		return `
-      background: ${bgColor};
-      color: ${fontColor};
-    `;
-	}}
+  ${({ $fontColor }) => `color: ${$fontColor};`}
+  ${({ $backgroundColor }) => `background:  rgb(from ${$backgroundColor} r g b / 0.1);`}
 
   :focus-visible {
     outline: none;
   }
-`;
+`

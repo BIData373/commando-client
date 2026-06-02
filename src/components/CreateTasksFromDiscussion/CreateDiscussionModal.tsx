@@ -1,14 +1,14 @@
-import styled from "@emotion/styled";
-import { Check, Paperclip, X } from "lucide-react";
-import { Dialog as DialogPrimitive } from "radix-ui";
-import { useState } from "react";
-import { formatDate } from "../../functions/date-utils";
-import { useSaveTasks } from "../../hooks/useSaveTasks";
-import SourceField from "../CreateTasks/SourceField";
-import TopicField from "../CreateTasks/TopicField";
-import CreateTasksTable from "./CreateTasksTable";
-import FileUploadField from "./FileUploadField";
-import type { TaskRow } from "./TasksColumns";
+import styled from "@emotion/styled"
+import { Check, Paperclip, X } from "lucide-react"
+import { Dialog as DialogPrimitive } from "radix-ui"
+import { useState } from "react"
+import { formatDate } from "../../functions/date-utils"
+import { useSaveTasks } from "../../hooks/useSaveTasks"
+import SourceField from "../CreateTasks/SourceField"
+import TopicField from "../CreateTasks/TopicField"
+import CreateTasksTable from "./CreateTasksTable"
+import FileUploadField from "./FileUploadField"
+import type { TaskRow } from "./TasksColumns"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -18,14 +18,14 @@ enum Steps {
 }
 
 interface DiscussionFormState {
-	name: string;
-	sourceDate: Date | null;
-	topics: string[];
-	file: File | null;
+	name: string
+	sourceDate: Date | null
+	topics: string[]
+	file: File | null
 }
 
 interface CreateDiscussionModalProps {
-	onClose: () => void;
+	onClose: () => void
 }
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -35,29 +35,29 @@ const INITIAL_FORM: DiscussionFormState = {
 	sourceDate: null,
 	topics: [],
 	file: null,
-};
+}
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
-	const saveTasks = useSaveTasks();
-	const [form, setForm] = useState<DiscussionFormState>(INITIAL_FORM);
-	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion);
+	const saveTasks = useSaveTasks()
+	const [form, setForm] = useState<DiscussionFormState>(INITIAL_FORM)
+	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
 	const setField = <K extends keyof DiscussionFormState>(
 		key: K,
 		value: DiscussionFormState[K],
-	) => setForm((prev) => ({ ...prev, [key]: value }));
+	) => setForm((prev) => ({ ...prev, [key]: value }))
 
-	const isCurrentStepTasks = currentStep === Steps.Tasks;
+	const isCurrentStepTasks = currentStep === Steps.Tasks
 	// ─── Source / Name Handlers ───────────────────────────────────────────────
 
 	function handleSourceSelect(name: string) {
-		setField("name", name);
+		setField("name", name)
 	}
 
 	function handleDateSelect(date: Date | undefined) {
 		if (date) {
-			setField("sourceDate", date);
+			setField("sourceDate", date)
 		}
 	}
 
@@ -65,7 +65,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 
 	function handleTopicSelect(topic: string) {
 		if (!form.topics.includes(topic)) {
-			setField("topics", [...form.topics, topic]);
+			setField("topics", [...form.topics, topic])
 		}
 	}
 
@@ -73,27 +73,27 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 		setField(
 			"topics",
 			form.topics.filter((t) => t !== topic),
-		);
+		)
 	}
 
 	// ─── File Handler ──────────────────────────────────────────────────────────
 
 	function handleFileChange(file: File | null) {
-		setField("file", file);
+		setField("file", file)
 	}
 
 	// ─── Modal Handlers ───────────────────────────────────────────────────────
 
 	function handleOpenChange(open: boolean) {
-		if (!open) onClose();
+		if (!open) onClose()
 	}
 
 	function handleContinue() {
-		setCurrentStep(Steps.Tasks);
+		setCurrentStep(Steps.Tasks)
 	}
 
 	function handleBack() {
-		setCurrentStep(Steps.Discussion);
+		setCurrentStep(Steps.Discussion)
 	}
 
 	function handleSave(taskRows: TaskRow[]) {
@@ -103,18 +103,18 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 			assigneeDetails: row.assigneeDetails,
 			deadlineType: row.deadlineType,
 			dueDate: row.dueDate,
-			isImportant: row.isImportant,
+			flagged: row.flagged,
 			notes: row.notes,
 			groupKey: String(row.id),
-		}));
+		}))
 
 		saveTasks(inputs, {
 			discussionName: form.name.trim(),
 			discussionDate: form.sourceDate ? formatDate(form.sourceDate) : "",
 			hasAttachment: form.file !== null,
 			tags: form.topics,
-		});
-		onClose();
+		})
+		onClose()
 	}
 
 	// ─── Render ───────────────────────────────────────────────────────────────
@@ -209,10 +209,10 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 				</ModalCard>
 			</DialogPrimitive.Portal>
 		</DialogPrimitive.Root>
-	);
+	)
 }
 
-export default CreateDiscussionModal;
+export default CreateDiscussionModal
 
 // ─── Modal Shell ────────────────────────────────────────────────────────────
 
@@ -222,7 +222,7 @@ const Overlay = styled(DialogPrimitive.Overlay)`
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(1px);
   z-index: var(--z-dropdown);
-`;
+`
 
 const ModalCard = styled(DialogPrimitive.Content)<{ $step: Steps }>`
   position: fixed;
@@ -246,7 +246,7 @@ const ModalCard = styled(DialogPrimitive.Content)<{ $step: Steps }>`
   padding-block: 36px;
   padding-inline: 48px;
   outline: none;
-`;
+`
 
 const ModalCloseButton = styled.button`
   position: absolute;
@@ -268,7 +268,7 @@ const ModalCloseButton = styled.button`
     color: var(--text-color-2);
     background: rgba(0, 0, 0, 0.04);
   }
-`;
+`
 
 const ModalBody = styled.div`
   direction: ltr;
@@ -277,14 +277,14 @@ const ModalBody = styled.div`
   gap: 24px;
   min-height: 0;
   flex: 1;
-`;
+`
 
 const HeaderSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 12px;
-`;
+`
 
 const ModalTitle = styled.h1`
   font-weight: 500;
@@ -293,7 +293,7 @@ const ModalTitle = styled.h1`
   color: var(--foreground);
   margin: 0;
   text-align: end;
-`;
+`
 
 // ─── Discussion Info (Step 2 header) ────────────────────────────────────────
 
@@ -303,28 +303,28 @@ const DiscussionInfoRow = styled.div`
   gap: 8px;
   justify-content: center;
   color: var(--text-color-2);
-`;
+`
 
 const DiscussionInfoText = styled.div`
   display: flex;
   align-items: baseline;
   gap: 8px;
   white-space: nowrap;
-`;
+`
 
 const DiscussionName = styled.span`
   font-size: 20px;
   font-weight: 400;
   line-height: 28px;
   color: var(--foreground);
-`;
+`
 
 const DiscussionDate = styled.span`
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
   color: var(--foreground);
-`;
+`
 
 // ─── Form Layout ────────────────────────────────────────────────────────────
 
@@ -334,7 +334,7 @@ const FormContainer = styled.div`
   gap: 24px;
   align-items: flex-end;
   flex: 1;
-`;
+`
 
 // ─── Footer ─────────────────────────────────────────────────────────────────
 
@@ -343,7 +343,7 @@ const ModalFooter = styled.div`
   display: flex;
   align-items: center;
   flex-shrink: 0;
-`;
+`
 
 const ContinueButton = styled.button`
   display: flex;
@@ -379,7 +379,7 @@ const ContinueButton = styled.button`
   &:hover:not(:disabled) {
     opacity: 0.9;
   }
-`;
+`
 
 // ─── Steps Indicator ────────────────────────────────────────────────────────
 
@@ -391,7 +391,7 @@ const StepsRow = styled.div`
   width: 657px;
   height: 24px;
   align-self: flex-end;
-`;
+`
 
 const StepItem = styled.div`
   direction: ltr;
@@ -399,7 +399,7 @@ const StepItem = styled.div`
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-`;
+`
 
 const stepCircleBase = `
   width: 24px;
@@ -412,25 +412,25 @@ const stepCircleBase = `
   font-weight: 400;
   line-height: 22px;
   flex-shrink: 0;
-`;
+`
 
 const StepCircleActive = styled.div`
   ${stepCircleBase}
   background: #6866ff;
   color: white;
-`;
+`
 
 const StepCircleCompleted = styled.div`
   ${stepCircleBase}
   background: #e2e2ff;
   color: #6866ff;
-`;
+`
 
 const StepCircle = styled.div<{ $active: boolean }>`
   ${stepCircleBase}
   background: ${({ $active }) => ($active ? "#6866ff" : "rgba(0, 0, 0, 0.06)")};
   color: ${({ $active }) => ($active ? "white" : "rgba(0, 0, 0, 0.45)")};
-`;
+`
 
 const StepLabel = styled.span<{ $active: boolean }>`
   font-size: 14px;
@@ -438,10 +438,10 @@ const StepLabel = styled.span<{ $active: boolean }>`
   line-height: 22px;
   color: ${({ $active }) => ($active ? "var(--text-color-2)" : "rgba(0, 0, 0, 0.45)")};
   white-space: nowrap;
-`;
+`
 
 const StepTail = styled.div<{ $completed: boolean }>`
   flex: 1;
   height: 1px;
   border-block-start: 1px ${({ $completed }) => ($completed ? "solid #6866ff" : "dashed var(--card-border)")};
-`;
+`

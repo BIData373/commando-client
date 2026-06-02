@@ -1,36 +1,41 @@
 import styled from "@emotion/styled";
+import type { QueryKey } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import type {
-	ColumnDef,
-	ColumnFiltersState,
-	RowSelectionState,
-	SortingState,
+  ColumnDef,
+  ColumnFiltersState,
+  RowSelectionState,
+  SortingState,
 } from "@tanstack/react-table";
 import type React from "react";
 import { useMemo, useState } from "react";
-import type { DirectiveStatus } from "src/utils/statusUtils";
-import type { Task } from "../../data/Tasks";
+import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status";
+import type { WorkspaceStatusDto, WorkspaceStatusDtoType } from "src/api/model";
+import { useDeleteTask } from "src/api/task/task";
+import { type TaskRow, useTasksFilters } from "src/providers/TasksFiltersProvider";
 import { buildFilterOptionsMap } from "../../functions/filter-utils";
 import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns";
-import { useTasks } from "../../providers/TasksProvider";
 import type { DeadlineType } from "../shared/DeadlineTag";
 import { DataTable } from "../ui/data-table";
 import { BulkActionsBar } from "./BulkActionsBar";
 
 interface TaskTableProps {
-	tasks: Task[];
+	queryKey: QueryKey;
+	tasks: TaskRow[];
 	onEdit?: (taskId: number) => void;
 	onDoubleClick?: (taskId: number) => void;
-	extraColumns?: Record<string, ColumnDef<Task>>;
+	extraColumns?: Record<string, ColumnDef<TaskRow>>;
 	showHeader?: boolean;
-	statusFilter?: DirectiveStatus[];
+	statusFilter?: WorkspaceStatusDtoType[];
 	deadlineTypeFilter?: DeadlineType[];
 	onFiltersChange?: (
-		statusFilter: DirectiveStatus[],
+		statusFilter: WorkspaceStatusDtoType[],
 		deadlineTypeFilter: DeadlineType[],
 	) => void;
 }
 
 function TaskTable({
+	queryKey,
 	tasks,
 	onEdit = () => { },
 	onDoubleClick,
@@ -40,14 +45,19 @@ function TaskTable({
 	deadlineTypeFilter = [],
 	onFiltersChange,
 }: TaskTableProps) {
-	const {
-		searchQuery,
-		columnOrder,
-		hiddenColumns,
-		updateTaskStatus,
-		removeTasks,
-		bulkUpdateStatus,
-	} = useTasks();
+	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters();
+	const queryClient = useQueryClient();
+
+	const { mutate: deleteTaskMutate } = useDeleteTask({
+		mutation: {
+			onSuccess: () => {
+				queryClient.invalidateQueries({ queryKey })
+			},
+		},
+	});
+
+	const { mutate: upsertStatus } = useUpsertAssigneeTaskStatus();
+
 	const [selectMode, setSelectMode] = useState(false);
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 	const urlColumnFilters: ColumnFiltersState = [
@@ -76,7 +86,7 @@ function TaskTable({
 		const tableStatusColumnValue = getColumnFilter(
 			newFilters,
 			"status",
-		) as DirectiveStatus[];
+		) as WorkspaceStatusDtoType[];
 		const tableDeadlineColumnValue = getColumnFilter(
 			newFilters,
 			"deadlineType",
@@ -117,6 +127,18 @@ function TaskTable({
 		}
 	}
 
+	function removeTasks(taskIds: number[]) {
+		taskIds.forEach((id) => deleteTaskMutate({ pathParams: { id } }));
+	}
+
+	function bulkUpdateStatus(taskIds: number[], status: WorkspaceStatusDto) {
+		taskIds.forEach((id) => {
+			const task = tasks.find((t) => t.id === id);
+			if (!task) return;
+			upsertStatus({ data: { taskId: id, assigneeId: task.assignee.id, statusId: status.id } });
+		});
+	}
+
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks]);
 
 	const extraColumnIds = extraColumns
@@ -128,10 +150,10 @@ function TaskTable({
 	) as TaskColumn[];
 
 	const { columns: baseColumns } = useTaskColumns({
+		queryKey,
 		visibleColumns,
 		searchQuery,
 		filterOptionsMap,
-		onUpdateStatus: updateTaskStatus,
 		selectMode: {
 			enabled: selectMode,
 			tasks,
@@ -161,7 +183,7 @@ function TaskTable({
 					.slice(0, orderIndex)
 					.filter((colId) => !hiddenColumns.has(colId)).length;
 
-				result.splice(visibleBeforeCount, 0, colDef as ColumnDef<Task>);
+				result.splice(visibleBeforeCount, 0, colDef as ColumnDef<TaskRow>);
 			}
 		}
 
@@ -180,7 +202,7 @@ function TaskTable({
 					onColumnFiltersChange={handleColumnFiltersChange}
 					sorting={sorting}
 					onSortingChange={setSorting}
-					getRowId={(row) => String(row.id)}
+					getRowId={(row) => row.rowKey}
 					showHeader={showHeader}
 				/>
 			</TableWrapper>

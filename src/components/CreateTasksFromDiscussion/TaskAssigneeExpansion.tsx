@@ -1,10 +1,10 @@
-import AssigneeExpansionPanel from "./AssigneeExpansionPanel";
-import type { TaskRow } from "./TasksColumns";
+import AssigneeExpansionPanel from "./AssigneeExpansionPanel"
+import type { TaskRow } from "./TasksColumns"
 
 interface TaskAssigneeExpansionProps {
-	row: TaskRow;
-	onUpdateRow: (updates: Partial<TaskRow>) => void;
-	onCollapse: () => void;
+	row: TaskRow
+	onUpdateRow: (updates: Partial<TaskRow>) => void
+	onCollapse: () => void
 }
 
 function TaskAssigneeExpansion({
@@ -18,21 +18,21 @@ function TaskAssigneeExpansion({
 				...row.assigneeDetails,
 				[assigneeId]: value,
 			},
-		});
+		})
 	}
 
 	function handleRemoveAssignee(assigneeId: number) {
-		const nextIds = row.assigneeIds.filter((id) => id !== assigneeId);
+		const nextIds = row.assigneeIds.filter((id) => id !== assigneeId)
 		const nextDetails = Object.fromEntries(
 			Object.entries(row.assigneeDetails).filter(
 				([id]) => Number(id) !== assigneeId,
 			),
-		);
+		)
 
 		onUpdateRow({
 			assigneeIds: nextIds,
 			assigneeDetails: nextDetails,
-		});
+		})
 	}
 
 	return (
@@ -44,7 +44,7 @@ function TaskAssigneeExpansion({
 			onRemoveAssignee={handleRemoveAssignee}
 			onCollapse={onCollapse}
 		/>
-	);
+	)
 }
 
-export default TaskAssigneeExpansion;
+export default TaskAssigneeExpansion
