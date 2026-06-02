@@ -11,7 +11,7 @@ interface TaskInput {
 	assigneeDetails: Record<number, string>
 	deadlineType: DeadlineType | null
 	dueDate: Date | null
-	isImportant: boolean
+	flagged: boolean
 	notes: string
 	groupKey?: string
 }
@@ -39,7 +39,7 @@ export function useSaveTasks() {
 
 			const sharedFields = {
 				title: input.title.trim(),
-				flagged: input.isImportant,
+				flagged: input.flagged,
 				status: "not_started" as const,
 				deadlineType: input.deadlineType ?? DeadlineType.Ongoing,
 				dueDate:

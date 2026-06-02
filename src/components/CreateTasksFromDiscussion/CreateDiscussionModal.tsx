@@ -103,7 +103,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 			assigneeDetails: row.assigneeDetails,
 			deadlineType: row.deadlineType,
 			dueDate: row.dueDate,
-			isImportant: row.isImportant,
+			flagged: row.flagged,
 			notes: row.notes,
 			groupKey: String(row.id),
 		}))

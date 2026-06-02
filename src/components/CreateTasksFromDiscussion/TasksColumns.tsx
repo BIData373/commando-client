@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
-import type { DeadlineType } from "../shared/DeadlineTag"
+import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import FlagIcon from "../shared/FlagIcon"
 import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
 import { TrashButton } from "../shared/TrashButton"
@@ -12,17 +12,6 @@ import DeadlineCell from "./DeadlineCell"
 export enum TaskColumnId {
 	Title = "title",
 	Notes = "notes",
-}
-
-export interface TaskRow {
-	id: number
-	title: string
-	deadlineType: DeadlineType | null
-	dueDate: Date | null
-	assigneeIds: number[]
-	assigneeDetails: Record<number, string>
-	notes: string
-	isImportant: boolean
 }
 
 export interface TaskTableMeta {
@@ -55,7 +44,7 @@ function handleImportantChange(
 	id: number,
 	updateRow: TaskTableMeta["updateRow"],
 ) {
-	updateRow(id, { isImportant: checked })
+	updateRow(id, { flagged: checked })
 }
 
 function handleDelete(id: number, deleteRow: TaskTableMeta["deleteRow"]) {
@@ -193,7 +182,7 @@ const columns: ColumnDef<TaskRow>[] = [
 		),
 		cell: ({
 			row: {
-				original: { id, isImportant },
+				original: { id, flagged },
 			},
 			table,
 		}) => {
@@ -201,7 +190,7 @@ const columns: ColumnDef<TaskRow>[] = [
 			return (
 				<CheckboxWrapper>
 					<Checkbox
-						checked={isImportant}
+						checked={flagged}
 						onCheckedChange={(checked) =>
 							handleImportantChange(checked as boolean, id, updateRow)
 						}
