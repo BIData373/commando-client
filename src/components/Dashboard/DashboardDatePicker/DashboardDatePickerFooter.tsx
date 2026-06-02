@@ -1,10 +1,10 @@
-import styled from "@emotion/styled";
-import type { DatePickerValue } from "src/components/shared/DatePicker";
-import type { DatePickerSlotProps } from "src/components/shared/DatePickerPopover";
+import styled from "@emotion/styled"
+import type { DatePickerValue } from "src/components/shared/DatePicker"
+import type { DatePickerSlotProps } from "src/components/shared/DatePickerPopover"
 
 interface DashboardDatePickerFooterProps {
-	slots: DatePickerSlotProps;
-	onConfirm(range: DatePickerValue | undefined): void;
+	slots: DatePickerSlotProps
+	onConfirm(range: DatePickerValue | undefined): void
 }
 
 export function DashboardDatePickerFooter({
@@ -12,12 +12,12 @@ export function DashboardDatePickerFooter({
 	onConfirm,
 }: DashboardDatePickerFooterProps) {
 	function handleClear() {
-		onChange(undefined);
+		onChange(undefined)
 	}
 
 	function handleConfirm() {
-		onConfirm(value);
-		onClose();
+		onConfirm(value)
+		onClose()
 	}
 
 	return (
@@ -25,7 +25,7 @@ export function DashboardDatePickerFooter({
 			<ClearButton onClick={handleClear}>נקה בחירה</ClearButton>
 			<ConfirmButton onClick={handleConfirm}>אישור</ConfirmButton>
 		</PopupFooter>
-	);
+	)
 }
 
 const ClearButton = styled.button`
@@ -45,7 +45,7 @@ const ClearButton = styled.button`
   &:hover {
     color: var(--sea-ink);
   }
-`;
+`
 
 const ConfirmButton = styled.button`
   display: inline-flex;
@@ -65,11 +65,11 @@ const ConfirmButton = styled.button`
   &:hover {
     opacity: 0.9;
   }
-`;
+`
 
 const PopupFooter = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-block-start: 4px;
-`;
+`

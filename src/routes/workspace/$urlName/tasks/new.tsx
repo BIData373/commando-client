@@ -1,13 +1,13 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import CreateTaskModal from "../../../../components/CreateTasks/CreateTaskModal";
-import CreateDiscussionModal from "../../../../components/CreateTasksFromDiscussion/CreateDiscussionModal";
-import type { View } from "../../../../components/Tasks/TasksLayout";
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import CreateTaskModal from "../../../../components/CreateTasks/CreateTaskModal"
+import CreateDiscussionModal from "../../../../components/CreateTasksFromDiscussion/CreateDiscussionModal"
+import type { View } from "../../../../components/Tasks/TasksLayout"
 
-type CreateMode = "single" | "discussion";
+type CreateMode = "single" | "discussion"
 
 interface NewTaskSearch {
-	view: View;
-	mode: CreateMode;
+	view: View
+	mode: CreateMode
 }
 
 export const Route = createFileRoute("/workspace/$urlName/tasks/new")({
@@ -16,24 +16,28 @@ export const Route = createFileRoute("/workspace/$urlName/tasks/new")({
 		view: search.view === "CARDS" ? "CARDS" : "TABLE",
 		mode: search.mode === "discussion" ? "discussion" : "single",
 	}),
-});
+})
 
 function NewTask() {
-	const { urlName } = Route.useParams();
-	const { view, mode } = Route.useSearch();
-	const navigate = useNavigate();
+	const { urlName } = Route.useParams()
+	const { view, mode } = Route.useSearch()
+	const navigate = useNavigate()
 
 	function handleClose() {
 		navigate({
 			to: "/workspace/$urlName/tasks",
 			params: { urlName },
 			search: { view },
-		});
+		})
 	}
 
-	return mode === "discussion" ? (
-		<CreateDiscussionModal onClose={handleClose} />
-	) : (
-		<CreateTaskModal onClose={handleClose} />
-	);
+	return (
+		<>
+			{mode === "discussion" ? (
+				<CreateDiscussionModal onClose={handleClose} />
+			) : (
+				<CreateTaskModal onClose={handleClose} />
+			)}
+		</>
+	)
 }

@@ -1,54 +1,54 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { QuickFilter } from "src/utils/filterUtils";
-import { DirectiveStatus } from "src/utils/statusUtils";
-import { z } from "zod";
-import { DeadlineType } from "../../../components/shared/DeadlineTag";
-import TasksLayout from "../../../components/Tasks/TasksLayout";
-import { TasksProvider } from "../../../providers/TasksProvider";
+import { createFileRoute } from "@tanstack/react-router"
+import { WorkspaceStatusDtoType } from "src/api/model"
+import { DeadlineType } from "src/components/shared/DeadlineTag"
+import { QuickFilter } from "src/utils/filter-utils"
+import { z } from "zod"
+import TasksLayout, { type View } from "../../../components/Tasks/TasksLayout"
+import { TasksFiltersProvider } from "../../../providers/TasksFiltersProvider"
 
 const queryArray = <T extends z.ZodTypeAny>(schema: T) =>
-	z.preprocess(
-		(v) => (Array.isArray(v) ? v : v == null ? [] : [v]),
-		z.array(schema),
-	);
+  z.preprocess(
+    (v) => (Array.isArray(v) ? v : v == null ? [] : [v]),
+    z.array(schema),
+  );
 
 const TasksSearchSchema = z.object({
-	view: z.enum(["CARDS", "TABLE"]).default("TABLE"),
-	tabFilter: queryArray(z.nativeEnum(QuickFilter)).default([]),
-	statusFilter: queryArray(z.nativeEnum(DirectiveStatus)).default([]),
-	deadlineTypeFilter: queryArray(z.nativeEnum(DeadlineType)).default([]),
+  view: z.enum(["CARDS", "TABLE"]).default("TABLE"),
+  tabFilter: queryArray(z.nativeEnum(QuickFilter)).default([]),
+  statusFilter: queryArray(z.nativeEnum(WorkspaceStatusDtoType)).default([]),
+  deadlineTypeFilter: queryArray(z.nativeEnum(DeadlineType)).default([]),
 });
 
 export type TasksSearchSchemaType = z.infer<typeof TasksSearchSchema>;
 
-
 export const Route = createFileRoute("/workspace/$urlName/tasks")({
-	component: TasksPage,
-	validateSearch: TasksSearchSchema,
-	staticData: {
-		header: {
-			title: "הנחיות",
-			user: true,
-			navigation: true,
-			workspace: true,
-		},
-	},
+  component: TasksPage,
+  validateSearch: TasksSearchSchema,
+  staticData: {
+    header: {
+      title: "הנחיות",
+      user: true,
+      navigation: true,
+      workspace: true,
+    },
+  },
 });
 
-function TasksPage() {
-	const { view, tabFilter, statusFilter, deadlineTypeFilter } =
-		Route.useSearch();
-	const { urlName } = Route.useParams();
 
-	return (
-		<TasksProvider>
-			<TasksLayout
-				view={view}
-				urlName={urlName}
-				tabFilter={tabFilter}
-				statusFilter={statusFilter}
-				deadlineTypeFilter={deadlineTypeFilter}
-			/>
-		</TasksProvider>
-	);
+function TasksPage() {
+  const { view, tabFilter, statusFilter, deadlineTypeFilter } =
+    Route.useSearch();
+  const { urlName } = Route.useParams()
+
+  return (
+    <TasksFiltersProvider>
+      <TasksLayout
+        view={view}
+        urlName={urlName}
+        tabFilter={tabFilter}
+        statusFilter={statusFilter}
+        deadlineTypeFilter={deadlineTypeFilter}
+      />
+    </TasksFiltersProvider>
+  )
 }

@@ -1,39 +1,44 @@
-import styled from "@emotion/styled";
-import { useParams } from "@tanstack/react-router";
-import { type IUser, UserRole } from "src/types";
-import { useWorkspaceSettings } from "../../hooks/useWorkspaceSettings";
-import type { RelatedDirective } from "../Tasks/ResponsibleCell";
-import { AssigneeContainer } from "./AssigneeContainer";
-import type { DirectiveStatus } from "src/utils/statusUtils";
+import styled from "@emotion/styled"
+import { type AssigneeStatusDto, PermissionDtoType } from "src/api/model"
+import { useGetMyPermission } from "src/api/permission/permission"
+import { useCurrentUser } from "src/hooks/useCurrentUser"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { AssigneeContainer } from "./AssigneeContainer"
 
 interface AssigneeSectionProps {
-	currentUser: IUser;
-	status: DirectiveStatus;
-	relatedDirectives: RelatedDirective[];
-	onDirectiveStatusChange: (
-		status: DirectiveStatus,
-	) => void;
+	taskId: number
+	assigneeStatuses: AssigneeStatusDto[]
 }
 
 export const AssigneeSection = ({
-	currentUser,
-	relatedDirectives,
-	onDirectiveStatusChange,
+	taskId,
+	assigneeStatuses,
 }: AssigneeSectionProps) => {
-	const { urlName } = useParams({ from: "/workspace/$urlName/tasks/$taskId" });
-	const { data: workspaceSettings } = useWorkspaceSettings(urlName);
-	const isAdmin = currentUser.role === UserRole.ADMIN;
+	const currentUser = useCurrentUser()
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
 
-	const myGroups = relatedDirectives.filter((d) =>
-		d.user.userIds.includes(currentUser.id),
-	);
-	const otherGroups = relatedDirectives.filter(
-		(d) => !d.user.userIds.includes(currentUser.id),
-	);
+	const { data: permission } = useGetMyPermission({ workspaceId })
 
-	const headerGroup = isAdmin ? relatedDirectives : myGroups;
+	const isAdmin = permission?.type === PermissionDtoType.MANAGER
 
-	const isMultiple = relatedDirectives.length >= 2;
+	const currentUserAssigneStatuses = isAdmin
+		? assigneeStatuses
+		: assigneeStatuses.filter(({ assignee: { users } }) =>
+				users.some(({ id }) => id === currentUser.id),
+			)
+
+	const otherUsersAssigneeStatuses = assigneeStatuses.filter(
+		({ assignee: otherAssignee }) =>
+			!currentUserAssigneStatuses.some(
+				({ assignee: currentAssignee }) =>
+					otherAssignee.id === currentAssignee.id,
+			),
+	)
+
+	const isMultiple = assigneeStatuses.length >= 2
+
 	return (
 		<Section>
 			<SectionLabel>
@@ -43,37 +48,35 @@ export const AssigneeSection = ({
 						: "אחראי לביצוע"
 					: "אחריותך לבצע"}
 			</SectionLabel>
-			{headerGroup.length === 0 ? (
+			{currentUserAssigneStatuses.length === 0 ? (
 				<SectionValue>לא הוגדר</SectionValue>
 			) : (
 				<AssigneesContainer>
 					<AssigneeRowsList>
-						{headerGroup.map((item) => (
+						{currentUserAssigneStatuses.map((item) => (
 							<AssigneeContainer
-								key={item.user.id}
+								key={item.assignee.id}
+								taskId={taskId}
 								assignee={item}
 								isAdmin={isAdmin}
 								editable={true}
-								workspaceSettings={workspaceSettings}
-								onDirectiveStatusChange={onDirectiveStatusChange}
 							/>
 						))}
 					</AssigneeRowsList>
 				</AssigneesContainer>
 			)}
-			{!isAdmin && otherGroups.length > 0 && (
+			{!isAdmin && otherUsersAssigneeStatuses.length > 0 && (
 				<>
 					<SectionLabel>אחראים נוספים לביצוע</SectionLabel>
 					<AssigneesContainer>
 						<AssigneeRowsList>
-							{otherGroups.map((item) => (
+							{otherUsersAssigneeStatuses.map((item) => (
 								<AssigneeContainer
-									key={item.user.id}
+									key={item.assignee.id}
+									taskId={taskId}
 									assignee={item}
 									isAdmin={isAdmin}
 									editable={false}
-									workspaceSettings={workspaceSettings}
-									onDirectiveStatusChange={onDirectiveStatusChange}
 								/>
 							))}
 						</AssigneeRowsList>
@@ -81,8 +84,8 @@ export const AssigneeSection = ({
 				</>
 			)}
 		</Section>
-	);
-};
+	)
+}
 
 const Section = styled.div`
   display: flex;
@@ -90,7 +93,7 @@ const Section = styled.div`
   gap: 8px;
   width: 100%;
   align-items: flex-start;
-`;
+`
 
 const SectionLabel = styled.p`
   font-size: 16px;
@@ -99,7 +102,7 @@ const SectionLabel = styled.p`
   color: var(--sea-ink);
   text-align: end;
   white-space: nowrap;
-`;
+`
 
 const SectionValue = styled.p`
   font-size: 14px;
@@ -107,15 +110,15 @@ const SectionValue = styled.p`
   line-height: 22px;
   color: var(--text-color);
   text-align: end;
-`;
+`
 
 const AssigneesContainer = styled.div`
   width: 100%;
-`;
+`
 
 const AssigneeRowsList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
   width: 100%;
-`;
+`

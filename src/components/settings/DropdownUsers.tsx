@@ -1,15 +1,16 @@
-import { useRef } from "react";
-import { useUsers } from "src/hooks/useUsers";
-import type { IUser } from "src/types";
-import { SearchDropdown } from "./SearchDropdown";
-import { UserItem } from "./UserDropdownItem";
+import { debounce } from "lodash"
+import { useEffect, useMemo, useState } from "react"
+import type { UserDto } from "src/api/model"
+import { useSearchUsers } from "src/api/user/user"
+import { SearchDropdown } from "./SearchDropdown"
+import { UserItem } from "./UserItem"
 
 interface DropdownUsersProps {
-	value: string;
-	onChange(value: string): void;
-	onSelect(user: IUser | null): void;
-	onClear(): void;
-	placeholder?: string;
+	value: string
+	onChange(value: string): void
+	onSelect(user: UserDto | null): void
+	onClear(): void
+	placeholder?: string
 }
 
 export function DropdownUsers({
@@ -19,33 +20,34 @@ export function DropdownUsers({
 	onClear,
 	placeholder,
 }: DropdownUsersProps) {
-	const { data: users = [], isLoading } = useUsers();
+	const [localValue, setLocalValue] = useState(value)
 
-	function filterUsers(query: string) {
-		return query.trim()
-			? users.filter((u) => u.name.includes(query) || u.email.includes(query))
-			: [];
-	}
+	const { data: users = [], isLoading } = useSearchUsers(
+		{ search: value },
+		{ query: { enabled: value.length > 0 } },
+	)
 
-	const filteredUsers = filterUsers(value);
+	const onChangeDebounced = useMemo(() => debounce(onChange, 300), [onChange])
 
-	function handleUserSearch(newValue: string) {
-		onChange(newValue);
-		if (filterUsers(newValue).length === 0) {
-			onSelect(null);
-		}
+	useEffect(() => {
+		setLocalValue(value)
+	}, [value])
+
+	function handleChange(value: string) {
+		setLocalValue(value)
+		onChangeDebounced(value)
 	}
 
 	return (
-		<SearchDropdown<IUser>
-			items={filteredUsers}
-			value={value}
-			onChange={handleUserSearch}
+		<SearchDropdown<UserDto>
+			items={users}
+			value={localValue}
+			onChange={handleChange}
 			onSelect={onSelect}
 			onClear={onClear}
 			placeholder={placeholder}
 			isLoading={isLoading}
 			renderItem={(item) => <UserItem user={item} />}
 		/>
-	);
+	)
 }

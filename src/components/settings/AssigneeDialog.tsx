@@ -1,31 +1,36 @@
-import styled from "@emotion/styled";
-import { useForm } from "@tanstack/react-form";
-import { UserPlus } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useCreateAssignee, useUpdateAssignee } from "src/hooks/useAssignees";
-import { type IMesibaIcon, useMesibaIconByName } from "src/hooks/useMesiba";
-import { useUsers } from "src/hooks/useUsers";
-import type { IAssignee, IUser } from "src/types";
-import { concatName } from "src/utils/userUtils";
-import { CancelButton } from "../shared/CancelButton";
-import { PrimaryButton } from "../shared/PrimaryButton";
+import styled from "@emotion/styled"
+import { useForm } from "@tanstack/react-form"
+import { UserPlus } from "lucide-react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import {
+	useCreateAssignee,
+	useListAssignees,
+	useUpdateAssignee,
+} from "src/api/assignee/assignee"
+import type { AssigneeDto, UserDto } from "src/api/model"
+import { type IMesibaIcon, useMesibaIconByName } from "src/hooks/useMesiba"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { queryClient } from "src/queryClient"
+import { concatName } from "src/utils/user-utils"
+import { CancelButton } from "../shared/CancelButton"
+import { PrimaryButton } from "../shared/PrimaryButton"
 import {
 	Dialog,
 	DialogClose,
 	DialogContent,
 	DialogDescription,
 	DialogTitle,
-} from "../ui/dialog";
-import { Input } from "../ui/input";
-import { ColorPicker, PRESET_COLORS } from "./ColorPicker";
-import { DropdownUsers } from "./DropdownUsers";
-import { IconDropdown } from "./IconDropdown";
-import { UsersLists } from "./UsersLists";
+} from "../ui/dialog"
+import { Input } from "../ui/input"
+import { ColorPicker, PRESET_COLORS } from "./ColorPicker"
+import { DropdownUsers } from "./DropdownUsers"
+import { IconDropdown } from "./IconDropdown"
+import { UsersLists } from "./UsersLists"
 
 interface AssigneeDialogProps {
-	open: boolean;
-	onOpenChange: (open: boolean) => void;
-	assignee?: IAssignee;
+	open: boolean
+	onOpenChange: (open: boolean) => void
+	assignee?: AssigneeDto
 }
 
 export function AssigneeDialog({
@@ -33,136 +38,174 @@ export function AssigneeDialog({
 	open,
 	onOpenChange,
 }: AssigneeDialogProps) {
-	const isUpdate = !!assignee;
+	const isUpdate = !!assignee
 
-	const createAssignee = useCreateAssignee();
-	const updateAssignee = useUpdateAssignee();
-	const { data: users = [] } = useUsers();
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
 
-	const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
-	const [localAssignees, setLocalAssignees] = useState<IUser[]>([]);
-	const [submitError, setSubmitError] = useState<string | null>(null);
+	const { queryKey } = useListAssignees({ workspaceId })
+	const { mutateAsync: createAssignee } = useCreateAssignee()
+	const { mutateAsync: updateAssignee } = useUpdateAssignee()
 
-	const [iconSearch, setIconSearch] = useState("");
-	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null);
+	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null)
+	// const [localAssignees, setLocalAssignees] = useState<UserDto[]>([]);
+	const [submitError, setSubmitError] = useState<string | null>(null)
+	const [searchValue, setSearchValue] = useState<string>("")
 
-	const { data: existingIcon } = useMesibaIconByName(assignee?.emblem ?? "");
+	const [iconSearch, setIconSearch] = useState("")
+	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
+
+	const { data: existingIcon } = useMesibaIconByName(assignee?.icon ?? "")
 
 	useEffect(() => {
-		if (existingIcon) setSelectedIcon(existingIcon);
-	}, [existingIcon]);
+		if (existingIcon) setSelectedIcon(existingIcon)
+	}, [existingIcon])
 
-	const randomColor =
-		useMemo(() => {
-			if (!open) return;
-			const randomColorIdx = Math.floor(
-				Math.random() * (PRESET_COLORS.length - 1),
-			);
-			return PRESET_COLORS[randomColorIdx];
-		}, [open]) ?? "";
+	const randomColor = useMemo(() => {
+		if (!open) {
+			return
+		}
+		const randomColorIdx = Math.floor(
+			Math.random() * (PRESET_COLORS.length - 1),
+		)
+		return PRESET_COLORS[randomColorIdx]
+	}, [open])
+
+	const handleSubmitSuccess = (data: AssigneeDto) => {
+		queryClient.setQueryData(queryKey, (prev?: AssigneeDto[]) => {
+			let updated = [...(prev ?? [])]
+			const foundIndex = updated.findIndex(({ id }) => id === data.id)
+
+			if (foundIndex >= 0) {
+				updated[foundIndex] = data
+			} else {
+				updated = [...updated, data]
+			}
+
+			return updated
+		})
+	}
 
 	const form = useForm({
 		defaultValues: {
 			name: assignee?.name ?? "",
-			color: assignee?.color ?? randomColor,
-			emblem: assignee?.emblem ?? "",
-			userSearch: "",
+			color: assignee?.color ?? randomColor ?? PRESET_COLORS[0],
+			icon: assignee?.icon ?? "",
+			users: assignee?.users ?? [],
 		},
 		onSubmit: async ({ value }) => {
 			const payload = {
 				name: value.name.trim(),
 				color: value.color,
-				emblem: value.emblem || null,
-				userIds: localAssignees.map((u) => u.id),
-				role: 'מג"ד 373',
-				email: "magad373@gmail.com",
-			};
+				icon: value.icon || null,
+				users: value.users,
+			}
+
 			try {
 				if (assignee) {
-					await updateAssignee.mutateAsync({
-						assigneeId: assignee.id,
-						data: payload,
-					});
+					await updateAssignee(
+						{
+							pathParams: { id: assignee.id },
+							data: payload,
+						},
+						{
+							onSuccess: handleSubmitSuccess,
+						},
+					)
 				} else {
-					await createAssignee.mutateAsync(payload);
+					await createAssignee(
+						{
+							data: { workspaceId, ...payload },
+						},
+						{
+							onSuccess: handleSubmitSuccess,
+						},
+					)
 				}
-				onOpenChange(false);
+
+				onOpenChange(false)
 			} catch {
-				setSubmitError("אירעה שגיאה, נסה שנית");
+				setSubmitError("אירעה שגיאה, נסה שנית")
 			}
 		},
-	});
+	})
 
 	function handleAddUserList() {
-		if (!selectedUser) return;
-		const alreadyAdded = localAssignees.some((u) => u.id === selectedUser.id);
-		if (!alreadyAdded) {
-			setLocalAssignees((prev) => [...prev, selectedUser]);
+		if (!selectedUser) {
+			return
 		}
-		form.setFieldValue("userSearch", "");
-		setSelectedUser(null);
+
+		form.setFieldValue("users", (prev) =>
+			prev.some((user) => user.upn === selectedUser.upn)
+				? prev
+				: [...prev, selectedUser],
+		)
+
+		setSearchValue("")
+		setSelectedUser(null)
 	}
 
-	function handleRemoveAssignee(id: number) {
-		setLocalAssignees((prev) => prev.filter((u) => u.id !== id));
+	function handleRemoveAssignee(upn: string) {
+		form.setFieldValue("users", (prev) =>
+			prev.filter((user) => user.upn !== upn),
+		)
 	}
 
-	function handleSearchSelect(user: IUser) {
+	function handleSearchSelect(user: UserDto) {
 		if (user) {
-			form.setFieldValue("userSearch", concatName(user));
+			setSearchValue(concatName(user))
 		}
-		setSelectedUser(user);
+
+		setSelectedUser(user)
 	}
 
 	function handleSearchClear() {
-		form.setFieldValue("userSearch", "");
-		setSelectedUser(null);
+		setSearchValue("")
+		setSelectedUser(null)
 	}
 
 	function handleColorChange(color: string) {
-		form.setFieldValue("color", color);
+		form.setFieldValue("color", color)
 	}
 
 	function handleIconSelect(icon: IMesibaIcon) {
-		form.setFieldValue("emblem", icon.iconName);
-		setSelectedIcon(icon);
-		setIconSearch("");
+		form.setFieldValue("icon", icon.iconName)
+		setSelectedIcon(icon)
+		setIconSearch("")
 	}
 
 	function handleIconClear() {
-		form.setFieldValue("emblem", "");
-		setSelectedIcon(null);
-		setIconSearch("");
+		form.setFieldValue("icon", "")
+		setSelectedIcon(null)
+		setIconSearch("")
 	}
 
 	function resetForm() {
-		const savedAssignees = assignee
-			? users.filter((u) => assignee.userIds.includes(u.id))
-			: [];
-		setLocalAssignees(savedAssignees);
-		setSubmitError(null);
-		setIconSearch("");
-		setSelectedIcon(existingIcon ?? null);
-		form.reset();
+		form.setFieldValue("users", assignee?.users ?? [])
+		setSubmitError(null)
+		setIconSearch("")
+		setSelectedIcon(existingIcon ?? null)
+		form.reset()
 	}
 
-	const scrollRef = useRef<HTMLDivElement>(null);
+	const scrollRef = useRef<HTMLDivElement>(null)
 	const [scrollShadow, setScrollShadow] = useState({
 		top: false,
 		bottom: false,
-	});
+	})
 
 	function handleScroll() {
-		const el = scrollRef.current;
-		if (!el) return;
-		const atTop = el.scrollTop <= 0;
-		const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
-		setScrollShadow({ top: !atTop, bottom: !atBottom });
+		const el = scrollRef.current
+		if (!el) return
+		const atTop = el.scrollTop <= 0
+		const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
+		setScrollShadow({ top: !atTop, bottom: !atBottom })
 	}
 
 	function handleOpenChange(open: boolean) {
-		resetForm();
-		onOpenChange(open);
+		resetForm()
+		onOpenChange(open)
 	}
 
 	return (
@@ -231,19 +274,19 @@ export function AssigneeDialog({
 							{submitError && <ErrorText>{submitError}</ErrorText>}
 						</FieldGroup>
 
-						<form.Field name="userSearch">
+						<form.Field name="users">
 							{(field) => (
 								<FieldGroup>
 									<FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
 									<SearchRow>
 										<DropdownUsers
-											value={field.state.value}
-											onChange={field.handleChange}
+											value={searchValue}
+											onChange={setSearchValue}
 											onSelect={handleSearchSelect}
 											onClear={handleSearchClear}
 											placeholder="חפש שם/ תפקיד/ מספר אישי"
 										/>
-										{field.state.value.length > 0 && (
+										{searchValue.length > 0 && (
 											<AddUserButton
 												type="button"
 												$enabled={!!selectedUser}
@@ -255,7 +298,7 @@ export function AssigneeDialog({
 										)}
 									</SearchRow>
 									<UsersLists
-										users={localAssignees}
+										users={field.state.value}
 										onRemove={handleRemoveAssignee}
 									/>
 								</FieldGroup>
@@ -275,7 +318,7 @@ export function AssigneeDialog({
 				</DialogActions>
 			</WideDialogContent>
 		</Dialog>
-	);
+	)
 }
 
 const WideDialogContent = styled(DialogContent)`
@@ -288,7 +331,7 @@ const WideDialogContent = styled(DialogContent)`
   flex-direction: column;
   overflow: hidden;
   z-index: 500;
-`;
+`
 
 const DialogTitleLarge = styled(DialogTitle)`
   text-align: right;
@@ -296,7 +339,7 @@ const DialogTitleLarge = styled(DialogTitle)`
   font-weight: 500;
   line-height: 1.2;
   color: var(--sea-ink);
-`;
+`
 
 const StyledDialogDescription = styled(DialogDescription)`
   direction: rtl;
@@ -305,7 +348,7 @@ const StyledDialogDescription = styled(DialogDescription)`
   color: var(--text-color);
   font-weight: 400;
   line-height: 1.4;
-`;
+`
 
 const ScrollableContent = styled.div`
   display: flex;
@@ -314,28 +357,28 @@ const ScrollableContent = styled.div`
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-`;
+`
 
 const DialogBody = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
   width: 100%;
-`;
+`
 
 const FieldGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
   align-items: flex-start;
-`;
+`
 
 const FieldLabel = styled.span`
   font-size: 20px;
   font-weight: 400;
   color: var(--sea-ink);
   line-height: 1.4;
-`;
+`
 
 const EitherOrRow = styled.div`
   display: flex;
@@ -343,7 +386,7 @@ const EitherOrRow = styled.div`
   gap: 16px;
   width: 100%;
   direction: rtl;
-`;
+`
 
 const EmblemSection = styled.div`
   max-width: 200px;
@@ -352,35 +395,35 @@ const EmblemSection = styled.div`
   gap: 6px;
   flex: 1;
   min-width: 0;
-`;
+`
 
 const OrSeparator = styled.span`
   font-size: 16px;
   color: rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
   line-height: 24px;
-`;
+`
 
 const ColorRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-`;
+`
 
 const ColorLabel = styled.span`
   font-size: 16px;
   color: var(--text-color);
   line-height: 22px;
   white-space: nowrap;
-`;
+`
 
 const SearchRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
-`;
+`
 
 const DialogHeader = styled.div<{ $shadow: boolean }>`
   flex-shrink: 0;
@@ -389,7 +432,7 @@ const DialogHeader = styled.div<{ $shadow: boolean }>`
   clip-path: inset(0 0 -20px 0);
   transition: box-shadow 200ms ease;
   box-shadow: ${({ $shadow }) => ($shadow ? "0px 10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
-`;
+`
 
 const DialogActions = styled.div<{ $shadow: boolean }>`
   display: flex;
@@ -403,13 +446,13 @@ const DialogActions = styled.div<{ $shadow: boolean }>`
   clip-path: inset(-20px 0 0 0);
   transition: box-shadow 200ms ease;
   box-shadow: ${({ $shadow }) => ($shadow ? "0px -10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
-`;
+`
 
 const ErrorText = styled.span`
   font-size: 13px;
   color: var(--color-error, #ef4444);
   line-height: 18px;
-`;
+`
 
 const AddUserButton = styled.button<{ $enabled: boolean }>`
   display: flex;
@@ -423,4 +466,4 @@ const AddUserButton = styled.button<{ $enabled: boolean }>`
   color: ${({ $enabled }) => ($enabled ? "var(--background)" : "rgba(0, 0, 0, 0.25)")};
   cursor: ${({ $enabled }) => ($enabled ? "pointer" : "default")};
   background: ${({ $enabled }) => ($enabled ? "va(--default-linear)" : "rgba(0, 0, 0, 0.04)")};
-`;
+`

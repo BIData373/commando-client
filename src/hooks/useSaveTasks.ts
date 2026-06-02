@@ -1,43 +1,45 @@
-import { startOfDay } from "date-fns";
-import { DeadlineType } from "../components/shared/DeadlineTag";
-import { MOCK_ASSIGNEES } from "../data/Assignees";
-import { type NewTaskInput, useTasks } from "../providers/TasksProvider";
+import { startOfDay } from "date-fns"
+import { DeadlineType } from "../components/shared/DeadlineTag"
+import {
+	type NewTaskInput,
+	useTasksFilters,
+} from "../providers/TasksFiltersProvider"
 
 interface TaskInput {
-	title: string;
-	assigneeIds: number[];
-	assigneeDetails: Record<number, string>;
-	deadlineType: DeadlineType | null;
-	dueDate: Date | null;
-	isImportant: boolean;
-	notes: string;
-	groupKey?: string;
+	title: string
+	assigneeIds: number[]
+	assigneeDetails: Record<number, string>
+	deadlineType: DeadlineType | null
+	dueDate: Date | null
+	flagged: boolean
+	notes: string
+	groupKey?: string
 }
 
 interface DiscussionFields {
-	discussionName: string;
-	discussionDate: string;
-	hasAttachment: boolean;
-	tags: string[];
+	discussionName: string
+	discussionDate: string
+	hasAttachment: boolean
+	tags: string[]
 }
 
 export function useSaveTasks() {
-	const { addTasks } = useTasks();
+	const { addTasks } = useTasksFilters()
 
 	function saveTasks(inputs: TaskInput[], discussion: DiscussionFields) {
-		const today = startOfDay(new Date());
+		const today = startOfDay(new Date())
 
-		const newTasks: NewTaskInput[] = [];
+		const newTasks: NewTaskInput[] = []
 
 		for (const input of inputs) {
 			const isOverdue =
 				input.deadlineType === DeadlineType.Date && input.dueDate
 					? input.dueDate < today
-					: false;
+					: false
 
 			const sharedFields = {
 				title: input.title.trim(),
-				flagged: input.isImportant,
+				flagged: input.flagged,
 				status: "not_started" as const,
 				deadlineType: input.deadlineType ?? DeadlineType.Ongoing,
 				dueDate:
@@ -49,12 +51,12 @@ export function useSaveTasks() {
 				attachmentUrl: null,
 				tags: discussion.tags,
 				notes: input.notes,
-			};
+			}
 
 			const groupAssignees = input.assigneeIds.flatMap((id) => {
-				const user = MOCK_ASSIGNEES[id];
-				return user ? [user] : [];
-			});
+				const user = MOCK_ASSIGNEES[id]
+				return user ? [user] : []
+			})
 
 			if (groupAssignees.length === 0) {
 				newTasks.push({
@@ -62,32 +64,32 @@ export function useSaveTasks() {
 					details: undefined,
 					responsible: null,
 					relatedDirectives: [],
-				});
-				continue;
+				})
+				continue
 			}
 
 			const groupKey =
 				groupAssignees.length > 1
 					? (input.groupKey ?? crypto.randomUUID())
-					: undefined;
+					: undefined
 			for (const responsible of groupAssignees) {
 				const perAssigneeDetail =
-					input.assigneeDetails[responsible.id]?.trim() || undefined;
+					input.assigneeDetails[responsible.id]?.trim() || undefined
 				const relatedDirectives = groupAssignees
 					.filter((u) => u.id !== responsible.id)
-					.map((user) => ({ user, status: "not_started" as const }));
+					.map((user) => ({ user, status: "not_started" as const }))
 				newTasks.push({
 					...sharedFields,
 					groupKey,
 					details: perAssigneeDetail,
 					responsible,
 					relatedDirectives,
-				});
+				})
 			}
 		}
 
-		addTasks(newTasks);
+		addTasks(newTasks)
 	}
 
-	return saveTasks;
+	return saveTasks
 }

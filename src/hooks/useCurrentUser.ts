@@ -1,6 +1,9 @@
-import { currentUser } from "../mocks/data/users";
-import { useUser } from "./useUsers";
+import type { UserDto } from "src/api/model"
 
-export function useCurrentUser() {
-	return useUser(currentUser.id);
+export function useCurrentUser(): UserDto {
+	return {
+		id: 1,
+		upn: "s0000000@idf.il",
+		info: null,
+	}
 }
