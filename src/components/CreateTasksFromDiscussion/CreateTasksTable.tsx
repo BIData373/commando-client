@@ -1,134 +1,136 @@
-import styled from "@emotion/styled";
-import { useRef, useState } from "react";
-import { DataTable } from "../ui/data-table";
-import { DATA_CELL_ACTIVE_KEY } from "./DeadlineCell";
-import TaskAssigneeExpansion from "./TaskAssigneeExpansion";
-import columns, { type TaskRow, type TaskTableMeta } from "./TasksColumns";
+import styled from "@emotion/styled"
+import { useRef, useState } from "react"
+import type { AssigneeDto } from "src/api/model"
+import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import { DataTable } from "../ui/data-table"
+import { DATA_CELL_ACTIVE_KEY } from "./DeadlineCell"
+import TaskAssigneeExpansion from "./TaskAssigneeExpansion"
+import columns, { type TaskTableMeta } from "./TasksColumns"
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 interface CreateTasksTableProps {
-	onSave: (tasks: TaskRow[]) => void;
-	onBack: () => void;
+  onSave: (tasks: TaskRow[]) => void
+  onBack: () => void
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
-	const nextRowId = useRef(1);
+  const nextRowId = useRef(1)
 
-	function createEmptyRow(): TaskRow {
-		return {
-			id: nextRowId.current++,
-			title: "",
-			deadlineType: null,
-			dueDate: null,
-			assigneeIds: [],
-			assigneeDetails: {},
-			notes: "",
-			isImportant: false,
-		};
-	}
+  function createEmptyRow(): TaskRow {
+    // TODO - fix this
+    return {
+      id: nextRowId.current++,
+      title: "",
+      deadlineType: '',
+      dueDate: new Date(),
+      assignee: {} as AssigneeDto,
+      notes: "",
+      flagged: false
+    }
+  }
 
-	const [rows, setRows] = useState<TaskRow[]>([createEmptyRow()]);
-	const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
+  const [rows, setRows] = useState<TaskRow[]>([createEmptyRow()])
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set())
 
-	function removeExpandedRow(id: number) {
-		setExpandedRows((prev) => {
-			const next = new Set(prev);
-			next.delete(id);
-			return next;
-		});
-	}
+  function removeExpandedRow(id: number) {
+    setExpandedRows((prev) => {
+      const next = new Set(prev)
+      next.delete(id)
+      return next
+    })
+  }
 
-	function updateRow(id: number, updates: Partial<TaskRow>) {
-		setRows((prev) => {
-			const next = prev.map((r) => (r.id === id ? { ...r, ...updates } : r));
-			const last = next[next.length - 1];
-			if (last.title.trim()) {
-				next.push(createEmptyRow());
-			}
-			return next;
-		});
+  function updateRow(id: number, updates: Partial<TaskRow>) {
+    setRows((prev) => {
+      const next = prev.map((r) => (r.id === id ? { ...r, ...updates } : r))
+      const last = next[next.length - 1]
+      if (last.title.trim()) {
+        next.push(createEmptyRow())
+      }
+      return next
+    })
 
-		if ("assigneeIds" in updates) {
-			const newIds = updates.assigneeIds!;
-			if (newIds.length > 1) {
-				setExpandedRows((prev) => new Set(prev).add(id));
-			} else {
-				removeExpandedRow(id);
-			}
-		}
-	}
+    if ("assigneeIds" in updates) {
+      const newIds = updates.assigneeIds!
+      if (newIds.length > 1) {
+        setExpandedRows((prev) => new Set(prev).add(id))
+      } else {
+        removeExpandedRow(id)
+      }
+    }
+  }
 
-	function toggleRowExpansion(id: number) {
-		setExpandedRows((prev) => {
-			const next = new Set(prev);
-			if (next.has(id)) next.delete(id);
-			else next.add(id);
-			return next;
-		});
-	}
+  function toggleRowExpansion(id: number) {
+    setExpandedRows((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
-	function deleteRow(id: number) {
-		setRows((prev) => {
-			const next = prev.filter((r) => r.id !== id);
-			if (next.length === 0) return [createEmptyRow()];
-			return next;
-		});
-		removeExpandedRow(id);
-	}
+  function deleteRow(id: number) {
+    setRows((prev) => {
+      const next = prev.filter((r) => r.id !== id)
+      if (next.length === 0) return [createEmptyRow()]
+      return next
+    })
+    removeExpandedRow(id)
+  }
 
-	function handleSave() {
-		const filled = rows.filter((r) => r.title.trim());
-		onSave(filled);
-	}
+  function handleSave() {
+    const filled = rows.filter((r) => r.title.trim())
+    onSave(filled)
+  }
 
-	const filledCount = rows.filter((r) => r.title.trim()).length;
-	const hasAnyTask = filledCount > 0;
+  const filledCount = rows.filter((r) => r.title.trim()).length
+  const hasAnyTask = filledCount > 0
 
-	const meta: TaskTableMeta = {
-		updateRow,
-		expandedRows,
-		toggleRowExpansion,
-		deleteRow,
-		isLastRow: (index: number) => index === rows.length - 1,
-	};
+  const meta: TaskTableMeta = {
+    updateRow,
+    expandedRows,
+    toggleRowExpansion,
+    deleteRow,
+    isLastRow: (index: number) => index === rows.length - 1,
+  }
 
-	return (
-		<TableWrapper>
-			<TableOuterContainer>
-				<DataTable
-					columns={columns}
-					data={rows}
-					getRowId={(row) => String(row.id)}
-					meta={meta}
-					containerClassName="overflow-x-hidden"
-					expansionColSpan={columns.length - 1}
-					renderRowExpansion={(row) =>
-						row.original.assigneeIds.length > 1 &&
-						expandedRows.has(row.original.id) ? (
-							<TaskAssigneeExpansion
-								row={row.original}
-								onUpdateRow={(updates) => updateRow(row.original.id, updates)}
-								onCollapse={() => toggleRowExpansion(row.original.id)}
-							/>
-						) : null
-					}
-				/>
-			</TableOuterContainer>
+  return (
+    <TableWrapper>
+      <TableOuterContainer>
+        <DataTable
+          columns={columns}
+          data={rows}
+          getRowId={(row) => row.rowKey}
+          meta={meta}
+          containerClassName="overflow-x-hidden"
+          expansionColSpan={columns.length - 1}
+          renderRowExpansion={(row) =>
+            row.original.assigneeIds.length > 1 &&
+              expandedRows.has(row.original.id) ? (
+              <TaskAssigneeExpansion
+                row={row.original}
+                onUpdateRow={(updates) => updateRow(row.original.id, updates)}
+                onCollapse={() => toggleRowExpansion(row.original.id)}
+              />
+            ) : null
+          }
+        />
+      </TableOuterContainer>
 
-			<FooterRow>
-				<SaveButton onClick={handleSave} disabled={!hasAnyTask}>
-					שמור {hasAnyTask && `(${filledCount})`}
-				</SaveButton>
-				<BackButton onClick={onBack}>חזור</BackButton>
-			</FooterRow>
-		</TableWrapper>
-	);
+      <FooterRow>
+        <SaveButton onClick={handleSave} disabled={!hasAnyTask}>
+          שמור {hasAnyTask && `(${filledCount})`}
+        </SaveButton>
+        <BackButton onClick={onBack}>חזור</BackButton>
+      </FooterRow>
+    </TableWrapper>
+  )
 }
 
-export default CreateTasksTable;
+export default CreateTasksTable
 
 // ─── Table Styled Components ────────────────────────────────────────────────
 
@@ -140,7 +142,7 @@ const TableWrapper = styled.div`
   min-height: 0;
   justify-content: space-between;
   overflow-x: hidden;
-  `;
+  `
 
 const TableOuterContainer = styled.div`
   direction: ltr;
@@ -233,7 +235,7 @@ const TableOuterContainer = styled.div`
     }
   }
 }
-`;
+`
 
 // ─── Footer ─────────────────────────────────────────────────────────────────
 
@@ -244,7 +246,7 @@ const FooterRow = styled.div`
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-`;
+`
 
 const SaveButton = styled.button`
   display: flex;
@@ -280,7 +282,7 @@ const SaveButton = styled.button`
   &:hover:not(:disabled) {
     opacity: 0.9;
   }
-`;
+`
 
 const BackButton = styled.button`
   display: flex;
@@ -312,4 +314,4 @@ const BackButton = styled.button`
     border-color: var(--button-color-hover);
     color: var(--button-color-hover);
   }
-`;
+`

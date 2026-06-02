@@ -1,45 +1,49 @@
-import styled from "@emotion/styled";
+import styled from "@emotion/styled"
+import type { QueryKey } from "@tanstack/react-query"
 import {
 	flexRender,
 	getCoreRowModel,
 	useReactTable,
-} from "@tanstack/react-table";
-import { useMemo } from "react";
-import { DirectiveStatus } from "src/utils/statusUtils";
-import compleateInstruction from "../../assets/icons/completeInstruction.svg";
-import type { Task } from "../../data/Tasks";
-import { useTaskColumns } from "../../hooks/useTaskColumns";
-import { EmptyCardState } from "./EmptyCardState";
-import { ViewMoreInstructions } from "./ViewMoreInstructions";
+} from "@tanstack/react-table"
+import { useMemo } from "react"
+import { WorkspaceStatusDtoType } from "src/api/model"
+import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import compleateInstruction from "../../assets/icons/completeInstruction.svg"
+import { useTaskColumns } from "../../hooks/useTaskColumns"
+import { EmptyCardState } from "./EmptyCardState"
+import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface RecentlyCompletedProps {
-	urlName: string;
-	tasks: Task[];
+	queryKey: QueryKey
+	urlName: string
+	tasks: TaskRow[]
 }
 
-const coreRowModel = getCoreRowModel();
+const coreRowModel = getCoreRowModel()
 
 export default function RecentlyCompleted({
+	queryKey,
 	urlName,
 	tasks,
 }: RecentlyCompletedProps) {
 	const completedTasks = useMemo(
-		() => tasks.filter((t) => t.status === DirectiveStatus.COMPLETED),
+		() =>
+			tasks.filter((t) => t.status.type === WorkspaceStatusDtoType.COMPLETED),
 		[tasks],
-	);
+	)
 
 	const { columns } = useTaskColumns({
-		visibleColumns: ["title", "status", "responsible"],
+		queryKey,
+		visibleColumns: ["title", "status", "assigneeStatuses"],
 		searchQuery: "",
 		filterOptionsMap: {},
-		onUpdateStatus: () => {},
-	});
+	})
 
 	const table = useReactTable({
 		data: completedTasks,
 		columns,
 		getCoreRowModel: coreRowModel,
-	});
+	})
 
 	return (
 		<Section>
@@ -54,7 +58,7 @@ export default function RecentlyCompleted({
 				) : (
 					<TaskList>
 						{table.getRowModel().rows.map((row) => (
-							<TaskRow key={row.id}>
+							<TaskTableRow key={row.id}>
 								{row.getVisibleCells().map((cell) =>
 									cell.column.id === "title" ? (
 										<TitleCellWrapper key={cell.id}>
@@ -72,17 +76,17 @@ export default function RecentlyCompleted({
 										</FixedCell>
 									),
 								)}
-							</TaskRow>
+							</TaskTableRow>
 						))}
 					</TaskList>
 				)}
 			</Card>
 			<ViewMoreInstructions
 				urlName={urlName}
-				statusFilter={DirectiveStatus.COMPLETED}
+				statusFilter={WorkspaceStatusDtoType.COMPLETED}
 			/>
 		</Section>
-	);
+	)
 }
 
 const Section = styled.div`
@@ -96,7 +100,7 @@ const Section = styled.div`
     grid-column: 1 / -1;
     grid-row: 3;
   }
-`;
+`
 
 const SectionTitle = styled.h2`
   margin: 0;
@@ -104,7 +108,7 @@ const SectionTitle = styled.h2`
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
-`;
+`
 
 const Card = styled.div<{ $hasContent: boolean }>`
   flex: 1;
@@ -127,15 +131,15 @@ const Card = styled.div<{ $hasContent: boolean }>`
       align-items: center;
       justify-content: center;
     `}
-`;
+`
 
 const TaskList = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-`;
+`
 
-const TaskRow = styled.div`
+const TaskTableRow = styled.div`
   display: flex;
   align-items: center;
   height: 44px;
@@ -144,7 +148,7 @@ const TaskRow = styled.div`
   &:nth-of-type(even) {
     background: rgba(0, 0, 0, 0);
   }
-`;
+`
 
 const TitleCellWrapper = styled.div`
   flex: 1;
@@ -157,7 +161,7 @@ const TitleCellWrapper = styled.div`
   background: var(--background);
   direction: rtl;
   border: 0.5px solid rgba(0, 0, 0, 0.01);
-`;
+`
 
 const FixedCell = styled.div<{ $width: number }>`
   width: ${({ $width }) => $width}px;
@@ -171,4 +175,4 @@ const FixedCell = styled.div<{ $width: number }>`
   background: var(--background);
   direction: rtl;
   border: 0.5px solid rgba(0, 0, 0, 0.01);
-`;
+`

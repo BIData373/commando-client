@@ -1,24 +1,24 @@
-import styled from "@emotion/styled";
-import { useNavigate, useParams } from "@tanstack/react-router";
-import { ChevronDown, Plus, Users, Users2 } from "lucide-react";
+import styled from "@emotion/styled"
+import { useNavigate, useParams } from "@tanstack/react-router"
+import { ChevronDown, Plus, Users, Users2 } from "lucide-react"
 
 export const TitleSection = () => {
-	const { urlName } = useParams({ from: "/workspace/$urlName/dashboard" });
-	const navigate = useNavigate();
+	const { urlName } = useParams({ from: "/workspace/$urlName/dashboard" })
+	const navigate = useNavigate()
 
 	function handleNavigateToNewInstruction() {
 		navigate({
 			to: "/workspace/$urlName/tasks/new",
 			params: { urlName },
 			search: { view: "TABLE" },
-		});
+		})
 	}
 
 	function handleNavigateToAssigneeSettings() {
 		navigate({
 			to: "/workspace/$urlName/settings/assignees",
 			params: { urlName },
-		});
+		})
 	}
 
 	return (
@@ -40,35 +40,35 @@ export const TitleSection = () => {
 				</CreateButton>
 			</ButtonGroup>
 		</TitleSectionContainer>
-	);
-};
+	)
+}
 
 const TitleSectionContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-`;
+`
 
 const TitleGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-`;
+`
 
 const WorkspaceName = styled.span`
   font-size: 24px;
   font-weight: 400;
   color: #001225;
   white-space: nowrap;
-`;
+`
 
 const TitleDivider = styled.div`
   width: 1.5px;
   height: 38px;
   background: rgba(0, 0, 0, 0.65);
   flex-shrink: 0;
-`;
+`
 
 const PageTitle = styled.h1`
   margin: 0;
@@ -76,13 +76,13 @@ const PageTitle = styled.h1`
   font-weight: 500;
   color: var(--foreground);
   white-space: nowrap;
-`;
+`
 
 const ButtonGroup = styled.div`
   display: flex;
   gap: 12px;
   align-items: center;
-`;
+`
 
 const CreateButton = styled.button`
   display: inline-flex;
@@ -103,7 +103,7 @@ const CreateButton = styled.button`
   &:hover {
     opacity: 0.9;
   }
-`;
+`
 
 const AssigneesButton = styled.button`
   display: inline-flex;
@@ -124,4 +124,4 @@ const AssigneesButton = styled.button`
   &:hover {
     background: var(--chip-bg);
   }
-`;
+`

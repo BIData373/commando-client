@@ -1,7 +1,14 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/workspace/$urlName/")({
 	beforeLoad: ({ params }) => {
-		throw redirect({ to: "/workspace/$urlName/tasks", params });
+		throw redirect({
+			to: "/workspace/$urlName/tasks",
+			params,
+			// TODO - maybe add in configurable defaults?
+			search: {
+				view: "TABLE",
+			},
+		})
 	},
-});
+})

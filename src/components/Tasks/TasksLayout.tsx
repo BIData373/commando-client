@@ -2,20 +2,23 @@ import styled from "@emotion/styled";
 import { Outlet, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
+import type { WorkspaceStatusDtoType } from "src/api/model";
+import { getListTasksQueryKey, useListTasks } from "src/api/task/task";
+import { toTaskRows } from "src/functions/tasks-table";
+import { useWorkspace } from "src/providers/WorkspaceProvider";
 import type { TasksSearchSchemaType } from "src/routes/workspace/$urlName/tasks";
-import type { QuickFilter } from "src/utils/filterUtils";
-import type { DirectiveStatus } from "src/utils/statusUtils";
+import type { QuickFilter } from "src/utils/filter-utils";
 import { exportTasksToExcel } from "../../functions/export-excel";
 import { applyAllFilters } from "../../functions/filter-utils";
-import { useTasks } from "../../providers/TasksProvider";
+import { useTasksFilters } from "../../providers/TasksFiltersProvider";
 import { useTitleBar } from "../../providers/TitleBarProvider";
 import type { DeadlineType } from "../shared/DeadlineTag";
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { TooltipProvider } from "../ui/tooltip";
 import { NoResultsFound } from "./NoResultsFound";
@@ -26,194 +29,208 @@ import { TaskTable } from "./TaskTable";
 export type View = "TABLE" | "CARDS";
 
 export interface TasksLayoutProps {
-	view: View;
-	urlName: string;
-	tabFilter: QuickFilter[];
-	statusFilter: DirectiveStatus[];
-	deadlineTypeFilter: DeadlineType[];
+  view: View;
+  urlName: string;
+  tabFilter: QuickFilter[];
+  statusFilter: WorkspaceStatusDtoType[];
+  deadlineTypeFilter: DeadlineType[];
 }
 
 function TasksLayout({
-	view,
-	urlName,
-	tabFilter,
-	statusFilter,
-	deadlineTypeFilter,
+  view,
+  urlName,
+  tabFilter,
+  statusFilter,
+  deadlineTypeFilter,
 }: TasksLayoutProps) {
-	const navigate = useNavigate();
-	const {
-		tasks,
-		searchQuery,
-		columnOrder,
-		hiddenColumns,
-		filteredTasks: baseFilteredTasks,
-	} = useTasks();
+  const navigate = useNavigate();
+  const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters();
+  const { workspace: { id: workspaceId } } = useWorkspace()
 
-	const tabFilterSet = new Set<QuickFilter>(tabFilter);
+  const tasksQueryKey = getListTasksQueryKey({ workspaceId })
+  const { data: tasks = [] } = useListTasks({ workspaceId })
 
-	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
-		new Set(),
-	);
+  const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
+    new Set(),
+  );
+  const allTopics = [...new Set(tasks.flatMap((t) => t.tags.map((tag) => tag.name)))];
 
-	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
-		navigate({
-			to: "/workspace/$urlName/tasks",
-			params: { urlName },
-			search: (prev) => ({
-				...prev,
-				...taskFilter,
-			}),
-		});
-	}
+  const tabFilterSet = useMemo(() => new Set<QuickFilter>(tabFilter), [tabFilter])
 
-	function navigateWithMode(mode: "single" | "discussion") {
-		navigate({
-			to: "/workspace/$urlName/tasks/new",
-			params: { urlName },
-			search: (prev) => ({ view, mode, ...prev }),
-		});
-	}
+  const baseFilteredTasks = useMemo(
+    () =>
+      toTaskRows(
+        applyAllFilters(tasks, tabFilterSet, new Set(), searchQuery),
+      ),
+    [tasks, searchQuery, tabFilterSet],
+  )
 
-	function handleEdit(taskId: number) {
-		navigate({
-			to: "/workspace/$urlName/tasks/$taskId",
-			params: { urlName, taskId: String(taskId) },
-			search: (prev) => ({ view, ...prev }),
-		});
-	}
+  const filteredTasks = useMemo(
+    () =>
+      activeTopicFilters.size > 0
+        ? toTaskRows(
+          applyAllFilters(
+            tasks,
+            tabFilterSet,
+            activeTopicFilters,
+            searchQuery,
+          ),
+        )
+        : baseFilteredTasks,
+    [tasks, searchQuery, tabFilterSet, activeTopicFilters, baseFilteredTasks],
+  )
 
-	function handleCreateTask() {
-		navigateWithMode("single");
-	}
+  function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
+    navigate({
+      to: "/workspace/$urlName/tasks",
+      params: { urlName },
+      search: (prev) => ({
+        ...prev,
+        ...taskFilter,
+      }),
+    });
+  }
 
-	function handleCreateTaskFromDiscussion() {
-		navigateWithMode("discussion");
-	}
+  function navigateWithMode(mode: "single" | "discussion") {
+    navigate({
+      to: "/workspace/$urlName/tasks/new",
+      params: { urlName },
+      search: (prev) => ({ view, mode, ...prev }),
+    });
+  }
 
-	function handleToggleTabFilter(filter: QuickFilter) {
-		const next = tabFilter.includes(filter)
-			? tabFilter.filter((f) => f !== filter)
-			: [...tabFilter, filter];
-		navigateToTasks({ tabFilter: next });
-	}
+  function handleEdit(taskId: number) {
+    navigate({
+      to: "/workspace/$urlName/tasks/$taskId",
+      params: { urlName, taskId: String(taskId) },
+      search: (prev) => ({ view, ...prev }),
+    });
+  }
 
-	function clearAllFilters() {
-		setActiveTopicFilters(new Set());
-		navigateToTasks({
-			tabFilter: [],
-			statusFilter: [],
-			deadlineTypeFilter: [],
-		});
-	}
+  function handleCreateTask() {
+    navigateWithMode("single");
+  }
 
-	function handleColumnFiltersChange(
-		newStatusFilter: DirectiveStatus[],
-		newDeadlineTypeFilter: DeadlineType[],
-	) {
-		navigateToTasks({
-			statusFilter: newStatusFilter,
-			deadlineTypeFilter: newDeadlineTypeFilter,
-		});
-	}
+  function handleCreateTaskFromDiscussion() {
+    navigateWithMode("discussion");
+  }
 
-	const allTopics = [...new Set(tasks.flatMap((t) => t.tags))];
+  function handleToggleTabFilter(filter: QuickFilter) {
+    const next = tabFilter.includes(filter)
+      ? tabFilter.filter((f) => f !== filter)
+      : [...tabFilter, filter];
+    navigateToTasks({ tabFilter: next });
+  }
 
-	const filteredTasks = useMemo(
-		() =>
-			tabFilterSet.size > 0 || activeTopicFilters.size > 0
-				? applyAllFilters(tasks, tabFilterSet, activeTopicFilters, searchQuery)
-				: baseFilteredTasks,
-		[tasks, searchQuery, tabFilterSet, activeTopicFilters, baseFilteredTasks],
-	);
+  function clearAllFilters() {
+    setActiveTopicFilters(new Set());
+    navigateToTasks({
+      tabFilter: [],
+      statusFilter: [],
+      deadlineTypeFilter: [],
+    });
+  }
 
-	function handleExport() {
-		exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns });
-	}
+  function handleColumnFiltersChange(
+    newStatusFilter: WorkspaceStatusDtoType[],
+    newDeadlineTypeFilter: DeadlineType[],
+  ) {
+    navigateToTasks({
+      statusFilter: newStatusFilter,
+      deadlineTypeFilter: newDeadlineTypeFilter,
+    });
+  }
 
-	function handleViewChange(newView: View) {
-		navigateToTasks({ view: newView });
-	}
+  function handleExport() {
+    exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns });
+  }
 
-	useTitleBar(
-		() => (
-			<ButtonGroup>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<CreateButton>
-							<Plus size={18} color="white" />
-							<CreateButtonText>צור הנחייה</CreateButtonText>
-							<ChevronDown size={18} color="white" />
-						</CreateButton>
-					</DropdownMenuTrigger>
-					<StyledDropdownContent align="end" sideOffset={6}>
-						<StyledDropdownItem onSelect={handleCreateTaskFromDiscussion}>
-							הנחיות מתוך דיון
-						</StyledDropdownItem>
-						<StyledDropdownItem onSelect={handleCreateTask}>
-							הנחייה בודדת
-						</StyledDropdownItem>
-					</StyledDropdownContent>
-				</DropdownMenu>
-				<SectionDivider />
-				<SegmentedControl>
-					<SegmentedItem
-						$selected={view === "CARDS"}
-						onClick={() => handleViewChange("CARDS")}
-					>
-						כרטיסיות
-					</SegmentedItem>
-					<SegmentedItem
-						$selected={view === "TABLE"}
-						onClick={() => handleViewChange("TABLE")}
-					>
-						טבלה
-					</SegmentedItem>
-				</SegmentedControl>
-			</ButtonGroup>
-		),
-		[view, urlName],
-	);
+  function handleViewChange(newView: View) {
+    navigateToTasks({ view: newView });
+  }
 
-	return (
-		<TooltipProvider>
-			<TasksRoot>
-				<TaskFilters
-					onClearAllFilters={clearAllFilters}
-					onExport={handleExport}
-					tabFilter={tabFilter}
-					onToggleTabFilter={handleToggleTabFilter}
-					hasExtraActiveFilters={activeTopicFilters.size > 0}
-					extraFilters={
-						<MultiSelectFilterDropdown
-							label="נושא"
-							options={allTopics.map((t) => ({ value: t, label: t }))}
-							activeValues={activeTopicFilters}
-							onApply={setActiveTopicFilters}
-							$active={activeTopicFilters.size > 0}
-						/>
-					}
-				/>
+  useTitleBar(
+    () => (
+      <ButtonGroup>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <CreateButton>
+              <Plus size={18} color="white" />
+              <CreateButtonText>צור הנחייה</CreateButtonText>
+              <ChevronDown size={18} color="white" />
+            </CreateButton>
+          </DropdownMenuTrigger>
+          <StyledDropdownContent align="end" sideOffset={6}>
+            <StyledDropdownItem onSelect={handleCreateTaskFromDiscussion}>
+              הנחיות מתוך דיון
+            </StyledDropdownItem>
+            <StyledDropdownItem onSelect={handleCreateTask}>
+              הנחייה בודדת
+            </StyledDropdownItem>
+          </StyledDropdownContent>
+        </DropdownMenu>
+        <SectionDivider />
+        <SegmentedControl>
+          <SegmentedItem
+            $selected={view === "CARDS"}
+            onClick={() => handleViewChange("CARDS")}
+          >
+            כרטיסיות
+          </SegmentedItem>
+          <SegmentedItem
+            $selected={view === "TABLE"}
+            onClick={() => handleViewChange("TABLE")}
+          >
+            טבלה
+          </SegmentedItem>
+        </SegmentedControl>
+      </ButtonGroup>
+    ),
+    [view, urlName],
+  );
 
-				{tasks.length === 0 ? (
-					<NoResultsFound variant="empty" />
-				) : searchQuery && filteredTasks.length === 0 ? (
-					<NoResultsFound variant="no-search-results" />
-				) : view === "TABLE" ? (
-					<TaskTable
-						tasks={filteredTasks}
-						onEdit={handleEdit}
-						statusFilter={statusFilter}
-						deadlineTypeFilter={deadlineTypeFilter}
-						onFiltersChange={handleColumnFiltersChange}
-						onDoubleClick={handleEdit}
-					/>
-				) : (
-					<TaskCardGrid tasks={filteredTasks} />
-				)}
-			</TasksRoot>
-			<Outlet />
-		</TooltipProvider>
-	);
+  return (
+    <TooltipProvider>
+      <TasksRoot>
+        <TaskFilters
+          tasks={toTaskRows(tasks)}
+          onClearAllFilters={clearAllFilters}
+          onExport={handleExport}
+          tabFilter={tabFilter}
+          onToggleTabFilter={handleToggleTabFilter}
+          hasExtraActiveFilters={activeTopicFilters.size > 0}
+          extraFilters={
+            <MultiSelectFilterDropdown
+              label="נושא"
+              options={allTopics.map((t) => ({ value: t, label: t }))}
+              activeValues={activeTopicFilters}
+              onApply={setActiveTopicFilters}
+              $active={activeTopicFilters.size > 0}
+            />
+          }
+        />
+
+        {tasks.length === 0 ? (
+          <NoResultsFound variant="empty" />
+        ) : searchQuery && filteredTasks.length === 0 ? (
+          <NoResultsFound variant="no-search-results" />
+        ) : view === "TABLE" ? (
+          <TaskTable
+            queryKey={tasksQueryKey}
+            tasks={filteredTasks}
+            onEdit={handleEdit}
+            statusFilter={statusFilter}
+            deadlineTypeFilter={deadlineTypeFilter}
+            onFiltersChange={handleColumnFiltersChange}
+            onDoubleClick={handleEdit}
+          />
+        ) : (
+          <TaskCardGrid tasks={filteredTasks} />
+        )}
+      </TasksRoot>
+      <Outlet />
+    </TooltipProvider>
+  );
 }
 
 export default TasksLayout;
@@ -313,9 +330,9 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   background: ${({ $selected }) => ($selected ? "white" : "transparent")};
   color: ${({ $selected }) => ($selected ? "rgba(0, 0, 0, 0.88)" : "rgba(0, 0, 0, 0.65)")};
   box-shadow: ${({ $selected }) =>
-		$selected
-			? "0px 1px 2px 0px rgba(0, 0, 0, 0.03), 0px 1px 6px -1px rgba(0, 0, 0, 0.02), 0px 2px 4px 0px rgba(0, 0, 0, 0.02)"
-			: "none"};
+    $selected
+      ? "0px 1px 2px 0px rgba(0, 0, 0, 0.03), 0px 1px 6px -1px rgba(0, 0, 0, 0.02), 0px 2px 4px 0px rgba(0, 0, 0, 0.02)"
+      : "none"};
   &:hover {
     background: ${({ $selected }) => ($selected ? "white" : "rgba(0, 0, 0, 0.06)")};
   }
