@@ -1,0 +1,1 @@
+export const isErrorCode = (code: number) => [400, 403, 404, 500].includes(code)

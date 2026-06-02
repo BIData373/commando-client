@@ -8,7 +8,7 @@ import Header from "../components/Header";
 import { ErrorModalProvider, useErrorModal } from "../providers/ErrorModalProvider";
 import { TitleBarProvider } from "../providers/TitleBarProvider";
 import "../styles.css";
-import { isErrorCode } from "src/utils/errorUtils";
+import { isErrorCode } from "src/utils/error-utils";
 
 function NotFoundComponent() {
 	const error = useErrorModal()
@@ -21,10 +21,14 @@ interface RouteError {
 	response?: { status?: number };
 }
 
-function RootErrorComponent({ error }: { error: Error }) {
+interface RootErrorComponentProps {
+	error: Error
+}
+
+function RootErrorComponent({ error } : RootErrorComponentProps) {
 	const errorModal = useErrorModal()
 
-	const routeError = error as unknown as RouteError;
+	const routeError = error as RouteError;
 	const status = routeError?.status ?? routeError?.response?.status;
 	const code = status && isErrorCode(status) ? status : 500;
 	errorModal?.setErrorCode(code);
