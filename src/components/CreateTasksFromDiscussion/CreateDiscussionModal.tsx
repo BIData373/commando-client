@@ -2,13 +2,13 @@ import styled from "@emotion/styled"
 import { Check, Paperclip, X } from "lucide-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 import { useState } from "react"
+import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import SourceField from "../CreateTasks/SourceField"
-import TopicField from "../CreateTasks/TopicField"
+import TagField from "../CreateTasks/TagField"
 import CreateTasksTable from "./CreateTasksTable"
 import FileUploadField from "./FileUploadField"
-import type { TaskRow } from "./TasksColumns"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -20,7 +20,7 @@ enum Steps {
 interface DiscussionFormState {
 	name: string
 	sourceDate: Date | null
-	topics: string[]
+	tags: string[]
 	file: File | null
 }
 
@@ -33,7 +33,7 @@ interface CreateDiscussionModalProps {
 const INITIAL_FORM: DiscussionFormState = {
 	name: "",
 	sourceDate: null,
-	topics: [],
+	tags: [],
 	file: null,
 }
 
@@ -61,18 +61,18 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 		}
 	}
 
-	// ─── Topic Handlers ───────────────────────────────────────────────────────
+	// ─── Tag Handlers ────────────────────────────────────────────────────────
 
-	function handleTopicSelect(topic: string) {
-		if (!form.topics.includes(topic)) {
-			setField("topics", [...form.topics, topic])
+	function handleTagSelect(tag: string) {
+		if (!form.tags.includes(tag)) {
+			setField("tags", [...form.tags, tag])
 		}
 	}
 
-	function handleTopicRemove(topic: string) {
+	function handleTagRemove(tag: string) {
 		setField(
-			"topics",
-			form.topics.filter((t) => t !== topic),
+			"tags",
+			form.tags.filter((t) => t !== tag),
 		)
 	}
 
@@ -112,7 +112,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 			discussionName: form.name.trim(),
 			discussionDate: form.sourceDate ? formatDate(form.sourceDate) : "",
 			hasAttachment: form.file !== null,
-			tags: form.topics,
+			tags: form.tags,
 		})
 		onClose()
 	}
@@ -180,11 +180,11 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 										uniqueNames
 									/>
 
-									<TopicField
-										topics={form.topics}
-										lockedTopics={[]}
-										onTopicSelect={handleTopicSelect}
-										onTopicRemove={handleTopicRemove}
+									<TagField
+										tags={form.tags}
+										lockedTags={[]}
+										onTagSelect={handleTagSelect}
+										onTagRemove={handleTagRemove}
 									/>
 
 									<FileUploadField

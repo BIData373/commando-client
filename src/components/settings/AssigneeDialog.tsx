@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { UserPlus } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
+import { toast } from "sonner"
 import {
 	useCreateAssignee,
 	useListAssignees,
@@ -13,6 +14,7 @@ import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { queryClient } from "src/queryClient"
 import { concatName } from "src/utils/user-utils"
 import { CancelButton } from "../shared/CancelButton"
+import { FormField } from "../shared/FormField"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import {
 	Dialog,
@@ -49,8 +51,6 @@ export function AssigneeDialog({
 	const { mutateAsync: updateAssignee } = useUpdateAssignee()
 
 	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null)
-	// const [localAssignees, setLocalAssignees] = useState<UserDto[]>([]);
-	const [submitError, setSubmitError] = useState<string | null>(null)
 	const [searchValue, setSearchValue] = useState<string>("")
 
 	const [iconSearch, setIconSearch] = useState("")
@@ -126,7 +126,7 @@ export function AssigneeDialog({
 
 				onOpenChange(false)
 			} catch {
-				setSubmitError("אירעה שגיאה, נסה שנית")
+				toast.error("אירעה שגיאה, נסה שנית")
 			}
 		},
 	})
@@ -183,7 +183,6 @@ export function AssigneeDialog({
 
 	function resetForm() {
 		form.setFieldValue("users", assignee?.users ?? [])
-		setSubmitError(null)
 		setIconSearch("")
 		setSelectedIcon(existingIcon ?? null)
 		form.reset()
@@ -235,14 +234,13 @@ export function AssigneeDialog({
 							{(field) => (
 								<FieldGroup>
 									<FieldLabel>שם אחראי</FieldLabel>
-									<Input
-										value={field.state.value}
-										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder='לדוגמה: מג"ד, רע"ן מפקדים, קמב"צ...'
-									/>
-									{field.state.meta.errors.length > 0 && (
-										<ErrorText>{field.state.meta.errors[0]}</ErrorText>
-									)}
+									<FormField field={field}>
+										<Input
+											value={field.state.value}
+											onChange={(e) => field.handleChange(e.target.value)}
+											placeholder='לדוגמה: מג"ד, רע"ן מפקדים, קמב"צ...'
+										/>
+									</FormField>
 								</FieldGroup>
 							)}
 						</form.Field>
@@ -271,7 +269,6 @@ export function AssigneeDialog({
 									/>
 								</EmblemSection>
 							</EitherOrRow>
-							{submitError && <ErrorText>{submitError}</ErrorText>}
 						</FieldGroup>
 
 						<form.Field name="users">
@@ -446,12 +443,6 @@ const DialogActions = styled.div<{ $shadow: boolean }>`
   clip-path: inset(-20px 0 0 0);
   transition: box-shadow 200ms ease;
   box-shadow: ${({ $shadow }) => ($shadow ? "0px -10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
-`
-
-const ErrorText = styled.span`
-  font-size: 13px;
-  color: var(--color-error, #ef4444);
-  line-height: 18px;
 `
 
 const AddUserButton = styled.button<{ $enabled: boolean }>`

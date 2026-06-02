@@ -5,10 +5,10 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { UpdatePermissionDtoType } from "./update-permission-dto-type"
+import type { PermissionType } from "./permission-type"
 
 export interface UpdatePermissionDto {
 	workspaceId: number
 	upn: string
-	type: UpdatePermissionDtoType
+	type: PermissionType
 }

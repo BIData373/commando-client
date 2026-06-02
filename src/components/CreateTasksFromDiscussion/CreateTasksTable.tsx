@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { useRef, useState } from "react"
-import type { AssigneeDto } from "src/api/model"
+import { type AssigneeDto, DeadlineType } from "src/api/model"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { DataTable } from "../ui/data-table"
 import { DATA_CELL_ACTIVE_KEY } from "./DeadlineCell"
@@ -24,7 +24,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
     return {
       id: nextRowId.current++,
       title: "",
-      deadlineType: '',
+      deadlineType: DeadlineType.IMMEDIATE,
       dueDate: new Date(),
       assignee: {} as AssigneeDto,
       notes: "",
@@ -107,8 +107,9 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
           meta={meta}
           containerClassName="overflow-x-hidden"
           expansionColSpan={columns.length - 1}
-          renderRowExpansion={(row) =>
-            row.original.assigneeIds.length > 1 &&
+          renderRowExpansion={(row) => {
+            console.log(row.original)
+            return row.original.assigneeStatuses.length > 1 &&
               expandedRows.has(row.original.id) ? (
               <TaskAssigneeExpansion
                 row={row.original}
@@ -116,6 +117,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
                 onCollapse={() => toggleRowExpansion(row.original.id)}
               />
             ) : null
+          }
           }
         />
       </TableOuterContainer>

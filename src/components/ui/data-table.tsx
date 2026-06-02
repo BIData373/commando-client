@@ -177,3 +177,4 @@ const ExpansionCell = styled.td`
   background: var(--colors-base-neutral-3) !important;
   outline: none !important;
 `
+

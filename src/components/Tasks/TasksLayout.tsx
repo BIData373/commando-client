@@ -210,23 +210,25 @@ function TasksLayout({
           }
         />
 
-        {tasks.length === 0 ? (
-          <NoResultsFound variant="empty" />
-        ) : searchQuery && filteredTasks.length === 0 ? (
-          <NoResultsFound variant="no-search-results" />
-        ) : view === "TABLE" ? (
-          <TaskTable
-            queryKey={tasksQueryKey}
-            tasks={filteredTasks}
-            onEdit={handleEdit}
-            statusFilter={statusFilter}
-            deadlineTypeFilter={deadlineTypeFilter}
-            onFiltersChange={handleColumnFiltersChange}
-            onDoubleClick={handleEdit}
-          />
-        ) : (
-          <TaskCardGrid tasks={filteredTasks} />
-        )}
+        <ContentArea>
+          {tasks.length === 0 ? (
+            <NoResultsFound variant="empty" />
+          ) : searchQuery && filteredTasks.length === 0 ? (
+            <NoResultsFound variant="no-search-results" />
+          ) : view === "TABLE" ? (
+            <TaskTable
+              queryKey={tasksQueryKey}
+              tasks={filteredTasks}
+              onEdit={handleEdit}
+              statusFilter={statusFilter}
+              deadlineTypeFilter={deadlineTypeFilter}
+              onFiltersChange={handleColumnFiltersChange}
+              onDoubleClick={handleEdit}
+            />
+          ) : (
+            <TaskCardGrid tasks={filteredTasks} />
+          )}
+        </ContentArea>
       </TasksRoot>
       <Outlet />
     </TooltipProvider>
@@ -239,9 +241,19 @@ export default TasksLayout;
 
 const TasksRoot = styled.div`
   padding-block: 24px;
+  height: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 28px;
+  overflow: hidden;
+`;
+
+const ContentArea = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  direction: ltr;
 `;
 
 // ─── Title Bar Actions ───────────────────────────────────────────────────────

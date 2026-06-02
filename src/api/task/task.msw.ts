@@ -8,8 +8,8 @@
 import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
-
 import type { TaskDto, TaskWithWorkspaceDto } from "../model"
+import { DeadlineType, WorkspaceStatusType } from "../model"
 
 export const getCreateTaskResponseMock = (
 	overrideResponse: Partial<Extract<TaskWithWorkspaceDto, object>> = {},
@@ -42,7 +42,7 @@ export const getCreateTaskResponseMock = (
 		null,
 	]),
 	flagged: faker.datatype.boolean(),
-	deadlineType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
 	issuedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	dueDate: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	notes: faker.helpers.arrayElement([
@@ -166,11 +166,7 @@ export const getCreateTaskResponseMock = (
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			type: faker.helpers.arrayElement([
-				"NOT_STARTED",
-				"IN_PROGRESS",
-				"COMPLETED",
-			] as const),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		},
 	})),
@@ -242,7 +238,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 			null,
 		]),
 		flagged: faker.datatype.boolean(),
-		deadlineType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
 		issuedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		dueDate: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		notes: faker.helpers.arrayElement([
@@ -368,11 +364,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 				id: faker.number.float({ fractionDigits: 2 }),
 				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				type: faker.helpers.arrayElement([
-					"NOT_STARTED",
-					"IN_PROGRESS",
-					"COMPLETED",
-				] as const),
+				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 		})),
@@ -411,7 +403,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 			null,
 		]),
 		flagged: faker.datatype.boolean(),
-		deadlineType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
 		issuedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		dueDate: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		notes: faker.helpers.arrayElement([
@@ -537,11 +529,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 				id: faker.number.float({ fractionDigits: 2 }),
 				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				type: faker.helpers.arrayElement([
-					"NOT_STARTED",
-					"IN_PROGRESS",
-					"COMPLETED",
-				] as const),
+				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 		})),
@@ -610,7 +598,7 @@ export const getGetTaskResponseMock = (
 		null,
 	]),
 	flagged: faker.datatype.boolean(),
-	deadlineType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
 	issuedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	dueDate: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	notes: faker.helpers.arrayElement([
@@ -734,11 +722,7 @@ export const getGetTaskResponseMock = (
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			type: faker.helpers.arrayElement([
-				"NOT_STARTED",
-				"IN_PROGRESS",
-				"COMPLETED",
-			] as const),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		},
 	})),
@@ -808,7 +792,7 @@ export const getUpdateTaskResponseMock = (
 		null,
 	]),
 	flagged: faker.datatype.boolean(),
-	deadlineType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
 	issuedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	dueDate: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	notes: faker.helpers.arrayElement([
@@ -932,11 +916,7 @@ export const getUpdateTaskResponseMock = (
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			type: faker.helpers.arrayElement([
-				"NOT_STARTED",
-				"IN_PROGRESS",
-				"COMPLETED",
-			] as const),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		},
 	})),
@@ -1006,7 +986,7 @@ export const getDeleteTaskResponseMock = (
 		null,
 	]),
 	flagged: faker.datatype.boolean(),
-	deadlineType: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
 	issuedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	dueDate: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	notes: faker.helpers.arrayElement([
@@ -1130,11 +1110,7 @@ export const getDeleteTaskResponseMock = (
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			type: faker.helpers.arrayElement([
-				"NOT_STARTED",
-				"IN_PROGRESS",
-				"COMPLETED",
-			] as const),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		},
 	})),

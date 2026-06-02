@@ -4,6 +4,7 @@ import { createRootRoute, Outlet } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { StrictMode } from "react"
 import Header from "../components/Header"
+import { Toaster } from "../components/ui/sonner"
 import { TitleBarProvider } from "../providers/TitleBarProvider"
 import "../styles.css"
 
@@ -22,6 +23,7 @@ function RootComponent() {
 					</PageContainer>
 				</AppShell>
 			</TitleBarProvider>
+			<Toaster />
 			<TanStackDevtools
 				config={{
 					position: "bottom-right",

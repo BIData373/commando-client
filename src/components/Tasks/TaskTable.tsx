@@ -204,7 +204,7 @@ function TaskTable({
 					onSortingChange={setSorting}
 					getRowId={(row) => row.rowKey}
 					showHeader={showHeader}
-				/>
+					/>
 			</TableWrapper>
 			{selectMode && (
 				<BulkActionsBar
@@ -231,15 +231,21 @@ export { TaskTable };
 
 const TableWrapper = styled.div`
   overflow: auto;
+  max-height: 100%;
+  box-sizing: border-box;
   direction: ltr;
   border-radius: 8px;
+  border: 0.5px solid var(--Background-color-bg-text-active);
+  background: var(--background);
+  box-shadow: var(--card-shadow-default);
 
   & > * {
     direction: rtl;
   }
-  border: 0.5px solid var(--Background-color-bg-text-active);
-  background: var(--background);
-  box-shadow: var(--card-shadow-default);
+
+  [data-slot="table-container"] {
+    overflow: visible;
+  }
 
   table {
     width: 100%;
@@ -257,6 +263,9 @@ const TableWrapper = styled.div`
   }
 
   th {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-dropdown);
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
