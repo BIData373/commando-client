@@ -7,8 +7,10 @@ import { Popover as PopoverPrimitive } from "radix-ui"
 import { Popover, PopoverTrigger } from "../ui/popover";
 import CreateTasksTable from "./CreateTasksTable";
 import FileUploadField from "./FileUploadField";
-import type { TaskRow } from "./TasksColumns";
+import type { TaskRow } from "../../providers/TasksFiltersProvider";
 import { Dialog as DialogPrimitive } from "radix-ui"
+import { useUpdateSource } from "../../api/source/source"
+import type { DeadlineType } from "../shared/DeadlineTag"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 
@@ -29,6 +31,7 @@ interface DiscussionFormState {
 
 interface CreateDiscussionModalProps {
 	onClose: () => void;
+	sourceId?: number;
 	editData?: DiscussionFormState;
 }
 
@@ -45,11 +48,12 @@ const INITIAL_FORM: DiscussionFormState = {
 
 function CreateDiscussionModal({
 	onClose,
+	sourceId,
 	editData,
 }: CreateDiscussionModalProps) {
 	const isEditMode = !!editData;
 	const saveTasks = useSaveTasks();
-	// const { updateDiscussionDetails } = saveTasks();
+	const { mutate: updateSource } = useUpdateSource();
 
 	const [form, setForm] = useState<DiscussionFormState>(
 		editData ?? INITIAL_FORM,
@@ -63,12 +67,19 @@ function CreateDiscussionModal({
 
 	const isCurrentStepTasks = currentStep === Steps.Tasks;
 
-	const hasChanges = isEditMode
-		? form.name !== editData.name ||
-			form.sourceDate?.getTime() !== editData.sourceDate?.getTime() ||
-			form.file !== editData.file ||
-			JSON.stringify(form.topics) !== JSON.stringify(editData.topics)
-		: false;
+	function getChangedFields(): Record<string, unknown> | null {
+		if (!editData) return null;
+		const data: Record<string, unknown> = {};
+		if (form.name.trim() !== editData.name) data.name = form.name.trim();
+		if (form.sourceDate?.getTime() !== editData.sourceDate?.getTime())
+			data.date = form.sourceDate ?? undefined;
+		if (JSON.stringify(form.topics) !== JSON.stringify(editData.topics))
+			data.tags = form.topics;
+		if (form.file !== editData.file) data.file = form.file ?? undefined;
+		return Object.keys(data).length > 0 ? data : null;
+	}
+
+	const hasChanges = isEditMode && getChangedFields() !== null;
 	// ─── Source / Name Handlers ───────────────────────────────────────────────
 
 	function handleSourceSelect(name: string) {
@@ -119,12 +130,12 @@ function CreateDiscussionModal({
 	function handleSave(taskRows: TaskRow[]) {
 		const inputs = taskRows.map((row) => ({
 			title: row.title,
-			assigneeIds: row.assigneeIds,
-			assigneeDetails: row.assigneeDetails,
-			deadlineType: row.deadlineType,
+			assigneeIds: row.assignee?.id ? [row.assignee.id] : [],
+			assigneeDetails: {} as Record<number, string>,
+			deadlineType: row.deadlineType as DeadlineType | null,
 			dueDate: row.dueDate,
 			flagged: row.flagged,
-			notes: row.notes,
+			notes: row.notes ?? "",
 			groupKey: String(row.id),
 		}))
 
@@ -138,15 +149,22 @@ function CreateDiscussionModal({
 	}
 
 	function handleEditConfirm() {
-		if (!editData) return;
-		// updateDiscussionDetails(editData.discussionName, {
-		// 	discussionName: form.name.trim(),
-		// 	discussionDate: form.sourceDate,
-		// 	hasAttachment: form.file !== null || editData.hasAttachment,
-		// 	tags: form.topics,
-		// });
-		setShowConfirmation(false);
-		onClose();
+		if (!sourceId) return;
+		const data = getChangedFields();
+		if (!data) return;
+
+		updateSource(
+      { pathParams: { id: sourceId }, data },
+			{
+        onSuccess: () => {
+          setShowConfirmation(false);
+					onClose();
+				},
+				onError: (error) => {
+					console.error("updateSource failed:", error);
+				},
+			},
+		);
 	}
 
 	function handleEditCancel() {
@@ -229,8 +247,6 @@ function CreateDiscussionModal({
 
 									<FileUploadField
 										file={form.file}
-										hasExistingFile={!!editData?.file}
-										existingFileName={editData?.file?.name}
 										onFileChange={handleFileChange}
 									/>
 								</FormContainer>

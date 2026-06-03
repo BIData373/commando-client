@@ -224,6 +224,7 @@ function TaskDetailPanel({
         {showEditDiscussion && (
             <CreateDiscussionModal
               onClose={() => setShowEditDiscussion(false)}
+              sourceId={source.id}
               editData={{
                 name: source.name,
                 sourceDate: source.date,
