@@ -5,40 +5,40 @@ import CreateDiscussionModal from "../../../../components/CreateTasksFromDiscuss
 import { TasksView } from "../tasks"
 
 export enum NewTaskMode {
-  SINGLE = 'SINGLE',
-  DISCUSSION = 'DISCUSSION'
+	SINGLE = "SINGLE",
+	DISCUSSION = "DISCUSSION",
 }
 
 const NewTaskSearchSchema = z.object({
-  view: z.nativeEnum(TasksView).default(TasksView.TABLE),
-  mode: z.nativeEnum(NewTaskMode).default(NewTaskMode.SINGLE),
+	view: z.nativeEnum(TasksView).default(TasksView.TABLE),
+	mode: z.nativeEnum(NewTaskMode).default(NewTaskMode.SINGLE),
 })
 
 export const Route = createFileRoute("/workspace/$urlName/tasks/new")({
-  component: NewTask,
-  validateSearch: NewTaskSearchSchema,
+	component: NewTask,
+	validateSearch: NewTaskSearchSchema,
 })
 
 function NewTask() {
-  const { urlName } = Route.useParams()
-  const { view, mode } = Route.useSearch()
-  const navigate = useNavigate()
+	const { urlName } = Route.useParams()
+	const { view, mode } = Route.useSearch()
+	const navigate = useNavigate()
 
-  function handleClose() {
-    navigate({
-      to: "/workspace/$urlName/tasks",
-      params: { urlName },
-      search: { view },
-    })
-  }
+	function handleClose() {
+		navigate({
+			to: "/workspace/$urlName/tasks",
+			params: { urlName },
+			search: { view },
+		})
+	}
 
-  return (
-    <>
-      {mode === NewTaskMode.DISCUSSION ? (
-        <CreateDiscussionModal onClose={handleClose} />
-      ) : (
-        <CreateTaskModal onClose={handleClose} />
-      )}
-    </>
-  )
+	return (
+		<>
+			{mode === NewTaskMode.DISCUSSION ? (
+				<CreateDiscussionModal onClose={handleClose} />
+			) : (
+				<CreateTaskModal onClose={handleClose} />
+			)}
+		</>
+	)
 }
