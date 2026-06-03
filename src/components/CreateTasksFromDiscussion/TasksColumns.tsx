@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import type { CreateTaskDto } from "src/api/model"
 import FlagIcon from "../shared/FlagIcon"
 import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
 import { TrashButton } from "../shared/TrashButton"
@@ -9,13 +9,21 @@ import AssigneeTableCell from "./AssigneeTableCell"
 import DeadlineCell from "./DeadlineCell"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
+
+export interface NewTaskRow extends CreateTaskDto {
+  id: number
+  rowKey: string
+  assigneeIds: number[]
+  assigneeDetails: Record<number, string>
+}
+
 export enum TaskColumnId {
   Title = "title",
   Notes = "notes",
 }
 
 export interface TaskTableMeta {
-  updateRow: (id: number, updates: Partial<TaskRow>) => void
+  updateRow: (id: number, updates: Partial<NewTaskRow>) => void
   expandedRows: Set<number>
   toggleRowExpansion: (id: number) => void
   deleteRow: (id: number) => void
@@ -82,7 +90,7 @@ function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
 
 // ─── Columns ────────────────────────────────────────────────────────────────
 
-const columns: ColumnDef<TaskRow>[] = [
+const columns: ColumnDef<NewTaskRow>[] = [
   {
     id: "title",
     size: 655,

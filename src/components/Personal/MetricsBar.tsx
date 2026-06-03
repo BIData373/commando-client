@@ -22,6 +22,7 @@ function MetricsBar({
 		setCollapsed((prev) => !prev)
 	}
 
+  // TODO - fix status tags here
 	return (
 		<MetricsSection>
 			{!collapsed && (
@@ -29,7 +30,7 @@ function MetricsBar({
 					<MetricCard>
 						<CardHeader>
 							<CardLabel>בעבודה</CardLabel>
-							<StatusTag status="in_progress" />
+							{/* <StatusTag status="in_progress" /> */}
 						</CardHeader>
 						<CardNumber>{inProgressCount}</CardNumber>
 					</MetricCard>
@@ -37,7 +38,7 @@ function MetricsBar({
 					<MetricCard>
 						<CardHeader>
 							<CardLabel>טרם בוצעו</CardLabel>
-							<StatusTag status="not_started" />
+							{/* <StatusTag status="not_started" /> */}
 						</CardHeader>
 						<CardNumber>{notStartedCount}</CardNumber>
 					</MetricCard>

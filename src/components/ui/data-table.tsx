@@ -49,7 +49,8 @@ export function DataTable<TData>({
   columns,
   data,
   onRowClick,
-  onRowDoubleClick,
+  // TODO - maybe implement?
+  // onRowDoubleClick,
   rowSelection,
   onRowSelectionChange,
   columnFilters,

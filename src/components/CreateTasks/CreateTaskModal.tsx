@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, X } from "lucide-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 import { useRef, useState } from "react"
 import { DeadlineType, type SourceDto } from "src/api/model"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { CancelButton } from "../shared/CancelButton"
 import FlagIcon from "../shared/FlagIcon"
@@ -41,6 +42,7 @@ interface CreateTaskModalProps {
 }
 
 function CreateTaskModal({ onClose }: CreateTaskModalProps) {
+  const { workspace: { id: workspaceId } } = useWorkspace()
   const saveTasks = useSaveTasks()
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false)
 
@@ -59,24 +61,15 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
       assigneeDetails: {},
       linkedSource: null,
     } as FormState,
-    onSubmit: ({ value }) => {
+    onSubmit: ({ value: { selectedAssignees, ...values } }) => {
       saveTasks(
         [
           {
-            title: value.title,
-            assigneeIds: value.selectedAssignees,
-            assigneeDetails: value.assigneeDetails,
-            deadlineType: value.deadlineType,
-            dueDate: value.dueDate,
-            flagged: value.flagged,
-            notes: value.notes,
-            tags: value.tags,
+            workspaceId,
+            assigneeIds: selectedAssignees,
+            ...values
           },
         ],
-        {
-          sourceId: value.sourceId ?? undefined,
-          issuedAt: value.sourceDate ?? undefined,
-        },
       )
       onClose()
     },

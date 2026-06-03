@@ -12,9 +12,11 @@ export interface UpdateTaskDto {
 	description?: string
 	flagged?: boolean
 	deadlineType?: DeadlineType
-	dueDate?: Date
+	/** @nullable */
+	dueDate?: Date | null
 	notes?: string
 	assigneeIds?: number[]
 	tags?: string[]
-	sourceId?: number
+	/** @nullable */
+	sourceId?: number | null
 }

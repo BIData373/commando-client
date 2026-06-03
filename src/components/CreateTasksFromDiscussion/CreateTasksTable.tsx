@@ -1,38 +1,42 @@
 import styled from "@emotion/styled"
 import { useRef, useState } from "react"
-import { type AssigneeDto, DeadlineType } from "src/api/model"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import { DeadlineType } from "src/api/model"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { DataTable } from "../ui/data-table"
 import { DATA_CELL_ACTIVE_KEY } from "./DeadlineCell"
 import TaskAssigneeExpansion from "./TaskAssigneeExpansion"
-import columns, { type TaskTableMeta } from "./TasksColumns"
+import columns, { type NewTaskRow, type TaskTableMeta } from "./TasksColumns"
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 interface CreateTasksTableProps {
-  onSave: (tasks: TaskRow[]) => void
+  onSave: (tasks: NewTaskRow[]) => void
   onBack: () => void
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
+  const { workspace: { id: workspaceId } } = useWorkspace()
   const nextRowId = useRef(1)
 
-  function createEmptyRow(): TaskRow {
-    // TODO - fix this
+  function createEmptyRow(): NewTaskRow {
+    const id = nextRowId.current++
     return {
-      id: nextRowId.current++,
+      workspaceId,
+      id,
+      rowKey: String(id),
       title: "",
       deadlineType: DeadlineType.IMMEDIATE,
       dueDate: new Date(),
-      assignee: {} as AssigneeDto,
+      assigneeIds: [],
+      assigneeDetails: {},
       notes: "",
-      flagged: false
+      flagged: false,
     }
   }
 
-  const [rows, setRows] = useState<TaskRow[]>([createEmptyRow()])
+  const [rows, setRows] = useState<NewTaskRow[]>([createEmptyRow()])
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set())
 
   function removeExpandedRow(id: number) {
@@ -43,7 +47,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
     })
   }
 
-  function updateRow(id: number, updates: Partial<TaskRow>) {
+  function updateRow(id: number, updates: Partial<NewTaskRow>) {
     setRows((prev) => {
       const next = prev.map((r) => (r.id === id ? { ...r, ...updates } : r))
       const last = next[next.length - 1]
@@ -107,9 +111,8 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
           meta={meta}
           containerClassName="overflow-x-hidden"
           expansionColSpan={columns.length - 1}
-          renderRowExpansion={(row) => {
-            console.log(row.original)
-            return row.original.assigneeStatuses.length > 1 &&
+          renderRowExpansion={(row) => (
+            row.original.assigneeIds.length > 1 &&
               expandedRows.has(row.original.id) ? (
               <TaskAssigneeExpansion
                 row={row.original}
@@ -117,8 +120,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
                 onCollapse={() => toggleRowExpansion(row.original.id)}
               />
             ) : null
-          }
-          }
+          )}
         />
       </TableOuterContainer>
 

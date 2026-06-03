@@ -365,7 +365,7 @@ function useTaskColumns({
     },
     discussionName: {
       id: "discussionName",
-      accessorFn: (row) => row.source.name,
+      accessorFn: (row) => row.source?.name,
       header: ({ column }) => (
         <ColumnHeaderWithActions
           label={COLUMN_LABELS.discussionName}
