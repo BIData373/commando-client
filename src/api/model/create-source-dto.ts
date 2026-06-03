@@ -9,7 +9,9 @@
 export interface CreateSourceDto {
 	workspaceId: number
 	name: string
-	date?: Date
+	/** @nullable */
+	date?: Date | null
 	tags?: string[]
-	attachment?: Blob
+	/** @nullable */
+	attachment?: Blob | null
 }
