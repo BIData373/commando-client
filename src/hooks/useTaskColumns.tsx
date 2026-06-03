@@ -12,6 +12,7 @@ import DeadlineTag, {
 } from "../components/shared/DeadlineTag"
 import FlagIcon from "../components/shared/FlagIcon"
 import HighlightMatch from "../components/shared/HighlightMatch"
+import { StatusTag } from "../components/shared/StatusTag"
 import { AssigneeCell } from "../components/Tasks/AssigneeCell"
 import { ColumnHeaderWithActions } from "../components/Tasks/ColumnHeaderWithActions"
 import { RowActionsMenu } from "../components/Tasks/RowActionsMenu"
@@ -87,6 +88,7 @@ interface UseTaskColumnsOptions {
   visibleColumns: TaskColumn[]
   searchQuery: string
   filterOptionsMap: Record<string, FilterOption[]>
+  statusReadOnly?: boolean
   selectMode?: SelectModeConfig
   actions?: ActionsConfig
 }
@@ -101,6 +103,7 @@ function useTaskColumns({
   visibleColumns,
   searchQuery,
   filterOptionsMap,
+  statusReadOnly = false,
   selectMode,
   actions,
 }: UseTaskColumnsOptions): UseTaskColumnsReturn {
@@ -250,14 +253,17 @@ function useTaskColumns({
         row: {
           original: { id, status, assignee },
         },
-      }) => (
-        <StatusCell
-          status={status}
-          taskId={id}
-          assigneeId={assignee.id}
-          onUpdate={onUpdateStatus}
-        />
-      ),
+      }) =>
+        statusReadOnly ? (
+          <StatusTag status={status} />
+        ) : (
+          <StatusCell
+            status={status}
+            taskId={id}
+            assigneeId={assignee.id}
+            onUpdate={onUpdateStatus}
+          />
+        ),
     },
     assigneeStatuses: {
       id: "assigneeStatuses",

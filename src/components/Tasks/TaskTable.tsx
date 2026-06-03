@@ -27,6 +27,7 @@ interface TaskTableProps {
 	showHeader?: boolean;
 	statusFilter?: WorkspaceStatusType[];
 	deadlineTypeFilter?: DeadlineType[];
+	statusReadOnly?: boolean;
 	onFiltersChange?: (
 		statusFilter: WorkspaceStatusType[],
 		deadlineTypeFilter: DeadlineType[],
@@ -42,8 +43,11 @@ function TaskTable({
 	showHeader = true,
 	statusFilter = [],
 	deadlineTypeFilter = [],
+	statusReadOnly = false,
 	onFiltersChange,
 }: TaskTableProps) {
+
+  console.log(statusReadOnly)
 	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters();
 	const queryClient = useQueryClient();
 
@@ -156,6 +160,7 @@ function TaskTable({
 		visibleColumns,
 		searchQuery,
 		filterOptionsMap,
+		statusReadOnly,
 		selectMode: {
 			enabled: selectMode,
 			tasks,
