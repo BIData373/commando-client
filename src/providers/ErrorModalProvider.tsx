@@ -27,5 +27,9 @@ export function ErrorModalProvider({ children }: ErrorModalProviderProps) {
 }
 
 export function useErrorModal() {
-  return useContext(ErrorModalContext);
+  const context = useContext(ErrorModalContext)
+  if (!context) {
+    throw new Error("useErrorModal must be used inside a ErrorModalProvider")
+  }
+  return context
 }
