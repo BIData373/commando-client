@@ -14,6 +14,7 @@ import FocusedInstructions from "./FocusedInstructions"
 import RecentlyCompleted from "./RecentlyCompleted"
 import StatusCard from "./StatusCard"
 import SystemDistribution from "./SystemDistribution"
+import { getDashboardFilterDataTypeKey, getDashboardFilterRangeKey } from "src/utils/filter-keys-utils"
 
 export function DashboardContent() {
 	const {
@@ -22,15 +23,13 @@ export function DashboardContent() {
 	const { urlName } = useParams({ from: "/workspace/$urlName" })
 	const navigate = useNavigate()
 
-	const filterKey = `dashboard-filter-${urlName}`
-
 	const [dataType, setDataType] = useLocalStorage<DATE_TYPE>({
-		key: `${filterKey}-type`,
+		key: getDashboardFilterDataTypeKey(urlName),
 		defaultValue: DATE_TYPE.CREATION_DATE,
 	})
 
 	const [persistedRange, setPersistedRange] = useLocalStorage<DateRange | undefined>({
-		key: `${filterKey}-range`,
+		key: getDashboardFilterRangeKey(urlName),
 		defaultValue: undefined,
 	})
 
