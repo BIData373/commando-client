@@ -2,7 +2,7 @@ import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import { useNavigate, useParams } from "@tanstack/react-router"
 import { MessageCircle } from "lucide-react"
-import { PermissionDtoType } from "src/api/model"
+import { PermissionType } from "src/api/model"
 import { useListPermissions } from "src/api/permission/permission"
 import { useListWorkspaces } from "src/api/workspace/workspace"
 import { useErrorModal } from "src/providers/ErrorModalProvider"
@@ -51,7 +51,7 @@ export function ErrorModal() {
 
 
   const admins = usersPermissions.filter(
-    ({ type }) => type === PermissionDtoType.MANAGER,
+    ({ type }) => type === PermissionType.MANAGER,
   )
 
   function handleClose() {

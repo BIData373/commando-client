@@ -1,7 +1,6 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import { useState } from "react"
-import { StatusTag } from "../shared/StatusTag"
 
 interface MetricsBarProps {
 	totalCount: number
