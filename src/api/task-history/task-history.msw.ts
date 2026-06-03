@@ -8,8 +8,8 @@
 import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
-
 import type { TaskHistoryDto } from "../model"
+import { TaskHistoryAction } from "../model"
 
 export const getListTaskHistoryResponseMock = (): TaskHistoryDto[] =>
 	Array.from(
@@ -17,12 +17,7 @@ export const getListTaskHistoryResponseMock = (): TaskHistoryDto[] =>
 		(_, i) => i + 1,
 	).map(() => ({
 		id: faker.number.float({ fractionDigits: 2 }),
-		action: faker.helpers.arrayElement([
-			"CREATE",
-			"UPDATE",
-			"DUPLICATE",
-			"DELETE",
-		] as const),
+		action: faker.helpers.arrayElement(Object.values(TaskHistoryAction)),
 		field: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		value: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([

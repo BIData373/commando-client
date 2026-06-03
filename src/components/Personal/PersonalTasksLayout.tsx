@@ -5,7 +5,7 @@ import { useState } from "react"
 import {
   type TaskWithWorkspaceDto,
   type WorkspaceDto,
-  WorkspaceStatusDtoType,
+  WorkspaceStatusType,
 } from "src/api/model"
 import {
   getListPersonalTasksQueryKey,
@@ -22,10 +22,10 @@ import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { NoResultsFound } from "../Tasks/NoResultsFound"
 import { TaskFilters } from "../Tasks/TaskFilters"
-import type { View } from "../Tasks/TasksLayout"
+import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
 interface PersonalTasksLayoutProps {
-	view: View
+	view: TasksView
 }
 
 import { TaskTable } from "../Tasks/TaskTable"
@@ -91,10 +91,10 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 
 	const totalCount = taskRows.length
 	const notStartedCount = taskRows.filter(
-		(t) => t.status.type === WorkspaceStatusDtoType.NOT_STARTED,
+		(t) => t.status.type === WorkspaceStatusType.NOT_STARTED,
 	).length
 	const inProgressCount = taskRows.filter(
-		(t) => t.status.type === WorkspaceStatusDtoType.IN_PROGRESS,
+		(t) => t.status.type === WorkspaceStatusType.IN_PROGRESS,
 	).length
 	const weeklyNew = taskRows.filter((t) =>
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
@@ -122,7 +122,7 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 		// placeholder for export
 	}
 
-	function handleViewChange(newView: View) {
+	function handleViewChange(newView: TasksView) {
 		return newView
 		// placeholder for view change
 	}
@@ -131,14 +131,14 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 		() => (
 			<SegmentedControl>
 				<SegmentedItem
-					$selected={view === "TABLE"}
-					onClick={() => handleViewChange("TABLE")}
+					$selected={view === TasksView.TABLE}
+					onClick={() => handleViewChange(TasksView.TABLE)}
 				>
 					טבלה
 				</SegmentedItem>
 				<SegmentedItem
-					$selected={view === "CARDS"}
-					onClick={() => handleViewChange("CARDS")}
+					$selected={view === TasksView.CARDS}
+					onClick={() => handleViewChange(TasksView.CARDS)}
 				>
 					כרטיסיות
 				</SegmentedItem>

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { type AssigneeStatusDto, PermissionDtoType } from "src/api/model"
+import { type AssigneeStatusDto, PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -21,7 +21,7 @@ export const AssigneeSection = ({
 
 	const { data: permission } = useGetMyPermission({ workspaceId })
 
-	const isAdmin = permission?.type === PermissionDtoType.MANAGER
+	const isAdmin = permission?.type === PermissionType.MANAGER
 
 	const currentUserAssigneStatuses = isAdmin
 		? assigneeStatuses

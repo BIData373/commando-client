@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router"
 import type { TaskColumn } from "src/hooks/useTaskColumns"
 import PersonalTasksLayout from "../components/Personal/PersonalTasksLayout"
-import type { View } from "../components/Tasks/TasksLayout"
+import { TasksView } from "../components/Tasks/TasksLayout"
 import { TasksFiltersProvider } from "../providers/TasksFiltersProvider"
 
 export const Route = createFileRoute("/personal")({
   component: PersonalPage,
-  validateSearch: (search: Record<string, unknown>): { view: View } => ({
-    view: search.view === "CARDS" ? "CARDS" : "TABLE",
+  validateSearch: (search: Record<string, unknown>): { view: TasksView } => ({
+    view: search.view === TasksView.CARDS ? TasksView.CARDS : TasksView.TABLE,
   }),
   staticData: {
     header: {
