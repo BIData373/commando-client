@@ -2,7 +2,6 @@ import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { UserPlus } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { toast } from "sonner"
 import {
 	useCreateAssignee,
 	useListAssignees,
@@ -102,8 +101,7 @@ export function AssigneeDialog({
 				users: value.users,
 			}
 
-			try {
-				if (assignee) {
+			if (assignee) {
 					await updateAssignee(
 						{
 							pathParams: { id: assignee.id },
@@ -125,9 +123,6 @@ export function AssigneeDialog({
 				}
 
 				onOpenChange(false)
-			} catch {
-				toast.error("אירעה שגיאה, נסה שנית")
-			}
 		},
 	})
 
