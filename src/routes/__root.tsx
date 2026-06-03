@@ -5,7 +5,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { StrictMode } from "react";
 import { ErrorModal } from "../components/ErrorModal";
 import Header from "../components/Header";
-import { ErrorModalProvider, useErrorModal } from "../providers/ErrorModalProvider";
+import { useErrorModal } from "../providers/ErrorModalProvider";
 import { TitleBarProvider } from "../providers/TitleBarProvider";
 import "../styles.css";
 import { ErrorCode, isErrorCode } from "src/utils/error-utils";
@@ -45,28 +45,26 @@ export const Route = createRootRoute({
 function RootComponent() {
 	return (
 		<StrictMode>
-			<ErrorModalProvider>
-				<TitleBarProvider>
-					<AppShell>
-						<Header />
-						<PageContainer>
-							<Outlet />
-						</PageContainer>
-					</AppShell>
-				</TitleBarProvider>
-				<ErrorModal />
-				<TanStackDevtools
-					config={{
-						position: "bottom-right",
-					}}
-					plugins={[
-						{
-							name: "TanStack Router",
-							render: <TanStackRouterDevtoolsPanel />,
-						},
-					]}
-				/>
-			</ErrorModalProvider>
+			<TitleBarProvider>
+				<AppShell>
+					<Header />
+					<PageContainer>
+						<Outlet />
+					</PageContainer>
+				</AppShell>
+			</TitleBarProvider>
+			<ErrorModal />
+			<TanStackDevtools
+				config={{
+					position: "bottom-right",
+				}}
+				plugins={[
+					{
+						name: "TanStack Router",
+						render: <TanStackRouterDevtoolsPanel />,
+					},
+				]}
+			/>
 		</StrictMode>
 	)
 }

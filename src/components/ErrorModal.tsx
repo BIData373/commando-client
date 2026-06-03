@@ -4,8 +4,8 @@ import { useNavigate, useParams } from "@tanstack/react-router"
 import { MessageCircle } from "lucide-react"
 import { PermissionDtoType } from "src/api/model"
 import { useListPermissions } from "src/api/permission/permission"
+import { useListWorkspaces } from "src/api/workspace/workspace"
 import { useErrorModal } from "src/providers/ErrorModalProvider"
-import { useWorkspaceSafe } from "src/providers/WorkspaceProvider"
 import { CHAT_LINK } from "src/utils/env-utils"
 import { ErrorCode, isErrorCode } from "src/utils/error-utils"
 
@@ -40,19 +40,15 @@ export function ErrorModal() {
 
   const error = useErrorModal()
 
-  const { urlName } = useParams({ strict: false })
+  const { urlName = "" } = useParams({ from: "/workspace/$urlName", shouldThrow: false }) || {}
+  const { data } = useListWorkspaces({ urlName })
+  const workspace = data?.[0]
+  const { data: usersPermissions = [] } =
+    useListPermissions(
+      { workspaceId: workspace?.id ?? -1 },
+      { query: { enabled: error?.errorCode === ErrorCode.UNAUTHORIZED && !!urlName } },
+    )
 
-  const workspaceContext = useWorkspaceSafe()
-  const workspaceId = workspaceContext?.workspace.id ?? -1
-
-  const { data: usersPermissions = [] } = useListPermissions(
-    { workspaceId },
-    {
-      query: {
-        enabled: error?.errorCode === ErrorCode.UNAUTHORIZED && !!urlName,
-      },
-    },
-  )
 
   const admins = usersPermissions.filter(
     ({ type }) => type === PermissionDtoType.MANAGER,
@@ -94,17 +90,21 @@ export function ErrorModal() {
                   <AdminContactsList>
                     {admins.map(({ user }) => (
                       <AdminContactRow key={user.id}>
-                        <AdminDot />
-                        <AdminContactLink onClick={navigateToChat}>
-                          {user.info?.name}
-                          {user.info?.upn}
-                        </AdminContactLink>
-                        <MessageCircle size={15} />
+                        <AdminContainer>
+                          <AdminDot />
+                          <AdminContactLink onClick={navigateToChat}>
+                            {user.info?.name}
+                            {user.info?.upn}
+                          </AdminContactLink>
+                        </AdminContainer>
+                        <ChatMessageContainer>
+                          <MessageCircle size={16} />
+                          <IconText>צ</IconText>
+                        </ChatMessageContainer>
                       </AdminContactRow>
                     ))}
                   </AdminContactsList>
                 </AdminContactsContent>
-                <AdminSeparator />
               </AdminContactsBox>
             )}
             <Actions>
@@ -266,22 +266,60 @@ const AdminContactsTitle = styled.p`
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-2);
-  text-align: end;
+  text-align: start;
   margin: 0;
+`
+
+const ChatMessageContainer = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 3px var(--active-color); 
+  border-radius: 50%;
+
+  &:hover {
+    cursor: pointer;
+  }
+`
+
+const IconText = styled.span`
+  position: absolute;
 `
 
 const AdminContactsList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  width: 325px;
+  max-height: 90px;
+  padding: 4px;
+  align-items: flex-start;
+  min-width: 0;
+  overflow-y: auto;
+  direction: ltr;
+`
+
+const AdminContainer = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
 `
 
 const AdminContactRow = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
-  justify-content: flex-end;
-`
+  justify-content: space-between;
+  min-width: 0;
+  align-self: stretch;
+  direction: rtl;
+  `
 
 const AdminDot = styled.span`
   display: inline-block;
@@ -290,23 +328,17 @@ const AdminDot = styled.span`
   border-radius: 50%;
   background: var(--card-border);
   flex-shrink: 0;
-`
+  `
 
 const AdminContactLink = styled.button`
   color: var(--active-color);
   font-size: 14px;
   line-height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
-`
-
-const AdminSeparator = styled.div`
-  width: 2px;
-  height: 22px;
-  background: var(--card-border);
-  border-radius: 25px;
-  align-self: center;
-  flex-shrink: 0;
 `
