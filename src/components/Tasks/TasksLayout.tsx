@@ -2,17 +2,17 @@ import styled from "@emotion/styled";
 import { Outlet, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
-import type { WorkspaceStatusDtoType } from "src/api/model";
+import type { DeadlineType, WorkspaceStatusType } from "src/api/model";
 import { getListTasksQueryKey, useListTasks } from "src/api/task/task";
 import { toTaskRows } from "src/functions/tasks-table";
 import { useWorkspace } from "src/providers/WorkspaceProvider";
-import type { TasksSearchSchemaType } from "src/routes/workspace/$urlName/tasks";
+import { type TasksSearchSchemaType, TasksView } from "src/routes/workspace/$urlName/tasks";
+import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new";
 import type { QuickFilter } from "src/utils/filter-utils";
 import { exportTasksToExcel } from "../../functions/export-excel";
 import { applyAllFilters } from "../../functions/filter-utils";
 import { useTasksFilters } from "../../providers/TasksFiltersProvider";
 import { useTitleBar } from "../../providers/TitleBarProvider";
-import type { DeadlineType } from "../shared/DeadlineTag";
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown";
 import {
   DropdownMenu,
@@ -25,14 +25,13 @@ import { NoResultsFound } from "./NoResultsFound";
 import { TaskCardGrid } from "./TaskCardGrid";
 import { TaskFilters } from "./TaskFilters";
 import { TaskTable } from "./TaskTable";
-
-export type View = "TABLE" | "CARDS";
+export { TasksView };
 
 export interface TasksLayoutProps {
-  view: View;
+  view: TasksView;
   urlName: string;
   tabFilter: QuickFilter[];
-  statusFilter: WorkspaceStatusDtoType[];
+  statusFilter: WorkspaceStatusType[];
   deadlineTypeFilter: DeadlineType[];
 }
 
@@ -84,18 +83,21 @@ function TasksLayout({
     navigate({
       to: "/workspace/$urlName/tasks",
       params: { urlName },
-      search: (prev) => ({
-        ...prev,
+      search: {
+        view,
+        tabFilter,
+        statusFilter,
+        deadlineTypeFilter,
         ...taskFilter,
-      }),
+      },
     });
   }
 
-  function navigateWithMode(mode: "single" | "discussion") {
+  function navigateWithMode(mode: NewTaskMode) {
     navigate({
       to: "/workspace/$urlName/tasks/new",
       params: { urlName },
-      search: (prev) => ({ view, mode, ...prev }),
+      search: { view, mode },
     });
   }
 
@@ -103,16 +105,16 @@ function TasksLayout({
     navigate({
       to: "/workspace/$urlName/tasks/$taskId",
       params: { urlName, taskId: String(taskId) },
-      search: (prev) => ({ view, ...prev }),
+      search: { view },
     });
   }
 
   function handleCreateTask() {
-    navigateWithMode("single");
+    navigateWithMode(NewTaskMode.SINGLE);
   }
 
   function handleCreateTaskFromDiscussion() {
-    navigateWithMode("discussion");
+    navigateWithMode(NewTaskMode.DISCUSSION);
   }
 
   function handleToggleTabFilter(filter: QuickFilter) {
@@ -132,7 +134,7 @@ function TasksLayout({
   }
 
   function handleColumnFiltersChange(
-    newStatusFilter: WorkspaceStatusDtoType[],
+    newStatusFilter: WorkspaceStatusType[],
     newDeadlineTypeFilter: DeadlineType[],
   ) {
     navigateToTasks({
@@ -145,7 +147,7 @@ function TasksLayout({
     exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns });
   }
 
-  function handleViewChange(newView: View) {
+  function handleViewChange(newView: TasksView) {
     navigateToTasks({ view: newView });
   }
 
@@ -172,14 +174,14 @@ function TasksLayout({
         <SectionDivider />
         <SegmentedControl>
           <SegmentedItem
-            $selected={view === "CARDS"}
-            onClick={() => handleViewChange("CARDS")}
+            $selected={view === TasksView.CARDS}
+            onClick={() => handleViewChange(TasksView.CARDS)}
           >
             כרטיסיות
           </SegmentedItem>
           <SegmentedItem
-            $selected={view === "TABLE"}
-            onClick={() => handleViewChange("TABLE")}
+            $selected={view === TasksView.TABLE}
+            onClick={() => handleViewChange(TasksView.TABLE)}
           >
             טבלה
           </SegmentedItem>
@@ -210,23 +212,25 @@ function TasksLayout({
           }
         />
 
-        {tasks.length === 0 ? (
-          <NoResultsFound variant="empty" />
-        ) : searchQuery && filteredTasks.length === 0 ? (
-          <NoResultsFound variant="no-search-results" />
-        ) : view === "TABLE" ? (
-          <TaskTable
-            queryKey={tasksQueryKey}
-            tasks={filteredTasks}
-            onEdit={handleEdit}
-            statusFilter={statusFilter}
-            deadlineTypeFilter={deadlineTypeFilter}
-            onFiltersChange={handleColumnFiltersChange}
-            onDoubleClick={handleEdit}
-          />
-        ) : (
-          <TaskCardGrid tasks={filteredTasks} />
-        )}
+        <ContentArea>
+          {tasks.length === 0 ? (
+            <NoResultsFound variant="empty" />
+          ) : searchQuery && filteredTasks.length === 0 ? (
+            <NoResultsFound variant="no-search-results" />
+          ) : view === TasksView.TABLE ? (
+            <TaskTable
+              queryKey={tasksQueryKey}
+              tasks={filteredTasks}
+              onEdit={handleEdit}
+              statusFilter={statusFilter}
+              deadlineTypeFilter={deadlineTypeFilter}
+              onFiltersChange={handleColumnFiltersChange}
+              onDoubleClick={handleEdit}
+            />
+          ) : (
+            <TaskCardGrid tasks={filteredTasks} />
+          )}
+        </ContentArea>
       </TasksRoot>
       <Outlet />
     </TooltipProvider>
@@ -239,9 +243,19 @@ export default TasksLayout;
 
 const TasksRoot = styled.div`
   padding-block: 24px;
+  height: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 28px;
+  overflow: hidden;
+`;
+
+const ContentArea = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  direction: ltr;
 `;
 
 // ─── Title Bar Actions ───────────────────────────────────────────────────────

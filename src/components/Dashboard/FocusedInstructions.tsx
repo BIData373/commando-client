@@ -1,177 +1,177 @@
 import styled from "@emotion/styled"
 import type { QueryKey } from "@tanstack/react-query"
 import {
-	flexRender,
-	getCoreRowModel,
-	useReactTable,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
 } from "@tanstack/react-table"
 import { useMemo, useState } from "react"
+import { DeadlineType } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filter-utils"
 import searchInstruction from "../../assets/icons/searchInstruction.svg"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
-import { DeadlineType } from "../shared/DeadlineTag"
 import { EmptyCardState } from "./EmptyCardState"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface TabConfig {
-	id: FocusedTab
-	label: string
-	count: number
-	weekDelta: number
+  id: FocusedTab
+  label: string
+  count: number
+  weekDelta: number
 }
 
 interface EmptyMessage {
-	title: string
-	description: string
+  title: string
+  description: string
 }
 
 interface IFocusedInstruction {
-	queryKey: QueryKey
-	urlName: string
-	tasks: TaskRow[]
+  queryKey: QueryKey
+  urlName: string
+  tasks: TaskRow[]
 }
 
 const TAB_LABELS: Pick<TabConfig, "id" | "label" | "weekDelta">[] = [
-	{ id: FocusedTab.FLAGGED, label: "הנחיות חשובות", weekDelta: 0 },
-	{ id: FocusedTab.APPROACHING, label: "הנחיות לביצוע מידיות", weekDelta: 0 },
-	{ id: FocusedTab.OVERDUE, label: 'חריגות מתג"ב', weekDelta: 0 },
+  { id: FocusedTab.FLAGGED, label: "הנחיות חשובות", weekDelta: 0 },
+  { id: FocusedTab.APPROACHING, label: "הנחיות לביצוע מידיות", weekDelta: 0 },
+  { id: FocusedTab.OVERDUE, label: 'חריגות מתג"ב', weekDelta: 0 },
 ]
 
 const EMPTY_MESSAGES: Record<FocusedTab, EmptyMessage> = {
-	[FocusedTab.FLAGGED]: {
-		title: "לא נמצאו הנחיות חשובות",
-		description: "לאחר שהנחיות יוגדרו כחשובות,\nההנחיות האחרונות יופיעו כאן",
-	},
-	[FocusedTab.APPROACHING]: {
-		title: "לא נמצאו הנחיות לביצוע מידיות",
-		description: "הנחיות לביצוע מידיות יופיעו כאן",
-	},
-	[FocusedTab.OVERDUE]: {
-		title: 'לא נמצאו חריגות מתג"ב',
-		description: 'חריגות מתג"ב יופיעו כאן',
-	},
+  [FocusedTab.FLAGGED]: {
+    title: "לא נמצאו הנחיות חשובות",
+    description: "לאחר שהנחיות יוגדרו כחשובות,\nההנחיות האחרונות יופיעו כאן",
+  },
+  [FocusedTab.APPROACHING]: {
+    title: "לא נמצאו הנחיות לביצוע מידיות",
+    description: "הנחיות לביצוע מידיות יופיעו כאן",
+  },
+  [FocusedTab.OVERDUE]: {
+    title: 'לא נמצאו חריגות מתג"ב',
+    description: 'חריגות מתג"ב יופיעו כאן',
+  },
 }
 
 const coreRowModel = getCoreRowModel()
 
 function getFilteredTasks(tab: FocusedTab, tasks: TaskRow[]): TaskRow[] {
-	switch (tab) {
-		case FocusedTab.FLAGGED:
-			return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED))
-		case FocusedTab.APPROACHING:
-			return tasks.filter((t) => t.deadlineType === "immediate")
-		case FocusedTab.OVERDUE:
-			return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
-	}
+  switch (tab) {
+    case FocusedTab.FLAGGED:
+      return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED))
+    case FocusedTab.APPROACHING:
+      return tasks.filter((t) => t.deadlineType === DeadlineType.IMMEDIATE)
+    case FocusedTab.OVERDUE:
+      return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
+  }
 }
 
 export default function FocusedInstructions({
-	queryKey,
-	urlName,
-	tasks,
+  queryKey,
+  urlName,
+  tasks,
 }: IFocusedInstruction) {
-	const [activeTab, setActiveTab] = useState<FocusedTab>(FocusedTab.FLAGGED)
+  const [activeTab, setActiveTab] = useState<FocusedTab>(FocusedTab.FLAGGED)
 
-	function handleTabClick(tabId: FocusedTab) {
-		setActiveTab(tabId)
-	}
+  function handleTabClick(tabId: FocusedTab) {
+    setActiveTab(tabId)
+  }
 
-	const filteredTasks = useMemo(
-		() => getFilteredTasks(activeTab, tasks),
-		[activeTab, tasks],
-	)
+  const filteredTasks = useMemo(
+    () => getFilteredTasks(activeTab, tasks),
+    [activeTab, tasks],
+  )
 
-	const tabs: TabConfig[] = TAB_LABELS.map((tab) => ({
-		...tab,
-		count:
-			tab.id === FocusedTab.FLAGGED
-				? tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED)).length
-				: tab.id === FocusedTab.APPROACHING
-					? tasks.filter((t) => t.deadlineType === "immediate").length
-					: tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
-							.length,
-	}))
+  const tabs: TabConfig[] = TAB_LABELS.map((tab) => ({
+    ...tab,
+    count:
+      tab.id === FocusedTab.FLAGGED
+        ? tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED)).length
+        : tab.id === FocusedTab.APPROACHING
+          ? tasks.filter((t) => t.deadlineType === DeadlineType.IMMEDIATE).length
+          : tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
+            .length,
+  }))
 
-	const emptyMsg = EMPTY_MESSAGES[activeTab]
+  const emptyMsg = EMPTY_MESSAGES[activeTab]
 
-	const { columns } = useTaskColumns({
-		queryKey,
-		visibleColumns: ["title", "status", "assigneeStatuses", "deadlineType"],
-		searchQuery: "",
-		filterOptionsMap: {},
-	})
+  const { columns } = useTaskColumns({
+    queryKey,
+    visibleColumns: ["title", "status", "assigneeStatuses", "deadlineType"],
+    searchQuery: "",
+    filterOptionsMap: {},
+  })
 
-	const table = useReactTable({
-		data: filteredTasks,
-		columns,
-		getCoreRowModel: coreRowModel,
-	})
+  const table = useReactTable({
+    data: filteredTasks,
+    columns,
+    getCoreRowModel: coreRowModel,
+  })
 
-	return (
-		<Section>
-			<SectionTitle>הנחיות במיקוד</SectionTitle>
-			<TabsWrapper>
-				<TabsHeader>
-					{tabs.map((tab) => (
-						<TabItem
-							key={tab.id}
-							$active={tab.id === activeTab}
-							onClick={() => handleTabClick(tab.id)}
-						>
-							<TabTitle $active={tab.id === activeTab}>{tab.label}</TabTitle>
-							<TabBottom>
-								<TabCount $active={tab.id === activeTab}>{tab.count}</TabCount>
-							</TabBottom>
-						</TabItem>
-					))}
-				</TabsHeader>
-				<ContentPanel $hasContent={filteredTasks.length > 0}>
-					{filteredTasks.length === 0 ? (
-						<EmptyCardState
-							imgSrc={searchInstruction}
-							title={emptyMsg.title}
-							description={emptyMsg.description}
-						/>
-					) : (
-						<TaskList>
-							{table.getRowModel().rows.map((row) => (
-								<TaskTableRow key={row.id}>
-									{row.getVisibleCells().map((cell) =>
-										cell.column.id === "title" ? (
-											<TitleCellWrapper key={cell.id}>
-												{flexRender(
-													cell.column.columnDef.cell,
-													cell.getContext(),
-												)}
-											</TitleCellWrapper>
-										) : (
-											<FixedCell key={cell.id} $width={cell.column.getSize()}>
-												{flexRender(
-													cell.column.columnDef.cell,
-													cell.getContext(),
-												)}
-											</FixedCell>
-										),
-									)}
-								</TaskTableRow>
-							))}
-						</TaskList>
-					)}
-				</ContentPanel>
-			</TabsWrapper>
-			<ViewMoreInstructions
-				urlName={urlName}
-				tabFilter={activeTab === FocusedTab.APPROACHING ? undefined : activeTab}
-				deadlineTypeFilter={
-					activeTab === FocusedTab.APPROACHING
-						? DeadlineType.Immediate
-						: undefined
-				}
-			/>
-		</Section>
-	)
+  return (
+    <Section>
+      <SectionTitle>הנחיות במיקוד</SectionTitle>
+      <TabsWrapper>
+        <TabsHeader>
+          {tabs.map((tab) => (
+            <TabItem
+              key={tab.id}
+              $active={tab.id === activeTab}
+              onClick={() => handleTabClick(tab.id)}
+            >
+              <TabTitle $active={tab.id === activeTab}>{tab.label}</TabTitle>
+              <TabBottom>
+                <TabCount $active={tab.id === activeTab}>{tab.count}</TabCount>
+              </TabBottom>
+            </TabItem>
+          ))}
+        </TabsHeader>
+        <ContentPanel $hasContent={filteredTasks.length > 0}>
+          {filteredTasks.length === 0 ? (
+            <EmptyCardState
+              imgSrc={searchInstruction}
+              title={emptyMsg.title}
+              description={emptyMsg.description}
+            />
+          ) : (
+            <TaskList>
+              {table.getRowModel().rows.map((row) => (
+                <TaskTableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) =>
+                    cell.column.id === "title" ? (
+                      <TitleCellWrapper key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TitleCellWrapper>
+                    ) : (
+                      <FixedCell key={cell.id} $width={cell.column.getSize()}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </FixedCell>
+                    ),
+                  )}
+                </TaskTableRow>
+              ))}
+            </TaskList>
+          )}
+        </ContentPanel>
+      </TabsWrapper>
+      <ViewMoreInstructions
+        urlName={urlName}
+        tabFilter={activeTab === FocusedTab.APPROACHING ? undefined : activeTab}
+        deadlineTypeFilter={
+          activeTab === FocusedTab.APPROACHING
+            ? DeadlineType.IMMEDIATE
+            : undefined
+        }
+      />
+    </Section>
+  )
 }
 
 const Section = styled.div`
@@ -232,14 +232,14 @@ const TabTitle = styled.span<{ $active: boolean }>`
   font-size: 20px;
   font-weight: 400;
   ${({ $active }) =>
-		$active
-			? `
+    $active
+      ? `
       background: linear-gradient(150deg, var(--purple-start) 0%, var(--purple-end) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     `
-			: `color: var(--sea-ink);`}
+      : `color: var(--sea-ink);`}
 `
 
 const TabBottom = styled.div`
@@ -254,14 +254,14 @@ const TabCount = styled.span<{ $active: boolean }>`
   font-weight: 400;
   line-height: 1.2;
   ${({ $active }) =>
-		$active
-			? `
+    $active
+      ? `
       background: linear-gradient(122deg, var(--purple-start) 0%, var(--purple-end) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     `
-			: `color: var(--foreground);`}
+      : `color: var(--foreground);`}
 `
 
 const ContentPanel = styled.div<{ $hasContent: boolean }>`
@@ -275,14 +275,14 @@ const ContentPanel = styled.div<{ $hasContent: boolean }>`
   min-height: 310px;
   max-height: 310px;
   ${({ $hasContent }) =>
-		$hasContent
-			? `
+    $hasContent
+      ? `
       flex-direction: column;
       align-items: stretch;
       justify-content: flex-start;
       overflow: hidden;
     `
-			: `
+      : `
       align-items: center;
       justify-content: center;
     `}

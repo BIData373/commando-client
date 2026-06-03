@@ -20,8 +20,8 @@ export function DashboardContent() {
 	const { urlName } = useParams({ from: "/workspace/$urlName" })
 	const navigate = useNavigate()
 
-	const [dataType, setDataType] = useState(DATE_TYPE.CREATION_DATE)
-	const [range, setRange] = useState<DateRange | undefined>()
+	const [dataType, _setDataType] = useState(DATE_TYPE.CREATION_DATE)
+	const [range, _setRange] = useState<DateRange | undefined>()
 
 	const tasksQueryKey = getListTasksQueryKey({ workspaceId: id })
 	const { data: rawTasks = [] } = useListTasks({ workspaceId: id })
@@ -37,7 +37,7 @@ export function DashboardContent() {
 				case DATE_TYPE.EXPECTED_END:
 					return new Date(task.dueDate)
 				case DATE_TYPE.INSTRUCTION_DATE:
-					return setYear(subMonths(task.source.date, 1), year)
+					return setYear(subMonths(task.source!.date, 1), year)
 				case DATE_TYPE.UPDATING_DATE:
 					return new Date(task.updatedAt)
 				default:
