@@ -1,12 +1,12 @@
 import styled from "@emotion/styled"
-import type { PermissionDto, PermissionDtoType, UserDto } from "src/api/model"
+import type { PermissionDto, PermissionType, UserDto } from "src/api/model"
 import { TrashButton } from "../shared/TrashButton"
 import { DropdownPermission } from "./DropdownPermission"
 
 interface UserPermissionListProps {
 	permissions: PermissionDto[]
 	onDelete: (user: UserDto) => void
-	onTypeChange: (user: UserDto, type: PermissionDtoType) => void
+	onTypeChange: (user: UserDto, type: PermissionType) => void
 }
 
 export function UserPermissionList({

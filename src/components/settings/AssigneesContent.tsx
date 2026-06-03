@@ -62,7 +62,7 @@ export function AssigneesContent() {
 	}
 
 	return (
-		<>
+		<ContentRoot>
 			<AssigneeDialog
 				open={isCreateDialogOpen}
 				onOpenChange={setIsCreateDialogOpen}
@@ -113,12 +113,14 @@ export function AssigneesContent() {
 				</ToolbarRow>
 			</StyledContent>
 
-			<AssigneeCardGrid>
-				{filteredAssignees.map((assignee) => (
-					<AssigneeCard key={assignee.id} assignee={assignee} />
-				))}
-			</AssigneeCardGrid>
-		</>
+			<CardScroller>
+				<AssigneeCardGrid>
+					{filteredAssignees.map((assignee) => (
+						<AssigneeCard key={assignee.id} assignee={assignee} />
+					))}
+				</AssigneeCardGrid>
+			</CardScroller>
+		</ContentRoot>
 	)
 }
 
@@ -130,6 +132,8 @@ const SearchWrapper = styled.div`
 const ToolbarRow = styled.div`
   display: flex;
   align-items: center;
+  justify-content: start;
+  padding-bottom: 12px;
   margin-right: 12px;
   gap: 12px;
 `
@@ -177,11 +181,26 @@ const QuestionIcon = styled.button`
   cursor: pointer;
 `
 
+const ContentRoot = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+`
+
+const CardScroller = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  direction: ltr;
+`
+
 const AssigneeCardGrid = styled.div`
   padding: 20px 10px;
   display: flex;
   flex-wrap: wrap;
-  flex: 1;
   gap: 18px;
   direction: rtl;
 `

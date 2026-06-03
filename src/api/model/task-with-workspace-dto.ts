@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 import type { AssigneeStatusDto } from "./assignee-status-dto"
+import type { DeadlineType } from "./deadline-type"
 import type { SourceDto } from "./source-dto"
 import type { TagDto } from "./tag-dto"
 import type { WorkspaceDto } from "./workspace-dto"
@@ -24,13 +25,14 @@ export interface TaskWithWorkspaceDto {
 	/** @nullable */
 	description: string | null
 	flagged: boolean
-	deadlineType: string
+	deadlineType: DeadlineType
 	issuedAt: Date
 	dueDate: Date
 	/** @nullable */
 	notes: string | null
 	workspaceId: number
-	source: SourceDto
+	/** @nullable */
+	source: SourceDto | null
 	tags: TagDto[]
 	assigneeStatuses: AssigneeStatusDto[]
 	workspace: WorkspaceDto

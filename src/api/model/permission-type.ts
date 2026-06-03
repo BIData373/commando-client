@@ -6,10 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
-export type UpdatePermissionDtoType =
-	(typeof UpdatePermissionDtoType)[keyof typeof UpdatePermissionDtoType]
+export type PermissionType =
+	(typeof PermissionType)[keyof typeof PermissionType]
 
-export const UpdatePermissionDtoType = {
+export const PermissionType = {
 	VIEWER: "VIEWER",
 	MANAGER: "MANAGER",
 } as const
