@@ -6,10 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
-export type CreateWorkspaceStatusDtoType =
-	(typeof CreateWorkspaceStatusDtoType)[keyof typeof CreateWorkspaceStatusDtoType]
+export type WorkspaceStatusType =
+	(typeof WorkspaceStatusType)[keyof typeof WorkspaceStatusType]
 
-export const CreateWorkspaceStatusDtoType = {
+export const WorkspaceStatusType = {
 	NOT_STARTED: "NOT_STARTED",
 	IN_PROGRESS: "IN_PROGRESS",
 	COMPLETED: "COMPLETED",

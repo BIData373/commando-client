@@ -5,15 +5,19 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
+import type { DeadlineType } from "./deadline-type"
 
 export interface CreateTaskDto {
-	workspaceId: number
-	sourceId: number
 	title: string
 	description?: string
 	flagged?: boolean
-	deadlineType: string
-	issuedAt?: Date
-	dueDate: Date
+	deadlineType: DeadlineType
+	/** @nullable */
+	dueDate?: Date | null
 	notes?: string
+	assigneeIds?: number[]
+	tags?: string[]
+	workspaceId: number
+	/** @nullable */
+	sourceId?: number | null
 }

@@ -9,6 +9,8 @@ import { useErrorModal } from "../providers/ErrorModalProvider";
 import { TitleBarProvider } from "../providers/TitleBarProvider";
 import "../styles.css";
 import { ErrorCode, isErrorCode } from "src/utils/error-utils";
+import { Toaster } from "../components/ui/sonner"
+
 
 function NotFoundComponent() {
 	const error = useErrorModal()
@@ -25,7 +27,7 @@ interface RootErrorComponentProps {
 	error: Error
 }
 
-function RootErrorComponent({ error } : RootErrorComponentProps) {
+function RootErrorComponent({ error }: RootErrorComponentProps) {
 	const errorModal = useErrorModal()
 
 	const routeError = error as RouteError;
@@ -54,6 +56,7 @@ function RootComponent() {
 				</AppShell>
 			</TitleBarProvider>
 			<ErrorModal />
+			<Toaster />
 			<TanStackDevtools
 				config={{
 					position: "bottom-right",
