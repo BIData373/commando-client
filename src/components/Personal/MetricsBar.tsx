@@ -1,71 +1,70 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import { useState } from "react"
-import { StatusTag } from "../shared/StatusTag"
 
 interface MetricsBarProps {
-	totalCount: number
-	notStartedCount: number
-	inProgressCount: number
-	weeklyNew: number
+  totalCount: number
+  notStartedCount: number
+  inProgressCount: number
+  weeklyNew: number
 }
 
 function MetricsBar({
-	totalCount,
-	notStartedCount,
-	inProgressCount,
-	weeklyNew,
+  totalCount,
+  notStartedCount,
+  inProgressCount,
+  weeklyNew,
 }: MetricsBarProps) {
-	const [collapsed, setCollapsed] = useState(false)
+  const [open, setOpen] = useState(true)
 
-	function toggleCollapsed() {
-		setCollapsed((prev) => !prev)
-	}
+  function toggleOpen() {
+    setOpen((prev) => !prev)
+  }
 
   // TODO - fix status tags here
-	return (
-		<MetricsSection>
-			{!collapsed && (
-				<CardsRow>
-					<MetricCard>
-						<CardHeader>
-							<CardLabel>בעבודה</CardLabel>
-							{/* <StatusTag status="in_progress" /> */}
-						</CardHeader>
-						<CardNumber>{inProgressCount}</CardNumber>
-					</MetricCard>
+  return (
+    <MetricsSection>
+      <CardsWrapper $open={open}>
+        <CardsRow>
+          <MetricCard>
+            <CardHeader>
+              <CardLabel>בעבודה</CardLabel>
+              {/* <StatusTag status="in_progress" /> */}
+            </CardHeader>
+            <CardNumber>{inProgressCount}</CardNumber>
+          </MetricCard>
 
-					<MetricCard>
-						<CardHeader>
-							<CardLabel>טרם בוצעו</CardLabel>
-							{/* <StatusTag status="not_started" /> */}
-						</CardHeader>
-						<CardNumber>{notStartedCount}</CardNumber>
-					</MetricCard>
+          <MetricCard>
+            <CardHeader>
+              <CardLabel>טרם בוצעו</CardLabel>
+              {/* <StatusTag status="not_started" /> */}
+            </CardHeader>
+            <CardNumber>{notStartedCount}</CardNumber>
+          </MetricCard>
 
-					<MetricCard $highlighted>
-						<CardHeader>
-							<CardLabel>סה"כ הנחיות שקיבלתי</CardLabel>
-						</CardHeader>
-						<CardFooter>
-							<WeeklyBadge>
-								<WeeklyText>השבוע</WeeklyText>
-								<WeeklyText>+{weeklyNew}</WeeklyText>
-							</WeeklyBadge>
-							<CardNumber>{totalCount}</CardNumber>
-						</CardFooter>
-					</MetricCard>
-				</CardsRow>
-			)}
-			<CollapseToggle>
-				<DividerLine />
-				<CollapseButton onClick={toggleCollapsed}>
-					<CollapseIcon size={14} $collapsed={collapsed} />
-				</CollapseButton>
-				<DividerLine />
-			</CollapseToggle>
-		</MetricsSection>
-	)
+          <MetricCard $highlighted>
+            <CardHeader>
+              <CardLabel>סה"כ הנחיות שקיבלתי</CardLabel>
+            </CardHeader>
+            <CardFooter>
+              <WeeklyBadge>
+                <WeeklyText>השבוע</WeeklyText>
+                <WeeklyText>+{weeklyNew}</WeeklyText>
+              </WeeklyBadge>
+              <CardNumber>{totalCount}</CardNumber>
+            </CardFooter>
+          </MetricCard>
+        </CardsRow>
+      </CardsWrapper>
+      <CollapseToggle>
+        <DividerLine />
+        <CollapseButton onClick={toggleOpen}>
+          <CollapseIcon size={14} $open={open} />
+        </CollapseButton>
+        <DividerLine />
+      </CollapseToggle>
+    </MetricsSection>
+  )
 }
 
 export { MetricsBar }
@@ -75,6 +74,12 @@ const MetricsSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 32px;
+`
+
+const CardsWrapper = styled.div<{ $open: boolean }>`
+  overflow: hidden;
+  max-height: ${({ $open }) => ($open ? "110px" : "0")};
+  transition: max-height 420ms cubic-bezier(0.4, 0, 0.2, 1);
 `
 
 const CardsRow = styled.div`
@@ -169,8 +174,8 @@ const CollapseButton = styled.button`
   }
 `
 
-const CollapseIcon = styled(ChevronDown)<{ $collapsed: boolean }>`
+const CollapseIcon = styled(ChevronDown) <{ $open: boolean }>`
   color: var(--text-color-2);
-  transition: transform 0.2s;
-  transform: ${({ $collapsed }) => ($collapsed ? "rotate(0)" : "rotate(180deg)")};
+  transition: transform 420ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform: ${({ $open }) => ($open ? "rotate(180deg)" : "rotate(0)")};
 `
