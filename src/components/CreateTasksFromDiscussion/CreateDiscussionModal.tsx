@@ -2,214 +2,213 @@ import styled from "@emotion/styled"
 import { Check, Paperclip, X } from "lucide-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 import { useState } from "react"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import SourceField from "../CreateTasks/SourceField"
-import TopicField from "../CreateTasks/TopicField"
+import TagField from "../CreateTasks/TagField"
 import CreateTasksTable from "./CreateTasksTable"
 import FileUploadField from "./FileUploadField"
-import type { TaskRow } from "./TasksColumns"
+import type { NewTaskRow } from "./TasksColumns"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 enum Steps {
-	Discussion = 1,
-	Tasks = 2,
+  Discussion = 1,
+  Tasks = 2,
 }
 
 interface DiscussionFormState {
-	name: string
-	sourceDate: Date | null
-	topics: string[]
-	file: File | null
+  name: string
+  sourceDate: Date | null
+  tags: string[]
+  file: File | null
 }
 
 interface CreateDiscussionModalProps {
-	onClose: () => void
+  onClose: () => void
 }
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 const INITIAL_FORM: DiscussionFormState = {
-	name: "",
-	sourceDate: null,
-	topics: [],
-	file: null,
+  name: "",
+  sourceDate: null,
+  tags: [],
+  file: null,
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
-	const saveTasks = useSaveTasks()
-	const [form, setForm] = useState<DiscussionFormState>(INITIAL_FORM)
-	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
-	const setField = <K extends keyof DiscussionFormState>(
-		key: K,
-		value: DiscussionFormState[K],
-	) => setForm((prev) => ({ ...prev, [key]: value }))
+  const { workspace: { id: workspaceId } } = useWorkspace()
+  const saveTasks = useSaveTasks()
+  const [form, setForm] = useState<DiscussionFormState>(INITIAL_FORM)
+  const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
+  const setField = <K extends keyof DiscussionFormState>(
+    key: K,
+    value: DiscussionFormState[K],
+  ) => setForm((prev) => ({ ...prev, [key]: value }))
 
-	const isCurrentStepTasks = currentStep === Steps.Tasks
-	// ─── Source / Name Handlers ───────────────────────────────────────────────
+  const isCurrentStepTasks = currentStep === Steps.Tasks
+  // ─── Source / Name Handlers ───────────────────────────────────────────────
 
-	function handleSourceSelect(name: string) {
-		setField("name", name)
-	}
+  function handleSourceSelect(name: string) {
+    setField("name", name)
+  }
 
-	function handleDateSelect(date: Date | undefined) {
-		if (date) {
-			setField("sourceDate", date)
-		}
-	}
+  function handleDateSelect(date: Date | undefined) {
+    if (date) {
+      setField("sourceDate", date)
+    }
+  }
 
-	// ─── Topic Handlers ───────────────────────────────────────────────────────
+  // ─── Tag Handlers ────────────────────────────────────────────────────────
 
-	function handleTopicSelect(topic: string) {
-		if (!form.topics.includes(topic)) {
-			setField("topics", [...form.topics, topic])
-		}
-	}
+  function handleTagSelect(tag: string) {
+    if (!form.tags.includes(tag)) {
+      setField("tags", [...form.tags, tag])
+    }
+  }
 
-	function handleTopicRemove(topic: string) {
-		setField(
-			"topics",
-			form.topics.filter((t) => t !== topic),
-		)
-	}
+  function handleTagRemove(tag: string) {
+    setField(
+      "tags",
+      form.tags.filter((t) => t !== tag),
+    )
+  }
 
-	// ─── File Handler ──────────────────────────────────────────────────────────
+  // ─── File Handler ──────────────────────────────────────────────────────────
 
-	function handleFileChange(file: File | null) {
-		setField("file", file)
-	}
+  function handleFileChange(file: File | null) {
+    setField("file", file)
+  }
 
-	// ─── Modal Handlers ───────────────────────────────────────────────────────
+  // ─── Modal Handlers ───────────────────────────────────────────────────────
 
-	function handleOpenChange(open: boolean) {
-		if (!open) onClose()
-	}
+  function handleOpenChange(open: boolean) {
+    if (!open) onClose()
+  }
 
-	function handleContinue() {
-		setCurrentStep(Steps.Tasks)
-	}
+  function handleContinue() {
+    setCurrentStep(Steps.Tasks)
+  }
 
-	function handleBack() {
-		setCurrentStep(Steps.Discussion)
-	}
+  function handleBack() {
+    setCurrentStep(Steps.Discussion)
+  }
 
-	function handleSave(taskRows: TaskRow[]) {
-		const inputs = taskRows.map((row) => ({
-			title: row.title,
-			assigneeIds: row.assigneeIds,
-			assigneeDetails: row.assigneeDetails,
-			deadlineType: row.deadlineType,
-			dueDate: row.dueDate,
-			flagged: row.flagged,
-			notes: row.notes,
-			groupKey: String(row.id),
-		}))
+  // TODO - update the API to handle creation of tasks via source
+  function handleSave(taskRows: NewTaskRow[]) {
+    const inputs = taskRows.map((row) => ({
+      workspaceId,
+      title: row.title,
+      assigneeIds: row.assigneeIds,
+      assigneeDetails: row.assigneeDetails,
+      deadlineType: row.deadlineType,
+      dueDate: row.dueDate,
+      flagged: row.flagged,
+      notes: row.notes ?? "",
+      groupKey: String(row.id),
+    }))
 
-		saveTasks(inputs, {
-			discussionName: form.name.trim(),
-			discussionDate: form.sourceDate ? formatDate(form.sourceDate) : "",
-			hasAttachment: form.file !== null,
-			tags: form.topics,
-		})
-		onClose()
-	}
+    saveTasks(inputs)
+    onClose()
+  }
 
-	// ─── Render ───────────────────────────────────────────────────────────────
+  // ─── Render ───────────────────────────────────────────────────────────────
 
-	return (
-		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
-			<DialogPrimitive.Portal>
-				<Overlay />
-				<ModalCard $step={currentStep}>
-					<ModalCloseButton onClick={onClose}>
-						<X size={16} />
-					</ModalCloseButton>
+  return (
+    <DialogPrimitive.Root open onOpenChange={handleOpenChange}>
+      <DialogPrimitive.Portal>
+        <Overlay />
+        <ModalCard $step={currentStep}>
+          <ModalCloseButton onClick={onClose}>
+            <X size={16} />
+          </ModalCloseButton>
 
-					<ModalBody>
-						<HeaderSection>
-							<ModalTitle>יצירת הנחיות מתוך דיון</ModalTitle>
+          <ModalBody>
+            <HeaderSection>
+              <ModalTitle>יצירת הנחיות מתוך דיון</ModalTitle>
 
-							<StepsRow>
-								<StepItem>
-									<StepLabel $active>פרטי הדיון</StepLabel>
-									{isCurrentStepTasks ? (
-										<StepCircleCompleted>
-											<Check size={12} />
-										</StepCircleCompleted>
-									) : (
-										<StepCircleActive>1</StepCircleActive>
-									)}
-								</StepItem>
+              <StepsRow>
+                <StepItem>
+                  <StepLabel $active>פרטי הדיון</StepLabel>
+                  {isCurrentStepTasks ? (
+                    <StepCircleCompleted>
+                      <Check size={12} />
+                    </StepCircleCompleted>
+                  ) : (
+                    <StepCircleActive>1</StepCircleActive>
+                  )}
+                </StepItem>
 
-								<StepTail $completed={isCurrentStepTasks} />
+                <StepTail $completed={isCurrentStepTasks} />
 
-								<StepItem>
-									<StepLabel $active={isCurrentStepTasks}>
-										יצירת הנחיות
-									</StepLabel>
-									<StepCircle $active={isCurrentStepTasks}>2</StepCircle>
-								</StepItem>
-							</StepsRow>
+                <StepItem>
+                  <StepLabel $active={isCurrentStepTasks}>
+                    יצירת הנחיות
+                  </StepLabel>
+                  <StepCircle $active={isCurrentStepTasks}>2</StepCircle>
+                </StepItem>
+              </StepsRow>
 
-							{isCurrentStepTasks && (
-								<DiscussionInfoRow>
-									<DiscussionInfoText>
-										<DiscussionDate>
-											{form.sourceDate ? formatDate(form.sourceDate) : ""}
-										</DiscussionDate>
-										<DiscussionName>{form.name}</DiscussionName>
-									</DiscussionInfoText>
-									{form.file && <Paperclip size={20} />}
-								</DiscussionInfoRow>
-							)}
-						</HeaderSection>
+              {isCurrentStepTasks && (
+                <DiscussionInfoRow>
+                  <DiscussionInfoText>
+                    <DiscussionDate>
+                      {form.sourceDate ? formatDate(form.sourceDate) : ""}
+                    </DiscussionDate>
+                    <DiscussionName>{form.name}</DiscussionName>
+                  </DiscussionInfoText>
+                  {form.file && <Paperclip size={20} />}
+                </DiscussionInfoRow>
+              )}
+            </HeaderSection>
 
-						{currentStep === Steps.Discussion ? (
-							<>
-								<FormContainer>
-									<SourceField
-										source={form.name}
-										sourceDate={form.sourceDate}
-										linkedSource={null}
-										onSourceSelect={handleSourceSelect}
-										onDateSelect={handleDateSelect}
-										label="שם הדיון"
-										uniqueNames
-									/>
+            {currentStep === Steps.Discussion ? (
+              <>
+                <FormContainer>
+                  <SourceField
+                    source={form.name}
+                    sourceDate={form.sourceDate}
+                    linkedSource={null}
+                    onSourceSelect={handleSourceSelect}
+                    onDateSelect={handleDateSelect}
+                    label="שם הדיון"
+                    uniqueNames
+                  />
 
-									<TopicField
-										topics={form.topics}
-										lockedTopics={[]}
-										onTopicSelect={handleTopicSelect}
-										onTopicRemove={handleTopicRemove}
-									/>
+                  <TagField
+                    tags={form.tags}
+                    lockedTags={[]}
+                    onTagSelect={handleTagSelect}
+                    onTagRemove={handleTagRemove}
+                  />
 
-									<FileUploadField
-										file={form.file}
-										onFileChange={handleFileChange}
-									/>
-								</FormContainer>
+                  <FileUploadField
+                    file={form.file}
+                    onFileChange={handleFileChange}
+                  />
+                </FormContainer>
 
-								<ModalFooter>
-									<ContinueButton
-										onClick={handleContinue}
-										disabled={!form.name.trim()}
-									>
-										המשך
-									</ContinueButton>
-								</ModalFooter>
-							</>
-						) : (
-							<CreateTasksTable onSave={handleSave} onBack={handleBack} />
-						)}
-					</ModalBody>
-				</ModalCard>
-			</DialogPrimitive.Portal>
-		</DialogPrimitive.Root>
-	)
+                <ModalFooter>
+                  <ContinueButton
+                    onClick={handleContinue}
+                    disabled={!form.name.trim()}
+                  >
+                    המשך
+                  </ContinueButton>
+                </ModalFooter>
+              </>
+            ) : (
+              <CreateTasksTable onSave={handleSave} onBack={handleBack} />
+            )}
+          </ModalBody>
+        </ModalCard>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  )
 }
 
 export default CreateDiscussionModal
@@ -224,14 +223,14 @@ const Overlay = styled(DialogPrimitive.Overlay)`
   z-index: var(--z-dropdown);
 `
 
-const ModalCard = styled(DialogPrimitive.Content)<{ $step: Steps }>`
+const ModalCard = styled(DialogPrimitive.Content) <{ $step: Steps }>`
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100%;
   max-width: ${({ $step }) =>
-		$step === Steps.Discussion ? "753px" : "1550px"};
+    $step === Steps.Discussion ? "753px" : "1550px"};
   transition: width 300ms ease;
   height: min(796px, calc(100vh - 48px));
   overflow-y: auto;

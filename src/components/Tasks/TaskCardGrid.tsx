@@ -1,59 +1,62 @@
 import styled from "@emotion/styled"
 import { Flag } from "lucide-react"
-import type { TaskDto } from "src/api/model"
+import { DeadlineType, type TaskDto } from "src/api/model"
+import { toTaskRows } from "src/functions/tasks-table"
 import { formatDateShort } from "../../functions/date-utils"
 import DeadlineTag, {
-	DEADLINE_LABELS,
-	DeadlineType,
+  DEADLINE_LABELS,
 } from "../shared/DeadlineTag"
 import { StatusTag } from "../shared/StatusTag"
 import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "../ui/card"
 
 interface TaskCardGridProps {
-	tasks: TaskDto[]
+  tasks: TaskDto[]
 }
 
 function TaskCardGrid({ tasks }: TaskCardGridProps) {
-	return (
-		<CardGridContainer>
-			{tasks.map((task) => (
-				<Card key={task.id}>
-					<CardHeader>
-						<CardTitle>
-							<CardTitleRow>
-								{task.title}
-								{task.flagged && <Flag size={16} />}
-							</CardTitleRow>
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<StatusTag status={task.status} />
-					</CardContent>
-					<CardFooter>
-						{task.deadlineType !== DeadlineType.Date && (
-							<DeadlineTag $type={task.deadlineType}>
-								{DEADLINE_LABELS[task.deadlineType]}
-							</DeadlineTag>
-						)}
-						{task.dueDate && (
-							<CardDateText>{formatDateShort(task.dueDate)}</CardDateText>
-						)}
-					</CardFooter>
-				</Card>
-			))}
-		</CardGridContainer>
-	)
+  const taskRows = toTaskRows(tasks)
+
+  return (
+    <CardGridContainer>
+      {taskRows.map((task) => (
+        <Card key={task.id}>
+          <CardHeader>
+            <CardTitle>
+              <CardTitleRow>
+                {task.title}
+                {task.flagged && <Flag size={16} />}
+              </CardTitleRow>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <StatusTag status={task.status} />
+          </CardContent>
+          <CardFooter>
+            {task.deadlineType !== DeadlineType.DATE && (
+              <DeadlineTag $type={task.deadlineType}>
+                {DEADLINE_LABELS[task.deadlineType]}
+              </DeadlineTag>
+            )}
+            {task.dueDate && (
+              <CardDateText>{formatDateShort(task.dueDate)}</CardDateText>
+            )}
+          </CardFooter>
+        </Card>
+      ))}
+    </CardGridContainer>
+  )
 }
 
 export { TaskCardGrid }
 
 const CardGridContainer = styled.div`
+  direction: rtl;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;

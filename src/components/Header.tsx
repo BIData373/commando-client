@@ -32,8 +32,8 @@ export default function Header() {
 	]
 
 	const { matches } = useRouterState()
-	const headerConfig = matches.findLast((m) => m.staticData.header)?.staticData
-		.header as HeaderConfig | undefined
+	const headerConfig = [...matches].reverse().find((m) => m.staticData.header)
+		?.staticData.header as HeaderConfig | undefined
 	const {
 		title = "",
 		navigation = true,

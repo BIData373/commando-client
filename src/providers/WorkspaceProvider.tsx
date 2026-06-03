@@ -27,7 +27,7 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 	const { data: workspaceStatuses, isLoading: isStatusesLoading } =
 		useListWorkspaceStatuses(
 			{ workspaceId: workspace?.id ?? -1 },
-			{ query: { enabled: !!workspace?.id } },
+			{ query: { enabled: workspace?.id !== undefined } },
 		)
 	const statuses = Object.fromEntries(
 		(workspaceStatuses ?? []).map((s) => [s.id, s]),

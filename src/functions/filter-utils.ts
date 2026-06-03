@@ -1,5 +1,5 @@
 import { differenceInDays, startOfToday } from "date-fns"
-import type { TaskDto } from "src/api/model"
+import { DeadlineType, type TaskDto } from "src/api/model"
 import { QuickFilter } from "src/utils/filter-utils"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 // ─── Shared Types ────────────────────────────────────────────────────────────
@@ -17,14 +17,14 @@ function matchesQuickFilter(task: TaskDto, filter: QuickFilter): boolean {
 	switch (filter) {
 		case QuickFilter.OVERDUE:
 			return (
-				daysUntil !== null && daysUntil < 0 && task.deadlineType !== "immediate"
+				daysUntil !== null && daysUntil < 0 && task.deadlineType !== DeadlineType.IMMEDIATE
 			)
 		case QuickFilter.APPROACHING:
 			return (
 				daysUntil !== null &&
 				daysUntil >= 0 &&
 				daysUntil < 2 &&
-				!(daysUntil < 0 && task.deadlineType !== "immediate")
+				!(daysUntil < 0 && task.deadlineType !== DeadlineType.IMMEDIATE)
 			)
 		case QuickFilter.FLAGGED:
 			return !!task.flagged
@@ -84,7 +84,7 @@ function buildFilterOptionsMap(
 		for (const { assignee } of t.assigneeStatuses) {
 			assigneeSet.add(assignee.name)
 		}
-		if (t.source.name) {
+		if (t.source?.name) {
 			discussionNameSet.add(t.source.name)
 		}
 		t.tags.forEach((tag) => {

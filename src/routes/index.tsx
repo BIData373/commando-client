@@ -4,90 +4,91 @@ import type { WorkspaceDto } from "src/api/model"
 import { useListWorkspaces } from "src/api/workspace/workspace"
 import { Avatar, AvatarFallback, AvatarImage } from "src/components/ui/avatar"
 import {
-	Card,
-	CardAction,
-	CardDescription,
-	CardHeader,
-	CardTitle,
+  Card,
+  CardAction,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "src/components/ui/card"
+import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
 export const Route = createFileRoute("/")({
-	component: RouteComponent,
-	staticData: {
-		header: {
-			title: "סביבות",
-			navigation: false,
-			user: false,
-		},
-	},
+  component: RouteComponent,
+  staticData: {
+    header: {
+      title: "סביבות",
+      navigation: false,
+      user: false,
+    },
+  },
 })
 
 // FIX Move to file?
 interface WorkspaceCardProps {
-	workspace: WorkspaceDto
+  workspace: WorkspaceDto
 }
 
 function WorkspaceCard({
-	workspace: { title, urlName, icon },
+  workspace: { title, urlName, icon },
 }: WorkspaceCardProps) {
-	const navigate = useNavigate()
+  const navigate = useNavigate()
 
-	function handleWorkspaceClick() {
-		navigate({
-			to: "/workspace/$urlName",
-			params: { urlName },
-		})
-	}
+  function handleWorkspaceClick() {
+    navigate({
+      to: "/workspace/$urlName",
+      params: { urlName },
+    })
+  }
 
-	return (
-		<Card onClick={handleWorkspaceClick}>
-			<CardHeader>
-				<CardTitle>{title}</CardTitle>
-				{/* // FIX Add description */}
-				<CardDescription>{title}</CardDescription>
+  return (
+    <Card onClick={handleWorkspaceClick}>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        {/* // FIX Add description */}
+        <CardDescription>{title}</CardDescription>
 
-				<CardAction>
-					<Avatar>
-						<AvatarImage
-							src={icon ?? "/workspace-icon.png"}
-							alt="@shadcn"
-							className="grayscale"
-						/>
-						<AvatarFallback>CN</AvatarFallback>
-					</Avatar>
-				</CardAction>
-			</CardHeader>
-			{/* // FIX Check if needed */}
-			{/* <CardFooter>{memberCount} משתמשים</CardFooter> */}
-		</Card>
-	)
+        <CardAction>
+          <Avatar>
+            <AvatarImage
+              src={icon ?? "/workspace-icon.png"}
+              alt={title}
+              className="grayscale"
+            />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+        </CardAction>
+      </CardHeader>
+      {/* // FIX Check if needed */}
+      {/* <CardFooter>{memberCount} משתמשים</CardFooter> */}
+    </Card>
+  )
 }
 
 function RouteComponent() {
-	const navigate = useNavigate()
+  const navigate = useNavigate()
 
-	const { data: workspaces = [] } = useListWorkspaces()
+  const { data: workspaces = [] } = useListWorkspaces()
 
-	function handlePersonalClick() {
-		navigate({ to: "/personal", search: { view: "TABLE" } })
-	}
+  function handlePersonalClick() {
+    navigate({ to: "/personal", search: { view: TasksView.TABLE } })
+  }
 
-	return (
-		<PageRoot>
-			<PersonalBanner onClick={handlePersonalClick}>
-				<PersonalLabel>אזור אישי</PersonalLabel>
-				<PersonalSub>משימות ופעולות אישיות</PersonalSub>
-			</PersonalBanner>
+  return (
+    <PageRoot>
+      <PersonalBanner onClick={handlePersonalClick}>
+        <PersonalLabel>אזור אישי</PersonalLabel>
+        <PersonalSub>משימות ופעולות אישיות</PersonalSub>
+      </PersonalBanner>
 
-			<SectionTitle>סביבות עבודה</SectionTitle>
+      <SectionTitle>סביבות עבודה</SectionTitle>
 
-			<WorkspaceGrid>
-				{workspaces.map((ws) => (
-					<WorkspaceCard key={ws.urlName} workspace={ws} />
-				))}
-			</WorkspaceGrid>
-		</PageRoot>
-	)
+      <WorkspaceGrid>
+        {workspaces.map((ws) => (
+          <WorkspaceCard key={ws.urlName} workspace={ws} />
+        ))}
+      </WorkspaceGrid>
+    </PageRoot>
+  )
 }
 
 const PageRoot = styled.div`
