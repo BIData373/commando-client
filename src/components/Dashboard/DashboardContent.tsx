@@ -1,11 +1,11 @@
 import styled from "@emotion/styled"
+import { readLocalStorageValue, useLocalStorage } from "@mantine/hooks"
 import { useNavigate, useParams } from "@tanstack/react-router"
-import { isWithinInterval, setYear, subMonths } from "date-fns"
+import { isWithinInterval, parseISO, setYear, subMonths } from "date-fns"
 import { useMemo } from "react"
 import type { DateRange } from "react-day-picker"
 import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
-import { useLocalStorage } from "src/hooks/useLocalStorage"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { DATE_TYPE } from "src/utils/data-type-utils"
@@ -14,7 +14,6 @@ import FocusedInstructions from "./FocusedInstructions"
 import RecentlyCompleted from "./RecentlyCompleted"
 import StatusCard from "./StatusCard"
 import SystemDistribution from "./SystemDistribution"
-
 
 export function DashboardContent() {
 	const {
@@ -25,15 +24,15 @@ export function DashboardContent() {
 
 	const filterKey = `dashboard-filter-${urlName}`
 
-	const [dataType, setDataType] = useLocalStorage<DATE_TYPE>(
-		`${filterKey}-type`,
-		DATE_TYPE.CREATION_DATE,
-	)
+	const [dataType, setDataType] = useLocalStorage<DATE_TYPE>({
+		key: `${filterKey}-type`,
+		defaultValue: DATE_TYPE.CREATION_DATE,
+	})
 
-	const [persistedRange, setPersistedRange] = useLocalStorage<DateRange | undefined>(
-		`${filterKey}-range`,
-		undefined,
-	)
+	const [persistedRange, setPersistedRange] = useLocalStorage<DateRange | undefined>({
+		key: `${filterKey}-range`,
+		defaultValue: undefined,
+	})
 
 	const range: DateRange | undefined = persistedRange
 		? {
