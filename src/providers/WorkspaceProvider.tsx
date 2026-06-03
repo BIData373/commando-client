@@ -73,10 +73,6 @@ export function useWorkspace() {
 	return context
 }
 
-export function useWorkspaceSafe() {
-	return useContext(WorkspaceContext)
-}
-
 const LoadingContainer = styled.div`
   display: flex;
   align-items: center;

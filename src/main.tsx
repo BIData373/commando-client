@@ -2,6 +2,7 @@ import { QueryClientProvider } from "@tanstack/react-query"
 import { RouterProvider } from "@tanstack/react-router"
 import ReactDOM from "react-dom/client"
 import * as mockHandlers from "src/api/index.msw" // Orval generated MSW handlers
+import { ErrorModalProvider } from "./providers/ErrorModalProvider"
 import { queryClient } from "./queryClient"
 import router from "./router"
 import { USE_MOCK_API } from "./utils/env-utils"
@@ -31,9 +32,11 @@ enableMocking().then(() => {
 	if (!rootElement.innerHTML) {
 		const root = ReactDOM.createRoot(rootElement)
 		root.render(
-			<QueryClientProvider client={queryClient}>
-				<RouterProvider router={router} />
-			</QueryClientProvider>,
+			<ErrorModalProvider>
+				<QueryClientProvider client={queryClient}>
+					<RouterProvider router={router} />
+				</QueryClientProvider>
+			</ErrorModalProvider>,
 		)
 	}
 })
