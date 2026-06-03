@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 interface DeadlineCellProps {
   deadlineType: DeadlineType | null
-  dueDate: Date | null
+  dueDate?: Date | null
   onDeadlineTypeChange: (type: DeadlineType) => void
   onDateChange: (date: Date | null) => void
 }

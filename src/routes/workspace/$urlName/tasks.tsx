@@ -5,6 +5,11 @@ import { z } from "zod"
 import TasksLayout from "../../../components/Tasks/TasksLayout"
 import { TasksFiltersProvider } from "../../../providers/TasksFiltersProvider"
 
+export enum TasksView {
+  CARDS = 'CARDS',
+  TABLE = 'TABLE'
+}
+
 const queryArray = <T extends z.ZodTypeAny>(schema: T) =>
   z.preprocess(
     (v) => (Array.isArray(v) ? v : v == null ? [] : [v]),
@@ -12,7 +17,7 @@ const queryArray = <T extends z.ZodTypeAny>(schema: T) =>
   );
 
 const TasksSearchSchema = z.object({
-  view: z.enum(["CARDS", "TABLE"]).default("TABLE"),
+  view: z.nativeEnum(TasksView).default(TasksView.TABLE),
   tabFilter: queryArray(z.nativeEnum(QuickFilter)).default([]),
   statusFilter: queryArray(z.nativeEnum(WorkspaceStatusType)).default([]),
   deadlineTypeFilter: queryArray(z.nativeEnum(DeadlineType)).default([]),

@@ -1,9 +1,9 @@
 import AssigneeExpansionPanel from "./AssigneeExpansionPanel"
-import type { TaskRow } from "./TasksColumns"
+import type { NewTaskRow } from "./TasksColumns"
 
 interface TaskAssigneeExpansionProps {
-	row: TaskRow
-	onUpdateRow: (updates: Partial<TaskRow>) => void
+	row: NewTaskRow
+	onUpdateRow: (updates: Partial<NewTaskRow>) => void
 	onCollapse: () => void
 }
 

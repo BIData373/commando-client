@@ -2,16 +2,16 @@ import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import type { AssigneeDto } from "src/api/model"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import type {
+  NewTaskRow,
   TaskTableMeta,
 } from "../CreateTasksFromDiscussion/TasksColumns"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import AssigneePicker from "../shared/AssigneePicker"
 
 interface AssigneeTableCellProps {
-  row: TaskRow
+  row: NewTaskRow
   meta: TaskTableMeta
 }
 
@@ -25,15 +25,11 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
     assignees.map((a) => [a.id, a]),
   ) as Record<number, AssigneeDto>
 
-  const assigneeIds = row.assigneeStatuses.map(({ assignee: { id } }) => id)
+  const assigneeIds = row.assigneeIds
   const hasMultiple = assigneeIds.length > 1
   const isExpanded = meta.expandedRows.has(row.id)
 
   function handleToggleAssignee(assigneeId: number) {
-    console.log(assigneeId)
-    console.log(row.assignee);
-    console.log(row.otherAssignees);
-    console.log(row.assigneeStatuses);
     const isRemoving = assigneeIds.includes(assigneeId)
     const nextIds = isRemoving
       ? assigneeIds.filter((id) => id !== assigneeId)

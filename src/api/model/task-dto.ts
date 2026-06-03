@@ -30,7 +30,8 @@ export interface TaskDto {
 	/** @nullable */
 	notes: string | null
 	workspaceId: number
-	source: SourceDto
+	/** @nullable */
+	source: SourceDto | null
 	tags: TagDto[]
 	assigneeStatuses: AssigneeStatusDto[]
 }

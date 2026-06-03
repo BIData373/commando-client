@@ -10,12 +10,11 @@ import type {
 import type React from "react";
 import { useMemo, useState } from "react";
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status";
-import type { WorkspaceStatusDto, WorkspaceStatusDtoType } from "src/api/model";
+import type { DeadlineType, WorkspaceStatusDto, WorkspaceStatusType } from "src/api/model";
 import { useDeleteTask } from "src/api/task/task";
 import { type TaskRow, useTasksFilters } from "src/providers/TasksFiltersProvider";
 import { buildFilterOptionsMap } from "../../functions/filter-utils";
 import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns";
-import type { DeadlineType } from "../shared/DeadlineTag";
 import { DataTable } from "../ui/data-table";
 import { BulkActionsBar } from "./BulkActionsBar";
 
@@ -26,10 +25,10 @@ interface TaskTableProps {
 	onDoubleClick?: (taskId: number) => void;
 	extraColumns?: Record<string, ColumnDef<TaskRow>>;
 	showHeader?: boolean;
-	statusFilter?: WorkspaceStatusDtoType[];
+	statusFilter?: WorkspaceStatusType[];
 	deadlineTypeFilter?: DeadlineType[];
 	onFiltersChange?: (
-		statusFilter: WorkspaceStatusDtoType[],
+		statusFilter: WorkspaceStatusType[],
 		deadlineTypeFilter: DeadlineType[],
 	) => void;
 }
@@ -86,7 +85,7 @@ function TaskTable({
 		const tableStatusColumnValue = getColumnFilter(
 			newFilters,
 			"status",
-		) as WorkspaceStatusDtoType[];
+		) as WorkspaceStatusType[];
 		const tableDeadlineColumnValue = getColumnFilter(
 			newFilters,
 			"deadlineType",
@@ -128,7 +127,10 @@ function TaskTable({
 	}
 
 	function removeTasks(taskIds: number[]) {
-		taskIds.forEach((id) => deleteTaskMutate({ pathParams: { id } }));
+    // TODO - maybe await Promise.all
+		taskIds.forEach((id) => {
+      deleteTaskMutate({ pathParams: { id } })
+    });
 	}
 
 	function bulkUpdateStatus(taskIds: number[], status: WorkspaceStatusDto) {
