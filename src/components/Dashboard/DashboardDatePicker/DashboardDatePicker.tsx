@@ -9,6 +9,7 @@ import { DashboardDatePickerTriggerButton } from "./DashboardDatePickerTriggerBu
 
 interface DashboardDatePickerProps {
 	dateType: DATE_TYPE
+	range?: DateRange
 	onDateTypeChange(value: DATE_TYPE): void
 	setRange(range: DateRange | undefined): void
 }
@@ -17,6 +18,7 @@ export function DashboardDatePicker({
 	dateType,
 	onDateTypeChange,
 	setRange,
+	range,
 }: DashboardDatePickerProps) {
 	const [pendingDataType, setPendingDataType] = useState(dateType)
 
@@ -27,11 +29,12 @@ export function DashboardDatePicker({
 
 	return (
 		<DatePickerPopover
+			value={range}
 			mode={CalendarMode.Range}
 			triggerButton={({ value }) => (
 				<DashboardDatePickerTriggerButton
 					label={dateType}
-					range={isDateRange(value) ? value : undefined}
+					range={range ?? (isDateRange(value) ? value : undefined)}
 				/>
 			)}
 			header={() => (
