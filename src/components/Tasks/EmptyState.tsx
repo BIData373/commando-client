@@ -2,26 +2,26 @@ import styled from "@emotion/styled"
 import emptyStateImage from "../../../public/empty-state.svg"
 import noResultsFoundImage from "../../assets/no-results-found.svg"
 
-interface NoResultsFoundProps {
-	variant: "no-search-results" | "empty"
+interface EmptyStateProps {
+	variant?: "default" | "search"
 }
 
-function NoResultsFound({ variant }: NoResultsFoundProps) {
-	const isEmpty = variant === "empty"
+function EmptyState({ variant = "default" }: EmptyStateProps) {
+	const isDefault = variant === "default"
 
 	return (
 		<Container>
 			<IconWrapper>
 				<img
-					src={isEmpty ? emptyStateImage : noResultsFoundImage}
+					src={isDefault ? emptyStateImage : noResultsFoundImage}
 					width={100}
 					height={100}
 					alt="no-results"
 				/>
 			</IconWrapper>
-			<Title>{isEmpty ? "טרם נוצרו הנחיות" : "לא הצלחנו למצוא הנחיות"}</Title>
+			<Title>{isDefault ? "טרם נוצרו הנחיות" : "לא הצלחנו למצוא הנחיות"}</Title>
 			<Subtitle>
-				{isEmpty
+				{isDefault
 					? "לאחר שהנחיות יוצרו, ההנחיות האחרונות יופיעו כאן"
 					: "יש לנסות ניסוח אחר או לבדוק אם ההנחיה נמצאת בארכיון"}
 			</Subtitle>
@@ -29,7 +29,7 @@ function NoResultsFound({ variant }: NoResultsFoundProps) {
 	)
 }
 
-export { NoResultsFound }
+export { EmptyState as NoResultsFound }
 
 const Container = styled.div`
   display: flex;
