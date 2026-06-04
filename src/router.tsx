@@ -5,7 +5,7 @@ import { routeTree } from "./routeTree.gen"
 const router = createRouter({
 	routeTree,
 	context: { queryClient },
-	notFoundMode: 'root',
+	notFoundMode: "root",
 	scrollRestoration: true,
 	defaultPreload: "intent",
 	defaultPreloadStaleTime: 0,

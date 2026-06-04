@@ -102,27 +102,27 @@ export function AssigneeDialog({
 			}
 
 			if (assignee) {
-					await updateAssignee(
-						{
-							pathParams: { id: assignee.id },
-							data: payload,
-						},
-						{
-							onSuccess: handleSubmitSuccess,
-						},
-					)
-				} else {
-					await createAssignee(
-						{
-							data: { workspaceId, ...payload },
-						},
-						{
-							onSuccess: handleSubmitSuccess,
-						},
-					)
-				}
+				await updateAssignee(
+					{
+						pathParams: { id: assignee.id },
+						data: payload,
+					},
+					{
+						onSuccess: handleSubmitSuccess,
+					},
+				)
+			} else {
+				await createAssignee(
+					{
+						data: { workspaceId, ...payload },
+					},
+					{
+						onSuccess: handleSubmitSuccess,
+					},
+				)
+			}
 
-				onOpenChange(false)
+			onOpenChange(false)
 		},
 	})
 

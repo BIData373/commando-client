@@ -1,32 +1,32 @@
 import styled from "@emotion/styled"
 import emptyStateImage from "../../../public/empty-state.svg"
-import noResultsFoundImage from '../../assets/no-results-found.svg'
+import noResultsFoundImage from "../../assets/no-results-found.svg"
 
 interface NoResultsFoundProps {
-  variant: "no-search-results" | "empty"
+	variant: "no-search-results" | "empty"
 }
 
 function NoResultsFound({ variant }: NoResultsFoundProps) {
-  const isEmpty = variant === "empty"
+	const isEmpty = variant === "empty"
 
-  return (
-    <Container>
-      <IconWrapper>
-        <img
-          src={isEmpty ? emptyStateImage : noResultsFoundImage}
-          width={100}
-          height={100}
-          alt="no-results"
-        />
-      </IconWrapper>
-      <Title>{isEmpty ? "טרם נוצרו הנחיות" : "לא הצלחנו למצוא הנחיות"}</Title>
-      <Subtitle>
-        {isEmpty
-          ? "לאחר שהנחיות יוצרו, ההנחיות האחרונות יופיעו כאן"
-          : "יש לנסות ניסוח אחר או לבדוק אם ההנחיה נמצאת בארכיון"}
-      </Subtitle>
-    </Container>
-  )
+	return (
+		<Container>
+			<IconWrapper>
+				<img
+					src={isEmpty ? emptyStateImage : noResultsFoundImage}
+					width={100}
+					height={100}
+					alt="no-results"
+				/>
+			</IconWrapper>
+			<Title>{isEmpty ? "טרם נוצרו הנחיות" : "לא הצלחנו למצוא הנחיות"}</Title>
+			<Subtitle>
+				{isEmpty
+					? "לאחר שהנחיות יוצרו, ההנחיות האחרונות יופיעו כאן"
+					: "יש לנסות ניסוח אחר או לבדוק אם ההנחיה נמצאת בארכיון"}
+			</Subtitle>
+		</Container>
+	)
 }
 
 export { NoResultsFound }

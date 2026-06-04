@@ -10,119 +10,121 @@ import { CHAT_LINK } from "src/utils/env-utils"
 import { ErrorCode, isErrorCode } from "src/utils/error-utils"
 
 interface ErrorContent {
-  title: string
-  description: string
+	title: string
+	description: string
 }
 
 const ERROR_CONTENT: Record<ErrorCode, ErrorContent> = {
-  [ErrorCode.BAD_REQUEST]: {
-    title: "משהו השתבש בתקשורת",
-    description:
-      "כדאי לנסות שוב בעוד מספר רגעים אם הבעיה נמשכת, פנו אלינו לעזרה",
-  },
-  [ErrorCode.UNAUTHORIZED]: {
-    title: "נראה שאין לך הרשאות לפה",
-    description: "לקבלת הרשאות פנה למנהל הסביבה ובמידת הצורך ניתן לפנות אלינו",
-  },
-  [ErrorCode.NOT_FOUND]: {
-    title: "אופס, נראה שהעמוד שחיפשת לא נמצא",
-    description: "ייתכן שהוא הוסר, הועבר או שהקישור שגוי",
-  },
-  [ErrorCode.SERVER_ERROR]: {
-    title: "משהו השתבש בתקשורת",
-    description:
-      "כדאי לנסות שוב בעוד מספר רגעים אם הבעיה נמשכת, פנו אלינו לעזרה",
-  },
+	[ErrorCode.BAD_REQUEST]: {
+		title: "משהו השתבש בתקשורת",
+		description:
+			"כדאי לנסות שוב בעוד מספר רגעים אם הבעיה נמשכת, פנו אלינו לעזרה",
+	},
+	[ErrorCode.UNAUTHORIZED]: {
+		title: "נראה שאין לך הרשאות לפה",
+		description: "לקבלת הרשאות פנה למנהל הסביבה ובמידת הצורך ניתן לפנות אלינו",
+	},
+	[ErrorCode.NOT_FOUND]: {
+		title: "אופס, נראה שהעמוד שחיפשת לא נמצא",
+		description: "ייתכן שהוא הוסר, הועבר או שהקישור שגוי",
+	},
+	[ErrorCode.SERVER_ERROR]: {
+		title: "משהו השתבש בתקשורת",
+		description:
+			"כדאי לנסות שוב בעוד מספר רגעים אם הבעיה נמשכת, פנו אלינו לעזרה",
+	},
 }
 
 export function ErrorModal() {
-  const navigate = useNavigate()
+	const navigate = useNavigate()
 
-  const { errorCode, setErrorCode } = useErrorModal()
+	const { errorCode, setErrorCode } = useErrorModal()
 
-  const { urlName = "" } = useParams({ from: "/workspace/$urlName", shouldThrow: false }) || {}
-  const { data } = useListWorkspaces({ urlName })
-  const workspace = data?.[0]
-  const { data: usersPermissions = [] } =
-    useListPermissions(
-      { workspaceId: workspace?.id ?? -1 },
-      { query: { enabled: errorCode === ErrorCode.UNAUTHORIZED && !!urlName } },
-    )
+	const { urlName = "" } =
+		useParams({ from: "/workspace/$urlName", shouldThrow: false }) || {}
+	const { data } = useListWorkspaces({ urlName })
+	const workspace = data?.[0]
+	const { data: usersPermissions = [] } = useListPermissions(
+		{ workspaceId: workspace?.id ?? -1 },
+		{ query: { enabled: errorCode === ErrorCode.UNAUTHORIZED && !!urlName } },
+	)
 
+	const admins = usersPermissions.filter(
+		({ type }) => type === PermissionType.MANAGER,
+	)
 
-  const admins = usersPermissions.filter(
-    ({ type }) => type === PermissionType.MANAGER,
-  )
+	function handleClose() {
+		setErrorCode(null)
+	}
 
-  function handleClose() {
-    setErrorCode(null)
-  }
+	function navigateToHomePage() {
+		setErrorCode(null)
+		navigate({ to: "/" })
+	}
 
-  function navigateToHomePage() {
-    setErrorCode(null)
-    navigate({ to: "/" })
-  }
+	function navigateToChat() {
+		setErrorCode(null)
+		window.open(CHAT_LINK)
+	}
 
-  function navigateToChat() {
-    setErrorCode(null)
-    window.open(CHAT_LINK)
-  }
+	const content =
+		errorCode && isErrorCode(errorCode)
+			? ERROR_CONTENT[errorCode as ErrorCode]
+			: null
 
-  const content = errorCode && isErrorCode(errorCode) ? ERROR_CONTENT[errorCode as ErrorCode] : null
-
-  return (
-    content &&
-    errorCode && (
-      <Overlay onClick={handleClose}>
-        <Card onClick={(e) => e.stopPropagation()}>
-          <ContentContainer>
-            <ErrorCodeDisplay>{errorCode}</ErrorCodeDisplay>
-            <ErrorText>
-              <ErrorTitle>{content.title}</ErrorTitle>
-              <ErrorDescription>{content.description}</ErrorDescription>
-            </ErrorText>
-            {errorCode === ErrorCode.UNAUTHORIZED && admins.length > 0 && (
-              <AdminContactsBox>
-                <AdminContactsContent>
-                  <AdminContactsTitle>
-                    פנו בצ'אט המבצעי לקבלת הרשאות
-                  </AdminContactsTitle>
-                  <AdminContactsList>
-                    {admins.map(({ user }) => (
-                      <AdminContactRow key={user.id}>
-                        <AdminContainer>
-                          <AdminDot />
-                          <AdminContactLink onClick={navigateToChat}>
-                            {user.info?.name}
-                            {user.info?.upn}
-                          </AdminContactLink>
-                        </AdminContainer>
-                        <ChatMessageContainer>
-                          <MessageCircle size={16} />
-                          <IconText>צ</IconText>
-                        </ChatMessageContainer>
-                      </AdminContactRow>
-                    ))}
-                  </AdminContactsList>
-                </AdminContactsContent>
-              </AdminContactsBox>
-            )}
-            <Actions>
-              <ButtonRow>
-                <SecondaryButton onClick={navigateToChat}>
-                  לערוץ תמיכה
-                </SecondaryButton>
-                <PrimaryButton onClick={navigateToHomePage}>
-                  חזרה למסך הבית
-                </PrimaryButton>
-              </ButtonRow>
-              <SupportNote>צוות התמיכה זמין עבורך 24/7</SupportNote>
-            </Actions>
-          </ContentContainer>
-        </Card>
-      </Overlay>
-    )
-  )
+	return (
+		content &&
+		errorCode && (
+			<Overlay onClick={handleClose}>
+				<Card onClick={(e) => e.stopPropagation()}>
+					<ContentContainer>
+						<ErrorCodeDisplay>{errorCode}</ErrorCodeDisplay>
+						<ErrorText>
+							<ErrorTitle>{content.title}</ErrorTitle>
+							<ErrorDescription>{content.description}</ErrorDescription>
+						</ErrorText>
+						{errorCode === ErrorCode.UNAUTHORIZED && admins.length > 0 && (
+							<AdminContactsBox>
+								<AdminContactsContent>
+									<AdminContactsTitle>
+										פנו בצ'אט המבצעי לקבלת הרשאות
+									</AdminContactsTitle>
+									<AdminContactsList>
+										{admins.map(({ user }) => (
+											<AdminContactRow key={user.id}>
+												<AdminContainer>
+													<AdminDot />
+													<AdminContactLink onClick={navigateToChat}>
+														{user.info?.name}
+														{user.info?.upn}
+													</AdminContactLink>
+												</AdminContainer>
+												<ChatMessageContainer>
+													<MessageCircle size={16} />
+													<IconText>צ</IconText>
+												</ChatMessageContainer>
+											</AdminContactRow>
+										))}
+									</AdminContactsList>
+								</AdminContactsContent>
+							</AdminContactsBox>
+						)}
+						<Actions>
+							<ButtonRow>
+								<SecondaryButton onClick={navigateToChat}>
+									לערוץ תמיכה
+								</SecondaryButton>
+								<PrimaryButton onClick={navigateToHomePage}>
+									חזרה למסך הבית
+								</PrimaryButton>
+							</ButtonRow>
+							<SupportNote>צוות התמיכה זמין עבורך 24/7</SupportNote>
+						</Actions>
+					</ContentContainer>
+				</Card>
+			</Overlay>
+		)
+	)
 }
 
 const fadeIn = keyframes`
