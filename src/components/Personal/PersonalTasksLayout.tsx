@@ -21,7 +21,7 @@ import {
 import { useTitleBar } from "../../providers/TitleBarProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
-import { NoResultsFound } from "../Tasks/NoResultsFound"
+import { NoResultsFound } from "../Tasks/EmptyState"
 import { TaskFilters } from "../Tasks/TaskFilters"
 
 interface PersonalTasksLayoutProps {

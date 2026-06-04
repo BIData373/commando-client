@@ -2,44 +2,13 @@ import styled from "@emotion/styled"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { createRootRoute, Outlet } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { StrictMode, useEffect } from "react"
-import { ErrorCode, isErrorCode } from "src/utils/error-utils"
+import { StrictMode } from "react"
+import { NotFoundComponent } from "src/components/Error/NotFoundComponent"
+import { RootErrorComponent } from "src/components/Error/RootErrorComponent"
 import { ErrorModal } from "../components/ErrorModal"
 import Header from "../components/Header"
-import { useErrorModal } from "../providers/ErrorModalProvider"
 import { TitleBarProvider } from "../providers/TitleBarProvider"
-
 import "../styles.css"
-
-function NotFoundComponent() {
-	const { setErrorCode } = useErrorModal()
-	useEffect(() => {
-		setErrorCode(ErrorCode.NOT_FOUND)
-	}, [setErrorCode])
-	return null
-}
-
-interface RouteError {
-	status?: number
-	response?: { status?: number }
-}
-
-interface RootErrorComponentProps {
-	error: Error
-}
-
-function RootErrorComponent({ error }: RootErrorComponentProps) {
-	const { setErrorCode } = useErrorModal()
-
-	useEffect(() => {
-		const routeError = error as RouteError
-		const status = routeError?.status ?? routeError?.response?.status
-		const code = status && isErrorCode(status) ? status : ErrorCode.SERVER_ERROR
-		setErrorCode(code)
-	}, [error, setErrorCode])
-
-	return null
-}
 
 export const Route = createRootRoute({
 	component: RootComponent,
