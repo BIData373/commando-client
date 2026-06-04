@@ -90,9 +90,9 @@ export default function FocusedInstructions({
 				? tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED)).length
 				: tab.id === FocusedTab.APPROACHING
 					? tasks.filter((t) => t.deadlineType === DeadlineType.IMMEDIATE)
-						.length
+							.length
 					: tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
-						.length,
+							.length,
 	}))
 
 	const emptyMsg = EMPTY_MESSAGES[activeTab]

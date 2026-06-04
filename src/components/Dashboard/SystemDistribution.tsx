@@ -61,10 +61,11 @@ export default function SystemDistribution({
 				tags.set(tag.name, (tags.get(tag.name) ?? 0) + 1)
 			}
 			const { assignee } = task
-			assignee && responsibles.set(
-				assignee.name,
-				(responsibles.get(assignee.name) ?? 0) + 1,
-			)
+			assignee &&
+				responsibles.set(
+					assignee.name,
+					(responsibles.get(assignee.name) ?? 0) + 1,
+				)
 		}
 
 		return {
