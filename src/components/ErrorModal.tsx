@@ -38,7 +38,7 @@ const ERROR_CONTENT: Record<ErrorCode, ErrorContent> = {
 export function ErrorModal() {
   const navigate = useNavigate()
 
-  const error = useErrorModal()
+  const { errorCode, setErrorCode } = useErrorModal()
 
   const { urlName = "" } = useParams({ from: "/workspace/$urlName", shouldThrow: false }) || {}
   const { data } = useListWorkspaces({ urlName })
@@ -46,7 +46,7 @@ export function ErrorModal() {
   const { data: usersPermissions = [] } =
     useListPermissions(
       { workspaceId: workspace?.id ?? -1 },
-      { query: { enabled: error?.errorCode === ErrorCode.UNAUTHORIZED && !!urlName } },
+      { query: { enabled: errorCode === ErrorCode.UNAUTHORIZED && !!urlName } },
     )
 
 
@@ -55,33 +55,33 @@ export function ErrorModal() {
   )
 
   function handleClose() {
-    error?.setErrorCode(null)
+    setErrorCode(null)
   }
 
   function navigateToHomePage() {
-    error?.setErrorCode(null)
+    setErrorCode(null)
     navigate({ to: "/" })
   }
 
   function navigateToChat() {
-    error?.setErrorCode(null)
+    setErrorCode(null)
     window.open(CHAT_LINK)
   }
 
-  const content = error?.errorCode && isErrorCode(error.errorCode) ? ERROR_CONTENT[error.errorCode as ErrorCode] : null
+  const content = errorCode && isErrorCode(errorCode) ? ERROR_CONTENT[errorCode as ErrorCode] : null
 
   return (
     content &&
-    error?.errorCode && (
+    errorCode && (
       <Overlay onClick={handleClose}>
         <Card onClick={(e) => e.stopPropagation()}>
           <ContentContainer>
-            <ErrorCodeDisplay>{error.errorCode}</ErrorCodeDisplay>
+            <ErrorCodeDisplay>{errorCode}</ErrorCodeDisplay>
             <ErrorText>
               <ErrorTitle>{content.title}</ErrorTitle>
               <ErrorDescription>{content.description}</ErrorDescription>
             </ErrorText>
-            {error.errorCode === ErrorCode.UNAUTHORIZED && admins.length > 0 && (
+            {errorCode === ErrorCode.UNAUTHORIZED && admins.length > 0 && (
               <AdminContactsBox>
                 <AdminContactsContent>
                   <AdminContactsTitle>
