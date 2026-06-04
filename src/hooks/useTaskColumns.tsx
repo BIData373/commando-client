@@ -105,21 +105,10 @@ function useTaskColumns({
 	const queryClient = useQueryClient()
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
-			onSuccess: ({ taskId, assigneeId, status }) => {
-				queryClient.setQueryData<TaskDto[]>(queryKey, (tasks) =>
-					tasks?.map((t) =>
-						t.id !== taskId
-							? t
-							: {
-								...t,
-								assigneeStatuses: t.assigneeStatuses.map((as) =>
-									as.assignee.id !== assigneeId ? as : { ...as, status },
-								),
-							},
-					),
-				)
-			},
-		},
+			onSuccess: () => {
+				queryClient.invalidateQueries({ queryKey })
+			}
+		}
 	})
 
 	function onUpdateStatus(
