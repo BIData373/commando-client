@@ -111,11 +111,11 @@ function useTaskColumns({
 						t.id !== taskId
 							? t
 							: {
-									...t,
-									assigneeStatuses: t.assigneeStatuses.map((as) =>
-										as.assignee.id !== assigneeId ? as : { ...as, status },
-									),
-								},
+								...t,
+								assigneeStatuses: t.assigneeStatuses.map((as) =>
+									as.assignee.id !== assigneeId ? as : { ...as, status },
+								),
+							},
 					),
 				)
 			},
@@ -132,30 +132,30 @@ function useTaskColumns({
 
 	const selectColumn: ColumnDef<TaskRow> | null = selectMode?.enabled
 		? {
-				id: "select",
-				size: 70,
-				enableSorting: false,
-				enableColumnFilter: false,
-				header: () => (
-					<CheckboxCenter>
-						<Checkbox
-							checked={
-								selectMode.tasks.length > 0 &&
-								selectMode.selectedTaskIds.length === selectMode.tasks.length
-							}
-							onCheckedChange={(checked) => selectMode.onSelectAll(!!checked)}
-						/>
-					</CheckboxCenter>
-				),
-				cell: ({ row }) => (
-					<CheckboxCenter>
-						<Checkbox
-							checked={row.getIsSelected()}
-							onCheckedChange={(checked) => row.toggleSelected(!!checked)}
-						/>
-					</CheckboxCenter>
-				),
-			}
+			id: "select",
+			size: 70,
+			enableSorting: false,
+			enableColumnFilter: false,
+			header: () => (
+				<CheckboxCenter>
+					<Checkbox
+						checked={
+							selectMode.tasks.length > 0 &&
+							selectMode.selectedTaskIds.length === selectMode.tasks.length
+						}
+						onCheckedChange={(checked) => selectMode.onSelectAll(!!checked)}
+					/>
+				</CheckboxCenter>
+			),
+			cell: ({ row }) => (
+				<CheckboxCenter>
+					<Checkbox
+						checked={row.getIsSelected()}
+						onCheckedChange={(checked) => row.toggleSelected(!!checked)}
+					/>
+				</CheckboxCenter>
+			),
+		}
 		: null
 
 	const columnMap: Partial<Record<TaskColumn, ColumnDef<TaskRow>>> = {
@@ -232,7 +232,7 @@ function useTaskColumns({
 		},
 		status: {
 			id: "status",
-			accessorFn: (row) => row.status.id,
+			accessorFn: (row) => row.status?.id,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.status}
@@ -248,7 +248,7 @@ function useTaskColumns({
 				row: {
 					original: { id, status, assignee, workspaceId },
 				},
-			}) => (
+			}) => status && assignee && (
 				<StatusCell
 					status={status}
 					assigneeId={assignee.id}
@@ -260,7 +260,7 @@ function useTaskColumns({
 		},
 		assigneeStatuses: {
 			id: "assigneeStatuses",
-			accessorFn: (row) => row.assignee.name,
+			accessorFn: (row) => row.assignee?.name,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.assigneeStatuses}
@@ -275,18 +275,15 @@ function useTaskColumns({
 				row: {
 					original: { assignee, otherAssignees },
 				},
-			}) => {
-				const relatedDirectives = otherAssignees.map((s) => ({
-					assignee: s.assignee,
-					status: s.status,
-				}))
-				return (
-					<AssigneeCell
-						responsible={assignee}
-						relatedDirectives={relatedDirectives}
-					/>
-				)
-			},
+			}) => assignee && (
+				<AssigneeCell
+					responsible={assignee}
+					relatedDirectives={(otherAssignees ?? []).map((s) => ({
+						assignee: s.assignee,
+						status: s.status,
+					}))}
+				/>
+			),
 		},
 		deadlineType: {
 			accessorKey: "deadlineType",
@@ -465,28 +462,28 @@ function useTaskColumns({
 
 	const actionsColumn: ColumnDef<TaskRow> | null = actions
 		? {
-				id: "actions",
-				size: 43,
-				enableSorting: false,
-				enableColumnFilter: false,
-				cell: ({
-					row: {
-						original: { id },
-					},
-				}) => (
-					<RowActionsMenu
-						trigger={
-							<ActionsButton>
-								<MoreVertical size={16} />
-							</ActionsButton>
-						}
-						onEdit={() => actions.onEdit(id)}
-						onEnterSelect={() => actions.onEnterSelectMode(id)}
-						onArchive={() => actions.onArchive([id])}
-						onDelete={() => actions.onDelete([id])}
-					/>
-				),
-			}
+			id: "actions",
+			size: 43,
+			enableSorting: false,
+			enableColumnFilter: false,
+			cell: ({
+				row: {
+					original: { id },
+				},
+			}) => (
+				<RowActionsMenu
+					trigger={
+						<ActionsButton>
+							<MoreVertical size={16} />
+						</ActionsButton>
+					}
+					onEdit={() => actions.onEdit(id)}
+					onEnterSelect={() => actions.onEnterSelectMode(id)}
+					onArchive={() => actions.onArchive([id])}
+					onDelete={() => actions.onDelete([id])}
+				/>
+			),
+		}
 		: null
 
 	const visibleOrderedColumns = visibleColumns
