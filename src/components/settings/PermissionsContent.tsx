@@ -152,7 +152,7 @@ export function PermissionsContent() {
 	return (
 		<PermissionsInner>
 			<Subtitle>
-				מנהל סביבה יוצר הנחיות, מגדיר אחראיים ומבצע בקרה ומעקב אחר סטטוס ההנחיות
+				מנהל סביבה יוצר הנחיות, מגדיר אחראים ומבצע בקרה ומעקב אחר סטטוס ההנחיות
 				בסביבה
 			</Subtitle>
 

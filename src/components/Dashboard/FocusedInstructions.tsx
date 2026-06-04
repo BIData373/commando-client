@@ -12,7 +12,7 @@ import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filter-utils"
 import searchInstruction from "../../assets/icons/searchInstruction.svg"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
-import { EmptyCardState } from "./EmptyCardState"
+import { EmptyCardState } from "../shared/EmptyCardState"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface TabConfig {
@@ -90,9 +90,9 @@ export default function FocusedInstructions({
 				? tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED)).length
 				: tab.id === FocusedTab.APPROACHING
 					? tasks.filter((t) => t.deadlineType === DeadlineType.IMMEDIATE)
-							.length
+						.length
 					: tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
-							.length,
+						.length,
 	}))
 
 	const emptyMsg = EMPTY_MESSAGES[activeTab]
