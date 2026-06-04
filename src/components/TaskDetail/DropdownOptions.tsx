@@ -6,37 +6,37 @@ import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { RowActionsMenu } from "../Tasks/RowActionsMenu"
 
 interface DropdownOptions {
-  onEdit(): void
-  onArchive(): void
-  onDelete(): void
+	onEdit(): void
+	onArchive(): void
+	onDelete(): void
 }
 
 export const DropdownOptions = ({
-  onEdit,
-  onArchive,
-  onDelete,
+	onEdit,
+	onArchive,
+	onDelete,
 }: DropdownOptions) => {
-  const {
-    workspace: { id: workspaceId },
-  } = useWorkspace()
-  const { data: myPermission } = useGetMyPermission({ workspaceId })
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
-  return (
-    <RowActionsMenu
-      trigger={
-        <DotsButton>
-          <MoreVertical size={16} />
-        </DotsButton>
-      }
-      onDelete={
-        myPermission?.type === PermissionType.MANAGER ? onDelete : undefined
-      }
-      onArchive={onArchive}
-      onEdit={
-        myPermission?.type === PermissionType.MANAGER ? onEdit : undefined
-      }
-    />
-  )
+	return (
+		<RowActionsMenu
+			trigger={
+				<DotsButton>
+					<MoreVertical size={16} />
+				</DotsButton>
+			}
+			onDelete={
+				myPermission?.type === PermissionType.MANAGER ? onDelete : undefined
+			}
+			onArchive={onArchive}
+			onEdit={
+				myPermission?.type === PermissionType.MANAGER ? onEdit : undefined
+			}
+		/>
+	)
 }
 
 const DotsButton = styled.button`

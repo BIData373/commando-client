@@ -6,134 +6,132 @@ import { formatDateShort } from "../../functions/date-utils"
 import type { DatePickerValue } from "../shared/DatePicker"
 import { CalendarMode } from "../shared/DatePicker"
 import DatePickerPopover from "../shared/DatePickerPopover"
-import DeadlineTag, {
-  DEADLINE_LABELS,
-} from "../shared/DeadlineTag"
+import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface DeadlineCellProps {
-  deadlineType: DeadlineType | null
-  dueDate?: Date | null
-  onDeadlineTypeChange: (type: DeadlineType) => void
-  onDateChange: (date: Date | null) => void
+	deadlineType: DeadlineType | null
+	dueDate?: Date | null
+	onDeadlineTypeChange: (type: DeadlineType) => void
+	onDateChange: (date: Date | null) => void
 }
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 const DEADLINE_TYPES = Object.keys(DEADLINE_LABELS) as DeadlineType[]
 const TYPES_WITH_CALENDAR: DeadlineType[] = [
-  DeadlineType.DATE,
-  DeadlineType.ROLLING,
+	DeadlineType.DATE,
+	DeadlineType.ROLLING,
 ]
 export const DATA_CELL_ACTIVE_KEY = "data-cell-active"
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function DeadlineCell({
-  deadlineType,
-  dueDate,
-  onDeadlineTypeChange,
-  onDateChange,
+	deadlineType,
+	dueDate,
+	onDeadlineTypeChange,
+	onDateChange,
 }: DeadlineCellProps) {
-  const [isOpen, setIsOpen] = useState(false)
+	const [isOpen, setIsOpen] = useState(false)
 
-  function handleOptionClick(type: DeadlineType) {
-    onDeadlineTypeChange(type)
-    if (!TYPES_WITH_CALENDAR.includes(type)) {
-      setIsOpen(false)
-    }
-  }
+	function handleOptionClick(type: DeadlineType) {
+		onDeadlineTypeChange(type)
+		if (!TYPES_WITH_CALENDAR.includes(type)) {
+			setIsOpen(false)
+		}
+	}
 
-  function handleSetDate(value: DatePickerValue | undefined) {
-    const date = value instanceof Date ? value : undefined
-    onDateChange(date ?? null)
-    setIsOpen(false)
-  }
+	function handleSetDate(value: DatePickerValue | undefined) {
+		const date = value instanceof Date ? value : undefined
+		onDateChange(date ?? null)
+		setIsOpen(false)
+	}
 
-  function handleSetWithoutDate() {
-    onDateChange(null)
-    setIsOpen(false)
-  }
+	function handleSetWithoutDate() {
+		onDateChange(null)
+		setIsOpen(false)
+	}
 
-  return (
-    <DeadlineCellWrapper {...{ [DATA_CELL_ACTIVE_KEY]: isOpen || undefined }}>
-      <Popover open={isOpen} onOpenChange={setIsOpen}>
-        <PopoverTrigger asChild>
-          <DeadlineTrigger>
-            {!deadlineType ? (
-              <PlaceholderText>{`תג"ב`}</PlaceholderText>
-            ) : deadlineType === DeadlineType.IMMEDIATE ? (
-              <DeadlineTag $type={DeadlineType.IMMEDIATE}>
-                {DEADLINE_LABELS[DeadlineType.IMMEDIATE]}
-              </DeadlineTag>
-            ) : deadlineType === DeadlineType.ROLLING ? (
-              <DisplayRow>
-                <DeadlineTag $type={DeadlineType.ROLLING}>
-                  {DEADLINE_LABELS[DeadlineType.ROLLING]}
-                </DeadlineTag>
-                {dueDate && <DateText>{formatDateShort(dueDate)}</DateText>}
-              </DisplayRow>
-            ) : dueDate ? (
-              <DateText>{formatDateShort(dueDate)}</DateText>
-            ) : (
-              <PlaceholderText>{`תג"ב`}</PlaceholderText>
-            )}
-          </DeadlineTrigger>
-        </PopoverTrigger>
-        <DeadlineDropdownContent sideOffset={4}>
-          <DropdownRow>
-            <DropdownHeader>{`תג"ב`}</DropdownHeader>
-            {DEADLINE_TYPES.map((type) => (
-              <DeadlineOption
-                key={type}
-                $active={deadlineType === type}
-                onClick={() => handleOptionClick(type)}
-              >
-                <DeadlineOptionText>{DEADLINE_LABELS[type]}</DeadlineOptionText>
+	return (
+		<DeadlineCellWrapper {...{ [DATA_CELL_ACTIVE_KEY]: isOpen || undefined }}>
+			<Popover open={isOpen} onOpenChange={setIsOpen}>
+				<PopoverTrigger asChild>
+					<DeadlineTrigger>
+						{!deadlineType ? (
+							<PlaceholderText>{`תג"ב`}</PlaceholderText>
+						) : deadlineType === DeadlineType.IMMEDIATE ? (
+							<DeadlineTag $type={DeadlineType.IMMEDIATE}>
+								{DEADLINE_LABELS[DeadlineType.IMMEDIATE]}
+							</DeadlineTag>
+						) : deadlineType === DeadlineType.ROLLING ? (
+							<DisplayRow>
+								<DeadlineTag $type={DeadlineType.ROLLING}>
+									{DEADLINE_LABELS[DeadlineType.ROLLING]}
+								</DeadlineTag>
+								{dueDate && <DateText>{formatDateShort(dueDate)}</DateText>}
+							</DisplayRow>
+						) : dueDate ? (
+							<DateText>{formatDateShort(dueDate)}</DateText>
+						) : (
+							<PlaceholderText>{`תג"ב`}</PlaceholderText>
+						)}
+					</DeadlineTrigger>
+				</PopoverTrigger>
+				<DeadlineDropdownContent sideOffset={4}>
+					<DropdownRow>
+						<DropdownHeader>{`תג"ב`}</DropdownHeader>
+						{DEADLINE_TYPES.map((type) => (
+							<DeadlineOption
+								key={type}
+								$active={deadlineType === type}
+								onClick={() => handleOptionClick(type)}
+							>
+								<DeadlineOptionText>{DEADLINE_LABELS[type]}</DeadlineOptionText>
 
-                {TYPES_WITH_CALENDAR.includes(type) && (
-                  <ChevronLeft size={12} />
-                )}
-              </DeadlineOption>
-            ))}
-            <DatePickerPopover
-              mode={CalendarMode.Single}
-              open={
-                deadlineType === DeadlineType.DATE ||
-                deadlineType === DeadlineType.ROLLING
-              }
-              value={dueDate ?? undefined}
-              side="left"
-              sideOffset={12}
-              align="start"
-              triggerButton={() => <HiddenAnchor />}
-              header={() => (
-                <PopoverHeaderText>
-                  {deadlineType === DeadlineType.ROLLING
-                    ? "עד (אופציונלי)"
-                    : "בחר תאריך להנחיה"}
-                </PopoverHeaderText>
-              )}
-              footer={({ value }) => (
-                <PopoverFooter>
-                  <SetButton onClick={() => handleSetDate(value)}>
-                    הגדר
-                  </SetButton>
-                  {deadlineType === DeadlineType.ROLLING && (
-                    <SetWithoutDateButton onClick={handleSetWithoutDate}>
-                      הגדר ללא תאריך
-                    </SetWithoutDateButton>
-                  )}
-                </PopoverFooter>
-              )}
-            />
-          </DropdownRow>
-        </DeadlineDropdownContent>
-      </Popover>
-    </DeadlineCellWrapper>
-  )
+								{TYPES_WITH_CALENDAR.includes(type) && (
+									<ChevronLeft size={12} />
+								)}
+							</DeadlineOption>
+						))}
+						<DatePickerPopover
+							mode={CalendarMode.Single}
+							open={
+								deadlineType === DeadlineType.DATE ||
+								deadlineType === DeadlineType.ROLLING
+							}
+							value={dueDate ?? undefined}
+							side="left"
+							sideOffset={12}
+							align="start"
+							triggerButton={() => <HiddenAnchor />}
+							header={() => (
+								<PopoverHeaderText>
+									{deadlineType === DeadlineType.ROLLING
+										? "עד (אופציונלי)"
+										: "בחר תאריך להנחיה"}
+								</PopoverHeaderText>
+							)}
+							footer={({ value }) => (
+								<PopoverFooter>
+									<SetButton onClick={() => handleSetDate(value)}>
+										הגדר
+									</SetButton>
+									{deadlineType === DeadlineType.ROLLING && (
+										<SetWithoutDateButton onClick={handleSetWithoutDate}>
+											הגדר ללא תאריך
+										</SetWithoutDateButton>
+									)}
+								</PopoverFooter>
+							)}
+						/>
+					</DropdownRow>
+				</DeadlineDropdownContent>
+			</Popover>
+		</DeadlineCellWrapper>
+	)
 }
 
 export default DeadlineCell

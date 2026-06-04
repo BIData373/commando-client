@@ -7,7 +7,7 @@ export const Route = createFileRoute("/workspace/$urlName/")({
 			to: "/workspace/$urlName/tasks",
 			params,
 			search: {
-        view: TasksView.TABLE
+				view: TasksView.TABLE,
 			},
 		})
 	},
