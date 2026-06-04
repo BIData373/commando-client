@@ -1,7 +1,8 @@
 import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
-import { isThisWeek } from "date-fns"
+import { isThisWeek, isWithinInterval } from "date-fns"
 import { useState } from "react"
+import type { DateRange } from "react-day-picker"
 import {
 	type TaskWithWorkspaceDto,
 	type WorkspaceDto,
@@ -12,6 +13,7 @@ import {
 	useListPersonalTasks,
 } from "src/api/task/task"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
+import { DATE_TYPE, getTaskDateByDateType } from "src/utils/data-type-utils"
 import { applyAllFilters } from "../../functions/filter-utils"
 import { toTaskRows } from "../../functions/tasks-table"
 import {
@@ -19,6 +21,7 @@ import {
 	useTasksFilters,
 } from "../../providers/TasksFiltersProvider"
 import { useTitleBar } from "../../providers/TitleBarProvider"
+import { DashboardDatePicker } from "../Dashboard/DashboardDatePicker/DashboardDatePicker"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { EmptyState } from "../Tasks/EmptyState"
@@ -80,6 +83,8 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
 	>(new Set())
+	const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
+	const [dateType, setDateType] = useState<DATE_TYPE>(DATE_TYPE.CREATION_DATE)
 
 	const taskRows = toPersonalTaskRows(rawTasks)
 
@@ -111,6 +116,15 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 		filteredTaskRows = filteredTaskRows.filter((t) =>
 			activeWorkspaceFilters.has(t.workspace.id),
 		)
+	}
+
+	if (dateRange?.from && dateRange?.to) {
+		const from = dateRange.from
+		const to = dateRange.to
+		filteredTaskRows = filteredTaskRows.filter((task) => {
+			const date = getTaskDateByDateType(task, dateType)
+			return date ? isWithinInterval(date, { start: from, end: to }) : false
+		})
 	}
 
 	function clearAllFilters() {
@@ -180,6 +194,14 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 							activeValues={activeWorkspaceFilters}
 							onApply={setActiveWorkspaceFilters}
 							$active={activeWorkspaceFilters.size > 0}
+						/>
+					}
+					startSlot={
+						<DashboardDatePicker
+							dateType={dateType}
+							range={dateRange}
+							onDateTypeChange={setDateType}
+							setRange={setDateRange}
 						/>
 					}
 				/>

@@ -1,7 +1,9 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
+import { isWithinInterval } from "date-fns"
 import { ChevronDown, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
+import type { DateRange } from "react-day-picker"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
@@ -12,10 +14,13 @@ import {
 } from "src/routes/workspace/$urlName/tasks"
 import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new"
 import type { QuickFilter } from "src/utils/filter-utils"
+import { DATE_TYPE, getTaskDateByDateType } from "src/utils/data-type-utils"
 import { exportTasksToExcel } from "../../functions/export-excel"
 import { applyAllFilters } from "../../functions/filter-utils"
+import type { TaskRow } from "../../providers/TasksFiltersProvider"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { useTitleBar } from "../../providers/TitleBarProvider"
+import { DashboardDatePicker } from "../Dashboard/DashboardDatePicker/DashboardDatePicker"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import {
 	DropdownMenu,
@@ -57,6 +62,8 @@ function TasksLayout({
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
 	)
+	const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
+	const [dateType, setDateType] = useState<DATE_TYPE>(DATE_TYPE.CREATION_DATE)
 	const allTopics = [
 		...new Set(tasks.flatMap((t) => t.tags.map((tag) => tag.name))),
 	]
@@ -73,18 +80,29 @@ function TasksLayout({
 	)
 
 	const filteredTasks = useMemo(
-		() =>
-			activeTopicFilters.size > 0
-				? toTaskRows(
-					applyAllFilters(
-						tasks,
-						tabFilterSet,
-						activeTopicFilters,
-						searchQuery,
-					),
-				)
-				: baseFilteredTasks,
-		[tasks, searchQuery, tabFilterSet, activeTopicFilters, baseFilteredTasks],
+		() => {
+			const byQuickAndTopic =
+				activeTopicFilters.size > 0
+					? toTaskRows(
+						applyAllFilters(
+							tasks,
+							tabFilterSet,
+							activeTopicFilters,
+							searchQuery,
+						),
+					)
+					: baseFilteredTasks
+
+			const from = dateRange?.from
+			const to = dateRange?.to
+			if (!from || !to) return byQuickAndTopic
+
+			return byQuickAndTopic.filter((task) => {
+				const date = getTaskDateByDateType(task, dateType)
+				return date ? isWithinInterval(date, { start: from, end: to }) : false
+			})
+		},
+		[tasks, searchQuery, tabFilterSet, activeTopicFilters, baseFilteredTasks, dateRange, dateType],
 	)
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
@@ -134,6 +152,7 @@ function TasksLayout({
 
 	function clearAllFilters() {
 		setActiveTopicFilters(new Set())
+		setDateRange(undefined)
 		navigateToTasks({
 			tabFilter: [],
 			statusFilter: [],
@@ -208,7 +227,7 @@ function TasksLayout({
 					onExport={handleExport}
 					tabFilter={tabFilter}
 					onToggleTabFilter={handleToggleTabFilter}
-					hasExtraActiveFilters={activeTopicFilters.size > 0}
+					hasExtraActiveFilters={activeTopicFilters.size > 0 || !!dateRange}
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label="נושא"
@@ -216,6 +235,14 @@ function TasksLayout({
 							activeValues={activeTopicFilters}
 							onApply={setActiveTopicFilters}
 							$active={activeTopicFilters.size > 0}
+						/>
+					}
+					startSlot={
+						<DashboardDatePicker
+							dateType={dateType}
+							range={dateRange}
+							onDateTypeChange={setDateType}
+							setRange={setDateRange}
 						/>
 					}
 				/>

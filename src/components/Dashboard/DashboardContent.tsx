@@ -1,14 +1,13 @@
 import styled from "@emotion/styled"
 import { useLocalStorage } from "@mantine/hooks"
 import { useNavigate, useParams } from "@tanstack/react-router"
-import { isWithinInterval, setYear, subMonths } from "date-fns"
+import { isWithinInterval } from "date-fns"
 import { useMemo } from "react"
 import type { DateRange } from "react-day-picker"
 import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { DATE_TYPE } from "src/utils/data-type-utils"
+import { DATE_TYPE, getTaskDateByDateType } from "src/utils/data-type-utils"
 import {
 	getDashboardFilterDataTypeKey,
 	getDashboardFilterRangeKey,
@@ -40,9 +39,9 @@ export function DashboardContent() {
 
 	const range: DateRange | undefined = persistedRange
 		? {
-				from: persistedRange.from ? new Date(persistedRange.from) : undefined,
-				to: persistedRange.to ? new Date(persistedRange.to) : undefined,
-			}
+			from: persistedRange.from ? new Date(persistedRange.from) : undefined,
+			to: persistedRange.to ? new Date(persistedRange.to) : undefined,
+		}
 		: undefined
 
 	function handleSetRange(newRange?: DateRange) {
@@ -54,34 +53,17 @@ export function DashboardContent() {
 	const tasks = useMemo(() => toTaskRows(rawTasks), [rawTasks])
 
 	const filteredTasks = useMemo(() => {
-		const refYear = range?.from?.getFullYear() ?? new Date().getFullYear()
-
-		function getTaskDate(task: TaskRow, year: number): Date | null {
-			switch (dataType) {
-				case DATE_TYPE.CREATION_DATE:
-					return new Date(task.createdAt)
-				case DATE_TYPE.EXPECTED_END:
-					return new Date(task.dueDate)
-				case DATE_TYPE.INSTRUCTION_DATE:
-					return setYear(subMonths(task.source!.date, 1), year)
-				case DATE_TYPE.UPDATING_DATE:
-					return new Date(task.updatedAt)
-				default:
-					return new Date(task.createdAt)
-			}
-		}
-
 		const from = range?.from
 		const to = range?.to
 
 		let filtered =
 			from && to
 				? tasks.filter((task) => {
-						const date = getTaskDate(task, refYear)
-						return (
-							date !== null && isWithinInterval(date, { start: from, end: to })
-						)
-					})
+					const date = getTaskDateByDateType(task, dataType)
+					return (
+						date !== null && isWithinInterval(date, { start: from, end: to })
+					)
+				})
 				: [...tasks]
 
 		if (dataType === DATE_TYPE.UPDATING_DATE) {
