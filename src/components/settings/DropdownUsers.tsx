@@ -1,4 +1,6 @@
+import styled from "@emotion/styled"
 import { debounce } from "lodash"
+import { UserPlus } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import type { UserDto } from "src/api/model"
 import { useSearchUsers } from "src/api/user/user"
@@ -10,6 +12,9 @@ interface DropdownUsersProps {
 	onChange(value: string): void
 	onSelect(user: UserDto | null): void
 	onClear(): void
+	onAdd?: () => void
+	selectedUser?: UserDto | null
+	excludeUpns?: string[]
 	placeholder?: string
 }
 
@@ -18,14 +23,21 @@ export function DropdownUsers({
 	onChange,
 	onSelect,
 	onClear,
+	onAdd,
+	selectedUser,
+	excludeUpns,
 	placeholder,
 }: DropdownUsersProps) {
 	const [localValue, setLocalValue] = useState(value)
 
-	const { data: users = [], isLoading } = useSearchUsers(
+	const { data: rawUsers = [], isLoading } = useSearchUsers(
 		{ search: value },
 		{ query: { enabled: value.length > 0 } },
 	)
+
+	const users = excludeUpns?.length
+		? rawUsers.filter((u) => !excludeUpns.includes(u.upn))
+		: rawUsers
 
 	const onChangeDebounced = useMemo(() => debounce(onChange, 300), [onChange])
 
@@ -35,19 +47,73 @@ export function DropdownUsers({
 
 	function handleChange(value: string) {
 		setLocalValue(value)
-		onChangeDebounced(value)
+		if (value.length === 0) {
+			onClear()
+		} else {
+			onChangeDebounced(value)
+		}
 	}
 
 	return (
-		<SearchDropdown<UserDto>
-			items={users}
-			value={localValue}
-			onChange={handleChange}
-			onSelect={onSelect}
-			onClear={onClear}
-			placeholder={placeholder}
-			isLoading={isLoading}
-			renderItem={(item) => <UserItem user={item} />}
-		/>
+		<Row>
+			<SearchDropdown<UserDto>
+				items={users}
+				value={localValue}
+				onChange={handleChange}
+				onSelect={onSelect}
+				onClear={onClear}
+				placeholder={placeholder}
+				isLoading={isLoading}
+				renderItem={(item) => <UserItem user={item} />}
+			/>
+			{onAdd && (
+				<AddButton
+					type="button"
+					$active={!!selectedUser}
+					disabled={!selectedUser}
+					onClick={onAdd}
+				>
+					<UserPlus size={16} />
+				</AddButton>
+			)}
+		</Row>
 	)
 }
+
+const Row = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+`
+
+const AddButton = styled.button<{ $active: boolean }>`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  cursor: ${({ $active }) => ($active ? "pointer" : "default")};
+  color: ${({ $active }) => ($active ? "#fff" : "rgba(0, 0, 0, 0.25)")};
+  background: var(--default-linear);
+  transition: color 150ms ease-in-out;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #D9D9D9;
+    opacity: ${({ $active }) => ($active ? 0 : 1)};
+    transition: opacity 150ms ease-in-out;
+  }
+
+  & > * {
+    position: relative;
+    z-index: 1;
+  }
+`
