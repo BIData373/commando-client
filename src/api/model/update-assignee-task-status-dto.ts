@@ -10,4 +10,5 @@ export interface UpdateAssigneeTaskStatusDto {
 	assigneeId: number
 	taskId: number
 	statusId: number
+	description?: string
 }
