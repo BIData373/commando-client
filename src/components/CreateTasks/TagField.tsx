@@ -38,8 +38,7 @@ function TagField({
 	const isNewTag =
 		tagQuery.trim() !== "" &&
 		!availableTags.some(({ name }) => name === tagQuery.trim())
-	const showDropdown =
-		isDropdownOpen && (filteredTags.length > 0 || isNewTag)
+	const showDropdown = isDropdownOpen && (filteredTags.length > 0 || isNewTag)
 
 	function handleSelect(tag: string) {
 		onTagSelect(tag)
@@ -113,9 +112,7 @@ function TagField({
 							<TagChip key={tag}>
 								<TagText>{tag}</TagText>
 								{!lockedTags.includes(tag) && (
-									<TagRemoveButton
-										onMouseDown={(e) => handleRemoveTag(e, tag)}
-									>
+									<TagRemoveButton onMouseDown={(e) => handleRemoveTag(e, tag)}>
 										<X size={12} />
 									</TagRemoveButton>
 								)}

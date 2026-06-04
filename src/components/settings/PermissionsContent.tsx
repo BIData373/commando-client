@@ -1,11 +1,7 @@
 import styled from "@emotion/styled"
 import { UserPlus } from "lucide-react"
 import { useMemo, useState } from "react"
-import {
-	type PermissionDto,
-	PermissionType,
-	type UserDto,
-} from "src/api/model"
+import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
 import {
 	useDeletePermission,
 	useListPermissions,

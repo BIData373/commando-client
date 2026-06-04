@@ -4,100 +4,100 @@ import { useListAssignees } from "src/api/assignee/assignee"
 import type { AssigneeDto } from "src/api/model"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import type {
-  NewTaskRow,
-  TaskTableMeta,
+	NewTaskRow,
+	TaskTableMeta,
 } from "../CreateTasksFromDiscussion/TasksColumns"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import AssigneePicker from "../shared/AssigneePicker"
 
 interface AssigneeTableCellProps {
-  row: NewTaskRow
-  meta: TaskTableMeta
+	row: NewTaskRow
+	meta: TaskTableMeta
 }
 
 function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
-  const {
-    workspace: { id: workspaceId },
-  } = useWorkspace()
-  const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
 
-  const assigneeMap = Object.fromEntries(
-    assignees.map((a) => [a.id, a]),
-  ) as Record<number, AssigneeDto>
+	const assigneeMap = Object.fromEntries(
+		assignees.map((a) => [a.id, a]),
+	) as Record<number, AssigneeDto>
 
-  const assigneeIds = row.assigneeIds
-  const hasMultiple = assigneeIds.length > 1
-  const isExpanded = meta.expandedRows.has(row.id)
+	const assigneeIds = row.assigneeIds
+	const hasMultiple = assigneeIds.length > 1
+	const isExpanded = meta.expandedRows.has(row.id)
 
-  function handleToggleAssignee(assigneeId: number) {
-    const isRemoving = assigneeIds.includes(assigneeId)
-    const nextIds = isRemoving
-      ? assigneeIds.filter((id) => id !== assigneeId)
-      : [...assigneeIds, assigneeId]
+	function handleToggleAssignee(assigneeId: number) {
+		const isRemoving = assigneeIds.includes(assigneeId)
+		const nextIds = isRemoving
+			? assigneeIds.filter((id) => id !== assigneeId)
+			: [...assigneeIds, assigneeId]
 
-    const nextDetails = isRemoving
-      ? Object.fromEntries(
-        Object.entries(row.assigneeDetails).filter(
-          ([id]) => Number(id) !== assigneeId,
-        ),
-      )
-      : row.assigneeDetails
+		const nextDetails = isRemoving
+			? Object.fromEntries(
+					Object.entries(row.assigneeDetails).filter(
+						([id]) => Number(id) !== assigneeId,
+					),
+				)
+			: row.assigneeDetails
 
-    meta.updateRow(row.id, {
-      assigneeIds: nextIds,
-      assigneeDetails: nextDetails,
-    })
-  }
+		meta.updateRow(row.id, {
+			assigneeIds: nextIds,
+			assigneeDetails: nextDetails,
+		})
+	}
 
-  return hasMultiple && !isExpanded && !isLoading ? (
-    <CollapsedAssigneeButton
-      type="button"
-      onClick={() => meta.toggleRowExpansion(row.id)}
-    >
-      <ChevronDown size={16} />
-      <CollapsedAssigneeLabel>
-        {assigneeIds.length} אחראים
-      </CollapsedAssigneeLabel>
-    </CollapsedAssigneeButton>
-  ) : (
-    <AssigneeCellOuter>
-      <AssigneePicker
-        selectedAssignees={assigneeIds}
-        onToggle={handleToggleAssignee}
-        trigger={
-          <CompactTriggerButton type="button">
-            <CompactChevron size={16} />
+	return hasMultiple && !isExpanded && !isLoading ? (
+		<CollapsedAssigneeButton
+			type="button"
+			onClick={() => meta.toggleRowExpansion(row.id)}
+		>
+			<ChevronDown size={16} />
+			<CollapsedAssigneeLabel>
+				{assigneeIds.length} אחראים
+			</CollapsedAssigneeLabel>
+		</CollapsedAssigneeButton>
+	) : (
+		<AssigneeCellOuter>
+			<AssigneePicker
+				selectedAssignees={assigneeIds}
+				onToggle={handleToggleAssignee}
+				trigger={
+					<CompactTriggerButton type="button">
+						<CompactChevron size={16} />
 
-            {hasMultiple ? (
-              <CompactAvatarStack>
-                {assigneeIds.map((id) =>
-                  assigneeMap[id] ? (
-                    <StackedAssigneeAvatar
-                      key={id}
-                      assignee={assigneeMap[id]}
-                      size={22}
-                    />
-                  ) : null,
-                )}
-              </CompactAvatarStack>
-            ) : assigneeIds.length === 1 && assigneeMap[assigneeIds[0]] ? (
-              <AssigneeTag>
-                <AssigneeTagName>
-                  {assigneeMap[assigneeIds[0]].name}
-                </AssigneeTagName>
-                <AssigneeAvatar
-                  assignee={assigneeMap[assigneeIds[0]]}
-                  size={18}
-                />
-              </AssigneeTag>
-            ) : (
-              <CompactLabel>בחר אחראי</CompactLabel>
-            )}
-          </CompactTriggerButton>
-        }
-      />
-    </AssigneeCellOuter>
-  )
+						{hasMultiple ? (
+							<CompactAvatarStack>
+								{assigneeIds.map((id) =>
+									assigneeMap[id] ? (
+										<StackedAssigneeAvatar
+											key={id}
+											assignee={assigneeMap[id]}
+											size={22}
+										/>
+									) : null,
+								)}
+							</CompactAvatarStack>
+						) : assigneeIds.length === 1 && assigneeMap[assigneeIds[0]] ? (
+							<AssigneeTag>
+								<AssigneeTagName>
+									{assigneeMap[assigneeIds[0]].name}
+								</AssigneeTagName>
+								<AssigneeAvatar
+									assignee={assigneeMap[assigneeIds[0]]}
+									size={18}
+								/>
+							</AssigneeTag>
+						) : (
+							<CompactLabel>בחר אחראי</CompactLabel>
+						)}
+					</CompactTriggerButton>
+				}
+			/>
+		</AssigneeCellOuter>
+	)
 }
 
 export default AssigneeTableCell

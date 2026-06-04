@@ -3,68 +3,68 @@ import { ChevronDown } from "lucide-react"
 import { useState } from "react"
 
 interface MetricsBarProps {
-  totalCount: number
-  notStartedCount: number
-  inProgressCount: number
-  weeklyNew: number
+	totalCount: number
+	notStartedCount: number
+	inProgressCount: number
+	weeklyNew: number
 }
 
 function MetricsBar({
-  totalCount,
-  notStartedCount,
-  inProgressCount,
-  weeklyNew,
+	totalCount,
+	notStartedCount,
+	inProgressCount,
+	weeklyNew,
 }: MetricsBarProps) {
-  const [open, setOpen] = useState(true)
+	const [open, setOpen] = useState(true)
 
-  function toggleOpen() {
-    setOpen((prev) => !prev)
-  }
+	function toggleOpen() {
+		setOpen((prev) => !prev)
+	}
 
-  // TODO - fix status tags here
-  return (
-    <MetricsSection>
-      <CardsWrapper $open={open}>
-        <CardsRow>
-          <MetricCard>
-            <CardHeader>
-              <CardLabel>בעבודה</CardLabel>
-              {/* <StatusTag status="in_progress" /> */}
-            </CardHeader>
-            <CardNumber>{inProgressCount}</CardNumber>
-          </MetricCard>
+	// TODO - fix status tags here
+	return (
+		<MetricsSection>
+			<CardsWrapper $open={open}>
+				<CardsRow>
+					<MetricCard>
+						<CardHeader>
+							<CardLabel>בעבודה</CardLabel>
+							{/* <StatusTag status="in_progress" /> */}
+						</CardHeader>
+						<CardNumber>{inProgressCount}</CardNumber>
+					</MetricCard>
 
-          <MetricCard>
-            <CardHeader>
-              <CardLabel>טרם בוצעו</CardLabel>
-              {/* <StatusTag status="not_started" /> */}
-            </CardHeader>
-            <CardNumber>{notStartedCount}</CardNumber>
-          </MetricCard>
+					<MetricCard>
+						<CardHeader>
+							<CardLabel>טרם בוצעו</CardLabel>
+							{/* <StatusTag status="not_started" /> */}
+						</CardHeader>
+						<CardNumber>{notStartedCount}</CardNumber>
+					</MetricCard>
 
-          <MetricCard $highlighted>
-            <CardHeader>
-              <CardLabel>סה"כ הנחיות שקיבלתי</CardLabel>
-            </CardHeader>
-            <CardFooter>
-              <WeeklyBadge>
-                <WeeklyText>השבוע</WeeklyText>
-                <WeeklyText>+{weeklyNew}</WeeklyText>
-              </WeeklyBadge>
-              <CardNumber>{totalCount}</CardNumber>
-            </CardFooter>
-          </MetricCard>
-        </CardsRow>
-      </CardsWrapper>
-      <CollapseToggle>
-        <DividerLine />
-        <CollapseButton onClick={toggleOpen}>
-          <CollapseIcon size={14} $open={open} />
-        </CollapseButton>
-        <DividerLine />
-      </CollapseToggle>
-    </MetricsSection>
-  )
+					<MetricCard $highlighted>
+						<CardHeader>
+							<CardLabel>סה"כ הנחיות שקיבלתי</CardLabel>
+						</CardHeader>
+						<CardFooter>
+							<WeeklyBadge>
+								<WeeklyText>השבוע</WeeklyText>
+								<WeeklyText>+{weeklyNew}</WeeklyText>
+							</WeeklyBadge>
+							<CardNumber>{totalCount}</CardNumber>
+						</CardFooter>
+					</MetricCard>
+				</CardsRow>
+			</CardsWrapper>
+			<CollapseToggle>
+				<DividerLine />
+				<CollapseButton onClick={toggleOpen}>
+					<CollapseIcon size={14} $open={open} />
+				</CollapseButton>
+				<DividerLine />
+			</CollapseToggle>
+		</MetricsSection>
+	)
 }
 
 export { MetricsBar }
@@ -174,7 +174,7 @@ const CollapseButton = styled.button`
   }
 `
 
-const CollapseIcon = styled(ChevronDown) <{ $open: boolean }>`
+const CollapseIcon = styled(ChevronDown)<{ $open: boolean }>`
   color: var(--text-color-2);
   transition: transform 420ms cubic-bezier(0.4, 0, 0.2, 1);
   transform: ${({ $open }) => ($open ? "rotate(180deg)" : "rotate(0)")};
