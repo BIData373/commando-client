@@ -4,14 +4,14 @@ import { useListAssignees } from "src/api/assignee/assignee"
 import type { AssigneeDto } from "src/api/model"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import type {
-	TaskRow,
+	NewTaskRow,
 	TaskTableMeta,
 } from "../CreateTasksFromDiscussion/TasksColumns"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import AssigneePicker from "../shared/AssigneePicker"
 
 interface AssigneeTableCellProps {
-	row: TaskRow
+	row: NewTaskRow
 	meta: TaskTableMeta
 }
 

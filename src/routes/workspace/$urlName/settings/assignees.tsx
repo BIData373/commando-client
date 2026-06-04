@@ -34,7 +34,7 @@ const AssigneesRoot = styled.div`
 const CardScrollArea = styled.div`
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  direction: ltr;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 `

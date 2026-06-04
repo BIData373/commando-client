@@ -7,59 +7,57 @@ import HighlightMatch from "../shared/HighlightMatch"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-interface TopicFieldProps {
-	topics: string[]
-	lockedTopics: string[]
-	onTopicSelect: (topic: string) => void
-	onTopicRemove: (topic: string) => void
+interface TagFieldProps {
+	tags: string[]
+	lockedTags: string[]
+	onTagSelect: (tag: string) => void
+	onTagRemove: (tag: string) => void
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-// FIX Rename to tags
-function TopicField({
-	topics,
-	lockedTopics,
-	onTopicSelect,
-	onTopicRemove,
-}: TopicFieldProps) {
-	const [topicQuery, setTopicQuery] = useState("")
+function TagField({
+	tags,
+	lockedTags,
+	onTagSelect,
+	onTagRemove,
+}: TagFieldProps) {
+	const [tagQuery, setTagQuery] = useState("")
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 	const inputRef = useRef<HTMLInputElement>(null)
 
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
-	const { data: tags = [] } = useListTags({ workspaceId })
+	const { data: availableTags = [] } = useListTags({ workspaceId })
 
-	const filteredTopics = tags.filter(
-		(tag) => tag.name.includes(topicQuery) && !topics.includes(tag.name),
+	const filteredTags = availableTags.filter(
+		(tag) => tag.name.includes(tagQuery) && !tags.includes(tag.name),
 	)
 
-	const isNewTopic =
-		topicQuery.trim() !== "" &&
-		!tags.some(({ name }) => name === topicQuery.trim())
-	const showDropdown =
-		isDropdownOpen && (filteredTopics.length > 0 || isNewTopic)
+	const isNewTag =
+		tagQuery.trim() !== "" &&
+		!availableTags.some(({ name }) => name === tagQuery.trim())
+	const showDropdown = isDropdownOpen && (filteredTags.length > 0 || isNewTag)
 
-	function handleSelect(topic: string) {
-		onTopicSelect(topic)
-		setTopicQuery("")
+	function handleSelect(tag: string) {
+		onTagSelect(tag)
+		setTagQuery("")
 	}
 
 	function handleCreateNew() {
-		if (topicQuery.trim() && !topics.includes(topicQuery.trim())) {
-			onTopicSelect(topicQuery.trim())
+		if (tagQuery.trim() && !tags.includes(tagQuery.trim())) {
+			onTagSelect(tagQuery.trim())
 		}
-		setTopicQuery("")
+		setTagQuery("")
 	}
 
 	function handleKeyDown(e: React.KeyboardEvent) {
 		if (e.key === "Enter") {
 			e.preventDefault()
-			if (topicQuery.trim()) {
-				const existing = filteredTopics.find(
-					({ name }) => name === topicQuery.trim(),
+			if (tagQuery.trim()) {
+				const existing = filteredTags.find(
+					({ name }) => name === tagQuery.trim(),
 				)
 				if (existing) {
 					handleSelect(existing.name)
@@ -70,14 +68,14 @@ function TopicField({
 		}
 	}
 
-	function handleRemoveTopic(e: React.MouseEvent, topic: string) {
+	function handleRemoveTag(e: React.MouseEvent, tag: string) {
 		e.preventDefault()
-		onTopicRemove(topic)
+		onTagRemove(tag)
 	}
 
-	function handleSelectMouseDown(e: React.MouseEvent, topic: string) {
+	function handleSelectMouseDown(e: React.MouseEvent, tag: string) {
 		e.preventDefault()
-		handleSelect(topic)
+		handleSelect(tag)
 	}
 
 	function handleCreateNewMouseDown(e: React.MouseEvent) {
@@ -90,7 +88,7 @@ function TopicField({
 	}
 
 	function handleQueryChange(e: React.ChangeEvent<HTMLInputElement>) {
-		setTopicQuery(e.target.value)
+		setTagQuery(e.target.value)
 	}
 
 	function handleFocus() {
@@ -106,73 +104,71 @@ function TopicField({
 			<FormLabelRow>
 				<LabelText>נושא</LabelText>
 			</FormLabelRow>
-			<TopicFieldWrapper>
-				<TopicInputBox onClick={handleInputBoxClick}>
+			<TagFieldWrapper>
+				<TagInputBox onClick={handleInputBoxClick}>
 					<StyledChevronDown size={16} />
 					<InputContent>
-						{topics.map((topic) => (
-							<TopicTag key={topic}>
-								<TagText>{topic}</TagText>
-								{!lockedTopics.includes(topic) && (
-									<TagRemoveButton
-										onMouseDown={(e) => handleRemoveTopic(e, topic)}
-									>
+						{tags.map((tag) => (
+							<TagChip key={tag}>
+								<TagText>{tag}</TagText>
+								{!lockedTags.includes(tag) && (
+									<TagRemoveButton onMouseDown={(e) => handleRemoveTag(e, tag)}>
 										<X size={12} />
 									</TagRemoveButton>
 								)}
-							</TopicTag>
+							</TagChip>
 						))}
-						<TopicInputField
+						<TagInputField
 							ref={inputRef}
-							value={topicQuery}
+							value={tagQuery}
 							onChange={handleQueryChange}
 							onFocus={handleFocus}
 							onBlur={handleBlur}
 							onKeyDown={handleKeyDown}
 							placeholder={
-								topics.length === 0
+								tags.length === 0
 									? "מאמץ/מבצע/קטגוריה (לדוג': 'שאגת הארי' , הגנה במרחב)"
 									: ""
 							}
 							dir="rtl"
 						/>
 					</InputContent>
-					{topics.length === 0 && <StyledTag size={16} />}
-				</TopicInputBox>
+					{tags.length === 0 && <StyledTag size={16} />}
+				</TagInputBox>
 				{showDropdown && (
 					<DropdownMenu>
-						{filteredTopics.length > 0 && topicQuery && (
+						{filteredTags.length > 0 && tagQuery && (
 							<SuggestionsHeader>הצעות</SuggestionsHeader>
 						)}
-						{filteredTopics.map(({ name }) => (
-							<TopicOption
+						{filteredTags.map(({ name }) => (
+							<TagOption
 								key={name}
 								onMouseDown={(e) => handleSelectMouseDown(e, name)}
 							>
-								{topicQuery ? (
-									<HighlightMatch text={name} query={topicQuery} />
+								{tagQuery ? (
+									<HighlightMatch text={name} query={tagQuery} />
 								) : (
 									name
 								)}
-							</TopicOption>
+							</TagOption>
 						))}
-						{isNewTopic && (
+						{isNewTag && (
 							<>
-								{filteredTopics.length > 0 && <Divider />}
-								<TopicOption onMouseDown={handleCreateNewMouseDown}>
-									<HighlightedText>{topicQuery}</HighlightedText>
+								{filteredTags.length > 0 && <Divider />}
+								<TagOption onMouseDown={handleCreateNewMouseDown}>
+									<HighlightedText>{tagQuery}</HighlightedText>
 									<span> (חדש)</span>
-								</TopicOption>
+								</TagOption>
 							</>
 						)}
 					</DropdownMenu>
 				)}
-			</TopicFieldWrapper>
+			</TagFieldWrapper>
 		</FormItem>
 	)
 }
 
-export default TopicField
+export default TagField
 
 // ─── Styled ─────────────────────────────────────────────────────────────────
 
@@ -200,12 +196,12 @@ const LabelText = styled.span`
   white-space: nowrap;
 `
 
-const TopicFieldWrapper = styled.div`
+const TagFieldWrapper = styled.div`
 position: relative;
 width: 100%;
 `
 
-const TopicInputBox = styled.div`
+const TagInputBox = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
@@ -237,7 +233,7 @@ const InputContent = styled.div`
   direction: rtl;
 `
 
-const TopicInputField = styled.input`
+const TagInputField = styled.input`
   direction: rtl;
   flex: 1;
   border: none;
@@ -255,7 +251,7 @@ const TopicInputField = styled.input`
   }
 `
 
-const TopicTag = styled.span`
+const TagChip = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -319,7 +315,7 @@ const SuggestionsHeader = styled.div`
   white-space: nowrap;
 `
 
-const TopicOption = styled.button`
+const TagOption = styled.button`
   display: flex;
   align-items: center;
   justify-content: flex-start;

@@ -2,7 +2,6 @@ import styled from "@emotion/styled"
 import { groupBy, mapValues } from "lodash"
 import { useMemo } from "react"
 import { Cell, Pie, PieChart } from "recharts"
-import { WorkspaceStatusDtoType } from "src/api/model"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 
@@ -20,7 +19,7 @@ export default function StatusCard({ tasks }: StatusCardProps) {
 				count: tasks.length,
 				...statuses[Number(id)],
 			})),
-		[tasks],
+		[tasks, statuses],
 	)
 
 	const total = tasks.length

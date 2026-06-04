@@ -1,11 +1,9 @@
 import styled from "@emotion/styled"
 import { Flag } from "lucide-react"
-import type { TaskDto } from "src/api/model"
+import { DeadlineType, type TaskDto } from "src/api/model"
+import { toTaskRows } from "src/functions/tasks-table"
 import { formatDateShort } from "../../functions/date-utils"
-import DeadlineTag, {
-	DEADLINE_LABELS,
-	DeadlineType,
-} from "../shared/DeadlineTag"
+import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import { StatusTag } from "../shared/StatusTag"
 import {
 	Card,
@@ -20,9 +18,11 @@ interface TaskCardGridProps {
 }
 
 function TaskCardGrid({ tasks }: TaskCardGridProps) {
+	const taskRows = toTaskRows(tasks)
+
 	return (
 		<CardGridContainer>
-			{tasks.map((task) => (
+			{taskRows.map((task) => (
 				<Card key={task.id}>
 					<CardHeader>
 						<CardTitle>
@@ -36,7 +36,7 @@ function TaskCardGrid({ tasks }: TaskCardGridProps) {
 						<StatusTag status={task.status} />
 					</CardContent>
 					<CardFooter>
-						{task.deadlineType !== DeadlineType.Date && (
+						{task.deadlineType !== DeadlineType.DATE && (
 							<DeadlineTag $type={task.deadlineType}>
 								{DEADLINE_LABELS[task.deadlineType]}
 							</DeadlineTag>
@@ -54,6 +54,7 @@ function TaskCardGrid({ tasks }: TaskCardGridProps) {
 export { TaskCardGrid }
 
 const CardGridContainer = styled.div`
+  direction: rtl;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;

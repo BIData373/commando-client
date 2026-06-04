@@ -10,6 +10,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "src/components/ui/card"
+import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
 export const Route = createFileRoute("/")({
 	component: RouteComponent,
@@ -50,7 +51,7 @@ function WorkspaceCard({
 					<Avatar>
 						<AvatarImage
 							src={icon ?? "/workspace-icon.png"}
-							alt="@shadcn"
+							alt={title}
 							className="grayscale"
 						/>
 						<AvatarFallback>CN</AvatarFallback>
@@ -69,7 +70,7 @@ function RouteComponent() {
 	const { data: workspaces = [] } = useListWorkspaces()
 
 	function handlePersonalClick() {
-		navigate({ to: "/personal", search: { view: "TABLE" } })
+		navigate({ to: "/personal", search: { view: TasksView.TABLE } })
 	}
 
 	return (

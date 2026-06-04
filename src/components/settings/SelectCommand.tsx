@@ -8,14 +8,14 @@ import {
 	SelectValue,
 } from "../ui/select"
 
-const COMMAND_OPTIONS = [
-	"פיקוד צפון",
-	"פיקוד מרכז",
-	"פיקוד דרום",
-	"פיקוד העורף",
-	"פיקוד העומק",
-	"מטכ״ל",
-] as const
+// const COMMAND_OPTIONS = [
+// 	"פיקוד צפון",
+// 	"פיקוד מרכז",
+// 	"פיקוד דרום",
+// 	"פיקוד העורף",
+// 	"פיקוד העומק",
+// 	"מטכ״ל",
+// ] as const
 
 interface SelectCommandProps {
 	value: number
