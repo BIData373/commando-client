@@ -11,23 +11,23 @@ import DeadlineCell from "./DeadlineCell"
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface NewTaskRow extends CreateTaskDto {
-  id: number
-  rowKey: string
-  assigneeIds: number[]
-  assigneeDetails: Record<number, string>
+	id: number
+	rowKey: string
+	assigneeIds: number[]
+	assigneeDetails: Record<number, string>
 }
 
 export enum TaskColumnId {
-  Title = "title",
-  Notes = "notes",
+	Title = "title",
+	Notes = "notes",
 }
 
 export interface TaskTableMeta {
-  updateRow: (id: number, updates: Partial<NewTaskRow>) => void
-  expandedRows: Set<number>
-  toggleRowExpansion: (id: number) => void
-  deleteRow: (id: number) => void
-  isLastRow: (index: number) => boolean
+	updateRow: (id: number, updates: Partial<NewTaskRow>) => void
+	expandedRows: Set<number>
+	toggleRowExpansion: (id: number) => void
+	deleteRow: (id: number) => void
+	isLastRow: (index: number) => boolean
 }
 
 // ─── Cell Handlers ─────────────────────────────────────────────────────────
@@ -35,194 +35,194 @@ export interface TaskTableMeta {
 const MAX_HEIGHT = 40
 
 function handleTextareaChange(
-  e: React.ChangeEvent<HTMLTextAreaElement>,
-  id: number,
-  field: TaskColumnId,
-  updateRow: TaskTableMeta["updateRow"],
+	e: React.ChangeEvent<HTMLTextAreaElement>,
+	id: number,
+	field: TaskColumnId,
+	updateRow: TaskTableMeta["updateRow"],
 ) {
-  const textarea = e.target
-  // Reset height to recalculate scrollHeight, then set to actual content height
-  textarea.style.height = "auto"
-  textarea.style.height = `${Math.min(textarea.scrollHeight, MAX_HEIGHT)}px`
-  updateRow(id, { [field]: textarea.value })
+	const textarea = e.target
+	// Reset height to recalculate scrollHeight, then set to actual content height
+	textarea.style.height = "auto"
+	textarea.style.height = `${Math.min(textarea.scrollHeight, MAX_HEIGHT)}px`
+	updateRow(id, { [field]: textarea.value })
 }
 
 function handleImportantChange(
-  checked: boolean,
-  id: number,
-  updateRow: TaskTableMeta["updateRow"],
+	checked: boolean,
+	id: number,
+	updateRow: TaskTableMeta["updateRow"],
 ) {
-  updateRow(id, { flagged: checked })
+	updateRow(id, { flagged: checked })
 }
 
 function handleDelete(id: number, deleteRow: TaskTableMeta["deleteRow"]) {
-  deleteRow(id)
+	deleteRow(id)
 }
 
 function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-  const target = e.target as HTMLElement
-  const row = Number(target.dataset.row)
-  const col = Number(target.dataset.col)
-  if (isNaN(row) || isNaN(col)) return
+	const target = e.target as HTMLElement
+	const row = Number(target.dataset.row)
+	const col = Number(target.dataset.col)
+	if (isNaN(row) || isNaN(col)) return
 
-  const container = target.closest("table")
-  if (!container) return
+	const container = target.closest("table")
+	if (!container) return
 
-  if (e.key === "Enter") {
-    e.preventDefault()
-    const next = container.querySelector<HTMLElement>(
-      `[data-row="${row + 1}"][data-col="0"]`,
-    )
-    next?.focus()
-    return
-  }
+	if (e.key === "Enter") {
+		e.preventDefault()
+		const next = container.querySelector<HTMLElement>(
+			`[data-row="${row + 1}"][data-col="0"]`,
+		)
+		next?.focus()
+		return
+	}
 
-  if (e.key === "Tab") {
-    const nextCol = e.shiftKey ? col - 1 : col + 1
-    const next = container.querySelector<HTMLElement>(
-      `[data-row="${row}"][data-col="${nextCol}"]`,
-    )
-    if (!next) return
-    e.preventDefault()
-    next.focus()
-  }
+	if (e.key === "Tab") {
+		const nextCol = e.shiftKey ? col - 1 : col + 1
+		const next = container.querySelector<HTMLElement>(
+			`[data-row="${row}"][data-col="${nextCol}"]`,
+		)
+		if (!next) return
+		e.preventDefault()
+		next.focus()
+	}
 }
 
 // ─── Columns ────────────────────────────────────────────────────────────────
 
 const columns: ColumnDef<NewTaskRow>[] = [
-  {
-    id: "title",
-    size: 655,
-    header: () => (
-      <HeaderLabelGroup>
-        <RequiredMark>*</RequiredMark>
-        <HeaderLabel>הנחיה</HeaderLabel>
-      </HeaderLabelGroup>
-    ),
-    cell: ({ row, table }) => {
-      const { id, title } = row.original
-      const { updateRow } = table.options.meta as TaskTableMeta
-      return (
-        <TextareaCellWrapper>
-          <CellTextarea
-            $color="var(--text-color-2)"
-            data-row={row.index}
-            data-col={0}
-            value={title}
-            onChange={(e) =>
-              handleTextareaChange(e, id, TaskColumnId.Title, updateRow)
-            }
-            onKeyDown={handleCellKeyDown}
-            placeholder="הנחיה"
-            rows={1}
-          />
-        </TextareaCellWrapper>
-      )
-    },
-  },
-  {
-    id: "deadline",
-    size: 138,
-    header: () => <HeaderLabel>{`תג"ב`}</HeaderLabel>,
-    cell: ({
-      row: {
-        original: { id, dueDate, deadlineType },
-      },
-      table,
-    }) => {
-      const { updateRow } = table.options.meta as TaskTableMeta
-      return (
-        <DeadlineCell
-          deadlineType={deadlineType}
-          dueDate={dueDate}
-          onDeadlineTypeChange={(type) =>
-            updateRow(id, { deadlineType: type, dueDate: undefined })
-          }
-          onDateChange={(date) => date && updateRow(id, { dueDate: date })}
-        />
-      )
-    },
-  },
-  {
-    id: "assignee",
-    size: 206,
-    header: () => <HeaderLabel>אחראי</HeaderLabel>,
-    cell: ({ row, table }) => (
-      <AssigneeTableCell
-        row={row.original}
-        meta={table.options.meta as TaskTableMeta}
-      />
-    ),
-  },
-  {
-    id: "notes",
-    size: 350,
-    header: () => <HeaderLabel>הערות הנחיה</HeaderLabel>,
-    cell: ({ row, table }) => {
-      const { id, notes } = row.original
-      const { updateRow } = table.options.meta as TaskTableMeta
-      return (
-        <TextareaCellWrapper>
-          <CellTextarea
-            data-row={row.index}
-            data-col={1}
-            value={notes ?? ''}
-            onChange={(e) =>
-              handleTextareaChange(e, id, TaskColumnId.Notes, updateRow)
-            }
-            onKeyDown={handleCellKeyDown}
-            placeholder=""
-            rows={1}
-          />
-        </TextareaCellWrapper>
-      )
-    },
-  },
-  {
-    id: "important",
-    size: 62,
-    header: () => (
-      <HeaderIcons>
-        <FlagIcon />
-        <ImportantFlagTooltip side="top" />
-      </HeaderIcons>
-    ),
-    cell: ({
-      row: {
-        original: { id, flagged },
-      },
-      table,
-    }) => {
-      const { updateRow } = table.options.meta as TaskTableMeta
-      return (
-        <CheckboxWrapper>
-          <Checkbox
-            checked={flagged}
-            onCheckedChange={(checked) =>
-              handleImportantChange(checked as boolean, id, updateRow)
-            }
-          />
-        </CheckboxWrapper>
-      )
-    },
-  },
-  {
-    id: "delete",
-    size: 35,
-    header: () => null,
-    cell: ({ row, table }) => {
-      const { deleteRow, isLastRow } = table.options.meta as TaskTableMeta
+	{
+		id: "title",
+		size: 655,
+		header: () => (
+			<HeaderLabelGroup>
+				<RequiredMark>*</RequiredMark>
+				<HeaderLabel>הנחיה</HeaderLabel>
+			</HeaderLabelGroup>
+		),
+		cell: ({ row, table }) => {
+			const { id, title } = row.original
+			const { updateRow } = table.options.meta as TaskTableMeta
+			return (
+				<TextareaCellWrapper>
+					<CellTextarea
+						$color="var(--text-color-2)"
+						data-row={row.index}
+						data-col={0}
+						value={title}
+						onChange={(e) =>
+							handleTextareaChange(e, id, TaskColumnId.Title, updateRow)
+						}
+						onKeyDown={handleCellKeyDown}
+						placeholder="הנחיה"
+						rows={1}
+					/>
+				</TextareaCellWrapper>
+			)
+		},
+	},
+	{
+		id: "deadline",
+		size: 138,
+		header: () => <HeaderLabel>{`תג"ב`}</HeaderLabel>,
+		cell: ({
+			row: {
+				original: { id, dueDate, deadlineType },
+			},
+			table,
+		}) => {
+			const { updateRow } = table.options.meta as TaskTableMeta
+			return (
+				<DeadlineCell
+					deadlineType={deadlineType}
+					dueDate={dueDate}
+					onDeadlineTypeChange={(type) =>
+						updateRow(id, { deadlineType: type, dueDate: undefined })
+					}
+					onDateChange={(date) => date && updateRow(id, { dueDate: date })}
+				/>
+			)
+		},
+	},
+	{
+		id: "assignee",
+		size: 206,
+		header: () => <HeaderLabel>אחראי</HeaderLabel>,
+		cell: ({ row, table }) => (
+			<AssigneeTableCell
+				row={row.original}
+				meta={table.options.meta as TaskTableMeta}
+			/>
+		),
+	},
+	{
+		id: "notes",
+		size: 350,
+		header: () => <HeaderLabel>הערות הנחיה</HeaderLabel>,
+		cell: ({ row, table }) => {
+			const { id, notes } = row.original
+			const { updateRow } = table.options.meta as TaskTableMeta
+			return (
+				<TextareaCellWrapper>
+					<CellTextarea
+						data-row={row.index}
+						data-col={1}
+						value={notes ?? ""}
+						onChange={(e) =>
+							handleTextareaChange(e, id, TaskColumnId.Notes, updateRow)
+						}
+						onKeyDown={handleCellKeyDown}
+						placeholder=""
+						rows={1}
+					/>
+				</TextareaCellWrapper>
+			)
+		},
+	},
+	{
+		id: "important",
+		size: 62,
+		header: () => (
+			<HeaderIcons>
+				<FlagIcon />
+				<ImportantFlagTooltip side="top" />
+			</HeaderIcons>
+		),
+		cell: ({
+			row: {
+				original: { id, flagged },
+			},
+			table,
+		}) => {
+			const { updateRow } = table.options.meta as TaskTableMeta
+			return (
+				<CheckboxWrapper>
+					<Checkbox
+						checked={flagged}
+						onCheckedChange={(checked) =>
+							handleImportantChange(checked as boolean, id, updateRow)
+						}
+					/>
+				</CheckboxWrapper>
+			)
+		},
+	},
+	{
+		id: "delete",
+		size: 35,
+		header: () => null,
+		cell: ({ row, table }) => {
+			const { deleteRow, isLastRow } = table.options.meta as TaskTableMeta
 
-      return !row.original.title.trim().length ||
-        isLastRow(row.index) ? null : (
-        <StyledTrashButton
-          onClick={() => handleDelete(row.original.id, deleteRow)}
-          size={14}
-        />
-      )
-    },
-  },
+			return !row.original.title.trim().length ||
+				isLastRow(row.index) ? null : (
+				<StyledTrashButton
+					onClick={() => handleDelete(row.original.id, deleteRow)}
+					size={14}
+				/>
+			)
+		},
+	},
 ]
 
 export default columns

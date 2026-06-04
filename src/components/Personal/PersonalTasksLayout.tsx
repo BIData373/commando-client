@@ -193,7 +193,6 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 						queryKey={queryKey}
 						tasks={filteredTaskRows}
 						extraColumns={EXTRA_COLUMNS as Record<string, ColumnDef<TaskRow>>}
-						statusReadOnly
 					/>
 				)}
 			</PageRoot>

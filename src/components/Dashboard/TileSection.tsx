@@ -5,44 +5,44 @@ import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new"
 
 export const TitleSection = () => {
-  const { urlName } = useParams({ from: "/workspace/$urlName/dashboard" })
-  const navigate = useNavigate()
+	const { urlName } = useParams({ from: "/workspace/$urlName/dashboard" })
+	const navigate = useNavigate()
 
-  function handleNavigateToNewInstruction() {
-    navigate({
-      to: "/workspace/$urlName/tasks/new",
-      params: { urlName },
-      search: { view: TasksView.TABLE, mode: NewTaskMode.SINGLE },
-    })
-  }
+	function handleNavigateToNewInstruction() {
+		navigate({
+			to: "/workspace/$urlName/tasks/new",
+			params: { urlName },
+			search: { view: TasksView.TABLE, mode: NewTaskMode.SINGLE },
+		})
+	}
 
-  function handleNavigateToAssigneeSettings() {
-    navigate({
-      to: "/workspace/$urlName/settings/assignees",
-      params: { urlName },
-    })
-  }
+	function handleNavigateToAssigneeSettings() {
+		navigate({
+			to: "/workspace/$urlName/settings/assignees",
+			params: { urlName },
+		})
+	}
 
-  return (
-    <TitleSectionContainer>
-      <TitleGroup>
-        <PageTitle>מסך המפקד</PageTitle>
-        <TitleDivider />
-        <WorkspaceName>לשכת מקשא&quot;פ</WorkspaceName>
-      </TitleGroup>
-      <ButtonGroup>
-        <AssigneesButton onClick={handleNavigateToAssigneeSettings}>
-          <Users size={16} />
-          הגדרת מקבלי הנחיות
-        </AssigneesButton>
-        <CreateButton onClick={handleNavigateToNewInstruction}>
-          <Plus size={16} />
-          צור הנחייה
-          <ChevronDown size={16} />
-        </CreateButton>
-      </ButtonGroup>
-    </TitleSectionContainer>
-  )
+	return (
+		<TitleSectionContainer>
+			<TitleGroup>
+				<PageTitle>מסך המפקד</PageTitle>
+				<TitleDivider />
+				<WorkspaceName>לשכת מקשא&quot;פ</WorkspaceName>
+			</TitleGroup>
+			<ButtonGroup>
+				<AssigneesButton onClick={handleNavigateToAssigneeSettings}>
+					<Users size={16} />
+					הגדרת מקבלי הנחיות
+				</AssigneesButton>
+				<CreateButton onClick={handleNavigateToNewInstruction}>
+					<Plus size={16} />
+					צור הנחייה
+					<ChevronDown size={16} />
+				</CreateButton>
+			</ButtonGroup>
+		</TitleSectionContainer>
+	)
 }
 
 const TitleSectionContainer = styled.div`

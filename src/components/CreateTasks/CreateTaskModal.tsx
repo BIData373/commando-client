@@ -22,305 +22,310 @@ import TagField from "./TagField"
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface FormState {
-  title: string
-  deadlineType: DeadlineType
-  dueDate: Date | null
-  flagged: boolean
-  source: string
-  sourceDate: Date | null
-  tags: string[]
-  notes: string
-  sourceId: number | null
-  selectedAssignees: number[]
-  assigneeDetails: Record<number, string>
-  linkedSource: SourceDto | null
+	title: string
+	deadlineType: DeadlineType
+	dueDate: Date | null
+	flagged: boolean
+	source: string
+	sourceDate: Date | null
+	tags: string[]
+	notes: string
+	sourceId: number | null
+	selectedAssignees: number[]
+	assigneeDetails: Record<number, string>
+	linkedSource: SourceDto | null
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 interface CreateTaskModalProps {
-  onClose: () => void
+	onClose: () => void
 }
 
 function CreateTaskModal({ onClose }: CreateTaskModalProps) {
-  const { workspace: { id: workspaceId } } = useWorkspace()
-  const saveTasks = useSaveTasks()
-  const [isDetailsExpanded, setIsDetailsExpanded] = useState(false)
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+	const saveTasks = useSaveTasks()
+	const [isDetailsExpanded, setIsDetailsExpanded] = useState(false)
 
-  const form = useForm({
-    defaultValues: {
-      title: "",
-      deadlineType: DeadlineType.DATE,
-      dueDate: null,
-      flagged: false,
-      source: "",
-      sourceDate: null,
-      tags: [],
-      notes: "",
-      sourceId: null,
-      selectedAssignees: [],
-      assigneeDetails: {},
-      linkedSource: null,
-    } as FormState,
-    onSubmit: ({ value: { selectedAssignees, ...values } }) => {
-      saveTasks(
-        [
-          {
-            workspaceId,
-            assigneeIds: selectedAssignees,
-            ...values
-          },
-        ],
-      )
-      onClose()
-    },
-  })
+	const form = useForm({
+		defaultValues: {
+			title: "",
+			deadlineType: DeadlineType.DATE,
+			dueDate: null,
+			flagged: false,
+			source: "",
+			sourceDate: null,
+			tags: [],
+			notes: "",
+			sourceId: null,
+			selectedAssignees: [],
+			assigneeDetails: {},
+			linkedSource: null,
+		} as FormState,
+		onSubmit: ({ value: { selectedAssignees, ...values } }) => {
+			saveTasks([
+				{
+					workspaceId,
+					assigneeIds: selectedAssignees,
+					...values,
+				},
+			])
+			onClose()
+		},
+	})
 
-  const values = useStore(form.store, (state) => state.values)
+	const values = useStore(form.store, (state) => state.values)
 
-  // ─── Handlers ──────────────────────────────────────────────────────────────
+	// ─── Handlers ──────────────────────────────────────────────────────────────
 
-  function handleDeadlineTypeChange(type: DeadlineType) {
-    form.setFieldValue("deadlineType", type)
-    if (type === DeadlineType.IMMEDIATE) {
-      form.setFieldValue("dueDate", null)
-    }
-  }
+	function handleDeadlineTypeChange(type: DeadlineType) {
+		form.setFieldValue("deadlineType", type)
+		if (type === DeadlineType.IMMEDIATE) {
+			form.setFieldValue("dueDate", null)
+		}
+	}
 
-  function handleDeadlineDateChange(date: Date | null) {
-    form.setFieldValue("dueDate", date)
-  }
+	function handleDeadlineDateChange(date: Date | null) {
+		form.setFieldValue("dueDate", date)
+	}
 
-  function handleAssigneeToggle(id: number) {
-    const isRemoving = values.selectedAssignees.includes(id)
-    const nextAssignees = isRemoving
-      ? values.selectedAssignees.filter((a) => a !== id)
-      : [...values.selectedAssignees, id]
-    const nextDetails = { ...values.assigneeDetails }
-    if (isRemoving) delete nextDetails[id]
-    form.setFieldValue("selectedAssignees", nextAssignees)
-    form.setFieldValue("assigneeDetails", nextDetails)
-  }
+	function handleAssigneeToggle(id: number) {
+		const isRemoving = values.selectedAssignees.includes(id)
+		const nextAssignees = isRemoving
+			? values.selectedAssignees.filter((a) => a !== id)
+			: [...values.selectedAssignees, id]
+		const nextDetails = { ...values.assigneeDetails }
+		if (isRemoving) delete nextDetails[id]
+		form.setFieldValue("selectedAssignees", nextAssignees)
+		form.setFieldValue("assigneeDetails", nextDetails)
+	}
 
-  function handleRemoveAssignee(id: number) {
-    const nextDetails = { ...values.assigneeDetails }
-    delete nextDetails[id]
-    form.setFieldValue(
-      "selectedAssignees",
-      values.selectedAssignees.filter((a) => a !== id),
-    )
-    form.setFieldValue("assigneeDetails", nextDetails)
-  }
+	function handleRemoveAssignee(id: number) {
+		const nextDetails = { ...values.assigneeDetails }
+		delete nextDetails[id]
+		form.setFieldValue(
+			"selectedAssignees",
+			values.selectedAssignees.filter((a) => a !== id),
+		)
+		form.setFieldValue("assigneeDetails", nextDetails)
+	}
 
-  function handleAssigneeDetailChange(id: number, value: string) {
-    form.setFieldValue("assigneeDetails", {
-      ...values.assigneeDetails,
-      [id]: value,
-    })
-  }
+	function handleAssigneeDetailChange(id: number, value: string) {
+		form.setFieldValue("assigneeDetails", {
+			...values.assigneeDetails,
+			[id]: value,
+		})
+	}
 
-  function handleSourceSelect(name: string, discussion?: SourceDto | null) {
-    if (discussion) {
-      const discussionTagNames = discussion.tags.map((t) => t.name)
-      const mergedTags = [...new Set([...values.tags, ...discussionTagNames])]
-      form.setFieldValue("source", discussion.name)
-      form.setFieldValue("sourceDate", discussion.date)
-      form.setFieldValue("tags", mergedTags)
-      form.setFieldValue("linkedSource", discussion)
-      form.setFieldValue("sourceId", discussion.id)
-      return
-    }
-    const prevLinkedTagNames = values.linkedSource?.tags.map((t) => t.name) ?? []
-    form.setFieldValue("source", name)
-    form.setFieldValue("sourceDate", null)
-    form.setFieldValue(
-      "tags",
-      values.tags.filter((t) => !prevLinkedTagNames.includes(t)),
-    )
-    form.setFieldValue("linkedSource", null)
-    form.setFieldValue("sourceId", null)
-  }
+	function handleSourceSelect(name: string, discussion?: SourceDto | null) {
+		if (discussion) {
+			const discussionTagNames = discussion.tags.map((t) => t.name)
+			const mergedTags = [...new Set([...values.tags, ...discussionTagNames])]
+			form.setFieldValue("source", discussion.name)
+			form.setFieldValue("sourceDate", discussion.date)
+			form.setFieldValue("tags", mergedTags)
+			form.setFieldValue("linkedSource", discussion)
+			form.setFieldValue("sourceId", discussion.id)
+			return
+		}
+		const prevLinkedTagNames =
+			values.linkedSource?.tags.map((t) => t.name) ?? []
+		form.setFieldValue("source", name)
+		form.setFieldValue("sourceDate", null)
+		form.setFieldValue(
+			"tags",
+			values.tags.filter((t) => !prevLinkedTagNames.includes(t)),
+		)
+		form.setFieldValue("linkedSource", null)
+		form.setFieldValue("sourceId", null)
+	}
 
-  function handleSourceDateSelect(date: Date | undefined) {
-    if (date) form.setFieldValue("sourceDate", date)
-  }
+	function handleSourceDateSelect(date: Date | undefined) {
+		if (date) form.setFieldValue("sourceDate", date)
+	}
 
-  function handleTagSelect(tag: string) {
-    if (!values.tags.includes(tag)) {
-      form.setFieldValue("tags", [...values.tags, tag])
-    }
-  }
+	function handleTagSelect(tag: string) {
+		if (!values.tags.includes(tag)) {
+			form.setFieldValue("tags", [...values.tags, tag])
+		}
+	}
 
-  function handleTagRemove(tag: string) {
-    form.setFieldValue(
-      "tags",
-      values.tags.filter((t) => t !== tag),
-    )
-  }
+	function handleTagRemove(tag: string) {
+		form.setFieldValue(
+			"tags",
+			values.tags.filter((t) => t !== tag),
+		)
+	}
 
-  function handleToggleDetails() {
-    setIsDetailsExpanded((prev) => !prev)
-  }
+	function handleToggleDetails() {
+		setIsDetailsExpanded((prev) => !prev)
+	}
 
-  function handleNotesChange(value: string) {
-    form.setFieldValue("notes", value)
-  }
+	function handleNotesChange(value: string) {
+		form.setFieldValue("notes", value)
+	}
 
-  // ─── Scroll Shadow ─────────────────────────────────────────────────────────
+	// ─── Scroll Shadow ─────────────────────────────────────────────────────────
 
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const [scrollShadow, setScrollShadow] = useState({
-    top: false,
-    bottom: false,
-  })
+	const scrollRef = useRef<HTMLDivElement>(null)
+	const [scrollShadow, setScrollShadow] = useState({
+		top: false,
+		bottom: false,
+	})
 
-  function handleScroll() {
-    const el = scrollRef.current
-    if (!el) return
-    const atTop = el.scrollTop <= 0
-    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
-    setScrollShadow({ top: !atTop, bottom: !atBottom })
-  }
+	function handleScroll() {
+		const el = scrollRef.current
+		if (!el) return
+		const atTop = el.scrollTop <= 0
+		const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
+		setScrollShadow({ top: !atTop, bottom: !atBottom })
+	}
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) onClose()
-  }
+	const handleOpenChange = (open: boolean) => {
+		if (!open) onClose()
+	}
 
-  // ─── Render ────────────────────────────────────────────────────────────────
+	// ─── Render ────────────────────────────────────────────────────────────────
 
-  return (
-    <DialogPrimitive.Root open onOpenChange={handleOpenChange}>
-      <DialogPrimitive.Portal>
-        <Overlay />
-        <ModalCard>
-          <ModalCloseButton onClick={onClose}>
-            <X size={16} />
-          </ModalCloseButton>
+	return (
+		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
+			<DialogPrimitive.Portal>
+				<Overlay />
+				<ModalCard>
+					<ModalCloseButton onClick={onClose}>
+						<X size={16} />
+					</ModalCloseButton>
 
-          <ModalBody>
-            <ModalHeader $shadow={scrollShadow.top}>
-              <ModalTitle>יצירת הנחיה</ModalTitle>
-            </ModalHeader>
+					<ModalBody>
+						<ModalHeader $shadow={scrollShadow.top}>
+							<ModalTitle>יצירת הנחיה</ModalTitle>
+						</ModalHeader>
 
-            <ScrollableContent ref={scrollRef} onScroll={handleScroll}>
-              <FormContainer>
-                {/* ─── Directive Name ──────────────────────────────────────── */}
-                <form.Field
-                  name="title"
-                  validators={{
-                    onSubmit: ({ value }) =>
-                      !value.trim() ? "הנחיה היא שדה חובה" : undefined,
-                  }}
-                >
-                  {(field) => (
-                    <FormField field={field} label="הנחיה" required>
-                      <DirectiveTextarea
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        placeholder="תיאור הנחיה"
-                        dir="rtl"
-                      />
-                    </FormField>
-                  )}
-                </form.Field>
+						<ScrollableContent ref={scrollRef} onScroll={handleScroll}>
+							<FormContainer>
+								{/* ─── Directive Name ──────────────────────────────────────── */}
+								<form.Field
+									name="title"
+									validators={{
+										onSubmit: ({ value }) =>
+											!value.trim() ? "הנחיה היא שדה חובה" : undefined,
+									}}
+								>
+									{(field) => (
+										<FormField field={field} label="הנחיה" required>
+											<DirectiveTextarea
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.target.value)}
+												placeholder="תיאור הנחיה"
+												dir="rtl"
+											/>
+										</FormField>
+									)}
+								</form.Field>
 
-                {/* ─── Deadline ────────────────────────────────────────────── */}
-                <DeadlineField
-                  deadlineType={values.deadlineType}
-                  dueDate={values.dueDate}
-                  onDeadlineTypeChange={handleDeadlineTypeChange}
-                  onDateChange={handleDeadlineDateChange}
-                />
+								{/* ─── Deadline ────────────────────────────────────────────── */}
+								<DeadlineField
+									deadlineType={values.deadlineType}
+									dueDate={values.dueDate}
+									onDeadlineTypeChange={handleDeadlineTypeChange}
+									onDateChange={handleDeadlineDateChange}
+								/>
 
-                {/* ─── Responsible ─────────────────────────────────────────── */}
-                <AssigneeField
-                  selectedAssignees={values.selectedAssignees}
-                  directiveTitle={values.title}
-                  onToggle={handleAssigneeToggle}
-                  onRemove={handleRemoveAssignee}
-                  onDetailChange={handleAssigneeDetailChange}
-                />
+								{/* ─── Responsible ─────────────────────────────────────────── */}
+								<AssigneeField
+									selectedAssignees={values.selectedAssignees}
+									directiveTitle={values.title}
+									onToggle={handleAssigneeToggle}
+									onRemove={handleRemoveAssignee}
+									onDetailChange={handleAssigneeDetailChange}
+								/>
 
-                {/* ─── Important Checkbox ──────────────────────────────────── */}
-                <form.Field name="flagged">
-                  {(field) => (
-                    <ImportantRow>
-                      <ImportantFlagTooltip side="left" />
-                      <FlagIcon />
-                      <CheckboxRow>
-                        <CheckboxLabelText>הגדר כהנחיה חשובה</CheckboxLabelText>
-                        <Checkbox
-                          checked={field.state.value}
-                          onCheckedChange={(checked) => field.handleChange(checked === true)}
-                        />
-                      </CheckboxRow>
-                    </ImportantRow>
-                  )}
-                </form.Field>
+								{/* ─── Important Checkbox ──────────────────────────────────── */}
+								<form.Field name="flagged">
+									{(field) => (
+										<ImportantRow>
+											<ImportantFlagTooltip side="left" />
+											<FlagIcon />
+											<CheckboxRow>
+												<CheckboxLabelText>הגדר כהנחיה חשובה</CheckboxLabelText>
+												<Checkbox
+													checked={field.state.value}
+													onCheckedChange={(checked) =>
+														field.handleChange(checked === true)
+													}
+												/>
+											</CheckboxRow>
+										</ImportantRow>
+									)}
+								</form.Field>
 
-                {/* ─── Expand / Collapse Divider ──────────────────────────── */}
-                <DividerRow>
-                  <DividerLine />
-                  <ExpandButton onClick={handleToggleDetails}>
-                    {isDetailsExpanded ? (
-                      <ChevronUp size={16} />
-                    ) : (
-                      <ChevronDown size={16} />
-                    )}
-                    <ExpandButtonText $expanded={isDetailsExpanded}>
-                      פרטים נוספים
-                    </ExpandButtonText>
-                  </ExpandButton>
-                  <DividerLine />
-                </DividerRow>
+								{/* ─── Expand / Collapse Divider ──────────────────────────── */}
+								<DividerRow>
+									<DividerLine />
+									<ExpandButton onClick={handleToggleDetails}>
+										{isDetailsExpanded ? (
+											<ChevronUp size={16} />
+										) : (
+											<ChevronDown size={16} />
+										)}
+										<ExpandButtonText $expanded={isDetailsExpanded}>
+											פרטים נוספים
+										</ExpandButtonText>
+									</ExpandButton>
+									<DividerLine />
+								</DividerRow>
 
-                {/* ─── Additional Details ─────────────────────────────────── */}
-                <AdditionalDetailsWrapper
-                  $expanded={isDetailsExpanded}
-                  aria-hidden={!isDetailsExpanded}
-                >
-                  <AdditionalDetails>
-                    {/* Source + Date row */}
-                    <SourceField
-                      source={values.source}
-                      sourceDate={values.sourceDate}
-                      linkedSource={values.linkedSource}
-                      onSourceSelect={handleSourceSelect}
-                      onDateSelect={handleSourceDateSelect}
-                    />
+								{/* ─── Additional Details ─────────────────────────────────── */}
+								<AdditionalDetailsWrapper
+									$expanded={isDetailsExpanded}
+									aria-hidden={!isDetailsExpanded}
+								>
+									<AdditionalDetails>
+										{/* Source + Date row */}
+										<SourceField
+											source={values.source}
+											sourceDate={values.sourceDate}
+											linkedSource={values.linkedSource}
+											onSourceSelect={handleSourceSelect}
+											onDateSelect={handleSourceDateSelect}
+										/>
 
-                    {/* Tag field */}
-                    <TagField
-                      tags={values.tags}
-                      lockedTags={values.linkedSource?.tags.map((t) => t.name) ?? []}
-                      onTagSelect={handleTagSelect}
-                      onTagRemove={handleTagRemove}
-                    />
+										{/* Tag field */}
+										<TagField
+											tags={values.tags}
+											lockedTags={
+												values.linkedSource?.tags.map((t) => t.name) ?? []
+											}
+											onTagSelect={handleTagSelect}
+											onTagRemove={handleTagRemove}
+										/>
 
-                    {/* Notes */}
-                    <NotesField
-                      notes={values.notes}
-                      onNotesChange={handleNotesChange}
-                    />
-                  </AdditionalDetails>
-                </AdditionalDetailsWrapper>
-              </FormContainer>
-            </ScrollableContent>
+										{/* Notes */}
+										<NotesField
+											notes={values.notes}
+											onNotesChange={handleNotesChange}
+										/>
+									</AdditionalDetails>
+								</AdditionalDetailsWrapper>
+							</FormContainer>
+						</ScrollableContent>
 
-            {/* ─── Action Buttons ──────────────────────────────────────── */}
-            <ActionRow $shadow={scrollShadow.bottom}>
-              <PrimaryButton
-                title="שמור"
-                onClick={form.handleSubmit}
-                disabled={!values.title.trim()}
-                width={133}
-              />
-              <CancelButton title="ביטול" onClick={onClose} />
-            </ActionRow>
-          </ModalBody>
-        </ModalCard>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
-  )
+						{/* ─── Action Buttons ──────────────────────────────────────── */}
+						<ActionRow $shadow={scrollShadow.bottom}>
+							<PrimaryButton
+								title="שמור"
+								onClick={form.handleSubmit}
+								disabled={!values.title.trim()}
+								width={133}
+							/>
+							<CancelButton title="ביטול" onClick={onClose} />
+						</ActionRow>
+					</ModalBody>
+				</ModalCard>
+			</DialogPrimitive.Portal>
+		</DialogPrimitive.Root>
+	)
 }
 
 export default CreateTaskModal

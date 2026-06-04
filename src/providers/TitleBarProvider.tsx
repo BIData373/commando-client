@@ -55,11 +55,13 @@ export function useTitleBar(renderActions: () => ReactNode, deps: unknown[]) {
 	}, [setActions, ...deps])
 }
 
-export function useWorkspaceHeader(workspace: WorkspaceDto) {
+export function useWorkspaceHeader(workspace?: WorkspaceDto) {
 	const { setWorkspace } = useTitleBarActions()
 
 	useLayoutEffect(() => {
-		setWorkspace(workspace)
+		if (workspace) {
+			setWorkspace(workspace)
+		}
 		return () => setWorkspace(null)
 	}, [workspace, setWorkspace])
 }

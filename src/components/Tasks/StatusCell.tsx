@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import type { WorkspaceStatusDto } from "src/api/model"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { StatusTag } from "../shared/StatusTag"
 import {
 	DropdownMenu,
@@ -12,6 +12,7 @@ import {
 interface StatusCellProps {
 	status: WorkspaceStatusDto
 	taskId: number
+	workspaceId: number
 	assigneeId: number
 	onUpdate: (taskId: number, assigneeId: number, statusId: number) => void
 }
@@ -20,35 +21,40 @@ export function StatusCell({
 	status,
 	taskId,
 	assigneeId,
+	workspaceId,
 	onUpdate,
 }: StatusCellProps) {
-	const { statuses } = useWorkspace()
+	const { data: statuses = [], isLoading } = useListWorkspaceStatuses({
+		workspaceId,
+	})
 
 	function handleSelectStatus(newStatusId: number) {
 		onUpdate(taskId, assigneeId, newStatusId)
 	}
 
 	return (
-		<CellCenter>
-			<DropdownMenu>
-				<DropdownMenuTrigger asChild>
-					<TriggerWrapper tabIndex={0}>
-						<StatusTag status={status} interactive />
-					</TriggerWrapper>
-				</DropdownMenuTrigger>
-				<StatusDropdownContent align="center" sideOffset={6}>
-					{Object.values(statuses).map((s) => (
-						<StatusDropdownItem
-							key={s.id}
-							$selected={s.id === status.id}
-							onSelect={() => handleSelectStatus(s.id)}
-						>
-							<StatusTag status={s} />
-						</StatusDropdownItem>
-					))}
-				</StatusDropdownContent>
-			</DropdownMenu>
-		</CellCenter>
+		!isLoading && (
+			<CellCenter>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<TriggerWrapper tabIndex={0}>
+							<StatusTag status={status} interactive />
+						</TriggerWrapper>
+					</DropdownMenuTrigger>
+					<StatusDropdownContent align="center" sideOffset={6}>
+						{Object.values(statuses).map((s) => (
+							<StatusDropdownItem
+								key={s.id}
+								$selected={s.id === status.id}
+								onSelect={() => handleSelectStatus(s.id)}
+							>
+								<StatusTag status={s} />
+							</StatusDropdownItem>
+						))}
+					</StatusDropdownContent>
+				</DropdownMenu>
+			</CellCenter>
+		)
 	)
 }
 

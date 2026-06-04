@@ -27,8 +27,7 @@ export default function RecentlyCompleted({
 	tasks,
 }: RecentlyCompletedProps) {
 	const completedTasks = useMemo(
-		() =>
-			tasks.filter((t) => t.status.type === WorkspaceStatusType.COMPLETED),
+		() => tasks.filter((t) => t.status.type === WorkspaceStatusType.COMPLETED),
 		[tasks],
 	)
 
