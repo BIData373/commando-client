@@ -3,29 +3,29 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { useState } from "react"
 import {
-  type TaskWithWorkspaceDto,
-  type WorkspaceDto,
-  WorkspaceStatusDtoType,
+	type TaskWithWorkspaceDto,
+	type WorkspaceDto,
+	WorkspaceStatusType,
 } from "src/api/model"
 import {
-  getListPersonalTasksQueryKey,
-  useListPersonalTasks,
+	getListPersonalTasksQueryKey,
+	useListPersonalTasks,
 } from "src/api/task/task"
+import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { applyAllFilters } from "../../functions/filter-utils"
 import { toTaskRows } from "../../functions/tasks-table"
 import {
-  type TaskRow,
-  useTasksFilters,
+	type TaskRow,
+	useTasksFilters,
 } from "../../providers/TasksFiltersProvider"
 import { useTitleBar } from "../../providers/TitleBarProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { NoResultsFound } from "../Tasks/NoResultsFound"
 import { TaskFilters } from "../Tasks/TaskFilters"
-import type { View } from "../Tasks/TasksLayout"
 
 interface PersonalTasksLayoutProps {
-	view: View
+	view: TasksView
 }
 
 import { TaskTable } from "../Tasks/TaskTable"
@@ -91,10 +91,10 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 
 	const totalCount = taskRows.length
 	const notStartedCount = taskRows.filter(
-		(t) => t.status.type === WorkspaceStatusDtoType.NOT_STARTED,
+		(t) => t.status.type === WorkspaceStatusType.NOT_STARTED,
 	).length
 	const inProgressCount = taskRows.filter(
-		(t) => t.status.type === WorkspaceStatusDtoType.IN_PROGRESS,
+		(t) => t.status.type === WorkspaceStatusType.IN_PROGRESS,
 	).length
 	const weeklyNew = taskRows.filter((t) =>
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
@@ -122,7 +122,7 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 		// placeholder for export
 	}
 
-	function handleViewChange(newView: View) {
+	function handleViewChange(newView: TasksView) {
 		return newView
 		// placeholder for view change
 	}
@@ -131,14 +131,14 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 		() => (
 			<SegmentedControl>
 				<SegmentedItem
-					$selected={view === "TABLE"}
-					onClick={() => handleViewChange("TABLE")}
+					$selected={view === TasksView.TABLE}
+					onClick={() => handleViewChange(TasksView.TABLE)}
 				>
 					טבלה
 				</SegmentedItem>
 				<SegmentedItem
-					$selected={view === "CARDS"}
-					onClick={() => handleViewChange("CARDS")}
+					$selected={view === TasksView.CARDS}
+					onClick={() => handleViewChange(TasksView.CARDS)}
 				>
 					כרטיסיות
 				</SegmentedItem>
@@ -206,6 +206,7 @@ const PageRoot = styled.div`
   display: flex;
   flex-direction: column;
   padding-top: 32px;
+  padding-block-end: 24px;
   gap: 28px;
   height: 100%;
   overflow: hidden;

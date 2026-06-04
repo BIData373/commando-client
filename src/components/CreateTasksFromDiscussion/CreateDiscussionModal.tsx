@@ -2,18 +2,17 @@ import styled from "@emotion/styled";
 import { AlertCircle, Check, Paperclip, X } from "lucide-react";
 import { useState } from "react";
 import SourceField from "../CreateTasks/SourceField";
-import TopicField from "../CreateTasks/TopicField";
 import { Popover as PopoverPrimitive } from "radix-ui"
 import { Popover, PopoverTrigger } from "../ui/popover";
 import CreateTasksTable from "./CreateTasksTable";
 import FileUploadField from "./FileUploadField";
-import type { TaskRow } from "../../providers/TasksFiltersProvider";
 import { Dialog as DialogPrimitive } from "radix-ui"
 import { useUpdateSource } from "../../api/source/source"
-import type { DeadlineType } from "../shared/DeadlineTag"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
-
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import TagField from "../CreateTasks/TagField"
+import type { NewTaskRow } from "./TasksColumns"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -25,7 +24,7 @@ enum Steps {
 interface DiscussionFormState {
 	name: string
 	sourceDate: Date | null
-	topics: string[]
+	tags: string[]
 	file: File | null
 }
 
@@ -40,7 +39,7 @@ interface CreateDiscussionModalProps {
 const INITIAL_FORM: DiscussionFormState = {
 	name: "",
 	sourceDate: null,
-	topics: [],
+	tags: [],
 	file: null,
 }
 
@@ -53,6 +52,9 @@ function CreateDiscussionModal({
 }: CreateDiscussionModalProps) {
 	const isEditMode = !!editData;
 	const saveTasks = useSaveTasks();
+  const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
 	const { mutate: updateSource } = useUpdateSource();
 
 	const [form, setForm] = useState<DiscussionFormState>(
@@ -73,8 +75,8 @@ function CreateDiscussionModal({
 		if (form.name.trim() !== editData.name) data.name = form.name.trim();
 		if (form.sourceDate?.getTime() !== editData.sourceDate?.getTime())
 			data.date = form.sourceDate ?? undefined;
-		if (JSON.stringify(form.topics) !== JSON.stringify(editData.topics))
-			data.tags = form.topics;
+		if (JSON.stringify(form.tags) !== JSON.stringify(editData.tags))
+			data.tags = form.tags;
 		if (form.file !== editData.file) data.file = form.file ?? undefined;
 		return Object.keys(data).length > 0 ? data : null;
 	}
@@ -92,18 +94,18 @@ function CreateDiscussionModal({
 		}
 	}
 
-	// ─── Topic Handlers ───────────────────────────────────────────────────────
+	// ─── Tag Handlers ────────────────────────────────────────────────────────
 
-	function handleTopicSelect(topic: string) {
-		if (!form.topics.includes(topic)) {
-			setField("topics", [...form.topics, topic])
+	function handleTagSelect(tag: string) {
+		if (!form.tags.includes(tag)) {
+			setField("tags", [...form.tags, tag])
 		}
 	}
 
-	function handleTopicRemove(topic: string) {
+	function handleTagRemove(tag: string) {
 		setField(
-			"topics",
-			form.topics.filter((t) => t !== topic),
+			"tags",
+			form.tags.filter((t) => t !== tag),
 		)
 	}
 
@@ -127,24 +129,15 @@ function CreateDiscussionModal({
 		setCurrentStep(Steps.Discussion)
 	}
 
-	function handleSave(taskRows: TaskRow[]) {
-		const inputs = taskRows.map((row) => ({
-			title: row.title,
-			assigneeIds: row.assignee?.id ? [row.assignee.id] : [],
-			assigneeDetails: {} as Record<number, string>,
-			deadlineType: row.deadlineType as DeadlineType | null,
-			dueDate: row.dueDate,
-			flagged: row.flagged,
-			notes: row.notes ?? "",
-			groupKey: String(row.id),
+	// TODO - update the API to handle creation of tasks via source
+	function handleSave(taskRows: NewTaskRow[]) {
+		const inputs = taskRows.map(({ id, rowKey, assigneeDetails, ...rest }) => ({
+			...rest,
+			workspaceId,
+			groupKey: String(id),
 		}))
 
-		saveTasks(inputs, {
-			discussionName: form.name.trim(),
-			discussionDate: form.sourceDate,
-			hasAttachment: form.file !== null,
-			tags: form.topics,
-		})
+		saveTasks(inputs)
 		onClose()
 	}
 
@@ -238,11 +231,11 @@ function CreateDiscussionModal({
 										uniqueNames
 									/>
 
-									<TopicField
-										topics={form.topics}
-										lockedTopics={[]}
-										onTopicSelect={handleTopicSelect}
-										onTopicRemove={handleTopicRemove}
+									<TagField
+										tags={form.tags}
+										lockedTags={[]}
+										onTagSelect={handleTagSelect}
+										onTagRemove={handleTagRemove}
 									/>
 
 									<FileUploadField

@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
-import { PermissionDtoType } from "src/api/model"
+import { PermissionType } from "src/api/model"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -8,16 +8,16 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
 
-const permissionTypeNames: Record<PermissionDtoType, string> = {
-	[PermissionDtoType.MANAGER]: "ניהול",
-	[PermissionDtoType.VIEWER]: "צפייה",
+const permissionTypeNames: Record<PermissionType, string> = {
+	[PermissionType.MANAGER]: "ניהול",
+	[PermissionType.VIEWER]: "צפייה",
 }
 
 interface SelectDropdownPermissionProps {
-	value: PermissionDtoType
+	value: PermissionType
 	ghost?: boolean
 	disabled?: boolean
-	onChange?(type: PermissionDtoType): void
+	onChange?(type: PermissionType): void
 }
 
 export function DropdownPermission({
@@ -27,7 +27,7 @@ export function DropdownPermission({
 	onChange,
 }: SelectDropdownPermissionProps) {
 	function onSelectPermission(value: string) {
-		onChange?.(value as PermissionDtoType)
+		onChange?.(value as PermissionType)
 	}
 
 	return (

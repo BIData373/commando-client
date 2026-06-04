@@ -1,11 +1,7 @@
 import styled from "@emotion/styled"
 import { UserPlus } from "lucide-react"
 import { useMemo, useState } from "react"
-import {
-	type PermissionDto,
-	PermissionDtoType,
-	type UserDto,
-} from "src/api/model"
+import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
 import {
 	useDeletePermission,
 	useListPermissions,
@@ -44,7 +40,7 @@ export function PermissionsContent() {
 	const [search, setSearch] = useState("")
 	const [activeTab, setActiveTab] = useState(PermissionsTab.ALL)
 	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null)
-	const [type, setType] = useState<PermissionDtoType>(PermissionDtoType.VIEWER)
+	const [type, setType] = useState<PermissionType>(PermissionType.VIEWER)
 
 	const { data: permissions = [], queryKey } = useListPermissions({
 		workspaceId,
@@ -55,8 +51,8 @@ export function PermissionsContent() {
 	const currentTabUsers = useMemo(() => {
 		const taggedType =
 			activeTab === PermissionsTab.MANAGERS
-				? PermissionDtoType.MANAGER
-				: PermissionDtoType.VIEWER
+				? PermissionType.MANAGER
+				: PermissionType.VIEWER
 
 		return activeTab === PermissionsTab.ALL
 			? permissions
@@ -87,7 +83,7 @@ export function PermissionsContent() {
 		)
 	}
 
-	function handleUserAdd(type: PermissionDtoType) {
+	function handleUserAdd(type: PermissionType) {
 		if (!selectedUser) {
 			return
 		}
@@ -121,7 +117,7 @@ export function PermissionsContent() {
 
 	function handleTypeChangePermissionUser(
 		{ upn }: UserDto,
-		type: PermissionDtoType,
+		type: PermissionType,
 	) {
 		updatePermission(
 			{

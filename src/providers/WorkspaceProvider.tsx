@@ -7,6 +7,7 @@ import { queryClient } from "src/queryClient"
 import type { WorkspaceDto } from "../api/model/workspace-dto"
 import { useListWorkspaces } from "../api/workspace/workspace"
 import { Spinner } from "../components/ui/spinner"
+import { useWorkspaceHeader } from "./TitleBarProvider"
 
 export interface WorkspaceContext {
 	workspace: WorkspaceDto
@@ -27,11 +28,13 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 	const { data: workspaceStatuses, isLoading: isStatusesLoading } =
 		useListWorkspaceStatuses(
 			{ workspaceId: workspace?.id ?? -1 },
-			{ query: { enabled: !!workspace?.id } },
+			{ query: { enabled: workspace?.id !== undefined } },
 		)
 	const statuses = Object.fromEntries(
 		(workspaceStatuses ?? []).map((s) => [s.id, s]),
 	)
+
+	useWorkspaceHeader(workspace)
 
 	const setWorkspace = (data: UpdateWorkspaceDto) => {
 		queryClient.setQueryData(

@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { MoreVertical } from "lucide-react"
-import { PermissionDtoType } from "src/api/model"
+import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { RowActionsMenu } from "../Tasks/RowActionsMenu"
@@ -29,11 +29,11 @@ export const DropdownOptions = ({
 				</DotsButton>
 			}
 			onDelete={
-				myPermission?.type === PermissionDtoType.MANAGER ? onDelete : undefined
+				myPermission?.type === PermissionType.MANAGER ? onDelete : undefined
 			}
 			onArchive={onArchive}
 			onEdit={
-				myPermission?.type === PermissionDtoType.MANAGER ? onEdit : undefined
+				myPermission?.type === PermissionType.MANAGER ? onEdit : undefined
 			}
 		/>
 	)

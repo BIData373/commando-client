@@ -1,13 +1,10 @@
 import { differenceInDays, startOfToday } from "date-fns"
 import ExcelJS from "exceljs"
-import type { TaskDto } from "src/api/model"
-import {
-	DEADLINE_LABELS,
-	type DeadlineType,
-} from "src/components/shared/DeadlineTag"
+import { DeadlineType, type TaskDto } from "src/api/model"
+import { DEADLINE_LABELS } from "src/components/shared/DeadlineTag"
 import type { TaskColumn } from "src/hooks/useTaskColumns"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
-import { formatDateShort } from "./date-utils"
+import { formatDate } from "./date-utils"
 
 interface CellValue {
 	value: string
@@ -55,7 +52,9 @@ function lighten(hex: string, alpha: number): string {
 }
 
 function getDeadlineDateStyle(task: TaskDto): Pick<CellValue, "fontColor"> {
-	if (!task.dueDate || task.deadlineType === "immediate") return {}
+	if (!task.dueDate || task.deadlineType === DeadlineType.IMMEDIATE) {
+		return {}
+	}
 	const today = startOfToday()
 	const daysUntil = differenceInDays(task.dueDate, today)
 	if (daysUntil < 0) return { fontColor: "#f5222d" }
@@ -82,8 +81,8 @@ const COLUMN_DEFS: Record<string, ExportColumn<TaskRow>> = {
 	deadlineType: {
 		header: 'תג"ב',
 		accessor: (t) => {
-			const typeStr = DEADLINE_LABELS[t.deadlineType as DeadlineType] ?? ""
-			const dateStr = t.dueDate ? formatDateShort(new Date(t.dueDate)) : ""
+			const typeStr = DEADLINE_LABELS[t.deadlineType] ?? ""
+			const dateStr = t.dueDate ? formatDate(t.dueDate) : ""
 			const value =
 				typeStr && dateStr ? `${typeStr} | ${dateStr}` : typeStr || dateStr
 			return { value, ...getDeadlineDateStyle(t) }
@@ -92,7 +91,11 @@ const COLUMN_DEFS: Record<string, ExportColumn<TaskRow>> = {
 	discussionName: {
 		header: "מקור",
 		accessor: (t) => {
-			const source = `${t.source.name} | ${t.source.date}`
+			if (!t.source) {
+				return ""
+			}
+
+			const source = `${t.source.name} | ${formatDate(t.source.date)}`
 			return t.source.attachmentKey
 				? { value: source, link: t.source.attachmentKey }
 				: source
@@ -105,11 +108,11 @@ const COLUMN_DEFS: Record<string, ExportColumn<TaskRow>> = {
 	notes: { header: "הערות", maxWidth: 50, accessor: (t) => t.notes ?? "" },
 	createdAt: {
 		header: "תאריך יצירה",
-		accessor: (t) => formatDateShort(new Date(t.createdAt)),
+		accessor: (t) => formatDate(t.createdAt),
 	},
 	updatedAt: {
 		header: "עודכן ב",
-		accessor: (t) => formatDateShort(new Date(t.updatedAt)),
+		accessor: (t) => formatDate(t.updatedAt),
 	},
 }
 

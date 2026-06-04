@@ -1,7 +1,7 @@
 import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import { ChevronsLeft } from "lucide-react"
-import { type TaskHistoryDto, TaskHistoryDtoAction } from "src/api/model"
+import { TaskHistoryAction, type TaskHistoryDto } from "src/api/model"
 import {
 	formatDateMonthFullYear,
 	formatMinutesHours,
@@ -19,7 +19,7 @@ interface HistoryGroup {
 	timestamp: Date
 	changes: {
 		id: number
-		action: TaskHistoryDtoAction
+		action: TaskHistoryAction
 		field: string
 		value: string | null
 	}[]
@@ -61,11 +61,11 @@ function groupHistoryEntries(history: TaskHistoryDto[]): HistoryGroup[] {
 	return groups
 }
 
-function getActionLabel(action: TaskHistoryDtoAction, field: string): string {
-	if (action === TaskHistoryDtoAction.CREATE) {
+function getActionLabel(action: TaskHistoryAction, field: string): string {
+	if (action === TaskHistoryAction.CREATE) {
 		return "יצר את הפריט:"
 	}
-	if (action === TaskHistoryDtoAction.DELETE) {
+	if (action === TaskHistoryAction.DELETE) {
 		return `נמחק ${field}:`
 	}
 	return `עודכן ${field}:`

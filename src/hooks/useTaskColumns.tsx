@@ -5,12 +5,9 @@ import { differenceInDays, startOfToday } from "date-fns"
 import { AlertTriangle, MoreVertical } from "lucide-react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
-import type { TaskDto } from "src/api/model"
+import { DeadlineType, type TaskDto } from "src/api/model"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
-import DeadlineTag, {
-	DEADLINE_LABELS,
-	DeadlineType,
-} from "../components/shared/DeadlineTag"
+import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 import FlagIcon from "../components/shared/FlagIcon"
 import HighlightMatch from "../components/shared/HighlightMatch"
 import { AssigneeCell } from "../components/Tasks/AssigneeCell"
@@ -249,13 +246,14 @@ function useTaskColumns({
 				(rowA.original.status?.id ?? 0) - (rowB.original.status?.id ?? 0),
 			cell: ({
 				row: {
-					original: { id, status, assignee },
+					original: { id, status, assignee, workspaceId },
 				},
 			}) => (
 				<StatusCell
 					status={status}
-					taskId={id}
 					assigneeId={assignee.id}
+					taskId={id}
+					workspaceId={workspaceId}
 					onUpdate={onUpdateStatus}
 				/>
 			),
@@ -314,7 +312,7 @@ function useTaskColumns({
 					original: { deadlineType: rawDeadlineType, dueDate },
 				},
 			}) => {
-				const deadlineType = rawDeadlineType as DeadlineType
+				const deadlineType = rawDeadlineType
 				const today = startOfToday()
 				const daysUntil = dueDate
 					? differenceInDays(new Date(dueDate), today)
@@ -322,13 +320,13 @@ function useTaskColumns({
 				const isOverdue =
 					daysUntil !== null &&
 					daysUntil < 0 &&
-					deadlineType !== DeadlineType.Immediate
+					deadlineType !== DeadlineType.IMMEDIATE
 				const isApproaching =
 					!isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
 
 				return (
 					<DeadlineCell>
-						{deadlineType !== DeadlineType.Date && (
+						{deadlineType !== DeadlineType.DATE && (
 							<DeadlineTag $type={deadlineType}>
 								{DEADLINE_LABELS[deadlineType]}
 							</DeadlineTag>
@@ -366,12 +364,12 @@ function useTaskColumns({
 		},
 		discussionName: {
 			id: "discussionName",
-			accessorFn: (row) => row.source.name,
+			accessorFn: (row) => row.source?.name,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.discussionName}
 					column={column}
-					filterOptions={filterOptionsMap["discussionName"]}
+					filterOptions={filterOptionsMap.discussionName}
 				/>
 			),
 			size: 260,
@@ -379,15 +377,18 @@ function useTaskColumns({
 			sortingFn: "text",
 			cell: ({
 				row: {
-					original: {
-						source: { name, date, attachmentKey },
-					},
+					original: { source },
 				},
 			}) => {
-				const parts = [name, formatDateShort(date)].filter(Boolean)
+				if (!source) {
+					return
+				}
+				const parts = [source.name, formatDateShort(source.date)].filter(
+					Boolean,
+				)
 				return (
 					<SourceCell>
-						{attachmentKey && <SourceIcon size={18} />}
+						{source.attachmentKey && <SourceIcon size={18} />}
 						{parts.length > 0 && <SourceText>{parts.join(" | ")}</SourceText>}
 					</SourceCell>
 				)

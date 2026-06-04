@@ -11,13 +11,10 @@ import { DropdownOptions } from "./DropdownOptions";
 import CreateDiscussionModal from "../CreateTasksFromDiscussion/CreateDiscussionModal";
 import TaskConversationPanel from "./TaskConversationPanel";
 import TaskHistoryPanel from "./TaskHistoryPanel";
-import type { TaskWithWorkspaceDto } from "src/api/model"
+import { DeadlineType, type TaskWithWorkspaceDto } from "src/api/model"
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { EditorExtensions } from "src/utils/tiptap-extensions"
-import DeadlineTag, {
-	DEADLINE_LABELS,
-	DeadlineType,
-} from "../shared/DeadlineTag"
+import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import FlagIcon from "../shared/FlagIcon"
 
 interface TaskDetailPanelProps {
@@ -61,8 +58,8 @@ function TaskDetailPanel({
 		content: notes,
 	})
 
-	const attachmentFile = source.attachmentKey?.split("/").pop()?.split(".")[0]
-	const hasTagOrAttachment = tags.length > 0 || !!source.attachmentKey
+	const attachmentFile = source?.attachmentKey?.split("/").pop()?.split(".")[0]
+	const hasTagOrAttachment = tags.length > 0 || !!source?.attachmentKey
 
 	function handleScroll() {
 		const el = scrollRef.current
@@ -110,9 +107,9 @@ function TaskDetailPanel({
 						<SectionLabel>תג"ב</SectionLabel>
 						<MetaRow>
 							<DueDateGroup>
-								{deadlineType !== DeadlineType.Date && (
-									<DeadlineTag $type={deadlineType as DeadlineType}>
-										{DEADLINE_LABELS[deadlineType as DeadlineType]}
+								{deadlineType !== DeadlineType.DATE && (
+									<DeadlineTag $type={deadlineType}>
+										{DEADLINE_LABELS[deadlineType]}
 									</DeadlineTag>
 								)}
 								{dueDate && (
@@ -146,7 +143,7 @@ function TaskDetailPanel({
 							</DividerRow>
 
 							<InfoGrid>
-								{source.name && (
+								{source?.name && (
 									<InfoBlock>
 										<SectionLabel>מקור</SectionLabel>
 										<SourceRow>
@@ -224,12 +221,12 @@ function TaskDetailPanel({
         {showEditDiscussion && (
             <CreateDiscussionModal
               onClose={() => setShowEditDiscussion(false)}
-              sourceId={source.id}
+              sourceId={source?.id}
               editData={{
-                name: source.name,
-                sourceDate: source.date,
+                name: source?.name ?? "",
+                sourceDate: source?.date ?? null,
                 file: null,
-                topics: tags.map((t) => t.name),
+                tags: tags.map((t) => t.name),
               }}
             />
           )}
