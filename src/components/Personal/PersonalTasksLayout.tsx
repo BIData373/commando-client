@@ -3,26 +3,26 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { useState } from "react"
 import {
-  type TaskWithWorkspaceDto,
-  type WorkspaceDto,
-  WorkspaceStatusType,
+	type TaskWithWorkspaceDto,
+	type WorkspaceDto,
+	WorkspaceStatusType,
 } from "src/api/model"
 import {
-  getListPersonalTasksQueryKey,
-  useListPersonalTasks,
+	getListPersonalTasksQueryKey,
+	useListPersonalTasks,
 } from "src/api/task/task"
+import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { applyAllFilters } from "../../functions/filter-utils"
 import { toTaskRows } from "../../functions/tasks-table"
 import {
-  type TaskRow,
-  useTasksFilters,
+	type TaskRow,
+	useTasksFilters,
 } from "../../providers/TasksFiltersProvider"
 import { useTitleBar } from "../../providers/TitleBarProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { NoResultsFound } from "../Tasks/NoResultsFound"
 import { TaskFilters } from "../Tasks/TaskFilters"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
 interface PersonalTasksLayoutProps {
 	view: TasksView
@@ -206,6 +206,7 @@ const PageRoot = styled.div`
   display: flex;
   flex-direction: column;
   padding-top: 32px;
+  padding-block-end: 24px;
   gap: 28px;
   height: 100%;
   overflow: hidden;

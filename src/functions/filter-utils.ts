@@ -17,7 +17,9 @@ function matchesQuickFilter(task: TaskDto, filter: QuickFilter): boolean {
 	switch (filter) {
 		case QuickFilter.OVERDUE:
 			return (
-				daysUntil !== null && daysUntil < 0 && task.deadlineType !== DeadlineType.IMMEDIATE
+				daysUntil !== null &&
+				daysUntil < 0 &&
+				task.deadlineType !== DeadlineType.IMMEDIATE
 			)
 		case QuickFilter.APPROACHING:
 			return (

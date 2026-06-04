@@ -2,26 +2,31 @@ import styled from "@emotion/styled"
 import type { AnyFieldApi } from "@tanstack/form-core"
 
 interface FormFieldProps {
-  field: AnyFieldApi
-  label?: string
-  required?: boolean
-  children: React.ReactNode
+	field: AnyFieldApi
+	label?: string
+	required?: boolean
+	children: React.ReactNode
 }
 
-export function FormField({ field, label, required, children }: FormFieldProps) {
-  const errors = field.state.meta.errors
-  return (
-    <Wrapper>
-      {label && (
-        <LabelRow>
-          {required && <RequiredMark>*</RequiredMark>}
-          <LabelText>{label}</LabelText>
-        </LabelRow>
-      )}
-      {children}
-      {errors.length > 0 && <ErrorText>{String(errors[0])}</ErrorText>}
-    </Wrapper>
-  )
+export function FormField({
+	field,
+	label,
+	required,
+	children,
+}: FormFieldProps) {
+	const errors = field.state.meta.errors
+	return (
+		<Wrapper>
+			{label && (
+				<LabelRow>
+					{required && <RequiredMark>*</RequiredMark>}
+					<LabelText>{label}</LabelText>
+				</LabelRow>
+			)}
+			{children}
+			{errors.length > 0 && <ErrorText>{String(errors[0])}</ErrorText>}
+		</Wrapper>
+	)
 }
 
 const Wrapper = styled.div`

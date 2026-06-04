@@ -6,73 +6,73 @@ import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 
 interface StatusCardProps {
-  tasks: TaskRow[]
+	tasks: TaskRow[]
 }
 
 const CHART_EMPTY_COLOR = "var(--chip-bg)"
 
 export default function StatusCard({ tasks }: StatusCardProps) {
-  const { statuses } = useWorkspace()
-  const statusCounts = useMemo(
-    () =>
-      mapValues(groupBy(tasks, "status.id"), (tasks, id) => ({
-        count: tasks.length,
-        ...statuses[Number(id)],
-      })),
-    [tasks, statuses]
-  )
+	const { statuses } = useWorkspace()
+	const statusCounts = useMemo(
+		() =>
+			mapValues(groupBy(tasks, "status.id"), (tasks, id) => ({
+				count: tasks.length,
+				...statuses[Number(id)],
+			})),
+		[tasks, statuses],
+	)
 
-  const total = tasks.length
+	const total = tasks.length
 
-  const chartData =
-    total === 0
-      ? [{ key: "all", value: 1 }]
-      : Object.values(statusCounts).map(({ id, count }) => ({
-        key: id,
-        value: count,
-      }))
+	const chartData =
+		total === 0
+			? [{ key: "all", value: 1 }]
+			: Object.values(statusCounts).map(({ id, count }) => ({
+					key: id,
+					value: count,
+				}))
 
-  const cellFills =
-    total === 0
-      ? [CHART_EMPTY_COLOR]
-      : Object.values(statuses).map(({ color }) => color)
+	const cellFills =
+		total === 0
+			? [CHART_EMPTY_COLOR]
+			: Object.values(statuses).map(({ color }) => color)
 
-  return (
-    <Section>
-      <SectionTitle>סטטוס הנחיות</SectionTitle>
-      <Card>
-        <ChartWrapper>
-          <StyledPieChart width={250} height={300}>
-            <Pie
-              style={{ outline: "none" }}
-              data={chartData}
-              innerRadius={88}
-              outerRadius={130}
-              dataKey="value"
-              startAngle={0}
-              endAngle={360}
-            >
-              {chartData.map(({ key }, i) => (
-                <Cell key={key} fill={cellFills[i] ?? CHART_EMPTY_COLOR} />
-              ))}
-            </Pie>
-          </StyledPieChart>
-          <ChartCenter>
-            <CenterCount>{total}</CenterCount>
-            <CenterLabel>הנחיות בסביבה</CenterLabel>
-          </ChartCenter>
-        </ChartWrapper>
-        <StatusRow>
-          {Object.values(statusCounts).map((status) => (
-            <StatusItem key={status.id}>
-              <StatusCount>{status.count}</StatusCount>
-              <StatusBadge $color={status.color}>{status.name}</StatusBadge>
-            </StatusItem>
-          ))}
-        </StatusRow>
-      </Card>
-    </Section>
-  )
+	return (
+		<Section>
+			<SectionTitle>סטטוס הנחיות</SectionTitle>
+			<Card>
+				<ChartWrapper>
+					<StyledPieChart width={250} height={300}>
+						<Pie
+							style={{ outline: "none" }}
+							data={chartData}
+							innerRadius={88}
+							outerRadius={130}
+							dataKey="value"
+							startAngle={0}
+							endAngle={360}
+						>
+							{chartData.map(({ key }, i) => (
+								<Cell key={key} fill={cellFills[i] ?? CHART_EMPTY_COLOR} />
+							))}
+						</Pie>
+					</StyledPieChart>
+					<ChartCenter>
+						<CenterCount>{total}</CenterCount>
+						<CenterLabel>הנחיות בסביבה</CenterLabel>
+					</ChartCenter>
+				</ChartWrapper>
+				<StatusRow>
+					{Object.values(statusCounts).map((status) => (
+						<StatusItem key={status.id}>
+							<StatusCount>{status.count}</StatusCount>
+							<StatusBadge $color={status.color}>{status.name}</StatusBadge>
+						</StatusItem>
+					))}
+				</StatusRow>
+			</Card>
+		</Section>
+	)
 }
 
 const StyledPieChart = styled(PieChart)`
