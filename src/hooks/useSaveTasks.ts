@@ -1,11 +1,14 @@
 import { type CreateTaskDto, DeadlineType } from "src/api/model"
-import { useCreateTask } from "../api/task/task"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { queryClient } from "src/queryClient"
+import { getListTasksQueryKey, useCreateTask } from "../api/task/task"
 
 interface TaskInput extends CreateTaskDto {
 	groupKey?: string
 }
 
 export function useSaveTasks() {
+	const { workspace: { id: workspaceId } } = useWorkspace()
 	const { mutate: createTask } = useCreateTask()
 
 	function saveTasks(inputs: TaskInput[]) {
@@ -18,6 +21,10 @@ export function useSaveTasks() {
 					notes: notes || undefined,
 					...input,
 				},
+			}, {
+				onSuccess: () => {
+					queryClient.invalidateQueries({ queryKey: getListTasksQueryKey({ workspaceId }) })
+				}
 			})
 		}
 	}

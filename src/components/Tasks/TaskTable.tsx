@@ -43,7 +43,7 @@ interface TaskTableProps {
 function TaskTable({
 	queryKey,
 	tasks,
-	onEdit = () => {},
+	onEdit = () => { },
 	onDoubleClick,
 	extraColumns,
 	showHeader = true,
@@ -54,15 +54,18 @@ function TaskTable({
 	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters()
 	const queryClient = useQueryClient()
 
+
+	function handleSuccess() {
+		queryClient.invalidateQueries({ queryKey })
+	}
+
 	const { mutate: deleteTaskMutate } = useDeleteTask({
-		mutation: {
-			onSuccess: () => {
-				queryClient.invalidateQueries({ queryKey })
-			},
-		},
+		mutation: { onSuccess: handleSuccess }
 	})
 
-	const { mutate: upsertStatus } = useUpsertAssigneeTaskStatus()
+	const { mutate: upsertStatus } = useUpsertAssigneeTaskStatus({
+		mutation: { onSuccess: handleSuccess }
+	})
 
 	const [selectMode, setSelectMode] = useState(false)
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
@@ -143,7 +146,10 @@ function TaskTable({
 	function bulkUpdateStatus(taskIds: number[], status: WorkspaceStatusDto) {
 		taskIds.forEach((id) => {
 			const task = tasks.find((t) => t.id === id)
-			if (!task) return
+			if (!task || !task.assignee) {
+				return
+			}
+			
 			upsertStatus({
 				data: { taskId: id, assigneeId: task.assignee.id, statusId: status.id },
 			})

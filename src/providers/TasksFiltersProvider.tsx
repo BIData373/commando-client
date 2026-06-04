@@ -20,9 +20,9 @@ export type NewTaskInput = Omit<TaskDto, "id" | "createdAt" | "updatedAt"> & {
 
 export type TaskRow = TaskDto & {
 	rowKey: string
-	assignee: AssigneeDto
-	status: WorkspaceStatusDto
-	otherAssignees: AssigneeStatusDto[]
+	assignee?: AssigneeDto
+	status?: WorkspaceStatusDto
+	otherAssignees?: AssigneeStatusDto[]
 }
 
 interface TasksFiltersContextValue {
@@ -51,7 +51,7 @@ interface TasksProviderProps extends PropsWithChildren {
 	defaultHiddenColumns?: Set<TaskColumn>
 }
 
-export function formatTaskRowId(taskId: number, assigneeId: number) {
+export function formatTaskRowId(taskId: number, assigneeId?: number) {
 	return `${taskId}_${assigneeId}`
 }
 
