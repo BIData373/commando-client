@@ -1,8 +1,6 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
-import { UserPlus } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { toast } from "sonner"
 import {
 	useCreateAssignee,
 	useListAssignees,
@@ -102,32 +100,28 @@ export function AssigneeDialog({
 				users: value.users,
 			}
 
-			try {
-				if (assignee) {
-					await updateAssignee(
-						{
-							pathParams: { id: assignee.id },
-							data: payload,
-						},
-						{
-							onSuccess: handleSubmitSuccess,
-						},
-					)
-				} else {
-					await createAssignee(
-						{
-							data: { workspaceId, ...payload },
-						},
-						{
-							onSuccess: handleSubmitSuccess,
-						},
-					)
-				}
-
-				onOpenChange(false)
-			} catch {
-				toast.error("אירעה שגיאה, נסה שנית")
+			if (assignee) {
+				await updateAssignee(
+					{
+						pathParams: { id: assignee.id },
+						data: payload,
+					},
+					{
+						onSuccess: handleSubmitSuccess,
+					},
+				)
+			} else {
+				await createAssignee(
+					{
+						data: { workspaceId, ...payload },
+					},
+					{
+						onSuccess: handleSubmitSuccess,
+					},
+				)
 			}
+
+			onOpenChange(false)
 		},
 	})
 
@@ -281,18 +275,11 @@ export function AssigneeDialog({
 											onChange={setSearchValue}
 											onSelect={handleSearchSelect}
 											onClear={handleSearchClear}
+											onAdd={handleAddUserList}
+											selectedUser={selectedUser}
+											excludeUpns={field.state.value.map((u) => u.upn)}
 											placeholder="חפש שם/ תפקיד/ מספר אישי"
 										/>
-										{searchValue.length > 0 && (
-											<AddUserButton
-												type="button"
-												$enabled={!!selectedUser}
-												disabled={!selectedUser}
-												onClick={handleAddUserList}
-											>
-												<UserPlus size={16} />
-											</AddUserButton>
-										)}
 									</SearchRow>
 									<UsersLists
 										users={field.state.value}
@@ -443,18 +430,4 @@ const DialogActions = styled.div<{ $shadow: boolean }>`
   clip-path: inset(-20px 0 0 0);
   transition: box-shadow 200ms ease;
   box-shadow: ${({ $shadow }) => ($shadow ? "0px -10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
-`
-
-const AddUserButton = styled.button<{ $enabled: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-  border-radius: 6px;
-  border: 1px solid var(--line);
-  color: ${({ $enabled }) => ($enabled ? "var(--background)" : "rgba(0, 0, 0, 0.25)")};
-  cursor: ${({ $enabled }) => ($enabled ? "pointer" : "default")};
-  background: ${({ $enabled }) => ($enabled ? "va(--default-linear)" : "rgba(0, 0, 0, 0.04)")};
 `

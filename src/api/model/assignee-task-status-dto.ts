@@ -11,9 +11,7 @@ import type { WorkspaceStatusDto } from "./workspace-status-dto"
 
 export interface AssigneeTaskStatusDto {
 	task: TaskDto
-	taskId: number
 	assignee: AssigneeDto
-	assigneeId: number
 	status: WorkspaceStatusDto
-	statusId: number
+	description: string
 }
