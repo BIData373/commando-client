@@ -34,7 +34,7 @@ export function DashboardDatePicker({
 			triggerButton={({ value }) => (
 				<DashboardDatePickerTriggerButton
 					label={dateType}
-					range={range ? range : isDateRange(value) ? value : undefined}
+					range={range ?? (isDateRange(value) ? value : undefined)}
 				/>
 			)}
 			header={() => (
