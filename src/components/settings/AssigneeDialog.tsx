@@ -1,7 +1,6 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { toast } from "sonner"
 import {
 	useCreateAssignee,
 	useListAssignees,
@@ -101,32 +100,28 @@ export function AssigneeDialog({
 				users: value.users,
 			}
 
-			try {
-				if (assignee) {
-					await updateAssignee(
-						{
-							pathParams: { id: assignee.id },
-							data: payload,
-						},
-						{
-							onSuccess: handleSubmitSuccess,
-						},
-					)
-				} else {
-					await createAssignee(
-						{
-							data: { workspaceId, ...payload },
-						},
-						{
-							onSuccess: handleSubmitSuccess,
-						},
-					)
-				}
-
-				onOpenChange(false)
-			} catch {
-				toast.error("אירעה שגיאה, נסה שנית")
+			if (assignee) {
+				await updateAssignee(
+					{
+						pathParams: { id: assignee.id },
+						data: payload,
+					},
+					{
+						onSuccess: handleSubmitSuccess,
+					},
+				)
+			} else {
+				await createAssignee(
+					{
+						data: { workspaceId, ...payload },
+					},
+					{
+						onSuccess: handleSubmitSuccess,
+					},
+				)
 			}
+
+			onOpenChange(false)
 		},
 	})
 

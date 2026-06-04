@@ -24,7 +24,7 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
 import { TooltipProvider } from "../ui/tooltip"
-import { NoResultsFound } from "./NoResultsFound"
+import { EmptyState } from "./EmptyState"
 import { TaskCardGrid } from "./TaskCardGrid"
 import { TaskFilters } from "./TaskFilters"
 import { TaskTable } from "./TaskTable"
@@ -76,13 +76,13 @@ function TasksLayout({
 		() =>
 			activeTopicFilters.size > 0
 				? toTaskRows(
-						applyAllFilters(
-							tasks,
-							tabFilterSet,
-							activeTopicFilters,
-							searchQuery,
-						),
-					)
+					applyAllFilters(
+						tasks,
+						tabFilterSet,
+						activeTopicFilters,
+						searchQuery,
+					),
+				)
 				: baseFilteredTasks,
 		[tasks, searchQuery, tabFilterSet, activeTopicFilters, baseFilteredTasks],
 	)
@@ -222,9 +222,9 @@ function TasksLayout({
 
 				<ContentArea>
 					{tasks.length === 0 ? (
-						<NoResultsFound variant="empty" />
+						<EmptyState />
 					) : searchQuery && filteredTasks.length === 0 ? (
-						<NoResultsFound variant="no-search-results" />
+						<EmptyState variant="search" />
 					) : view === TasksView.TABLE ? (
 						<TaskTable
 							queryKey={tasksQueryKey}
