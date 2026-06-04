@@ -3,30 +3,30 @@ import emptyStateImage from "../../../public/empty-state.svg"
 import noResultsFoundImage from "../../assets/no-results-found.svg"
 
 interface EmptyStateProps {
-  variant?: "default" | "search"
+	variant?: "default" | "search"
 }
 
 function EmptyState({ variant = "default" }: EmptyStateProps) {
-  const isDefault = variant === "default"
+	const isDefault = variant === "default"
 
-  return (
-    <Container>
-      <IconWrapper>
-        <img
-          src={isDefault ? emptyStateImage : noResultsFoundImage}
-          width={100}
-          height={100}
-          alt="no-results"
-        />
-      </IconWrapper>
-      <Title>{isDefault ? "טרם נוצרו הנחיות" : "לא הצלחנו למצוא הנחיות"}</Title>
-      <Subtitle>
-        {isDefault
-          ? "לאחר שהנחיות יוצרו, ההנחיות האחרונות יופיעו כאן"
-          : "יש לנסות ניסוח אחר או לבדוק אם ההנחיה נמצאת בארכיון"}
-      </Subtitle>
-    </Container>
-  )
+	return (
+		<Container>
+			<IconWrapper>
+				<img
+					src={isDefault ? emptyStateImage : noResultsFoundImage}
+					width={100}
+					height={100}
+					alt="no-results"
+				/>
+			</IconWrapper>
+			<Title>{isDefault ? "טרם נוצרו הנחיות" : "לא הצלחנו למצוא הנחיות"}</Title>
+			<Subtitle>
+				{isDefault
+					? "לאחר שהנחיות יוצרו, ההנחיות האחרונות יופיעו כאן"
+					: "יש לנסות ניסוח אחר או לבדוק אם ההנחיה נמצאת בארכיון"}
+			</Subtitle>
+		</Container>
+	)
 }
 
 export { EmptyState }

@@ -8,80 +8,83 @@ import { queryClient } from "src/queryClient"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { StatusTag } from "../shared/StatusTag"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
 
 interface AssigneeContainerProps {
-  taskId: number
-  isAdmin: boolean
-  editable: boolean
-  assignee: AssigneeStatusDto
+	taskId: number
+	isAdmin: boolean
+	editable: boolean
+	assignee: AssigneeStatusDto
 }
 
 export const AssigneeContainer = ({
-  taskId,
-  assignee: { assignee, status },
-  isAdmin,
-  editable,
+	taskId,
+	assignee: { assignee, status },
+	isAdmin,
+	editable,
 }: AssigneeContainerProps) => {
-  const {
-    workspace: { id: workspaceId, assigneeStatusEditable },
-    statuses,
-  } = useWorkspace()
+	const {
+		workspace: { id: workspaceId, assigneeStatusEditable },
+		statuses,
+	} = useWorkspace()
 
-  // FIX Get query key from params?
-  const { mutateAsync: upsertAssigneeTaskStatus } =
-    useUpsertAssigneeTaskStatus({
-      mutation: {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: getListTasksQueryKey({ workspaceId }) })
-        }
-      }
-    })
+	// FIX Get query key from params?
+	const { mutateAsync: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus(
+		{
+			mutation: {
+				onSuccess: () => {
+					queryClient.invalidateQueries({
+						queryKey: getListTasksQueryKey({ workspaceId }),
+					})
+				},
+			},
+		},
+	)
 
-  const canEdit = editable && (isAdmin || (assigneeStatusEditable ?? false))
+	const canEdit = editable && (isAdmin || (assigneeStatusEditable ?? false))
 
-  function handleUpdateAssigneeStatus(statusId: number) {
-    upsertAssigneeTaskStatus({
-      data: { taskId, assigneeId: assignee.id, statusId },
-    })
-  }
+	function handleUpdateAssigneeStatus(statusId: number) {
+		upsertAssigneeTaskStatus({
+			data: { taskId, assigneeId: assignee.id, statusId },
+		})
+	}
 
-  return (
-    <AssigneeRowContainer key={assignee.id} $white={editable && !isAdmin}>
-      <AssigneeInfoBlock>
-        <AssigneeAvatar assignee={assignee} />
-        <AssigneeRoleText>{assignee.name}</AssigneeRoleText>
-      </AssigneeInfoBlock>
+	return (
+		<AssigneeRowContainer key={assignee.id} $white={editable && !isAdmin}>
+			<AssigneeInfoBlock>
+				<AssigneeAvatar assignee={assignee} />
+				<AssigneeRoleText>{assignee.name}</AssigneeRoleText>
+			</AssigneeInfoBlock>
 
-      {canEdit ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <StatusPillTrigger $color={status.color}>
-              {status.name}
-              <ChevronDown size={12} />
-            </StatusPillTrigger>
-          </DropdownMenuTrigger>
-          <StatusDropdownContent align="center" sideOffset={6}>
-            {Object.values(statuses).map((status) => (
-              <StatusDropdownItem
-                key={status.id}
-                $selected={status.id === status?.id}
-                onSelect={() => handleUpdateAssigneeStatus(status.id)}
-              >
-                <StatusTag status={status} />
-              </StatusDropdownItem>
-            ))}
-          </StatusDropdownContent>
-        </DropdownMenu>
-      ) : (
-        status && <StatusTag status={status} />
-      )}
-    </AssigneeRowContainer>
-  )
+			{canEdit ? (
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<StatusPillTrigger $color={status.color}>
+							{status.name}
+							<ChevronDown size={12} />
+						</StatusPillTrigger>
+					</DropdownMenuTrigger>
+					<StatusDropdownContent align="center" sideOffset={6}>
+						{Object.values(statuses).map((status) => (
+							<StatusDropdownItem
+								key={status.id}
+								$selected={status.id === status?.id}
+								onSelect={() => handleUpdateAssigneeStatus(status.id)}
+							>
+								<StatusTag status={status} />
+							</StatusDropdownItem>
+						))}
+					</StatusDropdownContent>
+				</DropdownMenu>
+			) : (
+				status && <StatusTag status={status} />
+			)}
+		</AssigneeRowContainer>
+	)
 }
 
 const StatusPillTrigger = styled.button<{ $color: string }>`
@@ -121,7 +124,7 @@ const StatusDropdownContent = styled(DropdownMenuContent)`
     0px 9px 28px rgba(0, 0, 0, 0.05);
 `
 
-const StatusDropdownItem = styled(DropdownMenuItem) <{ $selected: boolean }>`
+const StatusDropdownItem = styled(DropdownMenuItem)<{ $selected: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
