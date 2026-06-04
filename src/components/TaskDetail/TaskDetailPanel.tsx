@@ -2,14 +2,11 @@ import styled from "@emotion/styled"
 import { EditorContent, useEditor } from "@tiptap/react"
 import { Calendar, ChevronUp, History, Paperclip, X } from "lucide-react"
 import { useRef, useState } from "react"
-import type { TaskWithWorkspaceDto } from "src/api/model"
+import { DeadlineType, type TaskWithWorkspaceDto } from "src/api/model"
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import { EditorExtensions } from "src/utils/tiptap-extensions"
-import DeadlineTag, {
-	DEADLINE_LABELS,
-	DeadlineType,
-} from "../shared/DeadlineTag"
+import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import FlagIcon from "../shared/FlagIcon"
 import { AssigneeSection } from "./AssigneeSection"
 import { DropdownOptions } from "./DropdownOptions"
@@ -56,8 +53,8 @@ function TaskDetailPanel({
 		content: notes,
 	})
 
-	const attachmentFile = source.attachmentKey?.split("/").pop()?.split(".")[0]
-	const hasTagOrAttachment = tags.length > 0 || !!source.attachmentKey
+	const attachmentFile = source?.attachmentKey?.split("/").pop()?.split(".")[0]
+	const hasTagOrAttachment = tags.length > 0 || !!source?.attachmentKey
 
 	function handleScroll() {
 		const el = scrollRef.current
@@ -105,9 +102,9 @@ function TaskDetailPanel({
 						<SectionLabel>תג"ב</SectionLabel>
 						<MetaRow>
 							<DueDateGroup>
-								{deadlineType !== DeadlineType.Date && (
-									<DeadlineTag $type={deadlineType as DeadlineType}>
-										{DEADLINE_LABELS[deadlineType as DeadlineType]}
+								{deadlineType !== DeadlineType.DATE && (
+									<DeadlineTag $type={deadlineType}>
+										{DEADLINE_LABELS[deadlineType]}
 									</DeadlineTag>
 								)}
 								{dueDate && (
@@ -141,7 +138,7 @@ function TaskDetailPanel({
 							</DividerRow>
 
 							<InfoGrid>
-								{source.name && (
+								{source?.name && (
 									<InfoBlock>
 										<SectionLabel>מקור</SectionLabel>
 										<SourceRow>

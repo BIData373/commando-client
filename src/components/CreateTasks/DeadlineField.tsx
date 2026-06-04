@@ -1,10 +1,10 @@
 import styled from "@emotion/styled"
 import { Calendar as CalendarIcon } from "lucide-react"
 import { useState } from "react"
+import { DeadlineType } from "src/api/model"
 import { formatDate } from "src/functions/date-utils"
 import type { DatePickerValue } from "../shared/DatePicker"
 import DatePicker, { CalendarMode } from "../shared/DatePicker"
-import { DeadlineType } from "../shared/DeadlineTag"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -32,7 +32,7 @@ function DeadlineField({
 		setIsDateOpen(false)
 	}
 
-	const showDatePicker = deadlineType !== DeadlineType.Immediate
+	const showDatePicker = deadlineType !== DeadlineType.IMMEDIATE
 
 	return (
 		<FormItem>
@@ -42,28 +42,28 @@ function DeadlineField({
 			<DeadlineRow>
 				<SegmentedControl>
 					<SegmentedItem
-						$selected={deadlineType === DeadlineType.Date}
-						onClick={() => onDeadlineTypeChange(DeadlineType.Date)}
+						$selected={deadlineType === DeadlineType.DATE}
+						onClick={() => onDeadlineTypeChange(DeadlineType.DATE)}
 					>
 						תאריך
 					</SegmentedItem>
 					<SegmentedItem
-						$selected={deadlineType === DeadlineType.Immediate}
-						onClick={() => onDeadlineTypeChange(DeadlineType.Immediate)}
+						$selected={deadlineType === DeadlineType.IMMEDIATE}
+						onClick={() => onDeadlineTypeChange(DeadlineType.IMMEDIATE)}
 					>
 						מיידי
 					</SegmentedItem>
 					<SegmentedItem
-						$selected={deadlineType === DeadlineType.Ongoing}
-						onClick={() => onDeadlineTypeChange(DeadlineType.Ongoing)}
+						$selected={deadlineType === DeadlineType.ROLLING}
+						onClick={() => onDeadlineTypeChange(DeadlineType.ROLLING)}
 					>
 						שוטף
 					</SegmentedItem>
 				</SegmentedControl>
-				{deadlineType === DeadlineType.Immediate && (
+				{deadlineType === DeadlineType.IMMEDIATE && (
 					<HintText>לביצוע בהקדם</HintText>
 				)}
-				{deadlineType === DeadlineType.Ongoing && (
+				{deadlineType === DeadlineType.ROLLING && (
 					<HintText>עד (אופציונלי)</HintText>
 				)}
 				{showDatePicker && (

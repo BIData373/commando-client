@@ -1,6 +1,8 @@
 import styled from "@emotion/styled"
 import { useNavigate, useParams } from "@tanstack/react-router"
-import { ChevronDown, Plus, Users, Users2 } from "lucide-react"
+import { ChevronDown, Plus, Users } from "lucide-react"
+import { TasksView } from "src/routes/workspace/$urlName/tasks"
+import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new"
 
 export const TitleSection = () => {
 	const { urlName } = useParams({ from: "/workspace/$urlName/dashboard" })
@@ -10,7 +12,7 @@ export const TitleSection = () => {
 		navigate({
 			to: "/workspace/$urlName/tasks/new",
 			params: { urlName },
-			search: { view: "TABLE" },
+			search: { view: TasksView.TABLE, mode: NewTaskMode.SINGLE },
 		})
 	}
 

@@ -1,21 +1,19 @@
 import styled from "@emotion/styled"
 import { ChevronLeft } from "lucide-react"
 import { useState } from "react"
+import { DeadlineType } from "src/api/model"
 import { formatDateShort } from "../../functions/date-utils"
 import type { DatePickerValue } from "../shared/DatePicker"
 import { CalendarMode } from "../shared/DatePicker"
 import DatePickerPopover from "../shared/DatePickerPopover"
-import DeadlineTag, {
-	DEADLINE_LABELS,
-	DeadlineType,
-} from "../shared/DeadlineTag"
+import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface DeadlineCellProps {
 	deadlineType: DeadlineType | null
-	dueDate: Date | null
+	dueDate?: Date | null
 	onDeadlineTypeChange: (type: DeadlineType) => void
 	onDateChange: (date: Date | null) => void
 }
@@ -24,8 +22,8 @@ interface DeadlineCellProps {
 
 const DEADLINE_TYPES = Object.keys(DEADLINE_LABELS) as DeadlineType[]
 const TYPES_WITH_CALENDAR: DeadlineType[] = [
-	DeadlineType.Date,
-	DeadlineType.Ongoing,
+	DeadlineType.DATE,
+	DeadlineType.ROLLING,
 ]
 export const DATA_CELL_ACTIVE_KEY = "data-cell-active"
 
@@ -64,14 +62,14 @@ function DeadlineCell({
 					<DeadlineTrigger>
 						{!deadlineType ? (
 							<PlaceholderText>{`תג"ב`}</PlaceholderText>
-						) : deadlineType === DeadlineType.Immediate ? (
-							<DeadlineTag $type={DeadlineType.Immediate}>
-								{DEADLINE_LABELS[DeadlineType.Immediate]}
+						) : deadlineType === DeadlineType.IMMEDIATE ? (
+							<DeadlineTag $type={DeadlineType.IMMEDIATE}>
+								{DEADLINE_LABELS[DeadlineType.IMMEDIATE]}
 							</DeadlineTag>
-						) : deadlineType === DeadlineType.Ongoing ? (
+						) : deadlineType === DeadlineType.ROLLING ? (
 							<DisplayRow>
-								<DeadlineTag $type={DeadlineType.Ongoing}>
-									{DEADLINE_LABELS[DeadlineType.Ongoing]}
+								<DeadlineTag $type={DeadlineType.ROLLING}>
+									{DEADLINE_LABELS[DeadlineType.ROLLING]}
 								</DeadlineTag>
 								{dueDate && <DateText>{formatDateShort(dueDate)}</DateText>}
 							</DisplayRow>
@@ -101,8 +99,8 @@ function DeadlineCell({
 						<DatePickerPopover
 							mode={CalendarMode.Single}
 							open={
-								deadlineType === DeadlineType.Date ||
-								deadlineType === DeadlineType.Ongoing
+								deadlineType === DeadlineType.DATE ||
+								deadlineType === DeadlineType.ROLLING
 							}
 							value={dueDate ?? undefined}
 							side="left"
@@ -111,7 +109,7 @@ function DeadlineCell({
 							triggerButton={() => <HiddenAnchor />}
 							header={() => (
 								<PopoverHeaderText>
-									{deadlineType === DeadlineType.Ongoing
+									{deadlineType === DeadlineType.ROLLING
 										? "עד (אופציונלי)"
 										: "בחר תאריך להנחיה"}
 								</PopoverHeaderText>
@@ -121,7 +119,7 @@ function DeadlineCell({
 									<SetButton onClick={() => handleSetDate(value)}>
 										הגדר
 									</SetButton>
-									{deadlineType === DeadlineType.Ongoing && (
+									{deadlineType === DeadlineType.ROLLING && (
 										<SetWithoutDateButton onClick={handleSetWithoutDate}>
 											הגדר ללא תאריך
 										</SetWithoutDateButton>

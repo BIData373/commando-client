@@ -6,12 +6,12 @@ import {
 	useReactTable,
 } from "@tanstack/react-table"
 import { useMemo, useState } from "react"
+import { DeadlineType } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filter-utils"
 import searchInstruction from "../../assets/icons/searchInstruction.svg"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
-import { DeadlineType } from "../shared/DeadlineTag"
 import { EmptyCardState } from "./EmptyCardState"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
@@ -61,7 +61,7 @@ function getFilteredTasks(tab: FocusedTab, tasks: TaskRow[]): TaskRow[] {
 		case FocusedTab.FLAGGED:
 			return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED))
 		case FocusedTab.APPROACHING:
-			return tasks.filter((t) => t.deadlineType === "immediate")
+			return tasks.filter((t) => t.deadlineType === DeadlineType.IMMEDIATE)
 		case FocusedTab.OVERDUE:
 			return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
 	}
@@ -89,7 +89,8 @@ export default function FocusedInstructions({
 			tab.id === FocusedTab.FLAGGED
 				? tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED)).length
 				: tab.id === FocusedTab.APPROACHING
-					? tasks.filter((t) => t.deadlineType === "immediate").length
+					? tasks.filter((t) => t.deadlineType === DeadlineType.IMMEDIATE)
+							.length
 					: tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
 							.length,
 	}))
@@ -166,7 +167,7 @@ export default function FocusedInstructions({
 				tabFilter={activeTab === FocusedTab.APPROACHING ? undefined : activeTab}
 				deadlineTypeFilter={
 					activeTab === FocusedTab.APPROACHING
-						? DeadlineType.Immediate
+						? DeadlineType.IMMEDIATE
 						: undefined
 				}
 			/>

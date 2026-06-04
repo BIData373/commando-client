@@ -4,7 +4,7 @@ import { useState } from "react"
 import type { SourceDto } from "src/api/model"
 import { useListSources } from "src/api/source/source"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { formatDate } from "../../functions/date-utils"
+import { formatDate, formatDateShort } from "../../functions/date-utils"
 import type { DatePickerValue } from "../shared/DatePicker"
 import DatePicker, { CalendarMode } from "../shared/DatePicker"
 import HighlightMatch from "../shared/HighlightMatch"
@@ -118,7 +118,7 @@ function SourceField({
 							placeholder='לדוגמה: חתמ"צ שבועי'
 							dir="rtl"
 						/>
-						{linkedSource && linkedSource?.hasAttachment && (
+						{linkedSource && !!linkedSource?.attachmentKey && (
 							<Paperclip size={16} />
 						)}
 					</SourceInputBox>
@@ -134,7 +134,9 @@ function SourceField({
 												onMouseDown={(e) => handleOptionMouseDown(e, d)}
 											>
 												{!uniqueNames && (
-													<SourceOptionDate>{d.date}</SourceOptionDate>
+													<SourceOptionDate>
+														{formatDateShort(d.date)}
+													</SourceOptionDate>
 												)}
 												<SourceOptionName>
 													{sourceQuery ? (

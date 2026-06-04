@@ -6,7 +6,7 @@ import {
 	useReactTable,
 } from "@tanstack/react-table"
 import { useMemo } from "react"
-import { WorkspaceStatusDtoType } from "src/api/model"
+import { WorkspaceStatusType } from "src/api/model"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import compleateInstruction from "../../assets/icons/completeInstruction.svg"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
@@ -27,8 +27,7 @@ export default function RecentlyCompleted({
 	tasks,
 }: RecentlyCompletedProps) {
 	const completedTasks = useMemo(
-		() =>
-			tasks.filter((t) => t.status.type === WorkspaceStatusDtoType.COMPLETED),
+		() => tasks.filter((t) => t.status.type === WorkspaceStatusType.COMPLETED),
 		[tasks],
 	)
 
@@ -83,7 +82,7 @@ export default function RecentlyCompleted({
 			</Card>
 			<ViewMoreInstructions
 				urlName={urlName}
-				statusFilter={WorkspaceStatusDtoType.COMPLETED}
+				statusFilter={WorkspaceStatusType.COMPLETED}
 			/>
 		</Section>
 	)

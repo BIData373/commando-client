@@ -1,5 +1,5 @@
-import type { PermissionDtoType, UserDto } from "src/api/model"
+import type { PermissionType, UserDto } from "src/api/model"
 
-export function concatName(user: UserDto, type?: PermissionDtoType) {
+export function concatName(user: UserDto, type?: PermissionType) {
 	return `${user.info?.name} ${user.id} ${user.upn}${type ? ` / ${type}` : ""}`
 }

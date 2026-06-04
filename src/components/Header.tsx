@@ -7,13 +7,10 @@ import {
 import { ChevronDown, User } from "lucide-react"
 import type { HeaderConfig } from "src/router"
 import { useTitleBarActions } from "../providers/TitleBarProvider"
-import ThemeToggle from "./ThemeToggle"
-import { Avatar, AvatarFallback } from "./ui/avatar"
+// import ThemeToggle from "./ThemeToggle"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
 import {
@@ -32,15 +29,15 @@ export default function Header() {
 	]
 
 	const { matches } = useRouterState()
-	const headerConfig = matches.findLast((m) => m.staticData.header)?.staticData
-		.header as HeaderConfig | undefined
+	const headerConfig = [...matches].reverse().find((m) => m.staticData.header)
+		?.staticData.header as HeaderConfig | undefined
 	const {
 		title = "",
 		navigation = true,
 		user = true,
 		workspace = false,
 	} = headerConfig ?? {}
-	const { actions } = useTitleBarActions()
+	const { actions, workspace: activeWorkspace } = useTitleBarActions()
 	const showTitleBar = title || actions
 
 	return (
@@ -48,7 +45,9 @@ export default function Header() {
 			<HeaderRoot>
 				<HeaderInner>
 					<StartSection>
-						<LogoImage src="/logo.svg" alt="Logo" />
+						<Link to="/">
+							<LogoImage src="/logo.svg" alt="Logo" />
+						</Link>
 						{navigation && (
 							<NavigationMenu>
 								<NavigationMenuList>
@@ -65,11 +64,15 @@ export default function Header() {
 					</StartSection>
 
 					<CenterSection>
-						{workspace && (
+						{workspace && activeWorkspace && (
 							<>
-								{/* Icon first = rightmost in RTL */}
-								<WorkspaceIcon src="/workspace-icon.png" alt="Workspace icon" />
-								<WorkspaceName>Example Workspace</WorkspaceName>
+								{activeWorkspace.icon && (
+									<WorkspaceIcon
+										src={activeWorkspace.icon}
+										alt="Workspace icon"
+									/>
+								)}
+								<WorkspaceName>{activeWorkspace.title}</WorkspaceName>
 							</>
 						)}
 					</CenterSection>
@@ -80,19 +83,15 @@ export default function Header() {
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<UserTrigger>
-										<Avatar>
-											<AvatarFallback>
-												<User size={20} />
-											</AvatarFallback>
-										</Avatar>
-										<ChevronDown size={20} />
+										<User size={16} />
+										<ChevronDown size={16} />
 									</UserTrigger>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent>
-									<DropdownMenuSeparator />
+									{/* <DropdownMenuSeparator />
 									<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
 										<ThemeToggle />
-									</DropdownMenuItem>
+									</DropdownMenuItem> */}
 								</DropdownMenuContent>
 							</DropdownMenu>
 						)}
@@ -154,15 +153,16 @@ const EndSection = styled.div`
 const UserTrigger = styled.button`
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: var(--chip-bg);
-  border: 1px solid var(--chip-line);
+  justify-content: center;
+  gap: 8px;
+  background: #FFFFFF1F;
+  border: none;
   border-radius: 40px;
-  padding-inline-start: 6px;
-  padding-inline-end: 16px;
-  height: 52px;
+  width: 64px;
+  height: 32px;
   cursor: pointer;
-  color: var(--sea-ink);
+  color: white;
+  margin-block: 15px;
 `
 
 const WorkspaceName = styled.p`
@@ -170,7 +170,7 @@ const WorkspaceName = styled.p`
   font-size: 24px;
   font-weight: 500;
   line-height: 32px;
-  color: var(--sea-ink);
+  color: #C7C9CB;
   white-space: nowrap;
 `
 
@@ -206,19 +206,19 @@ const PageTitle = styled.h1`
 const NavMenuLink = styled(NavigationMenuLink)`
   && {
     padding: 8px 8px;
-    color: white;
+    color: #C7C9CB;
     font-weight: 400;
     font-size: 14px;
     background: transparent;
     border-radius: 6px;
 
     &:hover {
-      color: white;
+      color: #C7C9CB;
       background: rgba(255, 255, 255, 0.1);
     }
 
     &[data-status='active'] {
-      color: white;
+      color: #C7C9CB;
       background: rgba(255, 255, 255, 0.15);
     }
   }
