@@ -14,13 +14,8 @@ interface ErrorModalProviderProps {
 export function ErrorModalProvider({ children }: ErrorModalProviderProps) {
   const [errorCode, setErrorCode] = useState<number | null>(null)
 
-  const handleErrorCodeChange = (errorCode: number | null) => setErrorCode(errorCode)
- 
   return (
-    <ErrorModalContext.Provider value={{
-      errorCode,
-      setErrorCode: handleErrorCodeChange
-    }}>
+    <ErrorModalContext.Provider value={{ errorCode, setErrorCode }}>
       {children}
     </ErrorModalContext.Provider>
   );
