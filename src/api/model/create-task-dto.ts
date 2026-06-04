@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 import type { DeadlineType } from "./deadline-type"
+import type { GetTaskAssigneeDto } from "./get-task-assignee-dto"
 
 export interface CreateTaskDto {
 	title: string
@@ -15,9 +16,9 @@ export interface CreateTaskDto {
 	/** @nullable */
 	dueDate?: Date | null
 	notes?: string
-	assigneeIds?: number[]
 	tags?: string[]
 	workspaceId: number
 	/** @nullable */
 	sourceId?: number | null
+	assignees?: GetTaskAssigneeDto[]
 }
