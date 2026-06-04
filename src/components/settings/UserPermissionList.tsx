@@ -1,39 +1,51 @@
 import styled from "@emotion/styled"
 import type { PermissionDto, PermissionType, UserDto } from "src/api/model"
+import noUsersFound from "../../assets/noUsersFound.svg"
+import { EmptyCardState } from "../shared/EmptyCardState"
 import { TrashButton } from "../shared/TrashButton"
 import { DropdownPermission } from "./DropdownPermission"
 
 interface UserPermissionListProps {
-	permissions: PermissionDto[]
-	onDelete: (user: UserDto) => void
-	onTypeChange: (user: UserDto, type: PermissionType) => void
+  permissions: PermissionDto[]
+  onDelete: (user: UserDto) => void
+  onTypeChange: (user: UserDto, type: PermissionType) => void
 }
 
 export function UserPermissionList({
-	permissions,
-	onDelete,
-	onTypeChange,
+  permissions,
+  onDelete,
+  onTypeChange,
 }: UserPermissionListProps) {
-	return (
-		<UserListRoot>
-			{permissions.map(({ user, type }) => (
-				<UserRow key={user.id}>
-					<UserInfo>
-						<UserHeader>
-							<UserName>{user.info?.name}</UserName>
-							<UserPersonalId> - {user.id}</UserPersonalId>
-						</UserHeader>
-						<UserSubtext>{user.upn}</UserSubtext>
-					</UserInfo>
-					<DropdownPermission
-						value={type}
-						onChange={(type) => onTypeChange(user, type)}
-					/>
-					<TrashButton onClick={() => onDelete(user)} size={22} />
-				</UserRow>
-			))}
-		</UserListRoot>
-	)
+  return (
+    <UserListRoot>
+      {permissions.length === 0 ? (
+        <CenterContainer>
+          <EmptyCardState
+            imgSrc={noUsersFound}
+            title="לא נמצאו משתמשים"
+            description="טרם הוגדרו משתמשים כדי להציג נתונים"
+          />
+        </CenterContainer>
+      ) : (
+        permissions.map(({ user, type }) => (
+          <UserRow key={user.id}>
+            <UserInfo>
+              <UserHeader>
+                <UserName>{user.info?.name}</UserName>
+                <UserPersonalId> - {user.upn}</UserPersonalId>
+              </UserHeader>
+              <UserSubtext>{user.info?.displayName}</UserSubtext>
+            </UserInfo>
+            <DropdownPermission
+              value={type}
+              onChange={(type) => onTypeChange(user, type)}
+            />
+            <TrashButton onClick={() => onDelete(user)} size={22} />
+          </UserRow>
+        ))
+      )}
+    </UserListRoot>
+  )
 }
 
 const UserListRoot = styled.div`
@@ -82,4 +94,10 @@ const UserSubtext = styled.span`
   font-size: 14px;
   font-weight: 400;
   color: rgba(0, 0, 0, 0.65);
+`
+
+const CenterContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
