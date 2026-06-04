@@ -9,9 +9,7 @@
 export interface UpdateSourceDto {
 	workspaceId?: number
 	name?: string
-	/** @nullable */
-	date?: Date | null
+	date?: Date
 	tags?: string[]
-	/** @nullable */
-	attachment?: Blob | null
+	attachment?: Blob
 }

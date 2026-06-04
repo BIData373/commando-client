@@ -6,10 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface CreateSourceDto {
-	workspaceId: number
-	name: string
-	date?: Date
-	tags?: string[]
-	attachment?: Blob
+export interface GetTaskAssigneeDto {
+	id: number
+	description?: string
 }
