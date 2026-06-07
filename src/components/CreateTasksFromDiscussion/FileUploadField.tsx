@@ -5,8 +5,8 @@ import { useRef, useState } from "react"
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface FileUploadFieldProps {
-	file: File | null;
-	onFileChange: (file: File | null) => void;
+	file: File | null
+	onFileChange: (file: File | null) => void
 }
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -22,9 +22,9 @@ const MAX_FILE_SIZE = 30 * 1024 * 1024
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function FileUploadField({ file, onFileChange }: FileUploadFieldProps) {
-	const fileInputRef = useRef<HTMLInputElement>(null);
-	const [isDragOver, setIsDragOver] = useState(false);
-	const [fileError, setFileError] = useState("");
+	const fileInputRef = useRef<HTMLInputElement>(null)
+	const [isDragOver, setIsDragOver] = useState(false)
+	const [fileError, setFileError] = useState("")
 
 	function validateFile(f: File): string | null {
 		const ext = "." + f.name.split(".").pop()?.toLowerCase()
@@ -78,8 +78,8 @@ function FileUploadField({ file, onFileChange }: FileUploadFieldProps) {
 	}
 
 	function handleRemoveFile() {
-		onFileChange(null);
-		setFileError("");
+		onFileChange(null)
+		setFileError("")
 	}
 
 	return (
@@ -232,7 +232,7 @@ const FileName = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: var(--Components-Upload-Global-colorPrimary);
+  color: var(--tab-active-color);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
