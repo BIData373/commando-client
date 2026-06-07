@@ -7,7 +7,7 @@ function appendValue(formData: FormData, key: string, value: unknown): void {
 		formData.append(key, value.toISOString())
 	} else if (Array.isArray(value)) {
 		value.forEach((item) => {
-			appendValue(formData, `${key}[]`, item)
+			appendValue(formData, key, item)
 		})
 	} else if (typeof value === "object") {
 		Object.entries(value).forEach(([k, v]) => {
