@@ -166,7 +166,7 @@ export function PermissionsContent() {
 					selectedUser={selectedUser}
 					excludeUpns={permissions.map((p) => p.user.upn)}
 					placeholder="חפש שם/ תפקיד/ מספר אישי"
-					showAddBtn={!!selectedUser}
+					showAddButton={!!selectedUser}
 				>
 					{search.length > 0 && (
 						<AddUserRow>
