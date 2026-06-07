@@ -2,8 +2,10 @@ import styled from "@emotion/styled"
 import { X } from "lucide-react"
 import { useRef } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
+import type { WorkspaceStatusDto } from "src/api/model"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AssigneeAvatar } from "./AssigneeAvatar"
+import { AssigneeStatusDropdown } from "./AssigneeStatusDropdown"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -11,10 +13,12 @@ interface AssigneeRowListProps {
 	assigneeIds: number[]
 	directiveTitle: string
 	assigneeDetails?: Record<number, string>
+	assigneeStatuses?: Record<number, WorkspaceStatusDto>
 	showDetail?: boolean
 	detailPlaceholder?: string
 	onDetailChange: (id: number, value: string) => void
 	onRemove: (id: number) => void
+	onStatusChange?: (assigneeId: number, statusId: number) => void
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -23,10 +27,12 @@ function AssigneeRowList({
 	assigneeIds,
 	directiveTitle,
 	assigneeDetails,
+	assigneeStatuses,
 	showDetail = true,
 	detailPlaceholder = "פירוט לאחראי",
 	onDetailChange,
 	onRemove,
+	onStatusChange,
 }: AssigneeRowListProps) {
 	const detailRefs = useRef<Record<number, HTMLSpanElement | null>>({})
 
@@ -85,6 +91,13 @@ function AssigneeRowList({
 									data-placeholder={detailPlaceholder}
 								/>
 							</TextareaWrapper>
+						)}
+
+						{assigneeStatuses?.[assignee.id] && onStatusChange && (
+							<AssigneeStatusDropdown
+								status={assigneeStatuses[assignee.id]}
+								onStatusChange={(statusId) => onStatusChange(assignee.id, statusId)}
+							/>
 						)}
 
 						<InfoBlock>

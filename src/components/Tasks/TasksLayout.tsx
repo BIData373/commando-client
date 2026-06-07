@@ -8,6 +8,7 @@ import { toTaskRows } from "src/functions/tasks-table";
 import { useWorkspace } from "src/providers/WorkspaceProvider";
 import { type TasksSearchSchemaType, TasksView } from "src/routes/workspace/$urlName/tasks";
 import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new";
+import { TaskDetailMode } from "src/routes/workspace/$urlName/tasks/$taskId";
 import type { QuickFilter } from "src/utils/filter-utils";
 import { exportTasksToExcel } from "../../functions/export-excel";
 import { applyAllFilters } from "../../functions/filter-utils";
@@ -101,11 +102,19 @@ function TasksLayout({
     });
   }
 
-  function handleEdit(taskId: number) {
+  function handleViewTask(taskId: number) {
     navigate({
       to: "/workspace/$urlName/tasks/$taskId",
       params: { urlName, taskId: String(taskId) },
       search: { view },
+    });
+  }
+
+  function handleEdit(taskId: number) {
+    navigate({
+      to: "/workspace/$urlName/tasks/$taskId",
+      params: { urlName, taskId: String(taskId) },
+      search: { view, mode: TaskDetailMode.EDIT },
     });
   }
 
@@ -225,7 +234,7 @@ function TasksLayout({
               statusFilter={statusFilter}
               deadlineTypeFilter={deadlineTypeFilter}
               onFiltersChange={handleColumnFiltersChange}
-              onDoubleClick={handleEdit}
+              onDoubleClick={handleViewTask}
             />
           ) : (
             <TaskCardGrid tasks={filteredTasks} />

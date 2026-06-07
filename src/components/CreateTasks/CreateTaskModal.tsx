@@ -1,10 +1,13 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
+import { useQueryClient } from "@tanstack/react-query"
 import { useStore } from "@tanstack/react-store"
 import { ChevronDown, ChevronUp, X } from "lucide-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 import { useRef, useState } from "react"
-import { DeadlineType, type SourceDto } from "src/api/model"
+import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
+import { DeadlineType, type SourceDto, type TaskDto, type WorkspaceStatusDto } from "src/api/model"
+import { getListTasksQueryKey, useUpdateTask } from "src/api/task/task"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { CancelButton } from "../shared/CancelButton"
@@ -33,44 +36,88 @@ interface FormState {
   sourceId: number | null
   selectedAssignees: number[]
   assigneeDetails: Record<number, string>
+  assigneeStatuses: Record<number, WorkspaceStatusDto>
   linkedSource: SourceDto | null
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 interface CreateTaskModalProps {
   onClose: () => void
+  task?: TaskDto
 }
 
-function CreateTaskModal({ onClose }: CreateTaskModalProps) {
-  const { workspace: { id: workspaceId } } = useWorkspace()
+function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
+  const isEditMode = !!task
+  const { workspace: { id: workspaceId }, statuses } = useWorkspace()
   const saveTasks = useSaveTasks()
-  const [isDetailsExpanded, setIsDetailsExpanded] = useState(false)
+  const queryClient = useQueryClient()
+  const { mutate: updateTask } = useUpdateTask({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getListTasksQueryKey({ workspaceId }) })
+      },
+    },
+  })
+  const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus()
+  const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
+
+  const initialAssigneeStatuses: Record<number, WorkspaceStatusDto> = {}
+  if (task) {
+    for (const as of task.assigneeStatuses) {
+      initialAssigneeStatuses[as.assignee.id] = as.status
+    }
+  }
 
   const form = useForm({
     defaultValues: {
-      title: "",
-      deadlineType: DeadlineType.DATE,
-      dueDate: null,
-      flagged: false,
-      source: "",
-      sourceDate: null,
-      tags: [],
-      notes: "",
-      sourceId: null,
-      selectedAssignees: [],
+      title: task?.title ?? "",
+      deadlineType: task?.deadlineType ?? DeadlineType.DATE,
+      dueDate: task?.dueDate ? new Date(task.dueDate) : null,
+      flagged: task?.flagged ?? false,
+      source: task?.source?.name ?? "",
+      sourceDate: task?.source?.date ? new Date(task.source.date) : null,
+      tags: task?.tags.map((t) => t.name) ?? [],
+      notes: task?.notes ?? "",
+      sourceId: task?.source?.id ?? null,
+      selectedAssignees: task?.assigneeStatuses.map((as) => as.assignee.id) ?? [],
       assigneeDetails: {},
-      linkedSource: null,
+      assigneeStatuses: initialAssigneeStatuses,
+      linkedSource: task?.source ?? null,
     } as FormState,
-    onSubmit: ({ value: { selectedAssignees, ...values } }) => {
-      saveTasks(
-        [
-          {
-            workspaceId,
+    onSubmit: ({ value: { selectedAssignees, assigneeStatuses, ...values } }) => {
+      if (isEditMode) {
+        updateTask({
+          pathParams: { id: task.id },
+          data: {
+            title: values.title,
+            flagged: values.flagged,
+            deadlineType: values.deadlineType,
+            dueDate: values.dueDate,
+            notes: values.notes || undefined,
             assigneeIds: selectedAssignees,
-            ...values
+            tags: values.tags,
+            sourceId: values.sourceId,
           },
-        ],
-      )
+        })
+        for (const assigneeId of selectedAssignees) {
+          const status = assigneeStatuses[assigneeId]
+          if (status) {
+            upsertAssigneeTaskStatus({
+              data: { taskId: task.id, assigneeId, statusId: status.id },
+            })
+          }
+        }
+      } else {
+        saveTasks(
+          [
+            {
+              workspaceId,
+              assigneeIds: selectedAssignees,
+              ...values,
+            },
+          ],
+        )
+      }
       onClose()
     },
   })
@@ -96,9 +143,26 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
       ? values.selectedAssignees.filter((a) => a !== id)
       : [...values.selectedAssignees, id]
     const nextDetails = { ...values.assigneeDetails }
-    if (isRemoving) delete nextDetails[id]
+    if (isRemoving) {
+      delete nextDetails[id]
+    }
     form.setFieldValue("selectedAssignees", nextAssignees)
     form.setFieldValue("assigneeDetails", nextDetails)
+
+    if (isEditMode && !isRemoving) {
+      const defaultStatus = Object.values(statuses)[0]
+      if (defaultStatus) {
+        form.setFieldValue("assigneeStatuses", {
+          ...values.assigneeStatuses,
+          [id]: defaultStatus,
+        })
+      }
+    }
+    if (isEditMode && isRemoving) {
+      const nextStatuses = { ...values.assigneeStatuses }
+      delete nextStatuses[id]
+      form.setFieldValue("assigneeStatuses", nextStatuses)
+    }
   }
 
   function handleRemoveAssignee(id: number) {
@@ -109,12 +173,26 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
       values.selectedAssignees.filter((a) => a !== id),
     )
     form.setFieldValue("assigneeDetails", nextDetails)
+    if (isEditMode) {
+      const nextStatuses = { ...values.assigneeStatuses }
+      delete nextStatuses[id]
+      form.setFieldValue("assigneeStatuses", nextStatuses)
+    }
   }
 
   function handleAssigneeDetailChange(id: number, value: string) {
     form.setFieldValue("assigneeDetails", {
       ...values.assigneeDetails,
       [id]: value,
+    })
+  }
+
+  function handleAssigneeStatusChange(assigneeId: number, statusId: number) {
+    const newStatus = statuses[statusId]
+    if (!newStatus) return
+    form.setFieldValue("assigneeStatuses", {
+      ...values.assigneeStatuses,
+      [assigneeId]: newStatus,
     })
   }
 
@@ -198,7 +276,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
           <ModalBody>
             <ModalHeader $shadow={scrollShadow.top}>
-              <ModalTitle>יצירת הנחיה</ModalTitle>
+              <ModalTitle>{isEditMode ? "עריכת הנחיה" : "יצירת הנחיה"}</ModalTitle>
             </ModalHeader>
 
             <ScrollableContent ref={scrollRef} onScroll={handleScroll}>
@@ -235,9 +313,11 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
                 <AssigneeField
                   selectedAssignees={values.selectedAssignees}
                   directiveTitle={values.title}
+                  assigneeStatuses={isEditMode ? values.assigneeStatuses : undefined}
                   onToggle={handleAssigneeToggle}
                   onRemove={handleRemoveAssignee}
                   onDetailChange={handleAssigneeDetailChange}
+                  onStatusChange={isEditMode ? handleAssigneeStatusChange : undefined}
                 />
 
                 {/* ─── Important Checkbox ──────────────────────────────────── */}
