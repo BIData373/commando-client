@@ -8,7 +8,7 @@ import {
 } from "src/utils/time-format";
 import { AssigneeSection } from "./AssigneeSection";
 import { DropdownOptions } from "./DropdownOptions";
-import CreateDiscussionModal from "../CreateTasksFromDiscussion/CreateDiscussionModal";
+import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal";
 import TaskConversationPanel from "./TaskConversationPanel";
 import TaskHistoryPanel from "./TaskHistoryPanel";
 import { DeadlineType, type TaskWithWorkspaceDto } from "src/api/model"
@@ -59,7 +59,9 @@ function TaskDetailPanel({
 	})
 
 	const attachmentFile = source?.attachmentKey?.split("/").pop()?.split(".")[0]
-	const hasTagOrAttachment = tags.length > 0 || !!source?.attachmentKey
+	const sourceTags = source?.tags ?? []
+	const allTags = [...tags, ...sourceTags.filter((st) => !tags.some((t) => t.id === st.id))]
+	const hasTagOrAttachment = allTags.length > 0 || !!source?.attachmentKey
 
 	function handleScroll() {
 		const el = scrollRef.current
@@ -71,6 +73,10 @@ function TaskDetailPanel({
 
 	function handlePanelClick(e: React.MouseEvent) {
 		e.stopPropagation()
+	}
+
+	function handleCloseEditDiscussion() {
+		setShowEditDiscussion(false)
 	}
 
 	function handleBottomBarClick() {
@@ -165,11 +171,11 @@ function TaskDetailPanel({
 										</InfoAttachment>
 									</InfoBlock>
 								)}
-								{tags.length > 0 && (
+								{allTags.length > 0 && (
 									<InfoBlock>
 										<SectionLabel>נושא</SectionLabel>
 										<TagsRow>
-											{tags.map((tag) => (
+											{allTags.map((tag) => (
 												<TagChip key={tag.id}>{tag.name}</TagChip>
 											))}
 										</TagsRow>
@@ -218,15 +224,16 @@ function TaskDetailPanel({
 						/>
 					</>
 				)}
-        {showEditDiscussion && (
-            <CreateDiscussionModal
-              onClose={() => setShowEditDiscussion(false)}
-              sourceId={source?.id}
+        {showEditDiscussion && source?.id && (
+            <EditDiscussionModal
+              onClose={handleCloseEditDiscussion}
+              sourceId={source.id}
+              taskId={id}
               editData={{
-                name: source?.name ?? "",
-                sourceDate: source?.date ?? null,
-                file: null,
-                tags: tags.map((t) => t.name),
+                name: source.name ?? "",
+                date: source.date ?? null,
+                attachment: null,
+                tags: source.tags.map((t) => t.name),
               }}
             />
           )}

@@ -408,9 +408,18 @@ function useTaskColumns({
 			filterFn: multiSelectFilter,
 			cell: ({
 				row: {
-					original: { tags },
+					original: { tags, source },
 				},
-			}) => <TopicCell tags={tags.map((t) => t.name)} />,
+			}) => {
+				const sourceTags = source?.tags ?? []
+				const allNames = [
+					...tags.map((t) => t.name),
+					...sourceTags
+						.filter((st) => !tags.some((t) => t.id === st.id))
+						.map((st) => st.name),
+				]
+				return <TopicCell tags={allNames} />
+			},
 		},
 		notes: {
 			accessorKey: "notes",

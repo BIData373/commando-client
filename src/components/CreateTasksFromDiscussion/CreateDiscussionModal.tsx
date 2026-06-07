@@ -1,17 +1,14 @@
-import styled from "@emotion/styled";
-import { AlertCircle, Check, Paperclip, X } from "lucide-react";
-import { useState } from "react";
-import SourceField from "../CreateTasks/SourceField";
-import { Popover as PopoverPrimitive } from "radix-ui"
-import { Popover, PopoverTrigger } from "../ui/popover";
-import CreateTasksTable from "./CreateTasksTable";
-import FileUploadField from "./FileUploadField";
+import styled from "@emotion/styled"
+import { Check, Paperclip, X } from "lucide-react"
+import { useState } from "react"
+import CreateTasksTable from "./CreateTasksTable"
+import DiscussionForm from "./DiscussionForm"
 import { Dialog as DialogPrimitive } from "radix-ui"
-import { useUpdateSource } from "../../api/source/source"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import TagField from "../CreateTasks/TagField"
+import { useCreateSource } from "../../api/source/source"
+import type { CreateSourceDto } from "../../api/model"
 import type { NewTaskRow } from "./TasksColumns"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -21,101 +18,65 @@ enum Steps {
 	Tasks = 2,
 }
 
-interface DiscussionFormState {
-	name: string
-	sourceDate: Date | null
-	tags: string[]
-	file: File | null
-}
-
 interface CreateDiscussionModalProps {
-	onClose: () => void;
-	sourceId?: number;
-	editData?: DiscussionFormState;
-}
-
-// ─── Constants ──────────────────────────────────────────────────────────────
-
-const INITIAL_FORM: DiscussionFormState = {
-	name: "",
-	sourceDate: null,
-	tags: [],
-	file: null,
+	onClose: () => void
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-function CreateDiscussionModal({
-	onClose,
-	sourceId,
-	editData,
-}: CreateDiscussionModalProps) {
-	const isEditMode = !!editData;
-	const saveTasks = useSaveTasks();
-  const {
+function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
+	const saveTasks = useSaveTasks()
+	const { mutate: createSource } = useCreateSource()
+	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
-	const { mutate: updateSource } = useUpdateSource();
 
-	const [form, setForm] = useState<DiscussionFormState>(
-		editData ?? INITIAL_FORM,
-	);
-	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion);
-	const [showConfirmation, setShowConfirmation] = useState(false);
-	const setField = <K extends keyof DiscussionFormState>(
-		key: K,
-		value: DiscussionFormState[K],
-	) => setForm((prev) => ({ ...prev, [key]: value }))
-
-	const isCurrentStepTasks = currentStep === Steps.Tasks;
-
-	function getChangedFields(): Record<string, unknown> | null {
-		if (!editData) return null;
-		const data: Record<string, unknown> = {};
-		if (form.name.trim() !== editData.name) data.name = form.name.trim();
-		if (form.sourceDate?.getTime() !== editData.sourceDate?.getTime())
-			data.date = form.sourceDate ?? undefined;
-		if (JSON.stringify(form.tags) !== JSON.stringify(editData.tags))
-			data.tags = form.tags;
-		if (form.file !== editData.file) data.file = form.file ?? undefined;
-		return Object.keys(data).length > 0 ? data : null;
+	const INITIAL_FORM: CreateSourceDto = {
+		workspaceId,
+		name: "",
+		date: null,
+		tags: [],
+		attachment: null,
 	}
 
-	const hasChanges = isEditMode && getChangedFields() !== null;
-	// ─── Source / Name Handlers ───────────────────────────────────────────────
+	const [form, setForm] = useState<CreateSourceDto>(INITIAL_FORM)
+	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
+	const setField = <K extends keyof CreateSourceDto>(
+		key: K,
+		value: CreateSourceDto[K],
+	) => setForm((prev) => ({ ...prev, [key]: value }))
 
-	function handleSourceSelect(name: string) {
+	const isCurrentStepTasks = currentStep === Steps.Tasks
+
+	// ─── Handlers ─────────────────────────────────────────────────────────────
+
+	function handleNameChange(name: string) {
 		setField("name", name)
 	}
 
-	function handleDateSelect(date: Date | undefined) {
+	function handleDateChange(date: Date | undefined) {
 		if (date) {
-			setField("sourceDate", date)
+			setField("date", date)
 		}
 	}
 
-	// ─── Tag Handlers ────────────────────────────────────────────────────────
-
 	function handleTagSelect(tag: string) {
-		if (!form.tags.includes(tag)) {
-			setField("tags", [...form.tags, tag])
+		const current = form.tags ?? []
+		if (!current.includes(tag)) {
+			setField("tags", [...current, tag])
 		}
 	}
 
 	function handleTagRemove(tag: string) {
 		setField(
 			"tags",
-			form.tags.filter((t) => t !== tag),
+			(form.tags ?? []).filter((t) => t !== tag),
 		)
 	}
 
-	// ─── File Handler ──────────────────────────────────────────────────────────
-
 	function handleFileChange(file: File | null) {
-		setField("file", file)
+		setField("attachment", file)
 	}
-
-	// ─── Modal Handlers ───────────────────────────────────────────────────────
 
 	function handleOpenChange(open: boolean) {
 		if (!open) onClose()
@@ -129,39 +90,24 @@ function CreateDiscussionModal({
 		setCurrentStep(Steps.Discussion)
 	}
 
-	// TODO - update the API to handle creation of tasks via source
 	function handleSave(taskRows: NewTaskRow[]) {
-		const inputs = taskRows.map(({ id, rowKey, assigneeDetails, ...rest }) => ({
-			...rest,
-			workspaceId,
-			groupKey: String(id),
-		}))
-
-		saveTasks(inputs)
-		onClose()
-	}
-
-	function handleEditConfirm() {
-		if (!sourceId) return;
-		const data = getChangedFields();
-		if (!data) return;
-
-		updateSource(
-      { pathParams: { id: sourceId }, data },
+		createSource(
+			{ data: form },
 			{
-        onSuccess: () => {
-          setShowConfirmation(false);
-					onClose();
-				},
-				onError: (error) => {
-					console.error("updateSource failed:", error);
+				onSuccess: (source) => {
+					const inputs = taskRows.map(
+						({ id, rowKey, assigneeDetails, ...rest }) => ({
+							...rest,
+							workspaceId,
+							sourceId: source.id,
+							groupKey: String(id),
+						}),
+					)
+					saveTasks(inputs)
+					onClose()
 				},
 			},
-		);
-	}
-
-	function handleEditCancel() {
-		setShowConfirmation(false);
+		)
 	}
 
 	// ─── Render ───────────────────────────────────────────────────────────────
@@ -170,136 +116,69 @@ function CreateDiscussionModal({
 		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
 			<DialogPrimitive.Portal>
 				<Overlay />
-				<ModalCard $step={isEditMode ? Steps.Discussion : currentStep}>
+				<ModalCard $step={currentStep}>
 					<ModalCloseButton onClick={onClose}>
 						<X size={16} />
 					</ModalCloseButton>
 
 					<ModalBody>
 						<HeaderSection>
-							<ModalTitle>
-								{isEditMode ? "עריכת פרטי דיון" : "יצירת הנחיות מתוך דיון"}
-							</ModalTitle>
+							<ModalTitle>יצירת הנחיות מתוך דיון</ModalTitle>
 
-							{!isEditMode && (
-								<StepsRow>
-									<StepItem>
-										<StepLabel $active>פרטי הדיון</StepLabel>
-										{isCurrentStepTasks ? (
-											<StepCircleCompleted>
-												<Check size={12} />
-											</StepCircleCompleted>
-										) : (
-											<StepCircleActive>1</StepCircleActive>
-										)}
-									</StepItem>
+							<StepsRow>
+								<StepItem>
+									<StepLabel $active>פרטי הדיון</StepLabel>
+									{isCurrentStepTasks ? (
+										<StepCircleCompleted>
+											<Check size={12} />
+										</StepCircleCompleted>
+									) : (
+										<StepCircleActive>1</StepCircleActive>
+									)}
+								</StepItem>
 
-									<StepTail $completed={isCurrentStepTasks} />
+								<StepTail $completed={isCurrentStepTasks} />
 
-									<StepItem>
-										<StepLabel $active={isCurrentStepTasks}>
-											יצירת הנחיות
-										</StepLabel>
-										<StepCircle $active={isCurrentStepTasks}>2</StepCircle>
-									</StepItem>
-								</StepsRow>
-							)}
+								<StepItem>
+									<StepLabel $active={isCurrentStepTasks}>
+										יצירת הנחיות
+									</StepLabel>
+									<StepCircle $active={isCurrentStepTasks}>2</StepCircle>
+								</StepItem>
+							</StepsRow>
 
-							{isCurrentStepTasks && !isEditMode && (
+							{isCurrentStepTasks && (
 								<DiscussionInfoRow>
 									<DiscussionInfoText>
 										<DiscussionDate>
-											{form.sourceDate ? formatDate(form.sourceDate) : ""}
+											{form.date ? formatDate(form.date) : ""}
 										</DiscussionDate>
 										<DiscussionName>{form.name}</DiscussionName>
 									</DiscussionInfoText>
-									{form.file && <Paperclip size={20} />}
+									{form.attachment && <Paperclip size={20} />}
 								</DiscussionInfoRow>
 							)}
 						</HeaderSection>
 
-						{isEditMode || currentStep === Steps.Discussion ? (
+						{currentStep === Steps.Discussion ? (
 							<>
-								<FormContainer>
-									<SourceField
-										source={form.name}
-										sourceDate={form.sourceDate}
-										linkedSource={null}
-										onSourceSelect={handleSourceSelect}
-										onDateSelect={handleDateSelect}
-										label="שם הדיון"
-										uniqueNames
-									/>
+								<DiscussionForm
+									form={form}
+									onNameChange={handleNameChange}
+									onDateChange={handleDateChange}
+									onTagSelect={handleTagSelect}
+									onTagRemove={handleTagRemove}
+									onFileChange={handleFileChange}
+								/>
 
-									<TagField
-										tags={form.tags}
-										lockedTags={[]}
-										onTagSelect={handleTagSelect}
-										onTagRemove={handleTagRemove}
-									/>
-
-									<FileUploadField
-										file={form.file}
-										onFileChange={handleFileChange}
-									/>
-								</FormContainer>
-
-								{isEditMode ? (
-									<EditFooter>
-										<Popover
-											open={showConfirmation}
-											onOpenChange={setShowConfirmation}
-										>
-											<PopoverTrigger asChild>
-												<SaveButton
-													$disabled={!hasChanges}
-													onClick={(e) => {
-														if (!hasChanges) {
-															e.preventDefault();
-														}
-													}}
-												>
-													שמור שינויים
-												</SaveButton>
-											</PopoverTrigger>
-											<ConfirmationContent
-												side="top"
-												align="start"
-												sideOffset={13}
-											>
-												<ConfirmationHeader>
-													<AlertCircleIcon size={16} />
-													<TextWrapper>
-														<ConfirmationTitle>
-															עריכת פרטי דיון לכל ההנחיות
-														</ConfirmationTitle>
-														<ConfirmationText>
-															כלל ההנחיות תחת דיון זה יתעדכנו בשינויים.
-														</ConfirmationText>
-													</TextWrapper>
-												</ConfirmationHeader>
-												<ConfirmationActions>
-													<ConfirmButton onClick={handleEditConfirm}>
-														בטוח
-													</ConfirmButton>
-													<CancelConfirmButton onClick={handleEditCancel}>
-														לא
-													</CancelConfirmButton>
-												</ConfirmationActions>
-											</ConfirmationContent>
-										</Popover>
-										<CancelButton onClick={onClose}>ביטול</CancelButton>
-									</EditFooter>
-								) : (
-									<ModalFooter>
-										<ContinueButton
-											onClick={handleContinue}
-											disabled={!form.name.trim()}
-										>
-											המשך
-										</ContinueButton>
-									</ModalFooter>
-								)}
+								<ModalFooter>
+									<ContinueButton
+										onClick={handleContinue}
+										disabled={!form.name.trim()}
+									>
+										המשך
+									</ContinueButton>
+								</ModalFooter>
 							</>
 						) : (
 							<CreateTasksTable onSave={handleSave} onBack={handleBack} />
@@ -425,16 +304,6 @@ const DiscussionDate = styled.span`
   color: var(--foreground);
 `
 
-// ─── Form Layout ────────────────────────────────────────────────────────────
-
-const FormContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  align-items: flex-end;
-  flex: 1;
-`
-
 // ─── Footer ─────────────────────────────────────────────────────────────────
 
 const ModalFooter = styled.div`
@@ -543,186 +412,4 @@ const StepTail = styled.div<{ $completed: boolean }>`
   flex: 1;
   height: 1px;
   border-block-start: 1px ${({ $completed }) => ($completed ? "solid #6866ff" : "dashed var(--card-border)")};
-`;
-
-// ─── Edit Mode Footer ──────────────────────────────────────────────────────
-
-const EditFooter = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  flex-shrink: 0;
-`;
-
-const SaveButton = styled.button<{ $disabled?: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-inline: 24px;
-  height: 40px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(165deg, #6866ff 0%, #7604c8 100%);
-  color: white;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
-  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
-  white-space: nowrap;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: var(--shadow-inset);
-    pointer-events: none;
-  }
-
-  &:hover {
-    opacity: ${({ $disabled }) => ($disabled ? 0.5 : 0.9)};
-  }
-`;
-
-const CancelButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 133px;
-  height: 40px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--background);
-  color: var(--sea-ink);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  cursor: pointer;
-  white-space: nowrap;
-
-  &:hover {
-    background: var(--link-bg-hover);
-  }
-`;
-
-const ConfirmationContent = styled(PopoverPrimitive.Content)`
-  direction: rtl;
-  display: flex;
-  padding: 12px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  align-self: stretch;
-  width: 224px;
-  background: var(--background);
-  border-radius: 8px;
-  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px rgba(0, 0, 0, 0.12),
-    0px 9px 28px rgba(0, 0, 0, 0.05);
-  z-index: var(--z-dropdown);
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset-block-end: -8px;
-    inset-inline-end: 16px;
-    width: 16px;
-    height: 8px;
-    background: var(--background);
-    clip-path: polygon(0 0, 100% 0, 50% 100%);
-  }
-`;
-
-const ConfirmationHeader = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  gap: 8px;
-  align-self: stretch;
-`;
-
-const TextWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  flex: 1 0 0;
-`;
-
-const AlertCircleIcon = styled(AlertCircle)`
-  display: flex;
-  margin-top: 3px;
-  align-items: center;
-  gap: 6px;
-  color: #faad14;
-`;
-
-const ConfirmationTitle = styled.span`
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 22px;
-  color: var(--sea-ink);
-  align-self: stretch;
-`;
-
-const ConfirmationText = styled.span`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--sea-ink);
-  align-self: stretch;
-`;
-
-const ConfirmationActions = styled.div`
-  direction: ltr;
-  display: flex;
-  align-items: center;
-  align-self: stretch;
-  gap: 8px;
-`;
-
-const ConfirmButton = styled.button`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 7px;
-  gap: 8px;
-  width: 43px;
-  height: 24px;
-  border: none;
-  border-radius: 4px;
-  background: linear-gradient(135deg, #6866ff 0%, #7604c8 100%);
-  color: white;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  cursor: pointer;
-
-  &:hover {
-    opacity: 0.9;
-  }
-`;
-
-const CancelConfirmButton = styled.button`
-  display: flex;
-padding: 0 var(--Components-Button-Component-paddingInlineSM, 7px);
-flex-direction: column;
-justify-content: center;
-align-items: center;
-gap: 8px;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  background: var(--background);
-  color: var(--sea-ink);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 22px;
-  cursor: pointer;
-
-  &:hover {
-    background: var(--link-bg-hover);
-  }
-`;
+`
