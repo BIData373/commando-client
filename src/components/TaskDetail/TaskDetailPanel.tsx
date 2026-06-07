@@ -12,20 +12,20 @@ import {
 import { useRef, useState } from "react"
 import { DeadlineType, type TaskWithWorkspaceDto } from "src/api/model"
 import { useListTaskHistory } from "src/api/task-history/task-history"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import { EditorExtensions } from "src/utils/tiptap-extensions"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import FlagIcon from "../shared/FlagIcon"
+import { RowActionsMenu } from "../Tasks/RowActionsMenu"
 import { AssigneeSection } from "./AssigneeSection"
-import { DropdownOptions } from "./DropdownOptions"
 import TaskConversationPanel from "./TaskConversationPanel"
 import TaskHistoryPanel from "./TaskHistoryPanel"
 
 interface TaskDetailPanelProps {
 	task: TaskWithWorkspaceDto
 	onClose: () => void
-	onArchive: () => void
 	onDelete: () => void
 }
 
@@ -43,9 +43,12 @@ function TaskDetailPanel({
 		assigneeStatuses,
 	},
 	onClose,
-	onArchive,
 	onDelete,
 }: TaskDetailPanelProps) {
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+
 	const [showHistory, setShowHistory] = useState(false)
 	const [showConversation, setShowConversation] = useState(false)
 
@@ -101,9 +104,9 @@ function TaskDetailPanel({
 						{flagged && <FlagIcon />}
 						<TitleText>{title}</TitleText>
 					</TextWrapper>
-					<DropdownOptions
+					<RowActionsMenu
+						workspaceId={workspaceId}
 						onEdit={onClose}
-						onArchive={onArchive}
 						onDelete={onDelete}
 					/>
 				</HeaderRow>

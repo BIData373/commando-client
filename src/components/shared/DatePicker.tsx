@@ -7,42 +7,43 @@ import CalendarNav from "./CalendarNav"
 import { WeekNumberCell } from "./WeekNumberCell"
 
 export enum CalendarMode {
-  Range = "range",
-  Single = "single",
+	Range = "range",
+	Single = "single",
 }
 
 interface DatePickerProps {
-  mode: CalendarMode
-  selected?: DatePickerValue
-  onSelect?: (val: DatePickerValue | undefined) => void
+	mode: CalendarMode
+	selected?: DatePickerValue
+	onSelect?: (val: DatePickerValue | undefined) => void
 }
 
 function DatePicker({ mode, selected, onSelect }: DatePickerProps) {
-  const defaultMonth = mode === CalendarMode.Range
-    ? selected && "from" in selected
-      ? selected.from
-      : undefined
-    : selected instanceof Date ? selected : undefined
+	const defaultMonth =
+		mode === CalendarMode.Range
+			? selected && "from" in selected
+				? selected.from
+				: undefined
+			: selected instanceof Date
+				? selected
+				: undefined
 
-  return (
-    <StyledCalendar
-      showWeekNumber
-      fixedWeeks
-      defaultMonth={defaultMonth}
-      {...({ mode, selected, onSelect } as React.ComponentProps<typeof Calendar>)}
-      locale={heDayPicker}
-      components={{
-        WeekNumber: props => (
-          <WeekNumberCell
-            {...props}
-            date={selected}
-            onClickBadge={onSelect}
-          />
-        ),
-        Nav: CalendarNav
-      }}
-    />
-  )
+	return (
+		<StyledCalendar
+			showWeekNumber
+			fixedWeeks
+			defaultMonth={defaultMonth}
+			{...({ mode, selected, onSelect } as React.ComponentProps<
+				typeof Calendar
+			>)}
+			locale={heDayPicker}
+			components={{
+				WeekNumber: (props) => (
+					<WeekNumberCell {...props} date={selected} onClickBadge={onSelect} />
+				),
+				Nav: CalendarNav,
+			}}
+		/>
+	)
 }
 
 export default DatePicker

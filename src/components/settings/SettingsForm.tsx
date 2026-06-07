@@ -33,7 +33,7 @@ export function SettingsForm() {
 	})
 
 	const [form, setForm] = useState<UpdateWorkspaceDto>({ title, pikudId, icon })
-	const [prevName, setPrevName] = useState(title);
+	const [prevName, setPrevName] = useState(title)
 	const [iconSearch, setIconSearch] = useState("")
 	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
 
@@ -59,7 +59,7 @@ export function SettingsForm() {
 				},
 				onError() {
 					setForm({ ...form, [key]: prevName })
-				}
+				},
 			},
 		)
 	}
@@ -73,7 +73,7 @@ export function SettingsForm() {
 	function handleNameChange(
 		e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
 	) {
-		const title =  e.target.value.slice(0, NAME_MAX_LENGTH)
+		const title = e.target.value.slice(0, NAME_MAX_LENGTH)
 		if (isSuccess) {
 			setPrevName(title)
 		}
@@ -96,12 +96,12 @@ export function SettingsForm() {
 	}
 
 	function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-		if (e.code === "Space" || e.key === ' ') {
+		if (e.code === "Space" || e.key === " ") {
 			e.preventDefault()
 			return
 		}
 
-		if (e.key === 'Backspace' && e.currentTarget.value.length === 1) {
+		if (e.key === "Backspace" && e.currentTarget.value.length === 1) {
 			e.preventDefault()
 		}
 	}
