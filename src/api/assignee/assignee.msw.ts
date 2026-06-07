@@ -9,7 +9,7 @@ import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 
-import type { AssigneeDto } from "../model"
+import type { AssigneeDto, AssigneesDto } from "../model"
 
 export const getCreateAssigneeResponseMock = (
 	overrideResponse: Partial<Extract<AssigneeDto, object>> = {},
@@ -65,7 +65,7 @@ export const getCreateAssigneeResponseMock = (
 	...overrideResponse,
 })
 
-export const getListAssigneesResponseMock = (): AssigneeDto[] =>
+export const getListAssigneesResponseMock = (): AssigneesDto[] =>
 	Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -118,6 +118,7 @@ export const getListAssigneesResponseMock = (): AssigneeDto[] =>
 				null,
 			]),
 		})),
+		tasksCount: faker.number.float({ fractionDigits: 2 }),
 	}))
 
 export const getGetAssigneeResponseMock = (
@@ -308,10 +309,10 @@ export const getCreateAssigneeMockHandler = (
 
 export const getListAssigneesMockHandler = (
 	overrideResponse?:
-		| AssigneeDto[]
+		| AssigneesDto[]
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0],
-		  ) => Promise<AssigneeDto[]> | AssigneeDto[]),
+		  ) => Promise<AssigneesDto[]> | AssigneesDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(

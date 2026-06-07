@@ -3,13 +3,17 @@ import { TanStackDevtools } from "@tanstack/react-devtools"
 import { createRootRoute, Outlet } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { StrictMode } from "react"
+import { NotFoundComponent } from "src/components/Error/NotFoundComponent"
+import { RootErrorComponent } from "src/components/Error/RootErrorComponent"
+import { ErrorModal } from "../components/ErrorModal"
 import Header from "../components/Header"
-import { Toaster } from "../components/ui/sonner"
 import { TitleBarProvider } from "../providers/TitleBarProvider"
 import "../styles.css"
 
 export const Route = createRootRoute({
 	component: RootComponent,
+	notFoundComponent: NotFoundComponent,
+	errorComponent: RootErrorComponent,
 })
 
 function RootComponent() {
@@ -23,7 +27,7 @@ function RootComponent() {
 					</PageContainer>
 				</AppShell>
 			</TitleBarProvider>
-			<Toaster />
+			<ErrorModal />
 			<TanStackDevtools
 				config={{
 					position: "bottom-right",

@@ -3,9 +3,13 @@ import { debounce } from "lodash"
 import { X } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { UpdateWorkspaceDto } from "src/api/model"
-import { useUpdateWorkspace } from "src/api/workspace/workspace"
+import {
+	getListWorkspacesQueryKey,
+	useUpdateWorkspace,
+} from "src/api/workspace/workspace"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { queryClient } from "src/queryClient"
 import { Input } from "../ui/input"
 import { IconDropdown } from "./IconDropdown"
 import { SelectCommand } from "./SelectCommand"
@@ -18,7 +22,15 @@ export function SettingsForm() {
 		workspace: { id, title, pikudId, icon },
 		setWorkspace,
 	} = useWorkspace()
-	const { mutate: updateSettings } = useUpdateWorkspace()
+	const { mutate: updateSettings } = useUpdateWorkspace({
+		mutation: {
+			onSuccess() {
+				queryClient.invalidateQueries({
+					queryKey: getListWorkspacesQueryKey(),
+				})
+			},
+		},
+	})
 
 	const [form, setForm] = useState<UpdateWorkspaceDto>({ title, pikudId, icon })
 	const [iconSearch, setIconSearch] = useState("")

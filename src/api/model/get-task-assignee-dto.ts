@@ -6,9 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface UpdateAssigneeTaskStatusDto {
-	assigneeId: number
-	taskId: number
-	statusId: number
+export interface GetTaskAssigneeDto {
+	id: number
 	description?: string
 }

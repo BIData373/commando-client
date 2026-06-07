@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "postinstall": "lefthook install && npm run orval",
     "dev": "vite dev --port 8080",
     "build": "vite build",
     "preview": "vite preview",
@@ -20,6 +21,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@emotion/styled": "^11.14.1",
     "@fontsource-variable/rubik": "^5.2.8",
+    "@mantine/hooks": "^9.3.0",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-form": "^1.33.0",
@@ -75,6 +77,7 @@
     "@vitejs/plugin-react": "^5.1.4",
     "dotenv": "^17.4.2",
     "jsdom": "^28.1.0",
+    "lefthook": "^2.1.9",
     "orval": "^8.9.1",
     "postcss-styled-syntax": "^0.7.1",
     "typescript": "^5.7.2",

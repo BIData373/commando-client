@@ -1,36 +1,43 @@
-import styled from "@emotion/styled";
-import type { QueryKey } from "@tanstack/react-query";
-import { useQueryClient } from "@tanstack/react-query";
+import styled from "@emotion/styled"
+import type { QueryKey } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import type {
-  ColumnDef,
-  ColumnFiltersState,
-  RowSelectionState,
-  SortingState,
-} from "@tanstack/react-table";
-import type React from "react";
-import { useMemo, useState } from "react";
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status";
-import type { DeadlineType, WorkspaceStatusDto, WorkspaceStatusType } from "src/api/model";
-import { useDeleteTask } from "src/api/task/task";
-import { type TaskRow, useTasksFilters } from "src/providers/TasksFiltersProvider";
-import { buildFilterOptionsMap } from "../../functions/filter-utils";
-import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns";
-import { DataTable } from "../ui/data-table";
-import { BulkActionsBar } from "./BulkActionsBar";
+	ColumnDef,
+	ColumnFiltersState,
+	RowSelectionState,
+	SortingState,
+} from "@tanstack/react-table"
+import type React from "react"
+import { useMemo, useState } from "react"
+import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
+import type {
+	DeadlineType,
+	WorkspaceStatusDto,
+	WorkspaceStatusType,
+} from "src/api/model"
+import { useDeleteTask } from "src/api/task/task"
+import {
+	type TaskRow,
+	useTasksFilters,
+} from "src/providers/TasksFiltersProvider"
+import { buildFilterOptionsMap } from "../../functions/filter-utils"
+import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns"
+import { DataTable } from "../ui/data-table"
+import { BulkActionsBar } from "./BulkActionsBar"
 
 interface TaskTableProps {
-	queryKey: QueryKey;
-	tasks: TaskRow[];
-	onEdit?: (taskId: number) => void;
-	onDoubleClick?: (taskId: number) => void;
-	extraColumns?: Record<string, ColumnDef<TaskRow>>;
-	showHeader?: boolean;
-	statusFilter?: WorkspaceStatusType[];
-	deadlineTypeFilter?: DeadlineType[];
+	queryKey: QueryKey
+	tasks: TaskRow[]
+	onEdit?: (taskId: number) => void
+	onDoubleClick?: (taskId: number) => void
+	extraColumns?: Record<string, ColumnDef<TaskRow>>
+	showHeader?: boolean
+	statusFilter?: WorkspaceStatusType[]
+	deadlineTypeFilter?: DeadlineType[]
 	onFiltersChange?: (
 		statusFilter: WorkspaceStatusType[],
 		deadlineTypeFilter: DeadlineType[],
-	) => void;
+	) => void
 }
 
 function TaskTable({
@@ -44,112 +51,120 @@ function TaskTable({
 	deadlineTypeFilter = [],
 	onFiltersChange,
 }: TaskTableProps) {
-	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters();
-	const queryClient = useQueryClient();
+	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters()
+	const queryClient = useQueryClient()
+
+
+	function handleSuccess() {
+		queryClient.invalidateQueries({ queryKey })
+	}
 
 	const { mutate: deleteTaskMutate } = useDeleteTask({
-		mutation: {
-			onSuccess: () => {
-				queryClient.invalidateQueries({ queryKey })
-			},
-		},
-	});
+		mutation: { onSuccess: handleSuccess }
+	})
 
-	const { mutate: upsertStatus } = useUpsertAssigneeTaskStatus();
+	const { mutate: upsertStatus } = useUpsertAssigneeTaskStatus({
+		mutation: { onSuccess: handleSuccess }
+	})
 
-	const [selectMode, setSelectMode] = useState(false);
-	const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+	const [selectMode, setSelectMode] = useState(false)
+	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 	const urlColumnFilters: ColumnFiltersState = [
 		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
 		...(deadlineTypeFilter.length
 			? [{ id: "deadlineType", value: deadlineTypeFilter }]
 			: []),
-	];
+	]
 	const [localColumnFilters, setLocalColumnFilters] =
-		useState<ColumnFiltersState>([]);
+		useState<ColumnFiltersState>([])
 	const columnFilters: ColumnFiltersState = [
 		...urlColumnFilters,
 		...localColumnFilters,
-	];
+	]
 
 	function getColumnFilter(columnFilters: ColumnFiltersState, id: string) {
-		return columnFilters.find((column) => column.id === id)?.value ?? [];
+		return columnFilters.find((column) => column.id === id)?.value ?? []
 	}
 
 	function handleColumnFiltersChange(
 		updater: React.SetStateAction<ColumnFiltersState>,
 	) {
 		const newFilters =
-			typeof updater === "function" ? updater(columnFilters) : updater;
+			typeof updater === "function" ? updater(columnFilters) : updater
 
 		const tableStatusColumnValue = getColumnFilter(
 			newFilters,
 			"status",
-		) as WorkspaceStatusType[];
+		) as WorkspaceStatusType[]
 		const tableDeadlineColumnValue = getColumnFilter(
 			newFilters,
 			"deadlineType",
-		) as DeadlineType[];
+		) as DeadlineType[]
 
 		const tableTabFilter = newFilters.filter(
 			(column) => column.id !== "status" && column.value !== "deadlineType",
-		);
-		setLocalColumnFilters(tableTabFilter);
+		)
+		setLocalColumnFilters(tableTabFilter)
 
-		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue);
+		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
 	}
-	const [sorting, setSorting] = useState<SortingState>([]);
+	const [sorting, setSorting] = useState<SortingState>([])
 
 	const selectedTaskIds = Object.keys(rowSelection)
 		.filter((key) => rowSelection[key])
-		.map(Number);
+		.map(Number)
 
 	function handleEnterSelectMode(taskId?: number) {
-		setSelectMode(true);
-		setRowSelection(taskId !== undefined ? { [String(taskId)]: true } : {});
+		setSelectMode(true)
+		setRowSelection(taskId !== undefined ? { [String(taskId)]: true } : {})
 	}
 
 	function handleExitSelectMode() {
-		setSelectMode(false);
-		setRowSelection({});
+		setSelectMode(false)
+		setRowSelection({})
 	}
 
 	function handleSelectAll(checked: boolean) {
 		if (checked) {
-			const all: RowSelectionState = {};
+			const all: RowSelectionState = {}
 			tasks.forEach((t) => {
-				all[String(t.id)] = true;
-			});
-			setRowSelection(all);
+				all[String(t.id)] = true
+			})
+			setRowSelection(all)
 		} else {
-			setRowSelection({});
+			setRowSelection({})
 		}
 	}
 
 	function removeTasks(taskIds: number[]) {
-    // TODO - maybe await Promise.all
+		// TODO - maybe await Promise.all
 		taskIds.forEach((id) => {
-      deleteTaskMutate({ pathParams: { id } })
-    });
+			deleteTaskMutate({ pathParams: { id } })
+		})
 	}
 
 	function bulkUpdateStatus(taskIds: number[], status: WorkspaceStatusDto) {
 		taskIds.forEach((id) => {
-			const task = tasks.find((t) => t.id === id);
-			if (!task) return;
-			upsertStatus({ data: { taskId: id, assigneeId: task.assignee.id, statusId: status.id } });
-		});
+			const task = tasks.find((t) => t.id === id)
+			if (!task || !task.assignee) {
+				return
+			}
+			
+			upsertStatus({
+				data: { taskId: id, assigneeId: task.assignee.id, statusId: status.id },
+			})
+		})
 	}
 
-	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks]);
+	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
 
 	const extraColumnIds = extraColumns
 		? new Set(Object.keys(extraColumns))
-		: new Set<string>();
+		: new Set<string>()
 
 	const visibleColumns = columnOrder.filter(
 		(id) => !hiddenColumns.has(id) && !extraColumnIds.has(id),
-	) as TaskColumn[];
+	) as TaskColumn[]
 
 	const { columns: baseColumns } = useTaskColumns({
 		queryKey,
@@ -169,28 +184,28 @@ function TaskTable({
 			onDelete: removeTasks,
 			onEnterSelectMode: handleEnterSelectMode,
 		},
-	});
+	})
 
 	const columns = useMemo(() => {
-		const result = [...baseColumns];
+		const result = [...baseColumns]
 
 		if (extraColumns) {
 			for (const [id, colDef] of Object.entries(extraColumns)) {
-				const colId = id as TaskColumn;
-				const isVisible = !hiddenColumns.has(colId);
-				const orderIndex = columnOrder.indexOf(colId);
-				if (!isVisible || orderIndex === -1) continue;
+				const colId = id as TaskColumn
+				const isVisible = !hiddenColumns.has(colId)
+				const orderIndex = columnOrder.indexOf(colId)
+				if (!isVisible || orderIndex === -1) continue
 
 				const visibleBeforeCount = columnOrder
 					.slice(0, orderIndex)
-					.filter((colId) => !hiddenColumns.has(colId)).length;
+					.filter((colId) => !hiddenColumns.has(colId)).length
 
-				result.splice(visibleBeforeCount, 0, colDef as ColumnDef<TaskRow>);
+				result.splice(visibleBeforeCount, 0, colDef as ColumnDef<TaskRow>)
 			}
 		}
 
-		return result;
-	}, [baseColumns, extraColumns, columnOrder, hiddenColumns]);
+		return result
+	}, [baseColumns, extraColumns, columnOrder, hiddenColumns])
 
 	return (
 		<>
@@ -206,33 +221,35 @@ function TaskTable({
 					onSortingChange={setSorting}
 					getRowId={(row) => row.rowKey}
 					showHeader={showHeader}
-					/>
+				/>
 			</TableWrapper>
 			{selectMode && (
 				<BulkActionsBar
 					selectedCount={selectedTaskIds.length}
 					onChangeStatus={(status) => bulkUpdateStatus(selectedTaskIds, status)}
 					onArchive={() => {
-						removeTasks(selectedTaskIds);
-						handleExitSelectMode();
+						removeTasks(selectedTaskIds)
+						handleExitSelectMode()
 					}}
 					onDelete={() => {
-						removeTasks(selectedTaskIds);
-						handleExitSelectMode();
+						removeTasks(selectedTaskIds)
+						handleExitSelectMode()
 					}}
 					onExitSelect={handleExitSelectMode}
 				/>
 			)}
 		</>
-	);
+	)
 }
 
-export { TaskTable };
+export { TaskTable }
 
 // ─── Table ────────────────────────────────────────────────────────────────────
 
 const TableWrapper = styled.div`
-  overflow: auto;
+  overflow-y: auto;
+  min-width: 0;
+  width: 100%;
   max-height: 100%;
   box-sizing: border-box;
   direction: ltr;
@@ -241,16 +258,14 @@ const TableWrapper = styled.div`
   background: var(--background);
   box-shadow: var(--card-shadow-default);
 
-  & > * {
-    direction: rtl;
-  }
-
   [data-slot="table-container"] {
-    overflow: visible;
+    overflow-x: auto;
+    direction: ltr;
   }
 
   table {
-    width: 100%;
+    direction: rtl;
+    min-width: 100%;
     table-layout: fixed;
   }
 
@@ -298,4 +313,4 @@ const TableWrapper = styled.div`
       border-left: none;
     }
   }
-`;
+`

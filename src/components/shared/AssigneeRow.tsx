@@ -39,10 +39,11 @@ function AssigneeRowList({
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
+
 	const { data: assignees } = useListAssignees({ workspaceId })
 
 	const filteredAssignees = (assignees ?? []).filter(({ id }) =>
-		assigneeIds.includes(id),
+		assigneeIds.includes(id)
 	)
 
 	function handleDetailInput(id: number, e: React.FormEvent<HTMLSpanElement>) {
@@ -61,6 +62,7 @@ function AssigneeRowList({
 
 	function handleDetailRef(id: number, el: HTMLSpanElement | null) {
 		detailRefs.current[id] = el
+
 		if (el && assigneeDetails?.[id] && !el.textContent) {
 			el.textContent = assigneeDetails[id]
 		}
@@ -82,6 +84,7 @@ function AssigneeRowList({
 										{directiveTitle} -&nbsp;
 									</DirectiveTitleText>
 								)}
+
 								<DetailEditable
 									ref={(el) => handleDetailRef(assignee.id, el)}
 									contentEditable
@@ -102,6 +105,7 @@ function AssigneeRowList({
 
 						<InfoBlock>
 							<RoleText>{assignee.name}</RoleText>
+              
 							<AssigneeAvatar assignee={assignee} />
 						</InfoBlock>
 					</RowContainer>
