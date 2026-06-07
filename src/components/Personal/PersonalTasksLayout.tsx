@@ -21,8 +21,8 @@ import {
 	useTasksFilters,
 } from "../../providers/TasksFiltersProvider"
 import { useTitleBar } from "../../providers/TitleBarProvider"
-import { DashboardDatePicker } from "../Dashboard/DashboardDatePicker/DashboardDatePicker"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
+import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { EmptyState } from "../Tasks/EmptyState"
 import { TaskFilters } from "../Tasks/TaskFilters"
@@ -197,7 +197,7 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 						/>
 					}
 					startSlot={
-						<DashboardDatePicker
+						<TasksDatePicker
 							dateType={dateType}
 							range={dateRange}
 							onDateTypeChange={setDateType}

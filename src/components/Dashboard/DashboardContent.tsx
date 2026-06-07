@@ -12,7 +12,7 @@ import {
 	getDashboardFilterDataTypeKey,
 	getDashboardFilterRangeKey,
 } from "src/utils/filter-keys-utils"
-import { DashboardDatePicker } from "./DashboardDatePicker/DashboardDatePicker"
+import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import FocusedInstructions from "./FocusedInstructions"
 import RecentlyCompleted from "./RecentlyCompleted"
 import StatusCard from "./StatusCard"
@@ -85,8 +85,9 @@ export function DashboardContent() {
 
 	return (
 		<ContentArea>
-			<DashboardDatePicker
+			<TasksDatePicker
 				dateType={dataType}
+				showTitle={true}
 				onDateTypeChange={setDataType}
 				setRange={handleSetRange}
 				range={range}

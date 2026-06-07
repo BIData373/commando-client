@@ -13,15 +13,15 @@ import {
 	TasksView,
 } from "src/routes/workspace/$urlName/tasks"
 import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new"
-import type { QuickFilter } from "src/utils/filter-utils"
 import { DATE_TYPE, getTaskDateByDateType } from "src/utils/data-type-utils"
+import type { QuickFilter } from "src/utils/filter-utils"
 import { exportTasksToExcel } from "../../functions/export-excel"
 import { applyAllFilters } from "../../functions/filter-utils"
 import type { TaskRow } from "../../providers/TasksFiltersProvider"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { useTitleBar } from "../../providers/TitleBarProvider"
-import { DashboardDatePicker } from "../Dashboard/DashboardDatePicker/DashboardDatePicker"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
+import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -79,31 +79,36 @@ function TasksLayout({
 		[tasks, searchQuery, tabFilterSet],
 	)
 
-	const filteredTasks = useMemo(
-		() => {
-			const byQuickAndTopic =
-				activeTopicFilters.size > 0
-					? toTaskRows(
-						applyAllFilters(
-							tasks,
-							tabFilterSet,
-							activeTopicFilters,
-							searchQuery,
-						),
-					)
-					: baseFilteredTasks
+	const filteredTasks = useMemo(() => {
+		const byQuickAndTopic =
+			activeTopicFilters.size > 0
+				? toTaskRows(
+					applyAllFilters(
+						tasks,
+						tabFilterSet,
+						activeTopicFilters,
+						searchQuery,
+					),
+				)
+				: baseFilteredTasks
 
-			const from = dateRange?.from
-			const to = dateRange?.to
-			if (!from || !to) return byQuickAndTopic
+		const from = dateRange?.from
+		const to = dateRange?.to
+		if (!from || !to) return byQuickAndTopic
 
-			return byQuickAndTopic.filter((task) => {
-				const date = getTaskDateByDateType(task, dateType)
-				return date ? isWithinInterval(date, { start: from, end: to }) : false
-			})
-		},
-		[tasks, searchQuery, tabFilterSet, activeTopicFilters, baseFilteredTasks, dateRange, dateType],
-	)
+		return byQuickAndTopic.filter((task) => {
+			const date = getTaskDateByDateType(task, dateType)
+			return date ? isWithinInterval(date, { start: from, end: to }) : false
+		})
+	}, [
+		tasks,
+		searchQuery,
+		tabFilterSet,
+		activeTopicFilters,
+		baseFilteredTasks,
+		dateRange,
+		dateType,
+	])
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -238,7 +243,7 @@ function TasksLayout({
 						/>
 					}
 					startSlot={
-						<DashboardDatePicker
+						<TasksDatePicker
 							dateType={dateType}
 							range={dateRange}
 							onDateTypeChange={setDateType}
