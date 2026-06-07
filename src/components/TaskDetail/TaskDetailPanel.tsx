@@ -16,6 +16,7 @@ import { useListTaskHistory } from "src/api/task-history/task-history"
 import { EditorExtensions } from "src/utils/tiptap-extensions"
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import FlagIcon from "../shared/FlagIcon"
+import { concat, uniqBy } from "lodash";
 
 interface TaskDetailPanelProps {
 	task: TaskWithWorkspaceDto
@@ -59,8 +60,7 @@ function TaskDetailPanel({
 	})
 
 	const attachmentFile = source?.attachmentKey?.split("/").pop()?.split(".")[0]
-	const sourceTags = source?.tags ?? []
-	const allTags = [...tags, ...sourceTags.filter((st) => !tags.some((t) => t.id === st.id))]
+	const allTags = uniqBy(concat(tags, source?.tags ?? []), 'id')
 	const hasTagOrAttachment = allTags.length > 0 || !!source?.attachmentKey
 
 	function handleScroll() {
@@ -229,12 +229,6 @@ function TaskDetailPanel({
               onClose={handleCloseEditDiscussion}
               sourceId={source.id}
               taskId={id}
-              editData={{
-                name: source.name ?? "",
-                date: source.date ?? null,
-                attachment: null,
-                tags: source.tags.map((t) => t.name),
-              }}
             />
           )}
 			</Panel>

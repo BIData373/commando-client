@@ -1,4 +1,6 @@
 import styled from "@emotion/styled"
+import { useForm } from "@tanstack/react-form"
+import { useStore } from "@tanstack/react-store"
 import { Check, Paperclip, X } from "lucide-react"
 import { useState } from "react"
 import CreateTasksTable from "./CreateTasksTable"
@@ -26,12 +28,12 @@ interface CreateDiscussionModalProps {
 
 function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 	const saveTasks = useSaveTasks()
-	const { mutate: createSource } = useCreateSource()
+	const { mutateAsync: createSource } = useCreateSource()
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-	const INITIAL_FORM: CreateSourceDto = {
+  	const defaultValues: CreateSourceDto = {
 		workspaceId,
 		name: "",
 		date: null,
@@ -39,43 +41,43 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 		attachment: null,
 	}
 
-	const [form, setForm] = useState<CreateSourceDto>(INITIAL_FORM)
+	 const form = useForm({
+    defaultValues,
+	})
+
+	const values = useStore(form.store, (state) => state.values)
 	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
-	const setField = <K extends keyof CreateSourceDto>(
-		key: K,
-		value: CreateSourceDto[K],
-	) => setForm((prev) => ({ ...prev, [key]: value }))
 
 	const isCurrentStepTasks = currentStep === Steps.Tasks
 
 	// ─── Handlers ─────────────────────────────────────────────────────────────
 
 	function handleNameChange(name: string) {
-		setField("name", name)
+		form.setFieldValue("name", name)
 	}
 
 	function handleDateChange(date: Date | undefined) {
 		if (date) {
-			setField("date", date)
+			form.setFieldValue("date", date)
 		}
 	}
 
 	function handleTagSelect(tag: string) {
-		const current = form.tags ?? []
+		const current = values.tags ?? []
 		if (!current.includes(tag)) {
-			setField("tags", [...current, tag])
+			form.setFieldValue("tags", [...current, tag])
 		}
 	}
 
 	function handleTagRemove(tag: string) {
-		setField(
+		form.setFieldValue(
 			"tags",
-			(form.tags ?? []).filter((t) => t !== tag),
+			(values.tags ?? []).filter((t) => t !== tag),
 		)
 	}
 
 	function handleFileChange(file: File | null) {
-		setField("attachment", file)
+		form.setFieldValue("attachment", file)
 	}
 
 	function handleOpenChange(open: boolean) {
@@ -90,24 +92,22 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 		setCurrentStep(Steps.Discussion)
 	}
 
-	function handleSave(taskRows: NewTaskRow[]) {
-		createSource(
-			{ data: form },
-			{
-				onSuccess: (source) => {
-					const inputs = taskRows.map(
-						({ id, rowKey, assigneeDetails, ...rest }) => ({
-							...rest,
-							workspaceId,
-							sourceId: source.id,
-							groupKey: String(id),
-						}),
-					)
-					saveTasks(inputs)
-					onClose()
-				},
-			},
-		)
+	async function handleSave(taskRows: NewTaskRow[]) {
+		try {
+			const source = await createSource({ data: values })
+			const inputs = taskRows.map(
+				({ id, rowKey, assigneeDetails, ...rest }) => ({
+					...rest,
+					workspaceId,
+					sourceId: source.id,
+					groupKey: String(id),
+				}),
+			)
+			saveTasks(inputs)
+			onClose()
+		} catch (error) {
+			console.error("createSource failed:", error)
+		}
 	}
 
 	// ─── Render ───────────────────────────────────────────────────────────────
@@ -151,11 +151,11 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 								<DiscussionInfoRow>
 									<DiscussionInfoText>
 										<DiscussionDate>
-											{form.date ? formatDate(form.date) : ""}
+											{values.date ? formatDate(values.date) : ""}
 										</DiscussionDate>
-										<DiscussionName>{form.name}</DiscussionName>
+										<DiscussionName>{values.name}</DiscussionName>
 									</DiscussionInfoText>
-									{form.attachment && <Paperclip size={20} />}
+									{values.attachment && <Paperclip size={20} />}
 								</DiscussionInfoRow>
 							)}
 						</HeaderSection>
@@ -163,7 +163,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 						{currentStep === Steps.Discussion ? (
 							<>
 								<DiscussionForm
-									form={form}
+									form={values}
 									onNameChange={handleNameChange}
 									onDateChange={handleDateChange}
 									onTagSelect={handleTagSelect}
@@ -174,7 +174,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 								<ModalFooter>
 									<ContinueButton
 										onClick={handleContinue}
-										disabled={!form.name.trim()}
+										disabled={!values.name.trim()}
 									>
 										המשך
 									</ContinueButton>

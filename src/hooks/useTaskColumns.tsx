@@ -24,6 +24,7 @@ import {
 } from "../components/ui/tooltip"
 import { formatDateShort } from "../functions/date-utils"
 import type { FilterOption } from "../functions/filter-utils"
+import { concat, map, uniq } from "lodash"
 
 export type TaskColumn =
 	| keyof TaskDto
@@ -397,13 +398,10 @@ function useTaskColumns({
 					original: { tags, source },
 				},
 			}) => {
-				const sourceTags = source?.tags ?? []
-				const allNames = [
-					...tags.map((t) => t.name),
-					...sourceTags
-						.filter((st) => !tags.some((t) => t.id === st.id))
-						.map((st) => st.name),
-				]
+				const allNames = uniq(concat(
+					map(tags, 'name'),
+					map(source?.tags ?? [], 'name'),
+				))
 				return <TopicCell tags={allNames} />
 			},
 		},
