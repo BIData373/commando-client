@@ -7,7 +7,7 @@ import {
 function formatTaskRow(
 	{ id, assigneeStatuses, ...task }: TaskDto,
 	assignee?: AssigneeDto,
-	status?: WorkspaceStatusDto
+	status?: WorkspaceStatusDto,
 ): TaskRow {
 	return {
 		...task,
@@ -19,7 +19,7 @@ function formatTaskRow(
 		...(assignee && {
 			otherAssignees: assigneeStatuses.filter(
 				(as) => as.assignee.id !== assignee.id,
-			)
+			),
 		}),
 	}
 }
@@ -27,9 +27,9 @@ function formatTaskRow(
 export function toTaskRows(tasks: TaskDto[]): TaskRow[] {
 	return tasks.flatMap((task) =>
 		task.assigneeStatuses.length > 0
-			? task.assigneeStatuses.map(({ assignee, status }) => (
-				formatTaskRow(task, assignee, status)
-			))
-			: ([formatTaskRow(task)])
+			? task.assigneeStatuses.map(({ assignee, status }) =>
+					formatTaskRow(task, assignee, status),
+				)
+			: [formatTaskRow(task)],
 	)
 }

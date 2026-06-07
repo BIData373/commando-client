@@ -76,14 +76,15 @@ function TasksLayout({
 	)
 
 	const filteredTasks = useMemo(
-		() => toTaskRows(
-			applyAllFilters(
-				tasks,
-				tabFilterSet,
-				activeTopicFilters.size > 0 ? activeTopicFilters : new Set(),
-				searchQuery,
+		() =>
+			toTaskRows(
+				applyAllFilters(
+					tasks,
+					tabFilterSet,
+					activeTopicFilters.size > 0 ? activeTopicFilters : new Set(),
+					searchQuery,
+				),
 			),
-		),
 		[tasks, searchQuery, tabFilterSet, activeTopicFilters],
 	)
 

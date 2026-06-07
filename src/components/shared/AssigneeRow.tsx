@@ -54,7 +54,7 @@ function AssigneeRowList({
 	const { data: assignees } = useListAssignees({ workspaceId })
 
 	const filteredAssignees = (assignees ?? []).filter(({ id }) =>
-		assigneeIds.includes(id)
+		assigneeIds.includes(id),
 	)
 
 	function handleDetailInput(id: number, e: React.FormEvent<HTMLSpanElement>) {

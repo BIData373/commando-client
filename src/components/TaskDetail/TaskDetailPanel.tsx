@@ -1,11 +1,20 @@
 import styled from "@emotion/styled"
 import { EditorContent, useEditor } from "@tiptap/react"
-import { Calendar, ChevronUp, History, Paperclip, X } from "lucide-react"
+import { concat, uniqBy } from "lodash"
+import {
+	Calendar,
+	ChevronUp,
+	History,
+	Paperclip,
+	Pencil,
+	X,
+} from "lucide-react"
 import { useRef, useState } from "react"
 import { DeadlineType, type TaskWithWorkspaceDto } from "src/api/model"
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import { EditorExtensions } from "src/utils/tiptap-extensions"
+import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import FlagIcon from "../shared/FlagIcon"
 import { AssigneeSection } from "./AssigneeSection"
@@ -42,6 +51,7 @@ function TaskDetailPanel({
 	const [showHistory, setShowHistory] = useState(false)
 	const [showConversation, setShowConversation] = useState(false)
 
+	const [showEditDiscussion, setShowEditDiscussion] = useState(false)
 	const scrollRef = useRef<HTMLDivElement>(null)
 	const [scrollShadow, setScrollShadow] = useState({
 		top: false,
@@ -56,7 +66,8 @@ function TaskDetailPanel({
 	})
 
 	const attachmentFile = source?.attachmentKey?.split("/").pop()?.split(".")[0]
-	const hasTagOrAttachment = tags.length > 0 || !!source?.attachmentKey
+	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
+	const hasTagOrAttachment = allTags.length > 0 || !!source?.attachmentKey
 
 	function handleScroll() {
 		const el = scrollRef.current
@@ -68,6 +79,10 @@ function TaskDetailPanel({
 
 	function handlePanelClick(e: React.MouseEvent) {
 		e.stopPropagation()
+	}
+
+	function handleCloseEditDiscussion() {
+		setShowEditDiscussion(false)
 	}
 
 	function handleBottomBarClick() {
@@ -144,6 +159,9 @@ function TaskDetailPanel({
 									<InfoBlock>
 										<SectionLabel>מקור</SectionLabel>
 										<SourceRow>
+											<PencilButton onClick={() => setShowEditDiscussion(true)}>
+												<Pencil size={14} />
+											</PencilButton>
 											<SourceName>{source.name}</SourceName>
 											<SourceDate>
 												{formatDateMonthYear(source.date)}
@@ -159,11 +177,11 @@ function TaskDetailPanel({
 										</InfoAttachment>
 									</InfoBlock>
 								)}
-								{tags.length > 0 && (
+								{allTags.length > 0 && (
 									<InfoBlock>
 										<SectionLabel>נושא</SectionLabel>
 										<TagsRow>
-											{tags.map((tag) => (
+											{allTags.map((tag) => (
 												<TagChip key={tag.id}>{tag.name}</TagChip>
 											))}
 										</TagsRow>
@@ -211,6 +229,13 @@ function TaskDetailPanel({
 							onClose={() => setShowConversation(false)}
 						/>
 					</>
+				)}
+				{showEditDiscussion && source?.id && (
+					<EditDiscussionModal
+						onClose={handleCloseEditDiscussion}
+						sourceId={source.id}
+						taskId={id}
+					/>
 				)}
 			</Panel>
 		</Overlay>
@@ -516,6 +541,18 @@ const SourceDate = styled.span`
   font-weight: 400;
   line-height: 22px;
   color: var(--sea-ink-soft);
+`
+
+const PencilButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sea-ink-soft);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--sea-ink);
+  }
 `
 
 // ─── Notes ─────────────────────────────────────────────────────────────────────
