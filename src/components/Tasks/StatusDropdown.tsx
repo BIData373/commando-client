@@ -71,7 +71,6 @@ export function StatusDropdown({
 const CellCenter = styled.div`
   display: flex;
   justify-content: center;
-  width: 100%;
 `
 
 const TriggerWrapper = styled.span`

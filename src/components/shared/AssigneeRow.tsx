@@ -1,17 +1,11 @@
 import styled from "@emotion/styled"
-import { ChevronDown, X } from "lucide-react"
+import { X } from "lucide-react"
 import { useRef } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { StatusTag } from "./StatusTag"
+import { StatusDropdown } from "../Tasks/StatusDropdown"
 import { AssigneeAvatar } from "./AssigneeAvatar"
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -28,7 +22,8 @@ interface AssigneeRowListProps {
 	onDetailChange: (id: number, value: string) => void
 	onRemove: (id: number) => void
 	assigneeStatuses?: AssigneeStatusMap
-	onStatusChange?: (assigneeId: number, statusId: number) => void
+	onStatusChange?: (taskId: number, assigneeId: number, statusId: number) => void
+	taskId?: number
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -43,8 +38,8 @@ function AssigneeRowList({
 	onRemove,
 	assigneeStatuses,
 	onStatusChange,
+	taskId,
 }: AssigneeRowListProps) {
-	const { statuses: workspaceStatuses } = useWorkspace()
 	const detailRefs = useRef<Record<number, HTMLSpanElement | null>>({})
 
 	const {
@@ -107,26 +102,14 @@ function AssigneeRowList({
 							</TextareaWrapper>
 						)}
 
-						{assigneeStatuses?.[assignee.id] && onStatusChange && (
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<StatusPillTrigger $color={assigneeStatuses[assignee.id].color}>
-										{assigneeStatuses[assignee.id].name}
-										<ChevronDown size={12} />
-									</StatusPillTrigger>
-								</DropdownMenuTrigger>
-								<StatusDropdownContent align="center" sideOffset={6}>
-									{Object.values(workspaceStatuses).map((s) => (
-										<StatusDropdownItem
-											key={s.id}
-											$selected={s.id === assigneeStatuses[assignee.id]?.id}
-											onSelect={() => onStatusChange(assignee.id, s.id)}
-										>
-											<StatusTag status={s} />
-										</StatusDropdownItem>
-									))}
-								</StatusDropdownContent>
-							</DropdownMenu>
+						{assigneeStatuses?.[assignee.id] && onStatusChange && taskId != null && (
+							<StatusDropdown
+								status={assigneeStatuses[assignee.id]}
+								taskId={taskId}
+								assigneeId={assignee.id}
+								workspaceId={workspaceId}
+								onUpdate={onStatusChange}
+							/>
 						)}
 
 						<InfoBlock>
@@ -257,60 +240,4 @@ const RoleText = styled.span`
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;
   text-align: center;
-`
-
-const StatusPillTrigger = styled.button<{ $color: string }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 1px 8px;
-  border-radius: 56px;
-  width: 76px;
-  max-width: 76px;
-  border: none;
-  font-size: 12px;
-  line-height: 20px;
-  white-space: nowrap;
-  cursor: pointer;
-  flex-shrink: 0;
-  color: ${({ $color }) => $color};
-  background: rgb(from ${({ $color }) => $color} r g b / 0.1);
-
-  &:focus-visible {
-    outline: none;
-  }
-`
-
-const StatusDropdownContent = styled(DropdownMenuContent)`
-  width: 100px;
-  min-width: 100px;
-  padding: 8px 4px;
-  border-radius: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: center;
-  z-index: var(--z-dropdown);
-  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px rgba(0, 0, 0, 0.12),
-    0px 9px 28px rgba(0, 0, 0, 0.05);
-`
-
-const StatusDropdownItem = styled(DropdownMenuItem)<{ $selected: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 4px;
-  border-radius: 4px;
-  background: ${({ $selected }) => ($selected ? "var(--selected-item)" : "transparent")};
-  cursor: pointer;
-  outline: none;
-
-  &[data-highlighted],
-  &:hover {
-    background: var(--selected-item);
-    color: inherit;
-  }
 `

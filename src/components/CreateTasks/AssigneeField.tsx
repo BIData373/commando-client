@@ -13,8 +13,9 @@ interface AssigneeFieldProps {
 	onRemove: (id: number) => void
 	onDetailChange: (id: number, value: string) => void
 	assigneeStatuses?: Record<number, WorkspaceStatusDto>
-	onStatusChange?: (assigneeId: number, statusId: number) => void
+	onStatusChange?: (taskId: number, assigneeId: number, statusId: number) => void
 	assigneeDetails?: Record<number, string>
+	taskId?: number
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -28,6 +29,7 @@ function AssigneeField({
 	assigneeStatuses,
 	onStatusChange,
 	assigneeDetails,
+	taskId,
 }: AssigneeFieldProps) {
 	return (
 		<>
@@ -68,6 +70,7 @@ function AssigneeField({
 						onRemove={onRemove}
 						assigneeStatuses={assigneeStatuses}
 						onStatusChange={onStatusChange}
+						taskId={taskId}
 					/>
 				)}
 			</AssigneeSection>

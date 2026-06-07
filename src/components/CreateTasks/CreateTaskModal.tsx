@@ -26,7 +26,9 @@ import DeadlineField from "./DeadlineField"
 import NotesField from "./NotesField"
 import SourceField from "./SourceField"
 import TagField from "./TagField"
-import { getListTasksQueryKey, useUpdateTask } from "src/api/task/task"
+import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
+import { useCreateSource } from "src/api/source/source"
+import { getGetTaskQueryKey, getListTasksQueryKey, useUpdateTask } from "src/api/task/task"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -51,7 +53,9 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 	} = useWorkspace()
 
 	const saveTasks = useSaveTasks()
+	const { mutateAsync: createSource } = useCreateSource()
 	const { mutate: updateTask } = useUpdateTask()
+	const { mutateAsync: upsertStatus } = useUpsertAssigneeTaskStatus()
 
 	const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
 
@@ -79,13 +83,36 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 			})) ?? [],
 			linkedSource: task?.source ?? null,
 		} as FormState,
-		onSubmit: ({ value: { source, sourceDate, linkedSource, ...rest } }) => {
+		onSubmit: async ({ value: { source, sourceDate, linkedSource, ...rest } }) => {
 			if (isEditMode) {
+				const newSourceId = source && !linkedSource
+					? (await createSource({ data: { workspaceId, name: source, date: sourceDate } })).id
+					: rest.sourceId
+				const { _statusChanged, ...changedFields } = getChangedFields(newSourceId)
 				updateTask(
-					{ pathParams: { id: task.id }, data: { ...rest } },
+					{ pathParams: { id: task.id }, data: changedFields },
 					{
-						onSuccess: () => {
-							queryClient.invalidateQueries({ queryKey: getListTasksQueryKey({ workspaceId }) })
+						onSuccess: async () => {
+							const statusUpdates = Object.entries(assigneeStatusMap)
+								.filter(([assigneeId]) => {
+									const original = task.assigneeStatuses.find(
+										(as) => as.assignee.id === Number(assigneeId),
+									)
+									return !original || original.status.id !== assigneeStatusMap[Number(assigneeId)].id
+								})
+								.map(([assigneeId, status]) =>
+									upsertStatus({ data: { taskId: task.id, assigneeId: Number(assigneeId), statusId: status.id } }),
+								)
+							await Promise.all(statusUpdates)
+							const queryKeys = [
+								getListTasksQueryKey({ workspaceId }),
+								getGetTaskQueryKey({ id: task.id }),
+							]
+							await Promise.all(
+								queryKeys.map((queryKey) =>
+									queryClient.invalidateQueries({ queryKey }),
+								),
+							)
 							onClose()
 						},
 					}
@@ -98,6 +125,32 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 	})
 
 	const values = useStore(form.store, (state) => state.values)
+
+	function getChangedFields(sourceId?: number | null): Record<string, unknown> {
+		if (!task) return {}
+		const changed: Record<string, unknown> = {}
+		if (values.title !== task.title) changed.title = values.title
+		if (values.deadlineType !== task.deadlineType) changed.deadlineType = values.deadlineType
+		if (String(values.dueDate) !== String(task.dueDate)) changed.dueDate = values.dueDate
+		if (values.flagged !== task.flagged) changed.flagged = values.flagged
+		if (values.notes !== (task.notes ?? "")) changed.notes = values.notes
+		if (JSON.stringify(values.tags) !== JSON.stringify(task.tags.map((t) => t.name))) changed.tags = values.tags
+		if ((sourceId ?? values.sourceId) !== (task.source?.id ?? null)) changed.sourceId = sourceId ?? values.sourceId
+		const originalAssignees = task.assigneeStatuses.map((as) => ({ id: as.assignee.id, description: as.description || "" }))
+		const currentAssignees = (values.assignees ?? []).map((a) => ({ id: a.id, description: a.description || "" }))
+		if (JSON.stringify(originalAssignees.sort((a, b) => a.id - b.id)) !== JSON.stringify(currentAssignees.sort((a, b) => a.id - b.id)))
+			changed.assignees = values.assignees
+		for (const [assigneeId, status] of Object.entries(assigneeStatusMap)) {
+			const orig = task.assigneeStatuses.find((as) => as.assignee.id === Number(assigneeId))
+			if (!orig || orig.status.id !== status.id) {
+				changed._statusChanged = true
+				break
+			}
+		}
+		return changed
+	}
+
+	const hasChanges = isEditMode ? Object.keys(getChangedFields()).length > 0 : true
 
 	// ─── Handlers ──────────────────────────────────────────────────────────────
 
@@ -192,7 +245,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 		form.setFieldValue("notes", value)
 	}
 
-	function handleAssigneeStatusChange(assigneeId: number, statusId: number) {
+	function handleAssigneeStatusChange(_taskId: number, assigneeId: number, statusId: number) {
 		const status = statuses[statusId]
 		if (status) {
 			setAssigneeStatusMap((prev) => ({ ...prev, [assigneeId]: status }))
@@ -279,6 +332,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 									onDetailChange={handleAssigneeDetailChange}
 									assigneeStatuses={isEditMode ? assigneeStatusMap : undefined}
 									onStatusChange={isEditMode ? handleAssigneeStatusChange : undefined}
+									taskId={task?.id}
 									assigneeDetails={isEditMode ? Object.fromEntries(
 										(values.assignees ?? [])
 											.filter((a) => a.description)
@@ -338,7 +392,10 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 
 										{/* Tag field */}
 										<TagField
-											tags={values.tags ?? []}
+											tags={[...new Set([
+												...(values.linkedSource?.tags.map((t) => t.name) ?? []),
+												...(values.tags ?? []),
+											])]}
 											lockedTags={
 												values.linkedSource?.tags.map((t) => t.name) ?? []
 											}
@@ -361,7 +418,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 							<PrimaryButton
 								title="שמור"
 								onClick={form.handleSubmit}
-								disabled={!values.title.trim()}
+								disabled={!values.title.trim() || (isEditMode && !hasChanges)}
 								width={133}
 							/>
 							<CancelButton title="ביטול" onClick={onClose} />
