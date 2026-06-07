@@ -5,7 +5,7 @@ import { ErrorCode, isErrorCode } from "../utils/error-utils"
 interface ErrorModalContextValue {
 	errorCode: number | null
 	setErrorCode(errorCode: number | null): void
-	handleError(error: unknown): void
+	handleError(error: AxiosError): void
 }
 
 const ErrorModalContext = createContext<ErrorModalContextValue | null>(null)
