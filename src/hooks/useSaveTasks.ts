@@ -8,24 +8,31 @@ interface TaskInput extends CreateTaskDto {
 }
 
 export function useSaveTasks() {
-	const { workspace: { id: workspaceId } } = useWorkspace()
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
 	const { mutate: createTask } = useCreateTask()
 
 	function saveTasks(inputs: TaskInput[]) {
 		for (const { deadlineType, notes, title, ...input } of inputs) {
-			createTask({
-				data: {
-					title: title.trim(),
-					deadlineType: deadlineType ?? DeadlineType.ROLLING,
-					dueDate: input.dueDate ?? new Date(),
-					notes: notes || undefined,
-					...input,
+			createTask(
+				{
+					data: {
+						title: title.trim(),
+						deadlineType: deadlineType ?? DeadlineType.ROLLING,
+						dueDate: input.dueDate ?? new Date(),
+						notes: notes || undefined,
+						...input,
+					},
 				},
-			}, {
-				onSuccess: () => {
-					queryClient.invalidateQueries({ queryKey: getListTasksQueryKey({ workspaceId }) })
-				}
-			})
+				{
+					onSuccess: () => {
+						queryClient.invalidateQueries({
+							queryKey: getListTasksQueryKey({ workspaceId }),
+						})
+					},
+				},
+			)
 		}
 	}
 

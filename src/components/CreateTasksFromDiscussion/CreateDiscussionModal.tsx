@@ -1,14 +1,16 @@
 import styled from "@emotion/styled"
+import { useForm } from "@tanstack/react-form"
+import { useStore } from "@tanstack/react-store"
 import { Check, Paperclip, X } from "lucide-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 import { useState } from "react"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import type { CreateSourceDto } from "../../api/model"
+import { useCreateSource } from "../../api/source/source"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
-import SourceField from "../CreateTasks/SourceField"
-import TagField from "../CreateTasks/TagField"
 import CreateTasksTable from "./CreateTasksTable"
-import FileUploadField from "./FileUploadField"
+import DiscussionForm from "./DiscussionForm"
 import type { NewTaskRow } from "./TasksColumns"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -18,75 +20,65 @@ enum Steps {
 	Tasks = 2,
 }
 
-interface DiscussionFormState {
-	name: string
-	sourceDate: Date | null
-	tags: string[]
-	file: File | null
-}
-
 interface CreateDiscussionModalProps {
 	onClose: () => void
-}
-
-// ─── Constants ──────────────────────────────────────────────────────────────
-
-const INITIAL_FORM: DiscussionFormState = {
-	name: "",
-	sourceDate: null,
-	tags: [],
-	file: null,
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
+	const saveTasks = useSaveTasks()
+	const { mutateAsync: createSource } = useCreateSource()
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
-	const saveTasks = useSaveTasks()
-	const [form, setForm] = useState<DiscussionFormState>(INITIAL_FORM)
-	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
-	const setField = <K extends keyof DiscussionFormState>(
-		key: K,
-		value: DiscussionFormState[K],
-	) => setForm((prev) => ({ ...prev, [key]: value }))
 
-	const isCurrentStepTasks = currentStep === Steps.Tasks
-	// ─── Source / Name Handlers ───────────────────────────────────────────────
-
-	function handleSourceSelect(name: string) {
-		setField("name", name)
+	const defaultValues: CreateSourceDto = {
+		workspaceId,
+		name: "",
+		date: null,
+		tags: [],
+		attachment: null,
 	}
 
-	function handleDateSelect(date: Date | undefined) {
+	const form = useForm({
+		defaultValues,
+	})
+
+	const values = useStore(form.store, (state) => state.values)
+	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
+
+	const isCurrentStepTasks = currentStep === Steps.Tasks
+
+	// ─── Handlers ─────────────────────────────────────────────────────────────
+
+	function handleNameChange(name: string) {
+		form.setFieldValue("name", name)
+	}
+
+	function handleDateChange(date: Date | undefined) {
 		if (date) {
-			setField("sourceDate", date)
+			form.setFieldValue("date", date)
 		}
 	}
 
-	// ─── Tag Handlers ────────────────────────────────────────────────────────
-
 	function handleTagSelect(tag: string) {
-		if (!form.tags.includes(tag)) {
-			setField("tags", [...form.tags, tag])
+		const current = values.tags ?? []
+		if (!current.includes(tag)) {
+			form.setFieldValue("tags", [...current, tag])
 		}
 	}
 
 	function handleTagRemove(tag: string) {
-		setField(
+		form.setFieldValue(
 			"tags",
-			form.tags.filter((t) => t !== tag),
+			(values.tags ?? []).filter((t) => t !== tag),
 		)
 	}
 
-	// ─── File Handler ──────────────────────────────────────────────────────────
-
 	function handleFileChange(file: File | null) {
-		setField("file", file)
+		form.setFieldValue("attachment", file)
 	}
-
-	// ─── Modal Handlers ───────────────────────────────────────────────────────
 
 	function handleOpenChange(open: boolean) {
 		if (!open) onClose()
@@ -100,22 +92,22 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 		setCurrentStep(Steps.Discussion)
 	}
 
-	// TODO - update the API to handle creation of tasks via source
-	function handleSave(taskRows: NewTaskRow[]) {
-		const inputs = taskRows.map((row) => ({
-			workspaceId,
-			title: row.title,
-			assigneeIds: row.assigneeIds,
-			assigneeDetails: row.assigneeDetails,
-			deadlineType: row.deadlineType,
-			dueDate: row.dueDate,
-			flagged: row.flagged,
-			notes: row.notes ?? "",
-			groupKey: String(row.id),
-		}))
-
-		saveTasks(inputs)
-		onClose()
+	async function handleSave(taskRows: NewTaskRow[]) {
+		try {
+			const source = await createSource({ data: values })
+			const inputs = taskRows.map(
+				({ id, rowKey, assigneeDetails, ...rest }) => ({
+					...rest,
+					workspaceId,
+					sourceId: source.id,
+					groupKey: String(id),
+				}),
+			)
+			saveTasks(inputs)
+			onClose()
+		} catch (error) {
+			console.error("createSource failed:", error)
+		}
 	}
 
 	// ─── Render ───────────────────────────────────────────────────────────────
@@ -159,45 +151,30 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 								<DiscussionInfoRow>
 									<DiscussionInfoText>
 										<DiscussionDate>
-											{form.sourceDate ? formatDate(form.sourceDate) : ""}
+											{values.date ? formatDate(values.date) : ""}
 										</DiscussionDate>
-										<DiscussionName>{form.name}</DiscussionName>
+										<DiscussionName>{values.name}</DiscussionName>
 									</DiscussionInfoText>
-									{form.file && <Paperclip size={20} />}
+									{values.attachment && <Paperclip size={20} />}
 								</DiscussionInfoRow>
 							)}
 						</HeaderSection>
 
 						{currentStep === Steps.Discussion ? (
 							<>
-								<FormContainer>
-									<SourceField
-										source={form.name}
-										sourceDate={form.sourceDate}
-										linkedSource={null}
-										onSourceSelect={handleSourceSelect}
-										onDateSelect={handleDateSelect}
-										label="שם הדיון"
-										uniqueNames
-									/>
-
-									<TagField
-										tags={form.tags}
-										lockedTags={[]}
-										onTagSelect={handleTagSelect}
-										onTagRemove={handleTagRemove}
-									/>
-
-									<FileUploadField
-										file={form.file}
-										onFileChange={handleFileChange}
-									/>
-								</FormContainer>
+								<DiscussionForm
+									form={values}
+									onNameChange={handleNameChange}
+									onDateChange={handleDateChange}
+									onTagSelect={handleTagSelect}
+									onTagRemove={handleTagRemove}
+									onFileChange={handleFileChange}
+								/>
 
 								<ModalFooter>
 									<ContinueButton
 										onClick={handleContinue}
-										disabled={!form.name.trim()}
+										disabled={!values.name.trim()}
 									>
 										המשך
 									</ContinueButton>
@@ -325,16 +302,6 @@ const DiscussionDate = styled.span`
   font-weight: 400;
   line-height: 24px;
   color: var(--foreground);
-`
-
-// ─── Form Layout ────────────────────────────────────────────────────────────
-
-const FormContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  align-items: flex-end;
-  flex: 1;
 `
 
 // ─── Footer ─────────────────────────────────────────────────────────────────
