@@ -41,12 +41,12 @@ export const AssigneeContainer = ({
 	const canEdit = editable && (isAdmin || (assigneeStatusEditable ?? false))
 
 	function handleUpdateAssigneeStatus(
-		_taskId: number,
-		_assigneeId: number,
+		taskId: number,
+		assigneeId: number,
 		statusId: number,
 	) {
 		upsertAssigneeTaskStatus({
-			data: { taskId, assigneeId: assignee.id, statusId },
+			data: { taskId, assigneeId, statusId },
 		})
 	}
 

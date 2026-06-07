@@ -1,4 +1,7 @@
-import { ConfirmPopover, type ConfirmPopoverProps } from "../shared/ConfirmPopover"
+import {
+	ConfirmPopover,
+	type ConfirmPopoverProps,
+} from "../shared/ConfirmPopover"
 
 interface DeletePopoverProps extends ConfirmPopoverProps {
 	count: number

@@ -4,81 +4,84 @@ import type { MouseEvent, ReactNode } from "react"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 export interface ConfirmPopoverProps {
-  title?: string
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onConfirm: () => void
-  openManually?: boolean
-  description?: ReactNode
-  confirmLabel?: string
-  cancelLabel?: string
-  trigger?: ReactNode
-  isPending?: boolean
-  side?: "top" | "bottom" | "left" | "right"
-  align?: "center" | "start" | "end"
-  sideOffset?: number
-  onCloseAutoFocus?: (e: Event) => void
+	title?: string
+	open: boolean
+	onOpenChange: (open: boolean) => void
+	onConfirm: () => void
+	openManually?: boolean
+	description?: ReactNode
+	confirmLabel?: string
+	cancelLabel?: string
+	trigger?: ReactNode
+	isPending?: boolean
+	side?: "top" | "bottom" | "left" | "right"
+	align?: "center" | "start" | "end"
+	sideOffset?: number
+	onCloseAutoFocus?: (e: Event) => void
 }
 
 export function ConfirmPopover({
-  title,
-  description,
-  confirmLabel = "אישור",
-  cancelLabel = "ביטול",
-  trigger,
-  open,
-  onOpenChange,
-  onConfirm,
-  isPending,
-  side = "top",
-  align = "center",
-  sideOffset = 12,
-  onCloseAutoFocus,
-  openManually = false
+	title,
+	description,
+	confirmLabel = "אישור",
+	cancelLabel = "ביטול",
+	trigger,
+	open,
+	onOpenChange,
+	onConfirm,
+	isPending,
+	side = "top",
+	align = "center",
+	sideOffset = 12,
+	onCloseAutoFocus,
+	openManually = false,
 }: ConfirmPopoverProps) {
-  function handleCancel(e: MouseEvent) {
-    e.stopPropagation()
-    onOpenChange(false)
-  }
+	function handleCancel(e: MouseEvent) {
+		e.stopPropagation()
+		onOpenChange(false)
+	}
 
-  function handleConfirm(e: MouseEvent) {
-    e.stopPropagation()
-    onOpenChange(false)
-    onConfirm()
-  }
+	function handleConfirm(e: MouseEvent) {
+		e.stopPropagation()
+		onOpenChange(false)
+		onConfirm()
+	}
 
-  return (
-    <Popover open={open} onOpenChange={!openManually ? onOpenChange : undefined}>
-      {trigger && <PopoverTrigger asChild>{trigger}</PopoverTrigger>}
+	return (
+		<Popover
+			open={open}
+			onOpenChange={!openManually ? onOpenChange : undefined}
+		>
+			{trigger && <PopoverTrigger asChild>{trigger}</PopoverTrigger>}
 
-      <Content
-        side={side}
-        sideOffset={sideOffset}
-        align={align}
-        onCloseAutoFocus={onCloseAutoFocus}
-      >
-        <Head>
-          <TextWrapper>
-            <Title>{title}</Title>
+			<Content
+				side={side}
+				sideOffset={sideOffset}
+				align={align}
+				onCloseAutoFocus={onCloseAutoFocus}
+			>
+				<Head>
+					<TextWrapper>
+						<Title>{title}</Title>
 
-            {description && <Description>{description}</Description>}
-          </TextWrapper>
+						{description && <Description>{description}</Description>}
+					</TextWrapper>
 
-          <IconWrapper>
-            <CircleAlert size={16} />
-          </IconWrapper>
-        </Head>
+					<IconWrapper>
+						<CircleAlert size={16} />
+					</IconWrapper>
+				</Head>
 
-        <Actions>
-          <CancelButton onClick={handleCancel}>{cancelLabel}</CancelButton>
+				<Actions>
+					<CancelButton onClick={handleCancel}>{cancelLabel}</CancelButton>
 
-          <DeleteButton onClick={handleConfirm} disabled={isPending}>
-            {confirmLabel}
-          </DeleteButton>
-        </Actions>
-      </Content>
-    </Popover>
-  )
+					<DeleteButton onClick={handleConfirm} disabled={isPending}>
+						{confirmLabel}
+					</DeleteButton>
+				</Actions>
+			</Content>
+		</Popover>
+	)
 }
 
 const Content = styled(PopoverContent)`

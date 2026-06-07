@@ -51,7 +51,10 @@ export function AssigneeCard({
 							<CardMeta>
 								<CardTitle>{assignee.name}</CardTitle>
 
-								<DeleteAssigneePopconfirm assigneeId={assignee.id} tasksCount={tasksCount} />
+								<DeleteAssigneePopconfirm
+									assigneeId={assignee.id}
+									tasksCount={tasksCount}
+								/>
 							</CardMeta>
 
 							<StyledCardDescription>
