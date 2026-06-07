@@ -1,22 +1,29 @@
 import styled from "@emotion/styled"
 import { EditorContent, useEditor } from "@tiptap/react"
-import { Calendar, ChevronUp, History, Paperclip, X } from "lucide-react"
+import {
+	Calendar,
+	ChevronUp,
+	History,
+	MoreVertical,
+	Paperclip,
+	X,
+} from "lucide-react"
 import { useRef, useState } from "react"
 import { DeadlineType, type TaskWithWorkspaceDto } from "src/api/model"
 import { useListTaskHistory } from "src/api/task-history/task-history"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import { EditorExtensions } from "src/utils/tiptap-extensions"
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import FlagIcon from "../shared/FlagIcon"
+import { RowActionsMenu } from "../Tasks/RowActionsMenu"
 import { AssigneeSection } from "./AssigneeSection"
-import { DropdownOptions } from "./DropdownOptions"
 import TaskConversationPanel from "./TaskConversationPanel"
 import TaskHistoryPanel from "./TaskHistoryPanel"
 
 interface TaskDetailPanelProps {
 	task: TaskWithWorkspaceDto
 	onClose: () => void
-	onArchive: () => void
 	onDelete: () => void
 }
 
@@ -34,9 +41,12 @@ function TaskDetailPanel({
 		assigneeStatuses,
 	},
 	onClose,
-	onArchive,
 	onDelete,
 }: TaskDetailPanelProps) {
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+
 	const [showHistory, setShowHistory] = useState(false)
 	const [showConversation, setShowConversation] = useState(false)
 
@@ -86,9 +96,14 @@ function TaskDetailPanel({
 						{flagged && <FlagIcon />}
 						<TitleText>{title}</TitleText>
 					</TextWrapper>
-					<DropdownOptions
+					<RowActionsMenu
+						workspaceId={workspaceId}
+						trigger={
+							<DotsButton>
+								<MoreVertical size={16} />
+							</DotsButton>
+						}
 						onEdit={onClose}
-						onArchive={onArchive}
 						onDelete={onDelete}
 					/>
 				</HeaderRow>
@@ -587,5 +602,23 @@ const StyledEditorContent = styled(EditorContent)`
       outline: none;
       border: none;
     }
+  }
+`
+
+const DotsButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  color: var(--sea-ink-soft);
+  cursor: pointer;
+  outline: none;
+
+  &:hover {
+    background: var(--button-hover);
+    color: var(--sea-ink);
   }
 `

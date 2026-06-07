@@ -1,6 +1,8 @@
 import styled from "@emotion/styled"
-import { Archive, CheckCircle2, Pencil, Trash2 } from "lucide-react"
+import { CheckCircle2, Pencil, Trash2 } from "lucide-react"
 import { type ReactNode, useState } from "react"
+import { PermissionType } from "src/api/model"
+import { useGetMyPermission } from "src/api/permission/permission"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -12,24 +14,34 @@ import { DeletePopover } from "./DeletePopover"
 
 interface RowActionsMenuProps {
 	trigger: ReactNode
+	workspaceId: number
 	onEdit?: () => void
 	onEnterSelect?: () => void
-	onArchive: () => void
 	onDelete?: () => void
 }
 
 export function RowActionsMenu({
 	trigger,
+	workspaceId,
 	onEdit,
 	onEnterSelect,
-	onArchive,
 	onDelete,
 }: RowActionsMenuProps) {
+	const { data: myPermission } = useGetMyPermission({ workspaceId })
+
+	const hasPermission = (permission: PermissionType, func?: () => void) =>
+		myPermission?.type === permission && func
+
+	const handleEdit = hasPermission(PermissionType.MANAGER, onEdit)
+	const handleDelete = hasPermission(PermissionType.MANAGER, onDelete)
+
 	const [dropdownOpen, setDropdownOpen] = useState(false)
 	const [popoverOpen, setPopoverOpen] = useState(false)
 
-	const hasMoreThanTwo =
-		[onEdit, onEnterSelect, onDelete].filter(Boolean).length >= 2
+	const itemCount = [onEnterSelect, handleEdit, handleDelete].filter(
+		Boolean,
+	).length
+	const hasMoreThanTwo = itemCount >= 2
 
 	function handleDropdownOpenChange(open: boolean) {
 		if (!open && popoverOpen) return
@@ -46,47 +58,45 @@ export function RowActionsMenu({
 	}
 
 	return (
-		<DropdownMenu
-			open={dropdownOpen || popoverOpen}
-			onOpenChange={handleDropdownOpenChange}
-		>
-			<DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-			<MenuContent align="start" sideOffset={4}>
-				{onEdit && (
-					<MenuItem onSelect={onEdit}>
-						<Pencil size={16} />
-						עריכה
-					</MenuItem>
-				)}
-				{onEnterSelect && (
-					<MenuItem onSelect={onEnterSelect}>
-						<CheckCircle2 size={16} />
-						סמן
-					</MenuItem>
-				)}
-				{hasMoreThanTwo && <MenuSeparator />}
-				<MenuItem onSelect={onArchive}>
-					<Archive size={16} />
-					העבר לארכיון
-				</MenuItem>
-				{onDelete && (
-					<DeletePopover
-						count={1}
-						side="right"
-						align="end"
-						onConfirm={onDelete}
-						open={popoverOpen}
-						onOpenChange={handlePopoverOpenChange}
-						trigger={
-							<DestructiveMenuItem onClick={handleDeleteClick}>
-								<Trash2 size={16} />
-								מחק
-							</DestructiveMenuItem>
-						}
-					/>
-				)}
-			</MenuContent>
-		</DropdownMenu>
+		itemCount > 0 && (
+			<DropdownMenu
+				open={dropdownOpen || popoverOpen}
+				onOpenChange={handleDropdownOpenChange}
+			>
+				<DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
+				<MenuContent align="start" sideOffset={4}>
+					{handleEdit && (
+						<MenuItem onSelect={handleEdit}>
+							<Pencil size={16} />
+							עריכה
+						</MenuItem>
+					)}
+					{onEnterSelect && (
+						<MenuItem onSelect={onEnterSelect}>
+							<CheckCircle2 size={16} />
+							סמן
+						</MenuItem>
+					)}
+					{hasMoreThanTwo && <MenuSeparator />}
+					{handleDelete && (
+						<DeletePopover
+							count={1}
+							side="right"
+							align="end"
+							onConfirm={handleDelete}
+							open={popoverOpen}
+							onOpenChange={handlePopoverOpenChange}
+							trigger={
+								<DestructiveMenuItem onClick={handleDeleteClick}>
+									<Trash2 size={16} />
+									מחק
+								</DestructiveMenuItem>
+							}
+						/>
+					)}
+				</MenuContent>
+			</DropdownMenu>
+		)
 	)
 }
 
