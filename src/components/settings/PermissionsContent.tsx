@@ -179,7 +179,6 @@ export function PermissionsContent() {
 						</AddUserRow>
 					)}
 				</DropdownUsers>
-
 			</SearchSection>
 
 			<StyledTabs value={activeTab} onValueChange={handleTabChange}>
