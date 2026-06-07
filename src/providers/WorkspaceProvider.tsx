@@ -1,6 +1,5 @@
 import styled from "@emotion/styled"
 import { useParams } from "@tanstack/react-router"
-import type { AxiosError } from "axios"
 import { createContext, type PropsWithChildren, useContext, useEffect } from "react"
 import type { UpdateWorkspaceDto, WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
@@ -8,7 +7,6 @@ import { queryClient } from "src/queryClient"
 import type { WorkspaceDto } from "../api/model/workspace-dto"
 import { useListWorkspaces } from "../api/workspace/workspace"
 import { Spinner } from "../components/ui/spinner"
-import { ErrorCode, isErrorCode } from "../utils/error-utils"
 import { useErrorModal } from "./ErrorModalProvider"
 import { useWorkspaceHeader } from "./TitleBarProvider"
 
@@ -22,7 +20,7 @@ const WorkspaceContext = createContext<WorkspaceContext | null>(null)
 
 export function WorkspaceProvider({ children }: PropsWithChildren) {
 	const { urlName } = useParams({ from: "/workspace/$urlName" })
-	const { setErrorCode } = useErrorModal()
+	const { handleError } = useErrorModal()
 	const {
 		data,
 		isLoading: isWorkspaceLoading,
@@ -44,11 +42,9 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 
 	useEffect(() => {
 		if (isError) {
-			const status = (error as AxiosError)?.response?.status
-			const code = status && isErrorCode(status) ? status : ErrorCode.SERVER_ERROR
-			setErrorCode(code)
+			handleError(error)
 		}
-	}, [isError, error, setErrorCode])
+	}, [isError, error, handleError])
 
 	const setWorkspace = (data: UpdateWorkspaceDto) => {
 		queryClient.setQueryData(

@@ -1,8 +1,11 @@
+import type { AxiosError } from "axios"
 import { createContext, type ReactNode, useContext, useState } from "react"
+import { ErrorCode, isErrorCode } from "../utils/error-utils"
 
 interface ErrorModalContextValue {
 	errorCode: number | null
 	setErrorCode(errorCode: number | null): void
+	handleError(error: unknown): void
 }
 
 const ErrorModalContext = createContext<ErrorModalContextValue | null>(null)
@@ -14,8 +17,16 @@ interface ErrorModalProviderProps {
 export function ErrorModalProvider({ children }: ErrorModalProviderProps) {
 	const [errorCode, setErrorCode] = useState<number | null>(null)
 
+	function handleError(error: AxiosError) {
+		const status = error?.status ?? error?.response?.status
+		const code = status && isErrorCode(status) ? status : ErrorCode.SERVER_ERROR
+		setErrorCode(code)
+	}
+
 	return (
-		<ErrorModalContext.Provider value={{ errorCode, setErrorCode }}>
+		<ErrorModalContext.Provider
+			value={{ errorCode, setErrorCode, handleError }}
+		>
 			{children}
 		</ErrorModalContext.Provider>
 	)
