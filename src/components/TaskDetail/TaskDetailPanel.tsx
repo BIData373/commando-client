@@ -18,6 +18,7 @@ interface TaskDetailPanelProps {
 	onClose: () => void
 	onArchive: () => void
 	onDelete: () => void
+	onEdit: () => void
 }
 
 function TaskDetailPanel({
@@ -36,6 +37,7 @@ function TaskDetailPanel({
 	onClose,
 	onArchive,
 	onDelete,
+	onEdit,
 }: TaskDetailPanelProps) {
 	const [showHistory, setShowHistory] = useState(false)
 	const [showConversation, setShowConversation] = useState(false)
@@ -87,7 +89,7 @@ function TaskDetailPanel({
 						<TitleText>{title}</TitleText>
 					</TextWrapper>
 					<DropdownOptions
-						onEdit={onClose}
+						onEdit={onEdit}
 						onArchive={onArchive}
 						onDelete={onDelete}
 					/>

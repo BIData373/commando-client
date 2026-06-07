@@ -30,6 +30,7 @@ export function FormField({
 }
 
 const Wrapper = styled.div`
+  direction:rtl;
   display: flex;
   flex-direction: column;
   gap: 6px;

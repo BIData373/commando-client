@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
+import type { WorkspaceStatusDto } from "src/api/model"
 import AssigneePicker from "../shared/AssigneePicker"
 import AssigneeRowList from "../shared/AssigneeRow"
 
@@ -11,6 +12,9 @@ interface AssigneeFieldProps {
 	onToggle: (id: number) => void
 	onRemove: (id: number) => void
 	onDetailChange: (id: number, value: string) => void
+	assigneeStatuses?: Record<number, WorkspaceStatusDto>
+	onStatusChange?: (assigneeId: number, statusId: number) => void
+	assigneeDetails?: Record<number, string>
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -21,6 +25,9 @@ function AssigneeField({
 	onToggle,
 	onRemove,
 	onDetailChange,
+	assigneeStatuses,
+	onStatusChange,
+	assigneeDetails,
 }: AssigneeFieldProps) {
 	return (
 		<>
@@ -56,16 +63,15 @@ function AssigneeField({
 						directiveTitle={directiveTitle}
 						showDetail={selectedAssignees.length > 1}
 						detailPlaceholder="פירוט נוסף לאחראי"
+						assigneeDetails={assigneeDetails}
 						onDetailChange={onDetailChange}
 						onRemove={onRemove}
+						assigneeStatuses={assigneeStatuses}
+						onStatusChange={onStatusChange}
 					/>
 				)}
 			</AssigneeSection>
 
-			{/* <CreateAssigneeDialog
-        open={isCreateAssigneeOpen}
-        onOpenChange={setIsCreateAssigneeOpen}
-      /> */}
 		</>
 	)
 }

@@ -4,8 +4,10 @@ import { useStore } from "@tanstack/react-store"
 import { ChevronDown, ChevronUp, X } from "lucide-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 import { useRef, useState } from "react"
-import { type CreateTaskDto, DeadlineType, type GetTaskAssigneeDto, type SourceDto } from "src/api/model"
+import { type CreateTaskDto, DeadlineType, type GetTaskAssigneeDto, type SourceDto, type TaskWithWorkspaceDto, type WorkspaceStatusDto } from "src/api/model"
+import { getListTasksQueryKey, useUpdateTask } from "src/api/task/task"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { queryClient } from "src/queryClient"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { CancelButton } from "../shared/CancelButton"
 import FlagIcon from "../shared/FlagIcon"
@@ -30,34 +32,61 @@ interface FormState extends Omit<CreateTaskDto, 'workspaceId'> {
 // ─── Component ───────────────────────────────────────────────────────────────
 interface CreateTaskModalProps {
 	onClose: () => void
+	task?: TaskWithWorkspaceDto
 }
 
-function CreateTaskModal({ onClose }: CreateTaskModalProps) {
+function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
+	const isEditMode = !!task
+
 	const {
-		workspace: { id: workspaceId }
+		workspace: { id: workspaceId },
+		statuses,
 	} = useWorkspace()
 
 	const saveTasks = useSaveTasks()
+	const { mutate: updateTask } = useUpdateTask()
 
-	const [isDetailsExpanded, setIsDetailsExpanded] = useState(false)
+	const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
+
+	const [assigneeStatusMap, setAssigneeStatusMap] = useState<Record<number, WorkspaceStatusDto>>(() => {
+		if (!task) return {}
+		return Object.fromEntries(
+			task.assigneeStatuses.map((as) => [as.assignee.id, as.status])
+		)
+	})
 
 	const form = useForm({
 		defaultValues: {
-			title: "",
-			deadlineType: DeadlineType.DATE,
-			dueDate: null,
-			flagged: false,
-			source: "",
-			sourceDate: null,
-			tags: [],
-			notes: "",
-			sourceId: null,
-			assignees: [],
-			linkedSource: null,
+			title: task?.title ?? "",
+			deadlineType: task?.deadlineType ?? DeadlineType.DATE,
+			dueDate: task?.dueDate ?? null,
+			flagged: task?.flagged ?? false,
+			source: task?.source?.name ?? "",
+			sourceDate: task?.source?.date ?? null,
+			tags: task?.tags.map((t) => t.name) ?? [],
+			notes: task?.notes ?? "",
+			sourceId: task?.source?.id ?? null,
+			assignees: task?.assigneeStatuses.map((as) => ({
+				id: as.assignee.id,
+				description: as.description || undefined,
+			})) ?? [],
+			linkedSource: task?.source ?? null,
 		} as FormState,
 		onSubmit: ({ value: { source, sourceDate, linkedSource, ...rest } }) => {
-			saveTasks([{ workspaceId, ...rest }])
-			onClose()
+			if (isEditMode) {
+				updateTask(
+					{ pathParams: { id: task.id }, data: { ...rest } },
+					{
+						onSuccess: () => {
+							queryClient.invalidateQueries({ queryKey: getListTasksQueryKey({ workspaceId }) })
+							onClose()
+						},
+					}
+				)
+			} else {
+				saveTasks([{ workspaceId, ...rest }])
+				onClose()
+			}
 		}
 	})
 
@@ -150,6 +179,13 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 		form.setFieldValue("notes", value)
 	}
 
+	function handleAssigneeStatusChange(assigneeId: number, statusId: number) {
+		const status = statuses[statusId]
+		if (status) {
+			setAssigneeStatusMap((prev) => ({ ...prev, [assigneeId]: status }))
+		}
+	}
+
 	// ─── Scroll Shadow ─────────────────────────────────────────────────────────
 
 	const scrollRef = useRef<HTMLDivElement>(null)
@@ -188,7 +224,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
 					<ModalBody>
 						<ModalHeader $shadow={scrollShadow.top}>
-							<ModalTitle>יצירת הנחיה</ModalTitle>
+							<ModalTitle>{isEditMode ? "עריכת הנחיה" : "יצירת הנחיה"}</ModalTitle>
 						</ModalHeader>
 
 						<ScrollableContent ref={scrollRef} onScroll={handleScroll}>
@@ -228,6 +264,13 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 									onToggle={handleAssigneeToggle}
 									onRemove={handleRemoveAssignee}
 									onDetailChange={handleAssigneeDetailChange}
+									assigneeStatuses={isEditMode ? assigneeStatusMap : undefined}
+									onStatusChange={isEditMode ? handleAssigneeStatusChange : undefined}
+									assigneeDetails={isEditMode ? Object.fromEntries(
+										(values.assignees ?? [])
+											.filter((a) => a.description)
+											.map((a) => [a.id, a.description!])
+									) : undefined}
 								/>
 
 								{/* ─── Important Checkbox ──────────────────────────────────── */}

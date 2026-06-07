@@ -3,7 +3,8 @@ import { Outlet, useNavigate } from "@tanstack/react-router"
 import { ChevronDown, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
-import { useListTasks } from "src/api/task/task"
+import { useGetTask, useListTasks } from "src/api/task/task"
+import CreateTaskModal from "../CreateTasks/CreateTaskModal"
 import { toTaskRows } from "src/functions/tasks-table"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import {
@@ -55,6 +56,12 @@ function TasksLayout({
 
 	const { data: tasks = [], queryKey } = useListTasks({ workspaceId })
 
+	const [editingTaskId, setEditingTaskId] = useState<number | null>(null)
+	const { data: editingTask } = useGetTask(
+		{ id: editingTaskId ?? 0 },
+		{ query: { enabled: editingTaskId !== null } },
+	)
+
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
 	)
@@ -102,12 +109,20 @@ function TasksLayout({
 		})
 	}
 
-	function handleEdit(taskId: number) {
+	function handleOpenTask(taskId: number) {
 		navigate({
 			to: "/workspace/$urlName/tasks/$taskId",
 			params: { urlName, taskId: String(taskId) },
 			search: { view },
 		})
+	}
+
+	function handleEdit(taskId: number) {
+		setEditingTaskId(taskId)
+	}
+
+	function handleEditClose() {
+		setEditingTaskId(null)
 	}
 
 	function handleCreateTask() {
@@ -226,7 +241,7 @@ function TasksLayout({
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
 							onFiltersChange={handleColumnFiltersChange}
-							onDoubleClick={handleEdit}
+							onDoubleClick={handleOpenTask}
 						/>
 					) : (
 						<TaskCardGrid tasks={filteredTasks} />
@@ -234,6 +249,9 @@ function TasksLayout({
 				</ContentArea>
 			</TasksRoot>
 			<Outlet />
+			{editingTaskId !== null && editingTask && (
+				<CreateTaskModal key={editingTaskId} task={editingTask} onClose={handleEditClose} />
+			)}
 		</TooltipProvider>
 	)
 }

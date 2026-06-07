@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router"
+import { useState } from "react"
 import { useGetTask } from "src/api/task/task"
+import CreateTaskModal from "../../../../components/CreateTasks/CreateTaskModal"
 import TaskDetailPanel from "../../../../components/TaskDetail/TaskDetailPanel"
 
 export const Route = createFileRoute("/workspace/$urlName/tasks/$taskId")({
@@ -12,6 +14,7 @@ function TaskDetail() {
 	const navigate = useNavigate()
 
 	const { data: task } = useGetTask({ id: Number(taskId) })
+	const [isEditing, setIsEditing] = useState(false)
 
 	function handleClose() {
 		navigate({
@@ -35,14 +38,27 @@ function TaskDetail() {
 		handleClose()
 	}
 
+	function handleEdit() {
+		setIsEditing(true)
+	}
+
+	function handleEditClose() {
+		setIsEditing(false)
+	}
+
+	if (!task) return null
+
+	if (isEditing) {
+		return <CreateTaskModal task={task} onClose={handleEditClose} />
+	}
+
 	return (
-		!!task && (
-			<TaskDetailPanel
-				task={task}
-				onClose={handleClose}
-				onArchive={handleArchive}
-				onDelete={handleDelete}
-			/>
-		)
+		<TaskDetailPanel
+			task={task}
+			onClose={handleClose}
+			onArchive={handleArchive}
+			onDelete={handleDelete}
+			onEdit={handleEdit}
+		/>
 	)
 }
