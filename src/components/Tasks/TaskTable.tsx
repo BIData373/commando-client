@@ -43,7 +43,7 @@ interface TaskTableProps {
 function TaskTable({
 	queryKey,
 	tasks,
-	onEdit = () => { },
+	onEdit = () => {},
 	onDoubleClick,
 	extraColumns,
 	showHeader = true,
@@ -54,17 +54,16 @@ function TaskTable({
 	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters()
 	const queryClient = useQueryClient()
 
-
 	function handleSuccess() {
 		queryClient.invalidateQueries({ queryKey })
 	}
 
 	const { mutate: deleteTaskMutate } = useDeleteTask({
-		mutation: { onSuccess: handleSuccess }
+		mutation: { onSuccess: handleSuccess },
 	})
 
 	const { mutate: upsertStatus } = useUpsertAssigneeTaskStatus({
-		mutation: { onSuccess: handleSuccess }
+		mutation: { onSuccess: handleSuccess },
 	})
 
 	const [selectMode, setSelectMode] = useState(false)
@@ -149,7 +148,7 @@ function TaskTable({
 			if (!task || !task.assignee) {
 				return
 			}
-			
+
 			upsertStatus({
 				data: { taskId: id, assigneeId: task.assignee.id, statusId: status.id },
 			})
