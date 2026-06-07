@@ -24,6 +24,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { sendRequest } from "../../axios"
 import type {
 	AssigneeDto,
+	AssigneesDto,
 	CreateAssigneeDto,
 	DeleteAssigneePathParameters,
 	GetAssigneePathParameters,
@@ -110,7 +111,7 @@ export const listAssignees = (
 	params: ListAssigneesParams,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneeDto[]>({
+	return sendRequest<AssigneesDto[]>({
 		url: `/assignee`,
 		method: "GET",
 		params,
