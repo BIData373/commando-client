@@ -7,10 +7,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 interface DeleteAssigneePopconfirmProps {
 	assigneeId: number
+	tasksCount: number
 }
 
 export function DeleteAssigneePopconfirm({
 	assigneeId,
+	tasksCount,
 }: DeleteAssigneePopconfirmProps) {
 	const [open, setOpen] = useState(false)
 	const { isPending, mutate: deleteAssignee } = useDeleteAssignee()
@@ -49,7 +51,8 @@ export function DeleteAssigneePopconfirm({
 					<TextWrapper>
 						<Title>למחוק את האחראי</Title>
 						<Description>
-							האם אתה בטוח? מחיקת האחראי תבטל את שיוך ההנחיות שהוא קיבל
+							האם אתה בטוח? מחיקת האחראי תבטל את שיוך ההנחיות שהוא קיבל (סה"כ{" "}
+							{tasksCount > 0 ? tasksCount : "."} הנחיות פעילות)
 							<br />
 							הנחיות אלו ימשיכו להופיע בלשכה
 						</Description>
@@ -78,7 +81,7 @@ const StyledPopoverContent = styled(PopoverContent)`
     border-radius: 6px;
     padding: 12px;
     gap: 8px;
-    min-width: 220px;
+    min-width: 330px;
     direction: rtl;
     display: flex;
     flex-direction: column;
