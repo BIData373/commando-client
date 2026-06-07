@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { CheckCircle2, Pencil, Trash2 } from "lucide-react"
+import { CheckCircle2, MoreVertical, Pencil, Trash2 } from "lucide-react"
 import { type ReactNode, useState } from "react"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
@@ -13,7 +13,7 @@ import {
 import { DeletePopover } from "./DeletePopover"
 
 interface RowActionsMenuProps {
-	trigger: ReactNode
+	trigger?: ReactNode
 	workspaceId: number
 	onEdit?: () => void
 	onEnterSelect?: () => void
@@ -63,7 +63,13 @@ export function RowActionsMenu({
 				open={dropdownOpen || popoverOpen}
 				onOpenChange={handleDropdownOpenChange}
 			>
-				<DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
+				<DropdownMenuTrigger asChild>
+					{trigger ?? (
+						<DefaultTrigger>
+							<MoreVertical size={16} />
+						</DefaultTrigger>
+					)}
+				</DropdownMenuTrigger>
 				<MenuContent align="start" sideOffset={4}>
 					{handleEdit && (
 						<MenuItem onSelect={handleEdit}>
@@ -144,4 +150,22 @@ const DestructiveMenuItem = styled(MenuItem)`
 const MenuSeparator = styled(DropdownMenuSeparator)`
   margin-block: 4px;
   background: var(--button-hover);
+`
+
+const DefaultTrigger = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  color: var(--sea-ink-soft);
+  cursor: pointer;
+  outline: none;
+
+  &:hover {
+    background: var(--button-hover);
+    color: var(--sea-ink);
+  }
 `

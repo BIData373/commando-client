@@ -7,14 +7,18 @@ interface WeekNumberCellProps extends WeekNumberProps {
 	onClickBadge?: (val: DatePickerValue | undefined) => void
 }
 
-export function WeekNumberCell({ week, date, onClickBadge, ...props }: WeekNumberCellProps) {
-	const selected = (
+export function WeekNumberCell({
+	week,
+	date,
+	onClickBadge,
+	...props
+}: WeekNumberCellProps) {
+	const selected =
 		isDateRange(date) &&
 		!!date?.from &&
 		!!date?.to &&
 		week.days[0].date >= date.from &&
 		week.days[week.days.length - 1].date <= date.to
-	)
 
 	function handleClickBadge() {
 		onClickBadge?.({
@@ -25,10 +29,7 @@ export function WeekNumberCell({ week, date, onClickBadge, ...props }: WeekNumbe
 
 	return (
 		<WeekNumber {...props}>
-			<WeekNumberBadge
-				onClick={handleClickBadge}
-				$selected={selected}
-			>
+			<WeekNumberBadge onClick={handleClickBadge} $selected={selected}>
 				{week.weekNumber}
 			</WeekNumberBadge>
 		</WeekNumber>

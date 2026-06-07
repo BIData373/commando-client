@@ -3,7 +3,7 @@ import { type QueryKey, useQueryClient } from "@tanstack/react-query"
 import type { ColumnDef, FilterFn } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
 import { concat, map, uniq } from "lodash"
-import { AlertTriangle, MoreVertical } from "lucide-react"
+import { AlertTriangle } from "lucide-react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import { DeadlineType, type TaskDto } from "src/api/model"
@@ -464,15 +464,11 @@ function useTaskColumns({
 				enableColumnFilter: false,
 				cell: ({
 					row: {
-						original: { id },
+						original: { id, workspaceId },
 					},
 				}) => (
 					<RowActionsMenu
-						trigger={
-							<ActionsButton>
-								<MoreVertical size={16} />
-							</ActionsButton>
-						}
+						workspaceId={workspaceId}
 						onEdit={() => actions.onEdit(id)}
 						onEnterSelect={() => actions.onEnterSelectMode(id)}
 						onDelete={() => actions.onDelete([id])}
@@ -656,21 +652,4 @@ const NotesText = styled.div`
 const DateText = styled.span`
   font-size: 14px;
   color: var(--sea-ink-soft);
-`
-
-const ActionsButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  color: var(--sea-ink-soft);
-  cursor: pointer;
-  transition: background 0.15s;
-
-  &:hover {
-    background: var(--link-bg-hover);
-    color: var(--sea-ink);
-  }
 `

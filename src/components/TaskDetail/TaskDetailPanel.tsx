@@ -5,7 +5,6 @@ import {
 	Calendar,
 	ChevronUp,
 	History,
-	MoreVertical,
 	Paperclip,
 	Pencil,
 	X,
@@ -107,11 +106,6 @@ function TaskDetailPanel({
 					</TextWrapper>
 					<RowActionsMenu
 						workspaceId={workspaceId}
-						trigger={
-							<DotsButton>
-								<MoreVertical size={16} />
-							</DotsButton>
-						}
 						onEdit={onClose}
 						onDelete={onDelete}
 					/>
@@ -633,23 +627,5 @@ const StyledEditorContent = styled(EditorContent)`
       outline: none;
       border: none;
     }
-  }
-`
-
-const DotsButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  flex-shrink: 0;
-  color: var(--sea-ink-soft);
-  cursor: pointer;
-  outline: none;
-
-  &:hover {
-    background: var(--button-hover);
-    color: var(--sea-ink);
   }
 `
