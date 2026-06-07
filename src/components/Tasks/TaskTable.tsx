@@ -259,7 +259,7 @@ const TableWrapper = styled.div`
 
   [data-slot="table-container"] {
     overflow-x: auto;
-    direction: ltr;
+    direction: rtl;
   }
 
   table {

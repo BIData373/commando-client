@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { type QueryKey, useQueryClient } from "@tanstack/react-query"
 import type { ColumnDef, FilterFn } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
+import { concat, map, uniq } from "lodash"
 import { AlertTriangle, MoreVertical } from "lucide-react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
@@ -13,7 +14,7 @@ import HighlightMatch from "../components/shared/HighlightMatch"
 import { AssigneeCell } from "../components/Tasks/AssigneeCell"
 import { ColumnHeaderWithActions } from "../components/Tasks/ColumnHeaderWithActions"
 import { RowActionsMenu } from "../components/Tasks/RowActionsMenu"
-import { StatusCell } from "../components/Tasks/StatusCell"
+import { StatusDropdown } from "../components/Tasks/StatusDropdown"
 import { TopicCell } from "../components/Tasks/TopicCell"
 import { Checkbox } from "../components/ui/checkbox"
 import {
@@ -240,7 +241,7 @@ function useTaskColumns({
 			}) =>
 				status &&
 				assignee && (
-					<StatusCell
+					<StatusDropdown
 						status={status}
 						assigneeId={assignee.id}
 						taskId={id}
@@ -397,9 +398,12 @@ function useTaskColumns({
 			filterFn: multiSelectFilter,
 			cell: ({
 				row: {
-					original: { tags },
+					original: { tags, source },
 				},
-			}) => <TopicCell tags={tags.map((t) => t.name)} />,
+			}) => {
+				const allNames = uniq(map(concat(tags, source?.tags ?? []), "name"))
+				return <TopicCell tags={allNames} />
+			},
 		},
 		notes: {
 			accessorKey: "notes",
@@ -460,11 +464,10 @@ function useTaskColumns({
 				enableColumnFilter: false,
 				cell: ({
 					row: {
-						original: { id, workspaceId },
+						original: { id },
 					},
 				}) => (
 					<RowActionsMenu
-						workspaceId={workspaceId}
 						trigger={
 							<ActionsButton>
 								<MoreVertical size={16} />
