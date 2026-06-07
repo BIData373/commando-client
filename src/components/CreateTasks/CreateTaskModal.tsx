@@ -4,7 +4,12 @@ import { useStore } from "@tanstack/react-store"
 import { ChevronDown, ChevronUp, X } from "lucide-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 import { useRef, useState } from "react"
-import { type CreateTaskDto, DeadlineType, type GetTaskAssigneeDto, type SourceDto } from "src/api/model"
+import {
+	type CreateTaskDto,
+	DeadlineType,
+	type GetTaskAssigneeDto,
+	type SourceDto,
+} from "src/api/model"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { CancelButton } from "../shared/CancelButton"
@@ -21,7 +26,7 @@ import TagField from "./TagField"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface FormState extends Omit<CreateTaskDto, 'workspaceId'> {
+interface FormState extends Omit<CreateTaskDto, "workspaceId"> {
 	source: string
 	sourceDate: Date | null
 	linkedSource: SourceDto | null
@@ -34,7 +39,7 @@ interface CreateTaskModalProps {
 
 function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 	const {
-		workspace: { id: workspaceId }
+		workspace: { id: workspaceId },
 	} = useWorkspace()
 
 	const saveTasks = useSaveTasks()
@@ -58,7 +63,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 		onSubmit: ({ value: { source, sourceDate, linkedSource, ...rest } }) => {
 			saveTasks([{ workspaceId, ...rest }])
 			onClose()
-		}
+		},
 	})
 
 	const values = useStore(form.store, (state) => state.values)
@@ -87,14 +92,18 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 	}
 
 	function handleRemoveAssignee(id: number) {
-		form.setFieldValue("assignees", (values.assignees ?? []).filter((a) => a.id !== id))
+		form.setFieldValue(
+			"assignees",
+			(values.assignees ?? []).filter((a) => a.id !== id),
+		)
 	}
 
 	function handleAssigneeDetailChange(id: number, value: string) {
 		form.setFieldValue(
 			"assignees",
-			(values.assignees ?? []).map((a): GetTaskAssigneeDto =>
-				a.id === id ? { ...a, description: value } : a,
+			(values.assignees ?? []).map(
+				(a): GetTaskAssigneeDto =>
+					a.id === id ? { ...a, description: value } : a,
 			),
 		)
 	}
@@ -102,7 +111,9 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 	function handleSourceSelect(name: string, discussion?: SourceDto | null) {
 		if (discussion) {
 			const discussionTagNames = discussion.tags.map((t) => t.name)
-			const mergedTags = [...new Set([...(values.tags ?? []), ...discussionTagNames])]
+			const mergedTags = [
+				...new Set([...(values.tags ?? []), ...discussionTagNames]),
+			]
 			form.setFieldValue("source", discussion.name)
 			form.setFieldValue("sourceDate", discussion.date)
 			form.setFieldValue("tags", mergedTags)
@@ -292,7 +303,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
 										{/* Notes */}
 										<NotesField
-											notes={values.notes ?? ''}
+											notes={values.notes ?? ""}
 											onNotesChange={handleNotesChange}
 										/>
 									</AdditionalDetails>

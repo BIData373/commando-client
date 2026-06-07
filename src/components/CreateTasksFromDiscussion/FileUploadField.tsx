@@ -232,7 +232,7 @@ const FileName = styled.span`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: var(--tab-active-color);
+  color: var(--Components-Upload-Global-colorPrimary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
