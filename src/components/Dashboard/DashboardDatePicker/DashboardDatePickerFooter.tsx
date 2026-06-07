@@ -1,31 +1,31 @@
 import styled from "@emotion/styled"
-import type { DatePickerValue } from "src/components/shared/DatePicker"
 import type { DatePickerSlotProps } from "src/components/shared/DatePickerPopover"
+import type { DatePickerValue } from "src/utils/date-utils"
 
 interface DashboardDatePickerFooterProps {
-	slots: DatePickerSlotProps
-	onConfirm(range: DatePickerValue | undefined): void
+  slots: DatePickerSlotProps
+  onConfirm(range: DatePickerValue | undefined): void
 }
 
 export function DashboardDatePickerFooter({
-	slots: { onChange, onClose, value },
-	onConfirm,
+  slots: { onChange, onClose, value },
+  onConfirm,
 }: DashboardDatePickerFooterProps) {
-	function handleClear() {
-		onChange(undefined)
-	}
+  function handleClear() {
+    onChange(undefined)
+  }
 
-	function handleConfirm() {
-		onConfirm(value)
-		onClose()
-	}
+  function handleConfirm() {
+    onConfirm(value)
+    onClose()
+  }
 
-	return (
-		<PopupFooter>
-			<ClearButton onClick={handleClear}>נקה בחירה</ClearButton>
-			<ConfirmButton onClick={handleConfirm}>אישור</ConfirmButton>
-		</PopupFooter>
-	)
+  return (
+    <PopupFooter>
+      <ClearButton onClick={handleClear}>נקה בחירה</ClearButton>
+      <ConfirmButton onClick={handleConfirm}>אישור</ConfirmButton>
+    </PopupFooter>
+  )
 }
 
 const ClearButton = styled.button`

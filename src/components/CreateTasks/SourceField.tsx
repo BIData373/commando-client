@@ -4,8 +4,8 @@ import { useState } from "react"
 import type { SourceDto } from "src/api/model"
 import { useListSources } from "src/api/source/source"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import type { DatePickerValue } from "src/utils/date-utils"
 import { formatDate, formatDateShort } from "../../functions/date-utils"
-import type { DatePickerValue } from "../shared/DatePicker"
 import DatePicker, { CalendarMode } from "../shared/DatePicker"
 import HighlightMatch from "../shared/HighlightMatch"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
@@ -73,8 +73,8 @@ function SourceField({
 	const allFiltered = sources.filter((d) => d.name.includes(sourceQuery))
 	const filteredDiscussions = uniqueNames
 		? allFiltered.filter(
-				(d, i, arr) => arr.findIndex((x) => x.name === d.name) === i,
-			)
+			(d, i, arr) => arr.findIndex((x) => x.name === d.name) === i,
+		)
 		: allFiltered
 
 	function openDropdown() {
