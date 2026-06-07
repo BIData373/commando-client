@@ -11,22 +11,16 @@ import {
 	getListPersonalTasksQueryKey,
 	useListPersonalTasks,
 } from "src/api/task/task"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { applyAllFilters } from "../../functions/filter-utils"
 import { toTaskRows } from "../../functions/tasks-table"
 import {
 	type TaskRow,
 	useTasksFilters,
 } from "../../providers/TasksFiltersProvider"
-import { useTitleBar } from "../../providers/TitleBarProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { EmptyState } from "../Tasks/EmptyState"
 import { TaskFilters } from "../Tasks/TaskFilters"
-
-interface PersonalTasksLayoutProps {
-	view: TasksView
-}
 
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
@@ -71,7 +65,12 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 	workspace: WORKSPACE_COLUMN,
 }
 
-function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
+// interface PersonalTasksLayoutProps {
+// 	view: TasksView
+// }
+
+function PersonalTasksLayout() {
+	// const navigate = useNavigate()
 	const { searchQuery, activeQuickFilters, clearQuickFilters } =
 		useTasksFilters()
 	const queryKey = getListPersonalTasksQueryKey()
@@ -91,10 +90,10 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 
 	const totalCount = taskRows.length
 	const notStartedCount = taskRows.filter(
-		(t) => t.status.type === WorkspaceStatusType.NOT_STARTED,
+		(t) => t.status?.type === WorkspaceStatusType.NOT_STARTED,
 	).length
 	const inProgressCount = taskRows.filter(
-		(t) => t.status.type === WorkspaceStatusType.IN_PROGRESS,
+		(t) => t.status?.type === WorkspaceStatusType.IN_PROGRESS,
 	).length
 	const weeklyNew = taskRows.filter((t) =>
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
@@ -122,30 +121,14 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 		// placeholder for export
 	}
 
-	function handleViewChange(newView: TasksView) {
-		return newView
-		// placeholder for view change
-	}
+	// function handleViewChange(newView: TasksView) {
+	// 	navigate({ to: "/personal", search: { view: newView } })
+	// }
 
-	useTitleBar(
-		() => (
-			<SegmentedControl>
-				<SegmentedItem
-					$selected={view === TasksView.TABLE}
-					onClick={() => handleViewChange(TasksView.TABLE)}
-				>
-					טבלה
-				</SegmentedItem>
-				<SegmentedItem
-					$selected={view === TasksView.CARDS}
-					onClick={() => handleViewChange(TasksView.CARDS)}
-				>
-					כרטיסיות
-				</SegmentedItem>
-			</SegmentedControl>
-		),
-		[view],
-	)
+	// useTitleBar(
+	// 	() => <ViewToggle view={view} onViewChange={handleViewChange} />,
+	// 	[view],
+	// )
 
 	return (
 		<TooltipProvider>
@@ -210,40 +193,6 @@ const PageRoot = styled.div`
   gap: 28px;
   height: 100%;
   overflow: hidden;
-`
-
-const SegmentedControl = styled.div`
-  display: flex;
-  align-items: center;
-  height: 40px;
-  padding: 2px;
-  background: var(--colors-base-neutral-3);
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-`
-
-const SegmentedItem = styled.button<{ $selected: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  height: 100%;
-  padding-inline: 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background 0.15s, box-shadow 0.15s;
-  background: ${({ $selected }) => ($selected ? "var(--background)" : "transparent")};
-  color: ${({ $selected }) => ($selected ? "rgba(0, 0, 0, 0.88)" : "var(--text-color)")};
-  box-shadow: ${({ $selected }) => ($selected ? "var(--card-shadow-default)" : "none")};
-  &:hover {
-    background: ${({ $selected }) => ($selected ? "var(--background)" : "rgba(0, 0, 0, 0.06)")};
-  }
 `
 
 const WorkspaceIcon = styled.img`

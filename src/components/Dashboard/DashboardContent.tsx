@@ -8,7 +8,7 @@ import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { DATE_TYPE } from "src/utils/data-type-utils"
+import { DATE_TYPE } from "src/utils/date-utils"
 import {
 	getDashboardFilterDataTypeKey,
 	getDashboardFilterRangeKey,
