@@ -1,9 +1,10 @@
 import styled from "@emotion/styled"
-import type { PermissionDto, PermissionType, UserDto } from "src/api/model"
+import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
 import noUsersFound from "../../assets/noUsersFound.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { TrashButton } from "../shared/TrashButton"
 import { DropdownPermission } from "./DropdownPermission"
+import { CHAT_LINK } from "src/utils/env-utils"
 
 interface UserPermissionListProps {
 	permissions: PermissionDto[]
@@ -16,6 +17,12 @@ export function UserPermissionList({
 	onDelete,
 	onTypeChange,
 }: UserPermissionListProps) {
+	function navigateToChat(type: PermissionType) {
+		if (type === PermissionType.MANAGER) {
+			window.open(CHAT_LINK)
+		}
+	}
+
 	return (
 		<UserListRoot>
 			{permissions.length === 0 ? (
@@ -29,7 +36,10 @@ export function UserPermissionList({
 			) : (
 				permissions.map(({ user, type }) => (
 					<UserRow key={user.id}>
-						<UserInfo>
+						<UserInfo
+							$type={type}
+							onClick={() => navigateToChat(type)}
+						>
 							<UserHeader>
 								<UserName>{user.info?.name}</UserName>
 								<UserPersonalId> - {user.upn}</UserPersonalId>
@@ -72,7 +82,9 @@ const UserHeader = styled.div`
   gap: 4px;
 `
 
-const UserInfo = styled.div`
+const UserInfo = styled.div<{ $type: PermissionType }>`
+  color: ${({ $type }) => ($type === PermissionType.MANAGER ? "var(--active-color)" : " var(--sea-ink)")};
+
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -82,7 +94,6 @@ const UserInfo = styled.div`
 const UserName = styled.span`
   font-size: 15px;
   font-weight: 500;
-  color: var(--sea-ink);
 `
 
 const UserPersonalId = styled.span`
