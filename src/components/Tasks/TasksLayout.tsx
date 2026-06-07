@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from "@tanstack/react-router"
 import { ChevronDown, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
-import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
+import { useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import {
@@ -24,7 +24,7 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
 import { TooltipProvider } from "../ui/tooltip"
-import { NoResultsFound } from "./NoResultsFound"
+import { EmptyState } from "./EmptyState"
 import { TaskCardGrid } from "./TaskCardGrid"
 import { TaskFilters } from "./TaskFilters"
 import { TaskTable } from "./TaskTable"
@@ -46,17 +46,19 @@ function TasksLayout({
 	deadlineTypeFilter,
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
+
 	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters()
+
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-	const tasksQueryKey = getListTasksQueryKey({ workspaceId })
-	const { data: tasks = [] } = useListTasks({ workspaceId })
+	const { data: tasks = [], queryKey } = useListTasks({ workspaceId })
 
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
 	)
+
 	const allTopics = [
 		...new Set(tasks.flatMap((t) => t.tags.map((tag) => tag.name))),
 	]
@@ -66,25 +68,16 @@ function TasksLayout({
 		[tabFilter],
 	)
 
-	const baseFilteredTasks = useMemo(
-		() =>
-			toTaskRows(applyAllFilters(tasks, tabFilterSet, new Set(), searchQuery)),
-		[tasks, searchQuery, tabFilterSet],
-	)
-
 	const filteredTasks = useMemo(
-		() =>
-			activeTopicFilters.size > 0
-				? toTaskRows(
-						applyAllFilters(
-							tasks,
-							tabFilterSet,
-							activeTopicFilters,
-							searchQuery,
-						),
-					)
-				: baseFilteredTasks,
-		[tasks, searchQuery, tabFilterSet, activeTopicFilters, baseFilteredTasks],
+		() => toTaskRows(
+			applyAllFilters(
+				tasks,
+				tabFilterSet,
+				activeTopicFilters.size > 0 ? activeTopicFilters : new Set(),
+				searchQuery,
+			),
+		),
+		[tasks, searchQuery, tabFilterSet, activeTopicFilters],
 	)
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
@@ -222,12 +215,12 @@ function TasksLayout({
 
 				<ContentArea>
 					{tasks.length === 0 ? (
-						<NoResultsFound variant="empty" />
+						<EmptyState />
 					) : searchQuery && filteredTasks.length === 0 ? (
-						<NoResultsFound variant="no-search-results" />
+						<EmptyState variant="search" />
 					) : view === TasksView.TABLE ? (
 						<TaskTable
-							queryKey={tasksQueryKey}
+							queryKey={queryKey}
 							tasks={filteredTasks}
 							onEdit={handleEdit}
 							statusFilter={statusFilter}

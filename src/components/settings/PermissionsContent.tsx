@@ -1,5 +1,4 @@
 import styled from "@emotion/styled"
-import { UserPlus } from "lucide-react"
 import { useMemo, useState } from "react"
 import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
 import {
@@ -163,25 +162,22 @@ export function PermissionsContent() {
 					onChange={handleSearchChange}
 					onSelect={handleSearchSelect}
 					onClear={handleSearchClear}
+					onAdd={() => handleUserAdd(type)}
+					selectedUser={selectedUser}
+					excludeUpns={permissions.map((p) => p.user.upn)}
 					placeholder="חפש שם/ תפקיד/ מספר אישי"
 				/>
 
-				<AddUserRow>
-					{search.length > 0 && (
+				{search.length > 0 && (
+					<AddUserRow>
 						<DropdownPermission
 							ghost
 							value={type}
 							onChange={setType}
 							disabled={!selectedUser}
 						/>
-					)}
-
-					{selectedUser && (
-						<AddAvatarButton onClick={() => handleUserAdd(type)}>
-							<UserPlus size={16} />
-						</AddAvatarButton>
-					)}
-				</AddUserRow>
+					</AddUserRow>
+				)}
 			</SearchSection>
 
 			<StyledTabs value={activeTab} onValueChange={handleTabChange}>
@@ -228,19 +224,6 @@ const AddUserRow = styled.div`
   justify-content: center;
 
   gap: 8px;
-`
-
-const AddAvatarButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  color: var(--color-primary-foreground);
-  cursor: pointer;
-  background: var(--default-linear);
 `
 
 const StyledTabs = styled(Tabs)`

@@ -178,6 +178,7 @@ export const getCreateTaskResponseMock = (
 			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		},
+		description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	})),
 	workspace: {
 		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -389,6 +390,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
+			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		})),
 	}))
 
@@ -567,6 +569,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
+			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		})),
 		workspace: {
 			createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -769,6 +772,7 @@ export const getGetTaskResponseMock = (
 			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		},
+		description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	})),
 	workspace: {
 		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -972,6 +976,7 @@ export const getUpdateTaskResponseMock = (
 			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		},
+		description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	})),
 	workspace: {
 		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1175,6 +1180,7 @@ export const getDeleteTaskResponseMock = (
 			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		},
+		description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	})),
 	workspace: {
 		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
