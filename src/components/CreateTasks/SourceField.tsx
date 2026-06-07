@@ -73,8 +73,8 @@ function SourceField({
 	const allFiltered = sources.filter((d) => d.name.includes(sourceQuery))
 	const filteredDiscussions = uniqueNames
 		? allFiltered.filter(
-			(d, i, arr) => arr.findIndex((x) => x.name === d.name) === i,
-		)
+				(d, i, arr) => arr.findIndex((x) => x.name === d.name) === i,
+			)
 		: allFiltered
 
 	function openDropdown() {
