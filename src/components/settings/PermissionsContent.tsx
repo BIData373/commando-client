@@ -166,18 +166,20 @@ export function PermissionsContent() {
 					selectedUser={selectedUser}
 					excludeUpns={permissions.map((p) => p.user.upn)}
 					placeholder="חפש שם/ תפקיד/ מספר אישי"
-				/>
+					showAddBtn={!!selectedUser}
+				>
+					{search.length > 0 && (
+						<AddUserRow>
+							<DropdownPermission
+								ghost
+								value={type}
+								onChange={setType}
+								disabled={!selectedUser}
+							/>
+						</AddUserRow>
+					)}
+				</DropdownUsers>
 
-				{search.length > 0 && (
-					<AddUserRow>
-						<DropdownPermission
-							ghost
-							value={type}
-							onChange={setType}
-							disabled={!selectedUser}
-						/>
-					</AddUserRow>
-				)}
 			</SearchSection>
 
 			<StyledTabs value={activeTab} onValueChange={handleTabChange}>

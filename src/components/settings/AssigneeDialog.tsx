@@ -277,6 +277,7 @@ export function AssigneeDialog({
 											onClear={handleSearchClear}
 											onAdd={handleAddUserList}
 											selectedUser={selectedUser}
+											showAddBtn={searchValue.length > 0}
 											excludeUpns={field.state.value.map((u) => u.upn)}
 											placeholder="חפש שם/ תפקיד/ מספר אישי"
 										/>
