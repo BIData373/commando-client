@@ -22,7 +22,7 @@ export function SettingsForm() {
 		workspace: { id, title, pikudId, icon },
 		setWorkspace,
 	} = useWorkspace()
-	const { mutate: updateSettings } = useUpdateWorkspace({
+	const { mutate: updateSettings, isSuccess } = useUpdateWorkspace({
 		mutation: {
 			onSuccess() {
 				queryClient.invalidateQueries({
@@ -33,6 +33,7 @@ export function SettingsForm() {
 	})
 
 	const [form, setForm] = useState<UpdateWorkspaceDto>({ title, pikudId, icon })
+	const [prevName, setPrevName] = useState(title);
 	const [iconSearch, setIconSearch] = useState("")
 	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
 
@@ -56,6 +57,9 @@ export function SettingsForm() {
 				onSuccess(data) {
 					setWorkspace(data)
 				},
+				onError() {
+					setForm({ ...form, [key]: prevName })
+				}
 			},
 		)
 	}
@@ -69,7 +73,11 @@ export function SettingsForm() {
 	function handleNameChange(
 		e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
 	) {
-		setField("title", e.target.value.slice(0, NAME_MAX_LENGTH))
+		const title =  e.target.value.slice(0, NAME_MAX_LENGTH)
+		if (isSuccess) {
+			setPrevName(title)
+		}
+		setField("title", title)
 	}
 
 	function handleCommandChange(value: number) {
@@ -87,6 +95,17 @@ export function SettingsForm() {
 		e.currentTarget.src = "/workspace-icon.png"
 	}
 
+	function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+		if (e.code === "Space" || e.key === ' ') {
+			e.preventDefault()
+			return
+		}
+
+		if (e.key === 'Backspace' && e.currentTarget.value.length === 1) {
+			e.preventDefault()
+		}
+	}
+
 	return (
 		<FormRoot>
 			<FieldRow>
@@ -94,6 +113,7 @@ export function SettingsForm() {
 				<InputWrapper>
 					<StyledInput
 						value={form.title}
+						onKeyDown={handleKeyDown}
 						onChange={handleNameChange}
 						placeholder="הזן שם סביבה"
 						maxLength={NAME_MAX_LENGTH}
