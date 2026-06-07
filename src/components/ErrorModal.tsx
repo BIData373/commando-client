@@ -182,7 +182,7 @@ const ErrorCodeDisplay = styled.div`
   background-clip: text;
 `
 
-const ErrorText = styled.p`
+const ErrorText = styled.div`
   font-size: 30px;
   font-weight: 400;
   line-height: 38px;

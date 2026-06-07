@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { useState } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { StatusTag } from "../shared/StatusTag"
@@ -9,21 +10,25 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
 
-interface StatusCellProps {
+interface StatusDropdownProps {
 	status: WorkspaceStatusDto
 	taskId: number
 	workspaceId: number
 	assigneeId: number
 	onUpdate: (taskId: number, assigneeId: number, statusId: number) => void
+	withArrow?: boolean
 }
 
-export function StatusCell({
+export function StatusDropdown({
 	status,
 	taskId,
 	assigneeId,
 	workspaceId,
 	onUpdate,
-}: StatusCellProps) {
+	withArrow = false,
+}: StatusDropdownProps) {
+	const [isOpen, setIsOpen] = useState(false)
+
 	const { data: statuses = [], isLoading } = useListWorkspaceStatuses({
 		workspaceId,
 	})
@@ -35,10 +40,15 @@ export function StatusCell({
 	return (
 		!isLoading && (
 			<CellCenter>
-				<DropdownMenu>
+				<DropdownMenu onOpenChange={setIsOpen}>
 					<DropdownMenuTrigger asChild>
 						<TriggerWrapper tabIndex={0}>
-							<StatusTag status={status} interactive />
+							<StatusTag
+								status={status}
+								interactive
+								withArrow={withArrow}
+								open={isOpen}
+							/>
 						</TriggerWrapper>
 					</DropdownMenuTrigger>
 					<StatusDropdownContent align="center" sideOffset={6}>

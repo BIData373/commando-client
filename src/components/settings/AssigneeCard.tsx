@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { User } from "lucide-react"
 import { useState } from "react"
-import type { AssigneeDto } from "src/api/model"
+import type { AssigneesDto } from "src/api/model"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { Badge } from "../ui/badge"
 import {
@@ -18,12 +18,12 @@ import { DeleteAssigneePopconfirm } from "./DeleteAssigneePopconfirm"
 const MAX_VISIBLE_TAGS = 2
 
 interface IAssigneeCardProps {
-	assignee: AssigneeDto
+	assignee: AssigneesDto
 }
 
 export function AssigneeCard({
 	assignee,
-	assignee: { users },
+	assignee: { users, tasksCount },
 }: IAssigneeCardProps) {
 	const visibleUsers = users.slice(0, MAX_VISIBLE_TAGS)
 	const remainingUsers = users.length - MAX_VISIBLE_TAGS
@@ -51,7 +51,10 @@ export function AssigneeCard({
 							<CardMeta>
 								<CardTitle>{assignee.name}</CardTitle>
 
-								<DeleteAssigneePopconfirm assigneeId={assignee.id} />
+								<DeleteAssigneePopconfirm
+									assigneeId={assignee.id}
+									tasksCount={tasksCount}
+								/>
 							</CardMeta>
 
 							<StyledCardDescription>
