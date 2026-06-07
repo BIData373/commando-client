@@ -3,11 +3,18 @@ import { useForm } from "@tanstack/react-form"
 import { useQueryClient } from "@tanstack/react-query"
 import { useStore } from "@tanstack/react-store"
 import { AlertCircle, X } from "lucide-react"
-import { Dialog as DialogPrimitive, Popover as PopoverPrimitive } from "radix-ui"
+import {
+	Dialog as DialogPrimitive,
+	Popover as PopoverPrimitive,
+} from "radix-ui"
 import { useState } from "react"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import type { UpdateSourceDto } from "../../api/model"
-import { getGetSourceQueryKey, useGetSource, useUpdateSource } from "../../api/source/source"
+import {
+	getGetSourceQueryKey,
+	useGetSource,
+	useUpdateSource,
+} from "../../api/source/source"
 import { getGetTaskQueryKey, getListTasksQueryKey } from "../../api/task/task"
 import { Popover, PopoverTrigger } from "../ui/popover"
 import DiscussionForm from "./DiscussionForm"
@@ -15,199 +22,191 @@ import DiscussionForm from "./DiscussionForm"
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface EditDiscussionModalProps {
-  onClose: () => void
-  sourceId: number
-  taskId: number
+	onClose: () => void
+	sourceId: number
+	taskId: number
 }
 
 function EditDiscussionModal({
-  onClose,
-  sourceId,
-  taskId,
+	onClose,
+	sourceId,
+	taskId,
 }: EditDiscussionModalProps) {
-  const {
-    workspace: { id: workspaceId },
-  } = useWorkspace()
-  const { data: source } = useGetSource({ id: sourceId })
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+	const { data: source } = useGetSource({ id: sourceId })
 
-  const queryClient = useQueryClient()
-  const { mutateAsync: updateSource } = useUpdateSource()
-  const [showConfirmation, setShowConfirmation] = useState(false)
+	const queryClient = useQueryClient()
+	const { mutateAsync: updateSource } = useUpdateSource()
+	const [showConfirmation, setShowConfirmation] = useState(false)
 
-  const defaultValues: UpdateSourceDto = {
-    name: source?.name ?? "",
-    date: source?.date ?? null,
-    tags: source?.tags.map((t) => t.name) ?? [],
-    attachment: source?.attachmentKey ? undefined : null,
-  }
+	const defaultValues: UpdateSourceDto = {
+		name: source?.name ?? "",
+		date: source?.date ?? null,
+		tags: source?.tags.map((t) => t.name) ?? [],
+		attachment: source?.attachmentKey ? undefined : null,
+	}
 
-  const form = useForm({
-    defaultValues,
-    onSubmit: async ({ value }) => {
-      const data: UpdateSourceDto = {}
-      if (value.name && value.name.trim() !== defaultValues.name) {
-        data.name = value.name.trim()
-      }
-      if (value.date?.getTime() !== defaultValues.date?.getTime()) {
-        data.date = value.date ?? undefined
-      }
-      if (JSON.stringify(value.tags) !== JSON.stringify(defaultValues.tags)) {
-        data.tags = value.tags
-      }
-      if (value.attachment !== defaultValues.attachment) {
-        data.attachment = value.attachment ?? undefined
-      }
+	const form = useForm({
+		defaultValues,
+		onSubmit: async ({ value: { tags, ...value } }) => {
+			const data: UpdateSourceDto = { tags }
+			if (value.name && value.name.trim() !== defaultValues.name) {
+				data.name = value.name.trim()
+			}
+			if (value.date?.getTime() !== defaultValues.date?.getTime()) {
+				data.date = value.date ?? undefined
+			}
+			if (value.attachment !== defaultValues.attachment) {
+				data.attachment = value.attachment ?? undefined
+			}
 
-      if (Object.keys(data).length === 0) return
+			if (Object.keys(data).length === 0) {
+				return
+			}
 
-      try {
-        await updateSource({ pathParams: { id: sourceId }, data })
-        const queryKeys = [
-          getListTasksQueryKey({ workspaceId }),
-          getGetTaskQueryKey({ id: taskId }),
-          getGetSourceQueryKey({ id: sourceId }),
-        ]
-        await Promise.all(
-          queryKeys.map((queryKey) =>
-            queryClient.invalidateQueries({ queryKey }),
-          ),
-        )
-        setShowConfirmation(false)
-        onClose()
-      } catch (error) {
-        console.error("updateSource failed:", error)
-      }
-    },
-  })
+			try {
+				await updateSource({ pathParams: { id: sourceId }, data })
+				const queryKeys = [
+					getListTasksQueryKey({ workspaceId }),
+					getGetTaskQueryKey({ id: taskId }),
+					getGetSourceQueryKey({ id: sourceId }),
+				]
+				await Promise.all(
+					queryKeys.map((queryKey) =>
+						queryClient.invalidateQueries({ queryKey }),
+					),
+				)
+				setShowConfirmation(false)
+				onClose()
+			} catch (error) {
+				console.error("updateSource failed:", error)
+			}
+		},
+	})
 
-  const values = useStore(form.store, (state) => state.values)
+	const values = useStore(form.store, (state) => state.values)
 
-  const hasChanges =
-    values.name?.trim() !== defaultValues.name ||
-    values.date?.getTime() !== defaultValues.date?.getTime() ||
-    JSON.stringify(values.tags) !== JSON.stringify(defaultValues.tags) ||
-    values.attachment !== defaultValues.attachment
+	const hasChanges =
+		values.name?.trim() !== defaultValues.name ||
+		values.date?.getTime() !== defaultValues.date?.getTime() ||
+		JSON.stringify(values.tags) !== JSON.stringify(defaultValues.tags) ||
+		values.attachment !== defaultValues.attachment
 
-  // ─── Handlers ─────────────────────────────────────────────────────────────
+	// ─── Handlers ─────────────────────────────────────────────────────────────
 
-  function handleNameChange(name: string) {
-    form.setFieldValue("name", name)
-  }
+	function handleNameChange(name: string) {
+		form.setFieldValue("name", name)
+	}
 
-  function handleDateChange(date: Date | undefined) {
-    if (date) {
-      form.setFieldValue("date", date)
-    }
-  }
+	function handleDateChange(date: Date | undefined) {
+		if (date) {
+			form.setFieldValue("date", date)
+		}
+	}
 
-  function handleTagSelect(tag: string) {
-    if (!values.tags?.includes(tag)) {
-      form.setFieldValue("tags", [...(values.tags || []), tag])
-    }
-  }
+	function handleTagSelect(tag: string) {
+		if (!values.tags?.includes(tag)) {
+			form.setFieldValue("tags", [...(values.tags || []), tag])
+		}
+	}
 
-  function handleTagRemove(tag: string) {
-    form.setFieldValue(
-      "tags",
-      values.tags?.filter((t) => t !== tag),
-    )
-  }
+	function handleTagRemove(tag: string) {
+		form.setFieldValue(
+			"tags",
+			values.tags?.filter((t) => t !== tag),
+		)
+	}
 
-  function handleFileChange(file: File | null) {
-    form.setFieldValue("attachment", file)
-  }
+	function handleFileChange(file: File | null) {
+		form.setFieldValue("attachment", file)
+	}
 
-  function handleOpenChange(open: boolean) {
-    if (!open) onClose()
-  }
+	function handleOpenChange(open: boolean) {
+		if (!open) onClose()
+	}
 
-  function handleEditConfirm() {
-    form.handleSubmit()
-  }
+	function handleEditConfirm() {
+		form.handleSubmit()
+	}
 
-  function handleSaveClick(e: React.MouseEvent) {
-    if (!hasChanges) {
-      e.preventDefault()
-    }
-  }
+	function handleSaveClick(e: React.MouseEvent) {
+		if (!hasChanges) {
+			e.preventDefault()
+		}
+	}
 
-  function handleEditCancel() {
-    setShowConfirmation(false)
-  }
+	function handleEditCancel() {
+		setShowConfirmation(false)
+	}
 
-  // ─── Render ───────────────────────────────────────────────────────────────
+	// ─── Render ───────────────────────────────────────────────────────────────
 
-  if (!source) return null
+	if (!source) return null
 
-  return (
-    <DialogPrimitive.Root open onOpenChange={handleOpenChange}>
-      <DialogPrimitive.Portal>
-        <Overlay />
-        <ModalCard>
-          <ModalCloseButton onClick={onClose}>
-            <X size={16} />
-          </ModalCloseButton>
+	return (
+		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
+			<DialogPrimitive.Portal>
+				<Overlay />
+				<ModalCard>
+					<ModalCloseButton onClick={onClose}>
+						<X size={16} />
+					</ModalCloseButton>
 
-          <ModalBody>
-            <HeaderSection>
-              <ModalTitle>עריכת פרטי דיון</ModalTitle>
-            </HeaderSection>
+					<ModalBody>
+						<HeaderSection>
+							<ModalTitle>עריכת פרטי דיון</ModalTitle>
+						</HeaderSection>
 
-            <DiscussionForm
-              form={values}
-              onNameChange={handleNameChange}
-              onDateChange={handleDateChange}
-              onTagSelect={handleTagSelect}
-              onTagRemove={handleTagRemove}
-              onFileChange={handleFileChange}
-            />
+						<DiscussionForm
+							form={values}
+							onNameChange={handleNameChange}
+							onDateChange={handleDateChange}
+							onTagSelect={handleTagSelect}
+							onTagRemove={handleTagRemove}
+							onFileChange={handleFileChange}
+						/>
 
-            <EditFooter>
-              <Popover
-                open={showConfirmation}
-                onOpenChange={setShowConfirmation}
-              >
-                <PopoverTrigger asChild>
-                  <SaveButton
-                    $disabled={!hasChanges}
-                    onClick={handleSaveClick}
-                  >
-                    שמור שינויים
-                  </SaveButton>
-                </PopoverTrigger>
-                <ConfirmationContent
-                  side="top"
-                  align="start"
-                  sideOffset={13}
-                >
-                  <ConfirmationHeader>
-                    <AlertCircleIcon size={16} />
-                    <TextWrapper>
-                      <ConfirmationTitle>
-                        עריכת פרטי דיון לכל ההנחיות
-                      </ConfirmationTitle>
-                      <ConfirmationText>
-                        כלל ההנחיות תחת דיון זה יתעדכנו בשינויים.
-                      </ConfirmationText>
-                    </TextWrapper>
-                  </ConfirmationHeader>
-                  <ConfirmationActions>
-                    <ConfirmButton onClick={handleEditConfirm}>
-                      בטוח
-                    </ConfirmButton>
-                    <CancelConfirmButton onClick={handleEditCancel}>
-                      לא
-                    </CancelConfirmButton>
-                  </ConfirmationActions>
-                </ConfirmationContent>
-              </Popover>
-              <CancelButton onClick={onClose}>ביטול</CancelButton>
-            </EditFooter>
-          </ModalBody>
-        </ModalCard>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
-  )
+						<EditFooter>
+							<Popover
+								open={showConfirmation}
+								onOpenChange={setShowConfirmation}
+							>
+								<PopoverTrigger asChild>
+									<SaveButton $disabled={!hasChanges} onClick={handleSaveClick}>
+										שמור שינויים
+									</SaveButton>
+								</PopoverTrigger>
+								<ConfirmationContent side="top" align="start" sideOffset={13}>
+									<ConfirmationHeader>
+										<AlertCircleIcon size={16} />
+										<TextWrapper>
+											<ConfirmationTitle>
+												עריכת פרטי דיון לכל ההנחיות
+											</ConfirmationTitle>
+											<ConfirmationText>
+												כלל ההנחיות תחת דיון זה יתעדכנו בשינויים.
+											</ConfirmationText>
+										</TextWrapper>
+									</ConfirmationHeader>
+									<ConfirmationActions>
+										<ConfirmButton onClick={handleEditConfirm}>
+											בטוח
+										</ConfirmButton>
+										<CancelConfirmButton onClick={handleEditCancel}>
+											לא
+										</CancelConfirmButton>
+									</ConfirmationActions>
+								</ConfirmationContent>
+							</Popover>
+							<CancelButton onClick={onClose}>ביטול</CancelButton>
+						</EditFooter>
+					</ModalBody>
+				</ModalCard>
+			</DialogPrimitive.Portal>
+		</DialogPrimitive.Root>
+	)
 }
 
 export default EditDiscussionModal

@@ -2,15 +2,15 @@ import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
 import { Check, Paperclip, X } from "lucide-react"
-import { useState } from "react"
-import CreateTasksTable from "./CreateTasksTable"
-import DiscussionForm from "./DiscussionForm"
 import { Dialog as DialogPrimitive } from "radix-ui"
+import { useState } from "react"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import type { CreateSourceDto } from "../../api/model"
+import { useCreateSource } from "../../api/source/source"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { useCreateSource } from "../../api/source/source"
-import type { CreateSourceDto } from "../../api/model"
+import CreateTasksTable from "./CreateTasksTable"
+import DiscussionForm from "./DiscussionForm"
 import type { NewTaskRow } from "./TasksColumns"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -33,7 +33,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-  	const defaultValues: CreateSourceDto = {
+	const defaultValues: CreateSourceDto = {
 		workspaceId,
 		name: "",
 		date: null,
@@ -41,8 +41,8 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 		attachment: null,
 	}
 
-	 const form = useForm({
-    defaultValues,
+	const form = useForm({
+		defaultValues,
 	})
 
 	const values = useStore(form.store, (state) => state.values)

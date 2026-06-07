@@ -6,9 +6,13 @@ function appendValue(formData: FormData, key: string, value: unknown): void {
 	} else if (value instanceof Date) {
 		formData.append(key, value.toISOString())
 	} else if (Array.isArray(value)) {
-		value.forEach((item) => {
-			appendValue(formData, key, item)
-		})
+		if (value.length === 0) {
+			formData.append(key, "")
+		} else {
+			value.forEach((item) => {
+				appendValue(formData, key, item)
+			})
+		}
 	} else if (typeof value === "object") {
 		Object.entries(value).forEach(([k, v]) => {
 			appendValue(formData, `${key}[${k}]`, v)
