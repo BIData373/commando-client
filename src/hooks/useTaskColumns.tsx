@@ -14,7 +14,7 @@ import HighlightMatch from "../components/shared/HighlightMatch"
 import { AssigneeCell } from "../components/Tasks/AssigneeCell"
 import { ColumnHeaderWithActions } from "../components/Tasks/ColumnHeaderWithActions"
 import { RowActionsMenu } from "../components/Tasks/RowActionsMenu"
-import { StatusCell } from "../components/Tasks/StatusCell"
+import { StatusDropdown } from "../components/Tasks/StatusDropdown"
 import { TopicCell } from "../components/Tasks/TopicCell"
 import { Checkbox } from "../components/ui/checkbox"
 import {
@@ -241,7 +241,7 @@ function useTaskColumns({
 			}) =>
 				status &&
 				assignee && (
-					<StatusCell
+					<StatusDropdown
 						status={status}
 						assigneeId={assignee.id}
 						taskId={id}
