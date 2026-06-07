@@ -125,6 +125,12 @@ function EditDiscussionModal({
     form.handleSubmit()
   }
 
+  function handleSaveClick(e: React.MouseEvent) {
+    if (!hasChanges) {
+      e.preventDefault()
+    }
+  }
+
   function handleEditCancel() {
     setShowConfirmation(false)
   }
@@ -164,11 +170,7 @@ function EditDiscussionModal({
                 <PopoverTrigger asChild>
                   <SaveButton
                     $disabled={!hasChanges}
-                    onClick={(e) => {
-                      if (!hasChanges) {
-                        e.preventDefault()
-                      }
-                    }}
+                    onClick={handleSaveClick}
                   >
                     שמור שינויים
                   </SaveButton>

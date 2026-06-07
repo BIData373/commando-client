@@ -398,9 +398,9 @@ function useTaskColumns({
 					original: { tags, source },
 				},
 			}) => {
-				const allNames = uniq(concat(
-					map(tags, 'name'),
-					map(source?.tags ?? [], 'name'),
+				const allNames = uniq(map(
+					concat(tags, source?.tags ?? []),
+					'name'
 				))
 				return <TopicCell tags={allNames} />
 			},
