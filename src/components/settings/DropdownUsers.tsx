@@ -14,7 +14,7 @@ interface DropdownUsersProps extends PropsWithChildren {
 	onClear(): void
 	onAdd?: () => void
 	selectedUser?: UserDto | null
-	showAddBtn?: boolean
+	showAddButton?: boolean
 	excludeUpns?: string[]
 	placeholder?: string
 }
@@ -28,7 +28,7 @@ export function DropdownUsers({
 	selectedUser,
 	excludeUpns,
 	placeholder,
-	showAddBtn,
+	showAddButton,
 	children,
 }: DropdownUsersProps) {
 	const [localValue, setLocalValue] = useState(value)
@@ -70,7 +70,7 @@ export function DropdownUsers({
 				renderItem={(item) => <UserItem user={item} />}
 			/>
 			{children}
-			{onAdd && showAddBtn && (
+			{onAdd && showAddButton && (
 				<AddButton
 					type="button"
 					$active={!!selectedUser}

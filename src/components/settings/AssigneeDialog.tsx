@@ -6,7 +6,7 @@ import {
 	useListAssignees,
 	useUpdateAssignee,
 } from "src/api/assignee/assignee"
-import type { AssigneeDto, UserDto } from "src/api/model"
+import type { AssigneeDto, AssigneesDto, UserDto } from "src/api/model"
 import { type IMesibaIcon, useMesibaIconByName } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { queryClient } from "src/queryClient"
@@ -71,14 +71,14 @@ export function AssigneeDialog({
 	}, [open])
 
 	const handleSubmitSuccess = (data: AssigneeDto) => {
-		queryClient.setQueryData(queryKey, (prev?: AssigneeDto[]) => {
-			let updated = [...(prev ?? [])]
+		queryClient.setQueryData(queryKey, (prev?: AssigneesDto[]) => {
+			const updated = [...(prev ?? [])]
 			const foundIndex = updated.findIndex(({ id }) => id === data.id)
 
 			if (foundIndex >= 0) {
-				updated[foundIndex] = data
+				updated[foundIndex] = { ...updated[foundIndex], ...data }
 			} else {
-				updated = [...updated, data]
+				updated.push({ ...data, tasksCount: 0 })
 			}
 
 			return updated
@@ -277,7 +277,7 @@ export function AssigneeDialog({
 											onClear={handleSearchClear}
 											onAdd={handleAddUserList}
 											selectedUser={selectedUser}
-											showAddBtn={searchValue.length > 0}
+											showAddButton={searchValue.length > 0}
 											excludeUpns={field.state.value.map((u) => u.upn)}
 											placeholder="חפש שם/ תפקיד/ מספר אישי"
 										/>

@@ -1,10 +1,10 @@
 import styled from "@emotion/styled"
 import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
+import { extractUpnFromUser, formatDirectChatLink } from "src/utils/user-utils"
 import noUsersFound from "../../assets/noUsersFound.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { TrashButton } from "../shared/TrashButton"
 import { DropdownPermission } from "./DropdownPermission"
-import { CHAT_LINK } from "src/utils/env-utils"
 
 interface UserPermissionListProps {
 	permissions: PermissionDto[]
@@ -17,10 +17,9 @@ export function UserPermissionList({
 	onDelete,
 	onTypeChange,
 }: UserPermissionListProps) {
-	function navigateToChat(type: PermissionType) {
-		if (type === PermissionType.MANAGER) {
-			window.open(CHAT_LINK)
-		}
+	function navigateToChat(user: UserDto) {
+		const upn = extractUpnFromUser(user)
+		window.open(formatDirectChatLink(upn))
 	}
 
 	return (
@@ -38,7 +37,9 @@ export function UserPermissionList({
 					<UserRow key={user.id}>
 						<UserInfo
 							$type={type}
-							onClick={() => navigateToChat(type)}
+							onClick={() =>
+								type === PermissionType.MANAGER && navigateToChat(user)
+							}
 						>
 							<UserHeader>
 								<UserName>{user.info?.name}</UserName>
