@@ -27,6 +27,8 @@ import { DropdownUsers } from "./DropdownUsers"
 import { IconDropdown } from "./IconDropdown"
 import { UsersLists } from "./UsersLists"
 
+const MAX_NAME_LENGTH = 30
+
 interface AssigneeDialogProps {
 	open: boolean
 	onOpenChange: (open: boolean) => void
@@ -140,6 +142,15 @@ export function AssigneeDialog({
 		setSelectedUser(null)
 	}
 
+	function handleKeyChange(e: React.KeyboardEvent<HTMLInputElement>) {
+		if (
+			e.code !== "Backspace" &&
+			e.currentTarget.value.length >= MAX_NAME_LENGTH
+		) {
+			e.preventDefault()
+		}
+	}
+
 	function handleRemoveAssignee(upn: string) {
 		form.setFieldValue("users", (prev) =>
 			prev.filter((user) => user.upn !== upn),
@@ -231,6 +242,7 @@ export function AssigneeDialog({
 									<FormField field={field}>
 										<Input
 											value={field.state.value}
+											onKeyDown={handleKeyChange}
 											onChange={(e) => field.handleChange(e.target.value)}
 											placeholder='לדוגמה: מג"ד, רע"ן מפקדים, קמב"צ...'
 										/>

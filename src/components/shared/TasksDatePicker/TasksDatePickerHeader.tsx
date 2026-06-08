@@ -8,15 +8,15 @@ import {
 	DropdownMenuTrigger,
 } from "../../ui/dropdown-menu"
 
-interface DashboardDatePickerHeaderProps {
+interface TasksDatePickerHeaderProps {
 	dateType: string
 	onDateTypeChange: (type: DATE_TYPE) => void
 }
 
-export function DashboardDatePickerHeader({
+export function TasksDatePickerHeader({
 	dateType,
 	onDateTypeChange,
-}: DashboardDatePickerHeaderProps) {
+}: TasksDatePickerHeaderProps) {
 	return (
 		<PopupHeader>
 			<FilterLabel>סנן לפי:</FilterLabel>

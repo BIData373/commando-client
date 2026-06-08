@@ -17,6 +17,7 @@ import { applyAllFilters } from "../../functions/filter-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { useTitleBar } from "../../providers/TitleBarProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
+import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -46,14 +47,17 @@ function TasksLayout({
 	deadlineTypeFilter,
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
-
-	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters()
-
+	const { searchQuery, columnOrder, hiddenColumns, dateRange, setDateRange } =
+		useTasksFilters()
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-	const { data: tasks = [], queryKey } = useListTasks({ workspaceId })
+	const {
+		data: tasks = [],
+		queryKey,
+		isLoading,
+	} = useListTasks({ workspaceId })
 
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
@@ -128,6 +132,7 @@ function TasksLayout({
 
 	function clearAllFilters() {
 		setActiveTopicFilters(new Set())
+		setDateRange(undefined)
 		navigateToTasks({
 			tabFilter: [],
 			statusFilter: [],
@@ -189,7 +194,7 @@ function TasksLayout({
 					onExport={handleExport}
 					tabFilter={tabFilter}
 					onToggleTabFilter={handleToggleTabFilter}
-					hasExtraActiveFilters={activeTopicFilters.size > 0}
+					hasExtraActiveFilters={activeTopicFilters.size > 0 || !!dateRange}
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label="נושא"
@@ -199,10 +204,11 @@ function TasksLayout({
 							$active={activeTopicFilters.size > 0}
 						/>
 					}
+					startSlot={<TasksDatePicker />}
 				/>
 
 				<ContentArea>
-					{tasks.length === 0 ? (
+					{!isLoading && tasks.length === 0 ? (
 						<EmptyState />
 					) : searchQuery && filteredTasks.length === 0 ? (
 						<EmptyState variant="search" />
