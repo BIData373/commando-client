@@ -4,8 +4,8 @@ import { useMemo, useState } from "react"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import addAssignee from "../../assets/icons/addPerson.svg"
 import subject from "../../assets/icons/subjects.svg"
+import { EmptyCardState } from "../shared/EmptyCardState"
 import { Button } from "../ui/button"
-import { EmptyCardState } from "./EmptyCardState"
 
 enum DistributionTab {
 	LOAD = "load",
@@ -61,10 +61,12 @@ export default function SystemDistribution({
 				tags.set(tag.name, (tags.get(tag.name) ?? 0) + 1)
 			}
 			const { assignee } = task
-			responsibles.set(
-				assignee.name,
-				(responsibles.get(assignee.name) ?? 0) + 1,
-			)
+			if (assignee) {
+				responsibles.set(
+					assignee.name,
+					(responsibles.get(assignee.name) ?? 0) + 1,
+				)
+			}
 		}
 
 		return {

@@ -7,6 +7,7 @@ import { NotFoundComponent } from "src/components/Error/NotFoundComponent"
 import { RootErrorComponent } from "src/components/Error/RootErrorComponent"
 import { ErrorModal } from "../components/ErrorModal"
 import Header from "../components/Header"
+import { Toaster } from "../components/ui/sonner"
 import { TitleBarProvider } from "../providers/TitleBarProvider"
 import "../styles.css"
 
@@ -28,6 +29,7 @@ function RootComponent() {
 				</AppShell>
 			</TitleBarProvider>
 			<ErrorModal />
+			<Toaster />
 			<TanStackDevtools
 				config={{
 					position: "bottom-right",
