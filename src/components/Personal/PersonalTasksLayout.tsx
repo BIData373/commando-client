@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import {
 	type TaskWithWorkspaceDto,
 	type WorkspaceDto,
@@ -11,7 +11,7 @@ import {
 	getListPersonalTasksQueryKey,
 	useListPersonalTasks,
 } from "src/api/task/task"
-import { applyAllFilters } from "../../functions/filter-utils"
+import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { toTaskRows } from "../../functions/tasks-table"
 import {
 	type TaskRow,
@@ -21,18 +21,11 @@ import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { EmptyState } from "../Tasks/EmptyState"
 import { TaskFilters } from "../Tasks/TaskFilters"
-
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
 
 type PersonalTaskRow = TaskRow & { workspace: WorkspaceDto }
-
-function toPersonalTaskRows(
-	rawTasks: TaskWithWorkspaceDto[],
-): PersonalTaskRow[] {
-	return toTaskRows(rawTasks) as PersonalTaskRow[]
-}
 
 const WORKSPACE_COLUMN: ColumnDef<PersonalTaskRow> = {
 	id: "workspace",
@@ -71,8 +64,10 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 
 function PersonalTasksLayout() {
 	// const navigate = useNavigate()
+
 	const { searchQuery, activeQuickFilters, clearQuickFilters } =
 		useTasksFilters()
+
 	const queryKey = getListPersonalTasksQueryKey()
 	const { data: rawTasks = [] } = useListPersonalTasks()
 
@@ -80,37 +75,47 @@ function PersonalTasksLayout() {
 		Set<number>
 	>(new Set())
 
-	const taskRows = toPersonalTaskRows(rawTasks)
+	const taskRows = toTaskRows(rawTasks)
 
-	const workspaceMap = new Map<number, WorkspaceDto>()
-	taskRows.forEach((t) => {
-		workspaceMap.set(t.workspace.id, t.workspace)
-	})
+	const workspaceMap = useMemo(() => {
+		const map = new Map<number, WorkspaceDto>()
+
+		taskRows.forEach((t) => {
+			map.set(t.workspace.id, t.workspace)
+		})
+
+		return map
+	}, [taskRows])
+
 	const workspaces = [...workspaceMap.values()]
 
 	const totalCount = taskRows.length
+
 	const notStartedCount = taskRows.filter(
 		(t) => t.status?.type === WorkspaceStatusType.NOT_STARTED,
 	).length
+
 	const inProgressCount = taskRows.filter(
 		(t) => t.status?.type === WorkspaceStatusType.IN_PROGRESS,
 	).length
+
 	const weeklyNew = taskRows.filter((t) =>
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
 	).length
 
-	let filteredTaskRows = applyAllFilters(
+	const baseFilteredTaskRows = useFilteredTasks(
 		taskRows,
 		activeQuickFilters,
 		new Set(),
 		searchQuery,
-	) as PersonalTaskRow[]
+	)
 
-	if (activeWorkspaceFilters.size > 0) {
-		filteredTaskRows = filteredTaskRows.filter((t) =>
-			activeWorkspaceFilters.has(t.workspace.id),
-		)
-	}
+	const filteredTaskRows =
+		activeWorkspaceFilters.size > 0
+			? baseFilteredTaskRows.filter((row) =>
+					activeWorkspaceFilters.has(row.workspace.id),
+				)
+			: baseFilteredTaskRows
 
 	function clearAllFilters() {
 		clearQuickFilters()
