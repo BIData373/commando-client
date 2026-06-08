@@ -108,7 +108,7 @@ function PersonalTasksLayout() {
 		)
 	}
 
-	filteredTaskRows = applyDateFilter(filteredTaskRows, dateType, dateRange) as PersonalTaskRow[]
+	filteredTaskRows = applyDateFilter(filteredTaskRows, dateType, dateRange)
 
 	function clearAllFilters() {
 		clearQuickFilters()

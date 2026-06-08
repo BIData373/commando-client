@@ -29,7 +29,7 @@ export function DashboardContent() {
 	const filteredTasks = useMemo(() => {
 		let filtered = applyDateFilter(tasks, dateType, dateRange)
 
-		if (dateType === DATE_TYPE.UPDATING_DATE) {
+		if (dateType === DATE_TYPE.UPDATED_DATE) {
 			filtered = [...filtered].sort(
 				(a, b) =>
 					new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),

@@ -12,7 +12,7 @@ interface TasksDatePickerProps {
 }
 
 export function TasksDatePicker({ showTitle = false }: TasksDatePickerProps) {
-	const { dateType, setDateType, dateRange: range, setDateRange: setRange } = useTasksFilters()
+	const { dateType, setDateType, dateRange, setDateRange } = useTasksFilters()
 	const [pendingDataType, setPendingDataType] = useState(dateType)
 
 	useEffect(() => {
@@ -21,17 +21,17 @@ export function TasksDatePicker({ showTitle = false }: TasksDatePickerProps) {
 
 	function handleConfirm(range: DateRange | undefined) {
 		setDateType(pendingDataType)
-		setRange(range)
+		setDateRange(range)
 	}
 
 	return (
 		<DatePickerPopover
-			value={range}
+			value={dateRange}
 			mode={CalendarMode.Range}
 			triggerButton={({ value }) => (
 				<TasksDatePickerTriggerButton
 					label={dateType}
-					range={range ?? (isDateRange(value) ? value : undefined)}
+					range={dateRange ?? (isDateRange(value) ? value : undefined)}
 					showTitle={showTitle}
 				/>
 			)}

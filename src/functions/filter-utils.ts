@@ -41,12 +41,12 @@ function matchesQuickFilter(task: TaskDto, filter: QuickFilter): boolean {
 
 // ─── Combined ────────────────────────────────────────────────────────────────
 
-function applyAllFilters(
-	tasks: TaskDto[],
+function applyAllFilters<T extends TaskRow>(
+	tasks: T[],
 	activeQuickFilters: Set<QuickFilter>,
 	activeTopicFilters: Set<string>,
 	searchQuery: string,
-): TaskDto[] {
+): T[] {
 	const hasQuickFilters = activeQuickFilters.size > 0
 	const hasTopicFilters = activeTopicFilters.size > 0
 
@@ -113,11 +113,11 @@ function buildFilterOptionsMap(
 
 // ─── Date Filter ─────────────────────────────────────────────────────────────
 
-function applyDateFilter(
-	tasks: TaskRow[],
+function applyDateFilter<T extends TaskRow>(
+	tasks: T[],
 	dateType: DATE_TYPE,
 	dateRange: DateRange | undefined,
-): TaskRow[] {
+): T[] {
 	const from = dateRange?.from
 	const to = dateRange?.to
 	if (!from || !to) return tasks
