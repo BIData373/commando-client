@@ -70,7 +70,7 @@ function PersonalTasksLayout() {
 	const { searchQuery, activeQuickFilters, clearQuickFilters, dateType, dateRange } =
 		useTasksFilters()
 	const queryKey = getListPersonalTasksQueryKey()
-	const { data: rawTasks = [] } = useListPersonalTasks()
+	const { data: rawTasks = [], isLoading } = useListPersonalTasks()
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
@@ -168,7 +168,7 @@ function PersonalTasksLayout() {
 					}
 				/>
 
-				{rawTasks.length === 0 ? (
+				{!isLoading && rawTasks.length === 0 ? (
 					<EmptyState />
 				) : searchQuery && filteredTaskRows.length === 0 ? (
 					<EmptyState variant="search" />
