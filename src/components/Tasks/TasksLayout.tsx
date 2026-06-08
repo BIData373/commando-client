@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
 import { ChevronDown, Plus } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
@@ -17,6 +17,7 @@ import { exportTasksToExcel } from "../../functions/export-excel"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { useTitleBar } from "../../providers/TitleBarProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
+import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -47,7 +48,8 @@ function TasksLayout({
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
 
-	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters()
+	const { searchQuery, columnOrder, hiddenColumns, dateRange, setDateRange } =
+		useTasksFilters()
 
 	const {
 		workspace: { id: workspaceId },
@@ -63,16 +65,11 @@ function TasksLayout({
 		...new Set(tasks.flatMap((t) => t.tags.map((tag) => tag.name))),
 	]
 
-	const tabFilterSet = useMemo(
-		() => new Set<QuickFilter>(tabFilter),
-		[tabFilter],
-	)
-
 	const filteredTasks = useFilteredTasks(
 		tasks,
-		tabFilterSet,
-		activeTopicFilters,
-		searchQuery,
+		(task) =>
+			activeTopicFilters.size > 0 &&
+			task.tags.some((tag) => activeTopicFilters.has(tag.name)),
 	)
 
 	const filteredTaskRows = toTaskRows(filteredTasks)
@@ -124,6 +121,7 @@ function TasksLayout({
 
 	function clearAllFilters() {
 		setActiveTopicFilters(new Set())
+		setDateRange(undefined)
 		navigateToTasks({
 			tabFilter: [],
 			statusFilter: [],
@@ -185,7 +183,7 @@ function TasksLayout({
 					onExport={handleExport}
 					tabFilter={tabFilter}
 					onToggleTabFilter={handleToggleTabFilter}
-					hasExtraActiveFilters={activeTopicFilters.size > 0}
+					hasExtraActiveFilters={activeTopicFilters.size > 0 || !!dateRange}
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label="נושא"
@@ -195,6 +193,7 @@ function TasksLayout({
 							$active={activeTopicFilters.size > 0}
 						/>
 					}
+					startSlot={<TasksDatePicker />}
 				/>
 
 				<ContentArea>
@@ -292,12 +291,6 @@ const CreateButton = styled.button`
 
 const CreateButtonText = styled.span`
   direction: rtl;
-`
-
-const SectionDivider = styled.div`
-  width: 1px;
-  height: 39px;
-  background: rgba(0, 0, 0, 0.15);
 `
 
 // ─── Create Dropdown ─────────────────────────────────────────────────────────

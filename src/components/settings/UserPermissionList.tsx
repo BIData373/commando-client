@@ -4,6 +4,7 @@ import { extractUpnFromUser, formatDirectChatLink } from "src/utils/user-utils"
 import noUsersFound from "../../assets/noUsersFound.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { TrashButton } from "../shared/TrashButton"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { DropdownPermission } from "./DropdownPermission"
 
 interface UserPermissionListProps {
@@ -51,7 +52,14 @@ export function UserPermissionList({
 							value={type}
 							onChange={(type) => onTypeChange(user, type)}
 						/>
-						<TrashButton onClick={() => onDelete(user)} size={22} />
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<span>
+									<TrashButton onClick={() => onDelete(user)} size={22} />
+								</span>
+							</TooltipTrigger>
+							<TooltipContent>הסרת הרשאות</TooltipContent>
+						</Tooltip>
 					</UserRow>
 				))
 			)}

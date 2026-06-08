@@ -17,6 +17,7 @@ interface TaskFiltersProps {
 	extraColumnsMeta?: TaskColumnMeta[]
 	tabFilter?: QuickFilter[]
 	onToggleTabFilter?: (filter: QuickFilter) => void
+	startSlot?: ReactNode
 }
 
 function TaskFilters({
@@ -28,6 +29,7 @@ function TaskFilters({
 	extraColumnsMeta,
 	tabFilter,
 	onToggleTabFilter,
+	startSlot,
 }: TaskFiltersProps) {
 	const {
 		activeQuickFilters,
@@ -68,6 +70,7 @@ function TaskFilters({
 			onColumnOrderChange={setColumnOrder}
 			onToggleColumn={toggleColumn}
 			extraColumnsMeta={extraColumnsMeta}
+			startSlot={startSlot}
 		>
 			{extraFilters}
 

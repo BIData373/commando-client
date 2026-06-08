@@ -15,7 +15,6 @@ import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface RecentlyCompletedProps {
 	queryKey: QueryKey
-	urlName: string
 	tasks: TaskRow[]
 }
 
@@ -23,7 +22,6 @@ const coreRowModel = getCoreRowModel()
 
 export default function RecentlyCompleted({
 	queryKey,
-	urlName,
 	tasks,
 }: RecentlyCompletedProps) {
 	const completedTasks = useMemo(
@@ -80,10 +78,7 @@ export default function RecentlyCompleted({
 					</TaskList>
 				)}
 			</Card>
-			<ViewMoreInstructions
-				urlName={urlName}
-				statusFilter={WorkspaceStatusType.COMPLETED}
-			/>
+			<ViewMoreInstructions statusFilter={WorkspaceStatusType.COMPLETED} />
 		</Section>
 	)
 }

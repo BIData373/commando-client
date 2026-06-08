@@ -1,34 +1,60 @@
+import { endOfDay, isWithinInterval, startOfDay } from "date-fns"
 import { useMemo } from "react"
 import type { TaskDto } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
-import type { QuickFilter } from "src/utils/filter-utils"
+import { useTasksFilters } from "src/providers/TasksFiltersProvider"
+import { getTaskDateByDateType } from "src/utils/date-utils"
 import { useFuse } from "./useFuse"
 
 export function useFilteredTasks<TTask extends TaskDto>(
 	tasks: TTask[],
-	activeQuickFilters: Set<QuickFilter>,
-	activeTopicFilters: Set<string>,
-	searchQuery: string,
+	additionalFilter?: (task: TTask) => boolean,
 ) {
+	const { searchQuery, activeQuickFilters, dateRange, dateType } =
+		useTasksFilters()
+
+	const from = dateRange?.from
+	const to = dateRange?.to
+
 	const searchedTasks = useFuse(tasks, searchQuery, {
 		threshold: 0.5,
 		keys: ["title", "description", "notes"],
 	})
 
-	return useMemo(() => {
-		const hasQuickFilters = activeQuickFilters.size > 0
-		const hasTopicFilters = activeTopicFilters.size > 0
-
-		return hasQuickFilters || hasTopicFilters
-			? searchedTasks.filter(
-					(t) =>
-						(hasQuickFilters &&
-							Array.from(activeQuickFilters).some((f) =>
-								matchesQuickFilter(t, f),
-							)) ||
-						(hasTopicFilters &&
-							t.tags.some((tag) => activeTopicFilters.has(tag.name))),
+	return useMemo(
+		() =>
+			searchedTasks
+				.filter(
+					(task) =>
+						additionalFilter?.(task) ||
+						activeQuickFilters.size === 0 ||
+						Array.from(activeQuickFilters).some((filter) =>
+							matchesQuickFilter(task, filter),
+						),
 				)
-			: searchedTasks
-	}, [activeQuickFilters, activeTopicFilters, searchQuery, searchedTasks])
+				.filter((task) => {
+					if (!from || !to) {
+						return true
+					}
+
+					const date = getTaskDateByDateType(task, dateType)
+
+					return (
+						date == null ||
+						isWithinInterval(date, {
+							start: startOfDay(from),
+							end: endOfDay(to),
+						})
+					)
+				}),
+		[
+			activeQuickFilters,
+			searchQuery,
+			searchedTasks,
+			additionalFilter,
+			from,
+			dateType,
+			to,
+		],
+	)
 }

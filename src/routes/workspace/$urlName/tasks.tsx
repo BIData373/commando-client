@@ -41,10 +41,14 @@ export const Route = createFileRoute("/workspace/$urlName/tasks")({
 function TasksPage() {
 	const { view, tabFilter, statusFilter, deadlineTypeFilter } =
 		Route.useSearch()
+
 	const { urlName } = Route.useParams()
 
 	return (
-		<TasksFiltersProvider>
+		<TasksFiltersProvider
+			storageKey="tasks"
+			defaultActiveQuickFilters={new Set<QuickFilter>(tabFilter)}
+		>
 			<TasksLayout
 				view={view}
 				urlName={urlName}

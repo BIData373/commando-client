@@ -1,15 +1,22 @@
+import { useLocalStorage } from "@mantine/hooks"
 import {
 	createContext,
 	type PropsWithChildren,
 	useContext,
 	useState,
 } from "react"
+import type { DateRange } from "react-day-picker"
 import type {
 	AssigneeDto,
 	AssigneeStatusDto,
 	TaskDto,
 	WorkspaceStatusDto,
 } from "src/api/model"
+import { DATE_TYPE } from "src/utils/date-utils"
+import {
+	dashboardFilterDataTypeKey,
+	dashboardFilterRangeKey,
+} from "src/utils/filter-keys-utils"
 import type { QuickFilter } from "src/utils/filter-utils"
 import { DEFAULT_COLUMN_ORDER } from "../components/Tasks/ColumnVisibilityDropdown"
 import type { TaskColumn } from "../hooks/useTaskColumns"
@@ -37,6 +44,11 @@ interface TasksFiltersContextValue {
 	hiddenColumns: Set<TaskColumn>
 	setColumnOrder: (order: TaskColumn[]) => void
 	toggleColumn: (columnId: TaskColumn) => void
+
+	dateType: DATE_TYPE
+	setDateType: (type: DATE_TYPE) => void
+	dateRange: DateRange | undefined
+	setDateRange: (range: DateRange | undefined) => void
 }
 
 const WORKSPACE_DEFAULT_HIDDEN = new Set<TaskColumn>([
@@ -46,9 +58,18 @@ const WORKSPACE_DEFAULT_HIDDEN = new Set<TaskColumn>([
 
 const TasksFiltersContext = createContext<TasksFiltersContextValue | null>(null)
 
+type ColumnsStorageKey = "personal" | "tasks"
+
+interface ColumnsVisibilityStorage {
+	columnOrder: TaskColumn[]
+	hiddenColumns: TaskColumn[]
+}
+
 interface TasksProviderProps extends PropsWithChildren {
+	storageKey: ColumnsStorageKey
 	defaultColumnOrder?: TaskColumn[]
 	defaultHiddenColumns?: Set<TaskColumn>
+	defaultActiveQuickFilters?: Set<QuickFilter>
 }
 
 export function formatTaskRowId(taskId: number, assigneeId?: number) {
@@ -56,30 +77,65 @@ export function formatTaskRowId(taskId: number, assigneeId?: number) {
 }
 
 export function TasksFiltersProvider({
+	storageKey,
 	defaultColumnOrder = DEFAULT_COLUMN_ORDER,
 	defaultHiddenColumns = WORKSPACE_DEFAULT_HIDDEN,
+	defaultActiveQuickFilters = new Set(),
 	children,
 }: TasksProviderProps) {
 	const [searchQuery, setSearchQuery] = useState("")
 	const [activeQuickFilters, setActiveQuickFilters] = useState<
 		Set<QuickFilter>
-	>(new Set())
-	const [columnOrder, setColumnOrder] = useState<TaskColumn[]>([
-		"id" as TaskColumn,
-		...defaultColumnOrder,
-	])
-	const [hiddenColumns, setHiddenColumns] =
-		useState<Set<TaskColumn>>(defaultHiddenColumns)
+	>(defaultActiveQuickFilters)
+
+	const [columnsVisibility, setColumnsVisibility] =
+		useLocalStorage<ColumnsVisibilityStorage>({
+			key: `${storageKey}:columnsVisibility`,
+			defaultValue: {
+				columnOrder: ["id" as TaskColumn, ...defaultColumnOrder],
+				hiddenColumns: [...defaultHiddenColumns],
+			},
+		})
+
+	const columnOrder = columnsVisibility.columnOrder
+	const hiddenColumns = new Set<TaskColumn>(columnsVisibility.hiddenColumns)
+
+	function setColumnOrder(order: TaskColumn[]) {
+		setColumnsVisibility((prev) => ({ ...prev, columnOrder: order }))
+	}
+
+	const [dateType, setDateType] = useLocalStorage<DATE_TYPE>({
+		key: dashboardFilterDataTypeKey,
+		defaultValue: DATE_TYPE.CREATION_DATE,
+	})
+
+	const [dateRange, setDateRange] = useLocalStorage<DateRange | undefined>({
+		key: dashboardFilterRangeKey,
+		defaultValue: undefined,
+		deserialize: (raw) => {
+			if (!raw) return undefined
+			try {
+				const parsed = JSON.parse(raw)
+				if (!parsed) return undefined
+				return {
+					from: parsed.from ? new Date(parsed.from) : undefined,
+					to: parsed.to ? new Date(parsed.to) : undefined,
+				}
+			} catch {
+				return undefined
+			}
+		},
+	})
 
 	function toggleColumn(columnId: TaskColumn) {
-		setHiddenColumns((prev) => {
-			const next = new Set(prev)
-			if (next.has(columnId)) {
-				next.delete(columnId)
+		setColumnsVisibility((prev) => {
+			const set = new Set(prev.hiddenColumns)
+			if (set.has(columnId)) {
+				set.delete(columnId)
 			} else {
-				next.add(columnId)
+				set.add(columnId)
 			}
-			return next
+			return { ...prev, hiddenColumns: [...set] }
 		})
 	}
 
@@ -111,6 +167,10 @@ export function TasksFiltersProvider({
 				setColumnOrder,
 				hiddenColumns,
 				toggleColumn,
+				dateType,
+				setDateType,
+				dateRange,
+				setDateRange,
 			}}
 		>
 			{children}
