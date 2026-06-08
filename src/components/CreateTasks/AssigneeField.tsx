@@ -1,8 +1,8 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
-import type { WorkspaceStatusDto } from "src/api/model"
 import AssigneePicker from "../shared/AssigneePicker"
 import AssigneeRowList from "../shared/AssigneeRow"
+import type { AssigneeExtra } from "../shared/AssigneeRow"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -12,9 +12,8 @@ interface AssigneeFieldProps {
 	onToggle: (id: number) => void
 	onRemove: (id: number) => void
 	onDetailChange: (id: number, value: string) => void
-	assigneeStatuses?: Record<number, WorkspaceStatusDto>
+	assigneeExtras?: Record<number, AssigneeExtra>
 	onStatusChange?: (taskId: number, assigneeId: number, statusId: number) => void
-	assigneeDetails?: Record<number, string>
 	taskId?: number
 }
 
@@ -26,9 +25,8 @@ function AssigneeField({
 	onToggle,
 	onRemove,
 	onDetailChange,
-	assigneeStatuses,
+	assigneeExtras,
 	onStatusChange,
-	assigneeDetails,
 	taskId,
 }: AssigneeFieldProps) {
 	return (
@@ -65,10 +63,9 @@ function AssigneeField({
 						directiveTitle={directiveTitle}
 						showDetail={selectedAssignees.length > 1}
 						detailPlaceholder="פירוט נוסף לאחראי"
-						assigneeDetails={assigneeDetails}
+						assigneeExtras={assigneeExtras}
 						onDetailChange={onDetailChange}
 						onRemove={onRemove}
-						assigneeStatuses={assigneeStatuses}
 						onStatusChange={onStatusChange}
 						taskId={taskId}
 					/>

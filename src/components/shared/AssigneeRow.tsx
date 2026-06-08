@@ -9,19 +9,19 @@ import { AssigneeAvatar } from "./AssigneeAvatar"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-interface AssigneeStatusMap {
-	[assigneeId: number]: WorkspaceStatusDto
+export interface AssigneeExtra {
+	status?: WorkspaceStatusDto
+	description?: string
 }
 
 interface AssigneeRowListProps {
 	assigneeIds: number[]
 	directiveTitle: string
-	assigneeDetails?: Record<number, string>
+	assigneeExtras?: Record<number, AssigneeExtra>
 	showDetail?: boolean
 	detailPlaceholder?: string
 	onDetailChange: (id: number, value: string) => void
 	onRemove: (id: number) => void
-	assigneeStatuses?: AssigneeStatusMap
 	onStatusChange?: (taskId: number, assigneeId: number, statusId: number) => void
 	taskId?: number
 }
@@ -31,12 +31,11 @@ interface AssigneeRowListProps {
 function AssigneeRowList({
 	assigneeIds,
 	directiveTitle,
-	assigneeDetails,
+	assigneeExtras,
 	showDetail = true,
 	detailPlaceholder = "פירוט לאחראי",
 	onDetailChange,
 	onRemove,
-	assigneeStatuses,
 	onStatusChange,
 	taskId,
 }: AssigneeRowListProps) {
@@ -69,8 +68,8 @@ function AssigneeRowList({
 	function handleDetailRef(id: number, el: HTMLSpanElement | null) {
 		detailRefs.current[id] = el
 
-		if (el && assigneeDetails?.[id] && !el.textContent) {
-			el.textContent = assigneeDetails[id]
+		if (el && assigneeExtras?.[id]?.description && !el.textContent) {
+			el.textContent = assigneeExtras[id].description!
 		}
 	}
 
@@ -102,9 +101,9 @@ function AssigneeRowList({
 							</TextareaWrapper>
 						)}
 
-						{assigneeStatuses?.[assignee.id] && onStatusChange && taskId != null && (
+						{assigneeExtras?.[assignee.id]?.status && onStatusChange && taskId != null && (
 							<StatusDropdown
-								status={assigneeStatuses[assignee.id]}
+								status={assigneeExtras[assignee.id].status!}
 								taskId={taskId}
 								assigneeId={assignee.id}
 								workspaceId={workspaceId}

@@ -37,6 +37,7 @@ export interface TasksLayoutProps {
 	tabFilter: QuickFilter[]
 	statusFilter: WorkspaceStatusType[]
 	deadlineTypeFilter: DeadlineType[]
+	editTaskId?: number
 }
 
 function TasksLayout({
@@ -45,6 +46,7 @@ function TasksLayout({
 	tabFilter,
 	statusFilter,
 	deadlineTypeFilter,
+	editTaskId,
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
 
@@ -56,10 +58,9 @@ function TasksLayout({
 
 	const { data: tasks = [], queryKey } = useListTasks({ workspaceId })
 
-	const [editingTaskId, setEditingTaskId] = useState<number | null>(null)
 	const { data: editingTask } = useGetTask(
-		{ id: editingTaskId ?? 0 },
-		{ query: { enabled: editingTaskId !== null } },
+		{ id: editTaskId ?? -1 },
+		{ query: { enabled: editTaskId !== undefined } },
 	)
 
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
@@ -97,6 +98,7 @@ function TasksLayout({
 				tabFilter,
 				statusFilter,
 				deadlineTypeFilter,
+				editTaskId,
 				...taskFilter,
 			},
 		})
@@ -119,11 +121,11 @@ function TasksLayout({
 	}
 
 	function handleEdit(taskId: number) {
-		setEditingTaskId(taskId)
+		navigateToTasks({ editTaskId: taskId })
 	}
 
 	function handleEditClose() {
-		setEditingTaskId(null)
+		navigateToTasks({ editTaskId: undefined })
 	}
 
 	function handleCreateTask() {
@@ -237,8 +239,8 @@ function TasksLayout({
 				</ContentArea>
 			</TasksRoot>
 			<Outlet />
-			{editingTaskId !== null && editingTask && (
-				<CreateTaskModal key={editingTaskId} task={editingTask} onClose={handleEditClose} />
+			{editingTask && (
+				<CreateTaskModal key={editTaskId} task={editingTask} onClose={handleEditClose} />
 			)}
 		</TooltipProvider>
 	)

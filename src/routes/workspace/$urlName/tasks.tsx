@@ -21,6 +21,7 @@ const TasksSearchSchema = z.object({
 	tabFilter: queryArray(z.nativeEnum(QuickFilter)).default([]),
 	statusFilter: queryArray(z.nativeEnum(WorkspaceStatusType)).default([]),
 	deadlineTypeFilter: queryArray(z.nativeEnum(DeadlineType)).default([]),
+	editTaskId: z.coerce.number().optional(),
 })
 
 export type TasksSearchSchemaType = z.infer<typeof TasksSearchSchema>
@@ -39,7 +40,7 @@ export const Route = createFileRoute("/workspace/$urlName/tasks")({
 })
 
 function TasksPage() {
-	const { view, tabFilter, statusFilter, deadlineTypeFilter } =
+	const { view, tabFilter, statusFilter, deadlineTypeFilter, editTaskId } =
 		Route.useSearch()
 	const { urlName } = Route.useParams()
 
@@ -51,6 +52,7 @@ function TasksPage() {
 				tabFilter={tabFilter}
 				statusFilter={statusFilter}
 				deadlineTypeFilter={deadlineTypeFilter}
+				editTaskId={editTaskId}
 			/>
 		</TasksFiltersProvider>
 	)

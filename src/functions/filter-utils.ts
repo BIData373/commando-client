@@ -65,8 +65,10 @@ function applyAllFilters(
 		result = result.filter(
 			(t) =>
 				t.title.includes(searchQuery) ||
-				JSON.stringify(t.notes).includes(searchQuery) ||
-				t.assigneeStatuses.some((as) => as.description?.includes(searchQuery)),
+				t.notes?.includes(searchQuery) ||
+				t.assigneeStatuses.some((as) =>
+					as.description?.includes(searchQuery),
+				),
 		)
 	}
 

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router"
-import { useState } from "react"
+import { useToggle } from "@mantine/hooks"
 import { useGetTask } from "src/api/task/task"
 import CreateTaskModal from "../../../../components/CreateTasks/CreateTaskModal"
 import TaskDetailPanel from "../../../../components/TaskDetail/TaskDetailPanel"
@@ -14,7 +14,7 @@ function TaskDetail() {
 	const navigate = useNavigate()
 
 	const { data: task } = useGetTask({ id: Number(taskId) })
-	const [isEditing, setIsEditing] = useState(false)
+	const [isEditing, toggleEditing] = useToggle()
 
 	function handleClose() {
 		navigate({
@@ -32,27 +32,23 @@ function TaskDetail() {
 	}
 
 	function handleEdit() {
-		setIsEditing(true)
+		toggleEditing()
 	}
 
 	function handleEditClose() {
-		setIsEditing(false)
+		toggleEditing()
 	}
 
 	if (!task) return null
 
-	if (isEditing) {
-		return <CreateTaskModal task={task} onClose={handleEditClose} />
-	}
-
-	return (
-		!!task && (
-			<TaskDetailPanel
-				task={task}
-				onClose={handleClose}
-				onDelete={handleDelete}
-				onEdit={handleEdit}
-			/>
-		)
+	return isEditing ? (
+		<CreateTaskModal task={task} onClose={handleEditClose} />
+	) : (
+		<TaskDetailPanel
+			task={task}
+			onClose={handleClose}
+			onDelete={handleDelete}
+			onEdit={handleEdit}
+		/>
 	)
 }

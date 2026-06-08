@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { uniq } from "lodash"
 import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
 import { ChevronDown, ChevronUp, X } from "lucide-react"
@@ -66,6 +67,27 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 		)
 	})
 
+	async function handleUpdateSuccess() {
+		const statusUpdates = Object.entries(assigneeStatusMap)
+			.filter(([assigneeId, status]) => {
+				const original = task!.assigneeStatuses.find(
+					(as) => as.assignee.id === Number(assigneeId),
+				)
+				return !original || original.status.id !== status.id
+			})
+			.map(([assigneeId, status]) =>
+				upsertStatus({ data: { taskId: task!.id, assigneeId: Number(assigneeId), statusId: status.id } }),
+			)
+		await Promise.all(statusUpdates)
+		await Promise.all(
+			[
+				getListTasksQueryKey({ workspaceId }),
+				getGetTaskQueryKey({ id: task!.id }),
+			].map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+		)
+		onClose()
+	}
+
 	const form = useForm({
 		defaultValues: {
 			title: task?.title ?? "",
@@ -91,31 +113,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 				const { _statusChanged, ...changedFields } = getChangedFields(newSourceId)
 				updateTask(
 					{ pathParams: { id: task.id }, data: changedFields },
-					{
-						onSuccess: async () => {
-							const statusUpdates = Object.entries(assigneeStatusMap)
-								.filter(([assigneeId]) => {
-									const original = task.assigneeStatuses.find(
-										(as) => as.assignee.id === Number(assigneeId),
-									)
-									return !original || original.status.id !== assigneeStatusMap[Number(assigneeId)].id
-								})
-								.map(([assigneeId, status]) =>
-									upsertStatus({ data: { taskId: task.id, assigneeId: Number(assigneeId), statusId: status.id } }),
-								)
-							await Promise.all(statusUpdates)
-							const queryKeys = [
-								getListTasksQueryKey({ workspaceId }),
-								getGetTaskQueryKey({ id: task.id }),
-							]
-							await Promise.all(
-								queryKeys.map((queryKey) =>
-									queryClient.invalidateQueries({ queryKey }),
-								),
-							)
-							onClose()
-						},
-					}
+					{ onSuccess: handleUpdateSuccess },
 				)
 			} else {
 				saveTasks([{ workspaceId, ...rest }])
@@ -277,6 +275,21 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 		}
 	}
 
+	const linkedTagNames = values.linkedSource?.tags.map((t) => t.name) ?? []
+	const mergedTags = uniq([...linkedTagNames, ...(values.tags ?? [])])
+
+	const assigneeExtras = isEditMode
+		? Object.fromEntries(
+				(values.assignees ?? []).map((a) => [
+					a.id,
+					{
+						status: assigneeStatusMap[a.id],
+						description: a.description,
+					},
+				]),
+			)
+		: undefined
+
 	// ─── Render ────────────────────────────────────────────────────────────────
 
 	return (
@@ -330,14 +343,9 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 									onToggle={handleAssigneeToggle}
 									onRemove={handleRemoveAssignee}
 									onDetailChange={handleAssigneeDetailChange}
-									assigneeStatuses={isEditMode ? assigneeStatusMap : undefined}
+									assigneeExtras={assigneeExtras}
 									onStatusChange={isEditMode ? handleAssigneeStatusChange : undefined}
 									taskId={task?.id}
-									assigneeDetails={isEditMode ? Object.fromEntries(
-										(values.assignees ?? [])
-											.filter((a) => a.description)
-											.map((a) => [a.id, a.description!])
-									) : undefined}
 								/>
 
 								{/* ─── Important Checkbox ──────────────────────────────────── */}
@@ -392,13 +400,8 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 
 										{/* Tag field */}
 										<TagField
-											tags={[...new Set([
-												...(values.linkedSource?.tags.map((t) => t.name) ?? []),
-												...(values.tags ?? []),
-											])]}
-											lockedTags={
-												values.linkedSource?.tags.map((t) => t.name) ?? []
-											}
+											tags={mergedTags}
+											lockedTags={linkedTagNames}
 											onTagSelect={handleTagSelect}
 											onTagRemove={handleTagRemove}
 										/>
