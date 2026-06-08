@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
+import type { ColumnFiltersState } from "@tanstack/react-table"
 import { ChevronDown, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
@@ -13,7 +14,11 @@ import {
 import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new"
 import type { QuickFilter } from "src/utils/filter-utils"
 import { exportTasksToExcel } from "../../functions/export-excel"
-import { applyAllFilters } from "../../functions/filter-utils"
+import {
+	applyAllFilters,
+	applyColumnFilters,
+	applyDateFilter,
+} from "../../functions/filter-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { useTitleBar } from "../../providers/TitleBarProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
@@ -47,8 +52,14 @@ function TasksLayout({
 	deadlineTypeFilter,
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
-	const { searchQuery, columnOrder, hiddenColumns, dateRange, setDateRange } =
-		useTasksFilters()
+	const {
+		searchQuery,
+		columnOrder,
+		hiddenColumns,
+		dateRange,
+		setDateRange,
+		dateType,
+	} = useTasksFilters()
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
@@ -62,6 +73,8 @@ function TasksLayout({
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
 	)
+	const [localColumnFilters, setLocalColumnFilters] =
+		useState<ColumnFiltersState>([])
 
 	const allTopics = [
 		...new Set(tasks.flatMap((t) => t.tags.map((tag) => tag.name))),
@@ -84,6 +97,36 @@ function TasksLayout({
 			),
 		[tasks, searchQuery, tabFilterSet, activeTopicFilters],
 	)
+
+	const tasksForCounts = useMemo(() => {
+		const columnFilters: ColumnFiltersState = [
+			...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
+			...(deadlineTypeFilter.length
+				? [{ id: "deadlineType", value: deadlineTypeFilter }]
+				: []),
+			...localColumnFilters,
+		]
+		const base = applyAllFilters(
+			toTaskRows(tasks),
+			new Set(),
+			activeTopicFilters,
+			searchQuery,
+		)
+		return applyDateFilter(
+			applyColumnFilters(base, columnFilters),
+			dateType,
+			dateRange,
+		)
+	}, [
+		tasks,
+		statusFilter,
+		deadlineTypeFilter,
+		localColumnFilters,
+		activeTopicFilters,
+		searchQuery,
+		dateType,
+		dateRange,
+	])
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -189,7 +232,7 @@ function TasksLayout({
 		<TooltipProvider>
 			<TasksRoot>
 				<TaskFilters
-					tasks={toTaskRows(tasks)}
+					tasks={tasksForCounts}
 					onClearAllFilters={clearAllFilters}
 					onExport={handleExport}
 					tabFilter={tabFilter}
@@ -220,6 +263,7 @@ function TasksLayout({
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
 							onFiltersChange={handleColumnFiltersChange}
+							onLocalColumnFiltersChange={setLocalColumnFilters}
 							onDoubleClick={handleEdit}
 						/>
 					) : (
