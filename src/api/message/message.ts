@@ -21,6 +21,8 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import type { ErrorType } from "../../axios"
+
 import { sendRequest } from "../../axios"
 import type {
 	CreateMessageDto,
@@ -46,7 +48,7 @@ export const createMessage = (
 }
 
 export const getCreateMessageMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -86,9 +88,12 @@ export type CreateMessageMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createMessage>>
 >
 export type CreateMessageMutationBody = CreateMessageDto
-export type CreateMessageMutationError = unknown
+export type CreateMessageMutationError = ErrorType<unknown>
 
-export const useCreateMessage = <TError = unknown, TContext = unknown>(
+export const useCreateMessage = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createMessage>>,
@@ -124,7 +129,7 @@ export const getListMessagesQueryKey = (params?: ListMessagesParams) => {
 
 export const getListMessagesQueryOptions = <
 	TData = Awaited<ReturnType<typeof listMessages>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListMessagesParams,
 	options?: {
@@ -151,11 +156,11 @@ export const getListMessagesQueryOptions = <
 export type ListMessagesQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listMessages>>
 >
-export type ListMessagesQueryError = unknown
+export type ListMessagesQueryError = ErrorType<unknown>
 
 export function useListMessages<
 	TData = Awaited<ReturnType<typeof listMessages>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListMessagesParams,
 	options: {
@@ -177,7 +182,7 @@ export function useListMessages<
 }
 export function useListMessages<
 	TData = Awaited<ReturnType<typeof listMessages>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListMessagesParams,
 	options?: {
@@ -199,7 +204,7 @@ export function useListMessages<
 }
 export function useListMessages<
 	TData = Awaited<ReturnType<typeof listMessages>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListMessagesParams,
 	options?: {
@@ -214,7 +219,7 @@ export function useListMessages<
 
 export function useListMessages<
 	TData = Awaited<ReturnType<typeof listMessages>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListMessagesParams,
 	options?: {
@@ -253,7 +258,7 @@ export const getGetMessageQueryKey = ({ id }: GetMessagePathParameters) => {
 
 export const getGetMessageQueryOptions = <
 	TData = Awaited<ReturnType<typeof getMessage>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetMessagePathParameters,
 	options?: {
@@ -285,11 +290,11 @@ export const getGetMessageQueryOptions = <
 export type GetMessageQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getMessage>>
 >
-export type GetMessageQueryError = unknown
+export type GetMessageQueryError = ErrorType<unknown>
 
 export function useGetMessage<
 	TData = Awaited<ReturnType<typeof getMessage>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetMessagePathParameters,
 	options: {
@@ -311,7 +316,7 @@ export function useGetMessage<
 }
 export function useGetMessage<
 	TData = Awaited<ReturnType<typeof getMessage>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetMessagePathParameters,
 	options?: {
@@ -333,7 +338,7 @@ export function useGetMessage<
 }
 export function useGetMessage<
 	TData = Awaited<ReturnType<typeof getMessage>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetMessagePathParameters,
 	options?: {
@@ -348,7 +353,7 @@ export function useGetMessage<
 
 export function useGetMessage<
 	TData = Awaited<ReturnType<typeof getMessage>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetMessagePathParameters,
 	options?: {
@@ -385,7 +390,7 @@ export const updateMessage = (
 }
 
 export const getUpdateMessageMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -425,9 +430,12 @@ export type UpdateMessageMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateMessage>>
 >
 export type UpdateMessageMutationBody = UpdateMessageDto
-export type UpdateMessageMutationError = unknown
+export type UpdateMessageMutationError = ErrorType<unknown>
 
-export const useUpdateMessage = <TError = unknown, TContext = unknown>(
+export const useUpdateMessage = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateMessage>>,
@@ -457,7 +465,7 @@ export const deleteMessage = (
 }
 
 export const getDeleteMessageMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -497,9 +505,12 @@ export type DeleteMessageMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deleteMessage>>
 >
 
-export type DeleteMessageMutationError = unknown
+export type DeleteMessageMutationError = ErrorType<unknown>
 
-export const useDeleteMessage = <TError = unknown, TContext = unknown>(
+export const useDeleteMessage = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteMessage>>,

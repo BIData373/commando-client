@@ -33,7 +33,7 @@ function TaskCardGrid({ tasks }: TaskCardGridProps) {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<StatusTag status={task.status} />
+						{task.status && <StatusTag status={task.status} />}
 					</CardContent>
 					<CardFooter>
 						{task.deadlineType !== DeadlineType.DATE && (
