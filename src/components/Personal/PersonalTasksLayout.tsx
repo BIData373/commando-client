@@ -67,8 +67,13 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 }
 
 function PersonalTasksLayout() {
-	const { searchQuery, activeQuickFilters, clearQuickFilters, dateType, dateRange } =
-		useTasksFilters()
+	const {
+		searchQuery,
+		activeQuickFilters,
+		clearQuickFilters,
+		dateType,
+		dateRange,
+	} = useTasksFilters()
 	const queryKey = getListPersonalTasksQueryKey()
 	const { data: rawTasks = [], isLoading } = useListPersonalTasks()
 
@@ -163,9 +168,7 @@ function PersonalTasksLayout() {
 							$active={activeWorkspaceFilters.size > 0}
 						/>
 					}
-					startSlot={
-						<TasksDatePicker />
-					}
+					startSlot={<TasksDatePicker />}
 				/>
 
 				{!isLoading && rawTasks.length === 0 ? (

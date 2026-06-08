@@ -3,29 +3,29 @@ import type { DatePickerSlotProps } from "src/components/shared/DatePickerPopove
 import type { DatePickerValue } from "src/utils/date-utils"
 
 interface TasksDatePickerFooterProps {
-  slots: DatePickerSlotProps
-  onConfirm(range: DatePickerValue | undefined): void
+	slots: DatePickerSlotProps
+	onConfirm(range: DatePickerValue | undefined): void
 }
 
 export function TasksDatePickerFooter({
-  slots: { onChange, onClose, value },
-  onConfirm,
+	slots: { onChange, onClose, value },
+	onConfirm,
 }: TasksDatePickerFooterProps) {
-  function handleClear() {
-    onChange(undefined)
-  }
+	function handleClear() {
+		onChange(undefined)
+	}
 
-  function handleConfirm() {
-    onConfirm(value)
-    onClose()
-  }
+	function handleConfirm() {
+		onConfirm(value)
+		onClose()
+	}
 
-  return (
-    <PopupFooter>
-      <ClearButton onClick={handleClear}>נקה בחירה</ClearButton>
-      <ConfirmButton onClick={handleConfirm}>אישור</ConfirmButton>
-    </PopupFooter>
-  )
+	return (
+		<PopupFooter>
+			<ClearButton onClick={handleClear}>נקה בחירה</ClearButton>
+			<ConfirmButton onClick={handleConfirm}>אישור</ConfirmButton>
+		</PopupFooter>
+	)
 }
 
 const ClearButton = styled.button`
