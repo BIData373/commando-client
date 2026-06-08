@@ -1,7 +1,10 @@
-import { differenceInDays, startOfToday } from "date-fns"
+import { differenceInDays, isWithinInterval, startOfToday } from "date-fns"
+import type { DateRange } from "react-day-picker"
 import { DeadlineType, type TaskDto } from "src/api/model"
+import { type DATE_TYPE, getTaskDateByDateType } from "src/utils/date-utils"
 import { QuickFilter } from "src/utils/filter-utils"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
+import type { TaskRow } from "../providers/TasksFiltersProvider"
 // ─── Shared Types ────────────────────────────────────────────────────────────
 
 export interface FilterOption {
@@ -38,12 +41,12 @@ function matchesQuickFilter(task: TaskDto, filter: QuickFilter): boolean {
 
 // ─── Combined ────────────────────────────────────────────────────────────────
 
-function applyAllFilters(
-	tasks: TaskDto[],
+function applyAllFilters<T extends TaskRow>(
+	tasks: T[],
 	activeQuickFilters: Set<QuickFilter>,
 	activeTopicFilters: Set<string>,
 	searchQuery: string,
-): TaskDto[] {
+): T[] {
 	const hasQuickFilters = activeQuickFilters.size > 0
 	const hasTopicFilters = activeTopicFilters.size > 0
 
@@ -108,4 +111,25 @@ function buildFilterOptionsMap(
 	}
 }
 
-export { applyAllFilters, buildFilterOptionsMap, matchesQuickFilter }
+// ─── Date Filter ─────────────────────────────────────────────────────────────
+
+function applyDateFilter<T extends TaskRow>(
+	tasks: T[],
+	dateType: DATE_TYPE,
+	dateRange: DateRange | undefined,
+): T[] {
+	const from = dateRange?.from
+	const to = dateRange?.to
+	if (!from || !to) return tasks
+	return tasks.filter((task) => {
+		const date = getTaskDateByDateType(task, dateType)
+		return date !== null && isWithinInterval(date, { start: from, end: to })
+	})
+}
+
+export {
+	applyAllFilters,
+	applyDateFilter,
+	buildFilterOptionsMap,
+	matchesQuickFilter,
+}

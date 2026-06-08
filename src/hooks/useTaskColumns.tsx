@@ -7,7 +7,9 @@ import { AlertTriangle } from "lucide-react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import { DeadlineType, type TaskDto } from "src/api/model"
+import { getGetTaskQueryKey } from "src/api/task/task"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import { invalidateQueries } from "src/queryClient"
 import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 import FlagIcon from "../components/shared/FlagIcon"
 import HighlightMatch from "../components/shared/HighlightMatch"
@@ -103,11 +105,10 @@ function useTaskColumns({
 	selectMode,
 	actions,
 }: UseTaskColumnsOptions): UseTaskColumnsReturn {
-	const queryClient = useQueryClient()
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
-			onSuccess: () => {
-				queryClient.invalidateQueries({ queryKey })
+			onSuccess: ({ task }) => {
+				invalidateQueries([queryKey, getGetTaskQueryKey({ id: task.id })])
 			},
 		},
 	})

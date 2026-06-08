@@ -3,28 +3,31 @@ import { CalendarDays, ChevronDown } from "lucide-react"
 import type { DateRange } from "react-day-picker"
 import { formatDateMonthFullYear, formatDay } from "src/utils/time-format"
 
-interface DashboardDatePickerTriggerButtonProps {
+interface TasksDatePickerTriggerButtonProps {
 	label: string
 	range?: DateRange
 	ref?: React.Ref<HTMLButtonElement>
+	showTitle?: boolean
 }
 
-export const DashboardDatePickerTriggerButton = ({
+export const TasksDatePickerTriggerButton = ({
 	label,
 	range,
 	ref,
+	showTitle,
 	...props
-}: DashboardDatePickerTriggerButtonProps) => {
+}: TasksDatePickerTriggerButtonProps) => {
 	return (
 		<TriggerButton ref={ref} {...props}>
 			<CalendarDays size={16} />
-			{label && range?.from && range.to ? (
-				<RangeLabel>
-					{label}: {formatDay(range.from)}-{formatDateMonthFullYear(range.to)}
-				</RangeLabel>
-			) : (
-				<RangeLabel>טווח תאריכים</RangeLabel>
-			)}
+			{showTitle &&
+				(label && range?.from && range.to ? (
+					<RangeLabel>
+						{label}: {formatDay(range.from)}-{formatDateMonthFullYear(range.to)}
+					</RangeLabel>
+				) : (
+					<RangeLabel>טווח תאריכים</RangeLabel>
+				))}
 			<ChevronDown size={16} />
 		</TriggerButton>
 	)
@@ -40,8 +43,8 @@ const TriggerButton = styled.button`
   gap: 8px;
   height: 32px;
   padding: 18px 15px;
-  border: 1px solid var(--purple-start);
-  color:var(--purple-start);
+  border: 1px solid var(--card-border);
+  color:var(--text-color-2);
   border-radius: 8px;
   background: var(--background);
   font-size: 16px;
@@ -50,13 +53,6 @@ const TriggerButton = styled.button`
   white-space: nowrap;
   align-self: flex-end;
   transition: opacity 0.15s;
-
-  & > * {
-    background: var(--purple-start);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
 
   &:hover {
     opacity: 0.8;
