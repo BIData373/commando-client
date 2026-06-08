@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { type QueryKey, useQueryClient } from "@tanstack/react-query"
+import type { QueryKey } from "@tanstack/react-query"
 import type { ColumnDef, FilterFn } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
 import { concat, map, uniq } from "lodash"
@@ -416,7 +416,7 @@ function useTaskColumns({
 				const notes = getValue<string>()
 				return (
 					<NotesText>
-						{searchQuery ? (
+						{searchQuery && notes ? (
 							<HighlightMatch text={notes} query={searchQuery} variant="mark" />
 						) : (
 							notes
