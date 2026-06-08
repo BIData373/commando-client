@@ -12,7 +12,7 @@ import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filter-utils"
 import searchInstruction from "../../assets/icons/searchInstruction.svg"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
-import { EmptyCardState } from "./EmptyCardState"
+import { EmptyCardState } from "../shared/EmptyCardState"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface TabConfig {

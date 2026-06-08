@@ -1,3 +1,4 @@
+import type { DateRange } from "react-day-picker"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 
 export enum DATE_TYPE {
@@ -17,3 +18,4 @@ export function getTaskDateByDateType(task: TaskRow, type: DATE_TYPE): Date | nu
 		default: return task.createdAt
 	}
 }
+export type DatePickerValue = Date | DateRange

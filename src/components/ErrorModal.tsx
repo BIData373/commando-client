@@ -42,7 +42,10 @@ export function ErrorModal() {
 
 	const { urlName = "" } =
 		useParams({ from: "/workspace/$urlName", shouldThrow: false }) || {}
-	const { data } = useListWorkspaces({ urlName })
+	const { data } = useListWorkspaces(
+		{ urlName },
+		{ query: { enabled: !!urlName } },
+	)
 	const workspace = data?.[0]
 	const { data: usersPermissions = [] } = useListPermissions(
 		{ workspaceId: workspace?.id ?? -1 },
@@ -179,7 +182,7 @@ const ErrorCodeDisplay = styled.div`
   background-clip: text;
 `
 
-const ErrorText = styled.p`
+const ErrorText = styled.div`
   font-size: 30px;
   font-weight: 400;
   line-height: 38px;

@@ -9,6 +9,7 @@
 export * from "./assignee-dto"
 export * from "./assignee-status-dto"
 export * from "./assignee-task-status-dto"
+export * from "./assignees-dto"
 export * from "./create-assignee-dto"
 export * from "./create-message-dto"
 export * from "./create-pikud-dto"

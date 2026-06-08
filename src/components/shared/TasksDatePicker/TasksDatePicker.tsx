@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { type DateRange, isDateRange } from "react-day-picker"
 import { CalendarMode } from "src/components/shared/DatePicker"
 import DatePickerPopover from "src/components/shared/DatePickerPopover"
-import type { DATE_TYPE } from "src/utils/data-type-utils"
+import type { DATE_TYPE } from "src/utils/date-utils"
 import { TasksDatePickerHeader } from "./TasksDatePickerHeader"
 import { TasksDatePickerTriggerButton } from "./TasksDatePickerTriggerButton"
 import { TasksDatePickerFooter } from "./TasksPickerFooter"
@@ -51,10 +51,7 @@ export function TasksDatePicker({
 				/>
 			)}
 			footer={(slotProps) => (
-				<TasksDatePickerFooter
-					slots={slotProps}
-					onConfirm={handleConfirm}
-				/>
+				<TasksDatePickerFooter slots={slotProps} onConfirm={handleConfirm} />
 			)}
 		/>
 	)

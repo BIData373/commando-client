@@ -1,11 +1,19 @@
 import styled from "@emotion/styled"
+import { useForm } from "@tanstack/react-form"
+import { useStore } from "@tanstack/react-store"
 import { debounce } from "lodash"
 import { X } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { toast } from "sonner"
 import type { UpdateWorkspaceDto } from "src/api/model"
-import { useUpdateWorkspace } from "src/api/workspace/workspace"
+import {
+	getListWorkspacesQueryKey,
+	useUpdateWorkspace,
+} from "src/api/workspace/workspace"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { queryClient } from "src/queryClient"
+import { FormField } from "../shared/FormField"
 import { Input } from "../ui/input"
 import { IconDropdown } from "./IconDropdown"
 import { SelectCommand } from "./SelectCommand"
@@ -18,54 +26,63 @@ export function SettingsForm() {
 		workspace: { id, title, pikudId, icon },
 		setWorkspace,
 	} = useWorkspace()
-	const { mutate: updateSettings } = useUpdateWorkspace()
 
-	const [form, setForm] = useState<UpdateWorkspaceDto>({ title, pikudId, icon })
+	const { mutateAsync: updateSettings } = useUpdateWorkspace({
+		mutation: {
+			onSuccess() {
+				queryClient.invalidateQueries({ queryKey: getListWorkspacesQueryKey() })
+			},
+		},
+	})
+
 	const [iconSearch, setIconSearch] = useState("")
 	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
 
-	const updateSettingsDebounced = useMemo(
-		() => debounce(updateSettings, DEBOUNCE_MS),
-		[updateSettings],
-	)
+	const form = useForm({
+		defaultValues: { title, pikudId, icon } as UpdateWorkspaceDto,
+		asyncDebounceMs: DEBOUNCE_MS,
+		onSubmit: async ({ value }) => {
+			const data = await updateSettings({ pathParams: { id }, data: value })
+			setWorkspace(data)
+		},
+	})
 
-	const setField = <K extends keyof UpdateWorkspaceDto>(
-		key: K,
-		value: UpdateWorkspaceDto[K],
-	) => {
-		const next = { ...form, [key]: value }
-		setForm(next)
-		updateSettingsDebounced(
-			{
-				pathParams: { id },
-				data: next,
-			},
-			{
-				onSuccess(data) {
-					setWorkspace(data)
-				},
-			},
-		)
+	const values = useStore(form.store, (state) => state.values)
+	const debouncedSubmit = useMemo(
+		() => debounce(() => form.handleSubmit(), DEBOUNCE_MS),
+		[form],
+	)
+	const mounted = useRef(false)
+
+	useEffect(() => {
+		if (!mounted.current) {
+			mounted.current = true
+			return
+		}
+		debouncedSubmit()
+	}, [values, debouncedSubmit])
+
+	function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
+		const next = e.target.value.slice(0, NAME_MAX_LENGTH)
+		if (!next.trim()) {
+			toast.error("שם סביבה הוא שדה חובה")
+			return
+		}
+		form.setFieldValue("title", next)
+	}
+
+	function handlePikudChange(value: number) {
+		form.setFieldValue("pikudId", value)
 	}
 
 	function handleIconSelect(icon: IMesibaIcon) {
-		setField("icon", icon.iconName)
+		form.setFieldValue("icon", icon.iconName)
 		setSelectedIcon(icon)
 		setIconSearch("")
 	}
 
-	function handleNameChange(
-		e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
-	) {
-		setField("title", e.target.value.slice(0, NAME_MAX_LENGTH))
-	}
-
-	function handleCommandChange(value: number) {
-		setField("pikudId", value)
-	}
-
 	function handleIconClear() {
-		setField("icon", "")
+		form.setFieldValue("icon", "")
 		setSelectedIcon(null)
 		setIconSearch("")
 	}
@@ -77,33 +94,30 @@ export function SettingsForm() {
 
 	return (
 		<FormRoot>
-			<FieldRow>
-				<FieldLabel>שם סביבה</FieldLabel>
+			<FormField label="שם סביבה">
 				<InputWrapper>
 					<StyledInput
-						value={form.title}
-						onChange={handleNameChange}
+						value={values.title ?? ""}
+						onChange={handleTitleChange}
 						placeholder="הזן שם סביבה"
 						maxLength={NAME_MAX_LENGTH}
 					/>
 					<CharCounter
-						$atLimit={!!form.title && form.title.length >= NAME_MAX_LENGTH}
+						$atLimit={(values.title ?? "").length >= NAME_MAX_LENGTH}
 					>
-						{form?.title?.length ?? 0}/{NAME_MAX_LENGTH}
+						{(values.title ?? "").length}/{NAME_MAX_LENGTH}
 					</CharCounter>
 				</InputWrapper>
-			</FieldRow>
+			</FormField>
 
-			<FieldRow>
-				<FieldLabel>שיוך פיקודי ארגוני</FieldLabel>
+			<FormField label="שיוך פיקודי ארגוני">
 				<SelectCommand
-					value={form.pikudId ?? pikudId}
-					onChange={handleCommandChange}
+					value={values.pikudId ?? pikudId}
+					onChange={handlePikudChange}
 				/>
-			</FieldRow>
+			</FormField>
 
-			<FieldRow>
-				<FieldLabel>סמל</FieldLabel>
+			<FormField label="סמל">
 				<IconDropdown
 					value={iconSearch}
 					onChange={setIconSearch}
@@ -112,13 +126,13 @@ export function SettingsForm() {
 					selectedItem={selectedIcon ?? undefined}
 				/>
 				<IconPreview>
-					{form.icon ? (
+					{values.icon ? (
 						<>
 							<IconClearButton type="button" onClick={handleIconClear}>
 								<X size={16} />
 							</IconClearButton>
 							<img
-								src={form.icon}
+								src={values.icon}
 								alt="סמל לשכה"
 								onError={handleImageNotFound}
 							/>
@@ -127,7 +141,7 @@ export function SettingsForm() {
 						<IconPlaceholder>בחר סמל</IconPlaceholder>
 					)}
 				</IconPreview>
-			</FieldRow>
+			</FormField>
 		</FormRoot>
 	)
 }
@@ -144,6 +158,7 @@ const InputWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  width: 100%;
 `
 
 const StyledInput = styled(Input)`
@@ -154,18 +169,6 @@ const CharCounter = styled.span<{ $atLimit: boolean }>`
   font-size: 12px;
   color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger, #e53e3e)" : "var(--sea-ink-soft)")};
   text-align: end;
-`
-
-const FieldRow = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`
-
-const FieldLabel = styled.label`
-  font-size: 16px;
-  font-weight: 400;
-  color: rgba(0, 0, 0, 0.65);
 `
 
 const IconPreview = styled.div`
@@ -179,6 +182,7 @@ const IconPreview = styled.div`
   border-radius: 6px;
   padding: 16px;
   height: 166px;
+  width: 100%;
 
   img {
     width: 48px;

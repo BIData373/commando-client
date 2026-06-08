@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
-import type { DatePickerValue } from "src/components/shared/DatePicker"
 import type { DatePickerSlotProps } from "src/components/shared/DatePickerPopover"
+import type { DatePickerValue } from "src/utils/date-utils"
 
 interface TasksDatePickerFooterProps {
   slots: DatePickerSlotProps

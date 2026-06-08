@@ -6,8 +6,12 @@ import { applyDateFilter } from "src/functions/filter-utils"
 import { toTaskRows } from "src/functions/tasks-table"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { DATE_TYPE } from "src/utils/data-type-utils"
-import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
+import { DATE_TYPE } from "src/utils/date-utils"
+import {
+	getDashboardFilterDataTypeKey,
+	getDashboardFilterRangeKey,
+} from "src/utils/filter-keys-utils"
+import { DashboardDatePicker } from "./DashboardDatePicker/DashboardDatePicker"
 import FocusedInstructions from "./FocusedInstructions"
 import RecentlyCompleted from "./RecentlyCompleted"
 import StatusCard from "./StatusCard"

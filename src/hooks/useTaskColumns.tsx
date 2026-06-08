@@ -2,7 +2,8 @@ import styled from "@emotion/styled"
 import { type QueryKey, useQueryClient } from "@tanstack/react-query"
 import type { ColumnDef, FilterFn } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
-import { AlertTriangle, MoreVertical } from "lucide-react"
+import { concat, map, uniq } from "lodash"
+import { AlertTriangle } from "lucide-react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import { DeadlineType, type TaskDto } from "src/api/model"
@@ -13,7 +14,7 @@ import HighlightMatch from "../components/shared/HighlightMatch"
 import { AssigneeCell } from "../components/Tasks/AssigneeCell"
 import { ColumnHeaderWithActions } from "../components/Tasks/ColumnHeaderWithActions"
 import { RowActionsMenu } from "../components/Tasks/RowActionsMenu"
-import { StatusCell } from "../components/Tasks/StatusCell"
+import { StatusDropdown } from "../components/Tasks/StatusDropdown"
 import { TopicCell } from "../components/Tasks/TopicCell"
 import { Checkbox } from "../components/ui/checkbox"
 import {
@@ -105,19 +106,8 @@ function useTaskColumns({
 	const queryClient = useQueryClient()
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
-			onSuccess: ({ taskId, assigneeId, status }) => {
-				queryClient.setQueryData<TaskDto[]>(queryKey, (tasks) =>
-					tasks?.map((t) =>
-						t.id !== taskId
-							? t
-							: {
-									...t,
-									assigneeStatuses: t.assigneeStatuses.map((as) =>
-										as.assignee.id !== assigneeId ? as : { ...as, status },
-									),
-								},
-					),
-				)
+			onSuccess: () => {
+				queryClient.invalidateQueries({ queryKey })
 			},
 		},
 	})
@@ -232,7 +222,7 @@ function useTaskColumns({
 		},
 		status: {
 			id: "status",
-			accessorFn: (row) => row.status.id,
+			accessorFn: (row) => row.status?.id,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.status}
@@ -248,19 +238,21 @@ function useTaskColumns({
 				row: {
 					original: { id, status, assignee, workspaceId },
 				},
-			}) => (
-				<StatusCell
-					status={status}
-					assigneeId={assignee.id}
-					taskId={id}
-					workspaceId={workspaceId}
-					onUpdate={onUpdateStatus}
-				/>
-			),
+			}) =>
+				status &&
+				assignee && (
+					<StatusDropdown
+						status={status}
+						assigneeId={assignee.id}
+						taskId={id}
+						workspaceId={workspaceId}
+						onUpdate={onUpdateStatus}
+					/>
+				),
 		},
 		assigneeStatuses: {
 			id: "assigneeStatuses",
-			accessorFn: (row) => row.assignee.name,
+			accessorFn: (row) => row.assignee?.name,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.assigneeStatuses}
@@ -275,18 +267,16 @@ function useTaskColumns({
 				row: {
 					original: { assignee, otherAssignees },
 				},
-			}) => {
-				const relatedDirectives = otherAssignees.map((s) => ({
-					assignee: s.assignee,
-					status: s.status,
-				}))
-				return (
+			}) =>
+				assignee && (
 					<AssigneeCell
 						responsible={assignee}
-						relatedDirectives={relatedDirectives}
+						relatedDirectives={(otherAssignees ?? []).map((s) => ({
+							assignee: s.assignee,
+							status: s.status,
+						}))}
 					/>
-				)
-			},
+				),
 		},
 		deadlineType: {
 			accessorKey: "deadlineType",
@@ -408,9 +398,12 @@ function useTaskColumns({
 			filterFn: multiSelectFilter,
 			cell: ({
 				row: {
-					original: { tags },
+					original: { tags, source },
 				},
-			}) => <TopicCell tags={tags.map((t) => t.name)} />,
+			}) => {
+				const allNames = uniq(map(concat(tags, source?.tags ?? []), "name"))
+				return <TopicCell tags={allNames} />
+			},
 		},
 		notes: {
 			accessorKey: "notes",
@@ -471,18 +464,13 @@ function useTaskColumns({
 				enableColumnFilter: false,
 				cell: ({
 					row: {
-						original: { id },
+						original: { id, workspaceId },
 					},
 				}) => (
 					<RowActionsMenu
-						trigger={
-							<ActionsButton>
-								<MoreVertical size={16} />
-							</ActionsButton>
-						}
+						workspaceId={workspaceId}
 						onEdit={() => actions.onEdit(id)}
 						onEnterSelect={() => actions.onEnterSelectMode(id)}
-						onArchive={() => actions.onArchive([id])}
 						onDelete={() => actions.onDelete([id])}
 					/>
 				),
@@ -664,21 +652,4 @@ const NotesText = styled.div`
 const DateText = styled.span`
   font-size: 14px;
   color: var(--sea-ink-soft);
-`
-
-const ActionsButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  color: var(--sea-ink-soft);
-  cursor: pointer;
-  transition: background 0.15s;
-
-  &:hover {
-    background: var(--link-bg-hover);
-    color: var(--sea-ink);
-  }
 `

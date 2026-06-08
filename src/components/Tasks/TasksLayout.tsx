@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from "@tanstack/react-router"
 import { ChevronDown, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
-import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
+import { useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import {
@@ -53,12 +53,12 @@ function TasksLayout({
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-	const tasksQueryKey = getListTasksQueryKey({ workspaceId })
-	const { data: tasks = [] } = useListTasks({ workspaceId })
+	const { data: tasks = [], queryKey } = useListTasks({ workspaceId })
 
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
 	)
+
 	const allTopics = [
 		...new Set(tasks.flatMap((t) => t.tags.map((tag) => tag.name))),
 	]
@@ -68,35 +68,18 @@ function TasksLayout({
 		[tabFilter],
 	)
 
-	const baseFilteredTasks = useMemo(
+	const filteredTasks = useMemo(
 		() =>
-			toTaskRows(applyAllFilters(tasks, tabFilterSet, new Set(), searchQuery)),
-		[tasks, searchQuery, tabFilterSet],
+			toTaskRows(
+				applyAllFilters(
+					tasks,
+					tabFilterSet,
+					activeTopicFilters.size > 0 ? activeTopicFilters : new Set(),
+					searchQuery,
+				),
+			),
+		[tasks, searchQuery, tabFilterSet, activeTopicFilters],
 	)
-
-	const filteredTasks = useMemo(() => {
-		const byQuickAndTopic =
-			activeTopicFilters.size > 0
-				? toTaskRows(
-					applyAllFilters(
-						tasks,
-						tabFilterSet,
-						activeTopicFilters,
-						searchQuery,
-					),
-				)
-				: baseFilteredTasks
-
-		return applyDateFilter(byQuickAndTopic, dateType, dateRange)
-	}, [
-		tasks,
-		searchQuery,
-		tabFilterSet,
-		activeTopicFilters,
-		baseFilteredTasks,
-		dateRange,
-		dateType,
-	])
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -167,9 +150,9 @@ function TasksLayout({
 		exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns })
 	}
 
-	function handleViewChange(newView: TasksView) {
-		navigateToTasks({ view: newView })
-	}
+	// function handleViewChange(newView: TasksView) {
+	// 	navigateToTasks({ view: newView })
+	// }
 
 	useTitleBar(
 		() => (
@@ -191,21 +174,8 @@ function TasksLayout({
 						</StyledDropdownItem>
 					</StyledDropdownContent>
 				</DropdownMenu>
-				<SectionDivider />
-				<SegmentedControl>
-					<SegmentedItem
-						$selected={view === TasksView.CARDS}
-						onClick={() => handleViewChange(TasksView.CARDS)}
-					>
-						כרטיסיות
-					</SegmentedItem>
-					<SegmentedItem
-						$selected={view === TasksView.TABLE}
-						onClick={() => handleViewChange(TasksView.TABLE)}
-					>
-						טבלה
-					</SegmentedItem>
-				</SegmentedControl>
+				{/* <SectionDivider />
+				<ViewToggle view={view} onViewChange={handleViewChange} /> */}
 			</ButtonGroup>
 		),
 		[view, urlName],
@@ -247,7 +217,7 @@ function TasksLayout({
 						<EmptyState variant="search" />
 					) : view === TasksView.TABLE ? (
 						<TaskTable
-							queryKey={tasksQueryKey}
+							queryKey={queryKey}
 							tasks={filteredTasks}
 							onEdit={handleEdit}
 							statusFilter={statusFilter}
@@ -341,43 +311,6 @@ const SectionDivider = styled.div`
   width: 1px;
   height: 39px;
   background: rgba(0, 0, 0, 0.15);
-`
-
-const SegmentedControl = styled.div`
-  display: flex;
-  align-items: center;
-  height: 40px;
-  padding: 2px;
-  background: var(--colors-base-neutral-3);
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-`
-
-const SegmentedItem = styled.button<{ $selected: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  height: 100%;
-  padding-inline: 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background 0.15s, box-shadow 0.15s;
-  background: ${({ $selected }) => ($selected ? "white" : "transparent")};
-  color: ${({ $selected }) => ($selected ? "rgba(0, 0, 0, 0.88)" : "rgba(0, 0, 0, 0.65)")};
-  box-shadow: ${({ $selected }) =>
-		$selected
-			? "0px 1px 2px 0px rgba(0, 0, 0, 0.03), 0px 1px 6px -1px rgba(0, 0, 0, 0.02), 0px 2px 4px 0px rgba(0, 0, 0, 0.02)"
-			: "none"};
-  &:hover {
-    background: ${({ $selected }) => ($selected ? "white" : "rgba(0, 0, 0, 0.06)")};
-  }
 `
 
 // ─── Create Dropdown ─────────────────────────────────────────────────────────

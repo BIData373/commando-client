@@ -19,6 +19,8 @@ import {
 	TooltipTrigger,
 } from "src/components/ui/tooltip"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import addPerson from "../../assets/icons/addPerson.svg"
+import { EmptyCardState } from "../shared/EmptyCardState"
 
 export const assigneeStatusEditableId = "allow-status-update"
 
@@ -114,11 +116,21 @@ export function AssigneesContent() {
 			</StyledContent>
 
 			<CardScroller>
-				<AssigneeCardGrid>
-					{filteredAssignees.map((assignee) => (
-						<AssigneeCard key={assignee.id} assignee={assignee} />
-					))}
-				</AssigneeCardGrid>
+				{assignees.length === 0 ? (
+					<CenterContainer>
+						<EmptyCardState
+							imgSrc={addPerson}
+							title="טרם הוגדרו אחראים"
+							description="לא נמצאו אחראים כדי להציג נתונים"
+						/>
+					</CenterContainer>
+				) : (
+					<AssigneeCardGrid>
+						{filteredAssignees.map((assignee) => (
+							<AssigneeCard key={assignee.id} assignee={assignee} />
+						))}
+					</AssigneeCardGrid>
+				)}
 			</CardScroller>
 		</ContentRoot>
 	)
@@ -203,4 +215,10 @@ const AssigneeCardGrid = styled.div`
   flex-wrap: wrap;
   gap: 18px;
   direction: rtl;
+`
+
+const CenterContainer = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: center;
 `
