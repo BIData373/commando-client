@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Download, FilterX, Search } from "lucide-react"
+import { Download, FilterX, Search, X } from "lucide-react"
 import type { ReactNode } from "react"
 import type { TaskColumn, TaskColumnMeta } from "../../hooks/useTaskColumns"
 import { ColumnVisibilityDropdown } from "../Tasks/ColumnVisibilityDropdown"
@@ -36,7 +36,7 @@ function FilterBar({
 	return (
 		<BarRoot>
 			<BarStart>
-        {startSlot}
+				{startSlot}
 				<ColumnVisibilityDropdown
 					columnOrder={columnOrder}
 					hiddenColumns={hiddenColumns}
@@ -55,7 +55,11 @@ function FilterBar({
 						onChange={(e) => onSearchChange(e.target.value)}
 					/>
 					<SearchIconBox>
-						<SearchIcon size={16} />
+						{searchQuery ? (
+							<ClearIcon size={14} onClick={() => onSearchChange("")} />
+						) : (
+							<SearchIcon size={16} />
+						)}
 					</SearchIconBox>
 				</SearchInputWrapper>
 			</BarStart>
@@ -107,6 +111,7 @@ const ClearButton = styled.button`
   cursor: pointer;
   background: transparent;
   white-space: nowrap;
+  transition: background 150ms ease-in-out;
 
   &:hover {
     background: var(--link-bg-hover);
@@ -156,11 +161,24 @@ const SearchIconBox = styled.div`
   height: 32px;
   justify-content: center;
   align-items: center;
-  gap: 8px;
 `
 
 const SearchIcon = styled(Search)`
   color: rgba(0, 0, 0, 0.25);
+  animation: scale-in 0.15s ease;
+`
+
+const ClearIcon = styled(X)`
+  color: white;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  padding: 2px;
+  animation: scale-in 0.15s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.35);
+  }
 `
 
 const SearchField = styled.input`
