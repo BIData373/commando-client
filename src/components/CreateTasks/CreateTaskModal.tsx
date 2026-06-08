@@ -42,7 +42,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-	const saveTasks = useSaveTasks()
+	const { saveTasks, isPending } = useSaveTasks(onClose)
 
 	const [isDetailsExpanded, setIsDetailsExpanded] = useState(false)
 
@@ -62,7 +62,6 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 		} as FormState,
 		onSubmit: ({ value: { source, sourceDate, linkedSource, ...rest } }) => {
 			saveTasks([{ workspaceId, ...rest }])
-			onClose()
 		},
 	})
 
@@ -317,6 +316,7 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 								title="שמור"
 								onClick={form.handleSubmit}
 								disabled={!values.title.trim()}
+								loading={isPending}
 								width={133}
 							/>
 							<CancelButton title="ביטול" onClick={onClose} />
