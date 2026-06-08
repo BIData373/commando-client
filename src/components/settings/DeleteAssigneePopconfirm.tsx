@@ -26,8 +26,8 @@ export function DeleteAssigneePopconfirm({
 				queryClient.invalidateQueries({
 					queryKey: getListAssigneesQueryKey({ workspaceId }),
 				})
-			}
-		}
+			},
+		},
 	})
 
 	const [open, setOpen] = useState(false)
@@ -53,7 +53,7 @@ export function DeleteAssigneePopconfirm({
 			description={
 				<>
 					האם אתה בטוח? מחיקת האחראי תבטל את שיוך ההנחיות שהוא קיבל
-					{tasksCount > 0 ? ` (סה"כ ${tasksCount} הנחיות פעילות)` : ''}
+					{tasksCount > 0 ? ` (סה"כ ${tasksCount} הנחיות פעילות)` : ""}
 					<br />
 					הנחיות אלו ימשיכו להופיע בלשכה
 				</>
