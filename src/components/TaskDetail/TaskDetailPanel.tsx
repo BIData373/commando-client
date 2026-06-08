@@ -186,9 +186,7 @@ function TaskDetailPanel({
 							{notes && (
 								<NotesSection>
 									<SectionLabel>הערות הנחיה</SectionLabel>
-									<NotesText
-										dangerouslySetInnerHTML={{ __html: notes ?? "" }}
-									/>
+									<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
 								</NotesSection>
 							)}
 						</>
