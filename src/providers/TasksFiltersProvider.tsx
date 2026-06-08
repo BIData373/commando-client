@@ -67,7 +67,7 @@ interface ColumnsVisibilityStorage {
 	hiddenColumns: TaskColumn[]
 }
 
-interface TasksProviderProps extends PropsWithChildren {
+interface TasksFiltersProviderProps extends PropsWithChildren {
 	storageKey: ColumnsStorageKey
 	defaultColumnOrder?: TaskColumn[]
 	defaultHiddenColumns?: Set<TaskColumn>
@@ -84,7 +84,7 @@ export function TasksFiltersProvider({
 	defaultHiddenColumns = WORKSPACE_DEFAULT_HIDDEN,
 	activeQuickFilters: currentActiveQuickFilters = new Set(),
 	children,
-}: TasksProviderProps) {
+}: TasksFiltersProviderProps) {
 	const [searchQuery, setSearchQuery] = useState("")
 	const [activeQuickFilters, setActiveQuickFilters] = useState<
 		Set<QuickFilter>
@@ -183,7 +183,9 @@ export function TasksFiltersProvider({
 export function useTasksFilters() {
 	const ctx = useContext(TasksFiltersContext)
 	if (!ctx) {
-		throw new Error("`useTasksFilters` must be used within a `TasksProvider`")
+		throw new Error(
+			"`useTasksFilters` must be used within a `TasksFiltersProvider`",
+		)
 	}
 	return ctx
 }
