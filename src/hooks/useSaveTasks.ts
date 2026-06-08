@@ -29,7 +29,7 @@ export function useSaveTasks(onDone?: () => void) {
 				data: {
 					title: title.trim(),
 					deadlineType: deadlineType ?? DeadlineType.ROLLING,
-					dueDate: input.dueDate ?? new Date(),
+					dueDate: input.dueDate ?? null,
 					notes: notes || undefined,
 					...input,
 				},
