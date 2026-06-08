@@ -7,4 +7,5 @@ export const CHAT_LINK = import.meta.env.VITE_CHAT_LINK
 
 export const STATIC_TOKEN = import.meta.env.VITE_STATIC_TOKEN
 export const IS_BI = import.meta.env.VITE_IS_BI
+export const IS_MATOMO_ON = import.meta.env.VITE_IS_MATOMO_ON === "true"
 export const REQUEST_USERNAME = import.meta.env.VITE_REQUEST_USERNAME
