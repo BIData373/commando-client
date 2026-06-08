@@ -2,15 +2,15 @@ import styled from "@emotion/styled"
 import type { DatePickerSlotProps } from "src/components/shared/DatePickerPopover"
 import type { DatePickerValue } from "src/utils/date-utils"
 
-interface DashboardDatePickerFooterProps {
+interface TasksDatePickerFooterProps {
 	slots: DatePickerSlotProps
 	onConfirm(range: DatePickerValue | undefined): void
 }
 
-export function DashboardDatePickerFooter({
+export function TasksDatePickerFooter({
 	slots: { onChange, onClose, value },
 	onConfirm,
-}: DashboardDatePickerFooterProps) {
+}: TasksDatePickerFooterProps) {
 	function handleClear() {
 		onChange(undefined)
 	}

@@ -1,16 +1,23 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios"
 import { parseISO } from "date-fns"
+import {
+	API_BASE_URL,
+	IS_BI,
+	REQUEST_USERNAME,
+	STATIC_TOKEN,
+} from "./utils/env-utils"
 
 const STATIC_TOKEN_HEADER = "static-token"
-const staticToken = import.meta.env.VITE_STATIC_TOKEN
+const REQUEST_USERNAME_HEADER = "requestusername"
+const IS_BI_HEADER = "is-bi"
 
 export const axiosInstance = axios.create({
-	baseURL: import.meta.env.VITE_API_BASE_URL!,
+	baseURL: API_BASE_URL,
 	headers: {
 		"Content-Type": "application/json",
-		...(staticToken && {
-			[STATIC_TOKEN_HEADER]: staticToken,
-		}),
+		...(STATIC_TOKEN && { [STATIC_TOKEN_HEADER]: STATIC_TOKEN }),
+		...(REQUEST_USERNAME && { [REQUEST_USERNAME_HEADER]: REQUEST_USERNAME }),
+		...(IS_BI && { [IS_BI_HEADER]: IS_BI }),
 	},
 })
 
