@@ -1,6 +1,8 @@
 import styled from "@emotion/styled"
 import { X } from "lucide-react"
+import { Tooltip as TooltipPrimitive } from "radix-ui"
 import type { CreateUserDto } from "src/api/model"
+import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { UserItem } from "./UserItem"
 
 interface UsersListsProps {
@@ -14,14 +16,31 @@ export function UsersLists({ users, onRemove }: UsersListsProps) {
 			{users.length > 0 && (
 				<UserCard>
 					{users.map((user) => (
-						<UserCardItem key={user.upn}>
-							<UserCardInfo>
-								<UserItem user={user} />
-							</UserCardInfo>
-							<UserCardClose type="button" onClick={() => onRemove(user.upn)}>
-								<X size={12} />
-							</UserCardClose>
-						</UserCardItem>
+						<TooltipProvider key={user.upn}>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<UserCardItem>
+										<UserCardInfo>
+											<UserItem user={user} />
+										</UserCardInfo>
+										<UserCardClose
+											type="button"
+											onClick={() => onRemove(user.upn)}
+										>
+											<X size={12} />
+										</UserCardClose>
+									</UserCardItem>
+								</TooltipTrigger>
+								<TooltipPrimitive.Portal>
+									{user.info?.displayName && (
+										<UserTooltipContent side="bottom" sideOffset={6}>
+											{user.info?.displayName}
+											<TooltipPrimitive.Arrow width={10} height={5} />
+										</UserTooltipContent>
+									)}
+								</TooltipPrimitive.Portal>
+							</Tooltip>
+						</TooltipProvider>
 					))}
 				</UserCard>
 			)}
@@ -83,4 +102,19 @@ const UserCardClose = styled.button`
     &:hover {
         color: var(--sea-ink);
     }
+`
+
+const UserTooltipContent = styled(TooltipPrimitive.Content)`
+  max-width: 260px;
+  padding: 10px 14px;
+  background: var(--text-color-2);
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #fff;
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
+  direction: rtl;
+  z-index: 1000;
 `

@@ -5,6 +5,7 @@ import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
+import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import {
 	type TasksSearchSchemaType,
@@ -13,10 +14,10 @@ import {
 import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new"
 import type { QuickFilter } from "src/utils/filter-utils"
 import { exportTasksToExcel } from "../../functions/export-excel"
-import { applyAllFilters } from "../../functions/filter-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { useTitleBar } from "../../providers/TitleBarProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
+import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -45,15 +46,27 @@ function TasksLayout({
 	statusFilter,
 	deadlineTypeFilter,
 }: TasksLayoutProps) {
-	const navigate = useNavigate()
+	const navigate = useNavigate({ from: "/workspace/$urlName/tasks" })
 
-	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters()
+	const {
+		searchQuery,
+		columnOrder,
+		hiddenColumns,
+		dateRange,
+		setDateRange,
+		toggleQuickFilter,
+		clearQuickFilters,
+	} = useTasksFilters()
 
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-	const { data: tasks = [], queryKey } = useListTasks({ workspaceId })
+	const {
+		data: tasks = [],
+		queryKey,
+		isLoading,
+	} = useListTasks({ workspaceId })
 
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
@@ -63,22 +76,16 @@ function TasksLayout({
 		...new Set(tasks.flatMap((t) => t.tags.map((tag) => tag.name))),
 	]
 
-	const tabFilterSet = useMemo(
-		() => new Set<QuickFilter>(tabFilter),
-		[tabFilter],
+	const filteredTasks = useFilteredTasks(
+		tasks,
+		activeTopicFilters.size > 0
+			? (task) => task.tags.some((tag) => activeTopicFilters.has(tag.name))
+			: undefined,
 	)
 
-	const filteredTasks = useMemo(
-		() =>
-			toTaskRows(
-				applyAllFilters(
-					tasks,
-					tabFilterSet,
-					activeTopicFilters.size > 0 ? activeTopicFilters : new Set(),
-					searchQuery,
-				),
-			),
-		[tasks, searchQuery, tabFilterSet, activeTopicFilters],
+	const filteredTaskRows = useMemo(
+		() => toTaskRows(filteredTasks),
+		[filteredTasks],
 	)
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
@@ -128,18 +135,24 @@ function TasksLayout({
 	}
 
 	function handleToggleTabFilter(filter: QuickFilter) {
+		toggleQuickFilter(filter)
 		const next = tabFilter.includes(filter)
 			? tabFilter.filter((f) => f !== filter)
 			: [...tabFilter, filter]
-		navigateToTasks({ tabFilter: next })
+		navigate({ search: (prev) => ({ ...prev, tabFilter: next }) })
 	}
 
 	function clearAllFilters() {
 		setActiveTopicFilters(new Set())
-		navigateToTasks({
-			tabFilter: [],
-			statusFilter: [],
-			deadlineTypeFilter: [],
+		setDateRange(undefined)
+		clearQuickFilters()
+		navigate({
+			search: (prev) => ({
+				...prev,
+				tabFilter: [],
+				statusFilter: [],
+				deadlineTypeFilter: [],
+			}),
 		})
 	}
 
@@ -154,7 +167,7 @@ function TasksLayout({
 	}
 
 	function handleExport() {
-		exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns })
+		exportTasksToExcel(filteredTaskRows, { columnOrder, hiddenColumns })
 	}
 
 	// function handleViewChange(newView: TasksView) {
@@ -197,7 +210,7 @@ function TasksLayout({
 					onExport={handleExport}
 					tabFilter={tabFilter}
 					onToggleTabFilter={handleToggleTabFilter}
-					hasExtraActiveFilters={activeTopicFilters.size > 0}
+					hasExtraActiveFilters={activeTopicFilters.size > 0 || !!dateRange}
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label="נושא"
@@ -207,17 +220,18 @@ function TasksLayout({
 							$active={activeTopicFilters.size > 0}
 						/>
 					}
+					startSlot={<TasksDatePicker />}
 				/>
 
 				<ContentArea>
-					{tasks.length === 0 ? (
+					{!isLoading && tasks.length === 0 ? (
 						<EmptyState />
 					) : searchQuery && filteredTasks.length === 0 ? (
 						<EmptyState variant="search" />
 					) : view === TasksView.TABLE ? (
 						<TaskTable
 							queryKey={queryKey}
-							tasks={filteredTasks}
+							tasks={filteredTaskRows}
 							onEdit={handleEdit}
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
@@ -304,12 +318,6 @@ const CreateButton = styled.button`
 
 const CreateButtonText = styled.span`
   direction: rtl;
-`
-
-const SectionDivider = styled.div`
-  width: 1px;
-  height: 39px;
-  background: rgba(0, 0, 0, 0.15);
 `
 
 // ─── Create Dropdown ─────────────────────────────────────────────────────────

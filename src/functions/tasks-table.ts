@@ -1,34 +1,30 @@
 import type { AssigneeStatusDto, TaskDto } from "src/api/model"
-import {
-	formatTaskRowId,
-	type TaskRow,
-} from "src/providers/TasksFiltersProvider"
+import { formatTaskRowId } from "src/providers/TasksFiltersProvider"
 
-function formatTaskRow(
-	{ id, assigneeStatuses, ...task }: TaskDto,
+function formatTaskRow<TTask extends TaskDto>(
+	{ id, assigneeStatuses, ...task }: TTask,
 	assigneeStatus?: AssigneeStatusDto,
-): TaskRow {
-	const { assignee, status, description } = assigneeStatus ?? {}
+) {
 	return {
 		...task,
 		id,
 		assigneeStatuses,
-		rowKey: formatTaskRowId(id, assignee?.id),
-		status,
-		assignee,
-		description: assigneeStatuses.length > 1 ? (description || null) : null,
-		...(assignee && {
+		rowKey: formatTaskRowId(id, assigneeStatus?.assignee?.id),
+		...assigneeStatus,
+		...(assigneeStatus?.assignee && {
 			otherAssignees: assigneeStatuses.filter(
-				(as) => as.assignee.id !== assignee.id,
+				(as) => as.assignee.id !== assigneeStatus?.assignee.id,
 			),
 		}),
 	}
 }
 
-export function toTaskRows(tasks: TaskDto[]): TaskRow[] {
+export function toTaskRows<TTask extends TaskDto>(tasks: TTask[]) {
 	return tasks.flatMap((task) =>
 		task.assigneeStatuses.length > 0
-			? task.assigneeStatuses.map((as) => formatTaskRow(task, as))
+			? task.assigneeStatuses.map((assigneeStatus) =>
+					formatTaskRow(task, assigneeStatus),
+				)
 			: [formatTaskRow(task)],
 	)
 }

@@ -11,7 +11,10 @@ export interface FilterOption {
 
 // ─── Quick Filters ───────────────────────────────────────────────────────────
 
-function matchesQuickFilter(task: TaskDto, filter: QuickFilter): boolean {
+export function matchesQuickFilter(
+	task: TaskDto,
+	filter: QuickFilter,
+): boolean {
 	const today = startOfToday()
 	const daysUntil = task.dueDate ? differenceInDays(task.dueDate, today) : null
 	switch (filter) {
@@ -36,46 +39,7 @@ function matchesQuickFilter(task: TaskDto, filter: QuickFilter): boolean {
 	}
 }
 
-// ─── Combined ────────────────────────────────────────────────────────────────
-
-function applyAllFilters(
-	tasks: TaskDto[],
-	activeQuickFilters: Set<QuickFilter>,
-	activeTopicFilters: Set<string>,
-	searchQuery: string,
-): TaskDto[] {
-	const hasQuickFilters = activeQuickFilters.size > 0
-	const hasTopicFilters = activeTopicFilters.size > 0
-
-	let result = tasks
-
-	if (hasQuickFilters || hasTopicFilters) {
-		result = result.filter((t) => {
-			const matchesQuick =
-				hasQuickFilters &&
-				Array.from(activeQuickFilters).some((f) => matchesQuickFilter(t, f))
-			const matchesTopic =
-				hasTopicFilters &&
-				t.tags.some((tag) => activeTopicFilters.has(tag.name))
-			return matchesQuick || matchesTopic
-		})
-	}
-
-	if (searchQuery) {
-		result = result.filter(
-			(t) =>
-				t.title.includes(searchQuery) ||
-				t.notes?.includes(searchQuery) ||
-				t.assigneeStatuses.some((as) =>
-					as.description?.includes(searchQuery),
-				),
-		)
-	}
-
-	return result
-}
-
-function buildFilterOptionsMap(
+export function buildFilterOptionsMap(
 	tasks: TaskDto[],
 ): Record<string, FilterOption[]> {
 	const assigneeSet = new Set<string>()
@@ -109,5 +73,3 @@ function buildFilterOptionsMap(
 		tags: toOptions(tagsSet),
 	}
 }
-
-export { applyAllFilters, buildFilterOptionsMap, matchesQuickFilter }

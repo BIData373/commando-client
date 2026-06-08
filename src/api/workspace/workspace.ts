@@ -21,6 +21,8 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import type { ErrorType } from "../../axios"
+
 import { sendRequest } from "../../axios"
 import type {
 	CreateWorkspaceDto,
@@ -46,7 +48,7 @@ export const createWorkspace = (
 }
 
 export const getCreateWorkspaceMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -86,9 +88,12 @@ export type CreateWorkspaceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createWorkspace>>
 >
 export type CreateWorkspaceMutationBody = CreateWorkspaceDto
-export type CreateWorkspaceMutationError = unknown
+export type CreateWorkspaceMutationError = ErrorType<unknown>
 
-export const useCreateWorkspace = <TError = unknown, TContext = unknown>(
+export const useCreateWorkspace = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createWorkspace>>,
@@ -124,7 +129,7 @@ export const getListWorkspacesQueryKey = (params?: ListWorkspacesParams) => {
 
 export const getListWorkspacesQueryOptions = <
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params?: ListWorkspacesParams,
 	options?: {
@@ -151,11 +156,11 @@ export const getListWorkspacesQueryOptions = <
 export type ListWorkspacesQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listWorkspaces>>
 >
-export type ListWorkspacesQueryError = unknown
+export type ListWorkspacesQueryError = ErrorType<unknown>
 
 export function useListWorkspaces<
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: undefined | ListWorkspacesParams,
 	options: {
@@ -177,7 +182,7 @@ export function useListWorkspaces<
 }
 export function useListWorkspaces<
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params?: ListWorkspacesParams,
 	options?: {
@@ -199,7 +204,7 @@ export function useListWorkspaces<
 }
 export function useListWorkspaces<
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params?: ListWorkspacesParams,
 	options?: {
@@ -214,7 +219,7 @@ export function useListWorkspaces<
 
 export function useListWorkspaces<
 	TData = Awaited<ReturnType<typeof listWorkspaces>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params?: ListWorkspacesParams,
 	options?: {
@@ -253,7 +258,7 @@ export const getGetWorkspaceQueryKey = ({ id }: GetWorkspacePathParameters) => {
 
 export const getGetWorkspaceQueryOptions = <
 	TData = Awaited<ReturnType<typeof getWorkspace>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetWorkspacePathParameters,
 	options?: {
@@ -285,11 +290,11 @@ export const getGetWorkspaceQueryOptions = <
 export type GetWorkspaceQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getWorkspace>>
 >
-export type GetWorkspaceQueryError = unknown
+export type GetWorkspaceQueryError = ErrorType<unknown>
 
 export function useGetWorkspace<
 	TData = Awaited<ReturnType<typeof getWorkspace>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetWorkspacePathParameters,
 	options: {
@@ -311,7 +316,7 @@ export function useGetWorkspace<
 }
 export function useGetWorkspace<
 	TData = Awaited<ReturnType<typeof getWorkspace>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetWorkspacePathParameters,
 	options?: {
@@ -333,7 +338,7 @@ export function useGetWorkspace<
 }
 export function useGetWorkspace<
 	TData = Awaited<ReturnType<typeof getWorkspace>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetWorkspacePathParameters,
 	options?: {
@@ -348,7 +353,7 @@ export function useGetWorkspace<
 
 export function useGetWorkspace<
 	TData = Awaited<ReturnType<typeof getWorkspace>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetWorkspacePathParameters,
 	options?: {
@@ -385,7 +390,7 @@ export const updateWorkspace = (
 }
 
 export const getUpdateWorkspaceMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -425,9 +430,12 @@ export type UpdateWorkspaceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateWorkspace>>
 >
 export type UpdateWorkspaceMutationBody = UpdateWorkspaceDto
-export type UpdateWorkspaceMutationError = unknown
+export type UpdateWorkspaceMutationError = ErrorType<unknown>
 
-export const useUpdateWorkspace = <TError = unknown, TContext = unknown>(
+export const useUpdateWorkspace = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateWorkspace>>,
@@ -457,7 +465,7 @@ export const deleteWorkspace = (
 }
 
 export const getDeleteWorkspaceMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -497,9 +505,12 @@ export type DeleteWorkspaceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deleteWorkspace>>
 >
 
-export type DeleteWorkspaceMutationError = unknown
+export type DeleteWorkspaceMutationError = ErrorType<unknown>
 
-export const useDeleteWorkspace = <TError = unknown, TContext = unknown>(
+export const useDeleteWorkspace = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteWorkspace>>,

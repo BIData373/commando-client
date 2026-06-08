@@ -63,7 +63,8 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 		statuses,
 	} = useWorkspace()
 
-	const saveTasks = useSaveTasks()
+	const { saveTasks, isPending } = useSaveTasks(onClose)
+
 	const { mutateAsync: createSource } = useCreateSource()
 	const { mutate: updateTask } = useUpdateTask()
 	const { mutateAsync: upsertStatus } = useUpsertAssigneeTaskStatus()
@@ -446,6 +447,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 								title="שמור"
 								onClick={form.handleSubmit}
 								disabled={!values.title.trim() || (isEditMode && !hasChanges)}
+								loading={isPending}
 								width={133}
 							/>
 							<CancelButton title="ביטול" onClick={onClose} />
