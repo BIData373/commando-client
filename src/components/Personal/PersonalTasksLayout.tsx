@@ -15,6 +15,7 @@ import {
 	useTasksFilters,
 } from "../../providers/TasksFiltersProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
+import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { EmptyState } from "../Tasks/EmptyState"
 import { TaskFilters } from "../Tasks/TaskFilters"
@@ -55,15 +56,10 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 	workspace: WORKSPACE_COLUMN,
 }
 
-// interface PersonalTasksLayoutProps {
-// 	view: TasksView
-// }
-
 function PersonalTasksLayout() {
 	// const navigate = useNavigate()
 
-	const { searchQuery, activeQuickFilters, clearQuickFilters } =
-		useTasksFilters()
+	const { searchQuery, clearQuickFilters } = useTasksFilters()
 
 	const queryKey = getListPersonalTasksQueryKey()
 	const { data: rawTasks = [] } = useListPersonalTasks()
@@ -92,20 +88,16 @@ function PersonalTasksLayout() {
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
 	).length
 
-	const baseFilteredTaskRows = useFilteredTasks(
-		taskRows,
-		activeQuickFilters,
-		new Set(),
-		searchQuery,
-	)
+	const baseFilteredTasks = useFilteredTasks(rawTasks)
 
-	const filteredTaskRows =
+	const filteredTasks =
 		activeWorkspaceFilters.size > 0
-			? baseFilteredTaskRows.filter((row) =>
+			? baseFilteredTasks.filter((row) =>
 					activeWorkspaceFilters.has(row.workspace.id),
 				)
-			: baseFilteredTaskRows
+			: baseFilteredTasks
 
+	console.log("PersonalTaskLayout", filteredTasks)
 	function clearAllFilters() {
 		clearQuickFilters()
 		setActiveWorkspaceFilters(new Set())
@@ -159,16 +151,17 @@ function PersonalTasksLayout() {
 							$active={activeWorkspaceFilters.size > 0}
 						/>
 					}
+					startSlot={<TasksDatePicker />}
 				/>
 
 				{rawTasks.length === 0 ? (
 					<EmptyState />
-				) : searchQuery && filteredTaskRows.length === 0 ? (
+				) : searchQuery && filteredTasks.length === 0 ? (
 					<EmptyState variant="search" />
 				) : (
 					<TaskTable
 						queryKey={queryKey}
-						tasks={filteredTaskRows}
+						tasks={toTaskRows(filteredTasks)}
 						extraColumns={EXTRA_COLUMNS as Record<string, ColumnDef<TaskRow>>}
 					/>
 				)}
