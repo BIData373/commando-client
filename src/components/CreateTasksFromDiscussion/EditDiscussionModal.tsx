@@ -16,6 +16,7 @@ import {
 	useUpdateSource,
 } from "../../api/source/source"
 import { getGetTaskQueryKey, getListTasksQueryKey } from "../../api/task/task"
+import { DialogOverlay } from "../ui/dialog"
 import { Popover, PopoverTrigger } from "../ui/popover"
 import DiscussionForm from "./DiscussionForm"
 
@@ -148,7 +149,7 @@ function EditDiscussionModal({
 	return (
 		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
 			<DialogPrimitive.Portal>
-				<Overlay />
+				<DialogOverlay />
 				<ModalCard>
 					<ModalCloseButton onClick={onClose}>
 						<X size={16} />
@@ -212,14 +213,6 @@ function EditDiscussionModal({
 export default EditDiscussionModal
 
 // ─── Modal Shell ────────────────────────────────────────────────────────────
-
-const Overlay = styled(DialogPrimitive.Overlay)`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(1px);
-  z-index: var(--z-dropdown);
-`
 
 const ModalCard = styled(DialogPrimitive.Content)`
   position: fixed;

@@ -47,7 +47,6 @@ const Button = styled.button<{ $height?: number; $width?: number }>`
   border-radius: 8px;
   background: var(--default-linear);
   color: white;
-  font-family: 'Rubik', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;

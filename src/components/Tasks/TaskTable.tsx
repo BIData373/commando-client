@@ -17,6 +17,7 @@ import type {
 } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import {
+	TASK_ROW_ID_SEPARATOR,
 	type TaskRow,
 	useTasksFilters,
 } from "src/providers/TasksFiltersProvider"
@@ -111,11 +112,12 @@ function TaskTable({
 
 	const selectedTaskIds = Object.keys(rowSelection)
 		.filter((key) => rowSelection[key])
-		.map(Number)
+		.map((key) => Number(key.split(TASK_ROW_ID_SEPARATOR)[0]))
 
 	function handleEnterSelectMode(taskId?: number) {
 		setSelectMode(true)
-		setRowSelection(taskId !== undefined ? { [String(taskId)]: true } : {})
+		const task = tasks.find((t) => t.id === taskId)
+		setRowSelection(task ? { [task.rowKey]: true } : {})
 	}
 
 	function handleExitSelectMode() {
@@ -127,7 +129,7 @@ function TaskTable({
 		if (checked) {
 			const all: RowSelectionState = {}
 			tasks.forEach((t) => {
-				all[String(t.id)] = true
+				all[t.rowKey] = true
 			})
 			setRowSelection(all)
 		} else {

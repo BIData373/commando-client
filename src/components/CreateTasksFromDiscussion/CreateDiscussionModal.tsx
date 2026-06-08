@@ -9,6 +9,7 @@ import type { CreateSourceDto } from "../../api/model"
 import { useCreateSource } from "../../api/source/source"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
+import { DialogOverlay } from "../ui/dialog"
 import CreateTasksTable from "./CreateTasksTable"
 import DiscussionForm from "./DiscussionForm"
 import type { NewTaskRow } from "./TasksColumns"
@@ -96,11 +97,15 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 		try {
 			const source = await createSource({ data: values })
 			const inputs = taskRows.map(
-				({ id, rowKey, assigneeDetails, ...rest }) => ({
+				({ id, rowKey, assigneeIds, assigneeDetails, ...rest }) => ({
 					...rest,
 					workspaceId,
 					sourceId: source.id,
 					groupKey: String(id),
+					assignees: assigneeIds.map((assigneeId) => ({
+						id: assigneeId,
+						description: assigneeDetails[assigneeId] || undefined,
+					})),
 				}),
 			)
 			saveTasks(inputs)
@@ -113,7 +118,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 	return (
 		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
 			<DialogPrimitive.Portal>
-				<Overlay />
+				<DialogOverlay />
 				<ModalCard $step={currentStep}>
 					<ModalCloseButton onClick={onClose}>
 						<X size={16} />
@@ -195,14 +200,6 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 export default CreateDiscussionModal
 
 // ─── Modal Shell ────────────────────────────────────────────────────────────
-
-const Overlay = styled(DialogPrimitive.Overlay)`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(1px);
-  z-index: var(--z-dropdown);
-`
 
 const ModalCard = styled(DialogPrimitive.Content)<{ $step: Steps }>`
   position: fixed;
