@@ -61,7 +61,7 @@ function TaskDetailPanel({
 
 	const attachmentFile = source?.attachmentKey?.split("/").pop()?.split(".")[0]
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
-	const hasTagOrAttachment = allTags.length > 0 || !!source?.attachmentKey
+	const showExtraInfo = allTags.length > 0 || !!source?.attachmentKey || notes
 
 	function handleScroll() {
 		const el = scrollRef.current
@@ -140,7 +140,7 @@ function TaskDetailPanel({
 
 					<AssigneeSection taskId={id} assigneeStatuses={assigneeStatuses} />
 
-					{hasTagOrAttachment && (
+					{showExtraInfo && (
 						<>
 							<DividerRow>
 								<DividerLine />
@@ -186,7 +186,9 @@ function TaskDetailPanel({
 							{notes && (
 								<NotesSection>
 									<SectionLabel>הערות הנחיה</SectionLabel>
-									<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
+									<NotesText
+										dangerouslySetInnerHTML={{ __html: notes ?? "" }}
+									/>
 								</NotesSection>
 							)}
 						</>
