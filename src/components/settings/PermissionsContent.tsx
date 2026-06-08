@@ -9,6 +9,7 @@ import {
 import { DropdownPermission } from "src/components/settings/DropdownPermission"
 import { DropdownUsers } from "src/components/settings/DropdownUsers"
 import { UserPermissionList } from "src/components/settings/UserPermissionList"
+import { Spinner } from "src/components/ui/spinner"
 import {
 	Tabs,
 	TabsContent,
@@ -41,7 +42,11 @@ export function PermissionsContent() {
 	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null)
 	const [type, setType] = useState<PermissionType>(PermissionType.VIEWER)
 
-	const { data: permissions = [], queryKey } = useListPermissions({
+	const {
+		data: permissions = [],
+		isLoading,
+		queryKey,
+	} = useListPermissions({
 		workspaceId,
 	})
 	const { mutate: updatePermission } = useUpdatePermission()
@@ -192,15 +197,21 @@ export function PermissionsContent() {
 
 				{Object.values(PermissionsTab).map((tab) => (
 					<StyledTabsContent key={tab} value={tab}>
-						<UserListScrollArea>
-							<UserListInner>
-								<UserPermissionList
-									permissions={currentTabUsers}
-									onDelete={handleDeletePermissionUser}
-									onTypeChange={handleTypeChangePermissionUser}
-								/>
-							</UserListInner>
-						</UserListScrollArea>
+						{isLoading ? (
+							<LoadingContainer>
+								<Spinner />
+							</LoadingContainer>
+						) : (
+							<UserListScrollArea>
+								<UserListInner>
+									<UserPermissionList
+										permissions={currentTabUsers}
+										onDelete={handleDeletePermissionUser}
+										onTypeChange={handleTypeChangePermissionUser}
+									/>
+								</UserListInner>
+							</UserListScrollArea>
+						)}
 					</StyledTabsContent>
 				))}
 			</StyledTabs>
@@ -290,4 +301,12 @@ const SearchSection = styled.div`
   align-items: center;
   justify-content: center;
   gap: 4px;
+`
+
+const LoadingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
 `

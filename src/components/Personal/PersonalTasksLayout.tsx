@@ -62,7 +62,7 @@ function PersonalTasksLayout() {
 	const { searchQuery, clearQuickFilters } = useTasksFilters()
 
 	const queryKey = getListPersonalTasksQueryKey()
-	const { data: rawTasks = [] } = useListPersonalTasks()
+	const { data: rawTasks = [], isLoading } = useListPersonalTasks()
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
@@ -153,7 +153,7 @@ function PersonalTasksLayout() {
 					startSlot={<TasksDatePicker />}
 				/>
 
-				{rawTasks.length === 0 ? (
+				{!isLoading && rawTasks.length === 0 ? (
 					<EmptyState />
 				) : searchQuery && filteredTasks.length === 0 ? (
 					<EmptyState variant="search" />

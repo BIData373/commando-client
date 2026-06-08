@@ -22,6 +22,7 @@ import { useFuse } from "src/hooks/useFuse"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import addPerson from "../../assets/icons/addPerson.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
+import { Spinner } from "../ui/spinner"
 
 export const assigneeStatusEditableId = "allow-status-update"
 
@@ -36,7 +37,7 @@ export function AssigneesContent() {
 	const [searchQuery, setSearchQuery] = useState("")
 	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
-	const { data: assignees = [] } = useListAssignees({ workspaceId })
+	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
 
 	const filteredAssignees = useFuse(assignees, searchQuery, {
 		threshold: 0.5,
@@ -118,7 +119,11 @@ export function AssigneesContent() {
 			</StyledContent>
 
 			<CardScroller>
-				{assignees.length === 0 ? (
+				{isLoading ? (
+					<LoadingContainer>
+						<Spinner />
+					</LoadingContainer>
+				) : assignees.length === 0 ? (
 					<CenterContainer>
 						<EmptyCardState
 							imgSrc={addPerson}
@@ -223,4 +228,12 @@ const CenterContainer = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: center;
+`
+
+const LoadingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
 `

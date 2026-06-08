@@ -9,6 +9,7 @@ const router = createRouter({
 	scrollRestoration: true,
 	defaultPreload: "intent",
 	defaultPreloadStaleTime: 0,
+	defaultViewTransition: true,
 })
 
 export interface HeaderConfig {
