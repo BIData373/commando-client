@@ -133,6 +133,12 @@ function PersonalTasksLayout() {
 	// 	[view],
 	// )
 
+	let tasksForCounts =
+		activeWorkspaceFilters.size > 0
+			? taskRows.filter((t) => activeWorkspaceFilters.has(t.workspace.id))
+			: taskRows
+	tasksForCounts = applyDateFilter(tasksForCounts, dateType, dateRange)
+
 	return (
 		<TooltipProvider>
 			<PageRoot>
@@ -144,7 +150,7 @@ function PersonalTasksLayout() {
 				/>
 
 				<TaskFilters
-					tasks={taskRows}
+					tasks={tasksForCounts}
 					onClearAllFilters={clearAllFilters}
 					onExport={handleExport}
 					hasExtraActiveFilters={activeWorkspaceFilters.size > 0}

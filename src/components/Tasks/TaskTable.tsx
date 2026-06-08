@@ -38,6 +38,7 @@ interface TaskTableProps {
 		statusFilter: WorkspaceStatusType[],
 		deadlineTypeFilter: DeadlineType[],
 	) => void
+	onLocalColumnFiltersChange?: (filters: ColumnFiltersState) => void
 }
 
 function TaskTable({
@@ -50,6 +51,7 @@ function TaskTable({
 	statusFilter = [],
 	deadlineTypeFilter = [],
 	onFiltersChange,
+	onLocalColumnFiltersChange,
 }: TaskTableProps) {
 	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters()
 	const queryClient = useQueryClient()
@@ -104,6 +106,7 @@ function TaskTable({
 			(column) => column.id !== "status" && column.value !== "deadlineType",
 		)
 		setLocalColumnFilters(tableTabFilter)
+		onLocalColumnFiltersChange?.(tableTabFilter)
 
 		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
 	}

@@ -1,3 +1,4 @@
+import type { ColumnFiltersState } from "@tanstack/react-table"
 import { differenceInDays, isWithinInterval, startOfToday } from "date-fns"
 import type { DateRange } from "react-day-picker"
 import { DeadlineType, type TaskDto } from "src/api/model"
@@ -111,6 +112,42 @@ function buildFilterOptionsMap(
 	}
 }
 
+// ─── Column Filters ──────────────────────────────────────────────────────────
+
+function applyColumnFilters<T extends TaskRow>(
+	tasks: T[],
+	columnFilters: ColumnFiltersState,
+): T[] {
+	if (!columnFilters.length) return tasks
+	return tasks.filter((task) =>
+		columnFilters.every(({ id, value }) => {
+			const filterValues = value as string[]
+			if (!filterValues?.length) return true
+			switch (id) {
+				case "status":
+					return (
+						task.status?.type != null && filterValues.includes(task.status.type)
+					)
+				case "assigneeStatuses":
+					return (
+						task.assignee?.name != null &&
+						filterValues.includes(task.assignee.name)
+					)
+				case "deadlineType":
+					return filterValues.includes(task.deadlineType)
+				case "discussionName":
+					return (
+						task.source?.name != null && filterValues.includes(task.source.name)
+					)
+				case "tags":
+					return task.tags.some((tag) => filterValues.includes(tag.name))
+				default:
+					return true
+			}
+		}),
+	)
+}
+
 // ─── Date Filter ─────────────────────────────────────────────────────────────
 
 function applyDateFilter<T extends TaskRow>(
@@ -129,6 +166,7 @@ function applyDateFilter<T extends TaskRow>(
 
 export {
 	applyAllFilters,
+	applyColumnFilters,
 	applyDateFilter,
 	buildFilterOptionsMap,
 	matchesQuickFilter,
