@@ -27,10 +27,11 @@ export function useFilteredTasks<TTask extends TaskDto>(
 				.filter(
 					(task) =>
 						additionalFilter?.(task) ||
-						activeQuickFilters.size === 0 ||
-						Array.from(activeQuickFilters).some((filter) =>
-							matchesQuickFilter(task, filter),
-						),
+						(activeQuickFilters.size > 0
+							? Array.from(activeQuickFilters).some((filter) =>
+									matchesQuickFilter(task, filter),
+								)
+							: true),
 				)
 				.filter((task) => {
 					if (!from || !to) {

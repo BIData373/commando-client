@@ -97,7 +97,6 @@ function PersonalTasksLayout() {
 				)
 			: baseFilteredTasks
 
-	console.log("PersonalTaskLayout", filteredTasks)
 	function clearAllFilters() {
 		clearQuickFilters()
 		setActiveWorkspaceFilters(new Set())

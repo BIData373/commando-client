@@ -69,7 +69,7 @@ interface TasksProviderProps extends PropsWithChildren {
 	storageKey: ColumnsStorageKey
 	defaultColumnOrder?: TaskColumn[]
 	defaultHiddenColumns?: Set<TaskColumn>
-	defaultActiveQuickFilters?: Set<QuickFilter>
+	activeQuickFilters?: Set<QuickFilter>
 }
 
 export function formatTaskRowId(taskId: number, assigneeId?: number) {
@@ -80,13 +80,13 @@ export function TasksFiltersProvider({
 	storageKey,
 	defaultColumnOrder = DEFAULT_COLUMN_ORDER,
 	defaultHiddenColumns = WORKSPACE_DEFAULT_HIDDEN,
-	defaultActiveQuickFilters = new Set(),
+	activeQuickFilters: currentActiveQuickFilters = new Set(),
 	children,
 }: TasksProviderProps) {
 	const [searchQuery, setSearchQuery] = useState("")
 	const [activeQuickFilters, setActiveQuickFilters] = useState<
 		Set<QuickFilter>
-	>(defaultActiveQuickFilters)
+	>(currentActiveQuickFilters)
 
 	const [columnsVisibility, setColumnsVisibility] =
 		useLocalStorage<ColumnsVisibilityStorage>({
