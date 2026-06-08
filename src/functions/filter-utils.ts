@@ -25,7 +25,7 @@ function matchesQuickFilter(task: TaskDto, filter: QuickFilter): boolean {
 			return (
 				daysUntil !== null &&
 				daysUntil >= 0 &&
-				daysUntil < 2 &&
+				daysUntil <= 2 &&
 				!(daysUntil < 0 && task.deadlineType !== DeadlineType.IMMEDIATE)
 			)
 		case QuickFilter.FLAGGED:
