@@ -1,5 +1,6 @@
 import { type PropsWithChildren, useEffect } from "react"
 import type { UserInfoDto } from "src/api/model"
+import { IS_MATOMO_ON } from "src/utils/env-utils"
 
 declare global {
 	interface Window {
@@ -9,6 +10,8 @@ declare global {
 
 export default function MatomoWrapper({ children }: PropsWithChildren) {
 	useEffect(() => {
+		if (!IS_MATOMO_ON) return
+
 		const cookieString = document.cookie
 		const result = cookieString
 			?.match(/ssoUser=([^;]+)/)
