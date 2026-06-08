@@ -18,6 +18,8 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useQuery } from "@tanstack/react-query"
+import type { ErrorType } from "../../axios"
+
 import { sendRequest } from "../../axios"
 import type { ListTaskHistoryParams, TaskHistoryDto } from "../model"
 
@@ -39,7 +41,7 @@ export const getListTaskHistoryQueryKey = (params?: ListTaskHistoryParams) => {
 
 export const getListTaskHistoryQueryOptions = <
 	TData = Awaited<ReturnType<typeof listTaskHistory>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTaskHistoryParams,
 	options?: {
@@ -70,11 +72,11 @@ export const getListTaskHistoryQueryOptions = <
 export type ListTaskHistoryQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listTaskHistory>>
 >
-export type ListTaskHistoryQueryError = unknown
+export type ListTaskHistoryQueryError = ErrorType<unknown>
 
 export function useListTaskHistory<
 	TData = Awaited<ReturnType<typeof listTaskHistory>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTaskHistoryParams,
 	options: {
@@ -100,7 +102,7 @@ export function useListTaskHistory<
 }
 export function useListTaskHistory<
 	TData = Awaited<ReturnType<typeof listTaskHistory>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTaskHistoryParams,
 	options?: {
@@ -126,7 +128,7 @@ export function useListTaskHistory<
 }
 export function useListTaskHistory<
 	TData = Awaited<ReturnType<typeof listTaskHistory>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTaskHistoryParams,
 	options?: {
@@ -145,7 +147,7 @@ export function useListTaskHistory<
 
 export function useListTaskHistory<
 	TData = Awaited<ReturnType<typeof listTaskHistory>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTaskHistoryParams,
 	options?: {

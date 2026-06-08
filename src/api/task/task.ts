@@ -21,6 +21,8 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import type { ErrorType } from "../../axios"
+
 import { sendRequest } from "../../axios"
 import type {
 	CreateTaskDto,
@@ -47,7 +49,7 @@ export const createTask = (
 }
 
 export const getCreateTaskMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -87,9 +89,9 @@ export type CreateTaskMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createTask>>
 >
 export type CreateTaskMutationBody = CreateTaskDto
-export type CreateTaskMutationError = unknown
+export type CreateTaskMutationError = ErrorType<unknown>
 
-export const useCreateTask = <TError = unknown, TContext = unknown>(
+export const useCreateTask = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createTask>>,
@@ -117,7 +119,7 @@ export const getListTasksQueryKey = (params?: ListTasksParams) => {
 
 export const getListTasksQueryOptions = <
 	TData = Awaited<ReturnType<typeof listTasks>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTasksParams,
 	options?: {
@@ -144,11 +146,11 @@ export const getListTasksQueryOptions = <
 export type ListTasksQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listTasks>>
 >
-export type ListTasksQueryError = unknown
+export type ListTasksQueryError = ErrorType<unknown>
 
 export function useListTasks<
 	TData = Awaited<ReturnType<typeof listTasks>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTasksParams,
 	options: {
@@ -170,7 +172,7 @@ export function useListTasks<
 }
 export function useListTasks<
 	TData = Awaited<ReturnType<typeof listTasks>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTasksParams,
 	options?: {
@@ -192,7 +194,7 @@ export function useListTasks<
 }
 export function useListTasks<
 	TData = Awaited<ReturnType<typeof listTasks>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTasksParams,
 	options?: {
@@ -207,7 +209,7 @@ export function useListTasks<
 
 export function useListTasks<
 	TData = Awaited<ReturnType<typeof listTasks>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTasksParams,
 	options?: {
@@ -243,7 +245,7 @@ export const getListPersonalTasksQueryKey = () => {
 
 export const getListPersonalTasksQueryOptions = <
 	TData = Awaited<ReturnType<typeof listPersonalTasks>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(options?: {
 	query?: Partial<
 		UseQueryOptions<
@@ -271,11 +273,11 @@ export const getListPersonalTasksQueryOptions = <
 export type ListPersonalTasksQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listPersonalTasks>>
 >
-export type ListPersonalTasksQueryError = unknown
+export type ListPersonalTasksQueryError = ErrorType<unknown>
 
 export function useListPersonalTasks<
 	TData = Awaited<ReturnType<typeof listPersonalTasks>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	options: {
 		query: Partial<
@@ -300,7 +302,7 @@ export function useListPersonalTasks<
 }
 export function useListPersonalTasks<
 	TData = Awaited<ReturnType<typeof listPersonalTasks>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	options?: {
 		query?: Partial<
@@ -325,7 +327,7 @@ export function useListPersonalTasks<
 }
 export function useListPersonalTasks<
 	TData = Awaited<ReturnType<typeof listPersonalTasks>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	options?: {
 		query?: Partial<
@@ -343,7 +345,7 @@ export function useListPersonalTasks<
 
 export function useListPersonalTasks<
 	TData = Awaited<ReturnType<typeof listPersonalTasks>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	options?: {
 		query?: Partial<
@@ -385,7 +387,7 @@ export const getGetTaskQueryKey = ({ id }: GetTaskPathParameters) => {
 
 export const getGetTaskQueryOptions = <
 	TData = Awaited<ReturnType<typeof getTask>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetTaskPathParameters,
 	options?: {
@@ -415,11 +417,11 @@ export const getGetTaskQueryOptions = <
 export type GetTaskQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getTask>>
 >
-export type GetTaskQueryError = unknown
+export type GetTaskQueryError = ErrorType<unknown>
 
 export function useGetTask<
 	TData = Awaited<ReturnType<typeof getTask>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetTaskPathParameters,
 	options: {
@@ -441,7 +443,7 @@ export function useGetTask<
 }
 export function useGetTask<
 	TData = Awaited<ReturnType<typeof getTask>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetTaskPathParameters,
 	options?: {
@@ -463,7 +465,7 @@ export function useGetTask<
 }
 export function useGetTask<
 	TData = Awaited<ReturnType<typeof getTask>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetTaskPathParameters,
 	options?: {
@@ -478,7 +480,7 @@ export function useGetTask<
 
 export function useGetTask<
 	TData = Awaited<ReturnType<typeof getTask>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetTaskPathParameters,
 	options?: {
@@ -515,7 +517,7 @@ export const updateTask = (
 }
 
 export const getUpdateTaskMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -555,9 +557,9 @@ export type UpdateTaskMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateTask>>
 >
 export type UpdateTaskMutationBody = UpdateTaskDto
-export type UpdateTaskMutationError = unknown
+export type UpdateTaskMutationError = ErrorType<unknown>
 
-export const useUpdateTask = <TError = unknown, TContext = unknown>(
+export const useUpdateTask = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateTask>>,
@@ -587,7 +589,7 @@ export const deleteTask = (
 }
 
 export const getDeleteTaskMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -627,9 +629,9 @@ export type DeleteTaskMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deleteTask>>
 >
 
-export type DeleteTaskMutationError = unknown
+export type DeleteTaskMutationError = ErrorType<unknown>
 
-export const useDeleteTask = <TError = unknown, TContext = unknown>(
+export const useDeleteTask = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteTask>>,

@@ -21,6 +21,8 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import type { ErrorType } from "../../axios"
+
 import { sendRequest } from "../../axios"
 import type {
 	AssigneeTaskStatusDto,
@@ -48,7 +50,7 @@ export const getListAssigneeTaskStatusesQueryKey = ({
 
 export const getListAssigneeTaskStatusesQueryOptions = <
 	TData = Awaited<ReturnType<typeof listAssigneeTaskStatuses>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ taskId }: ListAssigneeTaskStatusesPathParameters,
 	options?: {
@@ -85,11 +87,11 @@ export const getListAssigneeTaskStatusesQueryOptions = <
 export type ListAssigneeTaskStatusesQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listAssigneeTaskStatuses>>
 >
-export type ListAssigneeTaskStatusesQueryError = unknown
+export type ListAssigneeTaskStatusesQueryError = ErrorType<unknown>
 
 export function useListAssigneeTaskStatuses<
 	TData = Awaited<ReturnType<typeof listAssigneeTaskStatuses>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: ListAssigneeTaskStatusesPathParameters,
 	options: {
@@ -115,7 +117,7 @@ export function useListAssigneeTaskStatuses<
 }
 export function useListAssigneeTaskStatuses<
 	TData = Awaited<ReturnType<typeof listAssigneeTaskStatuses>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: ListAssigneeTaskStatusesPathParameters,
 	options?: {
@@ -141,7 +143,7 @@ export function useListAssigneeTaskStatuses<
 }
 export function useListAssigneeTaskStatuses<
 	TData = Awaited<ReturnType<typeof listAssigneeTaskStatuses>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: ListAssigneeTaskStatusesPathParameters,
 	options?: {
@@ -160,7 +162,7 @@ export function useListAssigneeTaskStatuses<
 
 export function useListAssigneeTaskStatuses<
 	TData = Awaited<ReturnType<typeof listAssigneeTaskStatuses>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ taskId }: ListAssigneeTaskStatusesPathParameters,
 	options?: {
@@ -203,7 +205,7 @@ export const upsertAssigneeTaskStatus = (
 }
 
 export const getUpsertAssigneeTaskStatusMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -243,10 +245,10 @@ export type UpsertAssigneeTaskStatusMutationResult = NonNullable<
 	Awaited<ReturnType<typeof upsertAssigneeTaskStatus>>
 >
 export type UpsertAssigneeTaskStatusMutationBody = UpdateAssigneeTaskStatusDto
-export type UpsertAssigneeTaskStatusMutationError = unknown
+export type UpsertAssigneeTaskStatusMutationError = ErrorType<unknown>
 
 export const useUpsertAssigneeTaskStatus = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(
 	options?: {
@@ -282,7 +284,7 @@ export const deleteAssigneeTaskStatus = (
 }
 
 export const getDeleteAssigneeTaskStatusMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -322,10 +324,10 @@ export type DeleteAssigneeTaskStatusMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>
 >
 
-export type DeleteAssigneeTaskStatusMutationError = unknown
+export type DeleteAssigneeTaskStatusMutationError = ErrorType<unknown>
 
 export const useDeleteAssigneeTaskStatus = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(
 	options?: {
