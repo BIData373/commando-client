@@ -18,6 +18,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "src/components/ui/tooltip"
+import { useFuse } from "src/hooks/useFuse"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import addPerson from "../../assets/icons/addPerson.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -38,9 +39,10 @@ export function AssigneesContent() {
 
 	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
 
-	const filteredAssignees = searchQuery.trim()
-		? assignees.filter((a) => a.name.includes(searchQuery))
-		: assignees
+	const filteredAssignees = useFuse(assignees, searchQuery, {
+		threshold: 0.5,
+		keys: ["name", "users.upn", "users.info.name", "users.info.displayName"],
+	})
 
 	function handleCheckboxChange(checked: boolean) {
 		updateSettings(
@@ -118,10 +120,10 @@ export function AssigneesContent() {
 
 			<CardScroller>
 				{isLoading ? (
-				<LoadingContainer>
-					<Spinner />
-				</LoadingContainer>
-			) : assignees.length === 0 ? (
+					<LoadingContainer>
+						<Spinner />
+					</LoadingContainer>
+				) : assignees.length === 0 ? (
 					<CenterContainer>
 						<EmptyCardState
 							imgSrc={addPerson}

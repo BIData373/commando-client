@@ -1,9 +1,8 @@
 import styled from "@emotion/styled"
-import { useNavigate, useParams } from "@tanstack/react-router"
-import { useMemo } from "react"
+import { useNavigate } from "@tanstack/react-router"
 import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
-import { applyDateFilter } from "src/functions/filter-utils"
 import { toTaskRows } from "src/functions/tasks-table"
+import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { DATE_TYPE } from "src/utils/date-utils"
@@ -15,28 +14,25 @@ import SystemDistribution from "./SystemDistribution"
 
 export function DashboardContent() {
 	const {
-		workspace: { id },
+		workspace: { id, urlName },
 	} = useWorkspace()
-	const { urlName } = useParams({ from: "/workspace/$urlName" })
+
 	const navigate = useNavigate()
 
-	const { dateType, dateRange } = useTasksFilters()
+	const { dateType } = useTasksFilters()
 
 	const tasksQueryKey = getListTasksQueryKey({ workspaceId: id })
 	const { data: rawTasks = [] } = useListTasks({ workspaceId: id })
-	const tasks = useMemo(() => toTaskRows(rawTasks), [rawTasks])
 
-	const filteredTasks = useMemo(() => {
-		let filtered = applyDateFilter(tasks, dateType, dateRange)
+	const filteredTasks = useFilteredTasks(rawTasks)
 
-		if (dateType === DATE_TYPE.UPDATED_DATE) {
-			filtered = [...filtered].sort(
-				(a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
-			)
-		}
-
-		return filtered
-	}, [tasks, dateRange, dateType])
+	const tasks = toTaskRows(
+		dateType === DATE_TYPE.UPDATED_DATE
+			? [...filteredTasks].sort(
+					(a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
+				)
+			: filteredTasks,
+	)
 
 	function handleSetAssignees() {
 		navigate({
@@ -50,21 +46,10 @@ export function DashboardContent() {
 			<TasksDatePicker showTitle={true} />
 
 			<GridLayout>
-				<FocusedInstructions
-					queryKey={tasksQueryKey}
-					urlName={urlName}
-					tasks={filteredTasks}
-				/>
-				<StatusCard tasks={filteredTasks} />
-				<RecentlyCompleted
-					queryKey={tasksQueryKey}
-					urlName={urlName}
-					tasks={filteredTasks}
-				/>
-				<SystemDistribution
-					onSetAssignees={handleSetAssignees}
-					tasks={filteredTasks}
-				/>
+				<FocusedInstructions queryKey={tasksQueryKey} tasks={tasks} />
+				<StatusCard tasks={tasks} />
+				<RecentlyCompleted queryKey={tasksQueryKey} tasks={tasks} />
+				<SystemDistribution onSetAssignees={handleSetAssignees} tasks={tasks} />
 			</GridLayout>
 		</ContentArea>
 	)
