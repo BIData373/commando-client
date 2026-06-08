@@ -44,7 +44,7 @@ function TasksPage() {
 	const { urlName } = Route.useParams()
 
 	return (
-		<TasksFiltersProvider>
+		<TasksFiltersProvider storageKey="tasks">
 			<TasksLayout
 				view={view}
 				urlName={urlName}

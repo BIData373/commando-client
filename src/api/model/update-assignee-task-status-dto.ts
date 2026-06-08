@@ -7,8 +7,8 @@
  */
 
 export interface UpdateAssigneeTaskStatusDto {
-	assigneeId: number
 	taskId: number
+	assigneeId: number
 	statusId: number
 	description?: string
 }

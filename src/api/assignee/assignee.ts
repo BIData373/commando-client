@@ -21,6 +21,8 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import type { ErrorType } from "../../axios"
+
 import { sendRequest } from "../../axios"
 import type {
 	AssigneeDto,
@@ -47,7 +49,7 @@ export const createAssignee = (
 }
 
 export const getCreateAssigneeMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -87,9 +89,12 @@ export type CreateAssigneeMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createAssignee>>
 >
 export type CreateAssigneeMutationBody = CreateAssigneeDto
-export type CreateAssigneeMutationError = unknown
+export type CreateAssigneeMutationError = ErrorType<unknown>
 
-export const useCreateAssignee = <TError = unknown, TContext = unknown>(
+export const useCreateAssignee = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createAssignee>>,
@@ -125,7 +130,7 @@ export const getListAssigneesQueryKey = (params?: ListAssigneesParams) => {
 
 export const getListAssigneesQueryOptions = <
 	TData = Awaited<ReturnType<typeof listAssignees>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListAssigneesParams,
 	options?: {
@@ -152,11 +157,11 @@ export const getListAssigneesQueryOptions = <
 export type ListAssigneesQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listAssignees>>
 >
-export type ListAssigneesQueryError = unknown
+export type ListAssigneesQueryError = ErrorType<unknown>
 
 export function useListAssignees<
 	TData = Awaited<ReturnType<typeof listAssignees>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListAssigneesParams,
 	options: {
@@ -178,7 +183,7 @@ export function useListAssignees<
 }
 export function useListAssignees<
 	TData = Awaited<ReturnType<typeof listAssignees>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListAssigneesParams,
 	options?: {
@@ -200,7 +205,7 @@ export function useListAssignees<
 }
 export function useListAssignees<
 	TData = Awaited<ReturnType<typeof listAssignees>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListAssigneesParams,
 	options?: {
@@ -215,7 +220,7 @@ export function useListAssignees<
 
 export function useListAssignees<
 	TData = Awaited<ReturnType<typeof listAssignees>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListAssigneesParams,
 	options?: {
@@ -254,7 +259,7 @@ export const getGetAssigneeQueryKey = ({ id }: GetAssigneePathParameters) => {
 
 export const getGetAssigneeQueryOptions = <
 	TData = Awaited<ReturnType<typeof getAssignee>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetAssigneePathParameters,
 	options?: {
@@ -286,11 +291,11 @@ export const getGetAssigneeQueryOptions = <
 export type GetAssigneeQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getAssignee>>
 >
-export type GetAssigneeQueryError = unknown
+export type GetAssigneeQueryError = ErrorType<unknown>
 
 export function useGetAssignee<
 	TData = Awaited<ReturnType<typeof getAssignee>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetAssigneePathParameters,
 	options: {
@@ -312,7 +317,7 @@ export function useGetAssignee<
 }
 export function useGetAssignee<
 	TData = Awaited<ReturnType<typeof getAssignee>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetAssigneePathParameters,
 	options?: {
@@ -334,7 +339,7 @@ export function useGetAssignee<
 }
 export function useGetAssignee<
 	TData = Awaited<ReturnType<typeof getAssignee>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetAssigneePathParameters,
 	options?: {
@@ -349,7 +354,7 @@ export function useGetAssignee<
 
 export function useGetAssignee<
 	TData = Awaited<ReturnType<typeof getAssignee>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetAssigneePathParameters,
 	options?: {
@@ -386,7 +391,7 @@ export const updateAssignee = (
 }
 
 export const getUpdateAssigneeMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -426,9 +431,12 @@ export type UpdateAssigneeMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateAssignee>>
 >
 export type UpdateAssigneeMutationBody = UpdateAssigneeDto
-export type UpdateAssigneeMutationError = unknown
+export type UpdateAssigneeMutationError = ErrorType<unknown>
 
-export const useUpdateAssignee = <TError = unknown, TContext = unknown>(
+export const useUpdateAssignee = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateAssignee>>,
@@ -458,7 +466,7 @@ export const deleteAssignee = (
 }
 
 export const getDeleteAssigneeMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -498,9 +506,12 @@ export type DeleteAssigneeMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deleteAssignee>>
 >
 
-export type DeleteAssigneeMutationError = unknown
+export type DeleteAssigneeMutationError = ErrorType<unknown>
 
-export const useDeleteAssignee = <TError = unknown, TContext = unknown>(
+export const useDeleteAssignee = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteAssignee>>,
