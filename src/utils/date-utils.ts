@@ -1,5 +1,5 @@
 import type { DateRange } from "react-day-picker"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import type { TaskDto } from "src/api/model"
 
 export enum DATE_TYPE {
 	CREATION_DATE = "תאריך יצירה",
@@ -8,8 +8,8 @@ export enum DATE_TYPE {
 	UPDATED_DATE = "תאריך עדכון",
 }
 
-export function getTaskDateByDateType(
-	task: TaskRow,
+export function getTaskDateByDateType<TTask extends TaskDto>(
+	task: TTask,
 	type: DATE_TYPE,
 ): Date | null {
 	switch (type) {
