@@ -11,13 +11,14 @@ import {
 	getListPersonalTasksQueryKey,
 	useListPersonalTasks,
 } from "src/api/task/task"
-import { applyAllFilters } from "../../functions/filter-utils"
+import { applyAllFilters, applyDateFilter } from "../../functions/filter-utils"
 import { toTaskRows } from "../../functions/tasks-table"
 import {
 	type TaskRow,
 	useTasksFilters,
 } from "../../providers/TasksFiltersProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
+import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { EmptyState } from "../Tasks/EmptyState"
 import { TaskFilters } from "../Tasks/TaskFilters"
@@ -65,13 +66,8 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 	workspace: WORKSPACE_COLUMN,
 }
 
-// interface PersonalTasksLayoutProps {
-// 	view: TasksView
-// }
-
 function PersonalTasksLayout() {
-	// const navigate = useNavigate()
-	const { searchQuery, activeQuickFilters, clearQuickFilters } =
+	const { searchQuery, activeQuickFilters, clearQuickFilters, dateType, dateRange } =
 		useTasksFilters()
 	const queryKey = getListPersonalTasksQueryKey()
 	const { data: rawTasks = [] } = useListPersonalTasks()
@@ -104,13 +100,15 @@ function PersonalTasksLayout() {
 		activeQuickFilters,
 		new Set(),
 		searchQuery,
-	) as PersonalTaskRow[]
+	)
 
 	if (activeWorkspaceFilters.size > 0) {
 		filteredTaskRows = filteredTaskRows.filter((t) =>
 			activeWorkspaceFilters.has(t.workspace.id),
 		)
 	}
+
+	filteredTaskRows = applyDateFilter(filteredTaskRows, dateType, dateRange)
 
 	function clearAllFilters() {
 		clearQuickFilters()
@@ -164,6 +162,9 @@ function PersonalTasksLayout() {
 							onApply={setActiveWorkspaceFilters}
 							$active={activeWorkspaceFilters.size > 0}
 						/>
+					}
+					startSlot={
+						<TasksDatePicker />
 					}
 				/>
 
