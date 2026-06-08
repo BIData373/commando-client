@@ -1,17 +1,14 @@
 import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
+import { uniqBy } from "lodash"
 import { useState } from "react"
-import {
-	type TaskWithWorkspaceDto,
-	type WorkspaceDto,
-	WorkspaceStatusType,
-} from "src/api/model"
+import { type WorkspaceDto, WorkspaceStatusType } from "src/api/model"
 import {
 	getListPersonalTasksQueryKey,
 	useListPersonalTasks,
 } from "src/api/task/task"
-import { applyAllFilters, applyDateFilter } from "../../functions/filter-utils"
+import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { toTaskRows } from "../../functions/tasks-table"
 import {
 	type TaskRow,
@@ -22,18 +19,11 @@ import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { EmptyState } from "../Tasks/EmptyState"
 import { TaskFilters } from "../Tasks/TaskFilters"
-
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
 
 type PersonalTaskRow = TaskRow & { workspace: WorkspaceDto }
-
-function toPersonalTaskRows(
-	rawTasks: TaskWithWorkspaceDto[],
-): PersonalTaskRow[] {
-	return toTaskRows(rawTasks) as PersonalTaskRow[]
-}
 
 const WORKSPACE_COLUMN: ColumnDef<PersonalTaskRow> = {
 	id: "workspace",
@@ -67,13 +57,10 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 }
 
 function PersonalTasksLayout() {
-	const {
-		searchQuery,
-		activeQuickFilters,
-		clearQuickFilters,
-		dateType,
-		dateRange,
-	} = useTasksFilters()
+	// const navigate = useNavigate()
+
+	const { searchQuery, clearQuickFilters } = useTasksFilters()
+
 	const queryKey = getListPersonalTasksQueryKey()
 	const { data: rawTasks = [], isLoading } = useListPersonalTasks()
 
@@ -81,39 +68,34 @@ function PersonalTasksLayout() {
 		Set<number>
 	>(new Set())
 
-	const taskRows = toPersonalTaskRows(rawTasks)
+	const taskRows = toTaskRows(rawTasks)
 
-	const workspaceMap = new Map<number, WorkspaceDto>()
-	taskRows.forEach((t) => {
-		workspaceMap.set(t.workspace.id, t.workspace)
-	})
-	const workspaces = [...workspaceMap.values()]
+	const workspaces = uniqBy(rawTasks, "workspace.id").map(
+		({ workspace }) => workspace,
+	)
 
 	const totalCount = taskRows.length
+
 	const notStartedCount = taskRows.filter(
 		(t) => t.status?.type === WorkspaceStatusType.NOT_STARTED,
 	).length
+
 	const inProgressCount = taskRows.filter(
 		(t) => t.status?.type === WorkspaceStatusType.IN_PROGRESS,
 	).length
+
 	const weeklyNew = taskRows.filter((t) =>
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
 	).length
 
-	let filteredTaskRows = applyAllFilters(
-		taskRows,
-		activeQuickFilters,
-		new Set(),
-		searchQuery,
-	)
+	const baseFilteredTasks = useFilteredTasks(rawTasks)
 
-	if (activeWorkspaceFilters.size > 0) {
-		filteredTaskRows = filteredTaskRows.filter((t) =>
-			activeWorkspaceFilters.has(t.workspace.id),
-		)
-	}
-
-	filteredTaskRows = applyDateFilter(filteredTaskRows, dateType, dateRange)
+	const filteredTasks =
+		activeWorkspaceFilters.size > 0
+			? baseFilteredTasks.filter((row) =>
+					activeWorkspaceFilters.has(row.workspace.id),
+				)
+			: baseFilteredTasks
 
 	function clearAllFilters() {
 		clearQuickFilters()
@@ -173,12 +155,12 @@ function PersonalTasksLayout() {
 
 				{!isLoading && rawTasks.length === 0 ? (
 					<EmptyState />
-				) : searchQuery && filteredTaskRows.length === 0 ? (
+				) : searchQuery && filteredTasks.length === 0 ? (
 					<EmptyState variant="search" />
 				) : (
 					<TaskTable
 						queryKey={queryKey}
-						tasks={filteredTaskRows}
+						tasks={toTaskRows(filteredTasks)}
 						extraColumns={EXTRA_COLUMNS as Record<string, ColumnDef<TaskRow>>}
 					/>
 				)}
