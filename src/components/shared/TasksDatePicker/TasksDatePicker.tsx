@@ -2,26 +2,17 @@ import { useEffect, useState } from "react"
 import { type DateRange, isDateRange } from "react-day-picker"
 import { CalendarMode } from "src/components/shared/DatePicker"
 import DatePickerPopover from "src/components/shared/DatePickerPopover"
-import type { DATE_TYPE } from "src/utils/date-utils"
+import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { TasksDatePickerHeader } from "./TasksDatePickerHeader"
 import { TasksDatePickerTriggerButton } from "./TasksDatePickerTriggerButton"
 import { TasksDatePickerFooter } from "./TasksPickerFooter"
 
 interface TasksDatePickerProps {
-	dateType: DATE_TYPE
-	range?: DateRange
 	showTitle?: boolean
-	onDateTypeChange(value: DATE_TYPE): void
-	setRange(range: DateRange | undefined): void
 }
 
-export function TasksDatePicker({
-	dateType,
-	onDateTypeChange,
-	setRange,
-	range,
-	showTitle = false,
-}: TasksDatePickerProps) {
+export function TasksDatePicker({ showTitle = false }: TasksDatePickerProps) {
+	const { dateType, setDateType, dateRange: range, setDateRange: setRange } = useTasksFilters()
 	const [pendingDataType, setPendingDataType] = useState(dateType)
 
 	useEffect(() => {
@@ -29,7 +20,7 @@ export function TasksDatePicker({
 	}, [dateType])
 
 	function handleConfirm(range: DateRange | undefined) {
-		onDateTypeChange(pendingDataType)
+		setDateType(pendingDataType)
 		setRange(range)
 	}
 

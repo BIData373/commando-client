@@ -20,7 +20,7 @@ export function DashboardContent() {
 	const { urlName } = useParams({ from: "/workspace/$urlName" })
 	const navigate = useNavigate()
 
-	const { dateType, setDateType, dateRange, setDateRange } = useTasksFilters()
+	const { dateType, dateRange } = useTasksFilters()
 
 	const tasksQueryKey = getListTasksQueryKey({ workspaceId: id })
 	const { data: rawTasks = [] } = useListTasks({ workspaceId: id })
@@ -48,13 +48,7 @@ export function DashboardContent() {
 
 	return (
 		<ContentArea>
-			<TasksDatePicker
-				dateType={dateType}
-				showTitle={true}
-				onDateTypeChange={setDateType}
-				setRange={setDateRange}
-				range={dateRange}
-			/>
+			<TasksDatePicker showTitle={true} />
 
 			<GridLayout>
 				<FocusedInstructions

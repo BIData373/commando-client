@@ -47,7 +47,7 @@ function TasksLayout({
 	deadlineTypeFilter,
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
-	const { searchQuery, columnOrder, hiddenColumns, dateType, setDateType, dateRange, setDateRange } = useTasksFilters()
+	const { searchQuery, columnOrder, hiddenColumns, dateRange, setDateRange } = useTasksFilters()
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
@@ -199,14 +199,7 @@ function TasksLayout({
 							$active={activeTopicFilters.size > 0}
 						/>
 					}
-					startSlot={
-						<TasksDatePicker
-							dateType={dateType}
-							range={dateRange}
-							onDateTypeChange={setDateType}
-							setRange={setDateRange}
-						/>
-					}
+					startSlot={<TasksDatePicker />}
 				/>
 
 				<ContentArea>

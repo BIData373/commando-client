@@ -67,7 +67,7 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 }
 
 function PersonalTasksLayout() {
-	const { searchQuery, activeQuickFilters, clearQuickFilters, dateType, setDateType, dateRange, setDateRange } =
+	const { searchQuery, activeQuickFilters, clearQuickFilters, dateType, dateRange } =
 		useTasksFilters()
 	const queryKey = getListPersonalTasksQueryKey()
 	const { data: rawTasks = [] } = useListPersonalTasks()
@@ -164,12 +164,7 @@ function PersonalTasksLayout() {
 						/>
 					}
 					startSlot={
-						<TasksDatePicker
-							dateType={dateType}
-							range={dateRange}
-							onDateTypeChange={setDateType}
-							setRange={setDateRange}
-						/>
+						<TasksDatePicker />
 					}
 				/>
 
