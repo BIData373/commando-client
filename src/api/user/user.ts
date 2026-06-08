@@ -21,6 +21,8 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import type { ErrorType } from "../../axios"
+
 import { sendRequest } from "../../axios"
 import type {
 	CreateUserDto,
@@ -46,7 +48,7 @@ export const createUser = (
 }
 
 export const getCreateUserMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -86,9 +88,9 @@ export type CreateUserMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createUser>>
 >
 export type CreateUserMutationBody = CreateUserDto
-export type CreateUserMutationError = unknown
+export type CreateUserMutationError = ErrorType<unknown>
 
-export const useCreateUser = <TError = unknown, TContext = unknown>(
+export const useCreateUser = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createUser>>,
@@ -116,7 +118,7 @@ export const getListUsersQueryKey = () => {
 
 export const getListUsersQueryOptions = <
 	TData = Awaited<ReturnType<typeof listUsers>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(options?: {
 	query?: Partial<
 		UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>
@@ -140,11 +142,11 @@ export const getListUsersQueryOptions = <
 export type ListUsersQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listUsers>>
 >
-export type ListUsersQueryError = unknown
+export type ListUsersQueryError = ErrorType<unknown>
 
 export function useListUsers<
 	TData = Awaited<ReturnType<typeof listUsers>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	options: {
 		query: Partial<
@@ -165,7 +167,7 @@ export function useListUsers<
 }
 export function useListUsers<
 	TData = Awaited<ReturnType<typeof listUsers>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	options?: {
 		query?: Partial<
@@ -186,7 +188,7 @@ export function useListUsers<
 }
 export function useListUsers<
 	TData = Awaited<ReturnType<typeof listUsers>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	options?: {
 		query?: Partial<
@@ -200,7 +202,7 @@ export function useListUsers<
 
 export function useListUsers<
 	TData = Awaited<ReturnType<typeof listUsers>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	options?: {
 		query?: Partial<
@@ -239,7 +241,7 @@ export const getSearchUsersQueryKey = (params?: SearchUsersParams) => {
 
 export const getSearchUsersQueryOptions = <
 	TData = Awaited<ReturnType<typeof searchUsers>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: SearchUsersParams,
 	options?: {
@@ -266,11 +268,11 @@ export const getSearchUsersQueryOptions = <
 export type SearchUsersQueryResult = NonNullable<
 	Awaited<ReturnType<typeof searchUsers>>
 >
-export type SearchUsersQueryError = unknown
+export type SearchUsersQueryError = ErrorType<unknown>
 
 export function useSearchUsers<
 	TData = Awaited<ReturnType<typeof searchUsers>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: SearchUsersParams,
 	options: {
@@ -292,7 +294,7 @@ export function useSearchUsers<
 }
 export function useSearchUsers<
 	TData = Awaited<ReturnType<typeof searchUsers>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: SearchUsersParams,
 	options?: {
@@ -314,7 +316,7 @@ export function useSearchUsers<
 }
 export function useSearchUsers<
 	TData = Awaited<ReturnType<typeof searchUsers>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: SearchUsersParams,
 	options?: {
@@ -329,7 +331,7 @@ export function useSearchUsers<
 
 export function useSearchUsers<
 	TData = Awaited<ReturnType<typeof searchUsers>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: SearchUsersParams,
 	options?: {
@@ -364,7 +366,7 @@ export const getGetUserQueryKey = ({ id }: GetUserPathParameters) => {
 
 export const getGetUserQueryOptions = <
 	TData = Awaited<ReturnType<typeof getUser>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetUserPathParameters,
 	options?: {
@@ -394,11 +396,11 @@ export const getGetUserQueryOptions = <
 export type GetUserQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getUser>>
 >
-export type GetUserQueryError = unknown
+export type GetUserQueryError = ErrorType<unknown>
 
 export function useGetUser<
 	TData = Awaited<ReturnType<typeof getUser>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetUserPathParameters,
 	options: {
@@ -420,7 +422,7 @@ export function useGetUser<
 }
 export function useGetUser<
 	TData = Awaited<ReturnType<typeof getUser>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetUserPathParameters,
 	options?: {
@@ -442,7 +444,7 @@ export function useGetUser<
 }
 export function useGetUser<
 	TData = Awaited<ReturnType<typeof getUser>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetUserPathParameters,
 	options?: {
@@ -457,7 +459,7 @@ export function useGetUser<
 
 export function useGetUser<
 	TData = Awaited<ReturnType<typeof getUser>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetUserPathParameters,
 	options?: {
@@ -494,7 +496,7 @@ export const updateUser = (
 }
 
 export const getUpdateUserMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -534,9 +536,9 @@ export type UpdateUserMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateUser>>
 >
 export type UpdateUserMutationBody = UpdateUserDto
-export type UpdateUserMutationError = unknown
+export type UpdateUserMutationError = ErrorType<unknown>
 
-export const useUpdateUser = <TError = unknown, TContext = unknown>(
+export const useUpdateUser = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateUser>>,
@@ -562,7 +564,7 @@ export const deleteUser = (
 }
 
 export const getDeleteUserMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -602,9 +604,9 @@ export type DeleteUserMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deleteUser>>
 >
 
-export type DeleteUserMutationError = unknown
+export type DeleteUserMutationError = ErrorType<unknown>
 
-export const useDeleteUser = <TError = unknown, TContext = unknown>(
+export const useDeleteUser = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteUser>>,

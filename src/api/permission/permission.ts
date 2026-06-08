@@ -21,6 +21,8 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import type { ErrorType } from "../../axios"
+
 import { sendRequest } from "../../axios"
 import type {
 	DeletePermissionParams,
@@ -48,7 +50,7 @@ export const getListPermissionsQueryKey = (params?: ListPermissionsParams) => {
 
 export const getListPermissionsQueryOptions = <
 	TData = Awaited<ReturnType<typeof listPermissions>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListPermissionsParams,
 	options?: {
@@ -79,11 +81,11 @@ export const getListPermissionsQueryOptions = <
 export type ListPermissionsQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listPermissions>>
 >
-export type ListPermissionsQueryError = unknown
+export type ListPermissionsQueryError = ErrorType<unknown>
 
 export function useListPermissions<
 	TData = Awaited<ReturnType<typeof listPermissions>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListPermissionsParams,
 	options: {
@@ -109,7 +111,7 @@ export function useListPermissions<
 }
 export function useListPermissions<
 	TData = Awaited<ReturnType<typeof listPermissions>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListPermissionsParams,
 	options?: {
@@ -135,7 +137,7 @@ export function useListPermissions<
 }
 export function useListPermissions<
 	TData = Awaited<ReturnType<typeof listPermissions>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListPermissionsParams,
 	options?: {
@@ -154,7 +156,7 @@ export function useListPermissions<
 
 export function useListPermissions<
 	TData = Awaited<ReturnType<typeof listPermissions>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListPermissionsParams,
 	options?: {
@@ -194,7 +196,7 @@ export const updatePermission = (
 }
 
 export const getUpdatePermissionMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -234,9 +236,12 @@ export type UpdatePermissionMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updatePermission>>
 >
 export type UpdatePermissionMutationBody = UpdatePermissionDto
-export type UpdatePermissionMutationError = unknown
+export type UpdatePermissionMutationError = ErrorType<unknown>
 
-export const useUpdatePermission = <TError = unknown, TContext = unknown>(
+export const useUpdatePermission = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updatePermission>>,
@@ -267,7 +272,7 @@ export const deletePermission = (
 }
 
 export const getDeletePermissionMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -307,9 +312,12 @@ export type DeletePermissionMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deletePermission>>
 >
 
-export type DeletePermissionMutationError = unknown
+export type DeletePermissionMutationError = ErrorType<unknown>
 
-export const useDeletePermission = <TError = unknown, TContext = unknown>(
+export const useDeletePermission = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deletePermission>>,
@@ -345,7 +353,7 @@ export const getGetMyPermissionQueryKey = (params?: GetMyPermissionParams) => {
 
 export const getGetMyPermissionQueryOptions = <
 	TData = Awaited<ReturnType<typeof getMyPermission>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: GetMyPermissionParams,
 	options?: {
@@ -376,11 +384,11 @@ export const getGetMyPermissionQueryOptions = <
 export type GetMyPermissionQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getMyPermission>>
 >
-export type GetMyPermissionQueryError = unknown
+export type GetMyPermissionQueryError = ErrorType<unknown>
 
 export function useGetMyPermission<
 	TData = Awaited<ReturnType<typeof getMyPermission>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: GetMyPermissionParams,
 	options: {
@@ -406,7 +414,7 @@ export function useGetMyPermission<
 }
 export function useGetMyPermission<
 	TData = Awaited<ReturnType<typeof getMyPermission>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: GetMyPermissionParams,
 	options?: {
@@ -432,7 +440,7 @@ export function useGetMyPermission<
 }
 export function useGetMyPermission<
 	TData = Awaited<ReturnType<typeof getMyPermission>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: GetMyPermissionParams,
 	options?: {
@@ -451,7 +459,7 @@ export function useGetMyPermission<
 
 export function useGetMyPermission<
 	TData = Awaited<ReturnType<typeof getMyPermission>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: GetMyPermissionParams,
 	options?: {

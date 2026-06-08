@@ -72,12 +72,12 @@ const COLUMN_DEFS: Record<string, ExportColumn<TaskRow>> = {
 	status: {
 		header: "סטטוס",
 		accessor: (t) => ({
-			value: t.status.name,
-			fontColor: t.status.color,
-			bgColor: t.status.color,
+			value: t.status?.name ?? "",
+			fontColor: t.status?.color,
+			bgColor: t.status?.color,
 		}),
 	},
-	responsible: { header: "אחראי", accessor: (t) => t.assignee.name ?? "" },
+	responsible: { header: "אחראי", accessor: (t) => t.assignee?.name ?? "" },
 	deadlineType: {
 		header: 'תג"ב',
 		accessor: (t) => {

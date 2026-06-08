@@ -21,6 +21,8 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import type { ErrorType } from "../../axios"
+
 import { sendRequest } from "../../axios"
 import { serializeFormData } from "../../form-data"
 import type {
@@ -48,7 +50,7 @@ export const createSource = (
 }
 
 export const getCreateSourceMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -88,9 +90,12 @@ export type CreateSourceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createSource>>
 >
 export type CreateSourceMutationBody = CreateSourceDto
-export type CreateSourceMutationError = unknown
+export type CreateSourceMutationError = ErrorType<unknown>
 
-export const useCreateSource = <TError = unknown, TContext = unknown>(
+export const useCreateSource = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createSource>>,
@@ -126,7 +131,7 @@ export const getListSourcesQueryKey = (params?: ListSourcesParams) => {
 
 export const getListSourcesQueryOptions = <
 	TData = Awaited<ReturnType<typeof listSources>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListSourcesParams,
 	options?: {
@@ -153,11 +158,11 @@ export const getListSourcesQueryOptions = <
 export type ListSourcesQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listSources>>
 >
-export type ListSourcesQueryError = unknown
+export type ListSourcesQueryError = ErrorType<unknown>
 
 export function useListSources<
 	TData = Awaited<ReturnType<typeof listSources>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListSourcesParams,
 	options: {
@@ -179,7 +184,7 @@ export function useListSources<
 }
 export function useListSources<
 	TData = Awaited<ReturnType<typeof listSources>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListSourcesParams,
 	options?: {
@@ -201,7 +206,7 @@ export function useListSources<
 }
 export function useListSources<
 	TData = Awaited<ReturnType<typeof listSources>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListSourcesParams,
 	options?: {
@@ -216,7 +221,7 @@ export function useListSources<
 
 export function useListSources<
 	TData = Awaited<ReturnType<typeof listSources>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListSourcesParams,
 	options?: {
@@ -251,7 +256,7 @@ export const getGetSourceQueryKey = ({ id }: GetSourcePathParameters) => {
 
 export const getGetSourceQueryOptions = <
 	TData = Awaited<ReturnType<typeof getSource>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetSourcePathParameters,
 	options?: {
@@ -281,11 +286,11 @@ export const getGetSourceQueryOptions = <
 export type GetSourceQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getSource>>
 >
-export type GetSourceQueryError = unknown
+export type GetSourceQueryError = ErrorType<unknown>
 
 export function useGetSource<
 	TData = Awaited<ReturnType<typeof getSource>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetSourcePathParameters,
 	options: {
@@ -307,7 +312,7 @@ export function useGetSource<
 }
 export function useGetSource<
 	TData = Awaited<ReturnType<typeof getSource>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetSourcePathParameters,
 	options?: {
@@ -329,7 +334,7 @@ export function useGetSource<
 }
 export function useGetSource<
 	TData = Awaited<ReturnType<typeof getSource>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetSourcePathParameters,
 	options?: {
@@ -344,7 +349,7 @@ export function useGetSource<
 
 export function useGetSource<
 	TData = Awaited<ReturnType<typeof getSource>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetSourcePathParameters,
 	options?: {
@@ -382,7 +387,7 @@ export const updateSource = (
 }
 
 export const getUpdateSourceMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -422,9 +427,12 @@ export type UpdateSourceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateSource>>
 >
 export type UpdateSourceMutationBody = UpdateSourceDto
-export type UpdateSourceMutationError = unknown
+export type UpdateSourceMutationError = ErrorType<unknown>
 
-export const useUpdateSource = <TError = unknown, TContext = unknown>(
+export const useUpdateSource = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateSource>>,
@@ -454,7 +462,7 @@ export const deleteSource = (
 }
 
 export const getDeleteSourceMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -494,9 +502,12 @@ export type DeleteSourceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deleteSource>>
 >
 
-export type DeleteSourceMutationError = unknown
+export type DeleteSourceMutationError = ErrorType<unknown>
 
-export const useDeleteSource = <TError = unknown, TContext = unknown>(
+export const useDeleteSource = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteSource>>,

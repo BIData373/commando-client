@@ -1,3 +1,4 @@
+import { useLocalStorage } from "@mantine/hooks"
 import {
 	createContext,
 	type PropsWithChildren,
@@ -46,7 +47,15 @@ const WORKSPACE_DEFAULT_HIDDEN = new Set<TaskColumn>([
 
 const TasksFiltersContext = createContext<TasksFiltersContextValue | null>(null)
 
+type ColumnsStorageKey = "personal" | "tasks"
+
+interface ColumnsVisibilityStorage {
+	columnOrder: TaskColumn[]
+	hiddenColumns: TaskColumn[]
+}
+
 interface TasksProviderProps extends PropsWithChildren {
+	storageKey: ColumnsStorageKey
 	defaultColumnOrder?: TaskColumn[]
 	defaultHiddenColumns?: Set<TaskColumn>
 }
@@ -56,6 +65,7 @@ export function formatTaskRowId(taskId: number, assigneeId?: number) {
 }
 
 export function TasksFiltersProvider({
+	storageKey,
 	defaultColumnOrder = DEFAULT_COLUMN_ORDER,
 	defaultHiddenColumns = WORKSPACE_DEFAULT_HIDDEN,
 	children,
@@ -64,22 +74,32 @@ export function TasksFiltersProvider({
 	const [activeQuickFilters, setActiveQuickFilters] = useState<
 		Set<QuickFilter>
 	>(new Set())
-	const [columnOrder, setColumnOrder] = useState<TaskColumn[]>([
-		"id" as TaskColumn,
-		...defaultColumnOrder,
-	])
-	const [hiddenColumns, setHiddenColumns] =
-		useState<Set<TaskColumn>>(defaultHiddenColumns)
+
+	const [columnsVisibility, setColumnsVisibility] =
+		useLocalStorage<ColumnsVisibilityStorage>({
+			key: `${storageKey}:columnsVisibility`,
+			defaultValue: {
+				columnOrder: ["id" as TaskColumn, ...defaultColumnOrder],
+				hiddenColumns: [...defaultHiddenColumns],
+			},
+		})
+
+	const columnOrder = columnsVisibility.columnOrder
+	const hiddenColumns = new Set<TaskColumn>(columnsVisibility.hiddenColumns)
+
+	function setColumnOrder(order: TaskColumn[]) {
+		setColumnsVisibility((prev) => ({ ...prev, columnOrder: order }))
+	}
 
 	function toggleColumn(columnId: TaskColumn) {
-		setHiddenColumns((prev) => {
-			const next = new Set(prev)
-			if (next.has(columnId)) {
-				next.delete(columnId)
+		setColumnsVisibility((prev) => {
+			const set = new Set(prev.hiddenColumns)
+			if (set.has(columnId)) {
+				set.delete(columnId)
 			} else {
-				next.add(columnId)
+				set.add(columnId)
 			}
-			return next
+			return { ...prev, hiddenColumns: [...set] }
 		})
 	}
 
