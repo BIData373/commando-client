@@ -154,10 +154,13 @@ function DialogDescription({
   )
 }
 
+const DialogContentPrimitive = DialogPrimitive.Content
+
 export {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogContentPrimitive,
   DialogDescription,
   DialogFooter,
   DialogHeader,

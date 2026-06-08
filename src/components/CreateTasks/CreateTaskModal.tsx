@@ -3,7 +3,6 @@ import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
 import { omit, uniq } from "lodash"
 import { ChevronDown, ChevronUp, X } from "lucide-react"
-import { Dialog as DialogPrimitive } from "radix-ui"
 import { useRef, useState } from "react"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import {
@@ -30,7 +29,12 @@ import { FormField } from "../shared/FormField"
 import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { Checkbox } from "../ui/checkbox"
-import { DialogOverlay } from "../ui/dialog"
+import {
+	Dialog,
+	DialogContentPrimitive,
+	DialogOverlay,
+	DialogPortal,
+} from "../ui/dialog"
 import AssigneeField from "./AssigneeField"
 import DeadlineField from "./DeadlineField"
 import NotesField from "./NotesField"
@@ -316,8 +320,8 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 	// ─── Render ────────────────────────────────────────────────────────────────
 
 	return (
-		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
-			<DialogPrimitive.Portal>
+		<Dialog open onOpenChange={handleOpenChange}>
+			<DialogPortal>
 				<DialogOverlay />
 				<ModalCard>
 					<ModalCloseButton onClick={onClose}>
@@ -456,8 +460,8 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 						</ActionRow>
 					</ModalBody>
 				</ModalCard>
-			</DialogPrimitive.Portal>
-		</DialogPrimitive.Root>
+			</DialogPortal>
+		</Dialog>
 	)
 }
 
@@ -465,7 +469,7 @@ export default CreateTaskModal
 
 // ─── Modal Shell ─────────────────────────────────────────────────────────────
 
-const ModalCard = styled(DialogPrimitive.Content)`
+const ModalCard = styled(DialogContentPrimitive)`
   position: fixed;
   top: 50%;
   left: 50%;
