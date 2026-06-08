@@ -51,6 +51,8 @@ interface TasksFiltersContextValue {
 	setDateRange: (range: DateRange | undefined) => void
 }
 
+export const TASK_ROW_ID_SEPARATOR = "_"
+
 const WORKSPACE_DEFAULT_HIDDEN = new Set<TaskColumn>([
 	"notes",
 	"updatedAt",
@@ -73,7 +75,7 @@ interface TasksProviderProps extends PropsWithChildren {
 }
 
 export function formatTaskRowId(taskId: number, assigneeId?: number) {
-	return `${taskId}_${assigneeId}`
+	return `${taskId}${TASK_ROW_ID_SEPARATOR}${assigneeId}`
 }
 
 export function TasksFiltersProvider({

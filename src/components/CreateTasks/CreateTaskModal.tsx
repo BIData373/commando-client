@@ -21,7 +21,7 @@ import {
 	useUpdateTask,
 } from "src/api/task/task"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { queryClient } from "src/queryClient"
+import { invalidateQueries, queryClient } from "src/queryClient"
 import { getChangedFields } from "src/utils/form-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { CancelButton } from "../shared/CancelButton"
@@ -74,28 +74,29 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 
 	async function handleUpdateSuccess() {
 		const currentAssignees = form.state.values.assignees ?? []
-		const statusUpdates = currentAssignees
-			.filter(({ statusId, id }) => {
-				if (statusId == null) {
-					return false
-				}
-				const original = task!.assigneeStatuses.find(
-					(as) => as.assignee.id === id,
-				)
-				return !original || original.status.id !== statusId
-			})
-			.map((a) =>
+		const statusUpdates = currentAssignees.filter(({ statusId, id }) => {
+			if (statusId == null) {
+				return false
+			}
+			const original = task!.assigneeStatuses.find(
+				(as) => as.assignee.id === id,
+			)
+			return !original || original.status.id !== statusId
+		})
+
+		await Promise.all(
+			statusUpdates.map((a) =>
 				upsertStatus({
 					data: { taskId: task!.id, assigneeId: a.id, statusId: a.statusId! },
 				}),
-			)
-		await Promise.all(statusUpdates)
-		await Promise.all(
-			[
-				getListTasksQueryKey({ workspaceId }),
-				getGetTaskQueryKey({ id: task!.id }),
-			].map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+			),
 		)
+
+		await invalidateQueries([
+			getListTasksQueryKey({ workspaceId }),
+			getGetTaskQueryKey({ id: task!.id }),
+		])
+
 		onClose()
 	}
 
