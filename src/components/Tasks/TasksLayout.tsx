@@ -1,9 +1,7 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
-import { isWithinInterval } from "date-fns"
 import { ChevronDown, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
-import type { DateRange } from "react-day-picker"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
@@ -13,10 +11,9 @@ import {
 	TasksView,
 } from "src/routes/workspace/$urlName/tasks"
 import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new"
-import { DATE_TYPE, getTaskDateByDateType } from "src/utils/data-type-utils"
 import type { QuickFilter } from "src/utils/filter-utils"
 import { exportTasksToExcel } from "../../functions/export-excel"
-import { applyAllFilters } from "../../functions/filter-utils"
+import { applyAllFilters, applyDateFilter } from "../../functions/filter-utils"
 import type { TaskRow } from "../../providers/TasksFiltersProvider"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { useTitleBar } from "../../providers/TitleBarProvider"
@@ -51,7 +48,7 @@ function TasksLayout({
 	deadlineTypeFilter,
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
-	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters()
+	const { searchQuery, columnOrder, hiddenColumns, dateType, setDateType, dateRange, setDateRange } = useTasksFilters()
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
@@ -62,8 +59,6 @@ function TasksLayout({
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
 	)
-	const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
-	const [dateType, setDateType] = useState<DATE_TYPE>(DATE_TYPE.CREATION_DATE)
 	const allTopics = [
 		...new Set(tasks.flatMap((t) => t.tags.map((tag) => tag.name))),
 	]
@@ -92,14 +87,7 @@ function TasksLayout({
 				)
 				: baseFilteredTasks
 
-		const from = dateRange?.from
-		const to = dateRange?.to
-		if (!from || !to) return byQuickAndTopic
-
-		return byQuickAndTopic.filter((task) => {
-			const date = getTaskDateByDateType(task, dateType)
-			return date ? isWithinInterval(date, { start: from, end: to }) : false
-		})
+		return applyDateFilter(byQuickAndTopic, dateType, dateRange)
 	}, [
 		tasks,
 		searchQuery,

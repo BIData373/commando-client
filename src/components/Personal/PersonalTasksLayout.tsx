@@ -1,8 +1,7 @@
 import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
-import { isThisWeek, isWithinInterval } from "date-fns"
+import { isThisWeek } from "date-fns"
 import { useState } from "react"
-import type { DateRange } from "react-day-picker"
 import {
 	type TaskWithWorkspaceDto,
 	type WorkspaceDto,
@@ -13,8 +12,7 @@ import {
 	useListPersonalTasks,
 } from "src/api/task/task"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import { DATE_TYPE, getTaskDateByDateType } from "src/utils/data-type-utils"
-import { applyAllFilters } from "../../functions/filter-utils"
+import { applyAllFilters, applyDateFilter } from "../../functions/filter-utils"
 import { toTaskRows } from "../../functions/tasks-table"
 import {
 	type TaskRow,
@@ -75,7 +73,7 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 }
 
 function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
-	const { searchQuery, activeQuickFilters, clearQuickFilters } =
+	const { searchQuery, activeQuickFilters, clearQuickFilters, dateType, setDateType, dateRange, setDateRange } =
 		useTasksFilters()
 	const queryKey = getListPersonalTasksQueryKey()
 	const { data: rawTasks = [] } = useListPersonalTasks()
@@ -83,8 +81,6 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
 	>(new Set())
-	const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
-	const [dateType, setDateType] = useState<DATE_TYPE>(DATE_TYPE.CREATION_DATE)
 
 	const taskRows = toPersonalTaskRows(rawTasks)
 
@@ -118,14 +114,7 @@ function PersonalTasksLayout({ view }: PersonalTasksLayoutProps) {
 		)
 	}
 
-	if (dateRange?.from && dateRange?.to) {
-		const from = dateRange.from
-		const to = dateRange.to
-		filteredTaskRows = filteredTaskRows.filter((task) => {
-			const date = getTaskDateByDateType(task, dateType)
-			return date ? isWithinInterval(date, { start: from, end: to }) : false
-		})
-	}
+	filteredTaskRows = applyDateFilter(filteredTaskRows, dateType, dateRange) as PersonalTaskRow[]
 
 	function clearAllFilters() {
 		clearQuickFilters()

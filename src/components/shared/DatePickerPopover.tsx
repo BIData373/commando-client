@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { Popover } from "radix-ui"
 import type { ReactNode } from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { DatePickerValue } from "./DatePicker"
 import DatePicker, { type CalendarMode } from "./DatePicker"
 
@@ -40,6 +40,10 @@ function DatePickerPopover({
 }: DatePickerPopoverProps) {
 	const [uncontrolledOpen, setUncontrolledOpen] = useState(false)
 	const [value, setValue] = useState<DatePickerValue | undefined>(initialValue)
+
+	useEffect(() => {
+		setValue(initialValue)
+	}, [initialValue])
 
 	const open = controlledOpen ?? uncontrolledOpen
 

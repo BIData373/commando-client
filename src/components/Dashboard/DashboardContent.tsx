@@ -1,17 +1,12 @@
 import styled from "@emotion/styled"
-import { useLocalStorage } from "@mantine/hooks"
 import { useNavigate, useParams } from "@tanstack/react-router"
-import { isWithinInterval } from "date-fns"
 import { useMemo } from "react"
-import type { DateRange } from "react-day-picker"
 import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
+import { applyDateFilter } from "src/functions/filter-utils"
 import { toTaskRows } from "src/functions/tasks-table"
+import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { DATE_TYPE, getTaskDateByDateType } from "src/utils/data-type-utils"
-import {
-	getDashboardFilterDataTypeKey,
-	getDashboardFilterRangeKey,
-} from "src/utils/filter-keys-utils"
+import { DATE_TYPE } from "src/utils/data-type-utils"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import FocusedInstructions from "./FocusedInstructions"
 import RecentlyCompleted from "./RecentlyCompleted"
@@ -25,56 +20,24 @@ export function DashboardContent() {
 	const { urlName } = useParams({ from: "/workspace/$urlName" })
 	const navigate = useNavigate()
 
-	const [dataType, setDataType] = useLocalStorage<DATE_TYPE>({
-		key: getDashboardFilterDataTypeKey(urlName),
-		defaultValue: DATE_TYPE.CREATION_DATE,
-	})
-
-	const [persistedRange, setPersistedRange] = useLocalStorage<
-		DateRange | undefined
-	>({
-		key: getDashboardFilterRangeKey(urlName),
-		defaultValue: undefined,
-	})
-
-	const range: DateRange | undefined = persistedRange
-		? {
-			from: persistedRange.from ? new Date(persistedRange.from) : undefined,
-			to: persistedRange.to ? new Date(persistedRange.to) : undefined,
-		}
-		: undefined
-
-	function handleSetRange(newRange?: DateRange) {
-		setPersistedRange(newRange)
-	}
+	const { dateType, setDateType, dateRange, setDateRange } = useTasksFilters()
 
 	const tasksQueryKey = getListTasksQueryKey({ workspaceId: id })
 	const { data: rawTasks = [] } = useListTasks({ workspaceId: id })
 	const tasks = useMemo(() => toTaskRows(rawTasks), [rawTasks])
 
 	const filteredTasks = useMemo(() => {
-		const from = range?.from
-		const to = range?.to
+		let filtered = applyDateFilter(tasks, dateType, dateRange)
 
-		let filtered =
-			from && to
-				? tasks.filter((task) => {
-					const date = getTaskDateByDateType(task, dataType)
-					return (
-						date !== null && isWithinInterval(date, { start: from, end: to })
-					)
-				})
-				: [...tasks]
-
-		if (dataType === DATE_TYPE.UPDATING_DATE) {
-			filtered = filtered.sort(
+		if (dateType === DATE_TYPE.UPDATING_DATE) {
+			filtered = [...filtered].sort(
 				(a, b) =>
 					new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
 			)
 		}
 
 		return filtered
-	}, [tasks, range, dataType])
+	}, [tasks, dateRange, dateType])
 
 	function handleSetAssignees() {
 		navigate({
@@ -86,11 +49,11 @@ export function DashboardContent() {
 	return (
 		<ContentArea>
 			<TasksDatePicker
-				dateType={dataType}
+				dateType={dateType}
 				showTitle={true}
-				onDateTypeChange={setDataType}
-				setRange={handleSetRange}
-				range={range}
+				onDateTypeChange={setDateType}
+				setRange={setDateRange}
+				range={dateRange}
 			/>
 
 			<GridLayout>

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { type DateRange, isDateRange } from "react-day-picker"
 import { CalendarMode } from "src/components/shared/DatePicker"
 import DatePickerPopover from "src/components/shared/DatePickerPopover"
@@ -23,6 +23,10 @@ export function TasksDatePicker({
 	showTitle = false,
 }: TasksDatePickerProps) {
 	const [pendingDataType, setPendingDataType] = useState(dateType)
+
+	useEffect(() => {
+		setPendingDataType(dateType)
+	}, [dateType])
 
 	function handleConfirm(range: DateRange | undefined) {
 		onDateTypeChange(pendingDataType)

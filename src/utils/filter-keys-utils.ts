@@ -1,6 +1,4 @@
-const getDashboardFilterKey = (urlName: string) => `dashboard-filter-${urlName}`
+const getDashboardFilterKey = 'dashboard-filter-'
 
-export const getDashboardFilterDataTypeKey = (urlName: string) =>
-	`${getDashboardFilterKey(urlName)}-type`
-export const getDashboardFilterRangeKey = (urlName: string) =>
-	`${getDashboardFilterKey(urlName)}-range`
+export const dashboardFilterDataTypeKey = `${getDashboardFilterKey}-type`
+export const dashboardFilterRangeKey = `${getDashboardFilterKey}-range`
