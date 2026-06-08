@@ -31,8 +31,7 @@ export function DashboardContent() {
 
 		if (dateType === DATE_TYPE.UPDATED_DATE) {
 			filtered = [...filtered].sort(
-				(a, b) =>
-					new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+				(a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
 			)
 		}
 

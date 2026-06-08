@@ -100,7 +100,7 @@ function PersonalTasksLayout() {
 		activeQuickFilters,
 		new Set(),
 		searchQuery,
-	) as PersonalTaskRow[]
+	)
 
 	if (activeWorkspaceFilters.size > 0) {
 		filteredTaskRows = filteredTaskRows.filter((t) =>
