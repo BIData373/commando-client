@@ -3,8 +3,7 @@ import { Outlet, useNavigate } from "@tanstack/react-router"
 import { ChevronDown, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
-import { useGetTask, useListTasks } from "src/api/task/task"
-import CreateTaskModal from "../CreateTasks/CreateTaskModal"
+import { useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import {
@@ -37,7 +36,6 @@ export interface TasksLayoutProps {
 	tabFilter: QuickFilter[]
 	statusFilter: WorkspaceStatusType[]
 	deadlineTypeFilter: DeadlineType[]
-	editTaskId?: number
 }
 
 function TasksLayout({
@@ -46,7 +44,6 @@ function TasksLayout({
 	tabFilter,
 	statusFilter,
 	deadlineTypeFilter,
-	editTaskId,
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
 
@@ -57,11 +54,6 @@ function TasksLayout({
 	} = useWorkspace()
 
 	const { data: tasks = [], queryKey } = useListTasks({ workspaceId })
-
-	const { data: editingTask } = useGetTask(
-		{ id: editTaskId ?? -1 },
-		{ query: { enabled: editTaskId !== undefined } },
-	)
 
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
@@ -98,7 +90,6 @@ function TasksLayout({
 				tabFilter,
 				statusFilter,
 				deadlineTypeFilter,
-				editTaskId,
 				...taskFilter,
 			},
 		})
@@ -121,11 +112,11 @@ function TasksLayout({
 	}
 
 	function handleEdit(taskId: number) {
-		navigateToTasks({ editTaskId: taskId })
-	}
-
-	function handleEditClose() {
-		navigateToTasks({ editTaskId: undefined })
+		navigate({
+			to: "/workspace/$urlName/tasks/$taskId/edit",
+			params: { urlName, taskId: String(taskId) },
+			search: { view },
+		})
 	}
 
 	function handleCreateTask() {
@@ -239,9 +230,6 @@ function TasksLayout({
 				</ContentArea>
 			</TasksRoot>
 			<Outlet />
-			{editingTask && (
-				<CreateTaskModal key={editTaskId} task={editingTask} onClose={handleEditClose} />
-			)}
 		</TooltipProvider>
 	)
 }

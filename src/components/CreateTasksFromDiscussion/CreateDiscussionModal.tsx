@@ -96,11 +96,15 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 		try {
 			const source = await createSource({ data: values })
 			const inputs = taskRows.map(
-				({ id, rowKey, assigneeDetails, ...rest }) => ({
+				({ id, rowKey, assigneeIds, assigneeDetails, ...rest }) => ({
 					...rest,
 					workspaceId,
 					sourceId: source.id,
 					groupKey: String(id),
+					assignees: assigneeIds.map((assigneeId) => ({
+						id: assigneeId,
+						description: assigneeDetails[assigneeId] || undefined,
+					})),
 				}),
 			)
 			saveTasks(inputs)
