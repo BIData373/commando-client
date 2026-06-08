@@ -1,34 +1,29 @@
-import type { AssigneeDto, TaskDto, WorkspaceStatusDto } from "src/api/model"
-import {
-	formatTaskRowId,
-	type TaskRow,
-} from "src/providers/TasksFiltersProvider"
+import type { AssigneeStatusDto, TaskDto } from "src/api/model"
+import { formatTaskRowId } from "src/providers/TasksFiltersProvider"
 
-function formatTaskRow(
-	{ id, assigneeStatuses, ...task }: TaskDto,
-	assignee?: AssigneeDto,
-	status?: WorkspaceStatusDto,
-): TaskRow {
+function formatTaskRow<TTask extends TaskDto>(
+	{ id, assigneeStatuses, ...task }: TTask,
+	assigneeStatus?: AssigneeStatusDto,
+) {
 	return {
 		...task,
 		id,
 		assigneeStatuses,
-		rowKey: formatTaskRowId(id, assignee?.id),
-		status,
-		assignee,
-		...(assignee && {
+		rowKey: formatTaskRowId(id, assigneeStatus?.assignee?.id),
+		...assigneeStatus,
+		...(assigneeStatus?.assignee && {
 			otherAssignees: assigneeStatuses.filter(
-				(as) => as.assignee.id !== assignee.id,
+				(as) => as.assignee.id !== assigneeStatus?.assignee.id,
 			),
 		}),
 	}
 }
 
-export function toTaskRows(tasks: TaskDto[]): TaskRow[] {
+export function toTaskRows<TTask extends TaskDto>(tasks: TTask[]) {
 	return tasks.flatMap((task) =>
 		task.assigneeStatuses.length > 0
-			? task.assigneeStatuses.map(({ assignee, status }) =>
-					formatTaskRow(task, assignee, status),
+			? task.assigneeStatuses.map((assigneeStatus) =>
+					formatTaskRow(task, assigneeStatus),
 				)
 			: [formatTaskRow(task)],
 	)

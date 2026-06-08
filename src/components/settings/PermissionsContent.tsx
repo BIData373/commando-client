@@ -42,7 +42,11 @@ export function PermissionsContent() {
 	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null)
 	const [type, setType] = useState<PermissionType>(PermissionType.VIEWER)
 
-	const { data: permissions = [], isLoading, queryKey } = useListPermissions({
+	const {
+		data: permissions = [],
+		isLoading,
+		queryKey,
+	} = useListPermissions({
 		workspaceId,
 	})
 	const { mutate: updatePermission } = useUpdatePermission()

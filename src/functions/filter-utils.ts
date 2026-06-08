@@ -6,6 +6,36 @@ import { type DATE_TYPE, getTaskDateByDateType } from "src/utils/date-utils"
 import { QuickFilter } from "src/utils/filter-utils"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 import type { TaskRow } from "../providers/TasksFiltersProvider"
+
+// ─── All Filters ─────────────────────────────────────────────────────────────
+
+export function applyAllFilters<T extends TaskRow>(
+	tasks: T[],
+	quickFilters: Set<QuickFilter>,
+	topicFilters: Set<string>,
+	searchQuery: string,
+): T[] {
+	let result = tasks
+
+	if (quickFilters.size > 0) {
+		result = result.filter((task) =>
+			Array.from(quickFilters).some((f) => matchesQuickFilter(task, f)),
+		)
+	}
+
+	if (topicFilters.size > 0) {
+		result = result.filter((task) =>
+			task.tags.some((tag) => topicFilters.has(tag.name)),
+		)
+	}
+
+	if (searchQuery.trim()) {
+		const q = searchQuery.toLowerCase()
+		result = result.filter((task) => task.title?.toLowerCase().includes(q))
+	}
+
+	return result
+}
 // ─── Shared Types ────────────────────────────────────────────────────────────
 
 export interface FilterOption {
@@ -15,7 +45,10 @@ export interface FilterOption {
 
 // ─── Quick Filters ───────────────────────────────────────────────────────────
 
-function matchesQuickFilter(task: TaskDto, filter: QuickFilter): boolean {
+export function matchesQuickFilter(
+	task: TaskDto,
+	filter: QuickFilter,
+): boolean {
 	const today = startOfToday()
 	const daysUntil = task.dueDate ? differenceInDays(task.dueDate, today) : null
 	switch (filter) {
@@ -40,44 +73,7 @@ function matchesQuickFilter(task: TaskDto, filter: QuickFilter): boolean {
 	}
 }
 
-// ─── Combined ────────────────────────────────────────────────────────────────
-
-function applyAllFilters<T extends TaskRow>(
-	tasks: T[],
-	activeQuickFilters: Set<QuickFilter>,
-	activeTopicFilters: Set<string>,
-	searchQuery: string,
-): T[] {
-	const hasQuickFilters = activeQuickFilters.size > 0
-	const hasTopicFilters = activeTopicFilters.size > 0
-
-	let result = tasks
-
-	if (hasQuickFilters || hasTopicFilters) {
-		result = result.filter((t) => {
-			const matchesQuick =
-				hasQuickFilters &&
-				Array.from(activeQuickFilters).some((f) => matchesQuickFilter(t, f))
-			const matchesTopic =
-				hasTopicFilters &&
-				t.tags.some((tag) => activeTopicFilters.has(tag.name))
-			return matchesQuick || matchesTopic
-		})
-	}
-
-	if (searchQuery) {
-		result = result.filter(
-			(t) =>
-				t.title.includes(searchQuery) ||
-				t.description?.includes(searchQuery) ||
-				JSON.stringify(t.notes).includes(searchQuery),
-		)
-	}
-
-	return result
-}
-
-function buildFilterOptionsMap(
+export function buildFilterOptionsMap(
 	tasks: TaskDto[],
 ): Record<string, FilterOption[]> {
 	const assigneeSet = new Set<string>()
@@ -114,7 +110,7 @@ function buildFilterOptionsMap(
 
 // ─── Column Filters ──────────────────────────────────────────────────────────
 
-function applyColumnFilters<T extends TaskRow>(
+export function applyColumnFilters<T extends TaskRow>(
 	tasks: T[],
 	columnFilters: ColumnFiltersState,
 ): T[] {
@@ -150,7 +146,7 @@ function applyColumnFilters<T extends TaskRow>(
 
 // ─── Date Filter ─────────────────────────────────────────────────────────────
 
-function applyDateFilter<T extends TaskRow>(
+export function applyDateFilter<T extends TaskRow>(
 	tasks: T[],
 	dateType: DATE_TYPE,
 	dateRange: DateRange | undefined,
@@ -162,12 +158,4 @@ function applyDateFilter<T extends TaskRow>(
 		const date = getTaskDateByDateType(task, dateType)
 		return date !== null && isWithinInterval(date, { start: from, end: to })
 	})
-}
-
-export {
-	applyAllFilters,
-	applyColumnFilters,
-	applyDateFilter,
-	buildFilterOptionsMap,
-	matchesQuickFilter,
 }

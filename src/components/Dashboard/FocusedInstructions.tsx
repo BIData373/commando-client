@@ -29,7 +29,6 @@ interface EmptyMessage {
 
 interface IFocusedInstruction {
 	queryKey: QueryKey
-	urlName: string
 	tasks: TaskRow[]
 }
 
@@ -69,7 +68,6 @@ function getFilteredTasks(tab: FocusedTab, tasks: TaskRow[]): TaskRow[] {
 
 export default function FocusedInstructions({
 	queryKey,
-	urlName,
 	tasks,
 }: IFocusedInstruction) {
 	const [activeTab, setActiveTab] = useState<FocusedTab>(FocusedTab.FLAGGED)
@@ -163,7 +161,6 @@ export default function FocusedInstructions({
 				</ContentPanel>
 			</TabsWrapper>
 			<ViewMoreInstructions
-				urlName={urlName}
 				tabFilter={activeTab === FocusedTab.APPROACHING ? undefined : activeTab}
 				deadlineTypeFilter={
 					activeTab === FocusedTab.APPROACHING

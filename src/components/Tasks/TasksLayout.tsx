@@ -6,6 +6,7 @@ import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
+import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import {
 	type TasksSearchSchemaType,
@@ -51,7 +52,8 @@ function TasksLayout({
 	statusFilter,
 	deadlineTypeFilter,
 }: TasksLayoutProps) {
-	const navigate = useNavigate()
+	const navigate = useNavigate({ from: "/workspace/$urlName/tasks" })
+
 	const {
 		searchQuery,
 		columnOrder,
@@ -59,7 +61,10 @@ function TasksLayout({
 		dateRange,
 		setDateRange,
 		dateType,
+		toggleQuickFilter,
+		clearQuickFilters,
 	} = useTasksFilters()
+
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
@@ -80,22 +85,16 @@ function TasksLayout({
 		...new Set(tasks.flatMap((t) => t.tags.map((tag) => tag.name))),
 	]
 
-	const tabFilterSet = useMemo(
-		() => new Set<QuickFilter>(tabFilter),
-		[tabFilter],
+	const filteredTasks = useFilteredTasks(
+		tasks,
+		activeTopicFilters.size > 0
+			? (task) => task.tags.some((tag) => activeTopicFilters.has(tag.name))
+			: undefined,
 	)
 
-	const filteredTasks = useMemo(
-		() =>
-			toTaskRows(
-				applyAllFilters(
-					tasks,
-					tabFilterSet,
-					activeTopicFilters.size > 0 ? activeTopicFilters : new Set(),
-					searchQuery,
-				),
-			),
-		[tasks, searchQuery, tabFilterSet, activeTopicFilters],
+	const filteredTaskRows = useMemo(
+		() => toTaskRows(filteredTasks),
+		[filteredTasks],
 	)
 
 	const tasksForCounts = useMemo(() => {
@@ -167,19 +166,24 @@ function TasksLayout({
 	}
 
 	function handleToggleTabFilter(filter: QuickFilter) {
+		toggleQuickFilter(filter)
 		const next = tabFilter.includes(filter)
 			? tabFilter.filter((f) => f !== filter)
 			: [...tabFilter, filter]
-		navigateToTasks({ tabFilter: next })
+		navigate({ search: (prev) => ({ ...prev, tabFilter: next }) })
 	}
 
 	function clearAllFilters() {
 		setActiveTopicFilters(new Set())
 		setDateRange(undefined)
-		navigateToTasks({
-			tabFilter: [],
-			statusFilter: [],
-			deadlineTypeFilter: [],
+		clearQuickFilters()
+		navigate({
+			search: (prev) => ({
+				...prev,
+				tabFilter: [],
+				statusFilter: [],
+				deadlineTypeFilter: [],
+			}),
 		})
 	}
 
@@ -194,7 +198,7 @@ function TasksLayout({
 	}
 
 	function handleExport() {
-		exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns })
+		exportTasksToExcel(filteredTaskRows, { columnOrder, hiddenColumns })
 	}
 
 	// function handleViewChange(newView: TasksView) {
@@ -258,7 +262,7 @@ function TasksLayout({
 					) : view === TasksView.TABLE ? (
 						<TaskTable
 							queryKey={queryKey}
-							tasks={filteredTasks}
+							tasks={filteredTaskRows}
 							onEdit={handleEdit}
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
