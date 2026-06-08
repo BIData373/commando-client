@@ -180,7 +180,7 @@ function TasksLayout({
 		<TooltipProvider>
 			<TasksRoot>
 				<TaskFilters
-					tasks={filteredTaskRows}
+					tasks={toTaskRows(tasks)}
 					onClearAllFilters={clearAllFilters}
 					onExport={handleExport}
 					tabFilter={tabFilter}
