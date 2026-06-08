@@ -2,31 +2,35 @@ import styled from "@emotion/styled"
 import type { PropsWithChildren } from "react"
 
 interface EmptyCardStateProps extends PropsWithChildren {
-	imgSrc: string
-	title: string
-	description: string
+  imgSrc?: string
+  title: string
+  description?: string
 }
 
 export const EmptyCardState = ({
-	imgSrc,
-	title,
-	description,
-	children,
+  imgSrc,
+  title,
+  description,
+  children,
 }: EmptyCardStateProps) => {
-	return (
-		<EmptyState>
-			<EmptyIconWrapper>
-				<img src={imgSrc} alt="" />
-			</EmptyIconWrapper>
-			<EmptyTitle>{title}</EmptyTitle>
-			<EmptyDescription>
-				{description.split("\n").map((line) => (
-					<span key={line}>{line}</span>
-				))}
-			</EmptyDescription>
-			{children}
-		</EmptyState>
-	)
+  return (
+    <EmptyState>
+      {imgSrc && (
+        <EmptyIconWrapper>
+          <img src={imgSrc} alt="" />
+        </EmptyIconWrapper>
+      )}
+      <EmptyTitle>{title}</EmptyTitle>
+      {description && (
+        <EmptyDescription>
+          {description.split("\n").map((line) => (
+            <span key={line}>{line}</span>
+          ))}
+        </EmptyDescription>
+      )}
+      {children}
+    </EmptyState>
+  )
 }
 
 const EmptyState = styled.div`
