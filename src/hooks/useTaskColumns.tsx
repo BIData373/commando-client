@@ -8,7 +8,6 @@ import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import { DeadlineType, type TaskDto } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
-import NotesCellContent from "src/components/Tasks/NotesCellContent"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
 import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
@@ -413,7 +412,12 @@ function useTaskColumns({
 			size: 220,
 			enableSorting: false,
 			enableColumnFilter: false,
-			cell: ({ getValue }) => <NotesCellContent notes={getValue<string>()} />,
+			cell: ({ getValue }) => {
+				const notes = getValue<string>()
+				return notes ? (
+					<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
+				) : null
+			},
 		},
 		createdAt: {
 			accessorKey: "createdAt",
@@ -603,6 +607,41 @@ const SourceText = styled.span`
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.65);
+`
+
+const NotesText = styled.div`
+  overflow: hidden;
+  max-height: 40px;
+
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--sea-ink-soft);
+
+  p {
+    margin: 0;
+  }
+
+  ol {
+    margin: 0;
+    padding-inline-start: 20px;
+    list-style-type: decimal;
+  }
+
+  li {
+    margin: 0;
+  }
+
+  li p {
+    display: inline;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+
+  u {
+    text-decoration: underline;
+  }
 `
 
 const DateText = styled.span`

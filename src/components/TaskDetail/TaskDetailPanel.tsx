@@ -1,5 +1,4 @@
 import styled from "@emotion/styled"
-import { EditorContent, useEditor } from "@tiptap/react"
 import { concat, uniqBy } from "lodash"
 import {
 	Calendar,
@@ -14,7 +13,6 @@ import { DeadlineType, type TaskWithWorkspaceDto } from "src/api/model"
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
-import { EditorExtensions } from "src/utils/tiptap-extensions"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import FlagIcon from "../shared/FlagIcon"
@@ -60,11 +58,6 @@ function TaskDetailPanel({
 	})
 
 	const { data: history } = useListTaskHistory({ taskId: id })
-
-	const editor = useEditor({
-		...EditorExtensions,
-		content: notes,
-	})
 
 	const attachmentFile = source?.attachmentKey?.split("/").pop()?.split(".")[0]
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
@@ -193,9 +186,7 @@ function TaskDetailPanel({
 							{notes && (
 								<NotesSection>
 									<SectionLabel>הערות הנחיה</SectionLabel>
-									<NotesText>
-										<StyledEditorContent editor={editor} />
-									</NotesText>
+									<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
 								</NotesSection>
 							)}
 						</>
@@ -618,14 +609,5 @@ const NotesText = styled.div`
 
   u {
     text-decoration: underline;
-  }
-`
-
-const StyledEditorContent = styled(EditorContent)`
-  .ProseMirror {
-    &:focus {
-      outline: none;
-      border: none;
-    }
   }
 `
