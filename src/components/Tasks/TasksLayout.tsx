@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
 import { ChevronDown, Plus } from "lucide-react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
@@ -46,10 +46,17 @@ function TasksLayout({
 	statusFilter,
 	deadlineTypeFilter,
 }: TasksLayoutProps) {
-	const navigate = useNavigate()
+	const navigate = useNavigate({ from: "/workspace/$urlName/tasks" })
 
-	const { searchQuery, columnOrder, hiddenColumns, dateRange, setDateRange } =
-		useTasksFilters()
+	const {
+		searchQuery,
+		columnOrder,
+		hiddenColumns,
+		dateRange,
+		setDateRange,
+		toggleQuickFilter,
+		clearQuickFilters,
+	} = useTasksFilters()
 
 	const {
 		workspace: { id: workspaceId },
@@ -67,12 +74,15 @@ function TasksLayout({
 
 	const filteredTasks = useFilteredTasks(
 		tasks,
-		(task) =>
-			activeTopicFilters.size > 0 &&
-			task.tags.some((tag) => activeTopicFilters.has(tag.name)),
+		activeTopicFilters.size > 0
+			? (task) => task.tags.some((tag) => activeTopicFilters.has(tag.name))
+			: undefined,
 	)
 
-	const filteredTaskRows = toTaskRows(filteredTasks)
+	const filteredTaskRows = useMemo(
+		() => toTaskRows(filteredTasks),
+		[filteredTasks],
+	)
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -113,19 +123,24 @@ function TasksLayout({
 	}
 
 	function handleToggleTabFilter(filter: QuickFilter) {
+		toggleQuickFilter(filter)
 		const next = tabFilter.includes(filter)
 			? tabFilter.filter((f) => f !== filter)
 			: [...tabFilter, filter]
-		navigateToTasks({ tabFilter: next })
+		navigate({ search: (prev) => ({ ...prev, tabFilter: next }) })
 	}
 
 	function clearAllFilters() {
 		setActiveTopicFilters(new Set())
 		setDateRange(undefined)
-		navigateToTasks({
-			tabFilter: [],
-			statusFilter: [],
-			deadlineTypeFilter: [],
+		clearQuickFilters()
+		navigate({
+			search: (prev) => ({
+				...prev,
+				tabFilter: [],
+				statusFilter: [],
+				deadlineTypeFilter: [],
+			}),
 		})
 	}
 

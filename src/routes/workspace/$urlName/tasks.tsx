@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { useMemo } from "react"
 import { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { QuickFilter } from "src/utils/filter-utils"
 import { z } from "zod"
@@ -44,10 +45,15 @@ function TasksPage() {
 
 	const { urlName } = Route.useParams()
 
+	const activeQuickFiltersSet = useMemo(
+		() => new Set<QuickFilter>(tabFilter),
+		[tabFilter],
+	)
+
 	return (
 		<TasksFiltersProvider
 			storageKey="tasks"
-			defaultActiveQuickFilters={new Set<QuickFilter>(tabFilter)}
+			activeQuickFilters={activeQuickFiltersSet}
 		>
 			<TasksLayout
 				view={view}
