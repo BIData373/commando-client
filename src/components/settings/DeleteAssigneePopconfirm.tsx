@@ -20,7 +20,15 @@ export function DeleteAssigneePopconfirm({
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
-	const { isPending, mutate: deleteAssignee } = useDeleteAssignee()
+	const { isPending, mutate: deleteAssignee } = useDeleteAssignee({
+		mutation: {
+			onSuccess: () => {
+				queryClient.invalidateQueries({
+					queryKey: getListAssigneesQueryKey({ workspaceId }),
+				})
+			}
+		}
+	})
 
 	const [open, setOpen] = useState(false)
 
@@ -29,18 +37,7 @@ export function DeleteAssigneePopconfirm({
 	}
 
 	function handleConfirm() {
-		deleteAssignee(
-			{
-				pathParams: { id: assigneeId },
-			},
-			{
-				onSuccess: () => {
-					queryClient.invalidateQueries({
-						queryKey: getListAssigneesQueryKey({ workspaceId }),
-					})
-				},
-			},
-		)
+		deleteAssignee({ pathParams: { id: assigneeId } })
 	}
 
 	function handleCloseAutoFocus(e: Event) {
