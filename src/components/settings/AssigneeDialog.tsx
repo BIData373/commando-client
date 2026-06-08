@@ -188,6 +188,8 @@ export function AssigneeDialog({
 		form.setFieldValue("users", assignee?.users ?? [])
 		setIconSearch("")
 		setSelectedIcon(existingIcon ?? null)
+		setSearchValue("")
+		setSelectedUser(null)
 		form.reset()
 	}
 
@@ -304,7 +306,7 @@ export function AssigneeDialog({
 
 				<DialogActions $shadow={scrollShadow.bottom}>
 					<DialogClose asChild>
-						<CancelButton title="ביטול" />
+						<CancelButton title="ביטול" onClick={resetForm} />
 					</DialogClose>
 					<PrimaryButton
 						title={isUpdate ? "שמור" : "צור"}
