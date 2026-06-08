@@ -5,6 +5,7 @@ import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
+import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import {
 	type TasksSearchSchemaType,
@@ -13,7 +14,6 @@ import {
 import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new"
 import type { QuickFilter } from "src/utils/filter-utils"
 import { exportTasksToExcel } from "../../functions/export-excel"
-import { applyAllFilters } from "../../functions/filter-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { useTitleBar } from "../../providers/TitleBarProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
@@ -68,18 +68,14 @@ function TasksLayout({
 		[tabFilter],
 	)
 
-	const filteredTasks = useMemo(
-		() =>
-			toTaskRows(
-				applyAllFilters(
-					tasks,
-					tabFilterSet,
-					activeTopicFilters.size > 0 ? activeTopicFilters : new Set(),
-					searchQuery,
-				),
-			),
-		[tasks, searchQuery, tabFilterSet, activeTopicFilters],
+	const filteredTasks = useFilteredTasks(
+		tasks,
+		tabFilterSet,
+		activeTopicFilters,
+		searchQuery,
 	)
+
+	const filteredTaskRows = toTaskRows(filteredTasks)
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -146,7 +142,7 @@ function TasksLayout({
 	}
 
 	function handleExport() {
-		exportTasksToExcel(filteredTasks, { columnOrder, hiddenColumns })
+		exportTasksToExcel(filteredTaskRows, { columnOrder, hiddenColumns })
 	}
 
 	// function handleViewChange(newView: TasksView) {
@@ -184,7 +180,7 @@ function TasksLayout({
 		<TooltipProvider>
 			<TasksRoot>
 				<TaskFilters
-					tasks={toTaskRows(tasks)}
+					tasks={filteredTaskRows}
 					onClearAllFilters={clearAllFilters}
 					onExport={handleExport}
 					tabFilter={tabFilter}
@@ -209,7 +205,7 @@ function TasksLayout({
 					) : view === TasksView.TABLE ? (
 						<TaskTable
 							queryKey={queryKey}
-							tasks={filteredTasks}
+							tasks={filteredTaskRows}
 							onEdit={handleEdit}
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
