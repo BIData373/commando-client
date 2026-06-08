@@ -1,7 +1,7 @@
 import { differenceInDays, isWithinInterval, startOfToday } from "date-fns"
 import type { DateRange } from "react-day-picker"
 import { DeadlineType, type TaskDto } from "src/api/model"
-import { type DATE_TYPE, getTaskDateByDateType } from "src/utils/data-type-utils"
+import { type DATE_TYPE, getTaskDateByDateType } from "src/utils/date-utils"
 import { QuickFilter } from "src/utils/filter-utils"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 import type { TaskRow } from "../providers/TasksFiltersProvider"
@@ -127,4 +127,9 @@ function applyDateFilter(
 	})
 }
 
-export { applyAllFilters, applyDateFilter, buildFilterOptionsMap, matchesQuickFilter }
+export {
+	applyAllFilters,
+	applyDateFilter,
+	buildFilterOptionsMap,
+	matchesQuickFilter,
+}

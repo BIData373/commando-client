@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { Popover } from "radix-ui"
 import type { ReactNode } from "react"
 import { useEffect, useState } from "react"
-import type { DatePickerValue } from "./DatePicker"
+import type { DatePickerValue } from "src/utils/date-utils"
 import DatePicker, { type CalendarMode } from "./DatePicker"
 
 // ─── Types ──────────────────────────────────────────────────────────────────

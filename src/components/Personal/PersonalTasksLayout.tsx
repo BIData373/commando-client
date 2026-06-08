@@ -11,7 +11,7 @@ import {
 	getListPersonalTasksQueryKey,
 	useListPersonalTasks,
 } from "src/api/task/task"
-import { applyAllFilters } from "../../functions/filter-utils"
+import { applyAllFilters, applyDateFilter } from "../../functions/filter-utils"
 import { toTaskRows } from "../../functions/tasks-table"
 import {
 	type TaskRow,

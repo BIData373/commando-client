@@ -12,7 +12,7 @@ import type {
 	TaskDto,
 	WorkspaceStatusDto,
 } from "src/api/model"
-import { DATE_TYPE } from "src/utils/data-type-utils"
+import { DATE_TYPE } from "src/utils/date-utils"
 import {
 	dashboardFilterDataTypeKey,
 	dashboardFilterRangeKey,

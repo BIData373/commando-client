@@ -45,7 +45,7 @@ function PersonalPage() {
 			defaultColumnOrder={PERSONAL_DEFAULT_COLUMN_ORDER}
 			defaultHiddenColumns={PERSONAL_DEFAULT_HIDDEN}
 		>
-			<PersonalTasksLayout view={view} />
+			<PersonalTasksLayout />
 		</TasksFiltersProvider>
 	)
 }
