@@ -30,6 +30,7 @@ import { FormField } from "../shared/FormField"
 import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { Checkbox } from "../ui/checkbox"
+import { DialogOverlay } from "../ui/dialog"
 import AssigneeField from "./AssigneeField"
 import DeadlineField from "./DeadlineField"
 import NotesField from "./NotesField"
@@ -316,7 +317,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 	return (
 		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
 			<DialogPrimitive.Portal>
-				<Overlay />
+				<DialogOverlay />
 				<ModalCard>
 					<ModalCloseButton onClick={onClose}>
 						<X size={16} />
@@ -462,14 +463,6 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 export default CreateTaskModal
 
 // ─── Modal Shell ─────────────────────────────────────────────────────────────
-
-const Overlay = styled(DialogPrimitive.Overlay)`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(1px);
-  z-index: var(--z-dropdown);
-`
 
 const ModalCard = styled(DialogPrimitive.Content)`
   position: fixed;
