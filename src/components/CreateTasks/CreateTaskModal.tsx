@@ -1,20 +1,28 @@
 import styled from "@emotion/styled"
-import { uniq } from "lodash"
 import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
+import { omit, uniq } from "lodash"
 import { ChevronDown, ChevronUp, X } from "lucide-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 import { useRef, useState } from "react"
+import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import {
 	type CreateTaskDto,
 	DeadlineType,
 	type GetTaskAssigneeDto,
 	type SourceDto,
 	type TaskWithWorkspaceDto,
-	type WorkspaceStatusDto,
+	WorkspaceStatusType,
 } from "src/api/model"
+import { useCreateSource } from "src/api/source/source"
+import {
+	getGetTaskQueryKey,
+	getListTasksQueryKey,
+	useUpdateTask,
+} from "src/api/task/task"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { queryClient } from "src/queryClient"
+import { getChangedFields } from "src/utils/form-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { CancelButton } from "../shared/CancelButton"
 import FlagIcon from "../shared/FlagIcon"
@@ -27,16 +35,18 @@ import DeadlineField from "./DeadlineField"
 import NotesField from "./NotesField"
 import SourceField from "./SourceField"
 import TagField from "./TagField"
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
-import { useCreateSource } from "src/api/source/source"
-import { getGetTaskQueryKey, getListTasksQueryKey, useUpdateTask } from "src/api/task/task"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface FormState extends Omit<CreateTaskDto, "workspaceId"> {
+interface FormAssignee extends GetTaskAssigneeDto {
+	statusId?: number
+}
+
+interface FormState extends Omit<CreateTaskDto, "workspaceId" | "assignees"> {
 	source: string
 	sourceDate: Date | null
 	linkedSource: SourceDto | null
+	assignees: FormAssignee[]
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -60,23 +70,22 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 
 	const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
 
-	const [assigneeStatusMap, setAssigneeStatusMap] = useState<Record<number, WorkspaceStatusDto>>(() => {
-		if (!task) return {}
-		return Object.fromEntries(
-			task.assigneeStatuses.map((as) => [as.assignee.id, as.status])
-		)
-	})
-
 	async function handleUpdateSuccess() {
-		const statusUpdates = Object.entries(assigneeStatusMap)
-			.filter(([assigneeId, status]) => {
+		const currentAssignees = form.state.values.assignees ?? []
+		const statusUpdates = currentAssignees
+			.filter(({ statusId, id }) => {
+				if (statusId == null) {
+					return false
+				}
 				const original = task!.assigneeStatuses.find(
-					(as) => as.assignee.id === Number(assigneeId),
+					(as) => as.assignee.id === id,
 				)
-				return !original || original.status.id !== status.id
+				return !original || original.status.id !== statusId
 			})
-			.map(([assigneeId, status]) =>
-				upsertStatus({ data: { taskId: task!.id, assigneeId: Number(assigneeId), statusId: status.id } }),
+			.map((a) =>
+				upsertStatus({
+					data: { taskId: task!.id, assigneeId: a.id, statusId: a.statusId! },
+				}),
 			)
 		await Promise.all(statusUpdates)
 		await Promise.all(
@@ -99,18 +108,37 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 			tags: task?.tags.map((t) => t.name) ?? [],
 			notes: task?.notes ?? "",
 			sourceId: task?.source?.id ?? null,
-			assignees: task?.assigneeStatuses.map((as) => ({
-				id: as.assignee.id,
-				description: as.description || undefined,
-			})) ?? [],
+			assignees:
+				task?.assigneeStatuses.map((as) => ({
+					id: as.assignee.id,
+					description: as.description || undefined,
+					statusId: as.status.id,
+				})) ?? [],
 			linkedSource: task?.source ?? null,
 		} as FormState,
-		onSubmit: async ({ value: { source, sourceDate, linkedSource, ...rest } }) => {
+		onSubmit: async ({
+			value: { source, sourceDate, linkedSource, ...rest },
+		}) => {
 			if (isEditMode) {
-				const newSourceId = source && !linkedSource
-					? (await createSource({ data: { workspaceId, name: source, date: sourceDate } })).id
-					: rest.sourceId
-				const { _statusChanged, ...changedFields } = getChangedFields(newSourceId)
+				const changedFields = omit(getChangedFields<FormState>(form), [
+					"source",
+					"sourceDate",
+					"linkedSource",
+				])
+
+				if (source && !linkedSource) {
+					const newSource = await createSource({
+						data: { workspaceId, name: source, date: sourceDate },
+					})
+					changedFields.sourceId = newSource.id
+				}
+
+				if (changedFields.assignees) {
+					changedFields.assignees = changedFields.assignees.map(
+						({ id, description }) => ({ id, description }),
+					)
+				}
+
 				updateTask(
 					{ pathParams: { id: task.id }, data: changedFields },
 					{ onSuccess: handleUpdateSuccess },
@@ -119,36 +147,11 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 				saveTasks([{ workspaceId, ...rest }])
 				onClose()
 			}
-		}
+		},
 	})
 
 	const values = useStore(form.store, (state) => state.values)
-
-	function getChangedFields(sourceId?: number | null): Record<string, unknown> {
-		if (!task) return {}
-		const changed: Record<string, unknown> = {}
-		if (values.title !== task.title) changed.title = values.title
-		if (values.deadlineType !== task.deadlineType) changed.deadlineType = values.deadlineType
-		if (String(values.dueDate) !== String(task.dueDate)) changed.dueDate = values.dueDate
-		if (values.flagged !== task.flagged) changed.flagged = values.flagged
-		if (values.notes !== (task.notes ?? "")) changed.notes = values.notes
-		if (JSON.stringify(values.tags) !== JSON.stringify(task.tags.map((t) => t.name))) changed.tags = values.tags
-		if ((sourceId ?? values.sourceId) !== (task.source?.id ?? null)) changed.sourceId = sourceId ?? values.sourceId
-		const originalAssignees = task.assigneeStatuses.map((as) => ({ id: as.assignee.id, description: as.description || "" }))
-		const currentAssignees = (values.assignees ?? []).map((a) => ({ id: a.id, description: a.description || "" }))
-		if (JSON.stringify(originalAssignees.sort((a, b) => a.id - b.id)) !== JSON.stringify(currentAssignees.sort((a, b) => a.id - b.id)))
-			changed.assignees = values.assignees
-		for (const [assigneeId, status] of Object.entries(assigneeStatusMap)) {
-			const orig = task.assigneeStatuses.find((as) => as.assignee.id === Number(assigneeId))
-			if (!orig || orig.status.id !== status.id) {
-				changed._statusChanged = true
-				break
-			}
-		}
-		return changed
-	}
-
-	const hasChanges = isEditMode ? Object.keys(getChangedFields()).length > 0 : true
+	const hasChanges = isEditMode ? !form.state.isDefaultValue : true
 
 	// ─── Handlers ──────────────────────────────────────────────────────────────
 
@@ -167,10 +170,22 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 		const current = values.assignees ?? []
 		const isRemoving = current.some((a) => a.id === id)
 
-		form.setFieldValue(
-			"assignees",
-			isRemoving ? current.filter((a) => a.id !== id) : [...current, { id }],
-		)
+		if (isRemoving) {
+			form.setFieldValue(
+				"assignees",
+				current.filter((a) => a.id !== id),
+			)
+		} else {
+			const defaultStatusId = isEditMode
+				? Object.values(statuses).find(
+						(s) => s.type === WorkspaceStatusType.NOT_STARTED,
+					)?.id
+				: undefined
+			form.setFieldValue("assignees", [
+				...current,
+				{ id, statusId: defaultStatusId },
+			])
+		}
 	}
 
 	function handleRemoveAssignee(id: number) {
@@ -183,9 +198,8 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 	function handleAssigneeDetailChange(id: number, value: string) {
 		form.setFieldValue(
 			"assignees",
-			(values.assignees ?? []).map(
-				(a): GetTaskAssigneeDto =>
-					a.id === id ? { ...a, description: value } : a,
+			(values.assignees ?? []).map((a) =>
+				a.id === id ? { ...a, description: value } : a,
 			),
 		)
 	}
@@ -243,11 +257,17 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 		form.setFieldValue("notes", value)
 	}
 
-	function handleAssigneeStatusChange(_taskId: number, assigneeId: number, statusId: number) {
-		const status = statuses[statusId]
-		if (status) {
-			setAssigneeStatusMap((prev) => ({ ...prev, [assigneeId]: status }))
-		}
+	function handleAssigneeStatusChange(
+		_taskId: number,
+		assigneeId: number,
+		statusId: number,
+	) {
+		form.setFieldValue(
+			"assignees",
+			(values.assignees ?? []).map((a) =>
+				a.id === assigneeId ? { ...a, statusId } : a,
+			),
+		)
 	}
 
 	// ─── Scroll Shadow ─────────────────────────────────────────────────────────
@@ -283,7 +303,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 				(values.assignees ?? []).map((a) => [
 					a.id,
 					{
-						status: assigneeStatusMap[a.id],
+						status: a.statusId != null ? statuses[a.statusId] : undefined,
 						description: a.description,
 					},
 				]),
@@ -303,7 +323,9 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 
 					<ModalBody>
 						<ModalHeader $shadow={scrollShadow.top}>
-							<ModalTitle>{isEditMode ? "עריכת הנחיה" : "יצירת הנחיה"}</ModalTitle>
+							<ModalTitle>
+								{isEditMode ? "עריכת הנחיה" : "יצירת הנחיה"}
+							</ModalTitle>
 						</ModalHeader>
 
 						<ScrollableContent ref={scrollRef} onScroll={handleScroll}>
@@ -344,7 +366,9 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 									onRemove={handleRemoveAssignee}
 									onDetailChange={handleAssigneeDetailChange}
 									assigneeExtras={assigneeExtras}
-									onStatusChange={isEditMode ? handleAssigneeStatusChange : undefined}
+									onStatusChange={
+										isEditMode ? handleAssigneeStatusChange : undefined
+									}
 									taskId={task?.id}
 								/>
 

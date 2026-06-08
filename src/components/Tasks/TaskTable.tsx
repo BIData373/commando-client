@@ -111,11 +111,16 @@ function TaskTable({
 
 	const selectedTaskIds = Object.keys(rowSelection)
 		.filter((key) => rowSelection[key])
-		.map(Number)
+		.map((key) => Number(key.split("_")[0]))
 
 	function handleEnterSelectMode(taskId?: number) {
 		setSelectMode(true)
-		setRowSelection(taskId !== undefined ? { [String(taskId)]: true } : {})
+		if (taskId !== undefined) {
+			const task = tasks.find((t) => t.id === taskId)
+			setRowSelection(task ? { [task.rowKey]: true } : {})
+		} else {
+			setRowSelection({})
+		}
 	}
 
 	function handleExitSelectMode() {
@@ -127,7 +132,7 @@ function TaskTable({
 		if (checked) {
 			const all: RowSelectionState = {}
 			tasks.forEach((t) => {
-				all[String(t.id)] = true
+				all[t.rowKey] = true
 			})
 			setRowSelection(all)
 		} else {

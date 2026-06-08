@@ -44,10 +44,10 @@ export function StatusDropdown({
 					<DropdownMenuTrigger asChild>
 						<TriggerWrapper tabIndex={0}>
 							<StatusTag
+								open={isOpen}
 								status={status}
 								interactive
 								withArrow={withArrow}
-								open={isOpen}
 							/>
 						</TriggerWrapper>
 					</DropdownMenuTrigger>

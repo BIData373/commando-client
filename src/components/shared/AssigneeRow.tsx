@@ -22,7 +22,11 @@ interface AssigneeRowListProps {
 	detailPlaceholder?: string
 	onDetailChange: (id: number, value: string) => void
 	onRemove: (id: number) => void
-	onStatusChange?: (taskId: number, assigneeId: number, statusId: number) => void
+	onStatusChange?: (
+		taskId: number,
+		assigneeId: number,
+		statusId: number,
+	) => void
 	taskId?: number
 }
 
@@ -101,15 +105,18 @@ function AssigneeRowList({
 							</TextareaWrapper>
 						)}
 
-						{assigneeExtras?.[assignee.id]?.status && onStatusChange && taskId != null && (
-							<StatusDropdown
-								status={assigneeExtras[assignee.id].status!}
-								taskId={taskId}
-								assigneeId={assignee.id}
-								workspaceId={workspaceId}
-								onUpdate={onStatusChange}
-							/>
-						)}
+						{assigneeExtras?.[assignee.id]?.status &&
+							onStatusChange &&
+							taskId != null && (
+								<StatusDropdown
+									status={assigneeExtras[assignee.id].status!}
+									taskId={taskId}
+									assigneeId={assignee.id}
+									workspaceId={workspaceId}
+									onUpdate={onStatusChange}
+									withArrow={true}
+								/>
+							)}
 
 						<InfoBlock>
 							<RoleText>{assignee.name}</RoleText>
