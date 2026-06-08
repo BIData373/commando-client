@@ -62,7 +62,11 @@ function TasksLayout({
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-	const { data: tasks = [], queryKey } = useListTasks({ workspaceId })
+	const {
+		data: tasks = [],
+		queryKey,
+		isLoading,
+	} = useListTasks({ workspaceId })
 
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
@@ -212,7 +216,7 @@ function TasksLayout({
 				/>
 
 				<ContentArea>
-					{tasks.length === 0 ? (
+					{!isLoading && tasks.length === 0 ? (
 						<EmptyState />
 					) : searchQuery && filteredTasks.length === 0 ? (
 						<EmptyState variant="search" />

@@ -32,10 +32,12 @@ export function UsersLists({ users, onRemove }: UsersListsProps) {
 									</UserCardItem>
 								</TooltipTrigger>
 								<TooltipPrimitive.Portal>
-									<UserTooltipContent side="bottom" sideOffset={6}>
-										{user.info?.displayName}
-										<TooltipPrimitive.Arrow width={10} height={5} />
-									</UserTooltipContent>
+									{user.info?.displayName && (
+										<UserTooltipContent side="bottom" sideOffset={6}>
+											{user.info?.displayName}
+											<TooltipPrimitive.Arrow width={10} height={5} />
+										</UserTooltipContent>
+									)}
 								</TooltipPrimitive.Portal>
 							</Tooltip>
 						</TooltipProvider>
