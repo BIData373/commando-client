@@ -16,6 +16,7 @@ interface FilterBarProps {
 	onColumnOrderChange: (order: TaskColumn[]) => void
 	onToggleColumn: (columnId: TaskColumn) => void
 	extraColumnsMeta?: TaskColumnMeta[]
+	startSlot?: ReactNode
 }
 
 function FilterBar({
@@ -30,10 +31,12 @@ function FilterBar({
 	onColumnOrderChange,
 	onToggleColumn,
 	extraColumnsMeta,
+	startSlot,
 }: FilterBarProps) {
 	return (
 		<BarRoot>
 			<BarStart>
+        {startSlot}
 				<ColumnVisibilityDropdown
 					columnOrder={columnOrder}
 					hiddenColumns={hiddenColumns}
