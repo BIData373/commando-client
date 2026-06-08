@@ -34,6 +34,9 @@ export function StatusDropdown({
 	})
 
 	function handleSelectStatus(newStatusId: number) {
+		if (newStatusId === status.id) {
+			return
+		}
 		onUpdate(taskId, assigneeId, newStatusId)
 	}
 

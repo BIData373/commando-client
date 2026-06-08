@@ -47,12 +47,17 @@ function TasksLayout({
 	deadlineTypeFilter,
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
-	const { searchQuery, columnOrder, hiddenColumns, dateRange, setDateRange } = useTasksFilters()
+	const { searchQuery, columnOrder, hiddenColumns, dateRange, setDateRange } =
+		useTasksFilters()
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-	const { data: tasks = [], queryKey, isLoading } = useListTasks({ workspaceId })
+	const {
+		data: tasks = [],
+		queryKey,
+		isLoading,
+	} = useListTasks({ workspaceId })
 
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),

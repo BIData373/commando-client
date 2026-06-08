@@ -143,10 +143,12 @@ export function AssigneeDialog({
 	}
 
 	function handleKeyChange(e: React.KeyboardEvent<HTMLInputElement>) {
-		if (e.code !== 'Backspace' && e.currentTarget.value.length >= MAX_NAME_LENGTH) {
+		if (
+			e.code !== "Backspace" &&
+			e.currentTarget.value.length >= MAX_NAME_LENGTH
+		) {
 			e.preventDefault()
 		}
-
 	}
 
 	function handleRemoveAssignee(upn: string) {
@@ -231,7 +233,7 @@ export function AssigneeDialog({
 							name="name"
 							validators={{
 								onSubmit: ({ value }) =>
-									!value.trim() ? "שם אחראי הוא שדה חובה" : undefined
+									!value.trim() ? "שם אחראי הוא שדה חובה" : undefined,
 							}}
 						>
 							{(field) => (

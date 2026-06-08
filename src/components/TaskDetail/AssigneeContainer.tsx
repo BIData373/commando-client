@@ -1,9 +1,9 @@
 import styled from "@emotion/styled"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import type { AssigneeStatusDto } from "src/api/model"
-import { getGetTaskQueryKey } from "src/api/task/task"
+import { getGetTaskQueryKey, getListTasksQueryKey } from "src/api/task/task"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { queryClient } from "src/queryClient"
+import { invalidateQueries, queryClient } from "src/queryClient"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { StatusTag } from "../shared/StatusTag"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
@@ -30,9 +30,10 @@ export const AssigneeContainer = ({
 		{
 			mutation: {
 				onSuccess: () => {
-					queryClient.invalidateQueries({
-						queryKey: getGetTaskQueryKey({ id: taskId }),
-					})
+					invalidateQueries([
+						getGetTaskQueryKey({ id: taskId }),
+						getListTasksQueryKey({ workspaceId }),
+					])
 				},
 			},
 		},
