@@ -146,7 +146,73 @@ function TaskDetailPanel({
 
             <AssigneeSection taskId={id} assigneeStatuses={assigneeStatuses} />
 
-					{showExtraInfo && (
+						{showExtraInfo && (
+							<>
+								<DividerRow>
+									<DividerLine />
+									<DividerText>פרטים נוספים</DividerText>
+									<DividerLine />
+								</DividerRow>
+
+								<InfoGrid>
+									{source?.name && (
+										<InfoBlock>
+											<SectionLabel>מקור</SectionLabel>
+											<SourceRow>
+												<PencilButton
+													onClick={() => setShowEditDiscussion(true)}
+												>
+													<Pencil size={14} />
+												</PencilButton>
+												<SourceName>{source.name}</SourceName>
+												<SourceDate>
+													{formatDateMonthYear(source.date)}
+												</SourceDate>
+											</SourceRow>
+											<InfoAttachment>
+												{source.attachmentKey && (
+													<>
+														<Paperclip size={16} />
+														{attachmentFile}
+													</>
+												)}
+											</InfoAttachment>
+										</InfoBlock>
+									)}
+									{allTags.length > 0 && (
+										<InfoBlock>
+											<SectionLabel>נושא</SectionLabel>
+											<TagsRow>
+												{allTags.map((tag) => (
+													<TagChip key={tag.id}>{tag.name}</TagChip>
+												))}
+											</TagsRow>
+										</InfoBlock>
+									)}
+								</InfoGrid>
+
+								{notes && (
+									<NotesSection>
+										<SectionLabel>הערות הנחיה</SectionLabel>
+										<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
+									</NotesSection>
+								)}
+							</>
+						)}
+					</ScrollContent>
+
+					<BottomBar
+						onClick={handleBottomBarClick}
+						$hidden={showConversation}
+						$shadow={scrollShadow.bottom}
+					>
+						<ChatGroup>
+							<ChatLabel>שיחה ועדכונים</ChatLabel>
+						</ChatGroup>
+						<ChevronUp size={20} />
+					</BottomBar>
+
+					{showHistory && (
 						<>
 							<DividerRow>
 								<DividerLine />
