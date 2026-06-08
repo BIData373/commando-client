@@ -275,3 +275,53 @@ body,
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
 }
+
+@keyframes scale-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scale-out {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  to {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+/* Page view transitions */
+/* ::view-transition-old(root) {
+  animation: 150ms ease-in both fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 200ms ease-out both fade-in;
+} */
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@view-transition {
+  navigation: auto;
+  types: backwards;
+}

@@ -6,41 +6,46 @@ import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { UserItem } from "./UserItem"
 
 interface UsersListsProps {
-    users: CreateUserDto[]
-    onRemove: (upn: string) => void
+	users: CreateUserDto[]
+	onRemove: (upn: string) => void
 }
 
 export function UsersLists({ users, onRemove }: UsersListsProps) {
-    return (
-        <UserListArea>
-            {users.length > 0 && (
-                <UserCard>
-                    {users.map((user) => (
-                        <TooltipProvider key={user.upn}>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <UserCardItem>
-                                        <UserCardInfo>
-                                            <UserItem user={user} />
-                                        </UserCardInfo>
-                                        <UserCardClose type="button" onClick={() => onRemove(user.upn)}>
-                                            <X size={12} />
-                                        </UserCardClose>
-                                    </UserCardItem>
-                                </TooltipTrigger>
-                                <TooltipPrimitive.Portal>
-                                    <UserTooltipContent side="bottom" sideOffset={6}>
-                                        {user.info?.displayName}
-                                        <TooltipPrimitive.Arrow width={10} height={5} />
-                                    </UserTooltipContent>
-                                </TooltipPrimitive.Portal>
-                            </Tooltip>
-                        </TooltipProvider>
-                    ))}
-                </UserCard>
-            )}
-        </UserListArea>
-    )
+	return (
+		<UserListArea>
+			{users.length > 0 && (
+				<UserCard>
+					{users.map((user) => (
+						<TooltipProvider key={user.upn}>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<UserCardItem>
+										<UserCardInfo>
+											<UserItem user={user} />
+										</UserCardInfo>
+										<UserCardClose
+											type="button"
+											onClick={() => onRemove(user.upn)}
+										>
+											<X size={12} />
+										</UserCardClose>
+									</UserCardItem>
+								</TooltipTrigger>
+								<TooltipPrimitive.Portal>
+									{user.info?.displayName && (
+										<UserTooltipContent side="bottom" sideOffset={6}>
+											{user.info?.displayName}
+											<TooltipPrimitive.Arrow width={10} height={5} />
+										</UserTooltipContent>
+									)}
+								</TooltipPrimitive.Portal>
+							</Tooltip>
+						</TooltipProvider>
+					))}
+				</UserCard>
+			)}
+		</UserListArea>
+	)
 }
 
 const UserListArea = styled.div`
