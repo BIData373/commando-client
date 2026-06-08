@@ -30,7 +30,7 @@ export function UsersLists({ users, onRemove }: UsersListsProps) {
                                 </TooltipTrigger>
                                 <TooltipPrimitive.Portal>
                                     <UserTooltipContent side="bottom" sideOffset={6}>
-                                        {user.upn.split("@idf.il")[0]}
+                                        {user.info?.displayName}
                                         <TooltipPrimitive.Arrow width={10} height={5} />
                                     </UserTooltipContent>
                                 </TooltipPrimitive.Portal>
