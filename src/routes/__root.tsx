@@ -7,6 +7,8 @@ import { NotFoundComponent } from "src/components/Error/NotFoundComponent"
 import { RootErrorComponent } from "src/components/Error/RootErrorComponent"
 import { ErrorModal } from "../components/ErrorModal"
 import Header from "../components/Header"
+import { Toaster } from "../components/ui/sonner"
+import { TooltipProvider } from "../components/ui/tooltip"
 import { TitleBarProvider } from "../providers/TitleBarProvider"
 import "../styles.css"
 
@@ -19,15 +21,18 @@ export const Route = createRootRoute({
 function RootComponent() {
 	return (
 		<StrictMode>
-			<TitleBarProvider>
-				<AppShell>
-					<Header />
-					<PageContainer>
-						<Outlet />
-					</PageContainer>
-				</AppShell>
-			</TitleBarProvider>
+			<TooltipProvider>
+				<TitleBarProvider>
+					<AppShell>
+						<Header />
+						<PageContainer>
+							<Outlet />
+						</PageContainer>
+					</AppShell>
+				</TitleBarProvider>
+			</TooltipProvider>
 			<ErrorModal />
+			<Toaster />
 			<TanStackDevtools
 				config={{
 					position: "bottom-right",

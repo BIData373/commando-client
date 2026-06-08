@@ -10,7 +10,7 @@ import { WorkspaceStatusType } from "src/api/model"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import compleateInstruction from "../../assets/icons/completeInstruction.svg"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
-import { EmptyCardState } from "./EmptyCardState"
+import { EmptyCardState } from "../shared/EmptyCardState"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface RecentlyCompletedProps {
@@ -27,7 +27,7 @@ export default function RecentlyCompleted({
 	tasks,
 }: RecentlyCompletedProps) {
 	const completedTasks = useMemo(
-		() => tasks.filter((t) => t.status.type === WorkspaceStatusType.COMPLETED),
+		() => tasks.filter((t) => t.status?.type === WorkspaceStatusType.COMPLETED),
 		[tasks],
 	)
 

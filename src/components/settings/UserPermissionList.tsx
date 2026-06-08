@@ -1,6 +1,10 @@
 import styled from "@emotion/styled"
-import type { PermissionDto, PermissionType, UserDto } from "src/api/model"
+import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
+import { extractUpnFromUser, formatDirectChatLink } from "src/utils/user-utils"
+import noUsersFound from "../../assets/noUsersFound.svg"
+import { EmptyCardState } from "../shared/EmptyCardState"
 import { TrashButton } from "../shared/TrashButton"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { DropdownPermission } from "./DropdownPermission"
 
 interface UserPermissionListProps {
@@ -14,24 +18,51 @@ export function UserPermissionList({
 	onDelete,
 	onTypeChange,
 }: UserPermissionListProps) {
+	function navigateToChat(user: UserDto) {
+		const upn = extractUpnFromUser(user)
+		window.open(formatDirectChatLink(upn))
+	}
+
 	return (
 		<UserListRoot>
-			{permissions.map(({ user, type }) => (
-				<UserRow key={user.id}>
-					<UserInfo>
-						<UserHeader>
-							<UserName>{user.info?.name}</UserName>
-							<UserPersonalId> - {user.id}</UserPersonalId>
-						</UserHeader>
-						<UserSubtext>{user.upn}</UserSubtext>
-					</UserInfo>
-					<DropdownPermission
-						value={type}
-						onChange={(type) => onTypeChange(user, type)}
+			{permissions.length === 0 ? (
+				<CenterContainer>
+					<EmptyCardState
+						imgSrc={noUsersFound}
+						title="לא נמצאו משתמשים"
+						description="טרם הוגדרו משתמשים כדי להציג נתונים"
 					/>
-					<TrashButton onClick={() => onDelete(user)} size={22} />
-				</UserRow>
-			))}
+				</CenterContainer>
+			) : (
+				permissions.map(({ user, type }) => (
+					<UserRow key={user.id}>
+						<UserInfo
+							$type={type}
+							onClick={() =>
+								type === PermissionType.MANAGER && navigateToChat(user)
+							}
+						>
+							<UserHeader>
+								<UserName>{user.info?.name}</UserName>
+								<UserPersonalId> - {user.upn}</UserPersonalId>
+							</UserHeader>
+							<UserSubtext>{user.info?.displayName}</UserSubtext>
+						</UserInfo>
+						<DropdownPermission
+							value={type}
+							onChange={(type) => onTypeChange(user, type)}
+						/>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<span>
+									<TrashButton onClick={() => onDelete(user)} size={22} />
+								</span>
+							</TooltipTrigger>
+							<TooltipContent>הסרת הרשאות</TooltipContent>
+						</Tooltip>
+					</UserRow>
+				))
+			)}
 		</UserListRoot>
 	)
 }
@@ -60,7 +91,9 @@ const UserHeader = styled.div`
   gap: 4px;
 `
 
-const UserInfo = styled.div`
+const UserInfo = styled.div<{ $type: PermissionType }>`
+  color: ${({ $type }) => ($type === PermissionType.MANAGER ? "var(--active-color)" : " var(--sea-ink)")};
+
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -70,7 +103,6 @@ const UserInfo = styled.div`
 const UserName = styled.span`
   font-size: 15px;
   font-weight: 500;
-  color: var(--sea-ink);
 `
 
 const UserPersonalId = styled.span`
@@ -82,4 +114,10 @@ const UserSubtext = styled.span`
   font-size: 14px;
   font-weight: 400;
   color: rgba(0, 0, 0, 0.65);
+`
+
+const CenterContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `

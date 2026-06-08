@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
-import { DATE_TYPE } from "src/utils/data-type-utils"
+import { DATE_TYPE } from "src/utils/date-utils"
 import {
 	DropdownMenu,
 	DropdownMenuContent,

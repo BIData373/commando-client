@@ -1,19 +1,20 @@
 import styled from "@emotion/styled"
 import { debounce } from "lodash"
 import { UserPlus } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { type PropsWithChildren, useEffect, useMemo, useState } from "react"
 import type { UserDto } from "src/api/model"
 import { useSearchUsers } from "src/api/user/user"
 import { SearchDropdown } from "./SearchDropdown"
 import { UserItem } from "./UserItem"
 
-interface DropdownUsersProps {
+interface DropdownUsersProps extends PropsWithChildren {
 	value: string
 	onChange(value: string): void
 	onSelect(user: UserDto | null): void
 	onClear(): void
 	onAdd?: () => void
 	selectedUser?: UserDto | null
+	showAddButton?: boolean
 	excludeUpns?: string[]
 	placeholder?: string
 }
@@ -27,6 +28,8 @@ export function DropdownUsers({
 	selectedUser,
 	excludeUpns,
 	placeholder,
+	showAddButton,
+	children,
 }: DropdownUsersProps) {
 	const [localValue, setLocalValue] = useState(value)
 
@@ -66,7 +69,8 @@ export function DropdownUsers({
 				isLoading={isLoading}
 				renderItem={(item) => <UserItem user={item} />}
 			/>
-			{onAdd && (
+			{children}
+			{onAdd && showAddButton && (
 				<AddButton
 					type="button"
 					$active={!!selectedUser}

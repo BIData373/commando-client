@@ -20,7 +20,7 @@ import {
 } from "src/components/ui/tooltip"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import addPerson from "../../assets/icons/addPerson.svg"
-import { EmptyCardState } from "../Dashboard/EmptyCardState"
+import { EmptyCardState } from "../shared/EmptyCardState"
 
 export const assigneeStatusEditableId = "allow-status-update"
 

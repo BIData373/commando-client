@@ -152,7 +152,7 @@ export function PermissionsContent() {
 	return (
 		<PermissionsInner>
 			<Subtitle>
-				מנהל סביבה יוצר הנחיות, מגדיר אחראיים ומבצע בקרה ומעקב אחר סטטוס ההנחיות
+				מנהל סביבה יוצר הנחיות, מגדיר אחראים ומבצע בקרה ומעקב אחר סטטוס ההנחיות
 				בסביבה
 			</Subtitle>
 
@@ -166,18 +166,19 @@ export function PermissionsContent() {
 					selectedUser={selectedUser}
 					excludeUpns={permissions.map((p) => p.user.upn)}
 					placeholder="חפש שם/ תפקיד/ מספר אישי"
-				/>
-
-				{search.length > 0 && (
-					<AddUserRow>
-						<DropdownPermission
-							ghost
-							value={type}
-							onChange={setType}
-							disabled={!selectedUser}
-						/>
-					</AddUserRow>
-				)}
+					showAddButton={!!selectedUser}
+				>
+					{search.length > 0 && (
+						<AddUserRow>
+							<DropdownPermission
+								ghost
+								value={type}
+								onChange={setType}
+								disabled={!selectedUser}
+							/>
+						</AddUserRow>
+					)}
+				</DropdownUsers>
 			</SearchSection>
 
 			<StyledTabs value={activeTab} onValueChange={handleTabChange}>

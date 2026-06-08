@@ -24,13 +24,6 @@ function TaskDetail() {
 		})
 	}
 
-	function handleArchive() {
-		// if (task) {
-		// 	removeTasks([task.id]);
-		// }
-		handleClose()
-	}
-
 	function handleDelete() {
 		// if (task) {
 		// 	removeTasks([task.id]);
@@ -53,12 +46,13 @@ function TaskDetail() {
 	}
 
 	return (
-		<TaskDetailPanel
-			task={task}
-			onClose={handleClose}
-			onArchive={handleArchive}
-			onDelete={handleDelete}
-			onEdit={handleEdit}
-		/>
+		!!task && (
+			<TaskDetailPanel
+				task={task}
+				onClose={handleClose}
+				onDelete={handleDelete}
+				onEdit={handleEdit}
+			/>
+		)
 	)
 }

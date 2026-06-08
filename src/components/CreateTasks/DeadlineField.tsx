@@ -3,7 +3,7 @@ import { Calendar as CalendarIcon } from "lucide-react"
 import { useState } from "react"
 import { DeadlineType } from "src/api/model"
 import { formatDate } from "src/functions/date-utils"
-import type { DatePickerValue } from "../shared/DatePicker"
+import type { DatePickerValue } from "src/utils/date-utils"
 import DatePicker, { CalendarMode } from "../shared/DatePicker"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 

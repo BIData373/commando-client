@@ -7,10 +7,10 @@
  */
 
 export interface UpdateWorkspaceDto {
-	urlName?: string
-	title?: string
 	/** @nullable */
 	icon?: string | null
 	assigneeStatusEditable?: boolean
 	pikudId?: number
+	urlName?: string
+	title?: string
 }
