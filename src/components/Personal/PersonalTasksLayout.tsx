@@ -1,12 +1,9 @@
 import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
-import { useMemo, useState } from "react"
-import {
-	type TaskWithWorkspaceDto,
-	type WorkspaceDto,
-	WorkspaceStatusType,
-} from "src/api/model"
+import { uniqBy } from "lodash"
+import { useState } from "react"
+import { type WorkspaceDto, WorkspaceStatusType } from "src/api/model"
 import {
 	getListPersonalTasksQueryKey,
 	useListPersonalTasks,
@@ -77,17 +74,9 @@ function PersonalTasksLayout() {
 
 	const taskRows = toTaskRows(rawTasks)
 
-	const workspaceMap = useMemo(() => {
-		const map = new Map<number, WorkspaceDto>()
-
-		taskRows.forEach((t) => {
-			map.set(t.workspace.id, t.workspace)
-		})
-
-		return map
-	}, [taskRows])
-
-	const workspaces = [...workspaceMap.values()]
+	const workspaces = uniqBy(rawTasks, "workspace.id").map(
+		({ workspace }) => workspace,
+	)
 
 	const totalCount = taskRows.length
 
