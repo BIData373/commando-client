@@ -63,9 +63,9 @@ function TaskDetailPanel({
 
   const { data: history } = useListTaskHistory({ taskId: id })
 
-  const attachmentFile = source?.attachmentKey?.split("/").pop()?.split(".")[0]
-  const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
-  const hasTagOrAttachment = allTags.length > 0 || !!source?.attachmentKey
+	const attachmentFile = source?.attachmentKey?.split("/").pop()?.split(".")[0]
+	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
+	const showExtraInfo = allTags.length > 0 || !!source?.attachmentKey || notes
 
   function handleScroll() {
     const el = scrollRef.current
@@ -146,13 +146,13 @@ function TaskDetailPanel({
 
             <AssigneeSection taskId={id} assigneeStatuses={assigneeStatuses} />
 
-            {hasTagOrAttachment && (
-              <>
-                <DividerRow>
-                  <DividerLine />
-                  <DividerText>פרטים נוספים</DividerText>
-                  <DividerLine />
-                </DividerRow>
+					{showExtraInfo && (
+						<>
+							<DividerRow>
+								<DividerLine />
+								<DividerText>פרטים נוספים</DividerText>
+								<DividerLine />
+							</DividerRow>
 
                 <InfoGrid>
                   {source?.name && (
@@ -191,17 +191,17 @@ function TaskDetailPanel({
                   )}
                 </InfoGrid>
 
-                {notes && (
-                  <NotesSection>
-                    <SectionLabel>הערות הנחיה</SectionLabel>
-                    <NotesText>
-                      <StyledEditorContent editor={editor} />
-                    </NotesText>
-                  </NotesSection>
-                )}
-              </>
-            )}
-          </ScrollContent>
+							{notes && (
+								<NotesSection>
+									<SectionLabel>הערות הנחיה</SectionLabel>
+									<NotesText
+										dangerouslySetInnerHTML={{ __html: notes ?? "" }}
+									/>
+								</NotesSection>
+							)}
+						</>
+					)}
+				</ScrollContent>
 
           <BottomBar
             onClick={handleBottomBarClick}
