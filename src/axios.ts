@@ -1,4 +1,4 @@
-import axios, { type AxiosRequestConfig } from "axios"
+import axios, { type AxiosError, type AxiosRequestConfig } from "axios"
 import { parseISO } from "date-fns"
 
 const STATIC_TOKEN_HEADER = "static-token"
@@ -43,3 +43,5 @@ function handleDates(body: unknown) {
 		}
 	}
 }
+
+export type ErrorType<Error> = AxiosError<Error>

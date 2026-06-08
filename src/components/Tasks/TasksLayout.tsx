@@ -299,12 +299,6 @@ const CreateButtonText = styled.span`
   direction: rtl;
 `
 
-const SectionDivider = styled.div`
-  width: 1px;
-  height: 39px;
-  background: rgba(0, 0, 0, 0.15);
-`
-
 // ─── Create Dropdown ─────────────────────────────────────────────────────────
 
 const StyledDropdownContent = styled(DropdownMenuContent)`

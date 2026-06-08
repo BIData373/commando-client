@@ -38,10 +38,11 @@ const PERSONAL_DEFAULT_HIDDEN = new Set<TaskColumn>([
 ] as TaskColumn[])
 
 function PersonalPage() {
-	const { view } = Route.useSearch()
+	// const { view } = Route.useSearch()
 
 	return (
 		<TasksFiltersProvider
+			storageKey="personal"
 			defaultColumnOrder={PERSONAL_DEFAULT_COLUMN_ORDER}
 			defaultHiddenColumns={PERSONAL_DEFAULT_HIDDEN}
 		>
