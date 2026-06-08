@@ -11,12 +11,12 @@ export function useSaveTasks() {
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
-	const { mutate: createTask } = useCreateTask()
+	const { mutateAsync: createTask } = useCreateTask()
 
-	function saveTasks(inputs: TaskInput[]) {
-		for (const { deadlineType, notes, title, ...input } of inputs) {
-			createTask(
-				{
+	async function saveTasks(inputs: TaskInput[]) {
+		await Promise.all(
+			inputs.map(({ deadlineType, notes, title, ...input }) =>
+				createTask({
 					data: {
 						title: title.trim(),
 						deadlineType: deadlineType ?? DeadlineType.ROLLING,
@@ -24,16 +24,12 @@ export function useSaveTasks() {
 						notes: notes || undefined,
 						...input,
 					},
-				},
-				{
-					onSuccess: () => {
-						queryClient.invalidateQueries({
-							queryKey: getListTasksQueryKey({ workspaceId }),
-						})
-					},
-				},
-			)
-		}
+				}),
+			),
+		)
+		await queryClient.invalidateQueries({
+			queryKey: getListTasksQueryKey({ workspaceId }),
+		})
 	}
 
 	return saveTasks

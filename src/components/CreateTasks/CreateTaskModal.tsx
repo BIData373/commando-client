@@ -60,8 +60,8 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 			assignees: [],
 			linkedSource: null,
 		} as FormState,
-		onSubmit: ({ value: { source, sourceDate, linkedSource, ...rest } }) => {
-			saveTasks([{ workspaceId, ...rest }])
+		onSubmit: async ({ value: { source, sourceDate, linkedSource, ...rest } }) => {
+			await saveTasks([{ workspaceId, ...rest }])
 			onClose()
 		},
 	})

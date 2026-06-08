@@ -103,13 +103,12 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 					groupKey: String(id),
 				}),
 			)
-			saveTasks(inputs)
+			await saveTasks(inputs)
 			onClose()
 		} catch (error) {
 			console.error("createSource failed:", error)
 		}
 	}
-
 	// ─── Render ───────────────────────────────────────────────────────────────
 
 	return (
