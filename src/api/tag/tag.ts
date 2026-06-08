@@ -21,6 +21,8 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import type { ErrorType } from "../../axios"
+
 import { sendRequest } from "../../axios"
 import type {
 	CreateTagDto,
@@ -43,7 +45,7 @@ export const createTag = (createTagDto: CreateTagDto, signal?: AbortSignal) => {
 }
 
 export const getCreateTagMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -83,9 +85,9 @@ export type CreateTagMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createTag>>
 >
 export type CreateTagMutationBody = CreateTagDto
-export type CreateTagMutationError = unknown
+export type CreateTagMutationError = ErrorType<unknown>
 
-export const useCreateTag = <TError = unknown, TContext = unknown>(
+export const useCreateTag = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createTag>>,
@@ -113,7 +115,7 @@ export const getListTagsQueryKey = (params?: ListTagsParams) => {
 
 export const getListTagsQueryOptions = <
 	TData = Awaited<ReturnType<typeof listTags>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTagsParams,
 	options?: {
@@ -140,11 +142,11 @@ export const getListTagsQueryOptions = <
 export type ListTagsQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listTags>>
 >
-export type ListTagsQueryError = unknown
+export type ListTagsQueryError = ErrorType<unknown>
 
 export function useListTags<
 	TData = Awaited<ReturnType<typeof listTags>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTagsParams,
 	options: {
@@ -166,7 +168,7 @@ export function useListTags<
 }
 export function useListTags<
 	TData = Awaited<ReturnType<typeof listTags>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTagsParams,
 	options?: {
@@ -188,7 +190,7 @@ export function useListTags<
 }
 export function useListTags<
 	TData = Awaited<ReturnType<typeof listTags>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTagsParams,
 	options?: {
@@ -203,7 +205,7 @@ export function useListTags<
 
 export function useListTags<
 	TData = Awaited<ReturnType<typeof listTags>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	params: ListTagsParams,
 	options?: {
@@ -235,7 +237,7 @@ export const getGetTagQueryKey = ({ id }: GetTagPathParameters) => {
 
 export const getGetTagQueryOptions = <
 	TData = Awaited<ReturnType<typeof getTag>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetTagPathParameters,
 	options?: {
@@ -263,11 +265,11 @@ export const getGetTagQueryOptions = <
 }
 
 export type GetTagQueryResult = NonNullable<Awaited<ReturnType<typeof getTag>>>
-export type GetTagQueryError = unknown
+export type GetTagQueryError = ErrorType<unknown>
 
 export function useGetTag<
 	TData = Awaited<ReturnType<typeof getTag>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetTagPathParameters,
 	options: {
@@ -289,7 +291,7 @@ export function useGetTag<
 }
 export function useGetTag<
 	TData = Awaited<ReturnType<typeof getTag>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetTagPathParameters,
 	options?: {
@@ -311,7 +313,7 @@ export function useGetTag<
 }
 export function useGetTag<
 	TData = Awaited<ReturnType<typeof getTag>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetTagPathParameters,
 	options?: {
@@ -326,7 +328,7 @@ export function useGetTag<
 
 export function useGetTag<
 	TData = Awaited<ReturnType<typeof getTag>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetTagPathParameters,
 	options?: {
@@ -363,7 +365,7 @@ export const updateTag = (
 }
 
 export const getUpdateTagMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -403,9 +405,9 @@ export type UpdateTagMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateTag>>
 >
 export type UpdateTagMutationBody = UpdateTagDto
-export type UpdateTagMutationError = unknown
+export type UpdateTagMutationError = ErrorType<unknown>
 
-export const useUpdateTag = <TError = unknown, TContext = unknown>(
+export const useUpdateTag = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateTag>>,
@@ -431,7 +433,7 @@ export const deleteTag = (
 }
 
 export const getDeleteTagMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -471,9 +473,9 @@ export type DeleteTagMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deleteTag>>
 >
 
-export type DeleteTagMutationError = unknown
+export type DeleteTagMutationError = ErrorType<unknown>
 
-export const useDeleteTag = <TError = unknown, TContext = unknown>(
+export const useDeleteTag = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteTag>>,

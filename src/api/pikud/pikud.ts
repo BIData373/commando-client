@@ -21,6 +21,8 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import type { ErrorType } from "../../axios"
+
 import { sendRequest } from "../../axios"
 import type {
 	CreatePikudDto,
@@ -45,7 +47,7 @@ export const createPikud = (
 }
 
 export const getCreatePikudMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -85,9 +87,9 @@ export type CreatePikudMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createPikud>>
 >
 export type CreatePikudMutationBody = CreatePikudDto
-export type CreatePikudMutationError = unknown
+export type CreatePikudMutationError = ErrorType<unknown>
 
-export const useCreatePikud = <TError = unknown, TContext = unknown>(
+export const useCreatePikud = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createPikud>>,
@@ -115,7 +117,7 @@ export const getListPikudsQueryKey = () => {
 
 export const getListPikudsQueryOptions = <
 	TData = Awaited<ReturnType<typeof listPikuds>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(options?: {
 	query?: Partial<
 		UseQueryOptions<Awaited<ReturnType<typeof listPikuds>>, TError, TData>
@@ -139,11 +141,11 @@ export const getListPikudsQueryOptions = <
 export type ListPikudsQueryResult = NonNullable<
 	Awaited<ReturnType<typeof listPikuds>>
 >
-export type ListPikudsQueryError = unknown
+export type ListPikudsQueryError = ErrorType<unknown>
 
 export function useListPikuds<
 	TData = Awaited<ReturnType<typeof listPikuds>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	options: {
 		query: Partial<
@@ -164,7 +166,7 @@ export function useListPikuds<
 }
 export function useListPikuds<
 	TData = Awaited<ReturnType<typeof listPikuds>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	options?: {
 		query?: Partial<
@@ -185,7 +187,7 @@ export function useListPikuds<
 }
 export function useListPikuds<
 	TData = Awaited<ReturnType<typeof listPikuds>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	options?: {
 		query?: Partial<
@@ -199,7 +201,7 @@ export function useListPikuds<
 
 export function useListPikuds<
 	TData = Awaited<ReturnType<typeof listPikuds>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	options?: {
 		query?: Partial<
@@ -233,7 +235,7 @@ export const getGetPikudQueryKey = ({ id }: GetPikudPathParameters) => {
 
 export const getGetPikudQueryOptions = <
 	TData = Awaited<ReturnType<typeof getPikud>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetPikudPathParameters,
 	options?: {
@@ -263,11 +265,11 @@ export const getGetPikudQueryOptions = <
 export type GetPikudQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getPikud>>
 >
-export type GetPikudQueryError = unknown
+export type GetPikudQueryError = ErrorType<unknown>
 
 export function useGetPikud<
 	TData = Awaited<ReturnType<typeof getPikud>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetPikudPathParameters,
 	options: {
@@ -289,7 +291,7 @@ export function useGetPikud<
 }
 export function useGetPikud<
 	TData = Awaited<ReturnType<typeof getPikud>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetPikudPathParameters,
 	options?: {
@@ -311,7 +313,7 @@ export function useGetPikud<
 }
 export function useGetPikud<
 	TData = Awaited<ReturnType<typeof getPikud>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	pathParams: GetPikudPathParameters,
 	options?: {
@@ -326,7 +328,7 @@ export function useGetPikud<
 
 export function useGetPikud<
 	TData = Awaited<ReturnType<typeof getPikud>>,
-	TError = unknown,
+	TError = ErrorType<unknown>,
 >(
 	{ id }: GetPikudPathParameters,
 	options?: {
@@ -363,7 +365,7 @@ export const updatePikud = (
 }
 
 export const getUpdatePikudMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -403,9 +405,9 @@ export type UpdatePikudMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updatePikud>>
 >
 export type UpdatePikudMutationBody = UpdatePikudDto
-export type UpdatePikudMutationError = unknown
+export type UpdatePikudMutationError = ErrorType<unknown>
 
-export const useUpdatePikud = <TError = unknown, TContext = unknown>(
+export const useUpdatePikud = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updatePikud>>,
@@ -435,7 +437,7 @@ export const deletePikud = (
 }
 
 export const getDeletePikudMutationOptions = <
-	TError = unknown,
+	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -475,9 +477,9 @@ export type DeletePikudMutationResult = NonNullable<
 	Awaited<ReturnType<typeof deletePikud>>
 >
 
-export type DeletePikudMutationError = unknown
+export type DeletePikudMutationError = ErrorType<unknown>
 
-export const useDeletePikud = <TError = unknown, TContext = unknown>(
+export const useDeletePikud = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deletePikud>>,
