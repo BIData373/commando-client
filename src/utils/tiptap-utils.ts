@@ -2,7 +2,7 @@ import Placeholder from "@tiptap/extension-placeholder"
 import UnderlineExtension from "@tiptap/extension-underline"
 import StarterKit from "@tiptap/starter-kit"
 
-export const EditorExtensions = {
+export const editorExtensions = {
 	extensions: [
 		StarterKit.configure({
 			bulletList: false,
