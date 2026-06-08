@@ -36,13 +36,11 @@ function SortableColumnItem({
 		<ItemRow ref={setNodeRef} style={style} $isDragging={isDragging}>
 			<ItemLabel>{column.label}</ItemLabel>
 			<ItemActions>
-				<IconButton
-					onClick={isLocked ? undefined : onToggle}
-					type="button"
-					disabled={isLocked}
-				>
-					{isHidden ? <EyeoffIcon size={16} /> : <Eye size={16} />}
-				</IconButton>
+				{!isLocked && (
+					<IconButton onClick={onToggle} type="button">
+						{isHidden ? <EyeoffIcon size={16} /> : <Eye size={16} />}
+					</IconButton>
+				)}
 				<DragHandle data-drag-handle {...attributes} {...listeners}>
 					<GripVertical size={16} />
 				</DragHandle>
