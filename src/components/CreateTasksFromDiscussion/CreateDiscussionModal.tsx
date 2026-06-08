@@ -27,7 +27,7 @@ interface CreateDiscussionModalProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
-	const saveTasks = useSaveTasks()
+	const { saveTasks, isPending } = useSaveTasks(onClose)
 	const { mutateAsync: createSource } = useCreateSource()
 	const {
 		workspace: { id: workspaceId },
@@ -103,8 +103,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 					groupKey: String(id),
 				}),
 			)
-			await saveTasks(inputs)
-			onClose()
+			saveTasks(inputs)
 		} catch (error) {
 			console.error("createSource failed:", error)
 		}
@@ -180,7 +179,11 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 								</ModalFooter>
 							</>
 						) : (
-							<CreateTasksTable onSave={handleSave} onBack={handleBack} />
+							<CreateTasksTable
+								onSave={handleSave}
+								onBack={handleBack}
+								isLoading={isPending}
+							/>
 						)}
 					</ModalBody>
 				</ModalCard>

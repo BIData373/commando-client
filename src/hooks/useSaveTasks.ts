@@ -1,4 +1,4 @@
-import { type CreateTaskDto, DeadlineType } from "src/api/model"
+import { type CreateTaskDto, DeadlineType, type TaskDto } from "src/api/model"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { queryClient } from "src/queryClient"
 import { getListTasksQueryKey, useCreateTask } from "../api/task/task"
@@ -7,30 +7,35 @@ interface TaskInput extends CreateTaskDto {
 	groupKey?: string
 }
 
-export function useSaveTasks() {
+export function useSaveTasks(onDone?: () => void) {
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
-	const { mutateAsync: createTask } = useCreateTask()
+	const { mutateAsync: createTask, isPending } = useCreateTask({
+		mutation: {
+			onSuccess: ({ workspace: _, ...task }) => {
+				queryClient.setQueryData<TaskDto[]>(
+					getListTasksQueryKey({ workspaceId }),
+					(prev) => (prev ? [...prev, task] : [task]),
+				)
+				onDone?.()
+			},
+		},
+	})
 
-	async function saveTasks(inputs: TaskInput[]) {
-		await Promise.all(
-			inputs.map(({ deadlineType, notes, title, ...input }) =>
-				createTask({
-					data: {
-						title: title.trim(),
-						deadlineType: deadlineType ?? DeadlineType.ROLLING,
-						dueDate: input.dueDate ?? new Date(),
-						notes: notes || undefined,
-						...input,
-					},
-				}),
-			),
-		)
-		await queryClient.invalidateQueries({
-			queryKey: getListTasksQueryKey({ workspaceId }),
-		})
+	function saveTasks(inputs: TaskInput[]) {
+		for (const { deadlineType, notes, title, ...input } of inputs) {
+			createTask({
+				data: {
+					title: title.trim(),
+					deadlineType: deadlineType ?? DeadlineType.ROLLING,
+					dueDate: input.dueDate ?? new Date(),
+					notes: notes || undefined,
+					...input,
+				},
+			})
+		}
 	}
 
-	return saveTasks
+	return { saveTasks, isPending }
 }
