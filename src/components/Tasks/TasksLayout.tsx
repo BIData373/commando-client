@@ -88,6 +88,8 @@ function TasksLayout({
 		[filteredTasks],
 	)
 
+	const allTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
+
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
 			to: "/workspace/$urlName/tasks",
@@ -205,7 +207,8 @@ function TasksLayout({
 		<TooltipProvider>
 			<TasksRoot>
 				<TaskFilters
-					tasks={toTaskRows(tasks)}
+					tasks={filteredTaskRows}
+					allTasksLength={allTaskRows.length}
 					onClearAllFilters={clearAllFilters}
 					onExport={handleExport}
 					tabFilter={tabFilter}
