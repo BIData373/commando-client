@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { type WorkspaceDto, WorkspaceStatusType } from "src/api/model"
 import {
 	getListPersonalTasksQueryKey,
@@ -97,6 +97,13 @@ function PersonalTasksLayout() {
 				)
 			: baseFilteredTasks
 
+	const filteredTaskRows = useMemo(
+		() => toTaskRows(filteredTasks),
+		[filteredTasks],
+	)
+
+	const allTaskRows = useMemo(() => toTaskRows(rawTasks), [rawTasks])
+
 	function clearAllFilters() {
 		clearQuickFilters()
 		setActiveWorkspaceFilters(new Set())
@@ -115,12 +122,6 @@ function PersonalTasksLayout() {
 	// 	[view],
 	// )
 
-	let tasksForCounts =
-		activeWorkspaceFilters.size > 0
-			? taskRows.filter((t) => activeWorkspaceFilters.has(t.workspace.id))
-			: taskRows
-	tasksForCounts = applyDateFilter(tasksForCounts, dateType, dateRange)
-
 	return (
 		<TooltipProvider>
 			<PageRoot>
@@ -132,7 +133,8 @@ function PersonalTasksLayout() {
 				/>
 
 				<TaskFilters
-					tasks={tasksForCounts}
+					tasks={filteredTaskRows}
+					allTasksLength={allTaskRows.length}
 					onClearAllFilters={clearAllFilters}
 					onExport={handleExport}
 					hasExtraActiveFilters={activeWorkspaceFilters.size > 0}
@@ -166,7 +168,7 @@ function PersonalTasksLayout() {
 				) : (
 					<TaskTable
 						queryKey={queryKey}
-						tasks={toTaskRows(filteredTasks)}
+						tasks={filteredTaskRows}
 						extraColumns={EXTRA_COLUMNS as Record<string, ColumnDef<TaskRow>>}
 					/>
 				)}
