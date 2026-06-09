@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
+import { concat, uniq } from "lodash"
 import { ChevronDown, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
@@ -72,9 +73,11 @@ function TasksLayout({
 		new Set(),
 	)
 
-	const allTopics = [
-		...new Set(tasks.flatMap((t) => t.tags.map((tag) => tag.name))),
-	]
+	const allTopics = uniq(
+		tasks.flatMap((t) =>
+			concat(t.tags, t.source?.tags ?? []).map((tag) => tag.name),
+		),
+	)
 
 	const filteredTasks = useFilteredTasks(
 		tasks,
@@ -87,6 +90,8 @@ function TasksLayout({
 		() => toTaskRows(filteredTasks),
 		[filteredTasks],
 	)
+
+	const allTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -110,9 +115,17 @@ function TasksLayout({
 		})
 	}
 
-	function handleEdit(taskId: number) {
+	function handleOpenTask(taskId: number) {
 		navigate({
 			to: "/workspace/$urlName/tasks/$taskId",
+			params: { urlName, taskId: String(taskId) },
+			search: { view },
+		})
+	}
+
+	function handleEdit(taskId: number) {
+		navigate({
+			to: "/workspace/$urlName/tasks/$taskId/edit",
 			params: { urlName, taskId: String(taskId) },
 			search: { view },
 		})
@@ -197,7 +210,8 @@ function TasksLayout({
 		<TooltipProvider>
 			<TasksRoot>
 				<TaskFilters
-					tasks={toTaskRows(tasks)}
+					tasks={filteredTaskRows}
+					allTasksLength={allTaskRows.length}
 					onClearAllFilters={clearAllFilters}
 					onExport={handleExport}
 					tabFilter={tabFilter}
@@ -228,7 +242,7 @@ function TasksLayout({
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
 							onFiltersChange={handleColumnFiltersChange}
-							onDoubleClick={handleEdit}
+							onDoubleClick={handleOpenTask}
 						/>
 					) : (
 						<TaskCardGrid tasks={filteredTasks} />
@@ -282,7 +296,7 @@ const CreateButton = styled.button`
   border-radius: 8px;
   background: linear-gradient(165deg, #615FFF 0%, #9810FA 100%);
   color: white;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   cursor: pointer;
@@ -334,7 +348,7 @@ const StyledDropdownItem = styled(DropdownMenuItem)`
   padding-inline: 12px;
   padding-block: 5px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);

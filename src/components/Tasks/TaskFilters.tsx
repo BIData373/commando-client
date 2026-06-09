@@ -18,6 +18,7 @@ interface TaskFiltersProps {
 	tabFilter?: QuickFilter[]
 	onToggleTabFilter?: (filter: QuickFilter) => void
 	startSlot?: ReactNode
+	allTasksLength: number
 }
 
 function TaskFilters({
@@ -30,6 +31,7 @@ function TaskFilters({
 	tabFilter,
 	onToggleTabFilter,
 	startSlot,
+	allTasksLength,
 }: TaskFiltersProps) {
 	const {
 		activeQuickFilters,
@@ -104,7 +106,7 @@ function TaskFilters({
 			<FilterDivider />
 
 			<FilterPill $active={!hasActiveFilters} onClick={onClearAllFilters}>
-				הכל ({tasks.length})
+				הכל ({allTasksLength})
 			</FilterPill>
 		</FilterBar>
 	)

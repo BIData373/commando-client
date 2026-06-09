@@ -125,6 +125,26 @@ const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
 
 ---
 
+## Typography Variables
+
+All font sizes come from the design token scale — never hardcode `px` sizes inline.
+
+| Variable          | Value (desktop) | Usage                        |
+| ----------------- | --------------- | ---------------------------- |
+| `var(--fs-heading-h1)` | 42px       | Display / hero headings      |
+| `var(--fs-heading-1)`  | 38px       | Page-level H1                |
+| `var(--fs-heading-2)`  | 30px       | Section headings             |
+| `var(--fs-heading-3)`  | 24px       | Sub-section headings         |
+| `var(--fs-xl)`         | 20px       | Large body / card titles     |
+| `var(--fs-lg)`         | 18px       | Medium emphasis text         |
+| `var(--fs-base)`       | 16px       | Default body text            |
+| `var(--fs-btn)`        | 14px       | Button labels (all sizes)    |
+| `var(--fs-sm)`         | 12px       | Captions, labels, meta text  |
+
+Responsive breakpoints automatically scale heading variables down at ≤1024px and ≤768px — body/button/sm sizes stay fixed.
+
+---
+
 ## Known CSS Variables (from existing components)
 
 | Variable                  | Usage                          |

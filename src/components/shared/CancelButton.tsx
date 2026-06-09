@@ -24,7 +24,7 @@ const Button = styled.button`
   background: white;
   border: 1px solid var(--card-border);
   color: rgba(0, 0, 0, 0.88);
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   cursor: pointer;

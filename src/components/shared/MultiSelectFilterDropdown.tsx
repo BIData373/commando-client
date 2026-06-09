@@ -4,6 +4,7 @@ import type { ReactNode } from "react"
 import { useState } from "react"
 import { Checkbox } from "../ui/checkbox"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { EmptyCardState } from "./EmptyCardState"
 
 interface FilterOption<T extends string | number> {
 	value: T
@@ -69,19 +70,23 @@ function MultiSelectFilterDropdown<T extends string | number>({
 			<PopoverContent align="start" sideOffset={8} asChild>
 				<DropdownPanel>
 					<ItemList>
-						{options.map((option) => (
-							<DropdownItem
-								key={option.value}
-								$selected={pending.has(option.value)}
-								onClick={() => toggleValue(option.value)}
-							>
-								<OptionLabel>
-									{option.icon}
-									<span>{option.label}</span>
-								</OptionLabel>
-								<Checkbox checked={pending.has(option.value)} />
-							</DropdownItem>
-						))}
+						{options.length === 0 ? (
+							<EmptyCardState title="לא נמצאו נושאים" />
+						) : (
+							options.map((option) => (
+								<DropdownItem
+									key={option.value}
+									$selected={pending.has(option.value)}
+									onClick={() => toggleValue(option.value)}
+								>
+									<OptionLabel>
+										{option.icon}
+										<span>{option.label}</span>
+									</OptionLabel>
+									<Checkbox checked={pending.has(option.value)} />
+								</DropdownItem>
+							))
+						)}
 					</ItemList>
 					<Divider />
 					<FooterRow>
@@ -106,7 +111,7 @@ const TriggerPill = styled.button<{ $active: boolean }>`
   padding-inline: 12px;
   height: 32px;
   border-radius: 999px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.15s;
@@ -162,7 +167,7 @@ const OptionLabel = styled.div`
   align-items: center;
   gap: 8px;
   justify-content: flex-start;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
@@ -190,7 +195,7 @@ const ApplyButton = styled.button`
   height: 24px;
   padding-inline: 7px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: white;
@@ -211,7 +216,7 @@ const ResetButton = styled.button`
   height: 24px;
   padding-inline: 7px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);

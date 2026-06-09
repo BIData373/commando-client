@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { ChevronUp } from "lucide-react"
+import type { AssigneeExtra } from "../shared/AssigneeRow"
 import AssigneeRowList from "../shared/AssigneeRow"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -11,6 +12,14 @@ interface AssigneeExpansionPanelProps {
 	onDetailChange: (assigneeId: number, value: string) => void
 	onRemoveAssignee: (assigneeId: number) => void
 	onCollapse: () => void
+}
+
+function toExtras(
+	details: Record<number, string>,
+): Record<number, AssigneeExtra> {
+	return Object.fromEntries(
+		Object.entries(details).map(([id, description]) => [id, { description }]),
+	)
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -37,7 +46,7 @@ function AssigneeExpansionPanel({
 				<AssigneeRowList
 					assigneeIds={assigneeIds}
 					directiveTitle={directiveTitle}
-					assigneeDetails={assigneeDetails}
+					assigneeExtras={toExtras(assigneeDetails)}
 					onDetailChange={onDetailChange}
 					onRemove={onRemoveAssignee}
 				/>
@@ -92,7 +101,7 @@ const DetailHeaderCell = styled.div`
   justify-content: flex-end;
   padding: 4px 12px;
   background: var(--colors-base-neutral-3);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color);
@@ -107,7 +116,7 @@ const AssigneeHeaderCell = styled.div`
   padding: 4px 12px;
   padding-inline-end: 64px;
   background: var(--colors-base-neutral-3);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 22px;
   color: var(--text-color);

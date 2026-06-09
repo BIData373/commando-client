@@ -2,9 +2,9 @@ import styled from "@emotion/styled"
 import type { PropsWithChildren } from "react"
 
 interface EmptyCardStateProps extends PropsWithChildren {
-	imgSrc: string
+	imgSrc?: string
 	title: string
-	description: string
+	description?: string
 }
 
 export const EmptyCardState = ({
@@ -15,15 +15,19 @@ export const EmptyCardState = ({
 }: EmptyCardStateProps) => {
 	return (
 		<EmptyState>
-			<EmptyIconWrapper>
-				<img src={imgSrc} alt="" />
-			</EmptyIconWrapper>
+			{imgSrc && (
+				<EmptyIconWrapper>
+					<img src={imgSrc} alt="" />
+				</EmptyIconWrapper>
+			)}
 			<EmptyTitle>{title}</EmptyTitle>
-			<EmptyDescription>
-				{description.split("\n").map((line) => (
-					<span key={line}>{line}</span>
-				))}
-			</EmptyDescription>
+			{description && (
+				<EmptyDescription>
+					{description.split("\n").map((line) => (
+						<span key={line}>{line}</span>
+					))}
+				</EmptyDescription>
+			)}
 			{children}
 		</EmptyState>
 	)
@@ -50,7 +54,7 @@ const EmptyDescription = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   color: var(--sea-ink-soft);
   margin: 0 0 12px;
   line-height: 22px;

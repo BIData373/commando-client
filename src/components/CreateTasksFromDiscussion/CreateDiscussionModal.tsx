@@ -9,6 +9,7 @@ import type { CreateSourceDto } from "../../api/model"
 import { useCreateSource } from "../../api/source/source"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
+import { DialogOverlay } from "../ui/dialog"
 import CreateTasksTable from "./CreateTasksTable"
 import DiscussionForm from "./DiscussionForm"
 import type { NewTaskRow } from "./TasksColumns"
@@ -27,7 +28,7 @@ interface CreateDiscussionModalProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
-	const saveTasks = useSaveTasks()
+	const { saveTasks, isPending } = useSaveTasks(onClose)
 	const { mutateAsync: createSource } = useCreateSource()
 	const {
 		workspace: { id: workspaceId },
@@ -96,26 +97,28 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 		try {
 			const source = await createSource({ data: values })
 			const inputs = taskRows.map(
-				({ id, rowKey, assigneeDetails, ...rest }) => ({
+				({ id, rowKey, assigneeIds, assigneeDetails, ...rest }) => ({
 					...rest,
 					workspaceId,
 					sourceId: source.id,
 					groupKey: String(id),
+					assignees: assigneeIds.map((assigneeId) => ({
+						id: assigneeId,
+						description: assigneeDetails[assigneeId] || undefined,
+					})),
 				}),
 			)
 			saveTasks(inputs)
-			onClose()
 		} catch (error) {
 			console.error("createSource failed:", error)
 		}
 	}
-
 	// ─── Render ───────────────────────────────────────────────────────────────
 
 	return (
 		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
 			<DialogPrimitive.Portal>
-				<Overlay />
+				<DialogOverlay />
 				<ModalCard $step={currentStep}>
 					<ModalCloseButton onClick={onClose}>
 						<X size={16} />
@@ -181,7 +184,11 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 								</ModalFooter>
 							</>
 						) : (
-							<CreateTasksTable onSave={handleSave} onBack={handleBack} />
+							<CreateTasksTable
+								onSave={handleSave}
+								onBack={handleBack}
+								isLoading={isPending}
+							/>
 						)}
 					</ModalBody>
 				</ModalCard>
@@ -193,14 +200,6 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 export default CreateDiscussionModal
 
 // ─── Modal Shell ────────────────────────────────────────────────────────────
-
-const Overlay = styled(DialogPrimitive.Overlay)`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(1px);
-  z-index: var(--z-dropdown);
-`
 
 const ModalCard = styled(DialogPrimitive.Content)<{ $step: Steps }>`
   position: fixed;
@@ -266,7 +265,7 @@ const HeaderSection = styled.div`
 
 const ModalTitle = styled.h1`
   font-weight: 500;
-  font-size: 42px;
+  font-size: var(--fs-heading-h1);
   line-height: 50px;
   color: var(--foreground);
   margin: 0;
@@ -291,14 +290,14 @@ const DiscussionInfoText = styled.div`
 `
 
 const DiscussionName = styled.span`
-  font-size: 20px;
+  font-size: var(--fs-xl);
   font-weight: 400;
   line-height: 28px;
   color: var(--foreground);
 `
 
 const DiscussionDate = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color: var(--foreground);
@@ -323,7 +322,7 @@ const ContinueButton = styled.button`
   border-radius: 8px;
   background: linear-gradient(165deg, #6866ff 0%, #7604c8 100%);
   color: white;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   cursor: pointer;
@@ -376,7 +375,7 @@ const stepCircleBase = `
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   flex-shrink: 0;
@@ -401,7 +400,7 @@ const StepCircle = styled.div<{ $active: boolean }>`
 `
 
 const StepLabel = styled.span<{ $active: boolean }>`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: ${({ $active }) => ($active ? "var(--text-color-2)" : "rgba(0, 0, 0, 0.45)")};

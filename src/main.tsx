@@ -2,6 +2,7 @@ import { QueryClientProvider } from "@tanstack/react-query"
 import { RouterProvider } from "@tanstack/react-router"
 import ReactDOM from "react-dom/client"
 import * as mockHandlers from "src/api/index.msw" // Orval generated MSW handlers
+import { AuthenticationWrapper } from "./components/AuthenticationWrapper"
 import { ErrorModalProvider } from "./providers/ErrorModalProvider"
 import { queryClient } from "./queryClient"
 import router from "./router"
@@ -17,7 +18,9 @@ async function enableMocking() {
 		const { setupWorker } = await import("msw/browser")
 		const worker = setupWorker(...handlers)
 
-		return worker.start()
+		return worker.start({
+			onUnhandledRequest: "bypass",
+		})
 	}
 }
 
@@ -33,13 +36,15 @@ enableMocking().then(() => {
 	if (rootElement && !rootElement.innerHTML) {
 		const root = ReactDOM.createRoot(rootElement)
 		root.render(
-			<MatomoWrapper>
-				<ErrorModalProvider>
-					<QueryClientProvider client={queryClient}>
-						<RouterProvider router={router} />
-					</QueryClientProvider>
-				</ErrorModalProvider>
-			</MatomoWrapper>,
+			<ErrorModalProvider>
+				<AuthenticationWrapper>
+					<MatomoWrapper>
+						<QueryClientProvider client={queryClient}>
+							<RouterProvider router={router} />
+						</QueryClientProvider>
+					</MatomoWrapper>
+				</AuthenticationWrapper>
+			</ErrorModalProvider>,
 		)
 	}
 })

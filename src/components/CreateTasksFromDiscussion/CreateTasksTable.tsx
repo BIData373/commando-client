@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { useRef, useState } from "react"
 import { DeadlineType } from "src/api/model"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { PrimaryButton } from "../shared/PrimaryButton"
 import { DataTable } from "../ui/data-table"
 import { DATA_CELL_ACTIVE_KEY } from "./DeadlineCell"
 import TaskAssigneeExpansion from "./TaskAssigneeExpansion"
@@ -12,11 +13,16 @@ import columns, { type NewTaskRow, type TaskTableMeta } from "./TasksColumns"
 interface CreateTasksTableProps {
 	onSave: (tasks: NewTaskRow[]) => void
 	onBack: () => void
+	isLoading?: boolean
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
+function CreateTasksTable({
+	onSave,
+	onBack,
+	isLoading,
+}: CreateTasksTableProps) {
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
@@ -30,7 +36,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
 			rowKey: String(id),
 			title: "",
 			deadlineType: DeadlineType.IMMEDIATE,
-			dueDate: new Date(),
+			dueDate: null,
 			assigneeIds: [],
 			assigneeDetails: {},
 			notes: "",
@@ -127,9 +133,13 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
 			</TableOuterContainer>
 
 			<FooterRow>
-				<SaveButton onClick={handleSave} disabled={!hasAnyTask}>
-					שמור {hasAnyTask && `(${filledCount})`}
-				</SaveButton>
+				<PrimaryButton
+					onClick={handleSave}
+					disabled={!hasAnyTask}
+					title={`שמור${hasAnyTask ? ` (${filledCount})` : ""}`}
+					width={123}
+					loading={isLoading}
+				/>
 				<BackButton onClick={onBack}>חזור</BackButton>
 			</FooterRow>
 		</TableWrapper>
@@ -254,42 +264,6 @@ const FooterRow = styled.div`
   flex-shrink: 0;
 `
 
-const SaveButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 123px;
-  height: 40px;
-  border: none;
-  border-radius: 8px;
-  background: var(--default-linear);
-  color: var(--background);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  cursor: pointer;
-  white-space: nowrap;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: var(--shadow-inset);
-    pointer-events: none;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &:hover:not(:disabled) {
-    opacity: 0.9;
-  }
-`
-
 const BackButton = styled.button`
   display: flex;
   align-items: center;
@@ -300,7 +274,7 @@ const BackButton = styled.button`
   border-radius: 8px;
   background: white;
   color: var(--text-color-2);
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   cursor: pointer;

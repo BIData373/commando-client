@@ -106,12 +106,12 @@ const UserName = styled.span`
 `
 
 const UserPersonalId = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
 `
 
 const UserSubtext = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   color: rgba(0, 0, 0, 0.65);
 `

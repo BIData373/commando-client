@@ -16,6 +16,7 @@ import {
 	useUpdateSource,
 } from "../../api/source/source"
 import { getGetTaskQueryKey, getListTasksQueryKey } from "../../api/task/task"
+import { DialogOverlay } from "../ui/dialog"
 import { Popover, PopoverTrigger } from "../ui/popover"
 import DiscussionForm from "./DiscussionForm"
 
@@ -148,7 +149,7 @@ function EditDiscussionModal({
 	return (
 		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
 			<DialogPrimitive.Portal>
-				<Overlay />
+				<DialogOverlay />
 				<ModalCard>
 					<ModalCloseButton onClick={onClose}>
 						<X size={16} />
@@ -213,14 +214,6 @@ export default EditDiscussionModal
 
 // ─── Modal Shell ────────────────────────────────────────────────────────────
 
-const Overlay = styled(DialogPrimitive.Overlay)`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(1px);
-  z-index: var(--z-dropdown);
-`
-
 const ModalCard = styled(DialogPrimitive.Content)`
   position: fixed;
   top: 50%;
@@ -283,7 +276,7 @@ const HeaderSection = styled.div`
 
 const ModalTitle = styled.h1`
   font-weight: 500;
-  font-size: 42px;
+  font-size: var(--fs-heading-h1);
   line-height: 50px;
   color: var(--foreground);
   margin: 0;
@@ -309,7 +302,7 @@ const SaveButton = styled.button<{ $disabled?: boolean }>`
   border-radius: 8px;
   background: linear-gradient(165deg, #6866ff 0%, #7604c8 100%);
   color: white;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
@@ -341,7 +334,7 @@ const CancelButton = styled.button`
   border-radius: 8px;
   background: var(--background);
   color: var(--sea-ink);
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   cursor: pointer;
@@ -405,7 +398,7 @@ const AlertCircleIcon = styled(AlertCircle)`
 `
 
 const ConfirmationTitle = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 22px;
   color: var(--sea-ink);
@@ -413,7 +406,7 @@ const ConfirmationTitle = styled.span`
 `
 
 const ConfirmationText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--sea-ink);
@@ -441,7 +434,7 @@ const ConfirmButton = styled.button`
   border-radius: 4px;
   background: linear-gradient(135deg, #6866ff 0%, #7604c8 100%);
   color: white;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   cursor: pointer;
@@ -462,7 +455,7 @@ const CancelConfirmButton = styled.button`
   border-radius: 4px;
   background: var(--background);
   color: var(--sea-ink);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   cursor: pointer;

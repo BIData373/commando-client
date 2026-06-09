@@ -31,6 +31,6 @@ const IconThumb = styled.img`
 `
 
 const IconLabel = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   color: var(--sea-ink);
 `
