@@ -43,6 +43,13 @@ export const getCreateSourceResponseMock = (
 		]),
 		null,
 	]),
+	attachmentName: faker.helpers.arrayElement([
+		faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
+			null,
+		]),
+		null,
+	]),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -92,6 +99,13 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 			]),
 			null,
 		]),
+		attachmentName: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				null,
+			]),
+			null,
+		]),
 		tags: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
@@ -132,6 +146,13 @@ export const getGetSourceResponseMock = (
 	date: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	attachmentKey: faker.helpers.arrayElement([
+		faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
+			null,
+		]),
+		null,
+	]),
+	attachmentName: faker.helpers.arrayElement([
 		faker.helpers.arrayElement([
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
@@ -185,6 +206,13 @@ export const getUpdateSourceResponseMock = (
 		]),
 		null,
 	]),
+	attachmentName: faker.helpers.arrayElement([
+		faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
+			null,
+		]),
+		null,
+	]),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -226,6 +254,13 @@ export const getDeleteSourceResponseMock = (
 	date: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	attachmentKey: faker.helpers.arrayElement([
+		faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
+			null,
+		]),
+		null,
+	]),
+	attachmentName: faker.helpers.arrayElement([
 		faker.helpers.arrayElement([
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,

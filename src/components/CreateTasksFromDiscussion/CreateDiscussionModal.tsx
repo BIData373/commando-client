@@ -208,7 +208,7 @@ const ModalCard = styled(DialogPrimitive.Content)<{ $step: Steps }>`
   transform: translate(-50%, -50%);
   width: 100%;
   max-width: ${({ $step }) =>
-		$step === Steps.Discussion ? "753px" : "1550px"};
+		$step === Steps.Discussion ? "753px" : "min(1550px, 95vw)"};
   transition: width 300ms ease;
   height: min(796px, calc(100vh - 48px));
   overflow-y: auto;
