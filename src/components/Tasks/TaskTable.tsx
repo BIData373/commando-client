@@ -259,20 +259,21 @@ export { TaskTable }
 // ─── Table ────────────────────────────────────────────────────────────────────
 
 const TableWrapper = styled.div`
-  overflow-y: auto;
   min-width: 0;
   width: 100%;
-  max-height: 100%;
+  height: 100%;
   box-sizing: border-box;
   direction: ltr;
   border-radius: 8px;
   border: 0.5px solid var(--Background-color-bg-text-active);
   background: var(--background);
   box-shadow: var(--card-shadow-default);
+  overflow: hidden;
 
   [data-slot="table-container"] {
-    overflow-x: auto;
-    direction: rtl;
+    overflow: auto;
+    max-height: 100%;
+    direction: ltr;
   }
 
   table {
@@ -303,6 +304,7 @@ const TableWrapper = styled.div`
     white-space: nowrap;
     background: var(--background);
     border-right: 0.5px solid var(--Background-color-bg-text-active);
+    box-shadow: inset 0 -0.5px 0 0 var(--Background-color-bg-text-active);
 
     &:first-of-type {
       border-right: none;

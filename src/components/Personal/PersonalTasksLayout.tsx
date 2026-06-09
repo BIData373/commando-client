@@ -155,6 +155,8 @@ function PersonalTasksLayout() {
 							activeValues={activeWorkspaceFilters}
 							onApply={setActiveWorkspaceFilters}
 							$active={activeWorkspaceFilters.size > 0}
+							emptyTitle="טרם הוגדרו סביבות"
+							emptyDescription="לאחר שסביבות יוצרו, הן יופיעו כאן"
 						/>
 					}
 					startSlot={<TasksDatePicker />}
