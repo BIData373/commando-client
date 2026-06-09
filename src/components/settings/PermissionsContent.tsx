@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
 import {
 	useDeletePermission,
@@ -52,6 +52,17 @@ export function PermissionsContent() {
 	const { mutate: updatePermission } = useUpdatePermission()
 	const { mutate: deletePermission } = useDeletePermission()
 
+	const userPermissionExist = useMemo(
+		() => permissions.find(({ user }) => user.upn === selectedUser?.upn),
+		[selectedUser, permissions],
+	)
+
+	useEffect(() => {
+		if (userPermissionExist) {
+			setType(userPermissionExist.type)
+		}
+	}, [userPermissionExist])
+
 	const currentTabUsers = useMemo(() => {
 		const taggedType =
 			activeTab === PermissionsTab.MANAGERS
@@ -87,6 +98,11 @@ export function PermissionsContent() {
 		)
 	}
 
+	function clearSearch() {
+		setSearch("")
+		setSelectedUser(null)
+	}
+
 	function handleUserAdd(type: PermissionType) {
 		if (!selectedUser) {
 			return
@@ -101,8 +117,7 @@ export function PermissionsContent() {
 			},
 		)
 
-		setSearch("")
-		setSelectedUser(null)
+		clearSearch()
 	}
 
 	function handleDeletePermissionUser({ id }: UserDto) {
@@ -131,6 +146,8 @@ export function PermissionsContent() {
 				onSuccess: handleSuccessUpsert,
 			},
 		)
+
+		clearSearch()
 	}
 
 	function handleTabChange(value: string) {
@@ -154,6 +171,12 @@ export function PermissionsContent() {
 		setSelectedUser(null)
 	}
 
+	function handleUserUpdate() {
+		if (!userPermissionExist) return
+
+		handleTypeChangePermissionUser(userPermissionExist?.user, type)
+	}
+
 	return (
 		<PermissionsInner>
 			<Subtitle>
@@ -169,9 +192,8 @@ export function PermissionsContent() {
 					onClear={handleSearchClear}
 					onAdd={() => handleUserAdd(type)}
 					selectedUser={selectedUser}
-					excludeUpns={permissions.map((p) => p.user.upn)}
 					placeholder="חפש שם/ תפקיד/ מספר אישי"
-					showAddButton={!!selectedUser}
+					showAddButton={!userPermissionExist && !!selectedUser}
 				>
 					{search.length > 0 && (
 						<AddUserRow>
@@ -181,6 +203,14 @@ export function PermissionsContent() {
 								onChange={setType}
 								disabled={!selectedUser}
 							/>
+							{userPermissionExist && (
+								<UpdateButton
+									disabled={userPermissionExist?.type === type}
+									onClick={handleUserUpdate}
+								>
+									עדכון
+								</UpdateButton>
+							)}
 						</AddUserRow>
 					)}
 				</DropdownUsers>
@@ -309,4 +339,15 @@ const LoadingContainer = styled.div`
   justify-content: center;
   flex: 1;
   height: 100%;
+`
+
+const UpdateButton = styled.button<{ disabled: boolean }>`
+  	font-size: 16px;
+  	font-weight: 400;
+    padding: 3px 16px;
+	color: ${({ disabled }) => (disabled ? "rgba(0, 0, 0, 0.25);" : "rgba(0, 0, 0, 0.65);")};
+	cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
+	border-radius: 6px;
+    border: 1px solid var(--card-border);
+    background: rgba(0, 0, 0, 0.04);
 `

@@ -19,6 +19,12 @@ import {
 	NavigationMenuLink,
 	NavigationMenuList,
 } from "./ui/navigation-menu"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "./ui/tooltip"
 
 export default function Header() {
 	// In RTL flex, first item is rightmost. 'בית' is the primary/rightmost link.
@@ -72,7 +78,14 @@ export default function Header() {
 										alt="Workspace icon"
 									/>
 								)}
-								<WorkspaceName>{activeWorkspace.title}</WorkspaceName>
+								<TooltipProvider>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<WorkspaceName>{activeWorkspace.title}</WorkspaceName>
+										</TooltipTrigger>
+										<TooltipContent>{activeWorkspace.title}</TooltipContent>
+									</Tooltip>
+								</TooltipProvider>
 							</>
 						)}
 					</CenterSection>
@@ -127,7 +140,7 @@ const HeaderRoot = styled.header`
 
 const HeaderInner = styled.div`
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr minmax(0, auto) 1fr;
   align-items: center;
   height: 62px;
 `
@@ -142,6 +155,7 @@ const CenterSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 `
 
 const EndSection = styled.div`
@@ -172,6 +186,9 @@ const WorkspaceName = styled.p`
   line-height: 32px;
   color: #C7C9CB;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 `
 
 const WorkspaceIcon = styled.img`
