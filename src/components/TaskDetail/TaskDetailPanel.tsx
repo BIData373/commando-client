@@ -161,9 +161,9 @@ function TaskDetailPanel({
 									)}
 								</DueDateGroup>
 								<CreatedGroup>
-									<HistoryButton onClick={() => setShowHistory(true)}>
+									{/* <HistoryButton onClick={() => setShowHistory(true)}>
 										<History size={16} />
-									</HistoryButton>
+									</HistoryButton> */}
 									<MetaText>
 										{formatMinutesHours(createdAt)} -{" "}
 										{formatDateMonthYear(createdAt)}
