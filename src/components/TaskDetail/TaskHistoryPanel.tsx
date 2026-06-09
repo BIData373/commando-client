@@ -177,7 +177,7 @@ const Header = styled.div`
 `
 
 const Title = styled.h2`
-  font-size: 20px;
+  font-size: var(--fs-xl);
   font-weight: 500;
   line-height: 28px;
   color: var(--sea-ink);
@@ -279,7 +279,7 @@ const TimeGroup = styled.div`
 `
 
 const TimeText = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   line-height: 20px;
   color: var(--text-color-400);
@@ -293,7 +293,7 @@ const TimeSeparator = styled.div`
 `
 
 const DateText = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   line-height: 20px;
   color: var(--text-color-400);
@@ -307,7 +307,7 @@ const UserGroup = styled.div`
 `
 
 const UserName = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 500;
   line-height: 20px;
   color: var(--text-color);
@@ -319,7 +319,7 @@ const UserSeparetor = styled.span`
 `
 
 const UserId = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   line-height: 20px;
   color: var(--text-color);
@@ -346,7 +346,7 @@ const ChangeRow = styled.div`
 `
 
 const ChangeLabel = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 500;
   line-height: 20px;
   color: var(--text-color);
@@ -355,7 +355,7 @@ const ChangeLabel = styled.span`
 `
 
 const ChangeValue = styled.p`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   line-height: 20px;
   color: var(--text-color);

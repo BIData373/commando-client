@@ -111,7 +111,7 @@ const TriggerPill = styled.button<{ $active: boolean }>`
   padding-inline: 12px;
   height: 32px;
   border-radius: 999px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.15s;
@@ -167,7 +167,7 @@ const OptionLabel = styled.div`
   align-items: center;
   gap: 8px;
   justify-content: flex-start;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
@@ -195,7 +195,7 @@ const ApplyButton = styled.button`
   height: 24px;
   padding-inline: 7px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: white;
@@ -216,7 +216,7 @@ const ResetButton = styled.button`
   height: 24px;
   padding-inline: 7px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);

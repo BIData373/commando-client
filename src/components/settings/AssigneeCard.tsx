@@ -114,7 +114,7 @@ const StyledCardHeader = styled(CardHeader)`
 
 const StyledCardDescription = styled(CardDescription)`
   color: #BFBFBF;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
 `
 
@@ -147,7 +147,7 @@ const TagRow = styled.div`
 
 const StyledBadge = styled(Badge)`
     border-radius: 9999px;
-    font-size: 14px;
+    font-size: var(--fs-btn);
     padding: 0 7px;
     background: rgba(0, 0, 0, 0.04);
     font-weight: 400;

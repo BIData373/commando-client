@@ -65,7 +65,7 @@ const ActionButton = styled.button`
   height: 40px;
   border: 1px solid #d9d9d9;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: rgba(0, 0, 0, 0.88);
   cursor: pointer;
   background: white;
@@ -112,7 +112,7 @@ const SearchField = styled.input`
   border: none;
   outline: none;
   background: transparent;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);

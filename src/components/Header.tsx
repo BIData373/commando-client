@@ -181,7 +181,7 @@ const UserTrigger = styled.button`
 
 const WorkspaceName = styled.p`
   margin: 0;
-  font-size: 24px;
+  font-size: var(--fs-heading-3);
   font-weight: 500;
   line-height: 32px;
   color: #C7C9CB;
@@ -215,7 +215,7 @@ const TitleBar = styled.div`
 const PageTitle = styled.h1`
   flex: 1;
   margin: 0;
-  font-size: 38px;
+  font-size: var(--fs-heading-1);
   font-weight: 500;
   color: var(--sea-ink);
 `
@@ -225,7 +225,7 @@ const NavMenuLink = styled(NavigationMenuLink)`
     padding: 8px 8px;
     color: #C7C9CB;
     font-weight: 400;
-    font-size: 14px;
+    font-size: var(--fs-btn);
     background: transparent;
     border-radius: 6px;
 
