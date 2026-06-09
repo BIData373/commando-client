@@ -60,7 +60,7 @@ const WORKSPACE_DEFAULT_HIDDEN = new Set<TaskColumn>([
 
 const TasksFiltersContext = createContext<TasksFiltersContextValue | null>(null)
 
-type ColumnsStorageKey = "personal" | "tasks"
+type ColumnsStorageKey = "personal" | "tasks" | "dashboard"
 
 interface ColumnsVisibilityStorage {
 	columnOrder: TaskColumn[]
