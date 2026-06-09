@@ -31,6 +31,7 @@ interface TaskDetailPanelProps {
 	task: TaskWithWorkspaceDto
 	onClose: () => void
 	onDelete: () => void
+	onEdit: () => void
 }
 
 function TaskDetailPanel({
@@ -48,6 +49,7 @@ function TaskDetailPanel({
 	},
 	onClose,
 	onDelete,
+	onEdit,
 }: TaskDetailPanelProps) {
 	const {
 		workspace: { id: workspaceId },
@@ -107,7 +109,7 @@ function TaskDetailPanel({
 						</TextWrapper>
 						<RowActionsMenu
 							workspaceId={workspaceId}
-							onEdit={onClose}
+							onEdit={onEdit}
 							onDelete={onDelete}
 						/>
 					</HeaderRow>
