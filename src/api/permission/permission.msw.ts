@@ -36,7 +36,7 @@ export const getListPermissionsResponseMock = (): PermissionDto[] =>
 		type: faker.helpers.arrayElement(Object.values(PermissionType)),
 	}))
 
-export const getUpdatePermissionResponseMock = (
+export const getUpsertPermissionResponseMock = (
 	overrideResponse: Partial<Extract<PermissionDto, object>> = {},
 ): PermissionDto => ({
 	user: {
@@ -132,7 +132,7 @@ export const getListPermissionsMockHandler = (
 	)
 }
 
-export const getUpdatePermissionMockHandler = (
+export const getUpsertPermissionMockHandler = (
 	overrideResponse?:
 		| PermissionDto
 		| ((
@@ -148,7 +148,7 @@ export const getUpdatePermissionMockHandler = (
 					? typeof overrideResponse === "function"
 						? await overrideResponse(info)
 						: overrideResponse
-					: getUpdatePermissionResponseMock(),
+					: getUpsertPermissionResponseMock(),
 				{ status: 200 },
 			)
 		},
@@ -205,7 +205,7 @@ export const getGetMyPermissionMockHandler = (
 }
 export const getPermissionMock = () => [
 	getListPermissionsMockHandler(),
-	getUpdatePermissionMockHandler(),
+	getUpsertPermissionMockHandler(),
 	getDeletePermissionMockHandler(),
 	getGetMyPermissionMockHandler(),
 ]
