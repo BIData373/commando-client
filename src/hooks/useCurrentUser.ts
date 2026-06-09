@@ -1,8 +1,8 @@
 import { useLocalStorage } from "@mantine/hooks"
 import { useEffect, useState } from "react"
 import type { UserDto } from "src/api/model"
-import { isBIKey, requestUsernameKey } from "src/axios"
-import { IS_BI, REQUEST_USERNAME, STATIC_TOKEN } from "src/utils/env-utils"
+import { isBIKey, requestUsernameKey, resolveBypassValues } from "src/axios"
+import { IS_BI, STATIC_TOKEN } from "src/utils/env-utils"
 import {
 	COOKIE_NAME,
 	decodeSsoUserJwt,
@@ -11,9 +11,12 @@ import {
 
 export const adminUserUpn = "s0000000"
 
-function buildAdminUser(username: string | null, isBI: string | null): UserDto {
-	const upn = username ?? REQUEST_USERNAME ?? adminUserUpn
-	const resolvedIsBI = isBI !== null ? isBI === "true" : IS_BI
+function buildAdminUser(
+	rawUsername: string | null,
+	rawIsBI: string | null,
+): UserDto {
+	const { username, isBI } = resolveBypassValues(rawUsername, rawIsBI)
+	const upn = username ?? adminUserUpn
 
 	return {
 		id: 1,
@@ -23,7 +26,7 @@ function buildAdminUser(username: string | null, isBI: string | null): UserDto {
 			upn,
 			name: "Admin",
 			displayName: "Admin",
-			isBI: resolvedIsBI,
+			isBI,
 		},
 	}
 }
