@@ -1,6 +1,6 @@
 import { type PropsWithChildren, useEffect } from "react"
 import type { UserInfoDto } from "src/api/model"
-import { IS_MATOMO_ON } from "src/utils/env-utils"
+import { MATOMO_ENABLED } from "src/utils/env-utils"
 
 declare global {
 	interface Window {
@@ -8,36 +8,48 @@ declare global {
 	}
 }
 
+function decodeJwtUser(jwtValue: string): {
+	userName?: string
+	privateNumber?: string
+} {
+	const base64Url = jwtValue.split(".")?.[1]
+	const base64 = base64Url?.replace(/-/g, "+")?.replace(/_/g, "/")
+
+	const jsonPayload = base64
+		? new TextDecoder().decode(
+				Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)),
+			)
+		: ""
+
+	let resultParsed: UserInfoDto | undefined
+	try {
+		resultParsed = JSON.parse(jsonPayload)?.user
+	} catch {
+		resultParsed = undefined
+	}
+
+	return {
+		userName: resultParsed?.displayName,
+		privateNumber: resultParsed?.upn,
+	}
+}
+
+function pushMatomoUserId(cookieValue?: string): void {
+	const { userName, privateNumber } = cookieValue
+		? decodeJwtUser(cookieValue)
+		: {}
+
+	window._paq = window._paq || []
+
+	window._paq.push([
+		"setUserId",
+		privateNumber && userName ? `${privateNumber}\n${userName}` : "",
+	])
+}
+
 export default function MatomoWrapper({ children }: PropsWithChildren) {
 	useEffect(() => {
-		if (!IS_MATOMO_ON) return
-
-		const cookieString = document.cookie
-		const result = cookieString
-			?.match(/ssoUser=([^;]+)/)
-			?.pop()
-			?.replaceAll('"', "")
-		const base64Url = result?.split(".")?.[1]
-		const base64 = base64Url?.replace(/-/g, "+")?.replace(/_/g, "/")
-		const jsonPayload = base64
-			? decodeURIComponent(
-					atob(base64)
-						?.split("")
-						?.map((c) => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`)
-						.join(""),
-				)
-			: ""
-
-		let resultParsed: UserInfoDto | undefined
-
-		try {
-			resultParsed = JSON.parse(jsonPayload)?.user
-		} catch {
-			resultParsed = undefined
-		}
-
-		const userName = resultParsed?.displayName
-		const privateNumber = resultParsed?.upn
+		if (!MATOMO_ENABLED) return
 
 		window._paq = window._paq || []
 		const _paq = window._paq
@@ -46,13 +58,8 @@ export default function MatomoWrapper({ children }: PropsWithChildren) {
 		_paq.push(["setCookieDomain", "*.vector.idf.cts"])
 		_paq.push(["trackPageView"])
 		_paq.push(["enableLinkTracking"])
-		_paq.push([
-			"setUserId",
-			privateNumber && userName ? `${privateNumber}\n${userName}` : "",
-		])
 
 		const u = "//matomo.idf.cts/"
-
 		_paq.push(["setTrackerUrl", `${u}matomo.php`])
 		_paq.push(["setSiteId", "2073"])
 
@@ -64,6 +71,30 @@ export default function MatomoWrapper({ children }: PropsWithChildren) {
 		g.async = true
 		g.src = `${u}matomo.js`
 		s.parentNode?.insertBefore(g, s)
+
+		cookieStore
+			.get("ssoUser")
+			.then((cookie) => {
+				pushMatomoUserId(cookie?.value)
+			})
+			.catch(() => {
+				pushMatomoUserId()
+			})
+
+		const handleCookieChange = (event: CookieChangeEvent) => {
+			const newValue = event.changed?.find((c) => c.name === "ssoUser")?.value
+			const wasDeleted = event.deleted?.some((c) => c.name === "ssoUser")
+
+			if (newValue !== undefined || wasDeleted) {
+				pushMatomoUserId(newValue)
+			}
+		}
+
+		cookieStore.addEventListener("change", handleCookieChange)
+
+		return () => {
+			cookieStore.removeEventListener("change", handleCookieChange)
+		}
 	}, [])
 
 	return children
