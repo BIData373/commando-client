@@ -5,6 +5,7 @@ import {
 	IS_BI,
 	REQUEST_USERNAME,
 	STATIC_TOKEN,
+	USE_SSO,
 } from "./utils/env-utils"
 
 const STATIC_TOKEN_HEADER = "static-token"
@@ -13,7 +14,7 @@ const IS_BI_HEADER = "is-bi"
 
 export const axiosInstance = axios.create({
 	baseURL: API_BASE_URL,
-	withCredentials: true,
+	withCredentials: USE_SSO,
 	headers: {
 		"Content-Type": "application/json",
 		...(STATIC_TOKEN && { [STATIC_TOKEN_HEADER]: STATIC_TOKEN }),
