@@ -7,7 +7,6 @@ import {
 import { ChevronDown, User } from "lucide-react"
 import type { HeaderConfig } from "src/router"
 import { useTitleBarActions } from "../providers/TitleBarProvider"
-// import ThemeToggle from "./ThemeToggle"
 import { BIHeaderBypass } from "./BIHeaderBypass"
 import {
 	DropdownMenu,
@@ -28,7 +27,6 @@ import {
 } from "./ui/tooltip"
 
 export default function Header() {
-	// In RTL flex, first item is rightmost. 'בית' is the primary/rightmost link.
 	const links: LinkComponentProps[] = [
 		{ to: "/workspace/$urlName/dashboard", children: "בית" },
 		{ to: "/workspace/$urlName/tasks", children: "הנחיות" },
@@ -41,7 +39,6 @@ export default function Header() {
 	const {
 		title = "",
 		navigation = true,
-		user = true,
 		workspace = false,
 	} = headerConfig ?? {}
 	const { actions, workspace: activeWorkspace } = useTitleBarActions()
@@ -92,7 +89,6 @@ export default function Header() {
 					</CenterSection>
 
 					<EndSection>
-						{/* {user && ( */}
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<UserTrigger>
@@ -102,13 +98,8 @@ export default function Header() {
 							</DropdownMenuTrigger>
 							<UserDropdownContent>
 								<BIHeaderBypass />
-								{/* <DropdownMenuSeparator />
-									<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-										<ThemeToggle />
-									</DropdownMenuItem> */}
 							</UserDropdownContent>
 						</DropdownMenu>
-						{/* )} */}
 					</EndSection>
 				</HeaderInner>
 			</HeaderRoot>
