@@ -95,6 +95,13 @@ export const getListAssigneeTaskStatusesResponseMock =
 								]),
 								null,
 							]),
+							attachmentName: faker.helpers.arrayElement([
+								faker.helpers.arrayElement([
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									null,
+								]),
+								null,
+							]),
 							tags: Array.from(
 								{ length: faker.number.int({ min: 1, max: 10 }) },
 								(_, i) => i + 1,
@@ -344,6 +351,13 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						]),
 						null,
 					]),
+					attachmentName: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
 					tags: Array.from(
 						{ length: faker.number.int({ min: 1, max: 10 }) },
 						(_, i) => i + 1,
@@ -576,6 +590,13 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					date: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 					workspaceId: faker.number.float({ fractionDigits: 2 }),
 					attachmentKey: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
+					attachmentName: faker.helpers.arrayElement([
 						faker.helpers.arrayElement([
 							faker.string.alpha({ length: { min: 10, max: 20 } }),
 							null,

@@ -22,5 +22,7 @@ export interface SourceDto {
 	workspaceId: number
 	/** @nullable */
 	attachmentKey: string | null
+	/** @nullable */
+	attachmentName: string | null
 	tags: TagDto[]
 }
