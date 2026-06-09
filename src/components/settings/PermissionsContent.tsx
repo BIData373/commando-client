@@ -54,12 +54,14 @@ export function PermissionsContent() {
 
 	const userPermissionExist = useMemo(
 		() => permissions.find(({ user }) => user.upn === selectedUser?.upn),
-		[selectedUser],
+		[selectedUser, permissions],
 	)
 
 	useEffect(() => {
-		setType(userPermissionExist?.type ?? type)
-	}, [selectedUser])
+		if (userPermissionExist) {
+			setType(userPermissionExist.type)
+		}
+	}, [userPermissionExist])
 
 	const currentTabUsers = useMemo(() => {
 		const taggedType =
@@ -204,7 +206,6 @@ export function PermissionsContent() {
 							{userPermissionExist && (
 								<UpdateButton
 									disabled={userPermissionExist?.type === type}
-									$enabled={userPermissionExist?.type !== type}
 									onClick={handleUserUpdate}
 								>
 									עדכון
@@ -340,12 +341,12 @@ const LoadingContainer = styled.div`
   height: 100%;
 `
 
-const UpdateButton = styled.button<{ $enabled: boolean }>`
+const UpdateButton = styled.button<{ disabled: boolean }>`
   	font-size: 16px;
   	font-weight: 400;
     padding: 3px 16px;
-	color: ${({ $enabled }) => ($enabled ? "rgba(0, 0, 0, 0.65);" : "rgba(0, 0, 0, 0.25);")};
-	cursor: ${({ $enabled }) => ($enabled ? "pointer" : "default")};
+	color: ${({ disabled }) => (disabled ? "rgba(0, 0, 0, 0.25);" : "rgba(0, 0, 0, 0.65);")};
+	cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
 	border-radius: 6px;
     border: 1px solid var(--card-border);
     background: rgba(0, 0, 0, 0.04);
