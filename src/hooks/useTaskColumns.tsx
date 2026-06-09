@@ -501,7 +501,7 @@ const IdCell = styled.span`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color:rgba(0, 0, 0, 0.65);
@@ -512,7 +512,7 @@ const TitleCell = styled.div`
   align-items: center;
   gap: 6px;
   color: var(--sea-ink);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 20px;
   overflow: hidden;
@@ -554,7 +554,7 @@ const DeadlineCell = styled.div`
 `
 
 const DeadlineDateText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.65);
@@ -603,7 +603,7 @@ const SourceText = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.65);
@@ -613,7 +613,7 @@ const NotesText = styled.div`
   overflow: hidden;
   max-height: 40px;
 
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 20px;
   color: var(--sea-ink-soft);
 
@@ -645,6 +645,6 @@ const NotesText = styled.div`
 `
 
 const DateText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   color: var(--sea-ink-soft);
 `

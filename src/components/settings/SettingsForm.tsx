@@ -10,6 +10,7 @@ import {
 	getListWorkspacesQueryKey,
 	useUpdateWorkspace,
 } from "src/api/workspace/workspace"
+import type { ErrorType } from "src/axios"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { queryClient } from "src/queryClient"
@@ -18,8 +19,12 @@ import { Input } from "../ui/input"
 import { IconDropdown } from "./IconDropdown"
 import { SelectCommand } from "./SelectCommand"
 
+const titleExistsError = "title-exists"
+
 const NAME_MAX_LENGTH = 50
 const DEBOUNCE_MS = 300
+
+type ApiError = ErrorType<{ message: string | string[] }>
 
 export function SettingsForm() {
 	const {
@@ -29,8 +34,9 @@ export function SettingsForm() {
 
 	const { mutateAsync: updateSettings } = useUpdateWorkspace({
 		mutation: {
-			onSuccess() {
+			onSuccess(data) {
 				queryClient.invalidateQueries({ queryKey: getListWorkspacesQueryKey() })
+				setWorkspace(data)
 			},
 		},
 	})
@@ -41,9 +47,25 @@ export function SettingsForm() {
 	const form = useForm({
 		defaultValues: { title, pikudId, icon } as UpdateWorkspaceDto,
 		asyncDebounceMs: DEBOUNCE_MS,
-		onSubmit: async ({ value }) => {
-			const data = await updateSettings({ pathParams: { id }, data: value })
-			setWorkspace(data)
+		onSubmit: async ({ value, formApi }) => {
+			updateSettings(
+				{
+					pathParams: { id },
+					data: value,
+				},
+				{
+					onError: (error) => {
+						const messages = (error as ApiError)?.response?.data?.message
+						const messageList = Array.isArray(messages) ? messages : [messages]
+
+						if (messageList.includes(titleExistsError)) {
+							toast.error("שם סביבה זה כבר קיים, אנא נסו שוב")
+						}
+
+						formApi.reset()
+					},
+				},
+			)
 		},
 	})
 
@@ -68,6 +90,7 @@ export function SettingsForm() {
 			toast.error("שם סביבה הוא שדה חובה")
 			return
 		}
+
 		form.setFieldValue("title", next)
 	}
 
@@ -166,7 +189,7 @@ const StyledInput = styled(Input)`
 `
 
 const CharCounter = styled.span<{ $atLimit: boolean }>`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger, #e53e3e)" : "var(--sea-ink-soft)")};
   text-align: end;
 `

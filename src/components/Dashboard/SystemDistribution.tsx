@@ -1,7 +1,11 @@
 import styled from "@emotion/styled"
+import { countBy, orderBy } from "lodash"
 import { Users } from "lucide-react"
 import { useMemo, useState } from "react"
+import { useListAssignees } from "src/api/assignee/assignee"
+import { useListTags } from "src/api/tag/tag"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import addAssignee from "../../assets/icons/addPerson.svg"
 import subject from "../../assets/icons/subjects.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -53,44 +57,51 @@ export default function SystemDistribution({
 		DistributionTab.LOAD,
 	)
 
-	const countDistribution = useMemo(() => {
-		const responsibles = new Map<string, number>()
-		const tags = new Map<string, number>()
-		for (const task of tasks) {
-			for (const tag of task.tags) {
-				tags.set(tag.name, (tags.get(tag.name) ?? 0) + 1)
-			}
-			const { assignee } = task
-			if (assignee) {
-				responsibles.set(
-					assignee.name,
-					(responsibles.get(assignee.name) ?? 0) + 1,
-				)
-			}
-		}
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+	const { data: assignees = [] } = useListAssignees({ workspaceId })
+	const { data: tags = [] } = useListTags({ workspaceId })
 
-		return {
-			distribution: Array.from(responsibles.entries())
-				.map(([name, count]) => ({ name, count }))
-				.sort((a, b) => b.count - a.count),
-			tagDistribution: Array.from(tags.entries())
-				.map(([name, count]) => ({ name, count }))
-				.sort((a, b) => b.count - a.count),
-		}
-	}, [tasks])
+	const assigneeDistribution = useMemo(() => {
+		const assigneeCounts = countBy(
+			tasks.filter((t) => t.assignee),
+			(t) => t.assignee?.name,
+		)
 
-	const { distribution, tagDistribution } = countDistribution
+		return orderBy(
+			assignees.map((a) => ({
+				name: a.name,
+				count: assigneeCounts[a.name] ?? 0,
+			})),
+			"count",
+			"desc",
+		)
+	}, [tasks, assignees])
 
-	function handleTabClick(tabId: DistributionTab) {
-		setActiveTab(tabId)
-	}
+	const tagDistribution = useMemo(() => {
+		const tagCounts = countBy(
+			tasks.flatMap((t) => t.tags),
+			(tag) => tag.name,
+		)
+
+		return orderBy(
+			tags.map((t) => ({ name: t.name, count: tagCounts[t.name] ?? 0 })),
+			"count",
+			"desc",
+		)
+	}, [tasks, tags])
 
 	const activeData =
-		activeTab === DistributionTab.LOAD ? distribution : tagDistribution
+		activeTab === DistributionTab.LOAD ? assigneeDistribution : tagDistribution
+
 	const tabDescription = TabsDescription[activeTab]
+
 	const hasData = !!(activeData && activeData.length > 0)
+
 	const maxCount =
 		hasData && activeData ? Math.max(...activeData.map((d) => d.count), 1) : 1
+
 	const headerLabels = HEADER_LABELS[activeTab]
 
 	return (
@@ -102,7 +113,7 @@ export default function SystemDistribution({
 						<TabItem
 							key={tab.id}
 							$active={tab.id === activeTab}
-							onClick={() => handleTabClick(tab.id)}
+							onClick={() => setActiveTab(tab.id)}
 						>
 							<TabTitle $active={tab.id === activeTab}>{tab.label}</TabTitle>
 						</TabItem>
@@ -166,7 +177,7 @@ const Section = styled.div`
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 30px;
+  font-size: var(--fs-heading-2);
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
@@ -236,7 +247,7 @@ const ChartHeader = styled.div`
 `
 
 const HeaderLabel = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: var(--sea-ink-soft);
 `
 
@@ -256,14 +267,14 @@ const BarRow = styled.div`
 `
 
 const AssigneeName = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: var(--sea-ink);
   white-space: nowrap;
   flex-shrink: 0;
 `
 
 const CountLabel = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: var(--sea-ink);
   width: 24px;
   text-align: end;

@@ -131,6 +131,18 @@ body,
   --radius: 0.625rem;
   --line: #F0F0F0;
 
+  /* Typography scale (rem = scales with user OS/browser font-size preference) */
+  --fs-heading-h1: 2.625rem;  /* 42px */
+  --fs-heading-1: 2.375rem;   /* 38px */
+  --fs-heading-2: 1.875rem;   /* 30px */
+  --fs-heading-3: 1.5rem;     /* 24px */
+  --fs-xl: 1.25rem;           /* 20px */
+  --fs-lg: 1.125rem;          /* 18px */
+  --fs-base: 1rem;            /* 16px */
+  --fs-btn: 0.875rem;         /* 14px */
+  --fs-sm: 0.75rem;           /* 12px */
+  --fs-xs: 0.625rem;          /* 10px */
+
   /* Semantic tokens */
   --sea-ink: oklch(0.12 0.028 254);
   --sea-ink-soft: oklch(0.52 0.020 252);
@@ -232,7 +244,6 @@ body,
   --icon-background: rgba(255, 218, 218, 0.4);
   --card-shadow-default: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
   --card-shadow-hover: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
-
 }
 
 @theme inline {
@@ -335,4 +346,26 @@ body,
 @view-transition {
   navigation: auto;
   types: backwards;
+}
+
+/* Responsive typography — scale headings down on smaller screens */
+@media (max-width: 64em) {   /* 1024px */
+  :root {
+    --fs-heading-h1: 2.25rem;   /* 36px */
+    --fs-heading-1: 2rem;       /* 32px */
+    --fs-heading-2: 1.625rem;   /* 26px */
+    --fs-heading-3: 1.3125rem;  /* 21px */
+    --fs-xl: 1.1875rem;         /* 19px */
+  }
+}
+
+@media (max-width: 48em) {   /* 768px */
+  :root {
+    --fs-heading-h1: 1.75rem;   /* 28px */
+    --fs-heading-1: 1.5rem;     /* 24px */
+    --fs-heading-2: 1.25rem;    /* 20px */
+    --fs-heading-3: 1.125rem;   /* 18px */
+    --fs-xl: 1.125rem;          /* 18px */
+    --fs-lg: 1rem;              /* 16px */
+  }
 }

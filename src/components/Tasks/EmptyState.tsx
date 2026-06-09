@@ -51,14 +51,14 @@ const IconWrapper = styled.div`
 `
 
 const Title = styled.p`
-  font-size: 20px;
+  font-size: var(--fs-xl);
   font-weight: 500;
   line-height: 28px;
   color: #1e2939;
 `
 
 const Subtitle = styled.p`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: #6a7282;

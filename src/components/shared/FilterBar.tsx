@@ -106,7 +106,7 @@ const ClearButton = styled.button`
   padding-inline: 15px;
   height: 32px;
   border-radius: 999px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   color: rgba(0, 0, 0, 0.88);
   cursor: pointer;
   background: transparent;
@@ -127,7 +127,7 @@ const ActionButton = styled.button`
   height: 40px;
   border: 1px solid #d9d9d9;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: rgba(0, 0, 0, 0.88);
   cursor: pointer;
   background: white;
@@ -187,7 +187,7 @@ const SearchField = styled.input`
   border: none;
   outline: none;
   background: transparent;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
@@ -207,7 +207,7 @@ export const FilterPill = styled.div<{ $active: boolean }>`
   padding-inline: 12px;
   height: 32px;
   border-radius: 999px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.15s;

@@ -95,7 +95,7 @@ const Section = styled.div`
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 30px;
+  font-size: var(--fs-heading-2);
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
@@ -133,7 +133,7 @@ const ChartCenter = styled.div`
 `
 
 const CenterCount = styled.span`
-  font-size: 38px;
+  font-size: var(--fs-heading-1);
   font-weight: 400;
   line-height: 1;
   color: var(--foreground);
@@ -161,7 +161,7 @@ const StatusItem = styled.div`
 `
 
 const StatusCount = styled.span`
-  font-size: 20px;
+  font-size: var(--fs-xl);
   font-weight: 400;
   color: var(--foreground);
 `
@@ -173,7 +173,7 @@ const StatusBadge = styled.span<{ $color: string }>`
   padding: 1px 8px;
   width: 100px;
   border-radius: 35px;
-  font-size: 20px;
+  font-size: var(--fs-xl);
   font-weight: 400;
   white-space: nowrap;
   ${({ $color }) => `color: ${$color};`}

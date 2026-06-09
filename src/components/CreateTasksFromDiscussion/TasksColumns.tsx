@@ -230,7 +230,7 @@ export default columns
 // ─── Header Elements ────────────────────────────────────────────────────────
 
 const HeaderLabel = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 500;
   line-height: 24px;
   color: var(--text-color);
@@ -245,7 +245,7 @@ const HeaderLabelGroup = styled.div`
 
 const RequiredMark = styled.span`
   color: var(--Components-Form-Component-labelRequiredMarkColor);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
 `
 
@@ -265,7 +265,7 @@ const TextareaCellWrapper = styled.div`
 const CellTextarea = styled.textarea<{ $color?: string }>`
   width: 100%;
   background: transparent;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 18px;
   color: ${({ $color }) => $color ?? "var(--text-color)"};

@@ -10,7 +10,7 @@ export const SectionTitle = ({ title, className }: SectionTitleProps) => {
 }
 
 const StyledTitle = styled.h2`
-  font-size: 24px;
+  font-size: var(--fs-heading-3);
   font-weight: 500;
   color: var(--sea-ink);
   margin: 0 12px;

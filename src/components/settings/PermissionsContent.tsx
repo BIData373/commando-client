@@ -4,7 +4,7 @@ import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
 import {
 	useDeletePermission,
 	useListPermissions,
-	useUpdatePermission,
+	useUpsertPermission,
 } from "src/api/permission/permission"
 import { DropdownPermission } from "src/components/settings/DropdownPermission"
 import { DropdownUsers } from "src/components/settings/DropdownUsers"
@@ -49,7 +49,7 @@ export function PermissionsContent() {
 	} = useListPermissions({
 		workspaceId,
 	})
-	const { mutate: updatePermission } = useUpdatePermission()
+	const { mutate: upsertPermission } = useUpsertPermission()
 	const { mutate: deletePermission } = useDeletePermission()
 
 	const userPermissionExist = useMemo(
@@ -108,9 +108,11 @@ export function PermissionsContent() {
 			return
 		}
 
-		updatePermission(
+		const { id, ...userToUpdate } = selectedUser
+
+		upsertPermission(
 			{
-				data: { workspaceId, upn: selectedUser.upn, type },
+				data: { ...userToUpdate, workspaceId, type },
 			},
 			{
 				onSuccess: handleSuccessUpsert,
@@ -135,12 +137,12 @@ export function PermissionsContent() {
 	}
 
 	function handleTypeChangePermissionUser(
-		{ upn }: UserDto,
+		{ id, ...dto }: UserDto,
 		type: PermissionType,
 	) {
-		updatePermission(
+		upsertPermission(
 			{
-				data: { upn, workspaceId, type },
+				data: { ...dto, workspaceId, type },
 			},
 			{
 				onSuccess: handleSuccessUpsert,
@@ -290,7 +292,7 @@ const UserListInner = styled.div`
 `
 
 const Subtitle = styled.p`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   color: var(--text-subtitle-color);
   margin: 0;
@@ -313,7 +315,7 @@ const StyledTabsContent = styled(TabsContent)`
 
 const StyledTabsTrigger = styled(TabsTrigger)`
   color: var(--text-color-2);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   cursor: pointer;
 
@@ -342,7 +344,7 @@ const LoadingContainer = styled.div`
 `
 
 const UpdateButton = styled.button<{ disabled: boolean }>`
-  	font-size: 16px;
+  	font-size: var(--fs-base);
   	font-weight: 400;
     padding: 3px 16px;
 	color: ${({ disabled }) => (disabled ? "rgba(0, 0, 0, 0.25);" : "rgba(0, 0, 0, 0.65);")};

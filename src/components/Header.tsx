@@ -7,7 +7,7 @@ import {
 import { ChevronDown, User } from "lucide-react"
 import type { HeaderConfig } from "src/router"
 import { useTitleBarActions } from "../providers/TitleBarProvider"
-// import ThemeToggle from "./ThemeToggle"
+import { BIHeaderBypass } from "./BIHeaderBypass"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -27,7 +27,6 @@ import {
 } from "./ui/tooltip"
 
 export default function Header() {
-	// In RTL flex, first item is rightmost. 'בית' is the primary/rightmost link.
 	const links: LinkComponentProps[] = [
 		{ to: "/workspace/$urlName/dashboard", children: "בית" },
 		{ to: "/workspace/$urlName/tasks", children: "הנחיות" },
@@ -40,7 +39,6 @@ export default function Header() {
 	const {
 		title = "",
 		navigation = true,
-		user = true,
 		workspace = false,
 	} = headerConfig ?? {}
 	const { actions, workspace: activeWorkspace } = useTitleBarActions()
@@ -90,24 +88,18 @@ export default function Header() {
 						)}
 					</CenterSection>
 
-					{/* Col 3 — physically LEFT in RTL: user avatar */}
 					<EndSection>
-						{user && (
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<UserTrigger>
-										<User size={16} />
-										<ChevronDown size={16} />
-									</UserTrigger>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent>
-									{/* <DropdownMenuSeparator />
-									<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-										<ThemeToggle />
-									</DropdownMenuItem> */}
-								</DropdownMenuContent>
-							</DropdownMenu>
-						)}
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<UserTrigger>
+									<User size={16} />
+									<ChevronDown size={16} />
+								</UserTrigger>
+							</DropdownMenuTrigger>
+							<UserDropdownContent>
+								<BIHeaderBypass />
+							</UserDropdownContent>
+						</DropdownMenu>
 					</EndSection>
 				</HeaderInner>
 			</HeaderRoot>
@@ -164,6 +156,10 @@ const EndSection = styled.div`
   justify-content: flex-end;
 `
 
+const UserDropdownContent = styled(DropdownMenuContent)`
+  min-width: 220px;
+`
+
 const UserTrigger = styled.button`
   display: flex;
   align-items: center;
@@ -181,7 +177,7 @@ const UserTrigger = styled.button`
 
 const WorkspaceName = styled.p`
   margin: 0;
-  font-size: 24px;
+  font-size: var(--fs-heading-3);
   font-weight: 500;
   line-height: 32px;
   color: #C7C9CB;
@@ -215,7 +211,7 @@ const TitleBar = styled.div`
 const PageTitle = styled.h1`
   flex: 1;
   margin: 0;
-  font-size: 38px;
+  font-size: var(--fs-heading-1);
   font-weight: 500;
   color: var(--sea-ink);
 `
@@ -225,7 +221,7 @@ const NavMenuLink = styled(NavigationMenuLink)`
     padding: 8px 8px;
     color: #C7C9CB;
     font-weight: 400;
-    font-size: 14px;
+    font-size: var(--fs-btn);
     background: transparent;
     border-radius: 6px;
 

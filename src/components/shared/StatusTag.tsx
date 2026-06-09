@@ -48,7 +48,7 @@ const Tag = styled.span<{
   width: ${({ $withArrow }) => ($withArrow ? "88px" : "72px")};
   padding: 1px 8px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   line-height: 20px;
   white-space: nowrap;
   cursor: ${({ $interactive }) => ($interactive ? "pointer" : "default")};

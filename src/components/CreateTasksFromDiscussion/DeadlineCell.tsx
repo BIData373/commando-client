@@ -160,7 +160,7 @@ const DeadlineTrigger = styled.button`
 `
 
 const PlaceholderText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color:  var(--Components-Dropdown-Global-colorTextDescription);
@@ -176,7 +176,7 @@ const DisplayRow = styled.div`
 `
 
 const DateText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color);
@@ -200,7 +200,7 @@ const DropdownHeader = styled.div`
   align-items: center;
   height: 32px;
   padding-inline: 12px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--Components-Dropdown-Global-colorTextDescription);
@@ -225,7 +225,7 @@ const DeadlineOption = styled.button<{ $active: boolean }>`
 
 const DeadlineOptionText = styled.span`
   flex: 1;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-2);
@@ -240,7 +240,7 @@ const HiddenAnchor = styled.div`
 
 const PopoverHeaderText = styled.span`
   direction: ltr;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 22px;
   color: var(--text-color-2);
@@ -263,7 +263,7 @@ const SetButton = styled.button`
   border-radius: 6px;
   background: var(--default-linear);
   color: var(--background);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   cursor: pointer;
@@ -279,7 +279,7 @@ const SetWithoutDateButton = styled.button`
   border: 1px solid var(--primary);
   border-radius: 6px;
   background: var(--background);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   cursor: pointer;

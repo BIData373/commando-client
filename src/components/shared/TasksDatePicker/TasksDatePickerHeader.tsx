@@ -29,6 +29,7 @@ export function TasksDatePickerHeader({
 					{Object.values(DATE_TYPE).map((type) => (
 						<DropdownMenuItem
 							key={type}
+							dir="rtl"
 							onSelect={() => onDateTypeChange(type)}
 						>
 							{type}
@@ -51,7 +52,7 @@ const PopupHeader = styled.div`
 `
 
 const FilterLabel = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   color: var(--sea-ink-soft);
   white-space: nowrap;
 `
@@ -66,7 +67,7 @@ const DateTypeTrigger = styled(DropdownMenuTrigger)`
   border-radius: 8px;
   background: var(--background);
   color: var(--sea-ink);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   cursor: pointer;
   white-space: nowrap;
 
