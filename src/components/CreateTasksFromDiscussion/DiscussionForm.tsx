@@ -13,6 +13,8 @@ interface DiscussionFormProps {
 	onTagSelect: (tag: string) => void
 	onTagRemove: (tag: string) => void
 	onFileChange: (file: File | null) => void
+	existingAttachmentKey?: string | null
+	existingAttachmentName?: string | null
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -24,6 +26,8 @@ function DiscussionForm({
 	onTagSelect,
 	onTagRemove,
 	onFileChange,
+	existingAttachmentKey,
+	existingAttachmentName,
 }: DiscussionFormProps) {
 	return (
 		<FormContainer>
@@ -45,7 +49,9 @@ function DiscussionForm({
 			/>
 
 			<FileUploadField
-				file={form.attachment as File | null}
+				file={form.attachment as File | null | undefined}
+				existingAttachmentKey={existingAttachmentKey}
+				existingAttachmentName={existingAttachmentName}
 				onFileChange={onFileChange}
 			/>
 		</FormContainer>

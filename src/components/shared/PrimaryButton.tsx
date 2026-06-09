@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import type { ReactNode } from "react"
+import { forwardRef, type ReactNode } from "react"
 import { Spinner } from "../ui/spinner"
 
 interface PrimaryButtonProps {
@@ -11,26 +11,22 @@ interface PrimaryButtonProps {
 	loading?: boolean
 }
 
-export const PrimaryButton = ({
-	onClick,
-	title,
-	height,
-	width,
-	disabled,
-	loading,
-}: PrimaryButtonProps) => {
-	return (
-		<Button
-			onClick={onClick}
-			$height={height}
-			$width={width}
-			disabled={disabled || loading}
-		>
-			{title}
-			{loading && <Spinner />}
-		</Button>
-	)
-}
+export const PrimaryButton = forwardRef<HTMLButtonElement, PrimaryButtonProps>(
+	({ onClick, title, height, width, disabled, loading }, ref) => {
+		return (
+			<Button
+				ref={ref}
+				onClick={onClick}
+				$height={height}
+				$width={width}
+				disabled={disabled || loading}
+			>
+				{title}
+				{loading && <Spinner />}
+			</Button>
+		)
+	},
+)
 
 const Button = styled.button<{ $height?: number; $width?: number }>`
   direction: rtl;
