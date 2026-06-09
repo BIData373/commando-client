@@ -51,8 +51,8 @@ axiosInstance.interceptors.request.use((config) => {
 		delete config.headers[REQUEST_USERNAME_HEADER]
 	}
 
-	if (isBI) {
-		config.headers[IS_BI_HEADER] = "true"
+	if (isBI !== undefined && isBI !== null) {
+		config.headers[IS_BI_HEADER] = String(isBI)
 	} else {
 		delete config.headers[IS_BI_HEADER]
 	}
