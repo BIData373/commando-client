@@ -11,5 +11,5 @@ export interface GetUserInfoDto {
 	upn: string
 	name?: string
 	displayName?: string
-	isBI: boolean
+	isBI?: boolean
 }
