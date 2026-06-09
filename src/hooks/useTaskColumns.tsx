@@ -1,111 +1,127 @@
-import styled from "@emotion/styled";
-import type { ColumnDef, FilterFn } from "@tanstack/react-table";
-import { differenceInDays, startOfToday } from "date-fns";
-import { AlertTriangle, MoreVertical } from "lucide-react";
-import { BsPaperclip as Paperclip } from "react-icons/bs";
-import type { DirectiveStatus } from "src/utils/statusUtils";
-import DeadlineTag, {
-	DEADLINE_LABELS,
-	DeadlineType,
-} from "../components/shared/DeadlineTag";
-import FlagIcon from "../components/shared/FlagIcon";
-import HighlightMatch from "../components/shared/HighlightMatch";
-import { ColumnHeaderWithActions } from "../components/Tasks/ColumnHeaderWithActions";
-import { ResponsibleCell } from "../components/Tasks/ResponsibleCell";
-import { RowActionsMenu } from "../components/Tasks/RowActionsMenu";
-import { StatusCell } from "../components/Tasks/StatusCell";
-import { TopicCell } from "../components/Tasks/TopicCell";
-import { Checkbox } from "../components/ui/checkbox";
+import styled from "@emotion/styled"
+import type { QueryKey } from "@tanstack/react-query"
+import type { ColumnDef, FilterFn } from "@tanstack/react-table"
+import { differenceInDays, startOfToday } from "date-fns"
+import { concat, map, uniq } from "lodash"
+import { AlertTriangle } from "lucide-react"
+import { BsPaperclip as Paperclip } from "react-icons/bs"
+import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
+import { DeadlineType, type TaskDto } from "src/api/model"
+import { getGetTaskQueryKey } from "src/api/task/task"
+import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
+import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import { invalidateQueries } from "src/queryClient"
+import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
+import FlagIcon from "../components/shared/FlagIcon"
+import HighlightMatch from "../components/shared/HighlightMatch"
+import { AssigneeCell } from "../components/Tasks/AssigneeCell"
+import { ColumnHeaderWithActions } from "../components/Tasks/ColumnHeaderWithActions"
+import { RowActionsMenu } from "../components/Tasks/RowActionsMenu"
+import { StatusDropdown } from "../components/Tasks/StatusDropdown"
+import { TopicCell } from "../components/Tasks/TopicCell"
+import { Checkbox } from "../components/ui/checkbox"
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-} from "../components/ui/tooltip";
-import type { Task } from "../data/Tasks";
-import { formatDateShort } from "../functions/date-utils";
-import type { FilterOption } from "../functions/filter-utils";
+} from "../components/ui/tooltip"
+import { formatDateShort } from "../functions/date-utils"
 
-export type TaskColumn = keyof Task;
+export type TaskColumn =
+	| keyof TaskDto
+	| "status"
+	| "discussionName"
+	| "workspace"
 
 export interface TaskColumnMeta {
-	id: TaskColumn;
-	label: string;
+	id: TaskColumn
+	label: string
 }
 
 export const TASK_COLUMNS_META: TaskColumnMeta[] = [
 	{ id: "id", label: 'מס"ד' },
 	{ id: "title", label: "ההנחיה" },
 	{ id: "status", label: "סטטוס" },
-	{ id: "responsible", label: "אחראי" },
+	{ id: "assigneeStatuses", label: "אחראי" },
 	{ id: "deadlineType", label: 'תג"ב' },
 	{ id: "discussionName", label: "מקור" },
 	{ id: "tags", label: "נושא" },
 	{ id: "notes", label: "הערות" },
 	{ id: "createdAt", label: "תאריך יצירה" },
 	{ id: "updatedAt", label: "עודכן ב" },
-];
+]
 
 const COLUMN_LABELS: Record<TaskColumn, string> = Object.fromEntries(
 	TASK_COLUMNS_META.map(({ id, label }) => [id, label]),
-) as Record<TaskColumn, string>;
+) as Record<TaskColumn, string>
 
-const STATUS_SORT_ORDER: Record<DirectiveStatus, number> = {
-	not_started: 0,
-	in_progress: 1,
-	completed: 2,
-};
-
-const multiSelectFilter: FilterFn<Task> = (
+const multiSelectFilter: FilterFn<TaskRow> = (
 	row,
 	columnId,
 	filterValue: string[],
 ) => {
-	if (!filterValue?.length) return true;
-	const value = row.getValue(columnId);
+	if (!filterValue?.length) return true
+	const value = row.getValue(columnId)
 	if (Array.isArray(value))
-		return value.some((v: string) => filterValue.includes(v));
-	return filterValue.includes(value as string);
-};
+		return value.some((v: string) => filterValue.includes(v))
+	return filterValue.includes(value as string)
+}
 
 interface SelectModeConfig {
-	enabled: boolean;
-	tasks: Task[];
-	selectedTaskIds: number[];
-	onSelectAll: (checked: boolean) => void;
+	enabled: boolean
+	tasks: TaskDto[]
+	selectedTaskIds: number[]
+	onSelectAll: (checked: boolean) => void
 }
 
 interface ActionsConfig {
-	onEdit: (taskId: number) => void;
-	onDoubleClick?: (taskId: number) => void;
-	onArchive: (taskIds: number[]) => void;
-	onDelete: (taskIds: number[]) => void;
-	onEnterSelectMode: (taskId?: number) => void;
+	onEdit: (taskId: number) => void
+	onDoubleClick?: (taskId: number) => void
+	onArchive: (taskIds: number[]) => void
+	onDelete: (taskIds: number[]) => void
+	onEnterSelectMode: (taskId?: number) => void
 }
 
 interface UseTaskColumnsOptions {
-	visibleColumns: TaskColumn[];
-	searchQuery: string;
-	filterOptionsMap: Record<string, FilterOption[]>;
-	onUpdateStatus: (taskId: number, status: DirectiveStatus) => void;
-	selectMode?: SelectModeConfig;
-	actions?: ActionsConfig;
+	queryKey: QueryKey
+	visibleColumns: TaskColumn[]
+	searchQuery: string
+	filterOptionsMap: Record<FilterOptions, FilterOption[]>
+	selectMode?: SelectModeConfig
+	actions?: ActionsConfig
 }
 
 interface UseTaskColumnsReturn {
-	columns: ColumnDef<Task>[];
-	availableColumns: TaskColumnMeta[];
+	columns: ColumnDef<TaskRow>[]
+	availableColumns: TaskColumnMeta[]
 }
 
 function useTaskColumns({
+	queryKey,
 	visibleColumns,
 	searchQuery,
 	filterOptionsMap,
-	onUpdateStatus,
 	selectMode,
 	actions,
 }: UseTaskColumnsOptions): UseTaskColumnsReturn {
-	const selectColumn: ColumnDef<Task> | null = selectMode?.enabled
+	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
+		mutation: {
+			onSuccess: ({ task }) => {
+				invalidateQueries([queryKey, getGetTaskQueryKey({ id: task.id })])
+			},
+		},
+	})
+
+	function onUpdateStatus(
+		taskId: number,
+		assigneeId: number,
+		statusId: number,
+	) {
+		upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } })
+	}
+
+	const selectColumn: ColumnDef<TaskRow> | null = selectMode?.enabled
 		? {
 				id: "select",
 				size: 70,
@@ -131,9 +147,9 @@ function useTaskColumns({
 					</CheckboxCenter>
 				),
 			}
-		: null;
+		: null
 
-	const columnMap: Partial<Record<TaskColumn, ColumnDef<Task>>> = {
+	const columnMap: Partial<Record<TaskColumn, ColumnDef<TaskRow>>> = {
 		id: {
 			accessorKey: "id",
 			header: ({ column }) => (
@@ -158,12 +174,12 @@ function useTaskColumns({
 			enableColumnFilter: false,
 			cell: ({
 				row: {
-					original: { id, title, details, flagged },
+					original: { id, title, description, flagged },
 				},
 			}) => (
 				<TitleCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
 					{flagged && <FlagIcon />}
-					{details ? (
+					{description ? (
 						<>
 							<TitlePart>
 								{searchQuery ? (
@@ -180,12 +196,12 @@ function useTaskColumns({
 							<DetailsPart>
 								{searchQuery ? (
 									<HighlightMatch
-										text={details}
+										text={description}
 										query={searchQuery}
 										variant="mark"
 									/>
 								) : (
-									details
+									description
 								)}
 							</DetailsPart>
 						</>
@@ -206,35 +222,43 @@ function useTaskColumns({
 			),
 		},
 		status: {
-			accessorKey: "status",
+			id: "status",
+			accessorFn: (row) => row.status?.type,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.status}
 					column={column}
-					filterOptions={filterOptionsMap["status"]}
+					filterOptions={filterOptionsMap.status}
 				/>
 			),
 			size: 100,
 			filterFn: multiSelectFilter,
 			sortingFn: (rowA, rowB) =>
-				(STATUS_SORT_ORDER[rowA.original.status] ?? 0) -
-				(STATUS_SORT_ORDER[rowB.original.status] ?? 0),
+				(rowA.original.status?.id ?? 0) - (rowB.original.status?.id ?? 0),
 			cell: ({
 				row: {
-					original: { status, id },
+					original: { id, status, assignee, workspaceId },
 				},
-			}) => (
-				<StatusCell status={status} taskId={id} onUpdate={onUpdateStatus} />
-			),
+			}) =>
+				status &&
+				assignee && (
+					<StatusDropdown
+						status={status}
+						assigneeId={assignee.id}
+						taskId={id}
+						workspaceId={workspaceId}
+						onUpdate={onUpdateStatus}
+					/>
+				),
 		},
-		responsible: {
-			id: "responsible",
-			accessorFn: (row) => row.responsible?.name ?? "ללא אחראי",
+		assigneeStatuses: {
+			id: "assigneeStatuses",
+			accessorFn: (row) => row.assignee?.name,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
-					label={COLUMN_LABELS.responsible}
+					label={COLUMN_LABELS.assigneeStatuses}
 					column={column}
-					filterOptions={filterOptionsMap["responsible"]}
+					filterOptions={filterOptionsMap.assigneeStatuses}
 				/>
 			),
 			size: 115,
@@ -242,14 +266,18 @@ function useTaskColumns({
 			sortingFn: "text",
 			cell: ({
 				row: {
-					original: { responsible, relatedDirectives },
+					original: { assignee, otherAssignees },
 				},
-			}) => (
-				<ResponsibleCell
-					responsible={responsible}
-					relatedDirectives={relatedDirectives}
-				/>
-			),
+			}) =>
+				assignee && (
+					<AssigneeCell
+						responsible={assignee}
+						relatedDirectives={(otherAssignees ?? []).map((s) => ({
+							assignee: s.assignee,
+							status: s.status,
+						}))}
+					/>
+				),
 		},
 		deadlineType: {
 			accessorKey: "deadlineType",
@@ -257,39 +285,47 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.deadlineType}
 					column={column}
-					filterOptions={filterOptionsMap["deadlineType"]}
+					filterOptions={filterOptionsMap.deadlineType}
 				/>
 			),
 			size: 160,
 			filterFn: multiSelectFilter,
-			sortingFn: (rowA, rowB) => {
-				const a = rowA.original.dueDate?.getTime() ?? Infinity;
-				const b = rowB.original.dueDate?.getTime() ?? Infinity;
-				return a > b ? 1 : a < b ? -1 : 0;
+			sortingFn: (
+				{ original: { dueDate: dueDateA } },
+				{ original: { dueDate: dueDateB } },
+			) => {
+				const a = dueDateA ? new Date(dueDateA).getTime() : Infinity
+				const b = dueDateB ? new Date(dueDateB).getTime() : Infinity
+				return a > b ? 1 : a < b ? -1 : 0
 			},
 			cell: ({
 				row: {
-					original: { deadlineType, dueDate },
+					original: { deadlineType: rawDeadlineType, dueDate },
 				},
 			}) => {
-				const today = startOfToday();
-				const daysUntil = dueDate ? differenceInDays(dueDate, today) : null;
+				const deadlineType = rawDeadlineType
+				const today = startOfToday()
+				const daysUntil = dueDate
+					? differenceInDays(new Date(dueDate), today)
+					: null
 				const isOverdue =
 					daysUntil !== null &&
 					daysUntil < 0 &&
-					deadlineType !== DeadlineType.Immediate;
+					deadlineType !== DeadlineType.IMMEDIATE
 				const isApproaching =
-					!isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2;
+					!isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
 
 				return (
 					<DeadlineCell>
-						{deadlineType !== DeadlineType.Date && (
+						{deadlineType !== DeadlineType.DATE && (
 							<DeadlineTag $type={deadlineType}>
 								{DEADLINE_LABELS[deadlineType]}
 							</DeadlineTag>
 						)}
 						{dueDate && (
-							<DeadlineDateText>{formatDateShort(dueDate)}</DeadlineDateText>
+							<DeadlineDateText>
+								{formatDateShort(new Date(dueDate))}
+							</DeadlineDateText>
 						)}
 						{(isOverdue || isApproaching) && (
 							<DeadlineWarning>
@@ -314,16 +350,17 @@ function useTaskColumns({
 							</DeadlineWarning>
 						)}
 					</DeadlineCell>
-				);
+				)
 			},
 		},
 		discussionName: {
-			accessorKey: "discussionName",
+			id: "discussionName",
+			accessorFn: (row) => row.source?.name,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.discussionName}
 					column={column}
-					filterOptions={filterOptionsMap["discussionName"]}
+					filterOptions={filterOptionsMap.discussionName}
 				/>
 			),
 			size: 260,
@@ -331,16 +368,21 @@ function useTaskColumns({
 			sortingFn: "text",
 			cell: ({
 				row: {
-					original: { discussionName, discussionDate, hasAttachment },
+					original: { source },
 				},
 			}) => {
-				const parts = [discussionName, discussionDate].filter(Boolean);
+				if (!source) {
+					return
+				}
+				const parts = [source.name, formatDateShort(source.date)].filter(
+					Boolean,
+				)
 				return (
 					<SourceCell>
-						{hasAttachment && <SourceIcon size={18} />}
+						{source.attachmentKey && <SourceIcon size={18} />}
 						{parts.length > 0 && <SourceText>{parts.join(" | ")}</SourceText>}
 					</SourceCell>
-				);
+				)
 			},
 		},
 		tags: {
@@ -349,13 +391,20 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.tags}
 					column={column}
-					filterOptions={filterOptionsMap["tags"]}
+					filterOptions={filterOptionsMap.tags}
 				/>
 			),
 			size: 160,
 			enableSorting: false,
 			filterFn: multiSelectFilter,
-			cell: ({ getValue }) => <TopicCell tags={getValue<string[]>()} />,
+			cell: ({
+				row: {
+					original: { tags, source },
+				},
+			}) => {
+				const allNames = uniq(map(concat(tags, source?.tags ?? []), "name"))
+				return <TopicCell tags={allNames} />
+			},
 		},
 		notes: {
 			accessorKey: "notes",
@@ -364,16 +413,10 @@ function useTaskColumns({
 			enableSorting: false,
 			enableColumnFilter: false,
 			cell: ({ getValue }) => {
-				const notes = getValue<string>();
-				return (
-					<NotesText>
-						{searchQuery ? (
-							<HighlightMatch text={notes} query={searchQuery} variant="mark" />
-						) : (
-							notes
-						)}
-					</NotesText>
-				);
+				const notes = getValue<string>()
+				return notes ? (
+					<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
+				) : null
 			},
 		},
 		createdAt: {
@@ -406,9 +449,9 @@ function useTaskColumns({
 				<DateText>{formatDateShort(getValue<Date>())}</DateText>
 			),
 		},
-	};
+	}
 
-	const actionsColumn: ColumnDef<Task> | null = actions
+	const actionsColumn: ColumnDef<TaskRow> | null = actions
 		? {
 				id: "actions",
 				size: 43,
@@ -416,40 +459,35 @@ function useTaskColumns({
 				enableColumnFilter: false,
 				cell: ({
 					row: {
-						original: { id },
+						original: { id, workspaceId },
 					},
 				}) => (
 					<RowActionsMenu
-						trigger={
-							<ActionsButton>
-								<MoreVertical size={16} />
-							</ActionsButton>
-						}
+						workspaceId={workspaceId}
 						onEdit={() => actions.onEdit(id)}
 						onEnterSelect={() => actions.onEnterSelectMode(id)}
-						onArchive={() => actions.onArchive([id])}
 						onDelete={() => actions.onDelete([id])}
 					/>
 				),
 			}
-		: null;
+		: null
 
 	const visibleOrderedColumns = visibleColumns
 		.filter((id) => columnMap[id])
-		.map((id) => (selectColumn && id === "id" ? selectColumn : columnMap[id]!));
+		.map((id) => (selectColumn && id === "id" ? selectColumn : columnMap[id]!))
 
-	const columns: ColumnDef<Task>[] = [
+	const columns: ColumnDef<TaskRow>[] = [
 		...visibleOrderedColumns,
 		...(actionsColumn ? [actionsColumn] : []),
-	];
+	]
 
 	return {
 		columns,
 		availableColumns: TASK_COLUMNS_META,
-	};
+	}
 }
 
-export { useTaskColumns };
+export { useTaskColumns }
 
 // ─── Styled Components ───────────────────────────────────────────────────────
 
@@ -457,28 +495,28 @@ const CheckboxCenter = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
+`
 
 const IdCell = styled.span`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color:rgba(0, 0, 0, 0.65);
-`;
+`
 
 const TitleCell = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
   color: var(--sea-ink);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 20px;
   overflow: hidden;
-`;
+`
 
 const TitlePart = styled.span`
   font-weight: 400;
@@ -487,12 +525,12 @@ const TitlePart = styled.span`
   white-space: nowrap;
   max-width: 50%;
   flex-shrink: 0;
-`;
+`
 
 const TitleSeparator = styled.span`
   flex-shrink: 0;
   white-space: nowrap;
-`;
+`
 
 const DetailsPart = styled.span`
   font-weight: 300;
@@ -501,34 +539,34 @@ const DetailsPart = styled.span`
   white-space: nowrap;
   flex: 1;
   min-width: 0;
-`;
+`
 
 const TitleFull = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`;
+`
 
 const DeadlineCell = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
-`;
+`
 
 const DeadlineDateText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.65);
   white-space: nowrap;
-`;
+`
 
 const DeadlineWarning = styled.span`
   margin-inline-start: auto;
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-`;
+`
 
 const WarningTrigger = styled(TooltipTrigger)`
   display: inline-flex;
@@ -538,44 +576,44 @@ const WarningTrigger = styled(TooltipTrigger)`
   padding: 0;
   cursor: default;
   line-height: 0;
-`;
+`
 
 const OverdueIcon = styled(AlertTriangle)`
   color: #f5222d;
   flex-shrink: 0;
-`;
+`
 
 const ApproachingIcon = styled(AlertTriangle)`
   color: rgba(212, 107, 8, 0.9);
   flex-shrink: 0;
-`;
+`
 
 const SourceCell = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
   color: var(--sea-ink-soft);
-`;
+`
 
 const SourceIcon = styled(Paperclip)`
   color: rgba(0, 0, 0, 0.45);
-`;
+`
 
 const SourceText = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.65);
-`;
+`
 
 const NotesText = styled.div`
   overflow: hidden;
   max-height: 40px;
 
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 20px;
   color: var(--sea-ink-soft);
 
@@ -604,26 +642,9 @@ const NotesText = styled.div`
   u {
     text-decoration: underline;
   }
-`;
+`
 
 const DateText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   color: var(--sea-ink-soft);
-`;
-
-const ActionsButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  color: var(--sea-ink-soft);
-  cursor: pointer;
-  transition: background 0.15s;
-
-  &:hover {
-    background: var(--link-bg-hover);
-    color: var(--sea-ink);
-  }
-`;
+`

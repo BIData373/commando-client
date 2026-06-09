@@ -1,91 +1,105 @@
-import styled from "@emotion/styled";
-import { useRef, useState } from "react";
-import { DataTable } from "../ui/data-table";
-import { DATA_CELL_ACTIVE_KEY } from "./DeadlineCell";
-import TaskAssigneeExpansion from "./TaskAssigneeExpansion";
-import columns, { type TaskRow, type TaskTableMeta } from "./TasksColumns";
+import styled from "@emotion/styled"
+import { useRef, useState } from "react"
+import { DeadlineType } from "src/api/model"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { PrimaryButton } from "../shared/PrimaryButton"
+import { DataTable } from "../ui/data-table"
+import { DATA_CELL_ACTIVE_KEY } from "./DeadlineCell"
+import TaskAssigneeExpansion from "./TaskAssigneeExpansion"
+import columns, { type NewTaskRow, type TaskTableMeta } from "./TasksColumns"
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 interface CreateTasksTableProps {
-	onSave: (tasks: TaskRow[]) => void;
-	onBack: () => void;
+	onSave: (tasks: NewTaskRow[]) => void
+	onBack: () => void
+	isLoading?: boolean
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
-	const nextRowId = useRef(1);
+function CreateTasksTable({
+	onSave,
+	onBack,
+	isLoading,
+}: CreateTasksTableProps) {
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+	const nextRowId = useRef(1)
 
-	function createEmptyRow(): TaskRow {
+	function createEmptyRow(): NewTaskRow {
+		const id = nextRowId.current++
 		return {
-			id: nextRowId.current++,
+			workspaceId,
+			id,
+			rowKey: String(id),
 			title: "",
-			deadlineType: null,
+			deadlineType: DeadlineType.IMMEDIATE,
 			dueDate: null,
 			assigneeIds: [],
 			assigneeDetails: {},
 			notes: "",
-			isImportant: false,
-		};
+			flagged: false,
+		}
 	}
 
-	const [rows, setRows] = useState<TaskRow[]>([createEmptyRow()]);
-	const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
+	const [rows, setRows] = useState<NewTaskRow[]>([createEmptyRow()])
+	const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set())
 
 	function removeExpandedRow(id: number) {
 		setExpandedRows((prev) => {
-			const next = new Set(prev);
-			next.delete(id);
-			return next;
-		});
+			const next = new Set(prev)
+			next.delete(id)
+			return next
+		})
 	}
 
-	function updateRow(id: number, updates: Partial<TaskRow>) {
+	function updateRow(id: number, updates: Partial<NewTaskRow>) {
 		setRows((prev) => {
-			const next = prev.map((r) => (r.id === id ? { ...r, ...updates } : r));
-			const last = next[next.length - 1];
+			const next = prev.map((r) => (r.id === id ? { ...r, ...updates } : r))
+			const last = next[next.length - 1]
 			if (last.title.trim()) {
-				next.push(createEmptyRow());
+				next.push(createEmptyRow())
 			}
-			return next;
-		});
+			return next
+		})
 
 		if ("assigneeIds" in updates) {
-			const newIds = updates.assigneeIds!;
+			const newIds = updates.assigneeIds!
 			if (newIds.length > 1) {
-				setExpandedRows((prev) => new Set(prev).add(id));
+				setExpandedRows((prev) => new Set(prev).add(id))
 			} else {
-				removeExpandedRow(id);
+				removeExpandedRow(id)
 			}
 		}
 	}
 
 	function toggleRowExpansion(id: number) {
 		setExpandedRows((prev) => {
-			const next = new Set(prev);
-			if (next.has(id)) next.delete(id);
-			else next.add(id);
-			return next;
-		});
+			const next = new Set(prev)
+			if (next.has(id)) next.delete(id)
+			else next.add(id)
+			return next
+		})
 	}
 
 	function deleteRow(id: number) {
 		setRows((prev) => {
-			const next = prev.filter((r) => r.id !== id);
-			if (next.length === 0) return [createEmptyRow()];
-			return next;
-		});
-		removeExpandedRow(id);
+			const next = prev.filter((r) => r.id !== id)
+			if (next.length === 0) return [createEmptyRow()]
+			return next
+		})
+		removeExpandedRow(id)
 	}
 
 	function handleSave() {
-		const filled = rows.filter((r) => r.title.trim());
-		onSave(filled);
+		const filled = rows.filter((r) => r.title.trim())
+		onSave(filled)
 	}
 
-	const filledCount = rows.filter((r) => r.title.trim()).length;
-	const hasAnyTask = filledCount > 0;
+	const filledCount = rows.filter((r) => r.title.trim()).length
+	const hasAnyTask = filledCount > 0
 
 	const meta: TaskTableMeta = {
 		updateRow,
@@ -93,7 +107,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
 		toggleRowExpansion,
 		deleteRow,
 		isLastRow: (index: number) => index === rows.length - 1,
-	};
+	}
 
 	return (
 		<TableWrapper>
@@ -101,7 +115,7 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
 				<DataTable
 					columns={columns}
 					data={rows}
-					getRowId={(row) => String(row.id)}
+					getRowId={(row) => row.rowKey}
 					meta={meta}
 					containerClassName="overflow-x-hidden"
 					expansionColSpan={columns.length - 1}
@@ -119,16 +133,20 @@ function CreateTasksTable({ onSave, onBack }: CreateTasksTableProps) {
 			</TableOuterContainer>
 
 			<FooterRow>
-				<SaveButton onClick={handleSave} disabled={!hasAnyTask}>
-					שמור {hasAnyTask && `(${filledCount})`}
-				</SaveButton>
+				<PrimaryButton
+					onClick={handleSave}
+					disabled={!hasAnyTask}
+					title={`שמור${hasAnyTask ? ` (${filledCount})` : ""}`}
+					width={123}
+					loading={isLoading}
+				/>
 				<BackButton onClick={onBack}>חזור</BackButton>
 			</FooterRow>
 		</TableWrapper>
-	);
+	)
 }
 
-export default CreateTasksTable;
+export default CreateTasksTable
 
 // ─── Table Styled Components ────────────────────────────────────────────────
 
@@ -140,7 +158,7 @@ const TableWrapper = styled.div`
   min-height: 0;
   justify-content: space-between;
   overflow-x: hidden;
-  `;
+  `
 
 const TableOuterContainer = styled.div`
   direction: ltr;
@@ -233,7 +251,7 @@ const TableOuterContainer = styled.div`
     }
   }
 }
-`;
+`
 
 // ─── Footer ─────────────────────────────────────────────────────────────────
 
@@ -244,43 +262,7 @@ const FooterRow = styled.div`
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-`;
-
-const SaveButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 123px;
-  height: 40px;
-  border: none;
-  border-radius: 8px;
-  background: var(--default-linear);
-  color: var(--background);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  cursor: pointer;
-  white-space: nowrap;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: var(--shadow-inset);
-    pointer-events: none;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &:hover:not(:disabled) {
-    opacity: 0.9;
-  }
-`;
+`
 
 const BackButton = styled.button`
   display: flex;
@@ -292,7 +274,7 @@ const BackButton = styled.button`
   border-radius: 8px;
   background: white;
   color: var(--text-color-2);
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   cursor: pointer;
@@ -312,4 +294,4 @@ const BackButton = styled.button`
     border-color: var(--button-color-hover);
     color: var(--button-color-hover);
   }
-`;
+`

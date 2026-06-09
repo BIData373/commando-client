@@ -86,7 +86,7 @@ body,
   --button-active: rgba(0, 0, 0, 0.2);
 
   --default-linear: linear-gradient(135deg, #6866FF 0%, #7604C8 100%);
-
+  --Components-Upload-Global-colorPrimary: #1677FF;
   --colors-base-neutral-3: oklch(97.02% 0 271.15);
   --Colors-Base-Volcano-1: oklch(96.86% 0.02 60.01);
   --Colors-Base-Volcano-6: oklch(66.76% 0.21 36.89);
@@ -120,6 +120,18 @@ body,
   --radius: 0.625rem;
   --line: #F0F0F0;
 
+  /* Typography scale (rem = scales with user OS/browser font-size preference) */
+  --fs-heading-h1: 2.625rem;  /* 42px */
+  --fs-heading-1: 2.375rem;   /* 38px */
+  --fs-heading-2: 1.875rem;   /* 30px */
+  --fs-heading-3: 1.5rem;     /* 24px */
+  --fs-xl: 1.25rem;           /* 20px */
+  --fs-lg: 1.125rem;          /* 18px */
+  --fs-base: 1rem;            /* 16px */
+  --fs-btn: 0.875rem;         /* 14px */
+  --fs-sm: 0.75rem;           /* 12px */
+  --fs-xs: 0.625rem;          /* 10px */
+
   /* Semantic tokens */
   --sea-ink: oklch(0.12 0.028 254);
   --sea-ink-soft: oklch(0.52 0.020 252);
@@ -127,7 +139,6 @@ body,
   --chip-line: oklch(0.87 0.010 252);
   --link-bg-hover: oklch(0.93 0.008 252);
   --line: oklch(0.91 0 0);
-  --z-dropdown: 1000;
   --header-bg: oklch(0.14 0.035 258);
 
   /* Status colors */
@@ -203,7 +214,6 @@ body,
   --chip-line: oklch(0.87 0.010 252);
   --link-bg-hover: oklch(0.93 0.008 252);
   --line: oklch(0.91 0 0);
-  --z-dropdown: 1000;
 
   /* Status colors */
   --status-done: oklch(0.70 0.22 145);
@@ -223,7 +233,6 @@ body,
   --icon-background: rgba(255, 218, 218, 0.4);
   --card-shadow-default: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
   --card-shadow-hover: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
-
 }
 
 @theme inline {
@@ -276,4 +285,76 @@ body,
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scale-out {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  to {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+/* Page view transitions */
+/* ::view-transition-old(root) {
+  animation: 150ms ease-in both fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 200ms ease-out both fade-in;
+} */
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@view-transition {
+  navigation: auto;
+  types: backwards;
+}
+
+/* Responsive typography — scale headings down on smaller screens */
+@media (max-width: 64em) {   /* 1024px */
+  :root {
+    --fs-heading-h1: 2.25rem;   /* 36px */
+    --fs-heading-1: 2rem;       /* 32px */
+    --fs-heading-2: 1.625rem;   /* 26px */
+    --fs-heading-3: 1.3125rem;  /* 21px */
+    --fs-xl: 1.1875rem;         /* 19px */
+  }
+}
+
+@media (max-width: 48em) {   /* 768px */
+  :root {
+    --fs-heading-h1: 1.75rem;   /* 28px */
+    --fs-heading-1: 1.5rem;     /* 24px */
+    --fs-heading-2: 1.25rem;    /* 20px */
+    --fs-heading-3: 1.125rem;   /* 18px */
+    --fs-xl: 1.125rem;          /* 18px */
+    --fs-lg: 1rem;              /* 16px */
+  }
 }

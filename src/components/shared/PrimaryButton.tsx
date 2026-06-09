@@ -1,37 +1,38 @@
-import styled from "@emotion/styled";
+import styled from "@emotion/styled"
+import { Spinner } from "../ui/spinner"
 
 interface PrimaryButtonProps {
-	onClick?(): void;
-	title: string;
-	header?: React.ReactNode;
-	tail?: React.ReactNode;
-	height?: number;
-	width?: number;
-	disabled?: boolean;
+	onClick?(): void
+	title: string
+	tail?: React.ReactNode
+	height?: number
+	width?: number
+	disabled?: boolean
+	loading?: boolean
 }
 
 export const PrimaryButton = ({
 	onClick,
 	title,
-	header,
 	tail,
 	height,
 	width,
 	disabled,
+	loading,
 }: PrimaryButtonProps) => {
 	return (
 		<Button
 			onClick={onClick}
 			$height={height}
 			$width={width}
-			disabled={disabled}
+			disabled={disabled || loading}
 		>
-			{header}
 			{title}
 			{tail}
+			{loading && <Spinner />}
 		</Button>
-	);
-};
+	)
+}
 
 const Button = styled.button<{ $height?: number; $width?: number }>`
   direction: rtl;
@@ -46,8 +47,7 @@ const Button = styled.button<{ $height?: number; $width?: number }>`
   border-radius: 8px;
   background: var(--default-linear);
   color: white;
-  font-family: 'Rubik', sans-serif;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   cursor: pointer;
@@ -75,4 +75,4 @@ const Button = styled.button<{ $height?: number; $width?: number }>`
   &:active {
     opacity: 0.85;
   }
-`;
+`

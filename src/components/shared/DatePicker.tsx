@@ -1,36 +1,31 @@
-import styled from "@emotion/styled";
-import type React from "react";
-import type { DateRange } from "react-day-picker";
-import { he as heDayPicker } from "react-day-picker/locale";
-import { Calendar } from "../ui/calendar";
-import CalendarNav from "./CalendarNav";
-import { WeekNumberCell } from "./WeekCellNumber";
+import styled from "@emotion/styled"
+import type React from "react"
+import { he as heDayPicker } from "react-day-picker/locale"
+import type { DatePickerValue } from "src/utils/date-utils"
+import { Calendar } from "../ui/calendar"
+import CalendarNav from "./CalendarNav"
+import { WeekNumberCell } from "./WeekNumberCell"
 
 export enum CalendarMode {
 	Range = "range",
 	Single = "single",
 }
 
-export type DatePickerValue = Date | DateRange;
-
 interface DatePickerProps {
-	mode: CalendarMode;
-	selected?: DatePickerValue;
-	onSelect?: (val: DatePickerValue | undefined) => void;
+	mode: CalendarMode
+	selected?: DatePickerValue
+	onSelect?: (val: DatePickerValue | undefined) => void
 }
 
-function getDefaultMonth(props: DatePickerProps): Date | undefined {
-	if (props.mode === CalendarMode.Range) {
-		return props.selected && "from" in props.selected
-			? props.selected.from
-			: undefined;
-	}
-	return props.selected instanceof Date ? props.selected : undefined;
-}
-
-function DatePicker(props: DatePickerProps) {
-	const defaultMonth = getDefaultMonth(props);
-	const { mode, selected, onSelect } = props;
+function DatePicker({ mode, selected, onSelect }: DatePickerProps) {
+	const defaultMonth =
+		mode === CalendarMode.Range
+			? selected && "from" in selected
+				? selected.from
+				: undefined
+			: selected instanceof Date
+				? selected
+				: undefined
 
 	return (
 		<StyledCalendar
@@ -41,12 +36,17 @@ function DatePicker(props: DatePickerProps) {
 				typeof Calendar
 			>)}
 			locale={heDayPicker}
-			components={{ WeekNumber: WeekNumberCell, Nav: CalendarNav }}
+			components={{
+				WeekNumber: (props) => (
+					<WeekNumberCell {...props} date={selected} onClickBadge={onSelect} />
+				),
+				Nav: CalendarNav,
+			}}
 		/>
-	);
+	)
 }
 
-export default DatePicker;
+export default DatePicker
 
 const StyledCalendar = styled(Calendar)`
   width: 100%;
@@ -72,7 +72,7 @@ const StyledCalendar = styled(Calendar)`
 
   /* ── Weekday headers ── */
   .rdp-weekdays .rdp-weekday {
-    font-size: 14px;
+    font-size: var(--fs-btn);
     color: rgba(0, 0, 0, 0.88) !important;
   }
 
@@ -84,7 +84,7 @@ const StyledCalendar = styled(Calendar)`
       width: 24px;
       height: 24px;
       min-width: 24px;
-      font-size: 14px;
+      font-size: var(--fs-btn);
       font-weight: 400;
       color: rgba(0, 0, 0, 0.88);
       border-radius: 6px;
@@ -145,4 +145,4 @@ const StyledCalendar = styled(Calendar)`
     color: rgba(0, 0, 0, 0.88) !important;
   }
 
-`;
+`

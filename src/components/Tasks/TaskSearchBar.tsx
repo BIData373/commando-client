@@ -1,16 +1,16 @@
-import styled from "@emotion/styled";
-import { Download, Search } from "lucide-react";
-import type { TaskColumn } from "src/hooks/useTaskColumns";
-import { ColumnVisibilityDropdown } from "./ColumnVisibilityDropdown";
+import styled from "@emotion/styled"
+import { Download, Search } from "lucide-react"
+import type { TaskColumn } from "src/hooks/useTaskColumns"
+import { ColumnVisibilityDropdown } from "./ColumnVisibilityDropdown"
 
 interface TaskSearchBarProps {
-	searchQuery: string;
-	onSearchChange: (value: string) => void;
-	onExport: () => void;
-	columnOrder: TaskColumn[];
-	hiddenColumns: Set<TaskColumn>;
-	onColumnOrderChange: (order: TaskColumn[]) => void;
-	onToggleColumn: (columnId: TaskColumn) => void;
+	searchQuery: string
+	onSearchChange: (value: string) => void
+	onExport: () => void
+	columnOrder: TaskColumn[]
+	hiddenColumns: Set<TaskColumn>
+	onColumnOrderChange: (order: TaskColumn[]) => void
+	onToggleColumn: (columnId: TaskColumn) => void
 }
 
 function TaskSearchBar({
@@ -45,16 +45,16 @@ function TaskSearchBar({
 				</SearchIconBox>
 			</SearchInputWrapper>
 		</ToolbarStart>
-	);
+	)
 }
 
-export { TaskSearchBar };
+export { TaskSearchBar }
 
 const ToolbarStart = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-`;
+`
 
 const ActionButton = styled.button`
   direction: rtl;
@@ -65,7 +65,7 @@ const ActionButton = styled.button`
   height: 40px;
   border: 1px solid #d9d9d9;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: rgba(0, 0, 0, 0.88);
   cursor: pointer;
   background: white;
@@ -75,7 +75,7 @@ const ActionButton = styled.button`
   &:hover {
     background: var(--link-bg-hover);
   }
-`;
+`
 
 const SearchInputWrapper = styled.div`
   direction: rtl;
@@ -91,7 +91,7 @@ const SearchInputWrapper = styled.div`
   &:focus-within {
     border-color: rgba(9, 88, 217, 0.6);
   }
-`;
+`
 
 const SearchIconBox = styled.div`
 display: flex;
@@ -100,11 +100,11 @@ height: 32px;
 justify-content: center;
 align-items: center;
 gap: 8px;
-`;
+`
 
 const SearchIcon = styled(Search)`
 color: rgba(0, 0, 0, 0.25);
-`;
+`
 
 const SearchField = styled.input`
   flex: 1;
@@ -112,7 +112,7 @@ const SearchField = styled.input`
   border: none;
   outline: none;
   background: transparent;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
@@ -123,4 +123,4 @@ const SearchField = styled.input`
   &::placeholder {
     color: rgba(0, 0, 0, 0.25);
   }
-`;
+`

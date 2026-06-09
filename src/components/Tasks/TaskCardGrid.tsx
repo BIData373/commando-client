@@ -1,28 +1,28 @@
-import styled from "@emotion/styled";
-import { Flag } from "lucide-react";
-import type { Task } from "../../data/Tasks";
-import { formatDateShort } from "../../functions/date-utils";
-import DeadlineTag, {
-	DEADLINE_LABELS,
-	DeadlineType,
-} from "../shared/DeadlineTag";
-import { StatusTag } from "../shared/StatusTag";
+import styled from "@emotion/styled"
+import { Flag } from "lucide-react"
+import { DeadlineType, type TaskDto } from "src/api/model"
+import { toTaskRows } from "src/functions/tasks-table"
+import { formatDateShort } from "../../functions/date-utils"
+import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
+import { StatusTag } from "../shared/StatusTag"
 import {
 	Card,
 	CardContent,
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "../ui/card";
+} from "../ui/card"
 
 interface TaskCardGridProps {
-	tasks: Task[];
+	tasks: TaskDto[]
 }
 
 function TaskCardGrid({ tasks }: TaskCardGridProps) {
+	const taskRows = toTaskRows(tasks)
+
 	return (
 		<CardGridContainer>
-			{tasks.map((task) => (
+			{taskRows.map((task) => (
 				<Card key={task.id}>
 					<CardHeader>
 						<CardTitle>
@@ -33,10 +33,10 @@ function TaskCardGrid({ tasks }: TaskCardGridProps) {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<StatusTag status={task.status} />
+						{task.status && <StatusTag status={task.status} />}
 					</CardContent>
 					<CardFooter>
-						{task.deadlineType !== DeadlineType.Date && (
+						{task.deadlineType !== DeadlineType.DATE && (
 							<DeadlineTag $type={task.deadlineType}>
 								{DEADLINE_LABELS[task.deadlineType]}
 							</DeadlineTag>
@@ -48,26 +48,27 @@ function TaskCardGrid({ tasks }: TaskCardGridProps) {
 				</Card>
 			))}
 		</CardGridContainer>
-	);
+	)
 }
 
-export { TaskCardGrid };
+export { TaskCardGrid }
 
 const CardGridContainer = styled.div`
+  direction: rtl;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
-`;
+`
 
 const CardTitleRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-`;
+`
 
 const CardDateText = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   color: var(--sea-ink-soft);
   margin-inline-start: auto;
-`;
+`

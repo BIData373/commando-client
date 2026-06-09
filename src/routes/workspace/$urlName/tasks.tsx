@@ -1,26 +1,30 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { QuickFilter } from "src/utils/filterUtils";
-import { DirectiveStatus } from "src/utils/statusUtils";
-import { z } from "zod";
-import { DeadlineType } from "../../../components/shared/DeadlineTag";
-import TasksLayout from "../../../components/Tasks/TasksLayout";
-import { TasksProvider } from "../../../providers/TasksProvider";
+import { createFileRoute } from "@tanstack/react-router"
+import { useMemo } from "react"
+import { DeadlineType, WorkspaceStatusType } from "src/api/model"
+import { QuickFilter } from "src/utils/filter-utils"
+import { z } from "zod"
+import TasksLayout from "../../../components/Tasks/TasksLayout"
+import { TasksFiltersProvider } from "../../../providers/TasksFiltersProvider"
+
+export enum TasksView {
+	CARDS = "CARDS",
+	TABLE = "TABLE",
+}
 
 const queryArray = <T extends z.ZodTypeAny>(schema: T) =>
 	z.preprocess(
 		(v) => (Array.isArray(v) ? v : v == null ? [] : [v]),
 		z.array(schema),
-	);
+	)
 
 const TasksSearchSchema = z.object({
-	view: z.enum(["CARDS", "TABLE"]).default("TABLE"),
+	view: z.nativeEnum(TasksView).default(TasksView.TABLE),
 	tabFilter: queryArray(z.nativeEnum(QuickFilter)).default([]),
-	statusFilter: queryArray(z.nativeEnum(DirectiveStatus)).default([]),
+	statusFilter: queryArray(z.nativeEnum(WorkspaceStatusType)).default([]),
 	deadlineTypeFilter: queryArray(z.nativeEnum(DeadlineType)).default([]),
-});
+})
 
-export type TasksSearchSchemaType = z.infer<typeof TasksSearchSchema>;
-
+export type TasksSearchSchemaType = z.infer<typeof TasksSearchSchema>
 
 export const Route = createFileRoute("/workspace/$urlName/tasks")({
 	component: TasksPage,
@@ -33,15 +37,24 @@ export const Route = createFileRoute("/workspace/$urlName/tasks")({
 			workspace: true,
 		},
 	},
-});
+})
 
 function TasksPage() {
 	const { view, tabFilter, statusFilter, deadlineTypeFilter } =
-		Route.useSearch();
-	const { urlName } = Route.useParams();
+		Route.useSearch()
+
+	const { urlName } = Route.useParams()
+
+	const activeQuickFiltersSet = useMemo(
+		() => new Set<QuickFilter>(tabFilter),
+		[tabFilter],
+	)
 
 	return (
-		<TasksProvider>
+		<TasksFiltersProvider
+			storageKey="tasks"
+			activeQuickFilters={activeQuickFiltersSet}
+		>
 			<TasksLayout
 				view={view}
 				urlName={urlName}
@@ -49,6 +62,6 @@ function TasksPage() {
 				statusFilter={statusFilter}
 				deadlineTypeFilter={deadlineTypeFilter}
 			/>
-		</TasksProvider>
-	);
+		</TasksFiltersProvider>
+	)
 }

@@ -1,39 +1,41 @@
-import styled from "@emotion/styled";
-import { useMemo } from "react";
-import { Cell, Pie, PieChart } from "recharts";
-import type { Task } from "src/data/Tasks";
-import { DirectiveStatus, statusColors } from "src/utils/statusUtils";
+import styled from "@emotion/styled"
+import { groupBy, mapValues } from "lodash"
+import { useMemo } from "react"
+import { Cell, Pie, PieChart } from "recharts"
+import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 
 interface StatusCardProps {
-	tasks: Task[];
+	tasks: TaskRow[]
 }
 
-const CHART_EMPTY_COLOR = "var(--chip-bg)";
+const CHART_EMPTY_COLOR = "var(--chip-bg)"
 
 export default function StatusCard({ tasks }: StatusCardProps) {
+	const { statuses } = useWorkspace()
 	const statusCounts = useMemo(
-		() => ({
-			done: tasks.filter((t) => t.status === DirectiveStatus.COMPLETED).length,
-			inProgress: tasks.filter((t) => t.status === DirectiveStatus.IN_PROGRESS)
-				.length,
-			pending: tasks.filter((t) => t.status === DirectiveStatus.NOT_STARTED)
-				.length,
-		}),
-		[tasks],
-	);
+		() =>
+			mapValues(groupBy(tasks, "status.id"), (tasks, id) => ({
+				count: tasks.length,
+				...statuses[Number(id)],
+			})),
+		[tasks, statuses],
+	)
 
-	const { done, inProgress, pending } = statusCounts;
-	const total = done + inProgress + pending;
+	const total = tasks.length
 
 	const chartData =
 		total === 0
 			? [{ key: "all", value: 1 }]
-			: Object.entries(statusCounts).map(([key, value]) => ({ key, value }));
+			: Object.values(statusCounts).map(({ id, count }) => ({
+					key: id,
+					value: count,
+				}))
 
 	const cellFills =
 		total === 0
 			? [CHART_EMPTY_COLOR]
-			: Object.values(statusColors).map((color) => color.bgColor);
+			: Object.values(statuses).map(({ color }) => color)
 
 	return (
 		<Section>
@@ -61,31 +63,21 @@ export default function StatusCard({ tasks }: StatusCardProps) {
 					</ChartCenter>
 				</ChartWrapper>
 				<StatusRow>
-					<StatusItem>
-						<StatusCount>{pending}</StatusCount>
-						<StatusBadge $variant={DirectiveStatus.NOT_STARTED}>
-							טרם בוצע
-						</StatusBadge>
-					</StatusItem>
-					<StatusItem>
-						<StatusCount>{inProgress}</StatusCount>
-						<StatusBadge $variant={DirectiveStatus.IN_PROGRESS}>
-							בעבודה
-						</StatusBadge>
-					</StatusItem>
-					<StatusItem>
-						<StatusCount>{done}</StatusCount>
-						<StatusBadge $variant={DirectiveStatus.COMPLETED}>בוצע</StatusBadge>
-					</StatusItem>
+					{Object.values(statusCounts).map((status) => (
+						<StatusItem key={status.id}>
+							<StatusCount>{status.count}</StatusCount>
+							<StatusBadge $color={status.color}>{status.name}</StatusBadge>
+						</StatusItem>
+					))}
 				</StatusRow>
 			</Card>
 		</Section>
-	);
+	)
 }
 
 const StyledPieChart = styled(PieChart)`
   width: 300px !important;
-`;
+`
 
 const Section = styled.div`
   display: flex;
@@ -99,15 +91,15 @@ const Section = styled.div`
     grid-column: 1;
     grid-row: 2;
   }
-`;
+`
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 30px;
+  font-size: var(--fs-heading-2);
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
-`;
+`
 
 const Card = styled.div`
   flex: 1;
@@ -118,14 +110,14 @@ const Card = styled.div`
   align-items: center;
   justify-content: center;
   gap: 20px;
-`;
+`
 
 const ChartWrapper = styled.div`
   position: relative;
   width: 300px !important;
   height: 300px !important;
   flex-shrink: 0;
-`;
+`
 
 const ChartCenter = styled.div`
   position: absolute;
@@ -138,26 +130,26 @@ const ChartCenter = styled.div`
   gap: 2px;
   text-align: center;
   pointer-events: none;
-`;
+`
 
 const CenterCount = styled.span`
-  font-size: 38px;
+  font-size: var(--fs-heading-1);
   font-weight: 400;
   line-height: 1;
   color: var(--foreground);
-`;
+`
 
 const CenterLabel = styled.span`
   white-space: nowrap;
   font-size: 17px;
   color: var(--foreground);
-`;
+`
 
 const StatusRow = styled.div`
   display: flex;
   gap: 30px;
   align-items: center;
-`;
+`
 
 const StatusItem = styled.div`
   display: flex;
@@ -166,24 +158,24 @@ const StatusItem = styled.div`
   gap: 8px;
   padding: 8px;
   width: 80px;
-`;
+`
 
 const StatusCount = styled.span`
-  font-size: 20px;
+  font-size: var(--fs-xl);
   font-weight: 400;
   color: var(--foreground);
-`;
+`
 
-const StatusBadge = styled.span<{ $variant: DirectiveStatus }>`
+const StatusBadge = styled.span<{ $color: string }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 1px 8px;
   width: 100px;
   border-radius: 35px;
-  font-size: 20px;
+  font-size: var(--fs-xl);
   font-weight: 400;
   white-space: nowrap;
-  color: ${({ $variant }) => statusColors[$variant].fontColor};
-  background: ${({ $variant }) => statusColors[$variant].bgColor};
-`;
+  ${({ $color }) => `color: ${$color};`}
+  ${({ $color }) => `background:  rgb(from ${$color} r g b / 0.1);`}
+`

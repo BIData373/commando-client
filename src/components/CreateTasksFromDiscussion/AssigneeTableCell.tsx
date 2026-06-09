@@ -1,44 +1,55 @@
-import styled from "@emotion/styled";
-import { ChevronDown } from "lucide-react";
-import { MOCK_ASSIGNEES } from "src/data/Assignees";
+import styled from "@emotion/styled"
+import { ChevronDown } from "lucide-react"
+import { useListAssignees } from "src/api/assignee/assignee"
+import type { AssigneeDto } from "src/api/model"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import type {
-	TaskRow,
+	NewTaskRow,
 	TaskTableMeta,
-} from "../CreateTasksFromDiscussion/TasksColumns";
-import { AssigneeAvatar } from "../shared/AssigneeAvatar";
-import AssigneePicker from "../shared/AssigneePicker";
+} from "../CreateTasksFromDiscussion/TasksColumns"
+import { AssigneeAvatar } from "../shared/AssigneeAvatar"
+import AssigneePicker from "../shared/AssigneePicker"
 
 interface AssigneeTableCellProps {
-	row: TaskRow;
-	meta: TaskTableMeta;
+	row: NewTaskRow
+	meta: TaskTableMeta
 }
 
 function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
-	const assigneeIds = row.assigneeIds;
-	const hasMultiple = assigneeIds.length > 1;
-	const isExpanded = meta.expandedRows.has(row.id);
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
+
+	const assigneeMap = Object.fromEntries(
+		assignees.map((a) => [a.id, a]),
+	) as Record<number, AssigneeDto>
+
+	const assigneeIds = row.assigneeIds
+	const hasMultiple = assigneeIds.length > 1
+	const isExpanded = meta.expandedRows.has(row.id)
 
 	function handleToggleAssignee(assigneeId: number) {
-		const isRemoving = assigneeIds.includes(assigneeId);
+		const isRemoving = assigneeIds.includes(assigneeId)
 		const nextIds = isRemoving
 			? assigneeIds.filter((id) => id !== assigneeId)
-			: [...assigneeIds, assigneeId];
+			: [...assigneeIds, assigneeId]
 
 		const nextDetails = isRemoving
 			? Object.fromEntries(
-				Object.entries(row.assigneeDetails).filter(
-					([id]) => Number(id) !== assigneeId,
-				),
-			)
-			: row.assigneeDetails;
+					Object.entries(row.assigneeDetails).filter(
+						([id]) => Number(id) !== assigneeId,
+					),
+				)
+			: row.assigneeDetails
 
 		meta.updateRow(row.id, {
 			assigneeIds: nextIds,
 			assigneeDetails: nextDetails,
-		});
+		})
 	}
 
-	return hasMultiple && !isExpanded ? (
+	return hasMultiple && !isExpanded && !isLoading ? (
 		<CollapsedAssigneeButton
 			type="button"
 			onClick={() => meta.toggleRowExpansion(row.id)}
@@ -60,22 +71,22 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 						{hasMultiple ? (
 							<CompactAvatarStack>
 								{assigneeIds.map((id) =>
-									MOCK_ASSIGNEES[id] ? (
+									assigneeMap[id] ? (
 										<StackedAssigneeAvatar
 											key={id}
-											assignee={MOCK_ASSIGNEES[id]}
+											assignee={assigneeMap[id]}
 											size={22}
 										/>
 									) : null,
 								)}
 							</CompactAvatarStack>
-						) : assigneeIds.length === 1 ? (
+						) : assigneeIds.length === 1 && assigneeMap[assigneeIds[0]] ? (
 							<AssigneeTag>
-								<AssigneeTagRole>
-									{MOCK_ASSIGNEES[assigneeIds[0]]?.role}
-								</AssigneeTagRole>
+								<AssigneeTagName>
+									{assigneeMap[assigneeIds[0]].name}
+								</AssigneeTagName>
 								<AssigneeAvatar
-									assignee={MOCK_ASSIGNEES[assigneeIds[0]]}
+									assignee={assigneeMap[assigneeIds[0]]}
 									size={18}
 								/>
 							</AssigneeTag>
@@ -86,16 +97,16 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 				}
 			/>
 		</AssigneeCellOuter>
-	);
+	)
 }
 
-export default AssigneeTableCell;
+export default AssigneeTableCell
 
 const AssigneeCellOuter = styled.div`
   display: flex;
   align-items: center;
   height: 100%;
-`;
+`
 
 const CollapsedAssigneeButton = styled.button`
   direction: ltr;
@@ -107,15 +118,15 @@ const CollapsedAssigneeButton = styled.button`
   border: none;
   background: transparent;
   cursor: pointer;
-`;
+`
 
 const CollapsedAssigneeLabel = styled.span`
   direction: rtl;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   color: var(--text-color-2);
   white-space: nowrap;
-`;
+`
 
 const CompactTriggerButton = styled.button`
   direction: ltr;
@@ -128,26 +139,26 @@ const CompactTriggerButton = styled.button`
   outline: none;
   background: transparent;
   cursor: pointer;
-`;
+`
 
 const CompactChevron = styled(ChevronDown)`
   color: var(--Text-color-text-placeholder);
   flex-shrink: 0;
-`;
+`
 
 const CompactLabel = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   color: var(--Text-color-text-placeholder);
   white-space: nowrap;
   text-align: end;
-`;
+`
 
 const CompactAvatarStack = styled.div`
   display: flex;
   align-items: center;
   flex-direction: row-reverse;
-`;
+`
 
 const StackedAssigneeAvatar = styled(AssigneeAvatar)`
   margin-inline-start: -14px;
@@ -155,18 +166,18 @@ const StackedAssigneeAvatar = styled(AssigneeAvatar)`
   &:last-of-type {
     margin-inline-start: 0;
   }
-`;
+`
 
 const AssigneeTag = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 2px 4px;
-`;
+`
 
-const AssigneeTagRole = styled.span`
-  font-size: 12px;
+const AssigneeTagName = styled.span`
+  font-size: var(--fs-sm);
   line-height: 20px;
   color: var(--text-color-2);
   white-space: nowrap;
-`;
+`

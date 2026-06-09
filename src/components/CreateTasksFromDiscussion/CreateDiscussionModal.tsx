@@ -1,14 +1,18 @@
-import styled from "@emotion/styled";
-import { Check, Paperclip, X } from "lucide-react";
-import { Dialog as DialogPrimitive } from "radix-ui";
-import { useState } from "react";
-import { formatDate } from "../../functions/date-utils";
-import { useSaveTasks } from "../../hooks/useSaveTasks";
-import SourceField from "../CreateTasks/SourceField";
-import TopicField from "../CreateTasks/TopicField";
-import CreateTasksTable from "./CreateTasksTable";
-import FileUploadField from "./FileUploadField";
-import type { TaskRow } from "./TasksColumns";
+import styled from "@emotion/styled"
+import { useForm } from "@tanstack/react-form"
+import { useStore } from "@tanstack/react-store"
+import { Check, Paperclip, X } from "lucide-react"
+import { Dialog as DialogPrimitive } from "radix-ui"
+import { useState } from "react"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import type { CreateSourceDto } from "../../api/model"
+import { useCreateSource } from "../../api/source/source"
+import { formatDate } from "../../functions/date-utils"
+import { useSaveTasks } from "../../hooks/useSaveTasks"
+import { DialogOverlay } from "../ui/dialog"
+import CreateTasksTable from "./CreateTasksTable"
+import DiscussionForm from "./DiscussionForm"
+import type { NewTaskRow } from "./TasksColumns"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -17,112 +21,104 @@ enum Steps {
 	Tasks = 2,
 }
 
-interface DiscussionFormState {
-	name: string;
-	sourceDate: Date | null;
-	topics: string[];
-	file: File | null;
-}
-
 interface CreateDiscussionModalProps {
-	onClose: () => void;
+	onClose: () => void
 }
-
-// ─── Constants ──────────────────────────────────────────────────────────────
-
-const INITIAL_FORM: DiscussionFormState = {
-	name: "",
-	sourceDate: null,
-	topics: [],
-	file: null,
-};
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
-	const saveTasks = useSaveTasks();
-	const [form, setForm] = useState<DiscussionFormState>(INITIAL_FORM);
-	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion);
-	const setField = <K extends keyof DiscussionFormState>(
-		key: K,
-		value: DiscussionFormState[K],
-	) => setForm((prev) => ({ ...prev, [key]: value }));
+	const { saveTasks, isPending } = useSaveTasks(onClose)
+	const { mutateAsync: createSource } = useCreateSource()
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
 
-	const isCurrentStepTasks = currentStep === Steps.Tasks;
-	// ─── Source / Name Handlers ───────────────────────────────────────────────
-
-	function handleSourceSelect(name: string) {
-		setField("name", name);
+	const defaultValues: CreateSourceDto = {
+		workspaceId,
+		name: "",
+		date: null,
+		tags: [],
+		attachment: null,
 	}
 
-	function handleDateSelect(date: Date | undefined) {
+	const form = useForm({
+		defaultValues,
+	})
+
+	const values = useStore(form.store, (state) => state.values)
+	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
+
+	const isCurrentStepTasks = currentStep === Steps.Tasks
+
+	// ─── Handlers ─────────────────────────────────────────────────────────────
+
+	function handleNameChange(name: string) {
+		form.setFieldValue("name", name)
+	}
+
+	function handleDateChange(date: Date | undefined) {
 		if (date) {
-			setField("sourceDate", date);
+			form.setFieldValue("date", date)
 		}
 	}
 
-	// ─── Topic Handlers ───────────────────────────────────────────────────────
-
-	function handleTopicSelect(topic: string) {
-		if (!form.topics.includes(topic)) {
-			setField("topics", [...form.topics, topic]);
+	function handleTagSelect(tag: string) {
+		const current = values.tags ?? []
+		if (!current.includes(tag)) {
+			form.setFieldValue("tags", [...current, tag])
 		}
 	}
 
-	function handleTopicRemove(topic: string) {
-		setField(
-			"topics",
-			form.topics.filter((t) => t !== topic),
-		);
+	function handleTagRemove(tag: string) {
+		form.setFieldValue(
+			"tags",
+			(values.tags ?? []).filter((t) => t !== tag),
+		)
 	}
-
-	// ─── File Handler ──────────────────────────────────────────────────────────
 
 	function handleFileChange(file: File | null) {
-		setField("file", file);
+		form.setFieldValue("attachment", file)
 	}
 
-	// ─── Modal Handlers ───────────────────────────────────────────────────────
-
 	function handleOpenChange(open: boolean) {
-		if (!open) onClose();
+		if (!open) onClose()
 	}
 
 	function handleContinue() {
-		setCurrentStep(Steps.Tasks);
+		setCurrentStep(Steps.Tasks)
 	}
 
 	function handleBack() {
-		setCurrentStep(Steps.Discussion);
+		setCurrentStep(Steps.Discussion)
 	}
 
-	function handleSave(taskRows: TaskRow[]) {
-		const inputs = taskRows.map((row) => ({
-			title: row.title,
-			assigneeIds: row.assigneeIds,
-			assigneeDetails: row.assigneeDetails,
-			deadlineType: row.deadlineType,
-			dueDate: row.dueDate,
-			isImportant: row.isImportant,
-			notes: row.notes,
-			groupKey: String(row.id),
-		}));
-
-		saveTasks(inputs, {
-			discussionName: form.name.trim(),
-			discussionDate: form.sourceDate ? formatDate(form.sourceDate) : "",
-			hasAttachment: form.file !== null,
-			tags: form.topics,
-		});
-		onClose();
+	async function handleSave(taskRows: NewTaskRow[]) {
+		try {
+			const source = await createSource({ data: values })
+			const inputs = taskRows.map(
+				({ id, rowKey, assigneeIds, assigneeDetails, ...rest }) => ({
+					...rest,
+					workspaceId,
+					sourceId: source.id,
+					groupKey: String(id),
+					assignees: assigneeIds.map((assigneeId) => ({
+						id: assigneeId,
+						description: assigneeDetails[assigneeId] || undefined,
+					})),
+				}),
+			)
+			saveTasks(inputs)
+		} catch (error) {
+			console.error("createSource failed:", error)
+		}
 	}
-
 	// ─── Render ───────────────────────────────────────────────────────────────
 
 	return (
 		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
 			<DialogPrimitive.Portal>
-				<Overlay />
+				<DialogOverlay />
 				<ModalCard $step={currentStep}>
 					<ModalCloseButton onClick={onClose}>
 						<X size={16} />
@@ -158,71 +154,52 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 								<DiscussionInfoRow>
 									<DiscussionInfoText>
 										<DiscussionDate>
-											{form.sourceDate ? formatDate(form.sourceDate) : ""}
+											{values.date ? formatDate(values.date) : ""}
 										</DiscussionDate>
-										<DiscussionName>{form.name}</DiscussionName>
+										<DiscussionName>{values.name}</DiscussionName>
 									</DiscussionInfoText>
-									{form.file && <Paperclip size={20} />}
+									{values.attachment && <Paperclip size={20} />}
 								</DiscussionInfoRow>
 							)}
 						</HeaderSection>
 
 						{currentStep === Steps.Discussion ? (
 							<>
-								<FormContainer>
-									<SourceField
-										source={form.name}
-										sourceDate={form.sourceDate}
-										linkedSource={null}
-										onSourceSelect={handleSourceSelect}
-										onDateSelect={handleDateSelect}
-										label="שם הדיון"
-										uniqueNames
-									/>
-
-									<TopicField
-										topics={form.topics}
-										lockedTopics={[]}
-										onTopicSelect={handleTopicSelect}
-										onTopicRemove={handleTopicRemove}
-									/>
-
-									<FileUploadField
-										file={form.file}
-										onFileChange={handleFileChange}
-									/>
-								</FormContainer>
+								<DiscussionForm
+									form={values}
+									onNameChange={handleNameChange}
+									onDateChange={handleDateChange}
+									onTagSelect={handleTagSelect}
+									onTagRemove={handleTagRemove}
+									onFileChange={handleFileChange}
+								/>
 
 								<ModalFooter>
 									<ContinueButton
 										onClick={handleContinue}
-										disabled={!form.name.trim()}
+										disabled={!values.name.trim()}
 									>
 										המשך
 									</ContinueButton>
 								</ModalFooter>
 							</>
 						) : (
-							<CreateTasksTable onSave={handleSave} onBack={handleBack} />
+							<CreateTasksTable
+								onSave={handleSave}
+								onBack={handleBack}
+								isLoading={isPending}
+							/>
 						)}
 					</ModalBody>
 				</ModalCard>
 			</DialogPrimitive.Portal>
 		</DialogPrimitive.Root>
-	);
+	)
 }
 
-export default CreateDiscussionModal;
+export default CreateDiscussionModal
 
 // ─── Modal Shell ────────────────────────────────────────────────────────────
-
-const Overlay = styled(DialogPrimitive.Overlay)`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(1px);
-  z-index: var(--z-dropdown);
-`;
 
 const ModalCard = styled(DialogPrimitive.Content)<{ $step: Steps }>`
   position: fixed;
@@ -246,7 +223,7 @@ const ModalCard = styled(DialogPrimitive.Content)<{ $step: Steps }>`
   padding-block: 36px;
   padding-inline: 48px;
   outline: none;
-`;
+`
 
 const ModalCloseButton = styled.button`
   position: absolute;
@@ -268,7 +245,7 @@ const ModalCloseButton = styled.button`
     color: var(--text-color-2);
     background: rgba(0, 0, 0, 0.04);
   }
-`;
+`
 
 const ModalBody = styled.div`
   direction: ltr;
@@ -277,23 +254,23 @@ const ModalBody = styled.div`
   gap: 24px;
   min-height: 0;
   flex: 1;
-`;
+`
 
 const HeaderSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 12px;
-`;
+`
 
 const ModalTitle = styled.h1`
   font-weight: 500;
-  font-size: 42px;
+  font-size: var(--fs-heading-h1);
   line-height: 50px;
   color: var(--foreground);
   margin: 0;
   text-align: end;
-`;
+`
 
 // ─── Discussion Info (Step 2 header) ────────────────────────────────────────
 
@@ -303,38 +280,28 @@ const DiscussionInfoRow = styled.div`
   gap: 8px;
   justify-content: center;
   color: var(--text-color-2);
-`;
+`
 
 const DiscussionInfoText = styled.div`
   display: flex;
   align-items: baseline;
   gap: 8px;
   white-space: nowrap;
-`;
+`
 
 const DiscussionName = styled.span`
-  font-size: 20px;
+  font-size: var(--fs-xl);
   font-weight: 400;
   line-height: 28px;
   color: var(--foreground);
-`;
+`
 
 const DiscussionDate = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color: var(--foreground);
-`;
-
-// ─── Form Layout ────────────────────────────────────────────────────────────
-
-const FormContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  align-items: flex-end;
-  flex: 1;
-`;
+`
 
 // ─── Footer ─────────────────────────────────────────────────────────────────
 
@@ -343,7 +310,7 @@ const ModalFooter = styled.div`
   display: flex;
   align-items: center;
   flex-shrink: 0;
-`;
+`
 
 const ContinueButton = styled.button`
   display: flex;
@@ -355,7 +322,7 @@ const ContinueButton = styled.button`
   border-radius: 8px;
   background: linear-gradient(165deg, #6866ff 0%, #7604c8 100%);
   color: white;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   cursor: pointer;
@@ -379,7 +346,7 @@ const ContinueButton = styled.button`
   &:hover:not(:disabled) {
     opacity: 0.9;
   }
-`;
+`
 
 // ─── Steps Indicator ────────────────────────────────────────────────────────
 
@@ -391,7 +358,7 @@ const StepsRow = styled.div`
   width: 657px;
   height: 24px;
   align-self: flex-end;
-`;
+`
 
 const StepItem = styled.div`
   direction: ltr;
@@ -399,7 +366,7 @@ const StepItem = styled.div`
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-`;
+`
 
 const stepCircleBase = `
   width: 24px;
@@ -408,40 +375,40 @@ const stepCircleBase = `
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   flex-shrink: 0;
-`;
+`
 
 const StepCircleActive = styled.div`
   ${stepCircleBase}
   background: #6866ff;
   color: white;
-`;
+`
 
 const StepCircleCompleted = styled.div`
   ${stepCircleBase}
   background: #e2e2ff;
   color: #6866ff;
-`;
+`
 
 const StepCircle = styled.div<{ $active: boolean }>`
   ${stepCircleBase}
   background: ${({ $active }) => ($active ? "#6866ff" : "rgba(0, 0, 0, 0.06)")};
   color: ${({ $active }) => ($active ? "white" : "rgba(0, 0, 0, 0.45)")};
-`;
+`
 
 const StepLabel = styled.span<{ $active: boolean }>`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: ${({ $active }) => ($active ? "var(--text-color-2)" : "rgba(0, 0, 0, 0.45)")};
   white-space: nowrap;
-`;
+`
 
 const StepTail = styled.div<{ $completed: boolean }>`
   flex: 1;
   height: 1px;
   border-block-start: 1px ${({ $completed }) => ($completed ? "solid #6866ff" : "dashed var(--card-border)")};
-`;
+`

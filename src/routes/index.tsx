@@ -1,14 +1,16 @@
-import styled from "@emotion/styled";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Avatar, AvatarFallback, AvatarImage } from "src/components/ui/avatar";
+import styled from "@emotion/styled"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import type { WorkspaceDto } from "src/api/model"
+import { useListWorkspaces } from "src/api/workspace/workspace"
+import { Avatar, AvatarFallback, AvatarImage } from "src/components/ui/avatar"
 import {
 	Card,
 	CardAction,
 	CardDescription,
-	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "src/components/ui/card";
+} from "src/components/ui/card"
+import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
 export const Route = createFileRoute("/")({
 	component: RouteComponent,
@@ -19,87 +21,56 @@ export const Route = createFileRoute("/")({
 			user: false,
 		},
 	},
-});
+})
 
-interface Workspace {
-	urlName: string;
-	displayName: string;
-	description: string;
-	memberCount: number;
-}
-
-const PLACEHOLDER_WORKSPACES: Workspace[] = [
-	{
-		urlName: "alpha-unit",
-		displayName: "יחידה אלפא",
-		description: "ניהול משימות יחידת אלפא",
-		memberCount: 12,
-	},
-	{
-		urlName: "bravo-unit",
-		displayName: "יחידה ברבו",
-		description: "מטה ותיאום מבצעי",
-		memberCount: 8,
-	},
-	{
-		urlName: "charlie-unit",
-		displayName: "יחידה צ'רלי",
-		description: "לוגיסטיקה ותמיכה",
-		memberCount: 15,
-	},
-	{
-		urlName: "command-hq",
-		displayName: "מפקדה",
-		description: "מטה פיקוד עליון",
-		memberCount: 5,
-	},
-];
-
+// FIX Move to file?
 interface WorkspaceCardProps {
-	workspace: Workspace;
+	workspace: WorkspaceDto
 }
 
-function WorkspaceCard({ workspace }: WorkspaceCardProps) {
-	const navigate = useNavigate();
+function WorkspaceCard({
+	workspace: { title, urlName, icon },
+}: WorkspaceCardProps) {
+	const navigate = useNavigate()
 
 	function handleWorkspaceClick() {
 		navigate({
 			to: "/workspace/$urlName",
-			params: { urlName: workspace.urlName },
-		});
+			params: { urlName },
+		})
 	}
 
 	return (
 		<Card onClick={handleWorkspaceClick}>
 			<CardHeader>
-				<CardTitle>{workspace.displayName}</CardTitle>
-				<CardDescription>{workspace.description}</CardDescription>
+				<CardTitle>{title}</CardTitle>
+				{/* // FIX Add description */}
+				<CardDescription>{title}</CardDescription>
 
 				<CardAction>
 					<Avatar>
 						<AvatarImage
-							src="/workspace-icon.png"
-							alt="@shadcn"
+							src={icon ?? "/workspace-icon.png"}
+							alt={title}
 							className="grayscale"
 						/>
 						<AvatarFallback>CN</AvatarFallback>
 					</Avatar>
 				</CardAction>
 			</CardHeader>
-			<CardFooter>{workspace.memberCount} משתמשים</CardFooter>
+			{/* // FIX Check if needed */}
+			{/* <CardFooter>{memberCount} משתמשים</CardFooter> */}
 		</Card>
-	);
+	)
 }
 
 function RouteComponent() {
-	const navigate = useNavigate();
+	const navigate = useNavigate()
+
+	const { data: workspaces = [] } = useListWorkspaces()
 
 	function handlePersonalClick() {
-		navigate({ to: "/personal", search: { view: "TABLE" } });
-	}
-
-	function handleWorkspaceClick(urlName: string) {
-		navigate({ to: "/workspace/$urlName", params: { urlName } });
+		navigate({ to: "/personal", search: { view: TasksView.TABLE } })
 	}
 
 	return (
@@ -112,12 +83,12 @@ function RouteComponent() {
 			<SectionTitle>סביבות עבודה</SectionTitle>
 
 			<WorkspaceGrid>
-				{PLACEHOLDER_WORKSPACES.map((ws) => (
+				{workspaces.map((ws) => (
 					<WorkspaceCard key={ws.urlName} workspace={ws} />
 				))}
 			</WorkspaceGrid>
 		</PageRoot>
-	);
+	)
 }
 
 const PageRoot = styled.div`
@@ -125,7 +96,7 @@ const PageRoot = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-`;
+`
 
 const PersonalBanner = styled.button`
   display: flex;
@@ -143,63 +114,30 @@ const PersonalBanner = styled.button`
   &:hover {
     background: var(--link-bg-hover);
   }
-`;
+`
 
 const PersonalLabel = styled.span`
-  font-size: 18px;
+  font-size: var(--fs-lg);
   font-weight: 600;
   color: var(--sea-ink);
-`;
+`
 
 const PersonalSub = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   color: var(--sea-ink-soft);
-`;
+`
 
 const SectionTitle = styled.h2`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 600;
   color: var(--sea-ink-soft);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0;
-`;
+`
 
 const WorkspaceGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
-`;
-
-const WorkspaceIcon = styled.img`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  flex-shrink: 0;
-`;
-
-const WorkspaceInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-`;
-
-const WorkspaceName = styled.span`
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--sea-ink);
-`;
-
-const WorkspaceDesc = styled.span`
-  font-size: 13px;
-  color: var(--sea-ink-soft);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const WorkspaceMeta = styled.span`
-  font-size: 12px;
-  color: var(--sea-ink-soft);
-`;
+`

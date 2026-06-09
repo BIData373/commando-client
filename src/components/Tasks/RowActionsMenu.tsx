@@ -1,93 +1,109 @@
-import styled from "@emotion/styled";
-import { Archive, CheckCircle2, Pencil, Trash2 } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import styled from "@emotion/styled"
+import { CheckCircle2, MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { type ReactNode, useState } from "react"
+import { PermissionType } from "src/api/model"
+import { useGetMyPermission } from "src/api/permission/permission"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { DeletePopover } from "./DeletePopover";
+} from "../ui/dropdown-menu"
+import { DeletePopover } from "./DeletePopover"
 
 interface RowActionsMenuProps {
-	trigger: ReactNode;
-	onEdit?: () => void;
-	onEnterSelect?: () => void;
-	onArchive: () => void;
-	onDelete?: () => void;
+	trigger?: ReactNode
+	workspaceId: number
+	onEdit?: () => void
+	onEnterSelect?: () => void
+	onDelete?: () => void
 }
 
 export function RowActionsMenu({
 	trigger,
+	workspaceId,
 	onEdit,
 	onEnterSelect,
-	onArchive,
 	onDelete,
 }: RowActionsMenuProps) {
-	const [dropdownOpen, setDropdownOpen] = useState(false);
-	const [popoverOpen, setPopoverOpen] = useState(false);
+	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
-	const hasMoreThanTwo =
-		[onEdit, onEnterSelect, onDelete].filter(Boolean).length >= 2;
+	const hasPermission = (permission: PermissionType, func?: () => void) =>
+		myPermission?.type === permission && func
+
+	const handleEdit = hasPermission(PermissionType.MANAGER, onEdit)
+	const handleDelete = hasPermission(PermissionType.MANAGER, onDelete)
+
+	const [dropdownOpen, setDropdownOpen] = useState(false)
+	const [popoverOpen, setPopoverOpen] = useState(false)
+
+	const itemCount = [onEnterSelect, handleEdit, handleDelete].filter(
+		Boolean,
+	).length
+	const hasMoreThanTwo = itemCount >= 2
 
 	function handleDropdownOpenChange(open: boolean) {
-		if (!open && popoverOpen) return;
-		setDropdownOpen(open);
+		if (!open && popoverOpen) return
+		setDropdownOpen(open)
 	}
 
 	function handleDeleteClick() {
-		setPopoverOpen(true);
+		setPopoverOpen(true)
 	}
 
 	function handlePopoverOpenChange(open: boolean) {
-		setPopoverOpen(open);
-		if (!open) setDropdownOpen(false);
+		setPopoverOpen(open)
+		if (!open) setDropdownOpen(false)
 	}
 
 	return (
-		<DropdownMenu
-			open={dropdownOpen || popoverOpen}
-			onOpenChange={handleDropdownOpenChange}
-		>
-			<DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-			<MenuContent align="start" sideOffset={4}>
-				{onEdit && (
-					<MenuItem onSelect={onEdit}>
-						<Pencil size={16} />
-						עריכה
-					</MenuItem>
-				)}
-				{onEnterSelect && (
-					<MenuItem onSelect={onEnterSelect}>
-						<CheckCircle2 size={16} />
-						סמן
-					</MenuItem>
-				)}
-				{hasMoreThanTwo && <MenuSeparator />}
-				<MenuItem onSelect={onArchive}>
-					<Archive size={16} />
-					העבר לארכיון
-				</MenuItem>
-				{onDelete && (
-					<DeletePopover
-						count={1}
-						side="right"
-						align="end"
-						onConfirm={onDelete}
-						open={popoverOpen}
-						onOpenChange={handlePopoverOpenChange}
-						trigger={
-							<DestructiveMenuItem onClick={handleDeleteClick}>
-								<Trash2 size={16} />
-								מחק
-							</DestructiveMenuItem>
-						}
-					/>
-				)}
-			</MenuContent>
-		</DropdownMenu>
-	);
+		itemCount > 0 && (
+			<DropdownMenu
+				open={dropdownOpen || popoverOpen}
+				onOpenChange={handleDropdownOpenChange}
+			>
+				<DropdownMenuTrigger asChild>
+					{trigger ?? (
+						<DefaultTrigger>
+							<MoreVertical size={16} />
+						</DefaultTrigger>
+					)}
+				</DropdownMenuTrigger>
+				<MenuContent align="start" sideOffset={4}>
+					{handleEdit && (
+						<MenuItem onSelect={handleEdit}>
+							<Pencil size={16} />
+							עריכה
+						</MenuItem>
+					)}
+					{onEnterSelect && (
+						<MenuItem onSelect={onEnterSelect}>
+							<CheckCircle2 size={16} />
+							סמן
+						</MenuItem>
+					)}
+					{hasMoreThanTwo && <MenuSeparator />}
+					{handleDelete && (
+						<DeletePopover
+							count={1}
+							side="right"
+							align="end"
+							onConfirm={handleDelete}
+							open={popoverOpen}
+							onOpenChange={handlePopoverOpenChange}
+							trigger={
+								<DestructiveMenuItem onClick={handleDeleteClick}>
+									<Trash2 size={16} />
+									מחק
+								</DestructiveMenuItem>
+							}
+						/>
+					)}
+				</MenuContent>
+			</DropdownMenu>
+		)
+	)
 }
 
 const MenuContent = styled(DropdownMenuContent)`
@@ -97,7 +113,7 @@ const MenuContent = styled(DropdownMenuContent)`
   border-radius: 8px;
   z-index: calc(var(--z-dropdown) + 1);
   box-shadow: var(--card-shadow-hover);
-`;
+`
 
 const MenuItem = styled(DropdownMenuItem)`
   display: flex;
@@ -107,7 +123,7 @@ const MenuItem = styled(DropdownMenuItem)`
   padding-inline: 12px;
   padding-block: 5px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-2);
@@ -119,7 +135,7 @@ const MenuItem = styled(DropdownMenuItem)`
     color: var(--text-color-2);
     outline: none;
   }
-`;
+`
 
 const DestructiveMenuItem = styled(MenuItem)`
   color: var(--Components-Form-Component-labelRequiredMarkColor);
@@ -129,9 +145,27 @@ const DestructiveMenuItem = styled(MenuItem)`
     background: var(--secondary);
     color: var(--Components-Form-Component-labelRequiredMarkColor);
   }
-`;
+`
 
 const MenuSeparator = styled(DropdownMenuSeparator)`
   margin-block: 4px;
   background: var(--button-hover);
-`;
+`
+
+const DefaultTrigger = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  color: var(--sea-ink-soft);
+  cursor: pointer;
+  outline: none;
+
+  &:hover {
+    background: var(--button-hover);
+    color: var(--sea-ink);
+  }
+`

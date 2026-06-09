@@ -1,32 +1,31 @@
-import styled from "@emotion/styled";
-import { Calendar as CalendarIcon, ChevronDown, Paperclip } from "lucide-react";
-import { useState } from "react";
-import type { DiscussionSource } from "../../data/Discussions";
-import { MOCK_DISCUSSIONS } from "../../data/Discussions";
-import { formatDate } from "../../functions/date-utils";
-import type { DatePickerValue } from "../shared/DatePicker";
-import DatePicker, { CalendarMode } from "../shared/DatePicker";
-
-import HighlightMatch from "../shared/HighlightMatch";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import styled from "@emotion/styled"
+import { Calendar as CalendarIcon, ChevronDown, Paperclip } from "lucide-react"
+import { useState } from "react"
+import type { SourceDto } from "src/api/model"
+import { useListSources } from "src/api/source/source"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import type { DatePickerValue } from "src/utils/date-utils"
+import { formatDate, formatDateShort } from "../../functions/date-utils"
+import DatePicker, { CalendarMode } from "../shared/DatePicker"
+import HighlightMatch from "../shared/HighlightMatch"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-} from "../ui/tooltip";
-export type { DiscussionSource };
+} from "../ui/tooltip"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface SourceFieldProps {
-	source: string;
-	sourceDate: Date | null;
-	linkedSource: DiscussionSource | null;
-	onSourceSelect: (name: string, discussion?: DiscussionSource | null) => void;
-	onDateSelect: (date: Date | undefined) => void;
-	label?: string;
-	uniqueNames?: boolean;
+	source: string
+	sourceDate: Date | null
+	linkedSource: SourceDto | null
+	onSourceSelect: (name: string, discussion?: SourceDto | null) => void
+	onDateSelect: (date: Date | undefined) => void
+	label?: string
+	uniqueNames?: boolean
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -40,66 +39,66 @@ function SourceField({
 	label = "מקור",
 	uniqueNames = false,
 }: SourceFieldProps) {
-	const [sourceQuery, setSourceQuery] = useState(source);
-	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-	const [isDateOpen, setIsDateOpen] = useState(false);
-	const isSourceLinked = linkedSource !== null;
+	const [sourceQuery, setSourceQuery] = useState(source)
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+	const [isDateOpen, setIsDateOpen] = useState(false)
+	const isSourceLinked = linkedSource !== null
+
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+	const { data: sources = [] } = useListSources({ workspaceId })
 
 	function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-		const value = e.target.value;
-		setSourceQuery(value);
+		const value = e.target.value
+		setSourceQuery(value)
 		if (linkedSource) {
-			onSourceSelect(value, null);
+			onSourceSelect(value, null)
 		}
 	}
 
-	function handleSelect(discussion: DiscussionSource) {
-		setSourceQuery(discussion.name);
-		setIsDropdownOpen(false);
-		onSourceSelect(discussion.name, discussion);
+	function handleSelect(discussion: SourceDto) {
+		setSourceQuery(discussion.name)
+		setIsDropdownOpen(false)
+		onSourceSelect(discussion.name, discussion)
 	}
 
 	function handleCreateNew() {
-		setIsDropdownOpen(false);
-		onSourceSelect(sourceQuery);
+		setIsDropdownOpen(false)
+		onSourceSelect(sourceQuery)
 	}
 
-	const selectedDate = sourceDate ?? undefined;
+	const selectedDate = sourceDate ?? undefined
 
-	const allFiltered = MOCK_DISCUSSIONS.filter((d) =>
-		d.name.includes(sourceQuery),
-	);
+	const allFiltered = sources.filter((d) => d.name.includes(sourceQuery))
 	const filteredDiscussions = uniqueNames
 		? allFiltered.filter(
 				(d, i, arr) => arr.findIndex((x) => x.name === d.name) === i,
 			)
-		: allFiltered;
+		: allFiltered
 
 	function openDropdown() {
-		setIsDropdownOpen(true);
+		setIsDropdownOpen(true)
 	}
 
 	function handleInputBlur() {
-		setTimeout(() => setIsDropdownOpen(false), 200);
+		setTimeout(() => setIsDropdownOpen(false), 200)
 	}
 
-	function handleOptionMouseDown(
-		e: React.MouseEvent,
-		discussion: DiscussionSource,
-	) {
-		e.preventDefault();
-		handleSelect(discussion);
+	function handleOptionMouseDown(e: React.MouseEvent, discussion: SourceDto) {
+		e.preventDefault()
+		handleSelect(discussion)
 	}
 
 	function handleCreateNewMouseDown(e: React.MouseEvent) {
-		e.preventDefault();
-		handleCreateNew();
+		e.preventDefault()
+		handleCreateNew()
 	}
 
 	function handleDateSelect(value: DatePickerValue | undefined) {
-		const date = value instanceof Date ? value : undefined;
-		onDateSelect(date);
-		setIsDateOpen(false);
+		const date = value instanceof Date ? value : undefined
+		onDateSelect(date)
+		setIsDateOpen(false)
 	}
 
 	return (
@@ -119,7 +118,7 @@ function SourceField({
 							placeholder='לדוגמה: חתמ"צ שבועי'
 							dir="rtl"
 						/>
-						{linkedSource && linkedSource?.hasAttachment && (
+						{linkedSource && !!linkedSource?.attachmentKey && (
 							<Paperclip size={16} />
 						)}
 					</SourceInputBox>
@@ -135,7 +134,9 @@ function SourceField({
 												onMouseDown={(e) => handleOptionMouseDown(e, d)}
 											>
 												{!uniqueNames && (
-													<SourceOptionDate>{d.date}</SourceOptionDate>
+													<SourceOptionDate>
+														{formatDateShort(d.date)}
+													</SourceOptionDate>
 												)}
 												<SourceOptionName>
 													{sourceQuery ? (
@@ -199,10 +200,10 @@ function SourceField({
 				</Popover>
 			</DateFormItem>
 		</SourceDateRow>
-	);
+	)
 }
 
-export default SourceField;
+export default SourceField
 
 // ─── Styled ─────────────────────────────────────────────────────────────────
 
@@ -212,7 +213,7 @@ const SourceDateRow = styled.div`
   gap: 20px;
   align-items: flex-start;
   width: 100%;
-`;
+`
 
 const SourceFormItem = styled.div`
   direction: ltr;
@@ -221,7 +222,7 @@ const SourceFormItem = styled.div`
   align-items: flex-end;
   flex: 1;
   min-width: 0;
-`;
+`
 
 const DateFormItem = styled.div`
   direction: ltr;
@@ -230,7 +231,7 @@ const DateFormItem = styled.div`
   align-items: flex-end;
   width: 160px;
   flex-shrink: 0;
-`;
+`
 
 const FormLabelRow = styled.div`
   display: flex;
@@ -239,19 +240,19 @@ const FormLabelRow = styled.div`
   gap: 4px;
   padding-block-end: 8px;
   font-weight: 400;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   white-space: nowrap;
-`;
+`
 
 const LabelText = styled.span`
   color: rgba(0, 0, 0, 0.88);
-`;
+`
 
 const SourceFieldWrapper = styled.div`
   position: relative;
   width: 100%;
-`;
+`
 
 const SourceInputBox = styled.div`
   display: flex;
@@ -269,19 +270,19 @@ const SourceInputBox = styled.div`
     border-color: #4096ff;
     box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
   }
-`;
+`
 
 const SourceChevron = styled(ChevronDown)`
   color: rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
-`;
+`
 
 const SourceInputField = styled.input`
   flex: 1;
   border: none;
   outline: none;
   background: transparent;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color: rgba(0, 0, 0, 0.88);
@@ -290,7 +291,7 @@ const SourceInputField = styled.input`
   &::placeholder {
     color: rgba(0, 0, 0, 0.25);
   }
-`;
+`
 
 const DropdownMenu = styled.div`
   position: absolute;
@@ -307,22 +308,22 @@ const DropdownMenu = styled.div`
   max-height: 176px;
   overflow-y: auto;
   padding: 4px;
-`;
+`
 
 const DropdownGroupTitle = styled.div`
   padding: 5px 12px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.45);
   text-align: end;
-`;
+`
 
 const DropdownDivider = styled.div`
   height: 1px;
   background: #f0f0f0;
   margin-block: 4px;
-`;
+`
 
 const SourceOption = styled.button`
   display: flex;
@@ -340,29 +341,29 @@ const SourceOption = styled.button`
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
-`;
+`
 
 const SourceOptionName = styled.span`
   flex: 1;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
   text-align: end;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`;
+`
 
 const HighlightedText = styled.span`
   font-weight: 700;
-`;
+`
 
 const SourceOptionDate = styled.span`
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   line-height: 20px;
   color: rgba(0, 0, 0, 0.45);
-`;
+`
 
 const CreateNewOption = styled.button`
   display: flex;
@@ -376,13 +377,13 @@ const CreateNewOption = styled.button`
   background: transparent;
   cursor: pointer;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   color: rgba(0, 0, 0, 0.88);
 
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
-`;
+`
 
 const CreateNewText = styled.span`
   line-height: 22px;
@@ -390,7 +391,7 @@ const CreateNewText = styled.span`
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: end;
-`;
+`
 
 const DatePickerButton = styled.button<{ $disabled?: boolean }>`
   display: flex;
@@ -411,22 +412,22 @@ const DatePickerButton = styled.button<{ $disabled?: boolean }>`
   &:hover {
     border-color: ${({ $disabled }) => ($disabled ? "#d9d9d9" : "#4096ff")};
   }
-`;
+`
 
 const DatePickerText = styled.span<{ $hasValue: boolean }>`
   flex: auto;
   text-align: right;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color: ${({ $hasValue }) => ($hasValue ? "rgba(0, 0, 0, 0.88)" : "rgba(0, 0, 0, 0.25)")};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`;
+`
 
 const DatePopoverContent = styled(PopoverContent)`
   width: auto;
   padding: 0;
   z-index: var(--z-dropdown);
-`;
+`

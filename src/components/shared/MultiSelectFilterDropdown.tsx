@@ -1,22 +1,23 @@
-import styled from "@emotion/styled";
-import { ChevronDown } from "lucide-react";
-import type { ReactNode } from "react";
-import { useState } from "react";
-import { Checkbox } from "../ui/checkbox";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import styled from "@emotion/styled"
+import { ChevronDown } from "lucide-react"
+import type { ReactNode } from "react"
+import { useState } from "react"
+import { Checkbox } from "../ui/checkbox"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { EmptyCardState } from "./EmptyCardState"
 
 interface FilterOption<T extends string | number> {
-	value: T;
-	label: string;
-	icon?: ReactNode;
+	value: T
+	label: string
+	icon?: ReactNode
 }
 
 interface MultiSelectFilterDropdownProps<T extends string | number> {
-	label: string;
-	options: FilterOption<T>[];
-	activeValues: Set<T>;
-	onApply: (selected: Set<T>) => void;
-	$active: boolean;
+	label: string
+	options: FilterOption<T>[]
+	activeValues: Set<T>
+	onApply: (selected: Set<T>) => void
+	$active: boolean
 }
 
 function MultiSelectFilterDropdown<T extends string | number>({
@@ -26,36 +27,36 @@ function MultiSelectFilterDropdown<T extends string | number>({
 	onApply,
 	$active,
 }: MultiSelectFilterDropdownProps<T>) {
-	const [open, setOpen] = useState(false);
-	const [pending, setPending] = useState<Set<T>>(new Set(activeValues));
+	const [open, setOpen] = useState(false)
+	const [pending, setPending] = useState<Set<T>>(new Set(activeValues))
 
 	function handleOpenChange(nextOpen: boolean) {
 		if (nextOpen) {
-			setPending(new Set(activeValues));
+			setPending(new Set(activeValues))
 		}
-		setOpen(nextOpen);
+		setOpen(nextOpen)
 	}
 
 	function toggleValue(value: T) {
 		setPending((prev) => {
-			const next = new Set(prev);
+			const next = new Set(prev)
 			if (next.has(value)) {
-				next.delete(value);
+				next.delete(value)
 			} else {
-				next.add(value);
+				next.add(value)
 			}
-			return next;
-		});
+			return next
+		})
 	}
 
 	function handleApply() {
-		onApply(pending);
-		setOpen(false);
+		onApply(pending)
+		setOpen(false)
 	}
 
 	function handleReset() {
-		onApply(new Set());
-		setOpen(false);
+		onApply(new Set())
+		setOpen(false)
 	}
 
 	return (
@@ -69,19 +70,23 @@ function MultiSelectFilterDropdown<T extends string | number>({
 			<PopoverContent align="start" sideOffset={8} asChild>
 				<DropdownPanel>
 					<ItemList>
-						{options.map((option) => (
-							<DropdownItem
-								key={option.value}
-								$selected={pending.has(option.value)}
-								onClick={() => toggleValue(option.value)}
-							>
-								<OptionLabel>
-									{option.icon}
-									<span>{option.label}</span>
-								</OptionLabel>
-								<Checkbox checked={pending.has(option.value)} />
-							</DropdownItem>
-						))}
+						{options.length === 0 ? (
+							<EmptyCardState title="לא נמצאו נושאים" />
+						) : (
+							options.map((option) => (
+								<DropdownItem
+									key={option.value}
+									$selected={pending.has(option.value)}
+									onClick={() => toggleValue(option.value)}
+								>
+									<OptionLabel>
+										{option.icon}
+										<span>{option.label}</span>
+									</OptionLabel>
+									<Checkbox checked={pending.has(option.value)} />
+								</DropdownItem>
+							))
+						)}
 					</ItemList>
 					<Divider />
 					<FooterRow>
@@ -93,11 +98,11 @@ function MultiSelectFilterDropdown<T extends string | number>({
 				</DropdownPanel>
 			</PopoverContent>
 		</Popover>
-	);
+	)
 }
 
-export { MultiSelectFilterDropdown };
-export type { FilterOption };
+export { MultiSelectFilterDropdown }
+export type { FilterOption }
 
 const TriggerPill = styled.button<{ $active: boolean }>`
   display: flex;
@@ -106,7 +111,7 @@ const TriggerPill = styled.button<{ $active: boolean }>`
   padding-inline: 12px;
   height: 32px;
   border-radius: 999px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.15s;
@@ -117,7 +122,7 @@ const TriggerPill = styled.button<{ $active: boolean }>`
   &:hover {
     background: var(--link-bg-hover);
   }
-`;
+`
 
 const DropdownPanel = styled.div`
   display: flex;
@@ -130,14 +135,14 @@ const DropdownPanel = styled.div`
     0px 9px 28px 0px rgba(0, 0, 0, 0.05);
   width: auto;
   min-width: 180px;
-  `;
+  `
 
 const ItemList = styled.div`
   display: flex;
   flex-direction: column;
   max-height: 160px;
   overflow-y: auto;
-  `;
+  `
 
 const DropdownItem = styled.div<{ $selected: boolean }>`
   direction: ltr;
@@ -153,7 +158,7 @@ const DropdownItem = styled.div<{ $selected: boolean }>`
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
-`;
+`
 
 const OptionLabel = styled.div`
   direction: rtl;
@@ -162,26 +167,26 @@ const OptionLabel = styled.div`
   align-items: center;
   gap: 8px;
   justify-content: flex-start;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`;
+`
 
 const Divider = styled.div`
   height: 1px;
   background: rgba(0, 0, 0, 0.06);
   margin-block: 4px;
-`;
+`
 
 const FooterRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`;
+`
 
 const ApplyButton = styled.button`
   display: flex;
@@ -190,7 +195,7 @@ const ApplyButton = styled.button`
   height: 24px;
   padding-inline: 7px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: white;
@@ -202,7 +207,7 @@ const ApplyButton = styled.button`
     opacity: 0.5;
     cursor: default;
   }
-`;
+`
 
 const ResetButton = styled.button`
   display: flex;
@@ -211,7 +216,7 @@ const ResetButton = styled.button`
   height: 24px;
   padding-inline: 7px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
@@ -221,4 +226,4 @@ const ResetButton = styled.button`
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
-`;
+`

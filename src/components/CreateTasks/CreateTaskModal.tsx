@@ -1,201 +1,328 @@
-import styled from "@emotion/styled";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
-import { Dialog as DialogPrimitive } from "radix-ui";
-import { useRef, useState } from "react";
-import type { FormState } from "../../data/CreateTaskForm";
-import { INITIAL_FORM } from "../../data/CreateTaskForm";
-import { formatDate, parseDate } from "../../functions/date-utils";
-import { useSaveTasks } from "../../hooks/useSaveTasks";
-import { CancelButton } from "../shared/CancelButton";
-import { DeadlineType } from "../shared/DeadlineTag";
-import FlagIcon from "../shared/FlagIcon";
-import ImportantFlagTooltip from "../shared/ImportantFlagTooltip";
-import { PrimaryButton } from "../shared/PrimaryButton";
-import { Checkbox } from "../ui/checkbox";
-import AssigneeField from "./AssigneeField";
-import DeadlineField from "./DeadlineField";
-import NotesField from "./NotesField";
-import type { DiscussionSource } from "./SourceField";
-import SourceField from "./SourceField";
-import TopicField from "./TopicField";
+import styled from "@emotion/styled"
+import { useForm } from "@tanstack/react-form"
+import { useStore } from "@tanstack/react-store"
+import { omit, uniq } from "lodash"
+import { ChevronDown, ChevronUp, X } from "lucide-react"
+import { useRef, useState } from "react"
+import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
+import {
+	type CreateTaskDto,
+	DeadlineType,
+	type GetTaskAssigneeDto,
+	type SourceDto,
+	type TaskWithWorkspaceDto,
+	WorkspaceStatusType,
+} from "src/api/model"
+import { useCreateSource } from "src/api/source/source"
+import {
+	getGetTaskQueryKey,
+	getListTasksQueryKey,
+	useUpdateTask,
+} from "src/api/task/task"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { invalidateQueries, queryClient } from "src/queryClient"
+import { getChangedFields } from "src/utils/form-utils"
+import { useSaveTasks } from "../../hooks/useSaveTasks"
+import { CancelButton } from "../shared/CancelButton"
+import FlagIcon from "../shared/FlagIcon"
+import { FormField } from "../shared/FormField"
+import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
+import { PrimaryButton } from "../shared/PrimaryButton"
+import { Checkbox } from "../ui/checkbox"
+import {
+	Dialog,
+	DialogContentPrimitive,
+	DialogOverlay,
+	DialogPortal,
+} from "../ui/dialog"
+import AssigneeField from "./AssigneeField"
+import DeadlineField from "./DeadlineField"
+import NotesField from "./NotesField"
+import SourceField from "./SourceField"
+import TagField from "./TagField"
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface FormAssignee extends GetTaskAssigneeDto {
+	statusId?: number
+}
+
+interface FormState extends Omit<CreateTaskDto, "workspaceId" | "assignees"> {
+	source: string
+	sourceDate: Date | null
+	linkedSource: SourceDto | null
+	assignees: FormAssignee[]
+}
 
 // ─── Component ───────────────────────────────────────────────────────────────
 interface CreateTaskModalProps {
-	onClose: () => void;
+	onClose: () => void
+	task?: TaskWithWorkspaceDto
 }
 
-function CreateTaskModal({ onClose }: CreateTaskModalProps) {
-	const saveTasks = useSaveTasks();
-	const [form, setForm] = useState<FormState>(INITIAL_FORM);
-	const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
-		setForm((prev) => ({ ...prev, [key]: value }));
+function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
+	const isEditMode = !!task
+
+	const {
+		workspace: { id: workspaceId },
+		statuses,
+	} = useWorkspace()
+
+	const { saveTasks, isPending } = useSaveTasks(onClose)
+
+	const { mutateAsync: createSource } = useCreateSource()
+	const { mutate: updateTask } = useUpdateTask()
+	const { mutateAsync: upsertStatus } = useUpsertAssigneeTaskStatus()
+
+	const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
+
+	async function handleUpdateSuccess() {
+		const currentAssignees = form.state.values.assignees ?? []
+		const statusUpdates = currentAssignees.filter(({ statusId, id }) => {
+			if (statusId == null) {
+				return false
+			}
+			const original = task!.assigneeStatuses.find(
+				(as) => as.assignee.id === id,
+			)
+			return !original || original.status.id !== statusId
+		})
+
+		await Promise.all(
+			statusUpdates.map((a) =>
+				upsertStatus({
+					data: { taskId: task!.id, assigneeId: a.id, statusId: a.statusId! },
+				}),
+			),
+		)
+
+		await invalidateQueries([
+			getListTasksQueryKey({ workspaceId }),
+			getGetTaskQueryKey({ id: task!.id }),
+		])
+
+		onClose()
+	}
+
+	const form = useForm({
+		defaultValues: {
+			title: task?.title ?? "",
+			deadlineType: task?.deadlineType ?? DeadlineType.DATE,
+			dueDate: task?.dueDate ?? null,
+			flagged: task?.flagged ?? false,
+			source: task?.source?.name ?? "",
+			sourceDate: task?.source?.date ?? null,
+			tags: task?.tags.map((t) => t.name) ?? [],
+			notes: task?.notes ?? "",
+			sourceId: task?.source?.id ?? null,
+			assignees:
+				task?.assigneeStatuses.map((as) => ({
+					id: as.assignee.id,
+					description: as.description || undefined,
+					statusId: as.status.id,
+				})) ?? [],
+			linkedSource: task?.source ?? null,
+		} as FormState,
+		onSubmit: async ({
+			value: { source, sourceDate, linkedSource, ...rest },
+		}) => {
+			if (isEditMode) {
+				const changedFields = omit(getChangedFields<FormState>(form), [
+					"source",
+					"sourceDate",
+					"linkedSource",
+				])
+
+				if (source && !linkedSource) {
+					const newSource = await createSource({
+						data: { workspaceId, name: source, date: sourceDate },
+					})
+					changedFields.sourceId = newSource.id
+				}
+
+				if (changedFields.assignees) {
+					changedFields.assignees = changedFields.assignees.map(
+						({ id, description }) => ({ id, description }),
+					)
+				}
+
+				updateTask(
+					{ pathParams: { id: task.id }, data: changedFields },
+					{ onSuccess: handleUpdateSuccess },
+				)
+			} else {
+				saveTasks([{ workspaceId, ...rest }])
+				onClose()
+			}
+		},
+	})
+
+	const values = useStore(form.store, (state) => state.values)
+	const hasChanges = isEditMode ? !form.state.isDefaultValue : true
 
 	// ─── Handlers ──────────────────────────────────────────────────────────────
 
-	function handleTitleChange(
-		value: React.ChangeEvent<HTMLTextAreaElement, HTMLTextAreaElement>,
-	) {
-		setField("title", value.target.value);
-	}
-
 	function handleDeadlineTypeChange(type: DeadlineType) {
-		setField("deadlineType", type);
-		if (type === DeadlineType.Immediate) {
-			setField("dueDate", null);
+		form.setFieldValue("deadlineType", type)
+		if (type === DeadlineType.IMMEDIATE) {
+			form.setFieldValue("dueDate", null)
 		}
 	}
 
 	function handleDeadlineDateChange(date: Date | null) {
-		setField("dueDate", date);
+		form.setFieldValue("dueDate", date)
 	}
 
 	function handleAssigneeToggle(id: number) {
-		setForm((prev) => {
-			const isRemoving = prev.selectedAssignees.includes(id);
-			const nextAssignees = isRemoving
-				? prev.selectedAssignees.filter((a) => a !== id)
-				: [...prev.selectedAssignees, id];
-			const nextDetails = { ...prev.assigneeDetails };
-			if (isRemoving) {
-				delete nextDetails[id];
-			}
-			return {
-				...prev,
-				selectedAssignees: nextAssignees,
-				assigneeDetails: nextDetails,
-			};
-		});
+		const current = values.assignees ?? []
+		const isRemoving = current.some((a) => a.id === id)
+
+		if (isRemoving) {
+			form.setFieldValue(
+				"assignees",
+				current.filter((a) => a.id !== id),
+			)
+		} else {
+			const defaultStatusId = isEditMode
+				? Object.values(statuses).find(
+						(s) => s.type === WorkspaceStatusType.NOT_STARTED,
+					)?.id
+				: undefined
+			form.setFieldValue("assignees", [
+				...current,
+				{ id, statusId: defaultStatusId },
+			])
+		}
 	}
 
 	function handleRemoveAssignee(id: number) {
-		setForm((prev) => {
-			const nextDetails = { ...prev.assigneeDetails };
-			delete nextDetails[id];
-			return {
-				...prev,
-				selectedAssignees: prev.selectedAssignees.filter((a) => a !== id),
-				assigneeDetails: nextDetails,
-			};
-		});
+		form.setFieldValue(
+			"assignees",
+			(values.assignees ?? []).filter((a) => a.id !== id),
+		)
 	}
 
 	function handleAssigneeDetailChange(id: number, value: string) {
-		setForm((prev) => ({
-			...prev,
-			assigneeDetails: { ...prev.assigneeDetails, [id]: value },
-		}));
+		form.setFieldValue(
+			"assignees",
+			(values.assignees ?? []).map((a) =>
+				a.id === id ? { ...a, description: value } : a,
+			),
+		)
 	}
 
-	function handleIsImportantCheckedChange(checked: boolean) {
-		setField("isImportant", checked === true);
-	}
+	function handleSourceSelect(name: string, discussion?: SourceDto | null) {
+		if (discussion) {
+			const discussionTagNames = discussion.tags.map((t) => t.name)
+			const mergedTags = [
+				...new Set([...(values.tags ?? []), ...discussionTagNames]),
+			]
+			form.setFieldValue("source", discussion.name)
+			form.setFieldValue("sourceDate", discussion.date)
+			form.setFieldValue("tags", mergedTags)
+			form.setFieldValue("linkedSource", discussion)
+			form.setFieldValue("sourceId", discussion.id)
+			return
+		}
+		const prevLinkedTagNames =
+			values.linkedSource?.tags.map((t) => t.name) ?? []
 
-	function handleSourceSelect(
-		name: string,
-		discussion?: DiscussionSource | null,
-	) {
-		setForm((prev) => {
-			if (discussion) {
-				const mergedTopics = [...new Set([...prev.topics, ...discussion.tags])];
-				return {
-					...prev,
-					source: discussion.name,
-					sourceDate: parseDate(discussion.date),
-					topics: mergedTopics,
-					linkedSource: discussion,
-				};
-			}
+		form.setFieldValue("source", name)
+		form.setFieldValue("sourceDate", null)
 
-			const prevLinkedTags = prev.linkedSource?.tags ?? [];
-			const topicsWithoutPrevSource = prev.topics.filter(
-				(t) => !prevLinkedTags.includes(t),
-			);
-			return {
-				...prev,
-				source: name,
-				sourceDate: null,
-				topics: topicsWithoutPrevSource,
-				linkedSource: null,
-			};
-		});
+		form.setFieldValue(
+			"tags",
+			(values.tags ?? []).filter((t) => !prevLinkedTagNames.includes(t)),
+		)
+
+		form.setFieldValue("linkedSource", null)
+		form.setFieldValue("sourceId", null)
 	}
 
 	function handleSourceDateSelect(date: Date | undefined) {
-		if (date) {
-			setField("sourceDate", date);
+		if (date) form.setFieldValue("sourceDate", date)
+	}
+
+	function handleTagSelect(tag: string) {
+		if (!values.tags?.includes(tag)) {
+			form.setFieldValue("tags", [...(values.tags ?? []), tag])
 		}
 	}
 
-	function handleTopicSelect(topic: string) {
-		if (!form.topics.includes(topic)) {
-			setField("topics", [...form.topics, topic]);
-		}
-	}
-
-	function handleTopicRemove(topic: string) {
-		setField(
-			"topics",
-			form.topics.filter((t) => t !== topic),
-		);
+	function handleTagRemove(tag: string) {
+		form.setFieldValue(
+			"tags",
+			(values.tags ?? []).filter((t) => t !== tag),
+		)
 	}
 
 	function handleToggleDetails() {
-		setField("isDetailsExpanded", !form.isDetailsExpanded);
-	}
-
-	function handleSave() {
-		saveTasks(
-			[
-				{
-					title: form.title,
-					assigneeIds: form.selectedAssignees,
-					assigneeDetails: form.assigneeDetails,
-					deadlineType: form.deadlineType,
-					dueDate: form.dueDate,
-					isImportant: form.isImportant,
-					notes: form.notes,
-				},
-			],
-			{
-				discussionName: form.source.trim(),
-				discussionDate: form.sourceDate ? formatDate(form.sourceDate) : "",
-				hasAttachment: form.linkedSource?.hasAttachment ?? false,
-				tags: form.topics,
-			},
-		);
-		onClose();
+		setIsDetailsExpanded((prev) => !prev)
 	}
 
 	function handleNotesChange(value: string) {
-		setField("notes", value);
+		form.setFieldValue("notes", value)
+	}
+
+	function handleAssigneeStatusChange(
+		_taskId: number,
+		assigneeId: number,
+		statusId: number,
+	) {
+		form.setFieldValue(
+			"assignees",
+			(values.assignees ?? []).map((a) =>
+				a.id === assigneeId ? { ...a, statusId } : a,
+			),
+		)
 	}
 
 	// ─── Scroll Shadow ─────────────────────────────────────────────────────────
 
-	const scrollRef = useRef<HTMLDivElement>(null);
+	const scrollRef = useRef<HTMLDivElement>(null)
 	const [scrollShadow, setScrollShadow] = useState({
 		top: false,
 		bottom: false,
-	});
+	})
 
 	function handleScroll() {
-		const el = scrollRef.current;
-		if (!el) return;
-		const atTop = el.scrollTop <= 0;
-		const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
-		setScrollShadow({ top: !atTop, bottom: !atBottom });
+		const el = scrollRef.current
+		if (!el) {
+			return
+		}
+
+		const atTop = el.scrollTop <= 0
+		const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
+		setScrollShadow({ top: !atTop, bottom: !atBottom })
 	}
 
 	const handleOpenChange = (open: boolean) => {
-		if (!open) onClose();
-	};
+		if (!open) {
+			onClose()
+		}
+	}
+
+	const linkedTagNames = values.linkedSource?.tags.map((t) => t.name) ?? []
+	const mergedTags = uniq([...linkedTagNames, ...(values.tags ?? [])])
+
+	const assigneeExtras = isEditMode
+		? Object.fromEntries(
+				(values.assignees ?? []).map((a) => [
+					a.id,
+					{
+						status: a.statusId != null ? statuses[a.statusId] : undefined,
+						description: a.description,
+					},
+				]),
+			)
+		: undefined
 
 	// ─── Render ────────────────────────────────────────────────────────────────
 
 	return (
-		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
-			<DialogPrimitive.Portal>
-				<Overlay />
+		<Dialog open onOpenChange={handleOpenChange}>
+			<DialogPortal>
+				<DialogOverlay />
 				<ModalCard>
 					<ModalCloseButton onClick={onClose}>
 						<X size={16} />
@@ -203,65 +330,84 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
 					<ModalBody>
 						<ModalHeader $shadow={scrollShadow.top}>
-							<ModalTitle>יצירת הנחיה</ModalTitle>
+							<ModalTitle>
+								{isEditMode ? "עריכת הנחיה" : "יצירת הנחיה"}
+							</ModalTitle>
 						</ModalHeader>
 
 						<ScrollableContent ref={scrollRef} onScroll={handleScroll}>
 							<FormContainer>
 								{/* ─── Directive Name ──────────────────────────────────────── */}
-								<FormItem>
-									<FormLabelRow>
-										<RequiredMark>*</RequiredMark>
-										<LabelText>הנחיה</LabelText>
-									</FormLabelRow>
-									<DirectiveTextarea
-										value={form.title}
-										onChange={handleTitleChange}
-										placeholder="תיאור הנחיה"
-										dir="rtl"
-									/>
-								</FormItem>
+								<form.Field
+									name="title"
+									validators={{
+										onSubmit: ({ value }) =>
+											!value.trim() ? "הנחיה היא שדה חובה" : undefined,
+									}}
+								>
+									{(field) => (
+										<FormField field={field} label="הנחיה" required>
+											<DirectiveTextarea
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.target.value)}
+												placeholder="תיאור הנחיה"
+												dir="rtl"
+											/>
+										</FormField>
+									)}
+								</form.Field>
 
 								{/* ─── Deadline ────────────────────────────────────────────── */}
 								<DeadlineField
-									deadlineType={form.deadlineType}
-									dueDate={form.dueDate}
+									deadlineType={values.deadlineType}
+									dueDate={values.dueDate ?? null}
 									onDeadlineTypeChange={handleDeadlineTypeChange}
 									onDateChange={handleDeadlineDateChange}
 								/>
 
 								{/* ─── Responsible ─────────────────────────────────────────── */}
 								<AssigneeField
-									selectedAssignees={form.selectedAssignees}
-									directiveTitle={form.title}
+									selectedAssignees={(values.assignees ?? []).map((a) => a.id)}
+									directiveTitle={values.title}
 									onToggle={handleAssigneeToggle}
 									onRemove={handleRemoveAssignee}
 									onDetailChange={handleAssigneeDetailChange}
+									assigneeExtras={assigneeExtras}
+									onStatusChange={
+										isEditMode ? handleAssigneeStatusChange : undefined
+									}
+									taskId={task?.id}
 								/>
 
 								{/* ─── Important Checkbox ──────────────────────────────────── */}
-								<ImportantRow>
-									<ImportantFlagTooltip side="left" />
-									<FlagIcon />
-									<CheckboxRow>
-										<CheckboxLabelText>הגדר כהנחיה חשובה</CheckboxLabelText>
-										<Checkbox
-											checked={form.isImportant}
-											onCheckedChange={handleIsImportantCheckedChange}
-										/>
-									</CheckboxRow>
-								</ImportantRow>
+								<form.Field name="flagged">
+									{(field) => (
+										<ImportantRow>
+											<ImportantFlagTooltip side="left" />
+											<FlagIcon />
+											<CheckboxRow>
+												<CheckboxLabelText>הגדר כהנחיה חשובה</CheckboxLabelText>
+												<Checkbox
+													checked={field.state.value}
+													onCheckedChange={(checked) =>
+														field.handleChange(checked === true)
+													}
+												/>
+											</CheckboxRow>
+										</ImportantRow>
+									)}
+								</form.Field>
 
 								{/* ─── Expand / Collapse Divider ──────────────────────────── */}
 								<DividerRow>
 									<DividerLine />
 									<ExpandButton onClick={handleToggleDetails}>
-										{form.isDetailsExpanded ? (
+										{isDetailsExpanded ? (
 											<ChevronUp size={16} />
 										) : (
 											<ChevronDown size={16} />
 										)}
-										<ExpandButtonText $expanded={form.isDetailsExpanded}>
+										<ExpandButtonText $expanded={isDetailsExpanded}>
 											פרטים נוספים
 										</ExpandButtonText>
 									</ExpandButton>
@@ -270,30 +416,30 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
 								{/* ─── Additional Details ─────────────────────────────────── */}
 								<AdditionalDetailsWrapper
-									$expanded={form.isDetailsExpanded}
-									aria-hidden={!form.isDetailsExpanded}
+									$expanded={isDetailsExpanded}
+									aria-hidden={!isDetailsExpanded}
 								>
 									<AdditionalDetails>
 										{/* Source + Date row */}
 										<SourceField
-											source={form.source}
-											sourceDate={form.sourceDate}
-											linkedSource={form.linkedSource}
+											source={values.source}
+											sourceDate={values.sourceDate}
+											linkedSource={values.linkedSource}
 											onSourceSelect={handleSourceSelect}
 											onDateSelect={handleSourceDateSelect}
 										/>
 
-										{/* Topic field */}
-										<TopicField
-											topics={form.topics}
-											lockedTopics={form.linkedSource?.tags ?? []}
-											onTopicSelect={handleTopicSelect}
-											onTopicRemove={handleTopicRemove}
+										{/* Tag field */}
+										<TagField
+											tags={mergedTags}
+											lockedTags={linkedTagNames}
+											onTagSelect={handleTagSelect}
+											onTagRemove={handleTagRemove}
 										/>
 
 										{/* Notes */}
 										<NotesField
-											notes={form.notes}
+											notes={values.notes ?? ""}
 											onNotesChange={handleNotesChange}
 										/>
 									</AdditionalDetails>
@@ -305,32 +451,25 @@ function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 						<ActionRow $shadow={scrollShadow.bottom}>
 							<PrimaryButton
 								title="שמור"
-								onClick={handleSave}
-								disabled={!form.title.trim()}
+								onClick={form.handleSubmit}
+								disabled={!values.title.trim() || (isEditMode && !hasChanges)}
+								loading={isPending}
 								width={133}
 							/>
 							<CancelButton title="ביטול" onClick={onClose} />
 						</ActionRow>
 					</ModalBody>
 				</ModalCard>
-			</DialogPrimitive.Portal>
-		</DialogPrimitive.Root>
-	);
+			</DialogPortal>
+		</Dialog>
+	)
 }
 
-export default CreateTaskModal;
+export default CreateTaskModal
 
 // ─── Modal Shell ─────────────────────────────────────────────────────────────
 
-const Overlay = styled(DialogPrimitive.Overlay)`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(1px);
-  z-index: var(--z-dropdown);
-`;
-
-const ModalCard = styled(DialogPrimitive.Content)`
+const ModalCard = styled(DialogContentPrimitive)`
   position: fixed;
   top: 50%;
   left: 50%;
@@ -352,7 +491,7 @@ const ModalCard = styled(DialogPrimitive.Content)`
   flex-direction: column;
   padding-block-start: 36px;
   outline: none;
-`;
+`
 
 const ModalCloseButton = styled.button`
   position: absolute;
@@ -374,7 +513,7 @@ const ModalCloseButton = styled.button`
     color: rgba(0, 0, 0, 0.88);
     background: rgba(0, 0, 0, 0.04);
   }
-`;
+`
 
 const ModalBody = styled.div`
   direction: ltr;
@@ -384,7 +523,7 @@ const ModalBody = styled.div`
   padding-block-end: 36px;
   min-height: 0;
   flex: 1;
-`;
+`
 
 const ModalHeader = styled.div<{ $shadow: boolean }>`
   display: flex;
@@ -396,7 +535,7 @@ const ModalHeader = styled.div<{ $shadow: boolean }>`
   z-index: 1;
   clip-path: inset(0 0 -20px 0);
   box-shadow: ${({ $shadow }) => ($shadow ? "0px 10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
-`;
+`
 
 const ScrollableContent = styled.div`
   flex: 1;
@@ -405,7 +544,7 @@ const ScrollableContent = styled.div`
   overflow-x: hidden;
   padding-block-end: 24px;
   padding-inline-end: 24px;
-`;
+`
 
 // ─── Form Layout ─────────────────────────────────────────────────────────────
 
@@ -414,43 +553,15 @@ const FormContainer = styled.div`
   flex-direction: column;
   gap: 24px;
   align-items: flex-end;
-`;
+`
 
 const ModalTitle = styled.h1`
   font-weight: 600;
-  font-size: 42px;
+  font-size: var(--fs-heading-h1);
   line-height: 50px;
   color: black;
   margin: 0;
-`;
-
-const FormItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  width: 100%;
-`;
-
-const FormLabelRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  padding-block-end: 8px;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  white-space: nowrap;
-`;
-
-const LabelText = styled.span`
-  color: rgba(0, 0, 0, 0.88);
-`;
-
-const RequiredMark = styled.span`
-  color: #ff4d4f;
-  font-size: 14px;
-`;
+`
 
 // ─── Directive Textarea ──────────────────────────────────────────────────────
 
@@ -461,7 +572,7 @@ const DirectiveTextarea = styled.textarea`
   border: 1px solid #d9d9d9;
   border-radius: 8px;
   background: white;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color: rgba(0, 0, 0, 0.88);
@@ -478,7 +589,7 @@ const DirectiveTextarea = styled.textarea`
     border-color: #4096ff;
     box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
   }
-`;
+`
 
 // ─── Important Checkbox ──────────────────────────────────────────────────────
 
@@ -487,23 +598,23 @@ const ImportantRow = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
-`;
+`
 
 const CheckboxRow = styled.label`
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-`;
+`
 
 const CheckboxLabelText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;
   cursor: pointer;
-`;
+`
 
 // ─── Divider ─────────────────────────────────────────────────────────────────
 
@@ -511,13 +622,13 @@ const DividerRow = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
-`;
+`
 
 const DividerLine = styled.div`
   flex: 1;
   height: 1px;
   background: #d9d9d9;
-`;
+`
 
 const ExpandButton = styled.button`
   display: flex;
@@ -534,15 +645,15 @@ const ExpandButton = styled.button`
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
-`;
+`
 
 const ExpandButtonText = styled.span<{ $expanded: boolean }>`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: ${({ $expanded }) => ($expanded ? "rgba(0, 0, 0, 0.25)" : "#1677ff")};
   white-space: nowrap;
-`;
+`
 
 // ─── Additional Details ──────────────────────────────────────────────────────
 
@@ -557,7 +668,7 @@ const AdditionalDetailsWrapper = styled.div<{ $expanded: boolean }>`
     min-height: 0;
     overflow: ${({ $expanded }) => ($expanded ? "visible" : "hidden")};
   }
-`;
+`
 
 const AdditionalDetails = styled.div`
   display: flex;
@@ -565,7 +676,7 @@ const AdditionalDetails = styled.div`
   gap: 12px;
   align-items: flex-end;
   width: 100%;
-`;
+`
 
 // ─── Bottom Actions ──────────────────────────────────────────────────────────
 const ActionRow = styled.div<{ $shadow: boolean }>`
@@ -579,4 +690,4 @@ const ActionRow = styled.div<{ $shadow: boolean }>`
   clip-path: inset(-20px 0 0 0);
   transition: box-shadow 200ms ease;
   box-shadow: ${({ $shadow }) => ($shadow ? "0px -10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
-`;
+`

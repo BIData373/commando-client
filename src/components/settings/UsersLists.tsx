@@ -1,11 +1,13 @@
-import styled from "@emotion/styled";
-import { X } from "lucide-react";
-import type { IUser } from "src/types";
-import { UserItem } from "./UserDropdownItem";
+import styled from "@emotion/styled"
+import { X } from "lucide-react"
+import { Tooltip as TooltipPrimitive } from "radix-ui"
+import type { CreateUserDto } from "src/api/model"
+import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
+import { UserItem } from "./UserItem"
 
 interface UsersListsProps {
-	users: IUser[];
-	onRemove: (id: number) => void;
+	users: CreateUserDto[]
+	onRemove: (upn: string) => void
 }
 
 export function UsersLists({ users, onRemove }: UsersListsProps) {
@@ -14,19 +16,36 @@ export function UsersLists({ users, onRemove }: UsersListsProps) {
 			{users.length > 0 && (
 				<UserCard>
 					{users.map((user) => (
-						<UserCardItem key={user.id}>
-							<UserCardInfo>
-								<UserItem user={user} />
-							</UserCardInfo>
-							<UserCardClose type="button" onClick={() => onRemove(user.id)}>
-								<X size={12} />
-							</UserCardClose>
-						</UserCardItem>
+						<TooltipProvider key={user.upn}>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<UserCardItem>
+										<UserCardInfo>
+											<UserItem user={user} />
+										</UserCardInfo>
+										<UserCardClose
+											type="button"
+											onClick={() => onRemove(user.upn)}
+										>
+											<X size={12} />
+										</UserCardClose>
+									</UserCardItem>
+								</TooltipTrigger>
+								<TooltipPrimitive.Portal>
+									{user.info?.displayName && (
+										<UserTooltipContent side="bottom" sideOffset={6}>
+											{user.info?.displayName}
+											<TooltipPrimitive.Arrow width={10} height={5} />
+										</UserTooltipContent>
+									)}
+								</TooltipPrimitive.Portal>
+							</Tooltip>
+						</TooltipProvider>
 					))}
 				</UserCard>
 			)}
 		</UserListArea>
-	);
+	)
 }
 
 const UserListArea = styled.div`
@@ -37,14 +56,14 @@ const UserListArea = styled.div`
   border-radius: 6px;
   background-color: var(--background-area);
   padding: 8px;
-`;
+`
 
 const UserCard = styled.div`
-    padding: 1px 8px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-`;
+  padding: 1px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+`
 
 const UserCardItem = styled.div`
     display: flex;
@@ -55,7 +74,7 @@ const UserCardItem = styled.div`
     background: rgba(0, 0, 0, 0.02);
     border: 1px solid var(--card-border);
     border-radius: 4px;
-`;
+`
 
 const UserCardInfo = styled.div`
     display: flex;
@@ -66,7 +85,7 @@ const UserCardInfo = styled.div`
     white-space: nowrap;
     text-overflow: clip;
     gap: 2px;
-`;
+`
 
 const UserCardClose = styled.button`
     display: flex;
@@ -83,4 +102,19 @@ const UserCardClose = styled.button`
     &:hover {
         color: var(--sea-ink);
     }
-`;
+`
+
+const UserTooltipContent = styled(TooltipPrimitive.Content)`
+  max-width: 260px;
+  padding: 10px 14px;
+  background: var(--text-color-2);
+  border-radius: 8px;
+  font-size: var(--fs-btn);
+  line-height: 1.6;
+  color: #fff;
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
+  direction: rtl;
+  z-index: 1000;
+`

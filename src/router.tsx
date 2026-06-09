@@ -1,30 +1,32 @@
-import { createRouter } from "@tanstack/react-router";
-import { queryClient } from "./queryClient";
-import { routeTree } from "./routeTree.gen";
+import { createRouter } from "@tanstack/react-router"
+import { queryClient } from "./queryClient"
+import { routeTree } from "./routeTree.gen"
 
 const router = createRouter({
 	routeTree,
 	context: { queryClient },
+	notFoundMode: "root",
 	scrollRestoration: true,
 	defaultPreload: "intent",
 	defaultPreloadStaleTime: 0,
-});
+	defaultViewTransition: true,
+})
 
 export interface HeaderConfig {
-	title?: React.ReactNode;
-	user?: boolean;
-	navigation?: boolean;
-	workspace?: boolean;
+	title?: React.ReactNode
+	user?: boolean
+	navigation?: boolean
+	workspace?: boolean
 }
 
 declare module "@tanstack/react-router" {
 	interface Register {
-		router: typeof router;
+		router: typeof router
 	}
 
 	interface StaticDataRouteOption {
-		header?: HeaderConfig;
+		header?: HeaderConfig
 	}
 }
 
-export default router;
+export default router
