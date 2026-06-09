@@ -57,7 +57,7 @@ const ColoredFallback = styled(AvatarFallback)<{
 }>`
   background: ${({ $color }) => $color ?? "var(--chip-bg)"};
   color: var(--background);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   width: ${({ $size }) => ($size ? `${$size}px` : "none")};
   height: ${({ $size }) => ($size ? `${$size}px` : "none")};

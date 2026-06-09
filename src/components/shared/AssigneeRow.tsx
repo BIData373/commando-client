@@ -2,19 +2,32 @@ import styled from "@emotion/styled"
 import { X } from "lucide-react"
 import { useRef } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
+import type { WorkspaceStatusDto } from "src/api/model"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { StatusDropdown } from "../Tasks/StatusDropdown"
 import { AssigneeAvatar } from "./AssigneeAvatar"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
+export interface AssigneeExtra {
+	status?: WorkspaceStatusDto
+	description?: string
+}
+
 interface AssigneeRowListProps {
 	assigneeIds: number[]
 	directiveTitle: string
-	assigneeDetails?: Record<number, string>
+	assigneeExtras?: Record<number, AssigneeExtra>
 	showDetail?: boolean
 	detailPlaceholder?: string
 	onDetailChange: (id: number, value: string) => void
 	onRemove: (id: number) => void
+	onStatusChange?: (
+		taskId: number,
+		assigneeId: number,
+		statusId: number,
+	) => void
+	taskId?: number
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -22,11 +35,13 @@ interface AssigneeRowListProps {
 function AssigneeRowList({
 	assigneeIds,
 	directiveTitle,
-	assigneeDetails,
+	assigneeExtras,
 	showDetail = true,
 	detailPlaceholder = "פירוט לאחראי",
 	onDetailChange,
 	onRemove,
+	onStatusChange,
+	taskId,
 }: AssigneeRowListProps) {
 	const detailRefs = useRef<Record<number, HTMLSpanElement | null>>({})
 
@@ -57,8 +72,8 @@ function AssigneeRowList({
 	function handleDetailRef(id: number, el: HTMLSpanElement | null) {
 		detailRefs.current[id] = el
 
-		if (el && assigneeDetails?.[id] && !el.textContent) {
-			el.textContent = assigneeDetails[id]
+		if (el && assigneeExtras?.[id]?.description && !el.textContent) {
+			el.textContent = assigneeExtras[id].description!
 		}
 	}
 
@@ -89,6 +104,19 @@ function AssigneeRowList({
 								/>
 							</TextareaWrapper>
 						)}
+
+						{assigneeExtras?.[assignee.id]?.status &&
+							onStatusChange &&
+							taskId != null && (
+								<StatusDropdown
+									status={assigneeExtras[assignee.id].status!}
+									taskId={taskId}
+									assigneeId={assignee.id}
+									workspaceId={workspaceId}
+									onUpdate={onStatusChange}
+									withArrow={true}
+								/>
+							)}
 
 						<InfoBlock>
 							<RoleText>{assignee.name}</RoleText>
@@ -174,7 +202,7 @@ const TextareaWrapper = styled.div`
 `
 
 const DirectiveTitleText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 18px;
   color: rgba(0, 0, 0, 0.45);
@@ -188,7 +216,7 @@ const DetailEditable = styled.span`
   padding: 0;
   border: none;
   background: transparent;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 18px;
   color: rgba(0, 0, 0, 0.88);
@@ -212,7 +240,7 @@ const InfoBlock = styled.div`
 `
 
 const RoleText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);

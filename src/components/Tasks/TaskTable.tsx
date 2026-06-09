@@ -17,6 +17,7 @@ import type {
 } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import {
+	TASK_ROW_ID_SEPARATOR,
 	type TaskRow,
 	useTasksFilters,
 } from "src/providers/TasksFiltersProvider"
@@ -95,15 +96,13 @@ function TaskTable({
 			newFilters,
 			"status",
 		) as WorkspaceStatusType[]
+
 		const tableDeadlineColumnValue = getColumnFilter(
 			newFilters,
 			"deadlineType",
 		) as DeadlineType[]
 
-		const tableTabFilter = newFilters.filter(
-			(column) => column.id !== "status" && column.value !== "deadlineType",
-		)
-		setLocalColumnFilters(tableTabFilter)
+		setLocalColumnFilters(newFilters)
 
 		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
 	}
@@ -111,11 +110,12 @@ function TaskTable({
 
 	const selectedTaskIds = Object.keys(rowSelection)
 		.filter((key) => rowSelection[key])
-		.map(Number)
+		.map((key) => Number(key.split(TASK_ROW_ID_SEPARATOR)[0]))
 
 	function handleEnterSelectMode(taskId?: number) {
 		setSelectMode(true)
-		setRowSelection(taskId !== undefined ? { [String(taskId)]: true } : {})
+		const task = tasks.find((t) => t.id === taskId)
+		setRowSelection(task ? { [task.rowKey]: true } : {})
 	}
 
 	function handleExitSelectMode() {
@@ -127,7 +127,7 @@ function TaskTable({
 		if (checked) {
 			const all: RowSelectionState = {}
 			tasks.forEach((t) => {
-				all[String(t.id)] = true
+				all[t.rowKey] = true
 			})
 			setRowSelection(all)
 		} else {
@@ -282,7 +282,7 @@ const TableWrapper = styled.div`
     position: sticky;
     top: 0;
     z-index: var(--z-dropdown);
-    font-size: 16px;
+    font-size: var(--fs-base);
     font-weight: 500;
     line-height: 24px;
     color: var(--text-color);

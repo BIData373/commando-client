@@ -51,6 +51,8 @@ interface TasksFiltersContextValue {
 	setDateRange: (range: DateRange | undefined) => void
 }
 
+export const TASK_ROW_ID_SEPARATOR = "_"
+
 const WORKSPACE_DEFAULT_HIDDEN = new Set<TaskColumn>([
 	"notes",
 	"updatedAt",
@@ -65,7 +67,7 @@ interface ColumnsVisibilityStorage {
 	hiddenColumns: TaskColumn[]
 }
 
-interface TasksProviderProps extends PropsWithChildren {
+interface TasksFiltersProviderProps extends PropsWithChildren {
 	storageKey: ColumnsStorageKey
 	defaultColumnOrder?: TaskColumn[]
 	defaultHiddenColumns?: Set<TaskColumn>
@@ -73,7 +75,7 @@ interface TasksProviderProps extends PropsWithChildren {
 }
 
 export function formatTaskRowId(taskId: number, assigneeId?: number) {
-	return `${taskId}_${assigneeId}`
+	return `${taskId}${TASK_ROW_ID_SEPARATOR}${assigneeId}`
 }
 
 export function TasksFiltersProvider({
@@ -82,7 +84,7 @@ export function TasksFiltersProvider({
 	defaultHiddenColumns = WORKSPACE_DEFAULT_HIDDEN,
 	activeQuickFilters: currentActiveQuickFilters = new Set(),
 	children,
-}: TasksProviderProps) {
+}: TasksFiltersProviderProps) {
 	const [searchQuery, setSearchQuery] = useState("")
 	const [activeQuickFilters, setActiveQuickFilters] = useState<
 		Set<QuickFilter>
@@ -181,7 +183,9 @@ export function TasksFiltersProvider({
 export function useTasksFilters() {
 	const ctx = useContext(TasksFiltersContext)
 	if (!ctx) {
-		throw new Error("`useTasksFilters` must be used within a `TasksProvider`")
+		throw new Error(
+			"`useTasksFilters` must be used within a `TasksFiltersProvider`",
+		)
 	}
 	return ctx
 }

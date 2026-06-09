@@ -79,7 +79,7 @@ const FullWidthTabsList = styled(TabsList)`
 const StyledTabsTrigger = styled(TabsTrigger)`
   color: var(--text-color-2);
   font-weight: 400;
-  font-size: 16px;
+  font-size: var(--fs-base);
   cursor: pointer;
 
   &[data-state="active"] {

@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { EditorContent, useEditor } from "@tiptap/react"
 import { Bold, ListOrdered, Underline } from "lucide-react"
 import { useEffect, useState } from "react"
-import { EditorExtensions } from "src/utils/tiptap-extensions"
+import { editorExtensions } from "src/utils/tiptap-utils"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -18,7 +18,7 @@ function NotesField({ notes, onNotesChange }: NotesFieldProps) {
 	const [, setTick] = useState(0)
 
 	const editor = useEditor({
-		...EditorExtensions,
+		...editorExtensions,
 		content: notes,
 		onUpdate: ({ editor }) => {
 			onNotesChange(editor.getHTML())
@@ -106,7 +106,7 @@ const FormLabelRow = styled.div`
   gap: 4px;
   padding-block-end: 8px;
   font-weight: 400;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   white-space: nowrap;
 `
@@ -170,7 +170,7 @@ const StyledEditorContent = styled(EditorContent)`
     border: 1px solid #d9d9d9;
     border-radius: 8px;
     background: white;
-    font-size: 16px;
+    font-size: var(--fs-base);
     font-weight: 400;
     line-height: 20px;
     color: rgba(0, 0, 0, 0.88);

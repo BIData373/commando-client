@@ -123,7 +123,7 @@ const MenuItem = styled(DropdownMenuItem)`
   padding-inline: 12px;
   padding-block: 5px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-2);

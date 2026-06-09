@@ -15,7 +15,6 @@ interface DropdownUsersProps extends PropsWithChildren {
 	onAdd?: () => void
 	selectedUser?: UserDto | null
 	showAddButton?: boolean
-	excludeUpns?: string[]
 	placeholder?: string
 }
 
@@ -26,7 +25,6 @@ export function DropdownUsers({
 	onClear,
 	onAdd,
 	selectedUser,
-	excludeUpns,
 	placeholder,
 	showAddButton,
 	children,
@@ -37,10 +35,6 @@ export function DropdownUsers({
 		{ search: value },
 		{ query: { enabled: value.length > 0 } },
 	)
-
-	const users = excludeUpns?.length
-		? rawUsers.filter((u) => !excludeUpns.includes(u.upn))
-		: rawUsers
 
 	const onChangeDebounced = useMemo(() => debounce(onChange, 300), [onChange])
 
@@ -60,7 +54,7 @@ export function DropdownUsers({
 	return (
 		<Row>
 			<SearchDropdown<UserDto>
-				items={users}
+				items={rawUsers}
 				value={localValue}
 				onChange={handleChange}
 				onSelect={onSelect}

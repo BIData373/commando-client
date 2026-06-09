@@ -1,7 +1,11 @@
 import { differenceInDays, startOfToday } from "date-fns"
-import { DeadlineType, type TaskDto } from "src/api/model"
+import { uniqBy } from "lodash"
+import type { TaskDto } from "src/api/model"
+import { DeadlineType } from "src/api/model"
+import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { QuickFilter } from "src/utils/filter-utils"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
+
 // ─── Shared Types ────────────────────────────────────────────────────────────
 
 export interface FilterOption {
@@ -28,7 +32,7 @@ export function matchesQuickFilter(
 			return (
 				daysUntil !== null &&
 				daysUntil >= 0 &&
-				daysUntil < 2 &&
+				daysUntil <= 2 &&
 				!(daysUntil < 0 && task.deadlineType !== DeadlineType.IMMEDIATE)
 			)
 		case QuickFilter.FLAGGED:
@@ -39,14 +43,20 @@ export function matchesQuickFilter(
 	}
 }
 
+export type FilterOptions =
+	| "assigneeStatuses"
+	| "status"
+	| "deadlineType"
+	| "discussionName"
+	| "tags"
+
 export function buildFilterOptionsMap(
-	tasks: TaskDto[],
-): Record<string, FilterOption[]> {
+	tasks: TaskRow[],
+): Record<FilterOptions, FilterOption[]> {
 	const assigneeSet = new Set<string>()
 	const deadlineTypeSet = new Set<string>()
 	const discussionNameSet = new Set<string>()
 	const tagsSet = new Set<string>()
-
 	for (const t of tasks) {
 		deadlineTypeSet.add(t.deadlineType)
 		for (const { assignee } of t.assigneeStatuses) {
@@ -68,6 +78,10 @@ export function buildFilterOptionsMap(
 
 	return {
 		assigneeStatuses: toOptions(assigneeSet),
+		status: uniqBy(tasks, "status.name")
+			.map(({ status }) => status)
+			.filter((status) => !!status)
+			.map((s) => ({ value: s.type, label: s.name })),
 		deadlineType: toOptions(deadlineTypeSet, DEADLINE_LABELS),
 		discussionName: toOptions(discussionNameSet),
 		tags: toOptions(tagsSet),

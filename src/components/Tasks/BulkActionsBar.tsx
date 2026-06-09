@@ -87,7 +87,7 @@ const Bar = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 8px 11px;
-  background: var(--Colors-Base-Geekblue-1);
+  background: #131629;
   border: 1px solid var(--Border-color-border-secondary);
   border-radius: 8px;
   box-shadow: var(--card-shadow-hover);
@@ -110,7 +110,7 @@ const GhostButton = styled.button<{ $danger?: boolean }>`
   border: none;
   border-radius: 2px;
   background: transparent;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 22px;
   color: ${({ $danger }) => ($danger ? "var(--Error-color-error)" : "var(--Text-color-text)")};
@@ -141,7 +141,7 @@ direction: rtl;
   background: var(--Components-Button-Component-defaultBg);
   border: 1px solid var(--Border-color-border);
   border-radius: 6px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--Text-color-text);

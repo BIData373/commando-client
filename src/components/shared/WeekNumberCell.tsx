@@ -48,7 +48,7 @@ const WeekNumberBadge = styled.div<{ $selected: boolean }>`
   width: 20px;
   height: 20px;
   border-radius: 5px;
-  font-size: 10px;
+  font-size: var(--fs-xs);
   margin-left: 2px;
   cursor: pointer;
   color: ${({ $selected }) => ($selected ? "var(--primary-foreground)" : "var(--muted-foreground)")};

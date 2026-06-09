@@ -54,7 +54,7 @@ const TooltipContent = styled(TooltipPrimitive.Content)`
   padding: 12px;
   background: white;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;

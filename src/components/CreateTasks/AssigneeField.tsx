@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import AssigneePicker from "../shared/AssigneePicker"
+import type { AssigneeExtra } from "../shared/AssigneeRow"
 import AssigneeRowList from "../shared/AssigneeRow"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -11,6 +12,13 @@ interface AssigneeFieldProps {
 	onToggle: (id: number) => void
 	onRemove: (id: number) => void
 	onDetailChange: (id: number, value: string) => void
+	assigneeExtras?: Record<number, AssigneeExtra>
+	onStatusChange?: (
+		taskId: number,
+		assigneeId: number,
+		statusId: number,
+	) => void
+	taskId?: number
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -21,6 +29,9 @@ function AssigneeField({
 	onToggle,
 	onRemove,
 	onDetailChange,
+	assigneeExtras,
+	onStatusChange,
+	taskId,
 }: AssigneeFieldProps) {
 	return (
 		<>
@@ -56,16 +67,14 @@ function AssigneeField({
 						directiveTitle={directiveTitle}
 						showDetail={selectedAssignees.length > 1}
 						detailPlaceholder="פירוט נוסף לאחראי"
+						assigneeExtras={assigneeExtras}
 						onDetailChange={onDetailChange}
 						onRemove={onRemove}
+						onStatusChange={onStatusChange}
+						taskId={taskId}
 					/>
 				)}
 			</AssigneeSection>
-
-			{/* <CreateAssigneeDialog
-        open={isCreateAssigneeOpen}
-        onOpenChange={setIsCreateAssigneeOpen}
-      /> */}
 		</>
 	)
 }
@@ -89,7 +98,7 @@ const FormLabelRow = styled.div`
   gap: 4px;
   padding-block-end: 8px;
   font-weight: 400;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   white-space: nowrap;
 `
@@ -124,7 +133,7 @@ const SelectChevron = styled(ChevronDown)`
 
 const SearchInput = styled.input`
   flex: 1;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 40px;
   text-align: right;
@@ -151,7 +160,7 @@ const EmptyAssigneesBox = styled.div`
 `
 
 const EmptyText = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 40px;
   color: rgba(0, 0, 0, 0.25);

@@ -108,7 +108,7 @@ const FormLabelRow = styled.div`
   gap: 4px;
   padding-block-end: 8px;
   font-weight: 400;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   white-space: nowrap;
 `
@@ -144,7 +144,7 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   padding-inline: 12px;
   border: none;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 24px;
   white-space: nowrap;
@@ -163,7 +163,7 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
 `
 
 const HintText = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color: rgba(0, 0, 0, 0.65);
@@ -195,7 +195,7 @@ const DatePickerButton = styled.button`
 const DatePickerText = styled.span<{ $hasValue: boolean }>`
   flex: auto;
   text-align: right;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 24px;
   color: ${({ $hasValue }) => ($hasValue ? "rgba(0, 0, 0, 0.88)" : "rgba(0, 0, 0, 0.25)")};

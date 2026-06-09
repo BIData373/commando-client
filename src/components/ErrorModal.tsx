@@ -183,7 +183,7 @@ const ErrorCodeDisplay = styled.div`
 `
 
 const ErrorText = styled.div`
-  font-size: 30px;
+  font-size: var(--fs-heading-2);
   font-weight: 400;
   line-height: 38px;
 `
@@ -245,7 +245,7 @@ const SecondaryButton = styled.button`
 `
 
 const SupportNote = styled.p`
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: var(--text-color-400);
   margin: 0;
 `
@@ -267,7 +267,7 @@ const AdminContactsContent = styled.div`
 `
 
 const AdminContactsTitle = styled.p`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-2);
@@ -337,7 +337,7 @@ const AdminDot = styled.span`
 
 const AdminContactLink = styled.button`
   color: var(--active-color);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   overflow: hidden;
   text-overflow: ellipsis;

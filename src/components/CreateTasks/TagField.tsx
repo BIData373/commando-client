@@ -189,7 +189,7 @@ const FormLabelRow = styled.div`
 `
 
 const LabelText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
@@ -239,7 +239,7 @@ const TagInputField = styled.input`
   border: none;
   outline: none;
   background: transparent;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 18px;
   color: rgba(0, 0, 0, 0.88);
@@ -262,7 +262,7 @@ const TagChip = styled.span`
 `
 
 const TagText = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   line-height: 20px;
   color: rgba(0, 0, 0, 0.88);
@@ -308,7 +308,7 @@ const SuggestionsHeader = styled.div`
   height: 32px;
   padding-inline: 12px;
   padding-block: 5px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.45);
@@ -327,7 +327,7 @@ const TagOption = styled.button`
   background: transparent;
   cursor: pointer;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;
