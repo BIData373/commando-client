@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { useLocalStorage } from "@mantine/hooks"
+import type { ChangeEvent } from "react"
 import { isBIKey, requestUsernameKey } from "src/axios"
 import { adminUserUpn } from "src/hooks/useCurrentUser"
 import { IS_BI, REQUEST_USERNAME, STATIC_TOKEN } from "../utils/env-utils"
@@ -22,6 +23,14 @@ export function BIHeaderBypass() {
 		defaultValue: !!IS_BI,
 	})
 
+	function handleChangeBypassUsername({
+		target: { value },
+	}: ChangeEvent<HTMLInputElement>) {
+		const cleanValue = value.replace(" ", "")
+
+		setBypassUsername(cleanValue.length > 0 ? cleanValue : undefined)
+	}
+
 	return (
 		STATIC_TOKEN && (
 			<>
@@ -29,19 +38,27 @@ export function BIHeaderBypass() {
 
 				<DropdownMenuSeparator />
 
-				<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+				<DropdownMenuItem
+					onSelect={(e) => e.preventDefault()}
+					onPointerMove={(e) => e.preventDefault()}
+					onPointerLeave={(e) => e.preventDefault()}
+				>
 					<BypassRow>
 						<BypassLabel>UPN</BypassLabel>
 
 						<Input
 							value={bypassUsername}
-							onChange={(e) => setBypassUsername(e.target.value)}
+							onChange={handleChangeBypassUsername}
 							placeholder={adminUserUpn}
 						/>
 					</BypassRow>
 				</DropdownMenuItem>
 
-				<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+				<DropdownMenuItem
+					onSelect={(e) => e.preventDefault()}
+					onPointerMove={(e) => e.preventDefault()}
+					onPointerLeave={(e) => e.preventDefault()}
+				>
 					<BypassRow>
 						<BypassLabel>Is BI</BypassLabel>
 
