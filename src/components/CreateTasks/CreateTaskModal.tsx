@@ -20,7 +20,7 @@ import {
 	useUpdateTask,
 } from "src/api/task/task"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries, queryClient } from "src/queryClient"
+import { invalidateQueries } from "src/queryClient"
 import { getChangedFields } from "src/utils/form-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { CancelButton } from "../shared/CancelButton"
