@@ -1,6 +1,10 @@
 import { type PropsWithChildren, useEffect } from "react"
-import type { UserInfoDto } from "src/api/model"
 import { MATOMO_ENABLED } from "src/utils/env-utils"
+import {
+	COOKIE_NAME,
+	decodeSsoUserJwt,
+	onCookieChange,
+} from "src/utils/user-utils"
 
 declare global {
 	interface Window {
@@ -8,36 +12,10 @@ declare global {
 	}
 }
 
-function decodeJwtUser(jwtValue: string): {
-	userName?: string
-	privateNumber?: string
-} {
-	const base64Url = jwtValue.split(".")?.[1]
-	const base64 = base64Url?.replace(/-/g, "+")?.replace(/_/g, "/")
-
-	const jsonPayload = base64
-		? new TextDecoder().decode(
-				Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)),
-			)
-		: ""
-
-	let resultParsed: UserInfoDto | undefined
-	try {
-		resultParsed = JSON.parse(jsonPayload)?.user
-	} catch {
-		resultParsed = undefined
-	}
-
-	return {
-		userName: resultParsed?.displayName,
-		privateNumber: resultParsed?.upn,
-	}
-}
-
 function pushMatomoUserId(cookieValue?: string): void {
-	const { userName, privateNumber } = cookieValue
-		? decodeJwtUser(cookieValue)
-		: {}
+	const user = cookieValue ? decodeSsoUserJwt(cookieValue) : null
+	const userName = user?.displayName
+	const privateNumber = user?.upn
 
 	window._paq = window._paq || []
 
@@ -73,7 +51,7 @@ export default function MatomoWrapper({ children }: PropsWithChildren) {
 		s.parentNode?.insertBefore(g, s)
 
 		cookieStore
-			.get("ssoUser")
+			.get(COOKIE_NAME)
 			.then((cookie) => {
 				pushMatomoUserId(cookie?.value)
 			})
@@ -81,20 +59,7 @@ export default function MatomoWrapper({ children }: PropsWithChildren) {
 				pushMatomoUserId()
 			})
 
-		const handleCookieChange = (event: CookieChangeEvent) => {
-			const newValue = event.changed?.find((c) => c.name === "ssoUser")?.value
-			const wasDeleted = event.deleted?.some((c) => c.name === "ssoUser")
-
-			if (newValue !== undefined || wasDeleted) {
-				pushMatomoUserId(newValue)
-			}
-		}
-
-		cookieStore.addEventListener("change", handleCookieChange)
-
-		return () => {
-			cookieStore.removeEventListener("change", handleCookieChange)
-		}
+		return onCookieChange(COOKIE_NAME, pushMatomoUserId)
 	}, [])
 
 	return children

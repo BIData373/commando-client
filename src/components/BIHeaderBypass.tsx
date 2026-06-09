@@ -1,6 +1,8 @@
 import styled from "@emotion/styled"
 import { useLocalStorage } from "@mantine/hooks"
-import { IS_BI, REQUEST_USERNAME } from "../utils/env-utils"
+import { isBIKey, requestUsernameKey } from "src/axios"
+import { adminUserUpn } from "src/hooks/useCurrentUser"
+import { IS_BI, REQUEST_USERNAME, STATIC_TOKEN } from "../utils/env-utils"
 import {
 	DropdownMenuItem,
 	DropdownMenuLabel,
@@ -11,46 +13,48 @@ import { Switch } from "./ui/switch"
 
 export function BIHeaderBypass() {
 	const [bypassUsername, setBypassUsername] = useLocalStorage({
-		key: "bi_bypass_username",
+		key: requestUsernameKey,
 		defaultValue: REQUEST_USERNAME ?? "",
 	})
 
 	const [bypassIsBI, setBypassIsBI] = useLocalStorage({
-		key: "bi_bypass_is_bi",
+		key: isBIKey,
 		defaultValue: !!IS_BI,
 	})
 
 	return (
-		<>
-			<DropdownMenuLabel>BI Bypass</DropdownMenuLabel>
+		STATIC_TOKEN && (
+			<>
+				<DropdownMenuLabel>BI Bypass</DropdownMenuLabel>
 
-			<DropdownMenuSeparator />
+				<DropdownMenuSeparator />
 
-			<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-				<BypassRow>
-					<BypassLabel>UPN</BypassLabel>
+				<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+					<BypassRow>
+						<BypassLabel>UPN</BypassLabel>
 
-					<Input
-						value={bypassUsername}
-						onChange={(e) => setBypassUsername(e.target.value)}
-						placeholder="s0000000"
-					/>
-				</BypassRow>
-			</DropdownMenuItem>
+						<Input
+							value={bypassUsername}
+							onChange={(e) => setBypassUsername(e.target.value)}
+							placeholder={adminUserUpn}
+						/>
+					</BypassRow>
+				</DropdownMenuItem>
 
-			<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-				<BypassRow>
-					<BypassLabel>Is BI</BypassLabel>
+				<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+					<BypassRow>
+						<BypassLabel>Is BI</BypassLabel>
 
-					<Switch
-						checked={bypassIsBI}
-						onCheckedChange={setBypassIsBI}
-						size="sm"
-						dir="rtl"
-					/>
-				</BypassRow>
-			</DropdownMenuItem>
-		</>
+						<Switch
+							checked={bypassIsBI}
+							onCheckedChange={setBypassIsBI}
+							size="sm"
+							dir="rtl"
+						/>
+					</BypassRow>
+				</DropdownMenuItem>
+			</>
+		)
 	)
 }
 

@@ -12,8 +12,11 @@ export const STATIC_TOKEN_HEADER = "static-token"
 export const REQUEST_USERNAME_HEADER = "requestusername"
 export const IS_BI_HEADER = "is-bi"
 
-const storedUsername = localStorage.getItem("bi_bypass_username")
-const storedIsBI = localStorage.getItem("bi_bypass_is_bi")
+export const requestUsernameKey = "request_username"
+export const isBIKey = "is_bi"
+
+const storedUsername = localStorage.getItem(requestUsernameKey)
+const storedIsBI = localStorage.getItem(isBIKey)
 
 const resolvedUsername = storedUsername ?? REQUEST_USERNAME
 const resolvedIsBI = storedIsBI ?? !!IS_BI
