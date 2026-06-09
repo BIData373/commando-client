@@ -275,7 +275,7 @@ const TaskIdLabel = styled.span`
   position: absolute;
   inset-inline-start: 15px;
   top: 15px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-400);
@@ -334,7 +334,7 @@ const BottomBar = styled.div<{ $hidden?: boolean; $shadow: boolean }>`
 `
 
 const SectionLabel = styled.p`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 500;
   line-height: 24px;
   color: var(--sea-ink);
@@ -367,7 +367,7 @@ const TextWrapper = styled.div`
 
 const TitleText = styled.p`
   margin: 0 auto;
-  font-size: 24px;
+  font-size: var(--fs-heading-3);
   font-weight: 500;
   line-height: 32px;
   color: var(--text-color);
@@ -399,7 +399,7 @@ const DueDateGroup = styled.div`
 `
 
 const DueDateText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color);
@@ -412,7 +412,7 @@ const DateContainer = styled.div`
 `
 
 const MetaLabel = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color);
@@ -425,7 +425,7 @@ const CreatedGroup = styled.span`
 `
 
 const MetaText = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   line-height: 20px;
   color: var(--sea-ink);
@@ -471,7 +471,7 @@ const DividerLine = styled.div`
 `
 
 const DividerText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-200);
@@ -507,7 +507,7 @@ const TagChip = styled.span`
   align-items: center;
   padding: 1px 8px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   line-height: 20px;
   background: var(--card-background);
   border: 1px solid var(--chip-line);
@@ -530,14 +530,14 @@ const InfoAttachment = styled.div`
 `
 
 const SourceName = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--sea-ink);
 `
 
 const SourceDate = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--sea-ink-soft);
@@ -582,14 +582,14 @@ const ChatGroup = styled.div`
 `
 
 const ChatLabel = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 21px;
   color: var(--sea-ink);
 `
 
 const NotesText = styled.div`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 20px;
   color: var(--sea-ink-soft);
 

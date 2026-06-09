@@ -38,7 +38,7 @@ const ClearButton = styled.button`
   border-radius: 8px;
   background: transparent;
   color: var(--sea-ink-soft);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   cursor: pointer;
   transition: color 0.15s;
 
@@ -57,7 +57,7 @@ const ConfirmButton = styled.button`
   border-radius: 8px;
   background: linear-gradient(165deg, var(--purple-start) 0%, var(--purple-end) 100%);
   color: var(--primary-foreground);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.15s;

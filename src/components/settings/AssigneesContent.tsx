@@ -180,7 +180,7 @@ const CheckboxRow = styled.div`
 `
 
 const CheckboxLabel = styled.label`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   color: var(--sea-ink);
   cursor: pointer;

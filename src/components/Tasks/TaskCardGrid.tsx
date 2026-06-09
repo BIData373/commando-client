@@ -68,7 +68,7 @@ const CardTitleRow = styled.div`
 `
 
 const CardDateText = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   color: var(--sea-ink-soft);
   margin-inline-start: auto;
 `

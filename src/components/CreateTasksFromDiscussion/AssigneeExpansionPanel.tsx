@@ -101,7 +101,7 @@ const DetailHeaderCell = styled.div`
   justify-content: flex-end;
   padding: 4px 12px;
   background: var(--colors-base-neutral-3);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color);
@@ -116,7 +116,7 @@ const AssigneeHeaderCell = styled.div`
   padding: 4px 12px;
   padding-inline-end: 64px;
   background: var(--colors-base-neutral-3);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 22px;
   color: var(--text-color);

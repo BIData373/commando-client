@@ -12,7 +12,7 @@ const DeadlineTag = styled.span<{ $type: DeadlineType }>`
   align-items: center;
   padding: 1px 6px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   white-space: nowrap;
   ${({ $type }) => {
 		switch ($type) {
