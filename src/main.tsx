@@ -7,6 +7,7 @@ import { ErrorModalProvider } from "./providers/ErrorModalProvider"
 import { queryClient } from "./queryClient"
 import router from "./router"
 import { USE_MOCK_API } from "./utils/env-utils"
+import MatomoWrapper from "./wrappers/MatomoWrapper"
 
 const handlers = Object.values(mockHandlers).flatMap((getHandlers) =>
 	getHandlers(),
@@ -37,9 +38,11 @@ enableMocking().then(() => {
 		root.render(
 			<ErrorModalProvider>
 				<AuthenticationWrapper>
-					<QueryClientProvider client={queryClient}>
-						<RouterProvider router={router} />
-					</QueryClientProvider>
+					<MatomoWrapper>
+						<QueryClientProvider client={queryClient}>
+							<RouterProvider router={router} />
+						</QueryClientProvider>
+					</MatomoWrapper>
 				</AuthenticationWrapper>
 			</ErrorModalProvider>,
 		)
