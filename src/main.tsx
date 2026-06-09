@@ -16,7 +16,9 @@ async function enableMocking() {
 		const { setupWorker } = await import("msw/browser")
 		const worker = setupWorker(...handlers)
 
-		return worker.start()
+		return worker.start({
+			onUnhandledRequest: "bypass",
+		})
 	}
 }
 
