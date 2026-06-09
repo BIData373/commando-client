@@ -122,7 +122,7 @@ const CollapsedAssigneeButton = styled.button`
 
 const CollapsedAssigneeLabel = styled.span`
   direction: rtl;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   color: var(--text-color-2);
   white-space: nowrap;
@@ -147,7 +147,7 @@ const CompactChevron = styled(ChevronDown)`
 `
 
 const CompactLabel = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   color: var(--Text-color-text-placeholder);
   white-space: nowrap;
@@ -176,7 +176,7 @@ const AssigneeTag = styled.div`
 `
 
 const AssigneeTagName = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   line-height: 20px;
   color: var(--text-color-2);
   white-space: nowrap;

@@ -132,7 +132,7 @@ const OtherColorLabel = styled.label`
   padding-inline: 7px;
   border-radius: 4px;
   background: var(--chip-bg);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--sea-ink);

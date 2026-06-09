@@ -117,18 +117,18 @@ const PersonalBanner = styled.button`
 `
 
 const PersonalLabel = styled.span`
-  font-size: 18px;
+  font-size: var(--fs-lg);
   font-weight: 600;
   color: var(--sea-ink);
 `
 
 const PersonalSub = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   color: var(--sea-ink-soft);
 `
 
 const SectionTitle = styled.h2`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 600;
   color: var(--sea-ink-soft);
   text-transform: uppercase;

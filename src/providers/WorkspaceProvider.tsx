@@ -33,12 +33,15 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 		error,
 		queryKey,
 	} = useListWorkspaces({ urlName })
+
 	const workspace = data?.[0]
-	const { data: workspaceStatuses, isLoading: isStatusesLoading } =
+
+	const { data: workspaceStatuses, isLoading: isWorkspaceStatusesLoading } =
 		useListWorkspaceStatuses(
 			{ workspaceId: workspace?.id ?? -1 },
 			{ query: { enabled: workspace?.id !== undefined } },
 		)
+
 	const statuses = Object.fromEntries(
 		(workspaceStatuses ?? []).map((s) => [s.id, s]),
 	)
@@ -64,12 +67,12 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 		)
 	}
 
-	return isWorkspaceLoading || isStatusesLoading ? (
+	return isWorkspaceLoading || isWorkspaceStatusesLoading ? (
 		<LoadingContainer>
 			<Spinner />
 		</LoadingContainer>
 	) : (
-		workspace && (
+		workspace && statuses && (
 			<WorkspaceContext.Provider
 				value={{
 					workspace,

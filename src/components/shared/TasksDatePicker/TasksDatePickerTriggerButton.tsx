@@ -35,7 +35,7 @@ export const TasksDatePickerTriggerButton = ({
 }
 
 const RangeLabel = styled.span`
-    font-size: 16px;
+    font-size: var(--fs-base);
 `
 
 const TriggerButton = styled.button`
@@ -48,7 +48,7 @@ const TriggerButton = styled.button`
   color:var(--text-color-2);
   border-radius: 8px;
   background: var(--background);
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   cursor: pointer;
   white-space: nowrap;

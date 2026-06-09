@@ -106,7 +106,7 @@ const FormLabelRow = styled.div`
   gap: 4px;
   padding-block-end: 8px;
   font-weight: 400;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   white-space: nowrap;
 `
@@ -170,7 +170,7 @@ const StyledEditorContent = styled(EditorContent)`
     border: 1px solid #d9d9d9;
     border-radius: 8px;
     background: white;
-    font-size: 16px;
+    font-size: var(--fs-base);
     font-weight: 400;
     line-height: 20px;
     color: rgba(0, 0, 0, 0.88);
