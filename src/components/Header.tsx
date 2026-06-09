@@ -91,25 +91,24 @@ export default function Header() {
 						)}
 					</CenterSection>
 
-					{/* Col 3 — physically LEFT in RTL: user avatar */}
 					<EndSection>
-						{user && (
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<UserTrigger>
-										<User size={16} />
-										<ChevronDown size={16} />
-									</UserTrigger>
-								</DropdownMenuTrigger>
-								<UserDropdownContent>
-									<BIHeaderBypass />
-									{/* <DropdownMenuSeparator />
+						{/* {user && ( */}
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<UserTrigger>
+									<User size={16} />
+									<ChevronDown size={16} />
+								</UserTrigger>
+							</DropdownMenuTrigger>
+							<UserDropdownContent>
+								<BIHeaderBypass />
+								{/* <DropdownMenuSeparator />
 									<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
 										<ThemeToggle />
 									</DropdownMenuItem> */}
-								</UserDropdownContent>
-							</DropdownMenu>
-						)}
+							</UserDropdownContent>
+						</DropdownMenu>
+						{/* )} */}
 					</EndSection>
 				</HeaderInner>
 			</HeaderRoot>
