@@ -3,6 +3,7 @@ export { getAssigneeTaskStatusMock } from "./assignee-task-status/assignee-task-
 export { getMessageMock } from "./message/message.msw"
 export { getPermissionMock } from "./permission/permission.msw"
 export { getPikudMock } from "./pikud/pikud.msw"
+export { getS3Mock } from "./s3/s3.msw"
 export { getSourceMock } from "./source/source.msw"
 export { getTagMock } from "./tag/tag.msw"
 export { getTaskMock } from "./task/task.msw"

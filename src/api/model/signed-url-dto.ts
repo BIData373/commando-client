@@ -6,10 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface GetUserInfoDto {
-	id?: number
-	upn: string
-	name?: string
-	displayName?: string
-	isBI?: boolean
+export interface SignedUrlDto {
+	/** @nullable */
+	url: string | null
 }

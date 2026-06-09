@@ -4,6 +4,7 @@ export const USE_MOCK_API = import.meta.env.VITE_USE_MOCK_API === "true"
 export const USE_SSO = import.meta.env.VITE_USE_SSO === "true"
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+export const API_PREFIX = import.meta.env.VITE_API_PREFIX
 export const MESIBA_BASE_API_URL = import.meta.env.VITE_MESIBA_BASE_URL_API
 
 export const CHAT_LINK = import.meta.env.VITE_CHAT_LINK
