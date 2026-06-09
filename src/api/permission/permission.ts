@@ -29,7 +29,7 @@ import type {
 	GetMyPermissionParams,
 	ListPermissionsParams,
 	PermissionDto,
-	UpdatePermissionDto,
+	UpsertPermissionDto,
 } from "../model"
 
 export const listPermissions = (
@@ -182,36 +182,36 @@ export function useListPermissions<
 	return { ...query, queryKey: queryOptions.queryKey }
 }
 
-export const updatePermission = (
-	updatePermissionDto: UpdatePermissionDto,
+export const upsertPermission = (
+	upsertPermissionDto: UpsertPermissionDto,
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<PermissionDto>({
 		url: `/permission`,
 		method: "PATCH",
 		headers: { "Content-Type": "application/json" },
-		data: updatePermissionDto,
+		data: upsertPermissionDto,
 		signal,
 	})
 }
 
-export const getUpdatePermissionMutationOptions = <
+export const getUpsertPermissionMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof updatePermission>>,
+		Awaited<ReturnType<typeof upsertPermission>>,
 		TError,
-		{ data: UpdatePermissionDto },
+		{ data: UpsertPermissionDto },
 		TContext
 	>
 }): UseMutationOptions<
-	Awaited<ReturnType<typeof updatePermission>>,
+	Awaited<ReturnType<typeof upsertPermission>>,
 	TError,
-	{ data: UpdatePermissionDto },
+	{ data: UpsertPermissionDto },
 	TContext
 > => {
-	const mutationKey = ["updatePermission"]
+	const mutationKey = ["upsertPermission"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -221,43 +221,43 @@ export const getUpdatePermissionMutationOptions = <
 		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof updatePermission>>,
-		{ data: UpdatePermissionDto }
+		Awaited<ReturnType<typeof upsertPermission>>,
+		{ data: UpsertPermissionDto }
 	> = (props) => {
 		const { data } = props ?? {}
 
-		return updatePermission(data)
+		return upsertPermission(data)
 	}
 
 	return { mutationFn, ...mutationOptions }
 }
 
-export type UpdatePermissionMutationResult = NonNullable<
-	Awaited<ReturnType<typeof updatePermission>>
+export type UpsertPermissionMutationResult = NonNullable<
+	Awaited<ReturnType<typeof upsertPermission>>
 >
-export type UpdatePermissionMutationBody = UpdatePermissionDto
-export type UpdatePermissionMutationError = ErrorType<unknown>
+export type UpsertPermissionMutationBody = UpsertPermissionDto
+export type UpsertPermissionMutationError = ErrorType<unknown>
 
-export const useUpdatePermission = <
+export const useUpsertPermission = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(
 	options?: {
 		mutation?: UseMutationOptions<
-			Awaited<ReturnType<typeof updatePermission>>,
+			Awaited<ReturnType<typeof upsertPermission>>,
 			TError,
-			{ data: UpdatePermissionDto },
+			{ data: UpsertPermissionDto },
 			TContext
 		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
-	Awaited<ReturnType<typeof updatePermission>>,
+	Awaited<ReturnType<typeof upsertPermission>>,
 	TError,
-	{ data: UpdatePermissionDto },
+	{ data: UpsertPermissionDto },
 	TContext
 > => {
-	return useMutation(getUpdatePermissionMutationOptions(options), queryClient)
+	return useMutation(getUpsertPermissionMutationOptions(options), queryClient)
 }
 export const deletePermission = (
 	params: DeletePermissionParams,

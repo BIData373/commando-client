@@ -33,17 +33,19 @@ function RootComponent() {
 			</TooltipProvider>
 			<ErrorModal />
 			<Toaster />
-			<TanStackDevtools
-				config={{
-					position: "bottom-right",
-				}}
-				plugins={[
-					{
-						name: "TanStack Router",
-						render: <TanStackRouterDevtoolsPanel />,
-					},
-				]}
-			/>
+			{import.meta.env.VITE_ENVIRONMENT === "development" && (
+				<TanStackDevtools
+					config={{
+						position: "bottom-right",
+					}}
+					plugins={[
+						{
+							name: "TanStack Router",
+							render: <TanStackRouterDevtoolsPanel />,
+						},
+					]}
+				/>
+			)}
 		</StrictMode>
 	)
 }

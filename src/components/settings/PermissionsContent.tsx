@@ -4,7 +4,7 @@ import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
 import {
 	useDeletePermission,
 	useListPermissions,
-	useUpdatePermission,
+	useUpsertPermission,
 } from "src/api/permission/permission"
 import { DropdownPermission } from "src/components/settings/DropdownPermission"
 import { DropdownUsers } from "src/components/settings/DropdownUsers"
@@ -49,7 +49,7 @@ export function PermissionsContent() {
 	} = useListPermissions({
 		workspaceId,
 	})
-	const { mutate: updatePermission } = useUpdatePermission()
+	const { mutate: updatePermission } = useUpsertPermission()
 	const { mutate: deletePermission } = useDeletePermission()
 
 	const currentTabUsers = useMemo(() => {
@@ -94,7 +94,7 @@ export function PermissionsContent() {
 
 		updatePermission(
 			{
-				data: { workspaceId, upn: selectedUser.upn, type },
+				data: { workspaceId, upn: selectedUser.upn, info: selectedUser, type },
 			},
 			{
 				onSuccess: handleSuccessUpsert,
