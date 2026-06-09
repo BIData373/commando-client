@@ -169,7 +169,6 @@ function useTaskColumns({
 			accessorKey: "title",
 			header: COLUMN_LABELS.title,
 			size: 400,
-			meta: { grow: true },
 			enableSorting: false,
 			enableColumnFilter: false,
 			cell: ({

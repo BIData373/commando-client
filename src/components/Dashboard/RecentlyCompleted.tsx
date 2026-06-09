@@ -105,6 +105,7 @@ const SectionTitle = styled.h2`
 `
 
 const Card = styled.div<{ $hasContent: boolean }>`
+  zoom: var(--responsive-zoom);
   flex: 1;
   background: var(--background);
   border: 1px solid var(--border);

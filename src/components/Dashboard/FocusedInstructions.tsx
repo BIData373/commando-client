@@ -263,6 +263,7 @@ const TabCount = styled.span<{ $active: boolean }>`
 `
 
 const ContentPanel = styled.div<{ $hasContent: boolean }>`
+  zoom: var(--responsive-zoom);
   flex: 1;
   background: var(--background);
   border: 1px solid var(--border);
