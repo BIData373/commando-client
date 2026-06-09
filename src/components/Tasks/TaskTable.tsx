@@ -282,7 +282,7 @@ const TableWrapper = styled.div`
     position: sticky;
     top: 0;
     z-index: var(--z-dropdown);
-    font-size: 16px;
+    font-size: var(--fs-base);
     font-weight: 500;
     line-height: 24px;
     color: var(--text-color);

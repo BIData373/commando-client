@@ -166,7 +166,7 @@ const Section = styled.div`
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 30px;
+  font-size: var(--fs-heading-2);
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
@@ -236,7 +236,7 @@ const ChartHeader = styled.div`
 `
 
 const HeaderLabel = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: var(--sea-ink-soft);
 `
 
@@ -256,14 +256,14 @@ const BarRow = styled.div`
 `
 
 const AssigneeName = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: var(--sea-ink);
   white-space: nowrap;
   flex-shrink: 0;
 `
 
 const CountLabel = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: var(--sea-ink);
   width: 24px;
   text-align: end;

@@ -115,7 +115,7 @@ const TextWrapper = styled.div`
 `
 
 const Title = styled.p`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 600;
   line-height: 22px;
   color: var(--text-color-2);
@@ -123,7 +123,7 @@ const Title = styled.p`
 `
 
 const Description = styled.p`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-2);
@@ -154,7 +154,7 @@ const DeleteButton = styled.button`
   border: none;
   border-radius: 2px;
   background: var(--Components-Form-Component-labelRequiredMarkColor);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--background);
@@ -180,7 +180,7 @@ const CancelButton = styled.button`
   border: 1px solid var(--card-border);
   border-radius: 2px;
   background: var(--background);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-2);

@@ -240,7 +240,7 @@ const FormLabelRow = styled.div`
   gap: 4px;
   padding-block-end: 8px;
   font-weight: 400;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   white-space: nowrap;
 `
@@ -282,7 +282,7 @@ const SourceInputField = styled.input`
   border: none;
   outline: none;
   background: transparent;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color: rgba(0, 0, 0, 0.88);
@@ -312,7 +312,7 @@ const DropdownMenu = styled.div`
 
 const DropdownGroupTitle = styled.div`
   padding: 5px 12px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.45);
@@ -345,7 +345,7 @@ const SourceOption = styled.button`
 
 const SourceOptionName = styled.span`
   flex: 1;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
   text-align: end;
@@ -360,7 +360,7 @@ const HighlightedText = styled.span`
 
 const SourceOptionDate = styled.span`
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   line-height: 20px;
   color: rgba(0, 0, 0, 0.45);
 `
@@ -377,7 +377,7 @@ const CreateNewOption = styled.button`
   background: transparent;
   cursor: pointer;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   color: rgba(0, 0, 0, 0.88);
 
   &:hover {
@@ -417,7 +417,7 @@ const DatePickerButton = styled.button<{ $disabled?: boolean }>`
 const DatePickerText = styled.span<{ $hasValue: boolean }>`
   flex: auto;
   text-align: right;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color: ${({ $hasValue }) => ($hasValue ? "rgba(0, 0, 0, 0.88)" : "rgba(0, 0, 0, 0.25)")};

@@ -331,7 +331,7 @@ const WideDialogContent = styled(DialogContent)`
 
 const DialogTitleLarge = styled(DialogTitle)`
   text-align: right;
-  font-size: 38px;
+  font-size: var(--fs-heading-1);
   font-weight: 500;
   line-height: 1.2;
   color: var(--sea-ink);
@@ -340,7 +340,7 @@ const DialogTitleLarge = styled(DialogTitle)`
 const StyledDialogDescription = styled(DialogDescription)`
   direction: rtl;
   text-align: start;
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: var(--text-color);
   font-weight: 400;
   line-height: 1.4;
@@ -370,7 +370,7 @@ const FieldGroup = styled.div`
 `
 
 const FieldLabel = styled.span`
-  font-size: 20px;
+  font-size: var(--fs-xl);
   font-weight: 400;
   color: var(--sea-ink);
   line-height: 1.4;
@@ -394,7 +394,7 @@ const EmblemSection = styled.div`
 `
 
 const OrSeparator = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
   line-height: 24px;
@@ -408,7 +408,7 @@ const ColorRow = styled.div`
 `
 
 const ColorLabel = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: var(--text-color);
   line-height: 22px;
   white-space: nowrap;

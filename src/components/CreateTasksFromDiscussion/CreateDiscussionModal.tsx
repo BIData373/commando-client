@@ -265,7 +265,7 @@ const HeaderSection = styled.div`
 
 const ModalTitle = styled.h1`
   font-weight: 500;
-  font-size: 42px;
+  font-size: var(--fs-heading-h1);
   line-height: 50px;
   color: var(--foreground);
   margin: 0;
@@ -290,14 +290,14 @@ const DiscussionInfoText = styled.div`
 `
 
 const DiscussionName = styled.span`
-  font-size: 20px;
+  font-size: var(--fs-xl);
   font-weight: 400;
   line-height: 28px;
   color: var(--foreground);
 `
 
 const DiscussionDate = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color: var(--foreground);
@@ -322,7 +322,7 @@ const ContinueButton = styled.button`
   border-radius: 8px;
   background: linear-gradient(165deg, #6866ff 0%, #7604c8 100%);
   color: white;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   cursor: pointer;
@@ -375,7 +375,7 @@ const stepCircleBase = `
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   flex-shrink: 0;
@@ -400,7 +400,7 @@ const StepCircle = styled.div<{ $active: boolean }>`
 `
 
 const StepLabel = styled.span<{ $active: boolean }>`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: ${({ $active }) => ($active ? "var(--text-color-2)" : "rgba(0, 0, 0, 0.45)")};

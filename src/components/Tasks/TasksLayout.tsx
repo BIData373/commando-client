@@ -296,7 +296,7 @@ const CreateButton = styled.button`
   border-radius: 8px;
   background: linear-gradient(165deg, #615FFF 0%, #9810FA 100%);
   color: white;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   cursor: pointer;
@@ -348,7 +348,7 @@ const StyledDropdownItem = styled(DropdownMenuItem)`
   padding-inline: 12px;
   padding-block: 5px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);

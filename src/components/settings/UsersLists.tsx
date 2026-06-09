@@ -109,7 +109,7 @@ const UserTooltipContent = styled(TooltipPrimitive.Content)`
   padding: 10px 14px;
   background: var(--text-color-2);
   border-radius: 8px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 1.6;
   color: #fff;
   text-align: center;

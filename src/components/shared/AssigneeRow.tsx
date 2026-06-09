@@ -202,7 +202,7 @@ const TextareaWrapper = styled.div`
 `
 
 const DirectiveTitleText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 18px;
   color: rgba(0, 0, 0, 0.45);
@@ -216,7 +216,7 @@ const DetailEditable = styled.span`
   padding: 0;
   border: none;
   background: transparent;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 18px;
   color: rgba(0, 0, 0, 0.88);
@@ -240,7 +240,7 @@ const InfoBlock = styled.div`
 `
 
 const RoleText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
