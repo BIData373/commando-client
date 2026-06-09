@@ -3,7 +3,7 @@ import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assign
 import type { AssigneeStatusDto } from "src/api/model"
 import { getGetTaskQueryKey, getListTasksQueryKey } from "src/api/task/task"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries, queryClient } from "src/queryClient"
+import { invalidateQueries } from "src/queryClient"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { StatusTag } from "../shared/StatusTag"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
