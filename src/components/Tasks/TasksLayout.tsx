@@ -25,7 +25,6 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
 import { TooltipProvider } from "../ui/tooltip"
-import { EmptyState } from "./EmptyState"
 import { TaskCardGrid } from "./TaskCardGrid"
 import { TaskFilters } from "./TaskFilters"
 import { TaskTable } from "./TaskTable"
@@ -49,7 +48,6 @@ function TasksLayout({
 	const navigate = useNavigate({ from: "/workspace/$urlName/tasks" })
 
 	const {
-		searchQuery,
 		columnOrder,
 		hiddenColumns,
 		dateRange,
@@ -62,11 +60,7 @@ function TasksLayout({
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-	const {
-		data: tasks = [],
-		queryKey,
-		isLoading,
-	} = useListTasks({ workspaceId })
+	const { data: tasks = [], queryKey } = useListTasks({ workspaceId })
 
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
@@ -227,11 +221,7 @@ function TasksLayout({
 				/>
 
 				<ContentArea>
-					{!isLoading && tasks.length === 0 ? (
-						<EmptyState />
-					) : searchQuery && filteredTasks.length === 0 ? (
-						<EmptyState variant="search" />
-					) : view === TasksView.TABLE ? (
+					{view === TasksView.TABLE ? (
 						<TaskTable
 							queryKey={queryKey}
 							tasks={filteredTaskRows}

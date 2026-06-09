@@ -17,7 +17,7 @@ import {
 } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
-
+import { EmptyCardState, type EmptyCardStateProps } from '../shared/EmptyCardState'
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     grow?: boolean
@@ -43,6 +43,7 @@ interface DataTableProps<TData> {
   expansionColSpan?: number
   containerClassName?: string
   showHeader?: boolean
+  emptyStateProps?: EmptyCardStateProps
 }
 
 export function DataTable<TData>({
@@ -65,6 +66,7 @@ export function DataTable<TData>({
   expansionColSpan,
   containerClassName,
   showHeader = true,
+  emptyStateProps
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -160,9 +162,15 @@ export function DataTable<TData>({
             </Fragment>
           ))
         ) : (
-          <TableRow>
-            <TableCell colSpan={columns.length}>אין נתונים להצגה</TableCell>
-          </TableRow>
+          <EmptyRow>
+            <EmptyCell colSpan={columns.length}>
+              <EmptyCardState
+							imgSrc={emptyStateProps?.imgSrc}
+							title={emptyStateProps?.title}
+							description={emptyStateProps?.description}
+						/>
+            </EmptyCell>
+          </EmptyRow>
         )}
       </TableBody>
     </Table>
@@ -170,6 +178,17 @@ export function DataTable<TData>({
 }
 
 // ─── Styled Components ─────────────────────────────────────────────────────
+
+const EmptyRow = styled.tr`
+  &:hover {
+    background: none !important;
+  }
+`
+const EmptyCell = styled.td`
+  text-align: center;
+  padding: 72px 0 !important;
+
+`
 
 const ExpansionCell = styled.td`
   padding: 0;

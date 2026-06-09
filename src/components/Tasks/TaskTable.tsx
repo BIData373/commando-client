@@ -21,6 +21,7 @@ import {
 	type TaskRow,
 	useTasksFilters,
 } from "src/providers/TasksFiltersProvider"
+import { getEmptyState } from "src/utils/empty-state-utils"
 import { buildFilterOptionsMap } from "../../functions/filter-utils"
 import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns"
 import { useWorkspace } from "../../providers/WorkspaceProvider"
@@ -53,7 +54,13 @@ function TaskTable({
 	deadlineTypeFilter = [],
 	onFiltersChange,
 }: TaskTableProps) {
-	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters()
+	const {
+		searchQuery,
+		columnOrder,
+		hiddenColumns,
+		activeQuickFilters,
+		dateRange,
+	} = useTasksFilters()
 	const { statuses } = useWorkspace()
 	const queryClient = useQueryClient()
 
@@ -227,6 +234,12 @@ function TaskTable({
 					onSortingChange={setSorting}
 					getRowId={(row) => row.rowKey}
 					showHeader={showHeader}
+					emptyStateProps={getEmptyState(
+						activeQuickFilters,
+						searchQuery,
+						tasks.length > 0,
+						dateRange,
+					)}
 				/>
 			</TableWrapper>
 			{selectMode && (

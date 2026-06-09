@@ -1,9 +1,9 @@
 import styled from "@emotion/styled"
-import type { PropsWithChildren } from "react"
+import type { PropsWithChildren, ReactNode } from "react"
 
-interface EmptyCardStateProps extends PropsWithChildren {
+export interface EmptyCardStateProps extends PropsWithChildren {
 	imgSrc?: string
-	title: string
+	title: ReactNode
 	description?: string
 }
 
@@ -39,7 +39,7 @@ const EmptyState = styled.div`
   align-items: center;
   gap: 8px;
   padding: 24px;
-  max-width: max-content;
+  max-width: none;
   text-align: center;
 `
 
