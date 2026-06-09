@@ -1,5 +1,6 @@
 import { differenceInDays, startOfToday } from "date-fns"
-import { DeadlineType, type TaskDto } from "src/api/model"
+import type { TaskDto, WorkspaceStatusDto } from "src/api/model"
+import { DeadlineType } from "src/api/model"
 import { QuickFilter } from "src/utils/filter-utils"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 // ─── Shared Types ────────────────────────────────────────────────────────────
@@ -41,12 +42,12 @@ export function matchesQuickFilter(
 
 export function buildFilterOptionsMap(
 	tasks: TaskDto[],
+	statuses: Record<number, WorkspaceStatusDto>,
 ): Record<string, FilterOption[]> {
 	const assigneeSet = new Set<string>()
 	const deadlineTypeSet = new Set<string>()
 	const discussionNameSet = new Set<string>()
 	const tagsSet = new Set<string>()
-
 	for (const t of tasks) {
 		deadlineTypeSet.add(t.deadlineType)
 		for (const { assignee } of t.assigneeStatuses) {
@@ -68,6 +69,10 @@ export function buildFilterOptionsMap(
 
 	return {
 		assigneeStatuses: toOptions(assigneeSet),
+		status: Object.values(statuses).map((s) => ({
+			value: s.type,
+			label: s.name,
+		})),
 		deadlineType: toOptions(deadlineTypeSet, DEADLINE_LABELS),
 		discussionName: toOptions(discussionNameSet),
 		tags: toOptions(tagsSet),
