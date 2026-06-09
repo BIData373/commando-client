@@ -13,6 +13,7 @@ const IS_BI_HEADER = "is-bi"
 
 export const axiosInstance = axios.create({
 	baseURL: API_BASE_URL,
+	withCredentials: true,
 	headers: {
 		"Content-Type": "application/json",
 		...(STATIC_TOKEN && { [STATIC_TOKEN_HEADER]: STATIC_TOKEN }),
@@ -26,7 +27,6 @@ axiosInstance.interceptors.response.use((originalResponse) => {
 	return originalResponse
 })
 
-// FIX Add cookie removing for sso
 export async function sendRequest<T>(config: AxiosRequestConfig) {
 	return (await axiosInstance<T>(config)).data
 }
