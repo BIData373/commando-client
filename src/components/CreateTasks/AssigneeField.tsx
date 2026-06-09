@@ -1,8 +1,8 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import AssigneePicker from "../shared/AssigneePicker"
-import AssigneeRowList from "../shared/AssigneeRow"
 import type { AssigneeExtra } from "../shared/AssigneeRow"
+import AssigneeRowList from "../shared/AssigneeRow"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -13,7 +13,11 @@ interface AssigneeFieldProps {
 	onRemove: (id: number) => void
 	onDetailChange: (id: number, value: string) => void
 	assigneeExtras?: Record<number, AssigneeExtra>
-	onStatusChange?: (taskId: number, assigneeId: number, statusId: number) => void
+	onStatusChange?: (
+		taskId: number,
+		assigneeId: number,
+		statusId: number,
+	) => void
 	taskId?: number
 }
 
@@ -71,7 +75,6 @@ function AssigneeField({
 					/>
 				)}
 			</AssigneeSection>
-
 		</>
 	)
 }
