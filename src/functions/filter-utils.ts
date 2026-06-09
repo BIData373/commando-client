@@ -1,6 +1,8 @@
 import { differenceInDays, startOfToday } from "date-fns"
-import type { TaskDto, WorkspaceStatusDto } from "src/api/model"
+import { uniqBy } from "lodash"
+import type { TaskDto } from "src/api/model"
 import { DeadlineType } from "src/api/model"
+import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { QuickFilter } from "src/utils/filter-utils"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 
@@ -41,10 +43,16 @@ export function matchesQuickFilter(
 	}
 }
 
+export type FilterOptions =
+	| "assigneeStatuses"
+	| "status"
+	| "deadlineType"
+	| "discussionName"
+	| "tags"
+
 export function buildFilterOptionsMap(
-	tasks: TaskDto[],
-	statuses: Record<number, WorkspaceStatusDto>,
-): Record<string, FilterOption[]> {
+	tasks: TaskRow[],
+): Record<FilterOptions, FilterOption[]> {
 	const assigneeSet = new Set<string>()
 	const deadlineTypeSet = new Set<string>()
 	const discussionNameSet = new Set<string>()
@@ -70,10 +78,10 @@ export function buildFilterOptionsMap(
 
 	return {
 		assigneeStatuses: toOptions(assigneeSet),
-		status: Object.values(statuses).map((s) => ({
-			value: s.type,
-			label: s.name,
-		})),
+		status: uniqBy(tasks, "status.name")
+			.map(({ status }) => status)
+			.filter((status) => !!status)
+			.map((s) => ({ value: s.type, label: s.name })),
 		deadlineType: toOptions(deadlineTypeSet, DEADLINE_LABELS),
 		discussionName: toOptions(discussionNameSet),
 		tags: toOptions(tagsSet),

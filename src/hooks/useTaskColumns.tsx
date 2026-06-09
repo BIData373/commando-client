@@ -8,6 +8,7 @@ import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import { DeadlineType, type TaskDto } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
+import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
 import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
@@ -26,7 +27,6 @@ import {
 	TooltipTrigger,
 } from "../components/ui/tooltip"
 import { formatDateShort } from "../functions/date-utils"
-import type { FilterOption } from "../functions/filter-utils"
 
 export type TaskColumn =
 	| keyof TaskDto
@@ -87,7 +87,7 @@ interface UseTaskColumnsOptions {
 	queryKey: QueryKey
 	visibleColumns: TaskColumn[]
 	searchQuery: string
-	filterOptionsMap: Record<string, FilterOption[]>
+	filterOptionsMap: Record<FilterOptions, FilterOption[]>
 	selectMode?: SelectModeConfig
 	actions?: ActionsConfig
 }
@@ -228,7 +228,7 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.status}
 					column={column}
-					filterOptions={filterOptionsMap["status"]}
+					filterOptions={filterOptionsMap.status}
 				/>
 			),
 			size: 100,
@@ -258,7 +258,7 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.assigneeStatuses}
 					column={column}
-					filterOptions={filterOptionsMap["assigneeStatuses"]}
+					filterOptions={filterOptionsMap.assigneeStatuses}
 				/>
 			),
 			size: 115,
@@ -285,7 +285,7 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.deadlineType}
 					column={column}
-					filterOptions={filterOptionsMap["deadlineType"]}
+					filterOptions={filterOptionsMap.deadlineType}
 				/>
 			),
 			size: 160,
@@ -391,7 +391,7 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.tags}
 					column={column}
-					filterOptions={filterOptionsMap["tags"]}
+					filterOptions={filterOptionsMap.tags}
 				/>
 			),
 			size: 160,
