@@ -101,7 +101,7 @@ direction: ltr;
 const ItemLabel = styled.span`
   direction: rtl;
   flex: 1;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);

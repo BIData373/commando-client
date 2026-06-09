@@ -24,7 +24,6 @@ import {
 import { getEmptyState } from "src/utils/empty-state-utils"
 import { buildFilterOptionsMap } from "../../functions/filter-utils"
 import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns"
-import { useWorkspace } from "../../providers/WorkspaceProvider"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 
@@ -61,7 +60,6 @@ function TaskTable({
 		activeQuickFilters,
 		dateRange,
 	} = useTasksFilters()
-	const { statuses } = useWorkspace()
 	const queryClient = useQueryClient()
 
 	function handleSuccess() {
@@ -105,15 +103,13 @@ function TaskTable({
 			newFilters,
 			"status",
 		) as WorkspaceStatusType[]
+
 		const tableDeadlineColumnValue = getColumnFilter(
 			newFilters,
 			"deadlineType",
 		) as DeadlineType[]
 
-		const tableTabFilter = newFilters.filter(
-			(column) => column.id !== "status" && column.value !== "deadlineType",
-		)
-		setLocalColumnFilters(tableTabFilter)
+		setLocalColumnFilters(newFilters)
 
 		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
 	}
@@ -166,10 +162,7 @@ function TaskTable({
 		})
 	}
 
-	const filterOptionsMap = useMemo(
-		() => buildFilterOptionsMap(tasks, statuses),
-		[tasks, statuses],
-	)
+	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
 
 	const extraColumnIds = extraColumns
 		? new Set(Object.keys(extraColumns))
@@ -302,7 +295,7 @@ const TableWrapper = styled.div`
     position: sticky;
     top: 0;
     z-index: var(--z-dropdown);
-    font-size: 16px;
+    font-size: var(--fs-base);
     font-weight: 500;
     line-height: 24px;
     color: var(--text-color);

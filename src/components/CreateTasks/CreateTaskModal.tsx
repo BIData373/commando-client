@@ -557,7 +557,7 @@ const FormContainer = styled.div`
 
 const ModalTitle = styled.h1`
   font-weight: 600;
-  font-size: 42px;
+  font-size: var(--fs-heading-h1);
   line-height: 50px;
   color: black;
   margin: 0;
@@ -572,7 +572,7 @@ const DirectiveTextarea = styled.textarea`
   border: 1px solid #d9d9d9;
   border-radius: 8px;
   background: white;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color: rgba(0, 0, 0, 0.88);
@@ -608,7 +608,7 @@ const CheckboxRow = styled.label`
 `
 
 const CheckboxLabelText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
@@ -648,7 +648,7 @@ const ExpandButton = styled.button`
 `
 
 const ExpandButtonText = styled.span<{ $expanded: boolean }>`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: ${({ $expanded }) => ($expanded ? "rgba(0, 0, 0, 0.25)" : "#1677ff")};

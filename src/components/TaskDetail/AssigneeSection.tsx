@@ -96,7 +96,7 @@ const Section = styled.div`
 `
 
 const SectionLabel = styled.p`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 500;
   line-height: 24px;
   color: var(--sea-ink);
@@ -105,7 +105,7 @@ const SectionLabel = styled.p`
 `
 
 const SectionValue = styled.p`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color);

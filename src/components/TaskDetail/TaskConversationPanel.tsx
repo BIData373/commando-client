@@ -235,7 +235,7 @@ const ChatGroup = styled.div`
 `
 
 const ChatLabel = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 21px;
   color: var(--sea-ink);
@@ -248,7 +248,7 @@ const ChatBadge = styled.span`
   width: 20px;
   height: 20px;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   color: var(--background);
   background: var(--default-linear);
@@ -271,7 +271,7 @@ const DateSection = styled.div`
 `
 
 const DateLabel = styled.p`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   line-height: 20px;
   color: var(--text-color-400);
@@ -309,7 +309,7 @@ const MessageHeader = styled.div`
 `
 
 const TimeText = styled.p`
-  font-size: 10px;
+  font-size: var(--fs-xs);
   font-weight: 400;
   line-height: 15px;
   color: var(--text-color);
@@ -318,7 +318,7 @@ const TimeText = styled.p`
 `
 
 const AuthorText = styled.p`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 22px;
   color: var(--text-color-2);
@@ -330,28 +330,28 @@ const AuthorText = styled.p`
 `
 
 const AuthorName = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 22px;
   color: var(--text-color-2);
 `
 
 const AuthorUpn = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 500;
   line-height: 20px;
   color: var(--text-color-400);
 `
 
 const AuthorEmail = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 22px;
   color: var(--text-color-400);
 `
 
 const MessageText = styled.p`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-2);
@@ -400,7 +400,7 @@ const StyledInput = styled.input`
   border: 0.8px solid var(--card-border);
   border-radius: 8px;
   padding: 4px 12px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: normal;
   color: var(--text-color-2);

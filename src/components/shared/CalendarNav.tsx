@@ -96,7 +96,7 @@ const NavButton = styled.button`
 `
 
 const MonthLabel = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;

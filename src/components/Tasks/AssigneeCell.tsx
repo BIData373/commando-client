@@ -100,7 +100,7 @@ const AvatarCircle = styled.button<{ $color?: AvatarColor }>`
   width: 29px;
   height: 29px;
   border-radius: 50%;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   line-height: 20px;
   color: var(--sea-ink);
@@ -172,13 +172,13 @@ direction: rtl;
 `
 
 const RoleText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   color: var(--sea-ink);
 `
 
 const SectionLabel = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 500;
   line-height: 24px;
   color: var(--text-subtitle-color);
@@ -198,7 +198,7 @@ const UserInfo = styled.div`
 `
 
 const UserName = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   color: var(--sea-ink);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -206,7 +206,7 @@ const UserName = styled.span`
 `
 
 const UserEmail = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   color: var(--sea-ink-soft);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -260,7 +260,7 @@ const CompactRole = styled.span`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   color: var(--sea-ink);
   flex: 1;
   white-space: nowrap;

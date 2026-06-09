@@ -61,7 +61,7 @@ const RoleTrigger = styled(DropdownMenuTrigger)<{
   padding: 3px 16px;
   border: none;
   outline: none;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   color: ${({ $enabled }) => ($enabled ? "rgba(0, 0, 0, 0.65);" : "rgba(0, 0, 0, 0.25);")};
   cursor: ${({ $enabled }) => ($enabled ? "pointer" : "default")};

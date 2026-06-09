@@ -196,7 +196,7 @@ const WorkspaceCell = styled.div`
 `
 
 const WorkspaceCellName = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color);

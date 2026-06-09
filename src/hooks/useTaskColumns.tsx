@@ -8,6 +8,7 @@ import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import { DeadlineType, type TaskDto } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
+import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
 import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
@@ -26,7 +27,6 @@ import {
 	TooltipTrigger,
 } from "../components/ui/tooltip"
 import { formatDateShort } from "../functions/date-utils"
-import type { FilterOption } from "../functions/filter-utils"
 
 export type TaskColumn =
 	| keyof TaskDto
@@ -87,7 +87,7 @@ interface UseTaskColumnsOptions {
 	queryKey: QueryKey
 	visibleColumns: TaskColumn[]
 	searchQuery: string
-	filterOptionsMap: Record<string, FilterOption[]>
+	filterOptionsMap: Record<FilterOptions, FilterOption[]>
 	selectMode?: SelectModeConfig
 	actions?: ActionsConfig
 }
@@ -228,7 +228,7 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.status}
 					column={column}
-					filterOptions={filterOptionsMap["status"]}
+					filterOptions={filterOptionsMap.status}
 				/>
 			),
 			size: 100,
@@ -258,7 +258,7 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.assigneeStatuses}
 					column={column}
-					filterOptions={filterOptionsMap["assigneeStatuses"]}
+					filterOptions={filterOptionsMap.assigneeStatuses}
 				/>
 			),
 			size: 115,
@@ -285,7 +285,7 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.deadlineType}
 					column={column}
-					filterOptions={filterOptionsMap["deadlineType"]}
+					filterOptions={filterOptionsMap.deadlineType}
 				/>
 			),
 			size: 160,
@@ -391,7 +391,7 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.tags}
 					column={column}
-					filterOptions={filterOptionsMap["tags"]}
+					filterOptions={filterOptionsMap.tags}
 				/>
 			),
 			size: 160,
@@ -501,7 +501,7 @@ const IdCell = styled.span`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color:rgba(0, 0, 0, 0.65);
@@ -512,7 +512,7 @@ const TitleCell = styled.div`
   align-items: center;
   gap: 6px;
   color: var(--sea-ink);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 20px;
   overflow: hidden;
@@ -554,7 +554,7 @@ const DeadlineCell = styled.div`
 `
 
 const DeadlineDateText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.65);
@@ -603,7 +603,7 @@ const SourceText = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.65);
@@ -613,7 +613,7 @@ const NotesText = styled.div`
   overflow: hidden;
   max-height: 40px;
 
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 20px;
   color: var(--sea-ink-soft);
 
@@ -645,6 +645,6 @@ const NotesText = styled.div`
 `
 
 const DateText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   color: var(--sea-ink-soft);
 `

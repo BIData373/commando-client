@@ -111,14 +111,14 @@ const CardHeader = styled.div`
 `
 
 const CardLabel = styled.span`
-  font-size: 20px;
+  font-size: var(--fs-xl);
   font-weight: 400;
   line-height: 28px;
   color: var(--primary);
 `
 
 const CardNumber = styled.span`
-  font-size: 38px;
+  font-size: var(--fs-heading-1);
   font-weight: 400;
   line-height: 46px;
   background: var(--default-linear);
@@ -141,7 +141,7 @@ const WeeklyBadge = styled.div`
 `
 
 const WeeklyText = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   line-height: 14px;
   color: var(--primary);

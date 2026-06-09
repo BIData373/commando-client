@@ -59,7 +59,7 @@ const TitleGroup = styled.div`
 `
 
 const WorkspaceName = styled.span`
-  font-size: 24px;
+  font-size: var(--fs-heading-3);
   font-weight: 400;
   color: #001225;
   white-space: nowrap;
@@ -74,7 +74,7 @@ const TitleDivider = styled.div`
 
 const PageTitle = styled.h1`
   margin: 0;
-  font-size: 38px;
+  font-size: var(--fs-heading-1);
   font-weight: 500;
   color: var(--foreground);
   white-space: nowrap;
@@ -96,7 +96,7 @@ const CreateButton = styled.button`
   border-radius: 8px;
   background: linear-gradient(165deg, var(--purple-start) 0%, var(--purple-end) 100%);
   color: var(--primary-foreground);
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   cursor: pointer;
   white-space: nowrap;
@@ -117,7 +117,7 @@ const AssigneesButton = styled.button`
   border-radius: 8px;
   background: var(--background);
   color: var(--foreground);
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   cursor: pointer;
   white-space: nowrap;

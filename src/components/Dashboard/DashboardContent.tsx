@@ -43,7 +43,7 @@ export function DashboardContent() {
 
 	return (
 		<ContentArea>
-			<TasksDatePicker showTitle={true} />
+			<TasksDatePicker />
 
 			<GridLayout>
 				<FocusedInstructions queryKey={tasksQueryKey} tasks={tasks} />

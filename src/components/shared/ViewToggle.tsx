@@ -45,7 +45,7 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   padding-inline: 12px;
   border: none;
   border-radius: 6px;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   white-space: nowrap;

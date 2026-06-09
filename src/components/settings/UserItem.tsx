@@ -20,13 +20,13 @@ export function UserItem({ user: { upn, info } }: UserItemProps) {
 }
 
 const UserName = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   color: rgba(0, 0, 0, 0.88);
 `
 
 const UserMeta = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   color: var(--text-color);
   color: rgba(0, 0, 0, 0.45);

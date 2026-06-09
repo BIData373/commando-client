@@ -7,7 +7,7 @@ import {
 import { ChevronDown, User } from "lucide-react"
 import type { HeaderConfig } from "src/router"
 import { useTitleBarActions } from "../providers/TitleBarProvider"
-// import ThemeToggle from "./ThemeToggle"
+import { BIHeaderBypass } from "./BIHeaderBypass"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -19,9 +19,14 @@ import {
 	NavigationMenuLink,
 	NavigationMenuList,
 } from "./ui/navigation-menu"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "./ui/tooltip"
 
 export default function Header() {
-	// In RTL flex, first item is rightmost. 'בית' is the primary/rightmost link.
 	const links: LinkComponentProps[] = [
 		{ to: "/workspace/$urlName/dashboard", children: "בית" },
 		{ to: "/workspace/$urlName/tasks", children: "הנחיות" },
@@ -34,7 +39,6 @@ export default function Header() {
 	const {
 		title = "",
 		navigation = true,
-		user = true,
 		workspace = false,
 	} = headerConfig ?? {}
 	const { actions, workspace: activeWorkspace } = useTitleBarActions()
@@ -72,29 +76,30 @@ export default function Header() {
 										alt="Workspace icon"
 									/>
 								)}
-								<WorkspaceName>{activeWorkspace.title}</WorkspaceName>
+								<TooltipProvider>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<WorkspaceName>{activeWorkspace.title}</WorkspaceName>
+										</TooltipTrigger>
+										<TooltipContent>{activeWorkspace.title}</TooltipContent>
+									</Tooltip>
+								</TooltipProvider>
 							</>
 						)}
 					</CenterSection>
 
-					{/* Col 3 — physically LEFT in RTL: user avatar */}
 					<EndSection>
-						{user && (
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<UserTrigger>
-										<User size={16} />
-										<ChevronDown size={16} />
-									</UserTrigger>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent>
-									{/* <DropdownMenuSeparator />
-									<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-										<ThemeToggle />
-									</DropdownMenuItem> */}
-								</DropdownMenuContent>
-							</DropdownMenu>
-						)}
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<UserTrigger>
+									<User size={16} />
+									<ChevronDown size={16} />
+								</UserTrigger>
+							</DropdownMenuTrigger>
+							<UserDropdownContent>
+								<BIHeaderBypass />
+							</UserDropdownContent>
+						</DropdownMenu>
 					</EndSection>
 				</HeaderInner>
 			</HeaderRoot>
@@ -127,7 +132,7 @@ const HeaderRoot = styled.header`
 
 const HeaderInner = styled.div`
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr minmax(0, auto) 1fr;
   align-items: center;
   height: 62px;
 `
@@ -142,12 +147,17 @@ const CenterSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 `
 
 const EndSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+`
+
+const UserDropdownContent = styled(DropdownMenuContent)`
+  min-width: 220px;
 `
 
 const UserTrigger = styled.button`
@@ -167,11 +177,14 @@ const UserTrigger = styled.button`
 
 const WorkspaceName = styled.p`
   margin: 0;
-  font-size: 24px;
+  font-size: var(--fs-heading-3);
   font-weight: 500;
   line-height: 32px;
   color: #C7C9CB;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 `
 
 const WorkspaceIcon = styled.img`
@@ -198,7 +211,7 @@ const TitleBar = styled.div`
 const PageTitle = styled.h1`
   flex: 1;
   margin: 0;
-  font-size: 38px;
+  font-size: var(--fs-heading-1);
   font-weight: 500;
   color: var(--sea-ink);
 `
@@ -208,7 +221,7 @@ const NavMenuLink = styled(NavigationMenuLink)`
     padding: 8px 8px;
     color: #C7C9CB;
     font-weight: 400;
-    font-size: 14px;
+    font-size: var(--fs-btn);
     background: transparent;
     border-radius: 6px;
 
