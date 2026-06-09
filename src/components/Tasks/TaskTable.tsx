@@ -22,6 +22,7 @@ import {
 } from "src/providers/TasksFiltersProvider"
 import { buildFilterOptionsMap } from "../../functions/filter-utils"
 import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns"
+import { useWorkspace } from "../../providers/WorkspaceProvider"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 
@@ -52,6 +53,7 @@ function TaskTable({
 	onFiltersChange,
 }: TaskTableProps) {
 	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters()
+	const { statuses } = useWorkspace()
 	const queryClient = useQueryClient()
 
 	function handleSuccess() {
@@ -155,7 +157,10 @@ function TaskTable({
 		})
 	}
 
-	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
+	const filterOptionsMap = useMemo(
+		() => buildFilterOptionsMap(tasks, statuses),
+		[tasks, statuses],
+	)
 
 	const extraColumnIds = extraColumns
 		? new Set(Object.keys(extraColumns))

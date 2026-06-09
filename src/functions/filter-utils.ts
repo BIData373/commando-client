@@ -1,13 +1,8 @@
 import { differenceInDays, startOfToday } from "date-fns"
-import { DeadlineType, type TaskDto, WorkspaceStatusType } from "src/api/model"
+import type { TaskDto, WorkspaceStatusDto } from "src/api/model"
+import { DeadlineType } from "src/api/model"
 import { QuickFilter } from "src/utils/filter-utils"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
-
-const STATUS_OPTIONS: FilterOption[] = [
-	{ value: WorkspaceStatusType.NOT_STARTED, label: "טרם בוצע" },
-	{ value: WorkspaceStatusType.IN_PROGRESS, label: "בעבודה" },
-	{ value: WorkspaceStatusType.COMPLETED, label: "בוצע" },
-]
 // ─── Shared Types ────────────────────────────────────────────────────────────
 
 export interface FilterOption {
@@ -47,6 +42,7 @@ export function matchesQuickFilter(
 
 export function buildFilterOptionsMap(
 	tasks: TaskDto[],
+	statuses: Record<number, WorkspaceStatusDto>,
 ): Record<string, FilterOption[]> {
 	const assigneeSet = new Set<string>()
 	const deadlineTypeSet = new Set<string>()
@@ -73,7 +69,10 @@ export function buildFilterOptionsMap(
 
 	return {
 		assigneeStatuses: toOptions(assigneeSet),
-		status: STATUS_OPTIONS,
+		status: Object.values(statuses).map((s) => ({
+			value: s.type,
+			label: s.name,
+		})),
 		deadlineType: toOptions(deadlineTypeSet, DEADLINE_LABELS),
 		discussionName: toOptions(discussionNameSet),
 		tags: toOptions(tagsSet),
