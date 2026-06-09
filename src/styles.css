@@ -69,8 +69,6 @@ body,
   --Components-Button-Component-defaultBg: #141414;
   --Text-color-text-placeholder: rgba(0, 0, 0, 0.25);
 
-  --responsive-zoom: min(1, calc(100vw / 1920px));
-
   /* Typography scale */
   --fs-heading-h1: 42px;
   --fs-heading-1:  38px;
