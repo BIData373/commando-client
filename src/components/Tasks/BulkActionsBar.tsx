@@ -87,7 +87,7 @@ const Bar = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 8px 11px;
-  background: var(--Colors-Base-Geekblue-1);
+  background: #131629;
   border: 1px solid var(--Border-color-border-secondary);
   border-radius: 8px;
   box-shadow: var(--card-shadow-hover);

@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { ChevronUp } from "lucide-react"
+import type { AssigneeExtra } from "../shared/AssigneeRow"
 import AssigneeRowList from "../shared/AssigneeRow"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -11,6 +12,14 @@ interface AssigneeExpansionPanelProps {
 	onDetailChange: (assigneeId: number, value: string) => void
 	onRemoveAssignee: (assigneeId: number) => void
 	onCollapse: () => void
+}
+
+function toExtras(
+	details: Record<number, string>,
+): Record<number, AssigneeExtra> {
+	return Object.fromEntries(
+		Object.entries(details).map(([id, description]) => [id, { description }]),
+	)
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -37,7 +46,7 @@ function AssigneeExpansionPanel({
 				<AssigneeRowList
 					assigneeIds={assigneeIds}
 					directiveTitle={directiveTitle}
-					assigneeDetails={assigneeDetails}
+					assigneeExtras={toExtras(assigneeDetails)}
 					onDetailChange={onDetailChange}
 					onRemove={onRemoveAssignee}
 				/>

@@ -414,15 +414,9 @@ function useTaskColumns({
 			enableColumnFilter: false,
 			cell: ({ getValue }) => {
 				const notes = getValue<string>()
-				return (
-					<NotesText>
-						{searchQuery && notes ? (
-							<HighlightMatch text={notes} query={searchQuery} variant="mark" />
-						) : (
-							notes
-						)}
-					</NotesText>
-				)
+				return notes ? (
+					<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
+				) : null
 			},
 		},
 		createdAt: {
