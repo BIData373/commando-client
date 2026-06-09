@@ -4,6 +4,7 @@ import type { ReactNode } from "react"
 import { useState } from "react"
 import { Checkbox } from "../ui/checkbox"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { EmptyCardState } from "./EmptyCardState"
 
 interface FilterOption<T extends string | number> {
 	value: T
@@ -69,19 +70,23 @@ function MultiSelectFilterDropdown<T extends string | number>({
 			<PopoverContent align="start" sideOffset={8} asChild>
 				<DropdownPanel>
 					<ItemList>
-						{options.map((option) => (
-							<DropdownItem
-								key={option.value}
-								$selected={pending.has(option.value)}
-								onClick={() => toggleValue(option.value)}
-							>
-								<OptionLabel>
-									{option.icon}
-									<span>{option.label}</span>
-								</OptionLabel>
-								<Checkbox checked={pending.has(option.value)} />
-							</DropdownItem>
-						))}
+						{options.length === 0 ? (
+							<EmptyCardState title="לא נמצאו נושאים" />
+						) : (
+							options.map((option) => (
+								<DropdownItem
+									key={option.value}
+									$selected={pending.has(option.value)}
+									onClick={() => toggleValue(option.value)}
+								>
+									<OptionLabel>
+										{option.icon}
+										<span>{option.label}</span>
+									</OptionLabel>
+									<Checkbox checked={pending.has(option.value)} />
+								</DropdownItem>
+							))
+						)}
 					</ItemList>
 					<Divider />
 					<FooterRow>

@@ -36,7 +36,7 @@ function CreateTasksTable({
 			rowKey: String(id),
 			title: "",
 			deadlineType: DeadlineType.IMMEDIATE,
-			dueDate: new Date(),
+			dueDate: null,
 			assigneeIds: [],
 			assigneeDetails: {},
 			notes: "",

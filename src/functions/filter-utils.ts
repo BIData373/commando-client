@@ -3,6 +3,7 @@ import type { TaskDto, WorkspaceStatusDto } from "src/api/model"
 import { DeadlineType } from "src/api/model"
 import { QuickFilter } from "src/utils/filter-utils"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
+
 // ─── Shared Types ────────────────────────────────────────────────────────────
 
 export interface FilterOption {
@@ -29,7 +30,7 @@ export function matchesQuickFilter(
 			return (
 				daysUntil !== null &&
 				daysUntil >= 0 &&
-				daysUntil < 2 &&
+				daysUntil <= 2 &&
 				!(daysUntil < 0 && task.deadlineType !== DeadlineType.IMMEDIATE)
 			)
 		case QuickFilter.FLAGGED:
