@@ -6,8 +6,7 @@ import {
 import type { PropsWithChildren } from "react"
 import { useEffect } from "react"
 import { USE_MOCK_API, USE_SSO } from "src/utils/env-utils"
-
-const COOKIE_NAME = "ssoUser"
+import { COOKIE_NAME } from "src/utils/user-utils"
 
 const oidcConfiguration = {
 	client_id: import.meta.env.VITE_KEYCLOAK_CLIENT_ID ?? "",

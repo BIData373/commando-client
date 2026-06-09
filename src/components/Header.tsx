@@ -7,7 +7,7 @@ import {
 import { ChevronDown, User } from "lucide-react"
 import type { HeaderConfig } from "src/router"
 import { useTitleBarActions } from "../providers/TitleBarProvider"
-// import ThemeToggle from "./ThemeToggle"
+import { BIHeaderBypass } from "./BIHeaderBypass"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -27,7 +27,6 @@ import {
 } from "./ui/tooltip"
 
 export default function Header() {
-	// In RTL flex, first item is rightmost. 'בית' is the primary/rightmost link.
 	const links: LinkComponentProps[] = [
 		{ to: "/workspace/$urlName/dashboard", children: "בית" },
 		{ to: "/workspace/$urlName/tasks", children: "הנחיות" },
@@ -40,7 +39,6 @@ export default function Header() {
 	const {
 		title = "",
 		navigation = true,
-		user = true,
 		workspace = false,
 	} = headerConfig ?? {}
 	const { actions, workspace: activeWorkspace } = useTitleBarActions()
@@ -90,24 +88,18 @@ export default function Header() {
 						)}
 					</CenterSection>
 
-					{/* Col 3 — physically LEFT in RTL: user avatar */}
 					<EndSection>
-						{user && (
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<UserTrigger>
-										<User size={16} />
-										<ChevronDown size={16} />
-									</UserTrigger>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent>
-									{/* <DropdownMenuSeparator />
-									<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-										<ThemeToggle />
-									</DropdownMenuItem> */}
-								</DropdownMenuContent>
-							</DropdownMenu>
-						)}
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<UserTrigger>
+									<User size={16} />
+									<ChevronDown size={16} />
+								</UserTrigger>
+							</DropdownMenuTrigger>
+							<UserDropdownContent>
+								<BIHeaderBypass />
+							</UserDropdownContent>
+						</DropdownMenu>
 					</EndSection>
 				</HeaderInner>
 			</HeaderRoot>
@@ -162,6 +154,10 @@ const EndSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+`
+
+const UserDropdownContent = styled(DropdownMenuContent)`
+  min-width: 220px;
 `
 
 const UserTrigger = styled.button`
