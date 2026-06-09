@@ -40,7 +40,7 @@ export function AssigneesContent() {
 	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
 
 	const filteredAssignees = useFuse(assignees, searchQuery, {
-		threshold: 0.5,
+		threshold: 0.3,
 		keys: ["name", "users.upn", "users.info.name", "users.info.displayName"],
 	})
 
@@ -110,10 +110,13 @@ export function AssigneesContent() {
 						</StyledInputGroup>
 					</SearchWrapper>
 					<PrimaryButton
-						title="צור אחראי"
 						onClick={handleOpenCreateDialog}
-						header={<Plus size={16} />}
 						height={32}
+						title={
+							<>
+								צור אחראי <Plus size={16} />
+							</>
+						}
 					/>
 				</ToolbarRow>
 			</StyledContent>

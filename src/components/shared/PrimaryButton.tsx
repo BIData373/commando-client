@@ -1,10 +1,10 @@
 import styled from "@emotion/styled"
+import type { ReactNode } from "react"
 import { Spinner } from "../ui/spinner"
 
 interface PrimaryButtonProps {
 	onClick?(): void
-	title: string
-	tail?: React.ReactNode
+	title: ReactNode
 	height?: number
 	width?: number
 	disabled?: boolean
@@ -14,7 +14,6 @@ interface PrimaryButtonProps {
 export const PrimaryButton = ({
 	onClick,
 	title,
-	tail,
 	height,
 	width,
 	disabled,
@@ -28,7 +27,6 @@ export const PrimaryButton = ({
 			disabled={disabled || loading}
 		>
 			{title}
-			{tail}
 			{loading && <Spinner />}
 		</Button>
 	)
