@@ -162,7 +162,7 @@ const DropdownItem = styled.div<{ $selected: boolean }>`
 
 const OptionLabel = styled.span`
   flex: 1;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
@@ -191,7 +191,7 @@ const ApplyButton = styled.button`
   height: 24px;
   padding-inline: 7px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: white;
@@ -212,7 +212,7 @@ const ResetButton = styled.button`
   height: 24px;
   padding-inline: 7px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);

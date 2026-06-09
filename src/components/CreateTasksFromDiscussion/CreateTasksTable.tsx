@@ -274,7 +274,7 @@ const BackButton = styled.button`
   border-radius: 8px;
   background: white;
   color: var(--text-color-2);
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   cursor: pointer;

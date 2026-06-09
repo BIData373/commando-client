@@ -149,7 +149,7 @@ const AssigneeOptionEnd = styled.div`
 `
 
 const AssigneeOptionName = styled.span<{ $selected: boolean }>`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: ${({ $selected }) => ($selected ? "var(--tab-active-color)" : "var(--text-color-2)")};
@@ -169,7 +169,7 @@ const CreateNewButton = styled.button`
   cursor: pointer;
   border-radius: 6px;
   color: rgba(0, 0, 0, 0.65);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 32px;
 
   &:hover {

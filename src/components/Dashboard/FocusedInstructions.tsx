@@ -187,7 +187,7 @@ const Section = styled.div`
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 30px;
+  font-size: var(--fs-heading-2);
   font-weight: 400;
   color: var(--sea-ink);
   text-align: start;
@@ -227,7 +227,7 @@ const TabItem = styled.button<{ $active: boolean }>`
 `
 
 const TabTitle = styled.span<{ $active: boolean }>`
-  font-size: 20px;
+  font-size: var(--fs-xl);
   font-weight: 400;
   ${({ $active }) =>
 		$active
@@ -248,7 +248,7 @@ const TabBottom = styled.div`
 `
 
 const TabCount = styled.span<{ $active: boolean }>`
-  font-size: 38px;
+  font-size: var(--fs-heading-1);
   font-weight: 400;
   line-height: 1.2;
   ${({ $active }) =>

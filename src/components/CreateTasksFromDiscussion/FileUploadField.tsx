@@ -147,7 +147,7 @@ const FormLabelRow = styled.div`
 `
 
 const LabelText = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-2);
@@ -186,7 +186,7 @@ const UploadTextsWrapper = styled.div`
 `
 
 const UploadMainText = styled.p`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color: var(--text-color-2);
@@ -196,7 +196,7 @@ const UploadMainText = styled.p`
 
 const UploadHintText = styled.p`
   direction: rtl;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.45);
@@ -229,7 +229,7 @@ const FileName = styled.span`
   direction: rtl;
   flex: 1;
   min-width: 0;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--Components-Upload-Global-colorPrimary);
@@ -260,7 +260,7 @@ const FileRemoveButton = styled.button`
 
 const FileErrorText = styled.span`
   direction: rtl;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   color: #ff4d4f;
   margin-block-start: 4px;

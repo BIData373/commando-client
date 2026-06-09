@@ -166,7 +166,7 @@ const StyledInput = styled(Input)`
 `
 
 const CharCounter = styled.span<{ $atLimit: boolean }>`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger, #e53e3e)" : "var(--sea-ink-soft)")};
   text-align: end;
 `

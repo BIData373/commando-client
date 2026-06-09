@@ -72,7 +72,7 @@ const StyledCalendar = styled(Calendar)`
 
   /* ── Weekday headers ── */
   .rdp-weekdays .rdp-weekday {
-    font-size: 14px;
+    font-size: var(--fs-btn);
     color: rgba(0, 0, 0, 0.88) !important;
   }
 
@@ -84,7 +84,7 @@ const StyledCalendar = styled(Calendar)`
       width: 24px;
       height: 24px;
       min-width: 24px;
-      font-size: 14px;
+      font-size: var(--fs-btn);
       font-weight: 400;
       color: rgba(0, 0, 0, 0.88);
       border-radius: 6px;
