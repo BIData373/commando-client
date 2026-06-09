@@ -246,6 +246,7 @@ export { TaskTable }
 // ─── Table ────────────────────────────────────────────────────────────────────
 
 const TableWrapper = styled.div`
+  zoom: var(--responsive-zoom);
   overflow-y: auto;
   min-width: 0;
   width: 100%;
