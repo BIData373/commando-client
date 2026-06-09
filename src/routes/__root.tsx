@@ -11,6 +11,7 @@ import { Toaster } from "../components/ui/sonner"
 import { TooltipProvider } from "../components/ui/tooltip"
 import { TitleBarProvider } from "../providers/TitleBarProvider"
 import "../styles.css"
+import { IS_DEV } from "../utils/env-utils"
 
 export const Route = createRootRoute({
 	component: RootComponent,
@@ -33,7 +34,7 @@ function RootComponent() {
 			</TooltipProvider>
 			<ErrorModal />
 			<Toaster />
-			{import.meta.env.VITE_ENVIRONMENT === "development" && (
+			{IS_DEV && (
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",
