@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
+import { concat, uniq } from "lodash"
 import { ChevronDown, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
@@ -72,9 +73,11 @@ function TasksLayout({
 		new Set(),
 	)
 
-	const allTopics = [
-		...new Set(tasks.flatMap((t) => t.tags.map((tag) => tag.name))),
-	]
+	const allTopics = uniq(
+		tasks.flatMap((t) =>
+			concat(t.tags, t.source?.tags ?? []).map((tag) => tag.name),
+		),
+	)
 
 	const filteredTasks = useFilteredTasks(
 		tasks,
