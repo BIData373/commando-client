@@ -29,6 +29,7 @@ export function TasksDatePickerHeader({
 					{Object.values(DATE_TYPE).map((type) => (
 						<DropdownMenuItem
 							key={type}
+							dir="rtl"
 							onSelect={() => onDateTypeChange(type)}
 						>
 							{type}
