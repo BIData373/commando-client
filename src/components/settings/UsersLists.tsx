@@ -59,10 +59,10 @@ const UserListArea = styled.div`
 `
 
 const UserCard = styled.div`
-    padding: 1px 8px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+  padding: 1px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 `
 
 const UserCardItem = styled.div`

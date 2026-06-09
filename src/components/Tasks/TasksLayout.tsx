@@ -110,9 +110,17 @@ function TasksLayout({
 		})
 	}
 
-	function handleEdit(taskId: number) {
+	function handleOpenTask(taskId: number) {
 		navigate({
 			to: "/workspace/$urlName/tasks/$taskId",
+			params: { urlName, taskId: String(taskId) },
+			search: { view },
+		})
+	}
+
+	function handleEdit(taskId: number) {
+		navigate({
+			to: "/workspace/$urlName/tasks/$taskId/edit",
 			params: { urlName, taskId: String(taskId) },
 			search: { view },
 		})
@@ -228,7 +236,7 @@ function TasksLayout({
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
 							onFiltersChange={handleColumnFiltersChange}
-							onDoubleClick={handleEdit}
+							onDoubleClick={handleOpenTask}
 						/>
 					) : (
 						<TaskCardGrid tasks={filteredTasks} />
