@@ -100,22 +100,24 @@ const StyledCalendar = styled(Calendar)`
     display: flex;
     align-items: center;
     justify-content: center;
-
-    button[data-range-start='true'],
-    button[data-range-end='true'] {
-      width: 15px;
-    }
   }
 
-  /* ── Today: purple border, no background ── */
-  .rdp-today {
+  /* ── Today: purple border, no background (only when not in a range) ── */
+  .rdp-today:not([data-range-start]):not([data-range-end]):not([data-range-middle]) {
     background: transparent !important;
     --muted: transparent;
+  }
 
-    button {
-      border: 1px solid var(--primary);
-      color: rgba(0, 0, 0, 0.88) !important;
-    }
+  .rdp-today button {
+    border: 1px solid var(--primary);
+    color: rgba(0, 0, 0, 0.88) !important;
+  }
+
+  /* ── Today inside range: no border on button ── */
+  .rdp-today button[data-range-start='true'],
+  .rdp-today button[data-range-end='true'],
+  .rdp-today button[data-range-middle='true'] {
+    border: none !important;
   }
 
   /* ── Selected single: purple bg, white text ── */
@@ -133,16 +135,36 @@ const StyledCalendar = styled(Calendar)`
   }
 
 
-  /* ── Range start/end ── */
+  /* ── Light-purple band for range cells ── */
+  .rdp-range_start,
+  .rdp-range_end {
+    background-color: #E6E5FF !important;
+  }
+
+  .rdp-range_start::after,
+  .rdp-range_end::after {
+    background-color: #E6E5FF !important;
+  }
+
+  .rdp-range_middle {
+    background-color: #E6E5FF !important;
+    border-radius: 0 !important;
+  }
+
+  .rdp-day button[data-range-middle='true'] {
+    background: transparent !important;
+    color: rgba(0, 0, 0, 0.88) !important;
+  }
+
+  /* ── Range start/end: purple circle ── */
   .rdp-day button[data-range-start='true'],
   .rdp-day button[data-range-end='true'] {
     background: var(--primary) !important;
     color: white !important;
-  }
-
-  /* ── Range middle ── */
-  .rdp-day button[data-range-middle='true'] {
-    color: rgba(0, 0, 0, 0.88) !important;
+    border-radius: 6px !important;
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
   }
 
 `

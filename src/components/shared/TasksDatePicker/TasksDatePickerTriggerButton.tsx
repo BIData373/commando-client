@@ -39,6 +39,7 @@ const RangeLabel = styled.span`
 `
 
 const TriggerButton = styled.button`
+  direction: rtl;
   display: flex;
   align-items: center;
   gap: 8px;
