@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { ChevronUp } from "lucide-react"
-import AssigneeRowList from "../shared/AssigneeRow"
 import type { AssigneeExtra } from "../shared/AssigneeRow"
+import AssigneeRowList from "../shared/AssigneeRow"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -14,7 +14,9 @@ interface AssigneeExpansionPanelProps {
 	onCollapse: () => void
 }
 
-function toExtras(details: Record<number, string>): Record<number, AssigneeExtra> {
+function toExtras(
+	details: Record<number, string>,
+): Record<number, AssigneeExtra> {
 	return Object.fromEntries(
 		Object.entries(details).map(([id, description]) => [id, { description }]),
 	)
