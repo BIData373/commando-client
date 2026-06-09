@@ -49,7 +49,7 @@ export function PermissionsContent() {
 	} = useListPermissions({
 		workspaceId,
 	})
-	const { mutate: updatePermission } = useUpsertPermission()
+	const { mutate: upsertPermission } = useUpsertPermission()
 	const { mutate: deletePermission } = useDeletePermission()
 
 	const currentTabUsers = useMemo(() => {
@@ -92,9 +92,11 @@ export function PermissionsContent() {
 			return
 		}
 
-		updatePermission(
+		const { id, ...userToUpdate } = selectedUser
+
+		upsertPermission(
 			{
-				data: { workspaceId, upn: selectedUser.upn, info: selectedUser, type },
+				data: { ...userToUpdate, workspaceId, type },
 			},
 			{
 				onSuccess: handleSuccessUpsert,
@@ -120,12 +122,12 @@ export function PermissionsContent() {
 	}
 
 	function handleTypeChangePermissionUser(
-		{ upn }: UserDto,
+		{ id, ...dto }: UserDto,
 		type: PermissionType,
 	) {
-		updatePermission(
+		upsertPermission(
 			{
-				data: { upn, workspaceId, type },
+				data: { ...dto, workspaceId, type },
 			},
 			{
 				onSuccess: handleSuccessUpsert,
