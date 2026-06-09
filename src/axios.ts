@@ -20,7 +20,7 @@ export function resolveBypassValues(
 	rawIsBI: string | null,
 ) {
 	return {
-		username: rawUsername ?? REQUEST_USERNAME ?? null,
+		username: rawUsername || REQUEST_USERNAME || null,
 		isBI: rawIsBI !== null ? rawIsBI === "true" : !!IS_BI,
 	}
 }
@@ -35,12 +35,16 @@ export const axiosInstance = axios.create({
 })
 
 axiosInstance.interceptors.request.use((config) => {
+	const rawUsername = localStorage.getItem(requestUsernameKey)
+	const parsedUsername =
+		rawUsername !== null ? (JSON.parse(rawUsername) as string | null) : null
+
 	const { username, isBI } = resolveBypassValues(
-		localStorage.getItem(requestUsernameKey),
+		parsedUsername,
 		localStorage.getItem(isBIKey),
 	)
 
-	if (username) {
+	if (username && username.length > 0) {
 		config.headers[REQUEST_USERNAME_HEADER] = username
 	} else {
 		delete config.headers[REQUEST_USERNAME_HEADER]
