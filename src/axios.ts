@@ -25,7 +25,7 @@ export const axiosInstance = axios.create({
 		"Content-Type": "application/json",
 		...(STATIC_TOKEN && { [STATIC_TOKEN_HEADER]: STATIC_TOKEN }),
 		...(resolvedUsername && { [REQUEST_USERNAME_HEADER]: resolvedUsername }),
-		...(resolvedIsBI && { [IS_BI_HEADER]: "true" }),
+		...(resolvedIsBI && { [IS_BI_HEADER]: resolvedIsBI }),
 	},
 })
 
