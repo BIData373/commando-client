@@ -15,11 +15,15 @@ export const IS_BI_HEADER = "is-bi"
 export const requestUsernameKey = "request_username"
 export const isBIKey = "is_bi"
 
-const storedUsername = localStorage.getItem(requestUsernameKey)
-const storedIsBI = localStorage.getItem(isBIKey)
-
-const resolvedUsername = storedUsername ?? REQUEST_USERNAME
-const resolvedIsBI = storedIsBI ?? !!IS_BI
+export function resolveBypassValues(
+	rawUsername: string | null,
+	rawIsBI: string | null,
+) {
+	return {
+		username: rawUsername ?? REQUEST_USERNAME ?? null,
+		isBI: rawIsBI !== null ? rawIsBI === "true" : !!IS_BI,
+	}
+}
 
 export const axiosInstance = axios.create({
 	baseURL: API_BASE_URL,
@@ -27,9 +31,28 @@ export const axiosInstance = axios.create({
 	headers: {
 		"Content-Type": "application/json",
 		...(STATIC_TOKEN && { [STATIC_TOKEN_HEADER]: STATIC_TOKEN }),
-		...(resolvedUsername && { [REQUEST_USERNAME_HEADER]: resolvedUsername }),
-		...(resolvedIsBI && { [IS_BI_HEADER]: resolvedIsBI }),
 	},
+})
+
+axiosInstance.interceptors.request.use((config) => {
+	const { username, isBI } = resolveBypassValues(
+		localStorage.getItem(requestUsernameKey),
+		localStorage.getItem(isBIKey),
+	)
+
+	if (username) {
+		config.headers[REQUEST_USERNAME_HEADER] = username
+	} else {
+		delete config.headers[REQUEST_USERNAME_HEADER]
+	}
+
+	if (isBI) {
+		config.headers[IS_BI_HEADER] = "true"
+	} else {
+		delete config.headers[IS_BI_HEADER]
+	}
+
+	return config
 })
 
 axiosInstance.interceptors.response.use((originalResponse) => {
