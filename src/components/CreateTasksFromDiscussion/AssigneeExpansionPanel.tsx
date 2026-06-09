@@ -1,16 +1,25 @@
-import styled from "@emotion/styled";
-import { ChevronUp } from "lucide-react";
-import AssigneeRowList from "../shared/AssigneeRow";
+import styled from "@emotion/styled"
+import { ChevronUp } from "lucide-react"
+import type { AssigneeExtra } from "../shared/AssigneeRow"
+import AssigneeRowList from "../shared/AssigneeRow"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface AssigneeExpansionPanelProps {
-	assigneeIds: number[];
-	directiveTitle: string;
-	assigneeDetails: Record<number, string>;
-	onDetailChange: (assigneeId: number, value: string) => void;
-	onRemoveAssignee: (assigneeId: number) => void;
-	onCollapse: () => void;
+	assigneeIds: number[]
+	directiveTitle: string
+	assigneeDetails: Record<number, string>
+	onDetailChange: (assigneeId: number, value: string) => void
+	onRemoveAssignee: (assigneeId: number) => void
+	onCollapse: () => void
+}
+
+function toExtras(
+	details: Record<number, string>,
+): Record<number, AssigneeExtra> {
+	return Object.fromEntries(
+		Object.entries(details).map(([id, description]) => [id, { description }]),
+	)
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -37,16 +46,16 @@ function AssigneeExpansionPanel({
 				<AssigneeRowList
 					assigneeIds={assigneeIds}
 					directiveTitle={directiveTitle}
-					assigneeDetails={assigneeDetails}
+					assigneeExtras={toExtras(assigneeDetails)}
 					onDetailChange={onDetailChange}
 					onRemove={onRemoveAssignee}
 				/>
 			</RowsWrapper>
 		</PanelContainer>
-	);
+	)
 }
 
-export default AssigneeExpansionPanel;
+export default AssigneeExpansionPanel
 
 // ─── Styled Components ──────────────────────────────────────────────────────
 
@@ -57,14 +66,14 @@ const PanelContainer = styled.div`
   gap: 12px;
   width: 100%;
   padding-block-end: 8px;
-`;
+`
 
 const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5px;
   padding: 0.5px;
-`;
+`
 
 const CollapseCell = styled.button`
   display: flex;
@@ -82,7 +91,7 @@ const CollapseCell = styled.button`
   &:hover {
     color: var(--text-color-2);
   }
-`;
+`
 
 const DetailHeaderCell = styled.div`
   flex: 1;
@@ -92,12 +101,12 @@ const DetailHeaderCell = styled.div`
   justify-content: flex-end;
   padding: 4px 12px;
   background: var(--colors-base-neutral-3);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color);
   white-space: nowrap;
-`;
+`
 
 const AssigneeHeaderCell = styled.div`
   width: 218px;
@@ -107,14 +116,14 @@ const AssigneeHeaderCell = styled.div`
   padding: 4px 12px;
   padding-inline-end: 64px;
   background: var(--colors-base-neutral-3);
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 22px;
   color: var(--text-color);
   white-space: nowrap;
   flex-shrink: 0;
-`;
+`
 
 const RowsWrapper = styled.div`
   padding-inline: 24px;
-`;
+`

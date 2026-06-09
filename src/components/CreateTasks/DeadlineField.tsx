@@ -1,19 +1,19 @@
-import styled from "@emotion/styled";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { useState } from "react";
-import { formatDate } from "src/functions/date-utils";
-import type { DatePickerValue } from "../shared/DatePicker";
-import DatePicker, { CalendarMode } from "../shared/DatePicker";
-import { DeadlineType } from "../shared/DeadlineTag";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import styled from "@emotion/styled"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { useState } from "react"
+import { DeadlineType } from "src/api/model"
+import { formatDate } from "src/functions/date-utils"
+import type { DatePickerValue } from "src/utils/date-utils"
+import DatePicker, { CalendarMode } from "../shared/DatePicker"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface DeadlineFieldProps {
-	deadlineType: DeadlineType;
-	dueDate: Date | null;
-	onDeadlineTypeChange: (type: DeadlineType) => void;
-	onDateChange: (date: Date | null) => void;
+	deadlineType: DeadlineType
+	dueDate: Date | null
+	onDeadlineTypeChange: (type: DeadlineType) => void
+	onDateChange: (date: Date | null) => void
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -24,15 +24,15 @@ function DeadlineField({
 	onDeadlineTypeChange,
 	onDateChange,
 }: DeadlineFieldProps) {
-	const [isDateOpen, setIsDateOpen] = useState(false);
+	const [isDateOpen, setIsDateOpen] = useState(false)
 
 	function handleDateSelect(value: DatePickerValue | undefined) {
-		const date = value instanceof Date ? value : undefined;
-		onDateChange(date ?? null);
-		setIsDateOpen(false);
+		const date = value instanceof Date ? value : undefined
+		onDateChange(date ?? null)
+		setIsDateOpen(false)
 	}
 
-	const showDatePicker = deadlineType !== DeadlineType.Immediate;
+	const showDatePicker = deadlineType !== DeadlineType.IMMEDIATE
 
 	return (
 		<FormItem>
@@ -42,28 +42,28 @@ function DeadlineField({
 			<DeadlineRow>
 				<SegmentedControl>
 					<SegmentedItem
-						$selected={deadlineType === DeadlineType.Date}
-						onClick={() => onDeadlineTypeChange(DeadlineType.Date)}
+						$selected={deadlineType === DeadlineType.DATE}
+						onClick={() => onDeadlineTypeChange(DeadlineType.DATE)}
 					>
 						תאריך
 					</SegmentedItem>
 					<SegmentedItem
-						$selected={deadlineType === DeadlineType.Immediate}
-						onClick={() => onDeadlineTypeChange(DeadlineType.Immediate)}
+						$selected={deadlineType === DeadlineType.IMMEDIATE}
+						onClick={() => onDeadlineTypeChange(DeadlineType.IMMEDIATE)}
 					>
 						מיידי
 					</SegmentedItem>
 					<SegmentedItem
-						$selected={deadlineType === DeadlineType.Ongoing}
-						onClick={() => onDeadlineTypeChange(DeadlineType.Ongoing)}
+						$selected={deadlineType === DeadlineType.ROLLING}
+						onClick={() => onDeadlineTypeChange(DeadlineType.ROLLING)}
 					>
 						שוטף
 					</SegmentedItem>
 				</SegmentedControl>
-				{deadlineType === DeadlineType.Immediate && (
+				{deadlineType === DeadlineType.IMMEDIATE && (
 					<HintText>לביצוע בהקדם</HintText>
 				)}
-				{deadlineType === DeadlineType.Ongoing && (
+				{deadlineType === DeadlineType.ROLLING && (
 					<HintText>עד (אופציונלי)</HintText>
 				)}
 				{showDatePicker && (
@@ -87,10 +87,10 @@ function DeadlineField({
 				)}
 			</DeadlineRow>
 		</FormItem>
-	);
+	)
 }
 
-export default DeadlineField;
+export default DeadlineField
 
 // ─── Styled ──────────────────────────────────────────────────────────────────
 
@@ -99,7 +99,7 @@ const FormItem = styled.div`
   flex-direction: column;
   align-items: flex-end;
   width: 100%;
-`;
+`
 
 const FormLabelRow = styled.div`
   display: flex;
@@ -108,14 +108,14 @@ const FormLabelRow = styled.div`
   gap: 4px;
   padding-block-end: 8px;
   font-weight: 400;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   white-space: nowrap;
-`;
+`
 
 const LabelText = styled.span`
   color: rgba(0, 0, 0, 0.88);
-`;
+`
 
 const DeadlineRow = styled.div`
   direction: rtl;
@@ -123,7 +123,7 @@ const DeadlineRow = styled.div`
   align-items: center;
   gap: 16px;
   width: 100%;
-`;
+`
 
 const SegmentedControl = styled.div`
   display: flex;
@@ -133,7 +133,7 @@ const SegmentedControl = styled.div`
   background: var(--colors-base-neutral-3);
   border-radius: 8px;
   overflow: hidden;
-`;
+`
 
 const SegmentedItem = styled.button<{ $selected: boolean }>`
   display: flex;
@@ -144,7 +144,7 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   padding-inline: 12px;
   border: none;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 24px;
   white-space: nowrap;
@@ -160,17 +160,17 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   &:hover {
     background: ${({ $selected }) => ($selected ? "white" : "rgba(0, 0, 0, 0.06)")};
   }
-`;
+`
 
 const HintText = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
   color: rgba(0, 0, 0, 0.65);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-`;
+`
 
 const DatePickerButton = styled.button`
   display: flex;
@@ -190,22 +190,22 @@ const DatePickerButton = styled.button`
   &:hover {
     border-color: #4096ff;
   }
-`;
+`
 
 const DatePickerText = styled.span<{ $hasValue: boolean }>`
   flex: auto;
   text-align: right;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 24px;
   color: ${({ $hasValue }) => ($hasValue ? "rgba(0, 0, 0, 0.88)" : "rgba(0, 0, 0, 0.25)")};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`;
+`
 
 const DatePopoverContent = styled(PopoverContent)`
   width: auto;
   padding: 0;
   z-index: var(--z-dropdown);
-`;
+`

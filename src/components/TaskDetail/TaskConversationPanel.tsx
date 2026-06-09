@@ -1,20 +1,16 @@
-import { keyframes } from "@emotion/react";
-import styled from "@emotion/styled";
-import { format, isSameDay } from "date-fns";
-import { ChevronUp, Send } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import type { IUserSummary } from "../../types";
-import type { TaskMessage } from "../../types/message";
-
-interface TaskConversationPanelProps {
-	messages: TaskMessage[];
-	currentUser: IUserSummary;
-	onClose: () => void;
-}
+import { keyframes } from "@emotion/react"
+import styled from "@emotion/styled"
+import { format, isSameDay } from "date-fns"
+import { ChevronUp, Send } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { useCreateMessage, useListMessages } from "src/api/message/message"
+import type { MessageDto } from "src/api/model"
+import { useCurrentUser } from "src/hooks/useCurrentUser"
+import { queryClient } from "src/queryClient"
 
 interface DateGroup {
-	dateLabel: string;
-	messages: TaskMessage[];
+	dateLabel: string
+	messages: MessageDto[]
 }
 
 const HEBREW_MONTHS = [
@@ -30,76 +26,92 @@ const HEBREW_MONTHS = [
 	"אוקטובר",
 	"נובמבר",
 	"דצמבר",
-];
+]
 
 function formatDateLabel(date: Date, today: Date): string {
-	if (isSameDay(date, today)) return "היום";
-	const day = date.getDate();
-	const month = HEBREW_MONTHS[date.getMonth()];
-	const year = date.getFullYear();
-	return `${day} ב${month} ${year}`;
+	if (isSameDay(date, today)) return "היום"
+	const day = date.getDate()
+	const month = HEBREW_MONTHS[date.getMonth()]
+	const year = date.getFullYear()
+	return `${day} ב${month} ${year}`
 }
 
-function groupMessagesByDate(messages: TaskMessage[]): DateGroup[] {
-	const today = new Date();
-	const groups: DateGroup[] = [];
+function groupMessagesByDate(messages: MessageDto[]): DateGroup[] {
+	const today = new Date()
+	const groups: DateGroup[] = []
 	for (const msg of messages) {
-		const label = formatDateLabel(msg.timestamp, today);
-		const last = groups[groups.length - 1];
+		const label = formatDateLabel(new Date(msg.createdAt), today)
+		const last = groups[groups.length - 1]
 		if (last && last.dateLabel === label) {
-			last.messages.push(msg);
+			last.messages.push(msg)
 		} else {
-			groups.push({ dateLabel: label, messages: [msg] });
+			groups.push({ dateLabel: label, messages: [msg] })
 		}
 	}
-	return groups;
+	return groups
+}
+
+interface TaskConversationPanelProps {
+	taskId: number
+	onClose: () => void
 }
 
 function TaskConversationPanel({
-	messages,
-	currentUser,
+	taskId,
 	onClose,
 }: TaskConversationPanelProps) {
-	const [localMessages, setLocalMessages] = useState<TaskMessage[]>(messages);
-	const [inputValue, setInputValue] = useState("");
-	const messagesAreaRef = useRef<HTMLDivElement>(null);
+	const currentUser = useCurrentUser()
+
+	const { data: messages = [], queryKey } = useListMessages({ taskId })
+	const { mutateAsync: createMessage } = useCreateMessage()
+
+	const [inputValue, setInputValue] = useState("")
+	const messagesAreaRef = useRef<HTMLDivElement>(null)
 
 	useEffect(() => {
-		const el = messagesAreaRef.current;
-		if (el && localMessages.length >= 0) el.scrollTop = el.scrollHeight;
-	}, [localMessages]);
+		const el = messagesAreaRef.current
+		if (el && messages.length >= 0) el.scrollTop = el.scrollHeight
+	}, [messages])
 
-	const dateGroups = groupMessagesByDate(localMessages);
+	const dateGroups = groupMessagesByDate(messages)
 
 	function handleSend() {
-		const trimmed = inputValue.trim();
-		if (!trimmed) return;
-		const newMsg: TaskMessage = {
-			id: Date.now(),
-			userId: currentUser.id,
-			fullName: currentUser.name,
-			upn: "",
-			emailDisplayName: "",
-			timestamp: new Date(),
-			text: trimmed,
-		};
-		setLocalMessages((prev) => [...prev, newMsg]);
-		setInputValue("");
+		const content = inputValue.trim()
+		if (!content) {
+			return
+		}
+
+		createMessage(
+			{
+				data: { taskId, content },
+			},
+			{
+				onSuccess(data) {
+					queryClient.setQueryData(queryKey, (prev) => prev && [...prev, data])
+				},
+			},
+		)
+
+		setInputValue("")
 	}
 
 	function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-		if (e.key === "Enter") handleSend();
+		if (e.key === "Enter") {
+			handleSend()
+		}
 	}
 
-	const displayCount = localMessages.length;
+	const displayCount = messages.length
 
 	return (
 		<ConversationWrapper>
 			<ConversationHeader onClick={onClose}>
 				<ChatGroup>
 					<ChatBadge>{displayCount}</ChatBadge>
+
 					<ChatLabel>שיחה ועדכונים</ChatLabel>
 				</ChatGroup>
+
 				<ChevronIcon>
 					<ChevronUp size={20} />
 				</ChevronIcon>
@@ -110,21 +122,25 @@ function TaskConversationPanel({
 					{dateGroups.map((group) => (
 						<DateSection key={group.dateLabel}>
 							<DateLabel>{group.dateLabel}</DateLabel>
-							{group.messages.map((msg) => (
-								<MessageOuter
-									key={msg.id}
-									$isOwn={msg.userId === currentUser.id}
-								>
+
+							{group.messages.map(({ id, user, content, createdAt }) => (
+								<MessageOuter key={id} $isOwn={user.id === currentUser.id}>
 									<MessageCard>
 										<MessageHeader>
 											<AuthorText>
-												<AuthorName>{msg.fullName} - </AuthorName>
-												<AuthorUpn>{msg.upn}</AuthorUpn>
-												<AuthorEmail> - {msg.emailDisplayName} </AuthorEmail>
+												<AuthorName>{user.info?.name} - </AuthorName>
+
+												<AuthorUpn>{user.upn}</AuthorUpn>
+
+												<AuthorEmail> - {user.info?.displayName} </AuthorEmail>
 											</AuthorText>
-											<TimeText>{format(msg.timestamp, "HH:mm")}</TimeText>
+
+											<TimeText>
+												{format(new Date(createdAt), "HH:mm")}
+											</TimeText>
 										</MessageHeader>
-										<MessageText>{msg.text}</MessageText>
+
+										<MessageText>{content}</MessageText>
 									</MessageCard>
 								</MessageOuter>
 							))}
@@ -141,6 +157,7 @@ function TaskConversationPanel({
 							placeholder="הוסף הערה לעדכון הצוות..."
 							dir="auto"
 						/>
+
 						<SendButton onClick={handleSend} aria-label="שלח">
 							<Send size={16} color="white" />
 						</SendButton>
@@ -148,17 +165,17 @@ function TaskConversationPanel({
 				</InputArea>
 			</ConverstaionContainer>
 		</ConversationWrapper>
-	);
+	)
 }
 
-export default TaskConversationPanel;
+export default TaskConversationPanel
 
 // ─── Animation ─────────────────────────────────────────────────────────────────
 
 const slideUp = keyframes`
   from { transform: translateY(100%); }
   to   { transform: translateY(0); }
-`;
+`
 
 // ─── Layout ────────────────────────────────────────────────────────────────────
 
@@ -175,7 +192,7 @@ const ConversationWrapper = styled.div`
   flex-direction: column;
   animation: ${slideUp} 0.22s ease-out both;
   overflow: hidden;
-`;
+`
 
 const ConversationHeader = styled.div`
   flex-shrink: 0;
@@ -193,7 +210,7 @@ const ConversationHeader = styled.div`
   &:hover {
     background: #f5f5f5;
   }
-`;
+`
 
 const ConverstaionContainer = styled.div`
   display: flex;
@@ -201,7 +218,7 @@ const ConverstaionContainer = styled.div`
   flex: 1;
   overflow: hidden;
   padding: 32px 32px 24px 32px;
-`;
+`
 
 const ChevronIcon = styled.div`
   transform: rotate(180deg);
@@ -209,20 +226,20 @@ const ChevronIcon = styled.div`
   align-items: center;
   justify-content: center;
   color: var(--sea-ink-soft);
-`;
+`
 
 const ChatGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-`;
+`
 
 const ChatLabel = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 21px;
   color: var(--sea-ink);
-`;
+`
 
 const ChatBadge = styled.span`
   display: inline-flex;
@@ -231,13 +248,13 @@ const ChatBadge = styled.span`
   width: 20px;
   height: 20px;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   color: var(--background);
   background: var(--default-linear);
   box-shadow: 0 0 0 1px var(--background);
   flex-shrink: 0;
-`;
+`
 
 const MessagesArea = styled.div`
   display: flex;
@@ -245,23 +262,23 @@ const MessagesArea = styled.div`
   overflow-y: auto;
   flex-direction: column;
   gap: 20px;
-`;
+`
 
 const DateSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-`;
+`
 
 const DateLabel = styled.p`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   line-height: 20px;
   color: var(--text-color-400);
   text-align: center;
   width: 100%;
   margin: 0;
-`;
+`
 
 const MessageOuter = styled.div<{ $isOwn: boolean }>`
   display: flex;
@@ -270,7 +287,7 @@ const MessageOuter = styled.div<{ $isOwn: boolean }>`
 background: ${({ $isOwn }) =>
 	$isOwn ? "rgba(104, 102, 255, 0.1)" : "var(--background)"};
   width: 686px;
-`;
+`
 
 const MessageCard = styled.div`
   border: 0.8px solid #f0f0f0;
@@ -282,26 +299,26 @@ const MessageCard = styled.div`
   width: 100%;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 6px rgba(0, 0, 0, 0.02),
     0 2px 4px rgba(0, 0, 0, 0.02);
-`;
+`
 
 const MessageHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   white-space: nowrap;
-`;
+`
 
 const TimeText = styled.p`
-  font-size: 10px;
+  font-size: var(--fs-xs);
   font-weight: 400;
   line-height: 15px;
   color: var(--text-color);
   margin: 0;
   flex-shrink: 0;
-`;
+`
 
 const AuthorText = styled.p`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 22px;
   color: var(--text-color-2);
@@ -310,36 +327,36 @@ const AuthorText = styled.p`
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-`;
+`
 
 const AuthorName = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 22px;
   color: var(--text-color-2);
-`;
+`
 
 const AuthorUpn = styled.span`
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 500;
   line-height: 20px;
   color: var(--text-color-400);
-`;
+`
 
 const AuthorEmail = styled.span`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 500;
   line-height: 22px;
   color: var(--text-color-400);
-`;
+`
 
 const MessageText = styled.p`
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-2);
   margin: 0;
-`;
+`
 
 // ─── Input area ────────────────────────────────────────────────────────────────
 
@@ -349,14 +366,14 @@ const InputArea = styled.div`
   border-radius: 8px;
   padding: 12px;
   margin: 0 0 0 0;
-`;
+`
 
 const InputRow = styled.div`
   display: flex;
   gap: 16px;
   align-items: center;
   width: 100%;
-`;
+`
 
 const SendButton = styled.button`
   display: flex;
@@ -373,7 +390,7 @@ const SendButton = styled.button`
   &:hover {
     opacity: 0.88;
   }
-`;
+`
 
 const StyledInput = styled.input`
   flex: 1;
@@ -383,7 +400,7 @@ const StyledInput = styled.input`
   border: 0.8px solid var(--card-border);
   border-radius: 8px;
   padding: 4px 12px;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: normal;
   color: var(--text-color-2);
@@ -397,4 +414,4 @@ const StyledInput = styled.input`
   &:focus {
     border-color: #6866ff;
   }
-`;
+`

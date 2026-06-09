@@ -1,23 +1,23 @@
-import styled from "@emotion/styled";
-import { ChevronDown } from "lucide-react";
-import { UserRole } from "src/types";
+import styled from "@emotion/styled"
+import { ChevronDown } from "lucide-react"
+import { PermissionType } from "src/api/model"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../ui/dropdown-menu"
 
-const roleNames: Record<UserRole, string> = {
-	[UserRole.ADMIN]: "ניהול",
-	[UserRole.VIEWER]: "צפייה",
-};
+const permissionTypeNames: Record<PermissionType, string> = {
+	[PermissionType.MANAGER]: "ניהול",
+	[PermissionType.VIEWER]: "צפייה",
+}
 
 interface SelectDropdownPermissionProps {
-	value: UserRole;
-	ghost?: boolean;
-	disabled?: boolean;
-	onChange?(role: UserRole): void;
+	value: PermissionType
+	ghost?: boolean
+	disabled?: boolean
+	onChange?(type: PermissionType): void
 }
 
 export function DropdownPermission({
@@ -27,17 +27,17 @@ export function DropdownPermission({
 	onChange,
 }: SelectDropdownPermissionProps) {
 	function onSelectPermission(value: string) {
-		onChange?.(value as UserRole);
+		onChange?.(value as PermissionType)
 	}
 
 	return (
 		<DropdownMenu>
 			<RoleTrigger $ghost={ghost} disabled={disabled} $enabled={!disabled}>
-				{roleNames[value]}
+				{permissionTypeNames[value]}
 				<ChevronDown size={16} />
 			</RoleTrigger>
 			<StyledDropdownMenuContent>
-				{Object.entries(roleNames).map(([key, value]) => (
+				{Object.entries(permissionTypeNames).map(([key, value]) => (
 					<StyledDropdownMenuItem
 						key={key}
 						onSelect={() => onSelectPermission(key)}
@@ -47,12 +47,12 @@ export function DropdownPermission({
 				))}
 			</StyledDropdownMenuContent>
 		</DropdownMenu>
-	);
+	)
 }
 
 const RoleTrigger = styled(DropdownMenuTrigger)<{
-	$ghost?: boolean;
-	$enabled: boolean;
+	$ghost?: boolean
+	$enabled: boolean
 }>`
   display: flex;
   align-items: center;
@@ -61,7 +61,7 @@ const RoleTrigger = styled(DropdownMenuTrigger)<{
   padding: 3px 16px;
   border: none;
   outline: none;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   color: ${({ $enabled }) => ($enabled ? "rgba(0, 0, 0, 0.65);" : "rgba(0, 0, 0, 0.25);")};
   cursor: ${({ $enabled }) => ($enabled ? "pointer" : "default")};
@@ -81,7 +81,7 @@ const RoleTrigger = styled(DropdownMenuTrigger)<{
         color: var(--button-color-hover)
     }
   `}
-`;
+`
 
 const StyledDropdownMenuContent = styled(DropdownMenuContent)`
     display: flex;
@@ -90,11 +90,11 @@ const StyledDropdownMenuContent = styled(DropdownMenuContent)`
     direction: rtl;
     box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
     border-radius: 6px;
-`;
+`
 
 const StyledDropdownMenuItem = styled(DropdownMenuItem)`
     &:hover {
       color: #1677FF;
       background: #e2eeff;
     }
-`;
+`

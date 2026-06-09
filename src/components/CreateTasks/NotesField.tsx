@@ -1,53 +1,53 @@
-import styled from "@emotion/styled";
-import { EditorContent, useEditor } from "@tiptap/react";
-import { Bold, ListOrdered, Underline } from "lucide-react";
-import { useEffect, useState } from "react";
-import { EditorExtensions } from "src/utils/tiptapExtensions";
+import styled from "@emotion/styled"
+import { EditorContent, useEditor } from "@tiptap/react"
+import { Bold, ListOrdered, Underline } from "lucide-react"
+import { useEffect, useState } from "react"
+import { editorExtensions } from "src/utils/tiptap-utils"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface NotesFieldProps {
-	notes: string;
-	onNotesChange: (value: string) => void;
+	notes: string
+	onNotesChange: (value: string) => void
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function NotesField({ notes, onNotesChange }: NotesFieldProps) {
-	const [isFocused, setIsFocused] = useState(false);
-	const [, setTick] = useState(0);
+	const [isFocused, setIsFocused] = useState(false)
+	const [, setTick] = useState(0)
 
 	const editor = useEditor({
-		...EditorExtensions,
+		...editorExtensions,
 		content: notes,
 		onUpdate: ({ editor }) => {
-			onNotesChange(editor.getHTML());
+			onNotesChange(editor.getHTML())
 		},
 		onFocus: () => setIsFocused(true),
 		onBlur: () => setIsFocused(false),
 		onTransaction: () => setTick((t) => t + 1),
-	});
+	})
 
 	useEffect(() => {
 		if (editor && notes !== editor.getHTML()) {
-			editor.commands.setContent(notes);
+			editor.commands.setContent(notes)
 		}
-	}, [notes, editor]);
+	}, [notes, editor])
 
 	function handleToggleBold() {
-		editor?.chain().focus().toggleBold().run();
+		editor?.chain().focus().toggleBold().run()
 	}
 
 	function handleToggleUnderline() {
-		editor?.chain().focus().toggleUnderline().run();
+		editor?.chain().focus().toggleUnderline().run()
 	}
 
 	function handleToggleOrderedList() {
-		editor?.chain().focus().toggleOrderedList().run();
+		editor?.chain().focus().toggleOrderedList().run()
 	}
 
 	function handlePreventDefault(e: React.MouseEvent) {
-		e.preventDefault();
+		e.preventDefault()
 	}
 
 	return (
@@ -85,10 +85,10 @@ function NotesField({ notes, onNotesChange }: NotesFieldProps) {
 				<StyledEditorContent editor={editor} dir="rtl" />
 			</NotesEditorWrapper>
 		</FormItem>
-	);
+	)
 }
 
-export default NotesField;
+export default NotesField
 
 // ─── Styled ─────────────────────────────────────────────────────────────────
 
@@ -97,7 +97,7 @@ const FormItem = styled.div`
   flex-direction: column;
   align-items: flex-end;
   width: 100%;
-`;
+`
 
 const FormLabelRow = styled.div`
   display: flex;
@@ -106,19 +106,19 @@ const FormLabelRow = styled.div`
   gap: 4px;
   padding-block-end: 8px;
   font-weight: 400;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   white-space: nowrap;
-`;
+`
 
 const LabelText = styled.span`
   color: rgba(0, 0, 0, 0.88);
-`;
+`
 
 const NotesEditorWrapper = styled.div`
   position: relative;
   width: 100%;
-`;
+`
 
 const NotesToolbar = styled.div`
   position: absolute;
@@ -136,7 +136,7 @@ const NotesToolbar = styled.div`
     0px 3px 6px rgba(0, 0, 0, 0.12),
     0px 9px 28px rgba(0, 0, 0, 0.05);
   z-index: var(--z-dropdown);
-`;
+`
 
 const ToolbarButton = styled.button<{ $active: boolean }>`
   display: flex;
@@ -154,13 +154,13 @@ const ToolbarButton = styled.button<{ $active: boolean }>`
   &:hover {
     background: ${({ $active }) => ($active ? "rgba(22, 119, 255, 0.15)" : "rgba(0, 0, 0, 0.04)")};
   }
-`;
+`
 
 const ToolbarDivider = styled.div`
   width: 1px;
   height: 16px;
   background: #d9d9d9;
-`;
+`
 
 const StyledEditorContent = styled(EditorContent)`
   .tiptap {
@@ -170,7 +170,7 @@ const StyledEditorContent = styled(EditorContent)`
     border: 1px solid #d9d9d9;
     border-radius: 8px;
     background: white;
-    font-size: 16px;
+    font-size: var(--fs-base);
     font-weight: 400;
     line-height: 20px;
     color: rgba(0, 0, 0, 0.88);
@@ -197,4 +197,4 @@ const StyledEditorContent = styled(EditorContent)`
       list-style-type: decimal;
     }
   }
-`;
+`

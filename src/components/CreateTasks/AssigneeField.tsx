@@ -1,16 +1,24 @@
-import styled from "@emotion/styled";
-import { ChevronDown } from "lucide-react";
-import AssigneePicker from "../shared/AssigneePicker";
-import AssigneeRowList from "../shared/AssigneeRow";
+import styled from "@emotion/styled"
+import { ChevronDown } from "lucide-react"
+import AssigneePicker from "../shared/AssigneePicker"
+import type { AssigneeExtra } from "../shared/AssigneeRow"
+import AssigneeRowList from "../shared/AssigneeRow"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface AssigneeFieldProps {
-	selectedAssignees: number[];
-	directiveTitle: string;
-	onToggle: (id: number) => void;
-	onRemove: (id: number) => void;
-	onDetailChange: (id: number, value: string) => void;
+	selectedAssignees: number[]
+	directiveTitle: string
+	onToggle: (id: number) => void
+	onRemove: (id: number) => void
+	onDetailChange: (id: number, value: string) => void
+	assigneeExtras?: Record<number, AssigneeExtra>
+	onStatusChange?: (
+		taskId: number,
+		assigneeId: number,
+		statusId: number,
+	) => void
+	taskId?: number
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -21,6 +29,9 @@ function AssigneeField({
 	onToggle,
 	onRemove,
 	onDetailChange,
+	assigneeExtras,
+	onStatusChange,
+	taskId,
 }: AssigneeFieldProps) {
 	return (
 		<>
@@ -56,21 +67,19 @@ function AssigneeField({
 						directiveTitle={directiveTitle}
 						showDetail={selectedAssignees.length > 1}
 						detailPlaceholder="פירוט נוסף לאחראי"
+						assigneeExtras={assigneeExtras}
 						onDetailChange={onDetailChange}
 						onRemove={onRemove}
+						onStatusChange={onStatusChange}
+						taskId={taskId}
 					/>
 				)}
 			</AssigneeSection>
-
-			{/* <CreateAssigneeDialog
-        open={isCreateAssigneeOpen}
-        onOpenChange={setIsCreateAssigneeOpen}
-      /> */}
 		</>
-	);
+	)
 }
 
-export default AssigneeField;
+export default AssigneeField
 
 // ─── Styled Components ──────────────────────────────────────────────────────
 
@@ -80,7 +89,7 @@ const AssigneeSection = styled.div`
   gap: 8px;
   align-items: flex-end;
   width: 100%;
-`;
+`
 
 const FormLabelRow = styled.div`
   display: flex;
@@ -89,14 +98,14 @@ const FormLabelRow = styled.div`
   gap: 4px;
   padding-block-end: 8px;
   font-weight: 400;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   white-space: nowrap;
-`;
+`
 
 const LabelText = styled.span`
   color: rgba(0, 0, 0, 0.88);
-`;
+`
 
 const SelectTriggerButton = styled.button`
   display: flex;
@@ -113,18 +122,18 @@ const SelectTriggerButton = styled.button`
   &:hover {
     border-color: #4096ff;
   }
-`;
+`
 const SelectChevron = styled(ChevronDown)`
   position: absolute;
   inset-inline-start: 12px;
   inset-block-start: 50%;
   transform: translateY(-50%);
   color: rgba(0, 0, 0, 0.25);
-`;
+`
 
 const SearchInput = styled.input`
   flex: 1;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 40px;
   text-align: right;
@@ -139,7 +148,7 @@ const SearchInput = styled.input`
   &::placeholder {
     color: rgba(0, 0, 0, 0.25);
   }
-`;
+`
 const EmptyAssigneesBox = styled.div`
   width: 100%;
   border: 1px dashed #d9d9d9;
@@ -148,12 +157,12 @@ const EmptyAssigneesBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
+`
 
 const EmptyText = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 40px;
   color: rgba(0, 0, 0, 0.25);
   text-align: center;
-`;
+`

@@ -1,27 +1,30 @@
-import styled from "@emotion/styled";
+import styled from "@emotion/styled"
 import {
 	Link,
 	type LinkComponentProps,
 	useRouterState,
-} from "@tanstack/react-router";
-import { ChevronDown, User } from "lucide-react";
-import type { HeaderConfig } from "src/router";
-import { useTitleBarActions } from "../providers/TitleBarProvider";
-import ThemeToggle from "./ThemeToggle";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+} from "@tanstack/react-router"
+import { ChevronDown, User } from "lucide-react"
+import type { HeaderConfig } from "src/router"
+import { useTitleBarActions } from "../providers/TitleBarProvider"
+// import ThemeToggle from "./ThemeToggle"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "./ui/dropdown-menu"
 import {
 	NavigationMenu,
 	NavigationMenuItem,
 	NavigationMenuLink,
 	NavigationMenuList,
-} from "./ui/navigation-menu";
+} from "./ui/navigation-menu"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "./ui/tooltip"
 
 export default function Header() {
 	// In RTL flex, first item is rightmost. 'בית' is the primary/rightmost link.
@@ -29,26 +32,28 @@ export default function Header() {
 		{ to: "/workspace/$urlName/dashboard", children: "בית" },
 		{ to: "/workspace/$urlName/tasks", children: "הנחיות" },
 		{ to: "/workspace/$urlName/settings", children: "הגדרות לשכה" },
-	];
+	]
 
-	const { matches } = useRouterState();
-	const headerConfig = matches.findLast((m) => m.staticData.header)?.staticData
-		.header as HeaderConfig | undefined;
+	const { matches } = useRouterState()
+	const headerConfig = [...matches].reverse().find((m) => m.staticData.header)
+		?.staticData.header as HeaderConfig | undefined
 	const {
 		title = "",
 		navigation = true,
 		user = true,
 		workspace = false,
-	} = headerConfig ?? {};
-	const { actions } = useTitleBarActions();
-	const showTitleBar = title || actions;
+	} = headerConfig ?? {}
+	const { actions, workspace: activeWorkspace } = useTitleBarActions()
+	const showTitleBar = title || actions
 
 	return (
 		<HeaderContainer>
 			<HeaderRoot>
 				<HeaderInner>
 					<StartSection>
-						<LogoImage src="/logo.svg" alt="Logo" />
+						<Link to="/">
+							<LogoImage src="/logo.svg" alt="Logo" />
+						</Link>
 						{navigation && (
 							<NavigationMenu>
 								<NavigationMenuList>
@@ -65,11 +70,22 @@ export default function Header() {
 					</StartSection>
 
 					<CenterSection>
-						{workspace && (
+						{workspace && activeWorkspace && (
 							<>
-								{/* Icon first = rightmost in RTL */}
-								<WorkspaceIcon src="/workspace-icon.png" alt="Workspace icon" />
-								<WorkspaceName>Example Workspace</WorkspaceName>
+								{activeWorkspace.icon && (
+									<WorkspaceIcon
+										src={activeWorkspace.icon}
+										alt="Workspace icon"
+									/>
+								)}
+								<TooltipProvider>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<WorkspaceName>{activeWorkspace.title}</WorkspaceName>
+										</TooltipTrigger>
+										<TooltipContent>{activeWorkspace.title}</TooltipContent>
+									</Tooltip>
+								</TooltipProvider>
 							</>
 						)}
 					</CenterSection>
@@ -80,19 +96,15 @@ export default function Header() {
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<UserTrigger>
-										<Avatar>
-											<AvatarFallback>
-												<User size={20} />
-											</AvatarFallback>
-										</Avatar>
-										<ChevronDown size={20} />
+										<User size={16} />
+										<ChevronDown size={16} />
 									</UserTrigger>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent>
-									<DropdownMenuSeparator />
+									{/* <DropdownMenuSeparator />
 									<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
 										<ThemeToggle />
-									</DropdownMenuItem>
+									</DropdownMenuItem> */}
 								</DropdownMenuContent>
 							</DropdownMenu>
 						)}
@@ -107,12 +119,12 @@ export default function Header() {
 				</TitleBar>
 			)}
 		</HeaderContainer>
-	);
+	)
 }
 
 const HeaderContainer = styled.div`
   padding: 20px 32px 0 32px;
-`;
+`
 
 const HeaderRoot = styled.header`
   position: sticky;
@@ -124,102 +136,107 @@ const HeaderRoot = styled.header`
   z-index: var(--z-dropdown);
   box-shadow: 0 4px 50px rgba(0, 0, 0, 0.25);
   color: white;
-`;
+`
 
 const HeaderInner = styled.div`
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr minmax(0, auto) 1fr;
   align-items: center;
   height: 62px;
-`;
+`
 
 const StartSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-`;
+`
 
 const CenterSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-`;
+  min-width: 0;
+`
 
 const EndSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-`;
+`
 
 const UserTrigger = styled.button`
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: var(--chip-bg);
-  border: 1px solid var(--chip-line);
+  justify-content: center;
+  gap: 8px;
+  background: #FFFFFF1F;
+  border: none;
   border-radius: 40px;
-  padding-inline-start: 6px;
-  padding-inline-end: 16px;
-  height: 52px;
+  width: 64px;
+  height: 32px;
   cursor: pointer;
-  color: var(--sea-ink);
-`;
+  color: white;
+  margin-block: 15px;
+`
 
 const WorkspaceName = styled.p`
   margin: 0;
-  font-size: 24px;
+  font-size: var(--fs-heading-3);
   font-weight: 500;
   line-height: 32px;
-  color: var(--sea-ink);
+  color: #C7C9CB;
   white-space: nowrap;
-`;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+`
 
 const WorkspaceIcon = styled.img`
   width: 32px;
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
-`;
+`
 
 const LogoImage = styled.img`
   width: 28px;
   height: 28px;
   margin-inline-end: 20px;
   object-fit: contain;
-`;
+`
 
 const TitleBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-block: 28px 8px;
-`;
+`
 
 const PageTitle = styled.h1`
   flex: 1;
   margin: 0;
-  font-size: 38px;
+  font-size: var(--fs-heading-1);
   font-weight: 500;
   color: var(--sea-ink);
-`;
+`
 
 const NavMenuLink = styled(NavigationMenuLink)`
   && {
     padding: 8px 8px;
-    color: white;
+    color: #C7C9CB;
     font-weight: 400;
-    font-size: 14px;
+    font-size: var(--fs-btn);
     background: transparent;
     border-radius: 6px;
 
     &:hover {
-      color: white;
+      color: #C7C9CB;
       background: rgba(255, 255, 255, 0.1);
     }
 
     &[data-status='active'] {
-      color: white;
+      color: #C7C9CB;
       background: rgba(255, 255, 255, 0.15);
     }
   }
-`;
+`
