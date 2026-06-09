@@ -87,7 +87,7 @@ interface UseTaskColumnsOptions {
 	queryKey: QueryKey
 	visibleColumns: TaskColumn[]
 	searchQuery: string
-	filterOptionsMap: Record<FilterOptions, FilterOption[]>
+	filterOptionsMap: Partial<Record<FilterOptions, FilterOption[]>>
 	selectMode?: SelectModeConfig
 	actions?: ActionsConfig
 }
@@ -124,7 +124,7 @@ function useTaskColumns({
 	const selectColumn: ColumnDef<TaskRow> | null = selectMode?.enabled
 		? {
 				id: "select",
-				size: 70,
+				size: 54,
 				enableSorting: false,
 				enableColumnFilter: false,
 				header: () => (
@@ -155,7 +155,7 @@ function useTaskColumns({
 			header: ({ column }) => (
 				<ColumnHeaderWithActions label={COLUMN_LABELS.id} column={column} />
 			),
-			size: 70,
+			size: 54,
 			enableColumnFilter: false,
 			cell: ({
 				row: {
@@ -168,7 +168,7 @@ function useTaskColumns({
 		title: {
 			accessorKey: "title",
 			header: COLUMN_LABELS.title,
-			size: 400,
+			size: 300,
 			meta: { grow: true },
 			enableSorting: false,
 			enableColumnFilter: false,
@@ -231,7 +231,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap.status}
 				/>
 			),
-			size: 100,
+			size: 84,
 			filterFn: multiSelectFilter,
 			sortingFn: (rowA, rowB) =>
 				(rowA.original.status?.id ?? 0) - (rowB.original.status?.id ?? 0),
@@ -261,7 +261,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap.assigneeStatuses}
 				/>
 			),
-			size: 115,
+			size: 88,
 			filterFn: multiSelectFilter,
 			sortingFn: "text",
 			cell: ({
@@ -288,7 +288,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap.deadlineType}
 				/>
 			),
-			size: 160,
+			size: 124,
 			filterFn: multiSelectFilter,
 			sortingFn: (
 				{ original: { dueDate: dueDateA } },
@@ -363,7 +363,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap.discussionName}
 				/>
 			),
-			size: 260,
+			size: 155,
 			filterFn: multiSelectFilter,
 			sortingFn: "text",
 			cell: ({
@@ -394,7 +394,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap.tags}
 				/>
 			),
-			size: 160,
+			size: 108,
 			enableSorting: false,
 			filterFn: multiSelectFilter,
 			cell: ({
@@ -409,7 +409,7 @@ function useTaskColumns({
 		notes: {
 			accessorKey: "notes",
 			header: COLUMN_LABELS.notes,
-			size: 220,
+			size: 140,
 			enableSorting: false,
 			enableColumnFilter: false,
 			cell: ({ getValue }) => {
@@ -427,7 +427,7 @@ function useTaskColumns({
 					column={column}
 				/>
 			),
-			size: 132,
+			size: 96,
 			enableColumnFilter: false,
 			sortingFn: "datetime",
 			cell: ({ getValue }) => (
@@ -442,7 +442,7 @@ function useTaskColumns({
 					column={column}
 				/>
 			),
-			size: 100,
+			size: 74,
 			enableColumnFilter: false,
 			sortingFn: "datetime",
 			cell: ({ getValue }) => (
@@ -454,7 +454,7 @@ function useTaskColumns({
 	const actionsColumn: ColumnDef<TaskRow> | null = actions
 		? {
 				id: "actions",
-				size: 43,
+				size: 37,
 				enableSorting: false,
 				enableColumnFilter: false,
 				cell: ({
