@@ -8,9 +8,15 @@ import {
 	USE_SSO,
 } from "./utils/env-utils"
 
-const STATIC_TOKEN_HEADER = "static-token"
-const REQUEST_USERNAME_HEADER = "requestusername"
-const IS_BI_HEADER = "is-bi"
+export const STATIC_TOKEN_HEADER = "static-token"
+export const REQUEST_USERNAME_HEADER = "requestusername"
+export const IS_BI_HEADER = "is-bi"
+
+const storedUsername = localStorage.getItem("bi_bypass_username")
+const storedIsBI = localStorage.getItem("bi_bypass_is_bi")
+
+const resolvedUsername = storedUsername ?? REQUEST_USERNAME
+const resolvedIsBI = storedIsBI ?? !!IS_BI
 
 export const axiosInstance = axios.create({
 	baseURL: API_BASE_URL,
@@ -18,8 +24,8 @@ export const axiosInstance = axios.create({
 	headers: {
 		"Content-Type": "application/json",
 		...(STATIC_TOKEN && { [STATIC_TOKEN_HEADER]: STATIC_TOKEN }),
-		...(REQUEST_USERNAME && { [REQUEST_USERNAME_HEADER]: REQUEST_USERNAME }),
-		...(IS_BI && { [IS_BI_HEADER]: IS_BI }),
+		...(resolvedUsername && { [REQUEST_USERNAME_HEADER]: resolvedUsername }),
+		...(resolvedIsBI && { [IS_BI_HEADER]: "true" }),
 	},
 })
 
