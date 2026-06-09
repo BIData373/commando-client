@@ -27,7 +27,7 @@ export function TasksDatePicker() {
 			triggerButton={({ value }) => (
 				<TasksDatePickerTriggerButton
 					label={dateType}
-					range={dateRange ?? (isDateRange(value) ? value : undefined)}
+					range={isDateRange(value) ? value : undefined}
 				/>
 			)}
 			header={() => (

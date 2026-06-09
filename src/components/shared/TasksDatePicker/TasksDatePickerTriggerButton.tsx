@@ -1,11 +1,8 @@
 import styled from "@emotion/styled"
+import { isSameDay } from "date-fns"
 import { CalendarDays, ChevronDown } from "lucide-react"
 import type { DateRange } from "react-day-picker"
-import {
-	formatDateMonth,
-	formatDateMonthFullYear,
-	formatDay,
-} from "src/utils/time-format"
+import { formatDateMonth, formatDateMonthFullYear } from "src/utils/time-format"
 
 interface TasksDatePickerTriggerButtonProps {
 	label: string
@@ -25,7 +22,7 @@ export const TasksDatePickerTriggerButton = ({
 			{label && range?.from && range.to ? (
 				<RangeLabel>
 					{label}:{" "}
-					{range.from === range.to
+					{isSameDay(range.from, range.to)
 						? formatDateMonthFullYear(range.from)
 						: `${formatDateMonth(range.from)}-${formatDateMonth(range.to)}`}
 				</RangeLabel>
