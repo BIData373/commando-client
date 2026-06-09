@@ -1,4 +1,4 @@
-import { Fragment, type CSSProperties } from 'react'
+import { Fragment } from 'react'
 import styled from '@emotion/styled'
 import {
   flexRender,
@@ -6,7 +6,6 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
-  type Column,
   type ColumnDef,
   type ColumnFiltersState,
   type OnChangeFn,
@@ -22,7 +21,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     grow?: boolean
-    pinned?: 'left' | 'right'
   }
 }
 
@@ -47,17 +45,6 @@ interface DataTableProps<TData> {
   showHeader?: boolean
 }
 
-function getPinStyle<TData>(column: Column<TData>): CSSProperties {
-  const pinned = column.getIsPinned()
-  if (!pinned) return {}
-  return {
-    position: 'sticky',
-    left: pinned === 'left' ? column.getStart('left') : undefined,
-    right: pinned === 'right' ? column.getAfter('right') : undefined,
-    zIndex: 1,
-  }
-}
-
 export function DataTable<TData>({
   columns,
   data,
@@ -79,16 +66,6 @@ export function DataTable<TData>({
   containerClassName,
   showHeader = true,
 }: DataTableProps<TData>) {
-  const pinnedLeft = columns
-    .filter((col) => col.meta?.pinned === 'left')
-    .map((col) => (col.id ?? (col as { accessorKey?: string }).accessorKey) as string)
-    .filter(Boolean)
-
-  const pinnedRight = columns
-    .filter((col) => col.meta?.pinned === 'right')
-    .map((col) => (col.id ?? (col as { accessorKey?: string }).accessorKey) as string)
-    .filter(Boolean)
-
   const table = useReactTable({
     data,
     columns,
@@ -99,9 +76,6 @@ export function DataTable<TData>({
       ...(rowSelection !== undefined && { rowSelection }),
       ...(columnFilters !== undefined && { columnFilters }),
       ...(sorting !== undefined && { sorting }),
-    },
-    initialState: {
-      columnPinning: { left: pinnedLeft, right: pinnedRight },
     },
     onRowSelectionChange,
     onColumnFiltersChange,
@@ -144,7 +118,7 @@ export function DataTable<TData>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} style={getPinStyle(header.column)}>
+                <TableHead key={header.id}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(header.column.columnDef.header, header.getContext())}
@@ -164,7 +138,7 @@ export function DataTable<TData>({
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} style={getPinStyle(cell.column)}>
+                  <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

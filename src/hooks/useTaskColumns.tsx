@@ -87,7 +87,7 @@ interface UseTaskColumnsOptions {
 	queryKey: QueryKey
 	visibleColumns: TaskColumn[]
 	searchQuery: string
-	filterOptionsMap: Record<FilterOptions, FilterOption[]>
+	filterOptionsMap: Partial<Record<FilterOptions, FilterOption[]>>
 	selectMode?: SelectModeConfig
 	actions?: ActionsConfig
 }
