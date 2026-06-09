@@ -1,40 +1,5 @@
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router"
-import { useGetTask } from "src/api/task/task"
-import TaskDetailPanel from "../../../../components/TaskDetail/TaskDetailPanel"
+import { createFileRoute, Outlet } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/workspace/$urlName/tasks/$taskId")({
-	component: TaskDetail,
+	component: () => <Outlet />,
 })
-
-function TaskDetail() {
-	const { urlName, taskId } = Route.useParams()
-	const { view } = useSearch({ from: "/workspace/$urlName/tasks" })
-	const navigate = useNavigate()
-
-	const { data: task } = useGetTask({ id: Number(taskId) })
-
-	function handleClose() {
-		navigate({
-			to: "/workspace/$urlName/tasks",
-			params: { urlName },
-			search: { view },
-		})
-	}
-
-	function handleDelete() {
-		// if (task) {
-		// 	removeTasks([task.id]);
-		// }
-		handleClose()
-	}
-
-	return (
-		!!task && (
-			<TaskDetailPanel
-				task={task}
-				onClose={handleClose}
-				onDelete={handleDelete}
-			/>
-		)
-	)
-}
