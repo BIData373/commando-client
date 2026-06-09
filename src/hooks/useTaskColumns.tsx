@@ -223,7 +223,7 @@ function useTaskColumns({
 		},
 		status: {
 			id: "status",
-			accessorFn: (row) => row.status?.id,
+			accessorFn: (row) => row.status?.type,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.status}
