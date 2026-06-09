@@ -87,7 +87,7 @@ interface UseTaskColumnsOptions {
 	queryKey: QueryKey
 	visibleColumns: TaskColumn[]
 	searchQuery: string
-	filterOptionsMap: Record<FilterOptions, FilterOption[]>
+	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
 	selectMode?: SelectModeConfig
 	actions?: ActionsConfig
 }
@@ -228,7 +228,7 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.status}
 					column={column}
-					filterOptions={filterOptionsMap.status}
+					filterOptions={filterOptionsMap?.status}
 				/>
 			),
 			size: 100,
@@ -258,7 +258,7 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.assigneeStatuses}
 					column={column}
-					filterOptions={filterOptionsMap.assigneeStatuses}
+					filterOptions={filterOptionsMap?.assigneeStatuses}
 				/>
 			),
 			size: 115,
@@ -285,7 +285,7 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.deadlineType}
 					column={column}
-					filterOptions={filterOptionsMap.deadlineType}
+					filterOptions={filterOptionsMap?.deadlineType}
 				/>
 			),
 			size: 160,
@@ -360,7 +360,7 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.discussionName}
 					column={column}
-					filterOptions={filterOptionsMap.discussionName}
+					filterOptions={filterOptionsMap?.discussionName}
 				/>
 			),
 			size: 260,
@@ -391,7 +391,7 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.tags}
 					column={column}
-					filterOptions={filterOptionsMap.tags}
+					filterOptions={filterOptionsMap?.tags}
 				/>
 			),
 			size: 160,
