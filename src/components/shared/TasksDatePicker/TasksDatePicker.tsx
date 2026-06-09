@@ -7,11 +7,7 @@ import { TasksDatePickerHeader } from "./TasksDatePickerHeader"
 import { TasksDatePickerTriggerButton } from "./TasksDatePickerTriggerButton"
 import { TasksDatePickerFooter } from "./TasksPickerFooter"
 
-interface TasksDatePickerProps {
-	showTitle?: boolean
-}
-
-export function TasksDatePicker({ showTitle = false }: TasksDatePickerProps) {
+export function TasksDatePicker() {
 	const { dateType, setDateType, dateRange, setDateRange } = useTasksFilters()
 	const [pendingDataType, setPendingDataType] = useState(dateType)
 
@@ -32,7 +28,6 @@ export function TasksDatePicker({ showTitle = false }: TasksDatePickerProps) {
 				<TasksDatePickerTriggerButton
 					label={dateType}
 					range={dateRange ?? (isDateRange(value) ? value : undefined)}
-					showTitle={showTitle}
 				/>
 			)}
 			header={() => (
