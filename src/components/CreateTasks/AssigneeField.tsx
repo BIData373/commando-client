@@ -98,7 +98,7 @@ const FormLabelRow = styled.div`
   gap: 4px;
   padding-block-end: 8px;
   font-weight: 400;
-  font-size: 14px;
+  font-size: var(--fs-btn);
   line-height: 22px;
   white-space: nowrap;
 `
@@ -133,7 +133,7 @@ const SelectChevron = styled(ChevronDown)`
 
 const SearchInput = styled.input`
   flex: 1;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 40px;
   text-align: right;
@@ -160,7 +160,7 @@ const EmptyAssigneesBox = styled.div`
 `
 
 const EmptyText = styled.span`
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 40px;
   color: rgba(0, 0, 0, 0.25);

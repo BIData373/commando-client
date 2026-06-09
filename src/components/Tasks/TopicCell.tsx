@@ -130,7 +130,7 @@ const Tag = styled.span`
   align-items: center;
   padding: 1px 8px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   line-height: 20px;
   background: rgba(0, 0, 0, 0.02);
   color: rgba(0, 0, 0, 0.88);
@@ -143,7 +143,7 @@ const OverflowTag = styled.button`
   align-items: center;
   padding: 1px 8px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   line-height: 20px;
   background: rgba(0, 0, 0, 0.02);
   color: rgba(0, 0, 0, 0.88);
