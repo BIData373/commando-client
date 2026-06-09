@@ -4,7 +4,6 @@ import { concat, uniqBy } from "lodash"
 import {
 	Calendar,
 	ChevronUp,
-	History,
 	Loader2,
 	Paperclip,
 	Pencil,
