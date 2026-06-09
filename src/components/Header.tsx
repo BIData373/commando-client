@@ -8,6 +8,7 @@ import { ChevronDown, User } from "lucide-react"
 import type { HeaderConfig } from "src/router"
 import { useTitleBarActions } from "../providers/TitleBarProvider"
 // import ThemeToggle from "./ThemeToggle"
+import { BIHeaderBypass } from "./BIHeaderBypass"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -100,12 +101,13 @@ export default function Header() {
 										<ChevronDown size={16} />
 									</UserTrigger>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent>
+								<UserDropdownContent>
+									<BIHeaderBypass />
 									{/* <DropdownMenuSeparator />
 									<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
 										<ThemeToggle />
 									</DropdownMenuItem> */}
-								</DropdownMenuContent>
+								</UserDropdownContent>
 							</DropdownMenu>
 						)}
 					</EndSection>
@@ -162,6 +164,10 @@ const EndSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+`
+
+const UserDropdownContent = styled(DropdownMenuContent)`
+  min-width: 220px;
 `
 
 const UserTrigger = styled.button`
