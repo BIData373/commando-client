@@ -11,13 +11,19 @@ interface StatusCardProps {
 
 const CHART_EMPTY_COLOR = "var(--chip-bg)"
 
+const EMPTY_STATUS = {
+	id: 0,
+	name: "לא משוייך",
+	color: CHART_EMPTY_COLOR, //  'black'
+}
+
 export default function StatusCard({ tasks }: StatusCardProps) {
 	const { statuses } = useWorkspace()
 	const statusCounts = useMemo(
 		() =>
 			mapValues(groupBy(tasks, "status.id"), (tasks, id) => ({
 				count: tasks.length,
-				...statuses[Number(id)],
+				...(statuses[Number(id)] ?? EMPTY_STATUS),
 			})),
 		[tasks, statuses],
 	)
@@ -176,6 +182,7 @@ const StatusBadge = styled.span<{ $color: string }>`
   font-size: var(--fs-xl);
   font-weight: 400;
   white-space: nowrap;
-  ${({ $color }) => `color: ${$color};`}
-  ${({ $color }) => `background:  rgb(from ${$color} r g b / 0.1);`}
+  ${({ $color }) => `color: oklch(from ${$color} clamp(0, l, 0.5) c h);`}
+  ${({ $color }) => `background: rgb(from ${$color} r g b / 0.1);`}
+  ${({ $color }) => `border: 1px solid oklch(from ${$color} calc(l * 0.85) c h / clamp(0, calc((l - 0.7) * 10), 1));`}
 `
