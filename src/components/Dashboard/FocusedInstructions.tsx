@@ -77,7 +77,10 @@ export default function FocusedInstructions({
 	}
 
 	const filteredTasks = useMemo(
-		() => getFilteredTasks(activeTab, tasks),
+		() =>
+			getFilteredTasks(activeTab, tasks).sort(
+				(a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
+			),
 		[activeTab, tasks],
 	)
 
@@ -99,7 +102,6 @@ export default function FocusedInstructions({
 		queryKey,
 		visibleColumns: ["title", "status", "assigneeStatuses", "deadlineType"],
 		searchQuery: "",
-		filterOptionsMap: {},
 	})
 
 	const table = useReactTable({
