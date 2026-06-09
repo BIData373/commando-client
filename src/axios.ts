@@ -2,6 +2,7 @@ import axios, { type AxiosError, type AxiosRequestConfig } from "axios"
 import { parseISO } from "date-fns"
 import {
 	API_BASE_URL,
+	API_PREFIX,
 	IS_BI,
 	REQUEST_USERNAME,
 	STATIC_TOKEN,
@@ -26,7 +27,7 @@ export function resolveBypassValues(
 }
 
 export const axiosInstance = axios.create({
-	baseURL: API_BASE_URL,
+	baseURL: `${API_BASE_URL}/${API_PREFIX}`,
 	withCredentials: USE_SSO,
 	headers: {
 		"Content-Type": "application/json",
