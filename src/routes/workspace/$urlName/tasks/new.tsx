@@ -4,6 +4,7 @@ import { AuthorizationWrapper } from "src/wrappers/AuthorizationWrapper"
 import { z } from "zod"
 import CreateTaskModal from "../../../../components/CreateTasks/CreateTaskModal"
 import CreateDiscussionModal from "../../../../components/CreateTasksFromDiscussion/CreateDiscussionModal"
+import { useWorkspace } from "../../../../providers/WorkspaceProvider"
 import { TasksView } from "../tasks"
 
 export enum NewTaskMode {
@@ -25,6 +26,9 @@ function NewTask() {
 	const { urlName } = Route.useParams()
 	const { view, mode } = Route.useSearch()
 	const navigate = useNavigate()
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
 
 	function handleClose() {
 		navigate({
@@ -39,7 +43,7 @@ function NewTask() {
 			{mode === NewTaskMode.DISCUSSION ? (
 				<CreateDiscussionModal onClose={handleClose} />
 			) : (
-				<CreateTaskModal onClose={handleClose} />
+				<CreateTaskModal workspaceId={workspaceId} onClose={handleClose} />
 			)}
 		</AuthorizationWrapper>
 	)

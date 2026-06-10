@@ -7,6 +7,7 @@ import type {
 	RowSelectionState,
 	SortingState,
 } from "@tanstack/react-table"
+import { uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
@@ -28,6 +29,11 @@ import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 
+interface TaskPermissions {
+	canDelete: boolean
+	canChangeStatus: boolean
+}
+
 interface TaskTableProps {
 	queryKey: QueryKey
 	tasks: TaskRow[]
@@ -42,6 +48,8 @@ interface TaskTableProps {
 		deadlineTypeFilter: DeadlineType[],
 	) => void
 	isLoading?: boolean
+	taskPermissions?: Record<number, TaskPermissions>
+	hideStatusAction?: boolean
 }
 
 function TaskTable({
@@ -55,6 +63,8 @@ function TaskTable({
 	deadlineTypeFilter = [],
 	onFiltersChange,
 	isLoading,
+	taskPermissions,
+	hideStatusAction = false,
 }: TaskTableProps) {
 	const {
 		searchQuery,
@@ -122,6 +132,14 @@ function TaskTable({
 		.filter((key) => rowSelection[key])
 		.map((key) => Number(key.split(TASK_ROW_ID_SEPARATOR)[0]))
 
+	const bulkDeleteDisabled =
+		taskPermissions != null &&
+		selectedTaskIds.some((id) => !taskPermissions[id]?.canDelete)
+
+	const bulkStatusDisabled =
+		taskPermissions != null &&
+		selectedTaskIds.some((id) => !taskPermissions[id]?.canChangeStatus)
+
 	function handleEnterSelectMode(taskId?: number) {
 		setSelectMode(true)
 		const task = tasks.find((t) => t.id === taskId)
@@ -152,6 +170,16 @@ function TaskTable({
 		})
 	}
 
+	function handleBulkArchive() {
+		removeTasks(selectedTaskIds)
+		handleExitSelectMode()
+	}
+
+	function handleBulkDelete() {
+		removeTasks(selectedTaskIds)
+		handleExitSelectMode()
+	}
+
 	function bulkUpdateStatus(taskIds: number[], status: WorkspaceStatusDto) {
 		taskIds.forEach((id) => {
 			const task = tasks.find((t) => t.id === id)
@@ -166,6 +194,19 @@ function TaskTable({
 	}
 
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
+
+	const uniqueStatuses = useMemo(
+		() =>
+			hideStatusAction
+				? undefined
+				: uniqBy(
+						tasks
+							.map((t) => t.status)
+							.filter((s): s is WorkspaceStatusDto => !!s),
+						"id",
+					),
+		[tasks, hideStatusAction],
+	)
 
 	const extraColumnIds = extraColumns
 		? new Set(Object.keys(extraColumns))
@@ -243,21 +284,17 @@ function TaskTable({
 					}
 				/>
 			</TableWrapper>
-			{selectMode && (
-				<BulkActionsBar
-					selectedCount={selectedTaskIds.length}
-					onChangeStatus={(status) => bulkUpdateStatus(selectedTaskIds, status)}
-					onArchive={() => {
-						removeTasks(selectedTaskIds)
-						handleExitSelectMode()
-					}}
-					onDelete={() => {
-						removeTasks(selectedTaskIds)
-						handleExitSelectMode()
-					}}
-					onExitSelect={handleExitSelectMode}
-				/>
-			)}
+			<BulkActionsBar
+				isVisible={selectMode}
+				selectedCount={selectedTaskIds.length}
+				statuses={uniqueStatuses}
+				onChangeStatus={(status) => bulkUpdateStatus(selectedTaskIds, status)}
+				onArchive={handleBulkArchive}
+				onDelete={handleBulkDelete}
+				deleteDisabled={bulkDeleteDisabled}
+				statusDisabled={bulkStatusDisabled}
+				onExitSelect={handleExitSelectMode}
+			/>
 		</>
 	)
 }

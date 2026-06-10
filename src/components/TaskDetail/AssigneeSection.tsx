@@ -2,22 +2,22 @@ import styled from "@emotion/styled"
 import { type AssigneeStatusDto, PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AssigneeContainer } from "./AssigneeContainer"
 
 interface AssigneeSectionProps {
 	taskId: number
+	workspaceId: number
+	assigneeStatusEditable?: boolean | null
 	assigneeStatuses: AssigneeStatusDto[]
 }
 
 export const AssigneeSection = ({
 	taskId,
+	workspaceId,
+	assigneeStatusEditable,
 	assigneeStatuses,
 }: AssigneeSectionProps) => {
 	const currentUser = useCurrentUser()
-	const {
-		workspace: { id: workspaceId },
-	} = useWorkspace()
 
 	const { data: permission } = useGetMyPermission({ workspaceId })
 
@@ -57,6 +57,8 @@ export const AssigneeSection = ({
 							<AssigneeContainer
 								key={item.assignee.id}
 								taskId={taskId}
+								workspaceId={workspaceId}
+								assigneeStatusEditable={assigneeStatusEditable}
 								assignee={item}
 								isAdmin={isAdmin}
 								editable={true}
@@ -74,6 +76,8 @@ export const AssigneeSection = ({
 								<AssigneeContainer
 									key={item.assignee.id}
 									taskId={taskId}
+									workspaceId={workspaceId}
+									assigneeStatusEditable={assigneeStatusEditable}
 									assignee={item}
 									isAdmin={isAdmin}
 									editable={false}
