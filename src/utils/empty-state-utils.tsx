@@ -7,11 +7,7 @@ import { QuickFilter } from "./filter-utils"
 
 type EmptyStateKey = QuickFilter | "search" | "dateRange" | "noData" | "default"
 
-export type DashboardEmptyStateKey =
-	| "dashboardFlagged"
-	| "dashboardApproaching"
-	| "dashboardOverdue"
-	| "dashboardCompleted"
+export type DashboardEmptyStateKey = QuickFilter | "completed"
 
 const EMPTY_STATES: Record<EmptyStateKey, EmptyCardStateProps> = {
 	[QuickFilter.OVERDUE]: {
@@ -76,34 +72,28 @@ export function getEmptyState(
 	return EMPTY_STATES.default
 }
 
-const DASHBOARD_EMPTY_STATES: Record<
+export const DASHBOARD_EMPTY_STATES: Record<
 	DashboardEmptyStateKey,
 	EmptyCardStateProps
 > = {
-	dashboardFlagged: {
+	[QuickFilter.FLAGGED]: {
 		imgSrc: searchInstruction,
 		title: "לא נמצאו הנחיות חשובות",
 		description: "לאחר שהנחיות יוגדרו כחשובות,\nההנחיות האחרונות יופיעו כאן",
 	},
-	dashboardApproaching: {
+	[QuickFilter.APPROACHING]: {
 		imgSrc: searchInstruction,
 		title: "לא נמצאו הנחיות לביצוע מיידי",
 		description: "הנחיות לביצוע מידיות יופיעו כאן",
 	},
-	dashboardOverdue: {
+	[QuickFilter.OVERDUE]: {
 		imgSrc: searchInstruction,
 		title: 'לא נמצאו חריגות מתג"ב',
 		description: 'חריגות מתג"ב יופיעו כאן',
 	},
-	dashboardCompleted: {
+	completed: {
 		imgSrc: compleateInstruction,
 		title: "טרם בוצעו הנחיות",
 		description: "לאחר שהנחיות יבצעו,\nההנחיות האחרונות יופיעו כאן",
 	},
-}
-
-export function getDashboardEmptyState(
-	key: DashboardEmptyStateKey,
-): EmptyCardStateProps {
-	return DASHBOARD_EMPTY_STATES[key]
 }

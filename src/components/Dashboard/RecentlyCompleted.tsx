@@ -3,7 +3,7 @@ import type { QueryKey } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { WorkspaceStatusType } from "src/api/model"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
-import { getDashboardEmptyState } from "src/utils/empty-state-utils"
+import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
@@ -37,9 +37,7 @@ export default function RecentlyCompleted({
 					columns={columns}
 					data={completedTasks}
 					showHeader={false}
-					emptyState={
-						<EmptyCardState {...getDashboardEmptyState("dashboardCompleted")} />
-					}
+					emptyState={<EmptyCardState {...DASHBOARD_EMPTY_STATES.completed} />}
 					containerClassName="overflow-hidden"
 				/>
 			</Card>

@@ -4,10 +4,7 @@ import { useMemo, useState } from "react"
 import { DeadlineType } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
-import {
-	type DashboardEmptyStateKey,
-	getDashboardEmptyState,
-} from "src/utils/empty-state-utils"
+import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
 import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filter-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -31,12 +28,6 @@ const TAB_LABELS: Pick<TabConfig, "id" | "label" | "weekDelta">[] = [
 	{ id: FocusedTab.APPROACHING, label: "הנחיות לביצוע מידיות", weekDelta: 0 },
 	{ id: FocusedTab.OVERDUE, label: 'חריגות מתג"ב', weekDelta: 0 },
 ]
-
-const TAB_EMPTY_STATE_KEY: Record<FocusedTab, DashboardEmptyStateKey> = {
-	[FocusedTab.FLAGGED]: "dashboardFlagged",
-	[FocusedTab.APPROACHING]: "dashboardApproaching",
-	[FocusedTab.OVERDUE]: "dashboardOverdue",
-}
 
 function getFilteredTasks(tab: FocusedTab, tasks: TaskRow[]): TaskRow[] {
 	switch (tab) {
@@ -79,8 +70,6 @@ export default function FocusedInstructions({
 							.length,
 	}))
 
-	const emptyMsg = getDashboardEmptyState(TAB_EMPTY_STATE_KEY[activeTab])
-
 	const { columns } = useTaskColumns({
 		queryKey,
 		visibleColumns: ["title", "status", "assigneeStatuses", "deadlineType"],
@@ -110,7 +99,9 @@ export default function FocusedInstructions({
 						columns={columns}
 						data={filteredTasks}
 						showHeader={false}
-						emptyState={<EmptyCardState {...emptyMsg} />}
+						emptyState={
+							<EmptyCardState {...DASHBOARD_EMPTY_STATES[activeTab]} />
+						}
 						containerClassName="overflow-hidden"
 					/>
 				</ContentPanel>
