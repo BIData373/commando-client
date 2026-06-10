@@ -23,5 +23,5 @@ export interface WorkspaceWithPermissionDto {
 	icon: string | null
 	assigneeStatusEditable: boolean
 	pikudId: number
-	permissionType: PermissionType
+	permissionType: PermissionType | null
 }
