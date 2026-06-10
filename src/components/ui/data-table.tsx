@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, type ReactNode } from 'react'
 import styled from '@emotion/styled'
 import {
   flexRender,
@@ -16,8 +16,8 @@ import {
   type TableMeta,
 } from '@tanstack/react-table'
 
+import { LoadingSpinner } from '../shared/LoadingSpinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
-
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     grow?: boolean
@@ -43,6 +43,8 @@ interface DataTableProps<TData> {
   expansionColSpan?: number
   containerClassName?: string
   showHeader?: boolean
+  emptyState?: ReactNode
+  isLoading?: boolean
 }
 
 export function DataTable<TData>({
@@ -65,6 +67,8 @@ export function DataTable<TData>({
   expansionColSpan,
   containerClassName,
   showHeader = true,
+  emptyState,
+  isLoading
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -153,10 +157,18 @@ export function DataTable<TData>({
               )}
             </Fragment>
           ))
+        ) : isLoading ? (
+          <EmptyRow>
+            <EmptyCell colSpan={columns.length}>
+              <LoadingSpinner />
+            </EmptyCell>
+          </EmptyRow>
         ) : (
-          <TableRow>
-            <TableCell colSpan={columns.length}>אין נתונים להצגה</TableCell>
-          </TableRow>
+          <EmptyRow>
+            <EmptyCell colSpan={columns.length}>
+              {emptyState}
+            </EmptyCell>
+          </EmptyRow>
         )}
       </TableBody>
     </Table>
@@ -164,6 +176,17 @@ export function DataTable<TData>({
 }
 
 // ─── Styled Components ─────────────────────────────────────────────────────
+
+const EmptyRow = styled.tr`
+  &:hover {
+    background: none !important;
+  }
+`
+const EmptyCell = styled.td`
+  text-align: center;
+  padding: 72px 0 !important;
+
+`
 
 const ExpansionCell = styled.td`
   padding: 0;
