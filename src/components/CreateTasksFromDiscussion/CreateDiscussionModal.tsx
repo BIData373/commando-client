@@ -181,7 +181,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 											onTagSelect={handleTagSelect}
 											onTagRemove={handleTagRemove}
 											onFileChange={handleFileChange}
-											dateError={field.state.meta.errors.join(", ")}
+											dateField={field}
 										/>
 									)}
 								</form.Field>
