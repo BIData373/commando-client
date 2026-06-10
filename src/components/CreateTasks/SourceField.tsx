@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import type { AnyFieldApi } from "@tanstack/form-core"
 import { Calendar as CalendarIcon, ChevronDown, Paperclip } from "lucide-react"
 import { useState } from "react"
 import type { SourceDto } from "src/api/model"
@@ -7,6 +8,7 @@ import { useWorkspace } from "src/providers/WorkspaceProvider"
 import type { DatePickerValue } from "src/utils/date-utils"
 import { formatDate, formatDateShort } from "../../functions/date-utils"
 import DatePicker, { CalendarMode } from "../shared/DatePicker"
+import { FormField } from "../shared/FormField"
 import HighlightMatch from "../shared/HighlightMatch"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import {
@@ -26,7 +28,7 @@ interface SourceFieldProps {
 	onDateSelect: (date: Date | undefined) => void
 	label?: string
 	uniqueNames?: boolean
-	dateError?: string
+	dateField?: AnyFieldApi
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -39,7 +41,7 @@ function SourceField({
 	onDateSelect,
 	label = "מקור",
 	uniqueNames = false,
-	dateError,
+	dateField,
 }: SourceFieldProps) {
 	const [sourceQuery, setSourceQuery] = useState(source)
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -167,43 +169,41 @@ function SourceField({
 				</SourceFieldWrapper>
 			</SourceFormItem>
 			<DateFormItem>
-				<FormLabelRow>
-					<LabelText>תאריך</LabelText>
-				</FormLabelRow>
-				<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<PopoverTrigger asChild>
-									<DatePickerButton
-										$disabled={isSourceLinked}
-										$error={!!dateError}
-									>
-										<CalendarIcon size={18} />
-										<DatePickerText $hasValue={!!sourceDate}>
-											{sourceDate ? formatDate(sourceDate) : "בחר תאריך"}
-										</DatePickerText>
-									</DatePickerButton>
-								</PopoverTrigger>
-							</TooltipTrigger>
-							{isSourceLinked && (
-								<TooltipContent side="top" sideOffset={8}>
-									לא ניתן לשנות תאריך של מקור קיים
-								</TooltipContent>
-							)}
-						</Tooltip>
-					</TooltipProvider>
-					{!isSourceLinked && (
-						<DatePopoverContent align="start" sideOffset={4}>
-							<DatePicker
-								mode={CalendarMode.Single}
-								selected={selectedDate}
-								onSelect={handleDateSelect}
-							/>
-						</DatePopoverContent>
-					)}
-				</Popover>
-				{dateError && <DateErrorText>{dateError}</DateErrorText>}
+				<FormField field={dateField} label="תאריך">
+					<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<PopoverTrigger asChild>
+										<DatePickerButton
+											$disabled={isSourceLinked}
+											$error={!!dateField?.state.meta.errors.length}
+										>
+											<CalendarIcon size={18} />
+											<DatePickerText $hasValue={!!sourceDate}>
+												{sourceDate ? formatDate(sourceDate) : "בחר תאריך"}
+											</DatePickerText>
+										</DatePickerButton>
+									</PopoverTrigger>
+								</TooltipTrigger>
+								{isSourceLinked && (
+									<TooltipContent side="top" sideOffset={8}>
+										לא ניתן לשנות תאריך של מקור קיים
+									</TooltipContent>
+								)}
+							</Tooltip>
+						</TooltipProvider>
+						{!isSourceLinked && (
+							<DatePopoverContent align="start" sideOffset={4}>
+								<DatePicker
+									mode={CalendarMode.Single}
+									selected={selectedDate}
+									onSelect={handleDateSelect}
+								/>
+							</DatePopoverContent>
+						)}
+					</Popover>
+				</FormField>
 			</DateFormItem>
 		</SourceDateRow>
 	)
@@ -433,16 +433,6 @@ const DatePickerText = styled.span<{ $hasValue: boolean }>`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`
-
-const DateErrorText = styled.span`
-  font-size: var(--fs-sm);
-  color: #ff4d4f;
-  line-height: 18px;
-  margin-block-start: 4px;
-  padding-right: 6px;
-  text-align: end;
-  width: 100%;
 `
 
 const DatePopoverContent = styled(PopoverContent)`

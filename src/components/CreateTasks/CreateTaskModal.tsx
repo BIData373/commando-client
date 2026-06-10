@@ -449,7 +449,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 													linkedSource={values.linkedSource}
 													onSourceSelect={handleSourceSelect}
 													onDateSelect={handleSourceDateSelect}
-													dateError={field.state.meta.errors.join(", ")}
+													dateField={field}
 												/>
 											)}
 										</form.Field>

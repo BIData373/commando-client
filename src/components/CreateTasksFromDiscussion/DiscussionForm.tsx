@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import type { AnyFieldApi } from "@tanstack/form-core"
 import type { CreateSourceDto, UpdateSourceDto } from "src/api/model"
 import SourceField from "../CreateTasks/SourceField"
 import TagField from "../CreateTasks/TagField"
@@ -15,7 +16,7 @@ interface DiscussionFormProps {
 	onFileChange: (file: File | null) => void
 	existingAttachmentKey?: string | null
 	existingAttachmentName?: string | null
-	dateError?: string
+	dateField?: AnyFieldApi
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -29,7 +30,7 @@ function DiscussionForm({
 	onFileChange,
 	existingAttachmentKey,
 	existingAttachmentName,
-	dateError,
+	dateField,
 }: DiscussionFormProps) {
 	return (
 		<FormContainer>
@@ -41,7 +42,7 @@ function DiscussionForm({
 				onDateSelect={onDateChange}
 				label="שם הדיון"
 				uniqueNames
-				dateError={dateError}
+				dateField={dateField}
 			/>
 
 			<TagField
