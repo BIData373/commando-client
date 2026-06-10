@@ -2,12 +2,12 @@ import styled from "@emotion/styled"
 import { ChevronDown, Tag, X } from "lucide-react"
 import { useRef, useState } from "react"
 import { useListTags } from "src/api/tag/tag"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
 import HighlightMatch from "../shared/HighlightMatch"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface TagFieldProps {
+	workspaceId: number
 	tags: string[]
 	lockedTags: string[]
 	onTagSelect: (tag: string) => void
@@ -17,6 +17,7 @@ interface TagFieldProps {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function TagField({
+	workspaceId,
 	tags,
 	lockedTags,
 	onTagSelect,
@@ -26,9 +27,6 @@ function TagField({
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 	const inputRef = useRef<HTMLInputElement>(null)
 
-	const {
-		workspace: { id: workspaceId },
-	} = useWorkspace()
 	const { data: availableTags = [] } = useListTags({ workspaceId })
 
 	const filteredTags = availableTags.filter(

@@ -6,6 +6,7 @@ import AssigneeRowList from "../shared/AssigneeRow"
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface AssigneeExpansionPanelProps {
+	workspaceId: number
 	assigneeIds: number[]
 	directiveTitle: string
 	assigneeDetails: Record<number, string>
@@ -25,6 +26,7 @@ function toExtras(
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function AssigneeExpansionPanel({
+	workspaceId,
 	assigneeIds,
 	directiveTitle,
 	assigneeDetails,
@@ -44,6 +46,7 @@ function AssigneeExpansionPanel({
 
 			<RowsWrapper>
 				<AssigneeRowList
+					workspaceId={workspaceId}
 					assigneeIds={assigneeIds}
 					directiveTitle={directiveTitle}
 					assigneeExtras={toExtras(assigneeDetails)}

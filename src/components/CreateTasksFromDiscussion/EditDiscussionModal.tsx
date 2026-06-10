@@ -1,6 +1,5 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
-import { useQueryClient } from "@tanstack/react-query"
 import { useStore } from "@tanstack/react-store"
 import { AlertCircle, X } from "lucide-react"
 import {
@@ -9,6 +8,7 @@ import {
 } from "radix-ui"
 import { useState } from "react"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { invalidateQueries } from "src/queryClient"
 import type { UpdateSourceDto } from "../../api/model"
 import {
 	getGetSourceQueryKey,
@@ -39,7 +39,6 @@ function EditDiscussionModal({
 	} = useWorkspace()
 	const { data: source } = useGetSource({ id: sourceId })
 
-	const queryClient = useQueryClient()
 	const { mutateAsync: updateSource } = useUpdateSource()
 	const [showConfirmation, setShowConfirmation] = useState(false)
 	const [isSubmitting, setIsSubmitting] = useState(false)
@@ -71,16 +70,11 @@ function EditDiscussionModal({
 
 			try {
 				await updateSource({ pathParams: { id: sourceId }, data })
-				const queryKeys = [
+				invalidateQueries([
 					getListTasksQueryKey({ workspaceId }),
 					getGetTaskQueryKey({ id: taskId }),
 					getGetSourceQueryKey({ id: sourceId }),
-				]
-				await Promise.all(
-					queryKeys.map((queryKey) =>
-						queryClient.invalidateQueries({ queryKey }),
-					),
-				)
+				])
 				setShowConfirmation(false)
 				onClose()
 			} catch (error) {
@@ -163,6 +157,7 @@ function EditDiscussionModal({
 						</HeaderSection>
 
 						<DiscussionForm
+							workspaceId={workspaceId}
 							form={values}
 							onNameChange={handleNameChange}
 							onDateChange={handleDateChange}

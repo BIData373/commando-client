@@ -14,7 +14,6 @@ import { DeadlineType, type TaskWithWorkspaceDto } from "src/api/model"
 import { getAttachmentSignedUrl } from "src/api/s3/s3"
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { downloadFromUrl } from "src/functions/download-utils"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
@@ -49,15 +48,12 @@ function TaskDetailPanel({
 		source,
 		tags,
 		assigneeStatuses,
+		workspace: { id: workspaceId, assigneeStatusEditable },
 	},
 	onClose,
 	onDelete,
 	onEdit,
 }: TaskDetailPanelProps) {
-	const {
-		workspace: { id: workspaceId },
-	} = useWorkspace()
-
 	const [showHistory, setShowHistory] = useState(false)
 	const [showConversation, setShowConversation] = useState(false)
 
@@ -171,7 +167,12 @@ function TaskDetailPanel({
 							</MetaRow>
 						</DeadlineSection>
 
-						<AssigneeSection taskId={id} assigneeStatuses={assigneeStatuses} />
+						<AssigneeSection
+							taskId={id}
+							workspaceId={workspaceId}
+							assigneeStatusEditable={assigneeStatusEditable}
+							assigneeStatuses={assigneeStatuses}
+						/>
 
 						{showExtraInfo && (
 							<>
