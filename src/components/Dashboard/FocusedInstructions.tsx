@@ -1,18 +1,17 @@
 import styled from "@emotion/styled"
 import type { QueryKey } from "@tanstack/react-query"
-import {
-	flexRender,
-	getCoreRowModel,
-	useReactTable,
-} from "@tanstack/react-table"
 import { useMemo, useState } from "react"
 import { DeadlineType } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import {
+	type DashboardEmptyStateKey,
+	getDashboardEmptyState,
+} from "src/utils/empty-state-utils"
 import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filter-utils"
-import searchInstruction from "../../assets/icons/searchInstruction.svg"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
+import { DataTable } from "../ui/data-table"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface TabConfig {
@@ -20,11 +19,6 @@ interface TabConfig {
 	label: string
 	count: number
 	weekDelta: number
-}
-
-interface EmptyMessage {
-	title: string
-	description: string
 }
 
 interface IFocusedInstruction {
@@ -38,22 +32,11 @@ const TAB_LABELS: Pick<TabConfig, "id" | "label" | "weekDelta">[] = [
 	{ id: FocusedTab.OVERDUE, label: 'חריגות מתג"ב', weekDelta: 0 },
 ]
 
-const EMPTY_MESSAGES: Record<FocusedTab, EmptyMessage> = {
-	[FocusedTab.FLAGGED]: {
-		title: "לא נמצאו הנחיות חשובות",
-		description: "לאחר שהנחיות יוגדרו כחשובות,\nההנחיות האחרונות יופיעו כאן",
-	},
-	[FocusedTab.APPROACHING]: {
-		title: "לא נמצאו הנחיות לביצוע מיידי",
-		description: "הנחיות לביצוע מידיות יופיעו כאן",
-	},
-	[FocusedTab.OVERDUE]: {
-		title: 'לא נמצאו חריגות מתג"ב',
-		description: 'חריגות מתג"ב יופיעו כאן',
-	},
+const TAB_EMPTY_STATE_KEY: Record<FocusedTab, DashboardEmptyStateKey> = {
+	[FocusedTab.FLAGGED]: "dashboardFlagged",
+	[FocusedTab.APPROACHING]: "dashboardApproaching",
+	[FocusedTab.OVERDUE]: "dashboardOverdue",
 }
-
-const coreRowModel = getCoreRowModel()
 
 function getFilteredTasks(tab: FocusedTab, tasks: TaskRow[]): TaskRow[] {
 	switch (tab) {
@@ -78,9 +61,9 @@ export default function FocusedInstructions({
 
 	const filteredTasks = useMemo(
 		() =>
-			getFilteredTasks(activeTab, tasks).sort(
-				(a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
-			),
+			getFilteredTasks(activeTab, tasks)
+				.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+				.slice(0, 7),
 		[activeTab, tasks],
 	)
 
@@ -96,18 +79,12 @@ export default function FocusedInstructions({
 							.length,
 	}))
 
-	const emptyMsg = EMPTY_MESSAGES[activeTab]
+	const emptyMsg = getDashboardEmptyState(TAB_EMPTY_STATE_KEY[activeTab])
 
 	const { columns } = useTaskColumns({
 		queryKey,
 		visibleColumns: ["title", "status", "assigneeStatuses", "deadlineType"],
 		searchQuery: "",
-	})
-
-	const table = useReactTable({
-		data: filteredTasks,
-		columns,
-		getCoreRowModel: coreRowModel,
 	})
 
 	return (
@@ -128,38 +105,14 @@ export default function FocusedInstructions({
 						</TabItem>
 					))}
 				</TabsHeader>
-				<ContentPanel $hasContent={filteredTasks.length > 0}>
-					{filteredTasks.length === 0 ? (
-						<EmptyCardState
-							imgSrc={searchInstruction}
-							title={emptyMsg.title}
-							description={emptyMsg.description}
-						/>
-					) : (
-						<TaskList>
-							{table.getRowModel().rows.map((row) => (
-								<TaskTableRow key={row.id}>
-									{row.getVisibleCells().map((cell) =>
-										cell.column.id === "title" ? (
-											<TitleCellWrapper key={cell.id}>
-												{flexRender(
-													cell.column.columnDef.cell,
-													cell.getContext(),
-												)}
-											</TitleCellWrapper>
-										) : (
-											<FixedCell key={cell.id} $width={cell.column.getSize()}>
-												{flexRender(
-													cell.column.columnDef.cell,
-													cell.getContext(),
-												)}
-											</FixedCell>
-										),
-									)}
-								</TaskTableRow>
-							))}
-						</TaskList>
-					)}
+				<ContentPanel>
+					<DataTable
+						columns={columns}
+						data={filteredTasks}
+						showHeader={false}
+						emptyState={<EmptyCardState {...emptyMsg} />}
+						containerClassName="overflow-hidden"
+					/>
 				</ContentPanel>
 			</TabsWrapper>
 			<ViewMoreInstructions
@@ -264,70 +217,26 @@ const TabCount = styled.span<{ $active: boolean }>`
 			: `color: var(--foreground);`}
 `
 
-const ContentPanel = styled.div<{ $hasContent: boolean }>`
-  flex: 1;
+const ContentPanel = styled.div`
+  flex: none;
   background: var(--background);
   border: 1px solid var(--border);
   border-radius: 8px;
   border-start-start-radius: 0;
   position: relative;
   display: flex;
-  min-height: 310px;
-  max-height: 310px;
-  ${({ $hasContent }) =>
-		$hasContent
-			? `
-      flex-direction: column;
-      align-items: stretch;
-      justify-content: flex-start;
-      overflow: hidden;
-    `
-			: `
-      align-items: center;
-      justify-content: center;
-    `}
-`
-
-const TaskList = styled.div`
-  display: flex;
   flex-direction: column;
-  width: 100%;
-`
+  height: 308px;
+  overflow: hidden;
 
-const TaskTableRow = styled.div`
-  display: flex;
-  align-items: center;
-  height: 44px;
-  background: rgba(0, 0, 0, 0.02);
-
-  &:nth-of-type(even) {
-    background: rgba(0, 0, 0, 0);
+  [data-slot="table-row"] {
+    border-bottom: none;
+    height: 44px;
   }
-`
 
-const TitleCellWrapper = styled.div`
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 100%;
-  padding: 10px 12px;
-  background: var(--background);
-  direction: rtl;
-  border: 0.5px solid rgba(0, 0, 0, 0.01);
-`
-
-const FixedCell = styled.div<{ $width: number }>`
-  width: ${({ $width }) => $width}px;
-  flex-shrink: 0;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  padding-inline: 12px;
-  background: var(--background);
-  direction: rtl;
-  border: 0.5px solid rgba(0, 0, 0, 0.01);
+  [data-slot="table-cell"] {
+    height: 44px;
+    padding-block: 0;
+    vertical-align: middle;
+  }
 `

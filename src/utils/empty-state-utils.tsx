@@ -1,11 +1,17 @@
 import type { DateRange } from "react-day-picker"
-
 import emptyStateImage from "../../public/empty-state.svg"
+import compleateInstruction from "../assets/icons/completeInstruction.svg"
 import searchInstruction from "../assets/icons/searchInstruction.svg"
 import type { EmptyCardStateProps } from "../components/shared/EmptyCardState"
 import { QuickFilter } from "./filter-utils"
 
 type EmptyStateKey = QuickFilter | "search" | "dateRange" | "noData" | "default"
+
+export type DashboardEmptyStateKey =
+	| "dashboardFlagged"
+	| "dashboardApproaching"
+	| "dashboardOverdue"
+	| "dashboardCompleted"
 
 const EMPTY_STATES: Record<EmptyStateKey, EmptyCardStateProps> = {
 	[QuickFilter.OVERDUE]: {
@@ -68,4 +74,36 @@ export function getEmptyState(
 	if (dateRange) return EMPTY_STATES.dateRange
 	if (!hasData) return EMPTY_STATES.noData
 	return EMPTY_STATES.default
+}
+
+const DASHBOARD_EMPTY_STATES: Record<
+	DashboardEmptyStateKey,
+	EmptyCardStateProps
+> = {
+	dashboardFlagged: {
+		imgSrc: searchInstruction,
+		title: "לא נמצאו הנחיות חשובות",
+		description: "לאחר שהנחיות יוגדרו כחשובות,\nההנחיות האחרונות יופיעו כאן",
+	},
+	dashboardApproaching: {
+		imgSrc: searchInstruction,
+		title: "לא נמצאו הנחיות לביצוע מיידי",
+		description: "הנחיות לביצוע מידיות יופיעו כאן",
+	},
+	dashboardOverdue: {
+		imgSrc: searchInstruction,
+		title: 'לא נמצאו חריגות מתג"ב',
+		description: 'חריגות מתג"ב יופיעו כאן',
+	},
+	dashboardCompleted: {
+		imgSrc: compleateInstruction,
+		title: "טרם בוצעו הנחיות",
+		description: "לאחר שהנחיות יבצעו,\nההנחיות האחרונות יופיעו כאן",
+	},
+}
+
+export function getDashboardEmptyState(
+	key: DashboardEmptyStateKey,
+): EmptyCardStateProps {
+	return DASHBOARD_EMPTY_STATES[key]
 }
