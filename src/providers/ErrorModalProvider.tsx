@@ -2,6 +2,7 @@ import { AxiosError } from "axios"
 import {
 	createContext,
 	type ReactNode,
+	useCallback,
 	useContext,
 	useEffect,
 	useState,
@@ -23,14 +24,14 @@ interface ErrorModalProviderProps {
 export function ErrorModalProvider({ children }: ErrorModalProviderProps) {
 	const [errorCode, setErrorCode] = useState<number | null>(null)
 
-	function handleError(error: Error) {
+	const handleError = useCallback((error: Error) => {
 		if (error instanceof AxiosError) {
 			const status = error?.status ?? error?.response?.status
 			const code =
 				status && isErrorCode(status) ? status : ErrorCode.SERVER_ERROR
 			setErrorCode(code)
 		}
-	}
+	}, [])
 
 	return (
 		<ErrorModalContext.Provider
@@ -51,11 +52,11 @@ export function useErrorModal() {
 
 export function useErrorHandler(...errors: (Error | null)[]) {
 	const { handleError } = useErrorModal()
+	const error = errors.find(Boolean) ?? null
 
 	useEffect(() => {
-		const error = errors?.find((error) => !!error)
 		if (error) {
 			handleError(error)
 		}
-	}, [errors, handleError])
+	}, [error, handleError])
 }
