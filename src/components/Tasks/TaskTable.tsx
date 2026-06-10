@@ -21,8 +21,10 @@ import {
 	type TaskRow,
 	useTasksFilters,
 } from "src/providers/TasksFiltersProvider"
+import { getEmptyState } from "src/utils/empty-state-utils"
 import { buildFilterOptionsMap } from "../../functions/filter-utils"
 import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns"
+import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 
@@ -39,6 +41,7 @@ interface TaskTableProps {
 		statusFilter: WorkspaceStatusType[],
 		deadlineTypeFilter: DeadlineType[],
 	) => void
+	isLoading?: boolean
 }
 
 function TaskTable({
@@ -51,8 +54,15 @@ function TaskTable({
 	statusFilter = [],
 	deadlineTypeFilter = [],
 	onFiltersChange,
+	isLoading,
 }: TaskTableProps) {
-	const { searchQuery, columnOrder, hiddenColumns } = useTasksFilters()
+	const {
+		searchQuery,
+		columnOrder,
+		hiddenColumns,
+		activeQuickFilters,
+		dateRange,
+	} = useTasksFilters()
 	const queryClient = useQueryClient()
 
 	function handleSuccess() {
@@ -220,6 +230,17 @@ function TaskTable({
 					onSortingChange={setSorting}
 					getRowId={(row) => row.rowKey}
 					showHeader={showHeader}
+					isLoading={isLoading}
+					emptyState={
+						<EmptyCardState
+							{...getEmptyState(
+								activeQuickFilters,
+								searchQuery,
+								tasks.length > 0,
+								dateRange,
+							)}
+						/>
+					}
 				/>
 			</TableWrapper>
 			{selectMode && (
@@ -246,7 +267,6 @@ export { TaskTable }
 // ─── Table ────────────────────────────────────────────────────────────────────
 
 const TableWrapper = styled.div`
-  overflow-y: auto;
   min-width: 0;
   width: 100%;
   max-height: 100%;
@@ -256,10 +276,12 @@ const TableWrapper = styled.div`
   border: 0.5px solid var(--Background-color-bg-text-active);
   background: var(--background);
   box-shadow: var(--card-shadow-default);
+  overflow: hidden;
 
   [data-slot="table-container"] {
-    overflow-x: auto;
-    direction: rtl;
+    overflow: auto;
+    max-height: 100%;
+    direction: ltr;
   }
 
   table {
@@ -290,6 +312,7 @@ const TableWrapper = styled.div`
     white-space: nowrap;
     background: var(--background);
     border-right: 0.5px solid var(--Background-color-bg-text-active);
+    box-shadow: inset 0 -0.5px 0 0 var(--Background-color-bg-text-active);
 
     &:first-of-type {
       border-right: none;

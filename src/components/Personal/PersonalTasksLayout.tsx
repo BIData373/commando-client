@@ -17,7 +17,6 @@ import {
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
-import { EmptyState } from "../Tasks/EmptyState"
 import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
@@ -59,7 +58,7 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 function PersonalTasksLayout() {
 	// const navigate = useNavigate()
 
-	const { searchQuery, clearQuickFilters } = useTasksFilters()
+	const { clearQuickFilters } = useTasksFilters()
 
 	const queryKey = getListPersonalTasksQueryKey()
 	const { data: rawTasks = [], isLoading } = useListPersonalTasks()
@@ -156,22 +155,18 @@ function PersonalTasksLayout() {
 							activeValues={activeWorkspaceFilters}
 							onApply={setActiveWorkspaceFilters}
 							$active={activeWorkspaceFilters.size > 0}
+							emptyTitle="טרם הוגדרו סביבות"
+							emptyDescription="לאחר שסביבות יוצרו, הן יופיעו כאן"
 						/>
 					}
 					startSlot={<TasksDatePicker />}
 				/>
-
-				{!isLoading && rawTasks.length === 0 ? (
-					<EmptyState />
-				) : searchQuery && filteredTasks.length === 0 ? (
-					<EmptyState variant="search" />
-				) : (
-					<TaskTable
-						queryKey={queryKey}
-						tasks={filteredTaskRows}
-						extraColumns={EXTRA_COLUMNS as Record<string, ColumnDef<TaskRow>>}
-					/>
-				)}
+				<TaskTable
+					queryKey={queryKey}
+					tasks={filteredTaskRows}
+					extraColumns={EXTRA_COLUMNS as Record<string, ColumnDef<TaskRow>>}
+					isLoading={isLoading}
+				/>
 			</PageRoot>
 		</TooltipProvider>
 	)
