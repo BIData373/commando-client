@@ -37,13 +37,13 @@ enableMocking().then(() => {
 		const root = ReactDOM.createRoot(rootElement)
 		root.render(
 			<ErrorModalProvider>
-				<AuthenticationWrapper>
-					<MatomoWrapper>
-						<QueryClientProvider client={queryClient}>
+				<MatomoWrapper>
+					<QueryClientProvider client={queryClient}>
+						<AuthenticationWrapper>
 							<RouterProvider router={router} />
-						</QueryClientProvider>
-					</MatomoWrapper>
-				</AuthenticationWrapper>
+						</AuthenticationWrapper>
+					</QueryClientProvider>
+				</MatomoWrapper>
 			</ErrorModalProvider>,
 		)
 	}
