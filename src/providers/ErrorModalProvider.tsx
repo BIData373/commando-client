@@ -1,5 +1,12 @@
 import { AxiosError } from "axios"
-import { createContext, type ReactNode, useContext, useState } from "react"
+import {
+	createContext,
+	type ReactNode,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from "react"
 import { ErrorCode, isErrorCode } from "../utils/error-utils"
 
 interface ErrorModalContextValue {
@@ -17,14 +24,14 @@ interface ErrorModalProviderProps {
 export function ErrorModalProvider({ children }: ErrorModalProviderProps) {
 	const [errorCode, setErrorCode] = useState<number | null>(null)
 
-	function handleError(error: Error) {
+	const handleError = useCallback((error: Error) => {
 		if (error instanceof AxiosError) {
 			const status = error?.status ?? error?.response?.status
 			const code =
 				status && isErrorCode(status) ? status : ErrorCode.SERVER_ERROR
 			setErrorCode(code)
 		}
-	}
+	}, [])
 
 	return (
 		<ErrorModalContext.Provider
@@ -41,4 +48,15 @@ export function useErrorModal() {
 		throw new Error("useErrorModal must be used inside a ErrorModalProvider")
 	}
 	return context
+}
+
+export function useErrorHandler(...errors: (Error | null)[]) {
+	const { handleError } = useErrorModal()
+	const error = errors.find(Boolean) ?? null
+
+	useEffect(() => {
+		if (error) {
+			handleError(error)
+		}
+	}, [error, handleError])
 }
