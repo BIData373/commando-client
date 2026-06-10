@@ -1,18 +1,14 @@
 import styled from "@emotion/styled"
 import { useParams } from "@tanstack/react-router"
-import {
-	createContext,
-	type PropsWithChildren,
-	useContext,
-	useEffect,
-} from "react"
+import { createContext, type PropsWithChildren, useContext } from "react"
 import type { UpdateWorkspaceDto, WorkspaceStatusDto } from "src/api/model"
+import { useGetMyPermission } from "src/api/permission/permission"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { queryClient } from "src/queryClient"
 import type { WorkspaceDto } from "../api/model/workspace-dto"
 import { useListWorkspaces } from "../api/workspace/workspace"
 import { Spinner } from "../components/ui/spinner"
-import { useErrorModal } from "./ErrorModalProvider"
+import { useErrorHandler } from "./ErrorModalProvider"
 import { useWorkspaceHeader } from "./TitleBarProvider"
 
 export interface WorkspaceContext {
@@ -25,34 +21,42 @@ const WorkspaceContext = createContext<WorkspaceContext | null>(null)
 
 export function WorkspaceProvider({ children }: PropsWithChildren) {
 	const { urlName } = useParams({ from: "/workspace/$urlName" })
-	const { handleError } = useErrorModal()
+
 	const {
 		data,
 		isLoading: isWorkspaceLoading,
-		isError,
-		error,
+		error: workspacesError,
 		queryKey,
 	} = useListWorkspaces({ urlName })
 
 	const workspace = data?.[0]
+	const workspaceId = workspace?.id ?? -1
 
-	const { data: workspaceStatuses, isLoading: isWorkspaceStatusesLoading } =
-		useListWorkspaceStatuses(
-			{ workspaceId: workspace?.id ?? -1 },
-			{ query: { enabled: workspace?.id !== undefined } },
-		)
+	const {
+		data: workspaceStatuses,
+		isLoading: isWorkspaceStatusesLoading,
+		error: workspaceStatusesError,
+	} = useListWorkspaceStatuses(
+		{ workspaceId },
+		{ query: { enabled: workspace?.id !== undefined } },
+	)
 
 	const statuses = Object.fromEntries(
 		(workspaceStatuses ?? []).map((s) => [s.id, s]),
 	)
 
-	useWorkspaceHeader(workspace)
+	const {
+		isLoading: isPermissionLoading,
+		error: permissionError,
+		isFetched: isFetchedPermission,
+	} = useGetMyPermission(
+		{ workspaceId },
+		{ query: { enabled: workspace?.id !== undefined } },
+	)
 
-	useEffect(() => {
-		if (isError) {
-			handleError(error)
-		}
-	}, [isError, error, handleError])
+	useErrorHandler(workspacesError, workspaceStatusesError, permissionError)
+
+	useWorkspaceHeader(workspace)
 
 	const setWorkspace = (data: UpdateWorkspaceDto) => {
 		queryClient.setQueryData(
@@ -67,12 +71,14 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 		)
 	}
 
-	return isWorkspaceLoading || isWorkspaceStatusesLoading ? (
+	return isWorkspaceLoading ||
+		isWorkspaceStatusesLoading ||
+		isPermissionLoading ? (
 		<LoadingContainer>
 			<Spinner />
 		</LoadingContainer>
 	) : (
-		workspace && statuses && (
+		workspace && statuses && isFetchedPermission && (
 			<WorkspaceContext.Provider
 				value={{
 					workspace,
