@@ -124,7 +124,7 @@ function useTaskColumns({
 	const selectColumn: ColumnDef<TaskRow> | null = selectMode?.enabled
 		? {
 				id: "select",
-				size: 54,
+				size: 35,
 				enableSorting: false,
 				enableColumnFilter: false,
 				header: () => (
@@ -155,7 +155,7 @@ function useTaskColumns({
 			header: ({ column }) => (
 				<ColumnHeaderWithActions label={COLUMN_LABELS.id} column={column} />
 			),
-			size: 54,
+			size: 35,
 			enableColumnFilter: false,
 			cell: ({
 				row: {
@@ -231,7 +231,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap?.status}
 				/>
 			),
-			size: 84,
+			size: 50,
 			filterFn: multiSelectFilter,
 			sortingFn: (rowA, rowB) =>
 				(rowA.original.status?.id ?? 0) - (rowB.original.status?.id ?? 0),
@@ -261,7 +261,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap?.assigneeStatuses}
 				/>
 			),
-			size: 88,
+			size: 60,
 			filterFn: multiSelectFilter,
 			sortingFn: "text",
 			cell: ({
@@ -288,7 +288,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap?.deadlineType}
 				/>
 			),
-			size: 124,
+			size: 90,
 			filterFn: multiSelectFilter,
 			sortingFn: (
 				{ original: { dueDate: dueDateA } },
@@ -363,7 +363,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap?.discussionName}
 				/>
 			),
-			size: 155,
+			size: 120,
 			filterFn: multiSelectFilter,
 			sortingFn: "text",
 			cell: ({
@@ -394,7 +394,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap?.tags}
 				/>
 			),
-			size: 108,
+			size: 90,
 			enableSorting: false,
 			filterFn: multiSelectFilter,
 			cell: ({
@@ -409,7 +409,7 @@ function useTaskColumns({
 		notes: {
 			accessorKey: "notes",
 			header: COLUMN_LABELS.notes,
-			size: 140,
+			size: 110,
 			enableSorting: false,
 			enableColumnFilter: false,
 			cell: ({ getValue }) => {
@@ -427,7 +427,7 @@ function useTaskColumns({
 					column={column}
 				/>
 			),
-			size: 96,
+			size: 70,
 			enableColumnFilter: false,
 			sortingFn: "datetime",
 			cell: ({ getValue }) => (
@@ -442,7 +442,7 @@ function useTaskColumns({
 					column={column}
 				/>
 			),
-			size: 74,
+			size: 70,
 			enableColumnFilter: false,
 			sortingFn: "datetime",
 			cell: ({ getValue }) => (
@@ -454,7 +454,7 @@ function useTaskColumns({
 	const actionsColumn: ColumnDef<TaskRow> | null = actions
 		? {
 				id: "actions",
-				size: 37,
+				size: 25,
 				enableSorting: false,
 				enableColumnFilter: false,
 				cell: ({

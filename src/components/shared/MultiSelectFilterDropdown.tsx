@@ -18,6 +18,8 @@ interface MultiSelectFilterDropdownProps<T extends string | number> {
 	activeValues: Set<T>
 	onApply: (selected: Set<T>) => void
 	$active: boolean
+	emptyTitle: string
+	emptyDescription: string
 }
 
 function MultiSelectFilterDropdown<T extends string | number>({
@@ -26,6 +28,8 @@ function MultiSelectFilterDropdown<T extends string | number>({
 	activeValues,
 	onApply,
 	$active,
+	emptyTitle,
+	emptyDescription,
 }: MultiSelectFilterDropdownProps<T>) {
 	const [open, setOpen] = useState(false)
 	const [pending, setPending] = useState<Set<T>>(new Set(activeValues))
@@ -71,7 +75,10 @@ function MultiSelectFilterDropdown<T extends string | number>({
 				<DropdownPanel>
 					<ItemList>
 						{options.length === 0 ? (
-							<EmptyCardState title="לא נמצאו נושאים" />
+							<EmptyCardState
+								title={emptyTitle}
+								description={emptyDescription}
+							/>
 						) : (
 							options.map((option) => (
 								<DropdownItem

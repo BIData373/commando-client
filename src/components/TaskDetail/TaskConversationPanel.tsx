@@ -394,6 +394,7 @@ const SendButton = styled.button`
 
 const StyledInput = styled.input`
   flex: 1;
+  direction: rtl;
   min-width: 0;
   height: 32px;
   background: var(--background);
@@ -404,7 +405,7 @@ const StyledInput = styled.input`
   font-weight: 400;
   line-height: normal;
   color: var(--text-color-2);
-  text-align: end;
+  text-align: start;
   outline: none;
 
   &::placeholder {
