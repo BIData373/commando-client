@@ -1,62 +1,81 @@
-import {
-	OidcProvider,
-	OidcSecure,
-	useOidcAccessToken,
-} from "@axa-fr/react-oidc"
+import { useQuery } from "@tanstack/react-query"
 import type { PropsWithChildren } from "react"
-import { useEffect } from "react"
+import {
+	getStoredToken,
+	getTokenExpiry,
+	REFRESH_BUFFER_SECONDS,
+	refreshAccessToken,
+	storeToken,
+} from "src/utils/auth-utils"
 import { USE_MOCK_API, USE_SSO } from "src/utils/env-utils"
-import { COOKIE_NAME } from "src/utils/user-utils"
 
-const oidcConfiguration = {
-	client_id: import.meta.env.VITE_KEYCLOAK_CLIENT_ID ?? "",
-	redirect_uri: window.location.origin,
-	silent_redirect_uri: `${window.location.origin}/authentication/silent-callback.html`,
-	scope: "openid profile email",
-	authority: `${import.meta.env.VITE_KEYCLOAK_URL}/realms/${import.meta.env.VITE_KEYCLOAK_REALM}`,
-	service_worker_only: false,
-	refresh_time_before_tokens_expiration_in_second: 70,
-}
-
-async function setTokenCookie(token: string | undefined): Promise<void> {
-	if (token) {
-		await cookieStore.set({
-			name: COOKIE_NAME,
-			value: token,
-			path: "/",
-			sameSite: "lax",
-		})
-	} else {
-		await cookieStore.delete(COOKIE_NAME)
+async function resolveToken(): Promise<string> {
+	const existing = await getStoredToken()
+	if (existing) {
+		const expiry = getTokenExpiry(existing)
+		if (
+			!expiry ||
+			expiry > Math.floor(Date.now() / 1000) + REFRESH_BUFFER_SECONDS
+		) {
+			return existing
+		}
 	}
+
+	const token = await refreshAccessToken()
+	if (token) {
+		await storeToken(token)
+		return token
+	}
+
+	throw new Error(
+		"SSO token refresh failed. Ensure the SSO service is running.",
+	)
 }
 
-function TokenCookieSync() {
-	const { accessToken } = useOidcAccessToken()
-
-	useEffect(() => {
-		setTokenCookie(accessToken)
-	}, [accessToken])
-
-	return null
+function useAuthToken() {
+	return useQuery({
+		queryKey: ["auth-token"],
+		queryFn: resolveToken,
+		refetchInterval: (query) => {
+			const token = query.state.data
+			if (!token) {
+				return false
+			}
+			const expiry = getTokenExpiry(token)
+			if (!expiry) {
+				return false
+			}
+			const delay =
+				(expiry - Math.floor(Date.now() / 1000) - REFRESH_BUFFER_SECONDS) * 1000
+			return delay > 0 ? delay : false
+		},
+		staleTime: Infinity,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+		retry: false,
+	})
 }
 
 export function AuthenticationWrapper({ children }: PropsWithChildren) {
-	return USE_MOCK_API || !USE_SSO ? (
-		children
-	) : (
-		<OidcProvider
-			configuration={oidcConfiguration}
-			loadingComponent={() => "Loading..."}
-			authenticatingComponent={() => "Authenticating..."}
-			callbackSuccessComponent={() => "Loading..."}
-			sessionLostComponent={() => "Session lost, refresh"}
-		>
-			<OidcSecure>
-				<TokenCookieSync />
+	if (USE_MOCK_API || !USE_SSO) {
+		return children
+	}
 
-				{children}
-			</OidcSecure>
-		</OidcProvider>
-	)
+	return <AuthGuard>{children}</AuthGuard>
+}
+
+function AuthGuard({ children }: PropsWithChildren) {
+	const { isPending, isError, error } = useAuthToken()
+
+	if (isPending) {
+		return "Authenticating..."
+	}
+
+	if (isError) {
+		const message =
+			error instanceof Error ? error.message : "SSO service unavailable."
+		return `Authentication error: ${message}`
+	}
+
+	return children
 }

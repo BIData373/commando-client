@@ -15,3 +15,5 @@ export const MATOMO_ENABLED = import.meta.env.VITE_MATOMO_ENABLED === "true"
 export const REQUEST_USERNAME = import.meta.env.VITE_REQUEST_USERNAME
 
 export const MESIBA_S3_URL = import.meta.env.VITE_MESIBA_S3_URL
+
+export const AUTH_SERVER_URL = import.meta.env.VITE_SSO_URL ?? ""
