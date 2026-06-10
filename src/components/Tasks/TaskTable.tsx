@@ -170,6 +170,16 @@ function TaskTable({
 		})
 	}
 
+	function handleBulkArchive() {
+		removeTasks(selectedTaskIds)
+		handleExitSelectMode()
+	}
+
+	function handleBulkDelete() {
+		removeTasks(selectedTaskIds)
+		handleExitSelectMode()
+	}
+
 	function bulkUpdateStatus(taskIds: number[], status: WorkspaceStatusDto) {
 		taskIds.forEach((id) => {
 			const task = tasks.find((t) => t.id === id)
@@ -279,14 +289,8 @@ function TaskTable({
 				selectedCount={selectedTaskIds.length}
 				statuses={uniqueStatuses}
 				onChangeStatus={(status) => bulkUpdateStatus(selectedTaskIds, status)}
-				onArchive={() => {
-					removeTasks(selectedTaskIds)
-					handleExitSelectMode()
-				}}
-				onDelete={() => {
-					removeTasks(selectedTaskIds)
-					handleExitSelectMode()
-				}}
+				onArchive={handleBulkArchive}
+				onDelete={handleBulkDelete}
 				deleteDisabled={bulkDeleteDisabled}
 				statusDisabled={bulkStatusDisabled}
 				onExitSelect={handleExitSelectMode}
