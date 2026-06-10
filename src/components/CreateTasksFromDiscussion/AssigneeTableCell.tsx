@@ -62,6 +62,7 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 	) : (
 		<AssigneeCellOuter>
 			<AssigneePicker
+				workspaceId={workspaceId}
 				selectedAssignees={assigneeIds}
 				onToggle={handleToggleAssignee}
 				trigger={

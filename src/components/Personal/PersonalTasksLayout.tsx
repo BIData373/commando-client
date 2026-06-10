@@ -1,14 +1,20 @@
 import styled from "@emotion/styled"
+import { Outlet, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
-import { type WorkspaceDto, WorkspaceStatusType } from "src/api/model"
+import {
+	PermissionType,
+	type WorkspaceDto,
+	WorkspaceStatusType,
+} from "src/api/model"
 import {
 	getListPersonalTasksQueryKey,
 	useListPersonalTasks,
 } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { toTaskRows } from "../../functions/tasks-table"
 import {
 	type TaskRow,
@@ -56,7 +62,7 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 }
 
 function PersonalTasksLayout() {
-	// const navigate = useNavigate()
+	const navigate = useNavigate()
 
 	const { clearQuickFilters } = useTasksFilters()
 
@@ -110,6 +116,39 @@ function PersonalTasksLayout() {
 
 	function handleExport() {
 		// placeholder for export
+	}
+
+	const taskPermissions = useMemo(
+		() =>
+			Object.fromEntries(
+				rawTasks.map((t) => [
+					t.id,
+					{
+						canDelete: t.workspace.permissionType === PermissionType.MANAGER,
+						canChangeStatus: !(
+							t.workspace.permissionType === PermissionType.VIEWER &&
+							!t.workspace.assigneeStatusEditable
+						),
+					},
+				]),
+			),
+		[rawTasks],
+	)
+
+	function handleOpenTask(taskId: number) {
+		navigate({
+			to: "/personal/task/$taskId",
+			params: { taskId: String(taskId) },
+			search: { view: TasksView.TABLE },
+		})
+	}
+
+	function handleEdit(taskId: number) {
+		navigate({
+			to: "/personal/task/$taskId/edit",
+			params: { taskId: String(taskId) },
+			search: { view: TasksView.TABLE },
+		})
 	}
 
 	// function handleViewChange(newView: TasksView) {
@@ -166,8 +205,13 @@ function PersonalTasksLayout() {
 					tasks={filteredTaskRows}
 					extraColumns={EXTRA_COLUMNS as Record<string, ColumnDef<TaskRow>>}
 					isLoading={isLoading}
+					onEdit={handleEdit}
+					onDoubleClick={handleOpenTask}
+					taskPermissions={taskPermissions}
+					hideStatusAction
 				/>
 			</PageRoot>
+			<Outlet />
 		</TooltipProvider>
 	)
 }

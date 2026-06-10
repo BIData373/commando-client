@@ -123,6 +123,7 @@ function CreateTasksTable({
 						row.original.assigneeIds.length > 1 &&
 						expandedRows.has(row.original.id) ? (
 							<TaskAssigneeExpansion
+								workspaceId={workspaceId}
 								row={row.original}
 								onUpdateRow={(updates) => updateRow(row.original.id, updates)}
 								onCollapse={() => toggleRowExpansion(row.original.id)}

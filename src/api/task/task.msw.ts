@@ -9,7 +9,7 @@ import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 import type { TaskDto, TaskWithWorkspaceDto } from "../model"
-import { DeadlineType, WorkspaceStatusType } from "../model"
+import { DeadlineType, PermissionType, WorkspaceStatusType } from "../model"
 
 export const getCreateTaskResponseMock = (
 	overrideResponse: Partial<Extract<TaskWithWorkspaceDto, object>> = {},
@@ -218,6 +218,7 @@ export const getCreateTaskResponseMock = (
 		]),
 		assigneeStatusEditable: faker.datatype.boolean(),
 		pikudId: faker.number.float({ fractionDigits: 2 }),
+		permissionType: faker.helpers.arrayElement(Object.values(PermissionType)),
 	},
 	...overrideResponse,
 })
@@ -623,6 +624,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 			]),
 			assigneeStatusEditable: faker.datatype.boolean(),
 			pikudId: faker.number.float({ fractionDigits: 2 }),
+			permissionType: faker.helpers.arrayElement(Object.values(PermissionType)),
 		},
 	}))
 
@@ -833,6 +835,7 @@ export const getGetTaskResponseMock = (
 		]),
 		assigneeStatusEditable: faker.datatype.boolean(),
 		pikudId: faker.number.float({ fractionDigits: 2 }),
+		permissionType: faker.helpers.arrayElement(Object.values(PermissionType)),
 	},
 	...overrideResponse,
 })
@@ -1044,6 +1047,7 @@ export const getUpdateTaskResponseMock = (
 		]),
 		assigneeStatusEditable: faker.datatype.boolean(),
 		pikudId: faker.number.float({ fractionDigits: 2 }),
+		permissionType: faker.helpers.arrayElement(Object.values(PermissionType)),
 	},
 	...overrideResponse,
 })
@@ -1255,6 +1259,7 @@ export const getDeleteTaskResponseMock = (
 		]),
 		assigneeStatusEditable: faker.datatype.boolean(),
 		pikudId: faker.number.float({ fractionDigits: 2 }),
+		permissionType: faker.helpers.arrayElement(Object.values(PermissionType)),
 	},
 	...overrideResponse,
 })
