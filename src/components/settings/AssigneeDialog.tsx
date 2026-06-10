@@ -7,9 +7,10 @@ import {
 	useUpdateAssignee,
 } from "src/api/assignee/assignee"
 import type { AssigneeDto, AssigneesDto, UserDto } from "src/api/model"
+import { getListPersonalTasksQueryKey } from "src/api/task/task"
 import { type IMesibaIcon, useMesibaIconByName } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { queryClient } from "src/queryClient"
+import { invalidateQueries, queryClient } from "src/queryClient"
 import { concatName } from "src/utils/user-utils"
 import { CancelButton } from "../shared/CancelButton"
 import { FormField } from "../shared/FormField"
@@ -85,6 +86,8 @@ export function AssigneeDialog({
 
 			return updated
 		})
+
+		invalidateQueries([getListPersonalTasksQueryKey()])
 	}
 
 	const form = useForm({
