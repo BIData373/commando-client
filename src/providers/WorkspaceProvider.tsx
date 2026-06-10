@@ -2,7 +2,6 @@ import styled from "@emotion/styled"
 import { useParams } from "@tanstack/react-router"
 import { createContext, type PropsWithChildren, useContext } from "react"
 import type { UpdateWorkspaceDto, WorkspaceStatusDto } from "src/api/model"
-import { useGetMyPermission } from "src/api/permission/permission"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { queryClient } from "src/queryClient"
 import type { WorkspaceDto } from "../api/model/workspace-dto"
@@ -45,16 +44,7 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 		(workspaceStatuses ?? []).map((s) => [s.id, s]),
 	)
 
-	const {
-		isLoading: isPermissionLoading,
-		error: permissionError,
-		isFetched: isFetchedPermission,
-	} = useGetMyPermission(
-		{ workspaceId },
-		{ query: { enabled: workspace?.id !== undefined } },
-	)
-
-	useErrorHandler(workspacesError, workspaceStatusesError, permissionError)
+	useErrorHandler(workspacesError, workspaceStatusesError)
 
 	useWorkspaceHeader(workspace)
 
@@ -71,14 +61,12 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 		)
 	}
 
-	return isWorkspaceLoading ||
-		isWorkspaceStatusesLoading ||
-		isPermissionLoading ? (
+	return isWorkspaceLoading || isWorkspaceStatusesLoading ? (
 		<LoadingContainer>
 			<Spinner />
 		</LoadingContainer>
 	) : (
-		workspace && statuses && isFetchedPermission && (
+		workspace && statuses && (
 			<WorkspaceContext.Provider
 				value={{
 					workspace,

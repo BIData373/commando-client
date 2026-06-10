@@ -5,6 +5,7 @@ import {
 	useCallback,
 	useContext,
 	useEffect,
+	useMemo,
 	useState,
 } from "react"
 import { ErrorCode, isErrorCode } from "../utils/error-utils"
@@ -26,9 +27,19 @@ export function ErrorModalProvider({ children }: ErrorModalProviderProps) {
 
 	const handleError = useCallback((error: Error) => {
 		if (error instanceof AxiosError) {
-			const status = error?.status ?? error?.response?.status
+			const possibleStatuses = [
+				error?.code,
+				error?.status,
+				error?.response?.status,
+			]
+
 			const code =
-				status && isErrorCode(status) ? status : ErrorCode.SERVER_ERROR
+				Number(
+					possibleStatuses.find(
+						(status) => status && isErrorCode(Number(status)),
+					),
+				) ?? ErrorCode.SERVER_ERROR
+
 			setErrorCode(code)
 		}
 	}, [])
@@ -52,7 +63,8 @@ export function useErrorModal() {
 
 export function useErrorHandler(...errors: (Error | null)[]) {
 	const { handleError } = useErrorModal()
-	const error = errors.find(Boolean) ?? null
+
+	const error = useMemo(() => errors.find(Boolean) ?? null, [errors])
 
 	useEffect(() => {
 		if (error) {

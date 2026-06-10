@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router"
+import { PermissionType } from "src/api/model"
 import { useGetTask } from "src/api/task/task"
+import { AuthorizationWrapper } from "src/wrappers/AuthorizationWrapper"
 import CreateTaskModal from "../../../../../components/CreateTasks/CreateTaskModal"
 
 export const Route = createFileRoute("/workspace/$urlName/tasks/$taskId/edit")({
@@ -25,5 +27,9 @@ function TaskEdit() {
 		return null
 	}
 
-	return <CreateTaskModal task={task} onClose={handleClose} />
+	return (
+		<AuthorizationWrapper type={PermissionType.MANAGER}>
+			<CreateTaskModal task={task} onClose={handleClose} />
+		</AuthorizationWrapper>
+	)
 }
