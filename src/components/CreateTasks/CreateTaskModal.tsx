@@ -159,14 +159,14 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 					)
 				}
 
-				updateTask(
+				await updateTask(
 					{ pathParams: { id: task.id }, data: changedFields },
 					{ onSuccess: handleUpdateSuccess },
 				)
 			} else {
-				saveTasks([{ workspaceId, ...rest }])
-				onClose()
+				await saveTasks([{ workspaceId, ...rest }])
 			}
+			onClose()
 		},
 	})
 
@@ -309,8 +309,8 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 		setScrollShadow({ top: !atTop, bottom: !atBottom })
 	}
 
-	const handleOpenChange = (open: boolean) => {
-		if (!open) {
+	const handleOpenChange = (isOpen: boolean) => {
+		if (!isOpen) {
 			onClose()
 		}
 	}
@@ -318,12 +318,21 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 	const linkedTagNames = values.linkedSource?.tags.map((t) => t.name) ?? []
 	const mergedTags = uniq([...linkedTagNames, ...(values.tags ?? [])])
 
+	const taskStatusByAssigneeId = isEditMode
+		? Object.fromEntries(
+				task!.assigneeStatuses.map((as) => [as.assignee.id, as.status]),
+			)
+		: {}
+
 	const assigneeExtras = isEditMode
 		? Object.fromEntries(
 				(values.assignees ?? []).map((a) => [
 					a.id,
 					{
-						status: a.statusId != null ? statusById[a.statusId] : undefined,
+						status:
+							a.statusId != null
+								? (statusById[a.statusId] ?? taskStatusByAssigneeId[a.id])
+								: undefined,
 						description: a.description,
 					},
 				]),
