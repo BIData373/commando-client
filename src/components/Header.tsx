@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router"
 import { ChevronDown, User } from "lucide-react"
 import type { HeaderConfig } from "src/router"
+import { formatMesibaIcon } from "src/utils/icon-utils"
 import { useTitleBarActions } from "../providers/TitleBarProvider"
 import { BIHeaderBypass } from "./BIHeaderBypass"
 import {
@@ -72,7 +73,7 @@ export default function Header() {
 							<>
 								{activeWorkspace.icon && (
 									<WorkspaceIcon
-										src={activeWorkspace.icon}
+										src={formatMesibaIcon(activeWorkspace.icon)}
 										alt="Workspace icon"
 									/>
 								)}
