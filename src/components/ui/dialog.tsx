@@ -11,6 +11,7 @@ import { XIcon } from "lucide-react"
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
+  // TODO - this is stupid, i promise to fix
   useEffect(() => {
     return () => {
       document.body.style.removeProperty("pointer-events")
