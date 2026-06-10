@@ -17,7 +17,7 @@ export const EmptyCardState = ({
 		<EmptyState>
 			{imgSrc && (
 				<EmptyIconWrapper>
-					<img src={imgSrc} alt="" />
+					<img src={imgSrc} alt="" style={{ aspectRatio: "1/1" }} />
 				</EmptyIconWrapper>
 			)}
 			<EmptyTitle>{title}</EmptyTitle>
@@ -37,8 +37,6 @@ const EmptyState = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 24px;
   max-width: none;
   text-align: center;
 `
@@ -56,7 +54,6 @@ const EmptyDescription = styled.div`
   align-items: center;
   font-size: var(--fs-btn);
   color: var(--sea-ink-soft);
-  margin: 0 0 12px;
   line-height: 22px;
 `
 
@@ -67,6 +64,4 @@ const EmptyIconWrapper = styled.div`
   align-items: center;
   justify-content: center;
   color: var(--purple-start);
-  opacity: 0.6;
-  margin-bottom: 8px;
 `

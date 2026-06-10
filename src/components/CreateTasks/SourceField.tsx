@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import type { AnyFieldApi } from "@tanstack/form-core"
 import { Calendar as CalendarIcon, ChevronDown, Paperclip } from "lucide-react"
 import { useState } from "react"
 import type { SourceDto } from "src/api/model"
@@ -6,6 +7,7 @@ import { useListSources } from "src/api/source/source"
 import type { DatePickerValue } from "src/utils/date-utils"
 import { formatDate, formatDateShort } from "../../functions/date-utils"
 import DatePicker, { CalendarMode } from "../shared/DatePicker"
+import { FormField } from "../shared/FormField"
 import HighlightMatch from "../shared/HighlightMatch"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import {
@@ -26,6 +28,7 @@ interface SourceFieldProps {
 	onDateSelect: (date: Date | undefined) => void
 	label?: string
 	uniqueNames?: boolean
+	dateField?: AnyFieldApi
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -39,6 +42,7 @@ function SourceField({
 	onDateSelect,
 	label = "מקור",
 	uniqueNames = false,
+	dateField,
 }: SourceFieldProps) {
 	const [sourceQuery, setSourceQuery] = useState(source)
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -163,39 +167,41 @@ function SourceField({
 				</SourceFieldWrapper>
 			</SourceFormItem>
 			<DateFormItem>
-				<FormLabelRow>
-					<LabelText>תאריך</LabelText>
-				</FormLabelRow>
-				<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<PopoverTrigger asChild>
-									<DatePickerButton $disabled={isSourceLinked}>
-										<CalendarIcon size={18} />
-										<DatePickerText $hasValue={!!sourceDate}>
-											{sourceDate ? formatDate(sourceDate) : "בחר תאריך"}
-										</DatePickerText>
-									</DatePickerButton>
-								</PopoverTrigger>
-							</TooltipTrigger>
-							{isSourceLinked && (
-								<TooltipContent side="top" sideOffset={8}>
-									לא ניתן לשנות תאריך של מקור קיים
-								</TooltipContent>
-							)}
-						</Tooltip>
-					</TooltipProvider>
-					{!isSourceLinked && (
-						<DatePopoverContent align="start" sideOffset={4}>
-							<DatePicker
-								mode={CalendarMode.Single}
-								selected={selectedDate}
-								onSelect={handleDateSelect}
-							/>
-						</DatePopoverContent>
-					)}
-				</Popover>
+				<FormField field={dateField} label="תאריך">
+					<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<PopoverTrigger asChild>
+										<DatePickerButton
+											$disabled={isSourceLinked}
+											$error={!!dateField?.state.meta.errors.length}
+										>
+											<CalendarIcon size={18} />
+											<DatePickerText $hasValue={!!sourceDate}>
+												{sourceDate ? formatDate(sourceDate) : "בחר תאריך"}
+											</DatePickerText>
+										</DatePickerButton>
+									</PopoverTrigger>
+								</TooltipTrigger>
+								{isSourceLinked && (
+									<TooltipContent side="top" sideOffset={8}>
+										לא ניתן לשנות תאריך של מקור קיים
+									</TooltipContent>
+								)}
+							</Tooltip>
+						</TooltipProvider>
+						{!isSourceLinked && (
+							<DatePopoverContent align="start" sideOffset={4}>
+								<DatePicker
+									mode={CalendarMode.Single}
+									selected={selectedDate}
+									onSelect={handleDateSelect}
+								/>
+							</DatePopoverContent>
+						)}
+					</Popover>
+				</FormField>
 			</DateFormItem>
 		</SourceDateRow>
 	)
@@ -391,7 +397,10 @@ const CreateNewText = styled.span`
   text-align: end;
 `
 
-const DatePickerButton = styled.button<{ $disabled?: boolean }>`
+const DatePickerButton = styled.button<{
+	$disabled?: boolean
+	$error?: boolean
+}>`
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -400,7 +409,7 @@ const DatePickerButton = styled.button<{ $disabled?: boolean }>`
   height: 40px;
   padding-inline: 12px;
   background: white;
-  border: 1px solid #d9d9d9;
+  border: 1px solid ${({ $error }) => ($error ? "#ff4d4f" : "#d9d9d9")};
   border-radius: 6px;
   cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
   opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
@@ -408,7 +417,7 @@ const DatePickerButton = styled.button<{ $disabled?: boolean }>`
   flex-shrink: 0;
 
   &:hover {
-    border-color: ${({ $disabled }) => ($disabled ? "#d9d9d9" : "#4096ff")};
+    border-color: ${({ $disabled, $error }) => ($disabled ? "#d9d9d9" : $error ? "#ff4d4f" : "#4096ff")};
   }
 `
 
