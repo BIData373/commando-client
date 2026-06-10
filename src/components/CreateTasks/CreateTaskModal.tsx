@@ -16,10 +16,11 @@ import {
 import { useCreateSource } from "src/api/source/source"
 import {
 	getGetTaskQueryKey,
+	getListPersonalTasksQueryKey,
 	getListTasksQueryKey,
 	useUpdateTask,
 } from "src/api/task/task"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { invalidateQueries } from "src/queryClient"
 import { getChangedFields } from "src/utils/form-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
@@ -56,23 +57,34 @@ interface FormState extends Omit<CreateTaskDto, "workspaceId" | "assignees"> {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 interface CreateTaskModalProps {
+	workspaceId: number
 	onClose: () => void
 	task?: TaskWithWorkspaceDto
 }
 
-function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
+function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 	const isEditMode = !!task
 
-	const {
-		workspace: { id: workspaceId },
-		statuses,
-	} = useWorkspace()
+	const { data: workspaceStatuses = [] } = useListWorkspaceStatuses({
+		workspaceId,
+	})
+	const statusById = Object.fromEntries(workspaceStatuses.map((s) => [s.id, s]))
 
-	const { saveTasks, isPending } = useSaveTasks(onClose)
+	const { saveTasks, isPending } = useSaveTasks(workspaceId, onClose)
 
 	const { mutateAsync: createSource } = useCreateSource()
 	const { mutate: updateTask } = useUpdateTask()
-	const { mutateAsync: upsertStatus } = useUpsertAssigneeTaskStatus()
+	const { mutateAsync: upsertStatus } = useUpsertAssigneeTaskStatus({
+		mutation: {
+			onSuccess() {
+				invalidateQueries([
+					getListTasksQueryKey({ workspaceId }),
+					getGetTaskQueryKey({ id: task!.id }),
+					getListPersonalTasksQueryKey(),
+				])
+			},
+		},
+	})
 
 	const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
 
@@ -99,6 +111,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 		await invalidateQueries([
 			getListTasksQueryKey({ workspaceId }),
 			getGetTaskQueryKey({ id: task!.id }),
+			getListPersonalTasksQueryKey(),
 		])
 
 		onClose()
@@ -190,7 +203,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 			)
 		} else {
 			const defaultStatusId = isEditMode
-				? Object.values(statuses).find(
+				? Object.values(statusById).find(
 						(s) => s.type === WorkspaceStatusType.NOT_STARTED,
 					)?.id
 				: undefined
@@ -318,7 +331,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 				(values.assignees ?? []).map((a) => [
 					a.id,
 					{
-						status: a.statusId != null ? statuses[a.statusId] : undefined,
+						status: a.statusId != null ? statusById[a.statusId] : undefined,
 						description: a.description,
 					},
 				]),
@@ -384,6 +397,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 
 								{/* ─── Responsible ─────────────────────────────────────────── */}
 								<AssigneeField
+									workspaceId={workspaceId}
 									selectedAssignees={(values.assignees ?? []).map((a) => a.id)}
 									directiveTitle={values.title}
 									onToggle={handleAssigneeToggle}
@@ -444,6 +458,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 										>
 											{(field) => (
 												<SourceField
+													workspaceId={workspaceId}
 													source={values.source}
 													sourceDate={values.sourceDate}
 													linkedSource={values.linkedSource}
@@ -456,6 +471,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 
 										{/* Tag field */}
 										<TagField
+											workspaceId={workspaceId}
 											tags={mergedTags}
 											lockedTags={linkedTagNames}
 											onTagSelect={handleTagSelect}

@@ -2,11 +2,11 @@ import { QueryClientProvider } from "@tanstack/react-query"
 import { RouterProvider } from "@tanstack/react-router"
 import ReactDOM from "react-dom/client"
 import * as mockHandlers from "src/api/index.msw" // Orval generated MSW handlers
-import { AuthenticationWrapper } from "./components/AuthenticationWrapper"
 import { ErrorModalProvider } from "./providers/ErrorModalProvider"
 import { queryClient } from "./queryClient"
 import router from "./router"
 import { USE_MOCK_API } from "./utils/env-utils"
+import { AuthenticationWrapper } from "./wrappers/AuthenticationWrapper"
 import MatomoWrapper from "./wrappers/MatomoWrapper"
 
 const handlers = Object.values(mockHandlers).flatMap((getHandlers) =>
@@ -37,13 +37,13 @@ enableMocking().then(() => {
 		const root = ReactDOM.createRoot(rootElement)
 		root.render(
 			<ErrorModalProvider>
-				<AuthenticationWrapper>
-					<MatomoWrapper>
-						<QueryClientProvider client={queryClient}>
+				<MatomoWrapper>
+					<QueryClientProvider client={queryClient}>
+						<AuthenticationWrapper>
 							<RouterProvider router={router} />
-						</QueryClientProvider>
-					</MatomoWrapper>
-				</AuthenticationWrapper>
+						</AuthenticationWrapper>
+					</QueryClientProvider>
+				</MatomoWrapper>
 			</ErrorModalProvider>,
 		)
 	}

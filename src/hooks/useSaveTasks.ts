@@ -1,5 +1,4 @@
 import { type CreateTaskDto, DeadlineType, type TaskDto } from "src/api/model"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { queryClient } from "src/queryClient"
 import { getListTasksQueryKey, useCreateTask } from "../api/task/task"
 
@@ -7,10 +6,7 @@ interface TaskInput extends CreateTaskDto {
 	groupKey?: string
 }
 
-export function useSaveTasks(onDone?: () => void) {
-	const {
-		workspace: { id: workspaceId },
-	} = useWorkspace()
+export function useSaveTasks(workspaceId: number, onDone?: () => void) {
 	const { mutateAsync: createTask, isPending } = useCreateTask({
 		mutation: {
 			onSuccess: ({ workspace: _, ...task }) => {

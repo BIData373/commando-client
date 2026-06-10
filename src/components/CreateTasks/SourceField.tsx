@@ -4,7 +4,6 @@ import { Calendar as CalendarIcon, ChevronDown, Paperclip } from "lucide-react"
 import { useState } from "react"
 import type { SourceDto } from "src/api/model"
 import { useListSources } from "src/api/source/source"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
 import type { DatePickerValue } from "src/utils/date-utils"
 import { formatDate, formatDateShort } from "../../functions/date-utils"
 import DatePicker, { CalendarMode } from "../shared/DatePicker"
@@ -21,6 +20,7 @@ import {
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface SourceFieldProps {
+	workspaceId: number
 	source: string
 	sourceDate: Date | null
 	linkedSource: SourceDto | null
@@ -34,6 +34,7 @@ interface SourceFieldProps {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function SourceField({
+	workspaceId,
 	source,
 	sourceDate,
 	linkedSource,
@@ -48,9 +49,6 @@ function SourceField({
 	const [isDateOpen, setIsDateOpen] = useState(false)
 	const isSourceLinked = linkedSource !== null
 
-	const {
-		workspace: { id: workspaceId },
-	} = useWorkspace()
 	const { data: sources = [] } = useListSources({ workspaceId })
 
 	function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
