@@ -28,11 +28,11 @@ interface CreateDiscussionModalProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
-	const { saveTasks, isPending } = useSaveTasks(onClose)
 	const { mutateAsync: createSource } = useCreateSource()
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
+	const { saveTasks, isPending } = useSaveTasks(workspaceId, onClose)
 
 	const defaultValues: CreateSourceDto = {
 		workspaceId,
@@ -166,6 +166,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 						{currentStep === Steps.Discussion ? (
 							<>
 								<DiscussionForm
+									workspaceId={workspaceId}
 									form={values}
 									onNameChange={handleNameChange}
 									onDateChange={handleDateChange}

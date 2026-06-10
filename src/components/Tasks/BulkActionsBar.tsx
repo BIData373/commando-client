@@ -2,7 +2,6 @@ import styled from "@emotion/styled"
 import { Trash2, X } from "lucide-react"
 import { useState } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { StatusTag } from "../shared/StatusTag"
 import {
 	DropdownMenu,
@@ -12,8 +11,14 @@ import {
 } from "../ui/dropdown-menu"
 import { DeletePopover } from "./DeletePopover"
 
+const ANIMATION_MS = 300
+
 interface BulkActionsBarProps {
+	isVisible: boolean
 	selectedCount: number
+	statuses?: WorkspaceStatusDto[]
+	deleteDisabled?: boolean
+	statusDisabled?: boolean
 	onChangeStatus: (status: WorkspaceStatusDto) => void
 	onArchive: () => void
 	onDelete: () => void
@@ -21,21 +26,24 @@ interface BulkActionsBarProps {
 }
 
 export function BulkActionsBar({
+	isVisible,
 	selectedCount,
+	statuses,
+	deleteDisabled = false,
+	statusDisabled = false,
 	onChangeStatus,
 	// onArchive,
 	onDelete,
 	onExitSelect,
 }: BulkActionsBarProps) {
-	const { statuses } = useWorkspace()
 	const [popoverOpen, setPopoverOpen] = useState(false)
 
 	function handleDeleteClick() {
-		setPopoverOpen(true)
+		if (!deleteDisabled) setPopoverOpen(true)
 	}
 
 	return (
-		<Bar>
+		<Bar $visible={isVisible}>
 			<ActionsSection>
 				<DeletePopover
 					count={selectedCount}
@@ -43,25 +51,33 @@ export function BulkActionsBar({
 					open={popoverOpen}
 					onOpenChange={setPopoverOpen}
 					trigger={
-						<GhostButton $danger onClick={handleDeleteClick}>
+						<GhostButton
+							$danger
+							$disabled={deleteDisabled}
+							onClick={handleDeleteClick}
+						>
 							מחק הנחיה
 							<Trash2 size={16} />
 						</GhostButton>
 					}
 				/>
-				<BarDivider />
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<GhostButton>עדכן סטטוס</GhostButton>
-					</DropdownMenuTrigger>
-					<StatusContent align="start" sideOffset={12}>
-						{Object.values(statuses).map((s) => (
-							<StatusItem key={s.id} onSelect={() => onChangeStatus(s)}>
-								<StatusTag status={s} />
-							</StatusItem>
-						))}
-					</StatusContent>
-				</DropdownMenu>
+				{statuses && (
+					<>
+						<BarDivider />
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild disabled={statusDisabled}>
+								<GhostButton $disabled={statusDisabled}>עדכן סטטוס</GhostButton>
+							</DropdownMenuTrigger>
+							<StatusContent align="start" sideOffset={12}>
+								{statuses.map((s) => (
+									<StatusItem key={s.id} onSelect={() => onChangeStatus(s)}>
+										<StatusTag status={s} />
+									</StatusItem>
+								))}
+							</StatusContent>
+						</DropdownMenu>
+					</>
+				)}
 			</ActionsSection>
 			<SelectedButton onClick={onExitSelect}>
 				<X size={16} />
@@ -71,7 +87,7 @@ export function BulkActionsBar({
 	)
 }
 
-const Bar = styled.div`
+const Bar = styled.div<{ $visible: boolean }>`
   position: fixed;
   bottom: 32px;
   left: 50%;
@@ -87,6 +103,10 @@ const Bar = styled.div`
   border: 1px solid var(--Border-color-border-secondary);
   border-radius: 8px;
   box-shadow: var(--card-shadow-hover);
+  transition: opacity ${ANIMATION_MS}ms ease, visibility ${ANIMATION_MS}ms ease;
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  visibility: ${({ $visible }) => ($visible ? "visible" : "hidden")};
+  animation: ${({ $visible }) => ($visible ? `slide-up ${ANIMATION_MS}ms cubic-bezier(0.16, 1, 0.3, 1) both` : "none")};
 `
 
 const ActionsSection = styled.div`
@@ -96,7 +116,7 @@ const ActionsSection = styled.div`
   gap: 8px;
 `
 
-const GhostButton = styled.button<{ $danger?: boolean }>`
+const GhostButton = styled.button<{ $danger?: boolean; $disabled?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -109,9 +129,16 @@ const GhostButton = styled.button<{ $danger?: boolean }>`
   font-size: var(--fs-base);
   font-weight: 400;
   line-height: 22px;
-  color: ${({ $danger }) => ($danger ? "var(--Error-color-error)" : "var(--Text-color-text)")};
-  cursor: pointer;
+  color: ${({ $danger, $disabled }) =>
+		$disabled
+			? "var(--Text-color-text-disabled, rgba(255,255,255,0.25))"
+			: $danger
+				? "var(--Error-color-error)"
+				: "var(--Text-color-text)"};
+  cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
+  opacity: ${({ $disabled }) => ($disabled ? 0.45 : 1)};
   white-space: nowrap;
+  pointer-events: ${({ $disabled }) => ($disabled ? "none" : "auto")};
 
   &:hover,
   &[data-state="open"] {
