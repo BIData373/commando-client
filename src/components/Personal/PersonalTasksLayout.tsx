@@ -126,7 +126,7 @@ function PersonalTasksLayout() {
 					{
 						canDelete: t.workspace.permissionType === PermissionType.MANAGER,
 						canChangeStatus: !(
-							t.workspace.permissionType === PermissionType.VIEWER &&
+							t.workspace.permissionType === PermissionType.MANAGER ||
 							!t.workspace.assigneeStatusEditable
 						),
 					},
