@@ -41,7 +41,7 @@ function WorkspaceCard({
 	}
 
 	return (
-		<Card onClick={handleWorkspaceClick}>
+		<Card className="cursor-pointer" onClick={handleWorkspaceClick}>
 			<CardHeader>
 				<CardTitle>{title}</CardTitle>
 				{/* // FIX Add description */}
