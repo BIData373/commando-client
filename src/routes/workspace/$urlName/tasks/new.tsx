@@ -1,4 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { PermissionType } from "src/api/model"
+import { AuthorizationWrapper } from "src/wrappers/AuthorizationWrapper"
 import { z } from "zod"
 import CreateTaskModal from "../../../../components/CreateTasks/CreateTaskModal"
 import CreateDiscussionModal from "../../../../components/CreateTasksFromDiscussion/CreateDiscussionModal"
@@ -33,12 +35,12 @@ function NewTask() {
 	}
 
 	return (
-		<>
+		<AuthorizationWrapper type={PermissionType.MANAGER}>
 			{mode === NewTaskMode.DISCUSSION ? (
 				<CreateDiscussionModal onClose={handleClose} />
 			) : (
 				<CreateTaskModal onClose={handleClose} />
 			)}
-		</>
+		</AuthorizationWrapper>
 	)
 }
