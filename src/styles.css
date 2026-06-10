@@ -69,6 +69,17 @@ body,
   --Components-Button-Component-defaultBg: #141414;
   --Text-color-text-placeholder: rgba(0, 0, 0, 0.25);
 
+  /* Typography scale */
+  --fs-heading-h1: 42px;
+  --fs-heading-1:  38px;
+  --fs-heading-2:  30px;
+  --fs-heading-3:  24px;
+  --fs-xl:         20px;
+  --fs-lg:         18px;
+  --fs-base:       16px;
+  --fs-btn:        14px;
+  --fs-sm:         12px;
+
   --text-color: rgba(0, 0, 0, 0.65);
   --text-color-2: rgba(0, 0, 0, 0.88);
   --text-color-400: rgba(0, 0, 0, 0.45);

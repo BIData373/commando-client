@@ -1,16 +1,20 @@
+import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import { concat, uniqBy } from "lodash"
 import {
 	Calendar,
 	ChevronUp,
 	History,
+	Loader2,
 	Paperclip,
 	Pencil,
 	X,
 } from "lucide-react"
 import { useRef, useState } from "react"
 import { DeadlineType, type TaskWithWorkspaceDto } from "src/api/model"
+import { getAttachmentSignedUrl } from "src/api/s3/s3"
 import { useListTaskHistory } from "src/api/task-history/task-history"
+import { downloadFromUrl } from "src/functions/download-utils"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
@@ -67,9 +71,29 @@ function TaskDetailPanel({
 
 	const { data: history } = useListTaskHistory({ taskId: id })
 
-	const attachmentFile = source?.attachmentKey?.split("/").pop()?.split(".")[0]
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
 	const showExtraInfo = allTags.length > 0 || !!source?.attachmentKey || notes
+
+	const [isDownloadingAttachment, setIsDownloadingAttachment] = useState(false)
+
+	async function handleAttachmentDownload() {
+		if (
+			!source?.attachmentKey ||
+			!source?.attachmentName ||
+			isDownloadingAttachment
+		)
+			return
+		setIsDownloadingAttachment(true)
+		try {
+			const { url } = await getAttachmentSignedUrl({
+				key: source.attachmentKey,
+				filename: source.attachmentName,
+			})
+			if (url) await downloadFromUrl(url, source.attachmentName)
+		} finally {
+			setIsDownloadingAttachment(false)
+		}
+	}
 
 	function handleScroll() {
 		const el = scrollRef.current
@@ -137,9 +161,9 @@ function TaskDetailPanel({
 									)}
 								</DueDateGroup>
 								<CreatedGroup>
-									<HistoryButton onClick={() => setShowHistory(true)}>
+									{/* <HistoryButton onClick={() => setShowHistory(true)}>
 										<History size={16} />
-									</HistoryButton>
+									</HistoryButton> */}
 									<MetaText>
 										{formatMinutesHours(createdAt)} -{" "}
 										{formatDateMonthYear(createdAt)}
@@ -177,7 +201,15 @@ function TaskDetailPanel({
 												{source.attachmentKey && (
 													<>
 														<Paperclip size={16} />
-														{attachmentFile}
+														<AttachmentDownloadButton
+															onClick={handleAttachmentDownload}
+															disabled={isDownloadingAttachment}
+														>
+															{source.attachmentName}
+															{isDownloadingAttachment && (
+																<AttachmentSpinIcon size={12} />
+															)}
+														</AttachmentDownloadButton>
 													</>
 												)}
 											</InfoAttachment>
@@ -526,7 +558,36 @@ const InfoAttachment = styled.div`
   align-items: center;
   gap: 8px;
   color: var(--active-color);
+`
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`
+
+const AttachmentSpinIcon = styled(Loader2)`
+  flex-shrink: 0;
+  animation: ${spin} 0.8s linear infinite;
+`
+
+const AttachmentDownloadButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: var(--fs-btn);
   cursor: pointer;
+
+  &:hover:not(:disabled) {
+    text-decoration: underline;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
 `
 
 const SourceName = styled.span`

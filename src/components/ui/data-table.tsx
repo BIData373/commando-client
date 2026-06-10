@@ -89,26 +89,18 @@ export function DataTable<TData>({
   })
 
   const allColumns = table.getAllColumns()
-  const fixedTotal = allColumns.reduce((sum, col) => {
-    const grow = col.columnDef.meta?.grow
-    return grow ? sum : sum + (col.columnDef.size ?? 0)
-  }, 0)
+  const totalSize = allColumns.reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
 
   const colgroup = (
     <colgroup>
       {allColumns.map((column) => {
-        const grow = column.columnDef.meta?.grow
         const size = column.columnDef.size
-
-      return grow && size !== undefined ? (
-            <col
-              key={column.id}
-              style={{ width: `calc(100% - ${fixedTotal}px)`, minWidth: `${size}px` }}
-            />
-          ) : (
+        return (
           <col
             key={column.id}
-            style={size !== undefined ? { width: `${size}px` } : undefined}
+            style={size !== undefined && totalSize > 0
+              ? { width: `${((size / totalSize) * 100).toFixed(3)}%` }
+              : undefined}
           />
         )
       })}
@@ -120,8 +112,10 @@ export function DataTable<TData>({
     expansionContent: renderRowExpansion?.(row),
   }))
 
+  const tableMinWidth = totalSize > 0 ? totalSize : undefined
+
   return (
-    <Table containerClassName={containerClassName}>
+    <Table containerClassName={containerClassName} style={{ minWidth: tableMinWidth }}>
       {colgroup}
       {showHeader && (
         <TableHeader>

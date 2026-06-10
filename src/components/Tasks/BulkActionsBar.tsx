@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Archive, Trash2, X } from "lucide-react"
+import { Trash2, X } from "lucide-react"
 import { useState } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -23,7 +23,7 @@ interface BulkActionsBarProps {
 export function BulkActionsBar({
 	selectedCount,
 	onChangeStatus,
-	onArchive,
+	// onArchive,
 	onDelete,
 	onExitSelect,
 }: BulkActionsBarProps) {
@@ -49,10 +49,6 @@ export function BulkActionsBar({
 						</GhostButton>
 					}
 				/>
-				<GhostButton onClick={onArchive}>
-					העבר לארכיון
-					<Archive size={16} />
-				</GhostButton>
 				<BarDivider />
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -82,7 +78,7 @@ const Bar = styled.div`
   transform: translateX(-50%);
   z-index: var(--z-dropdown);
   direction: ltr;
-  width: 627px;
+  width: 450px;
   display: flex;
   align-items: center;
   justify-content: space-between;
