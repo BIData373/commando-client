@@ -1,11 +1,13 @@
 import type { DateRange } from "react-day-picker"
-
 import emptyStateImage from "../../public/empty-state.svg"
+import compleateInstruction from "../assets/icons/completeInstruction.svg"
 import searchInstruction from "../assets/icons/searchInstruction.svg"
 import type { EmptyCardStateProps } from "../components/shared/EmptyCardState"
 import { QuickFilter } from "./filter-utils"
 
 type EmptyStateKey = QuickFilter | "search" | "dateRange" | "noData" | "default"
+
+export type DashboardEmptyStateKey = QuickFilter | "completed"
 
 const EMPTY_STATES: Record<EmptyStateKey, EmptyCardStateProps> = {
 	[QuickFilter.OVERDUE]: {
@@ -68,4 +70,30 @@ export function getEmptyState(
 	if (dateRange) return EMPTY_STATES.dateRange
 	if (!hasData) return EMPTY_STATES.noData
 	return EMPTY_STATES.default
+}
+
+export const DASHBOARD_EMPTY_STATES: Record<
+	DashboardEmptyStateKey,
+	EmptyCardStateProps
+> = {
+	[QuickFilter.FLAGGED]: {
+		imgSrc: searchInstruction,
+		title: "לא נמצאו הנחיות חשובות",
+		description: "לאחר שהנחיות יוגדרו כחשובות,\nההנחיות האחרונות יופיעו כאן",
+	},
+	[QuickFilter.APPROACHING]: {
+		imgSrc: searchInstruction,
+		title: "לא נמצאו הנחיות לביצוע מיידי",
+		description: "הנחיות לביצוע מידיות יופיעו כאן",
+	},
+	[QuickFilter.OVERDUE]: {
+		imgSrc: searchInstruction,
+		title: 'לא נמצאו חריגות מתג"ב',
+		description: 'חריגות מתג"ב יופיעו כאן',
+	},
+	completed: {
+		imgSrc: compleateInstruction,
+		title: "טרם בוצעו הנחיות",
+		description: "לאחר שהנחיות יבצעו,\nההנחיות האחרונות יופיעו כאן",
+	},
 }
