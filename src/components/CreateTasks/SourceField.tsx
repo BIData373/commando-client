@@ -26,6 +26,7 @@ interface SourceFieldProps {
 	onDateSelect: (date: Date | undefined) => void
 	label?: string
 	uniqueNames?: boolean
+	dateError?: string
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -38,6 +39,7 @@ function SourceField({
 	onDateSelect,
 	label = "מקור",
 	uniqueNames = false,
+	dateError,
 }: SourceFieldProps) {
 	const [sourceQuery, setSourceQuery] = useState(source)
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -173,7 +175,10 @@ function SourceField({
 						<Tooltip>
 							<TooltipTrigger asChild>
 								<PopoverTrigger asChild>
-									<DatePickerButton $disabled={isSourceLinked}>
+									<DatePickerButton
+										$disabled={isSourceLinked}
+										$error={!!dateError}
+									>
 										<CalendarIcon size={18} />
 										<DatePickerText $hasValue={!!sourceDate}>
 											{sourceDate ? formatDate(sourceDate) : "בחר תאריך"}
@@ -198,6 +203,7 @@ function SourceField({
 						</DatePopoverContent>
 					)}
 				</Popover>
+				{dateError && <DateErrorText>{dateError}</DateErrorText>}
 			</DateFormItem>
 		</SourceDateRow>
 	)
@@ -393,7 +399,10 @@ const CreateNewText = styled.span`
   text-align: end;
 `
 
-const DatePickerButton = styled.button<{ $disabled?: boolean }>`
+const DatePickerButton = styled.button<{
+	$disabled?: boolean
+	$error?: boolean
+}>`
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -402,7 +411,7 @@ const DatePickerButton = styled.button<{ $disabled?: boolean }>`
   height: 40px;
   padding-inline: 12px;
   background: white;
-  border: 1px solid #d9d9d9;
+  border: 1px solid ${({ $error }) => ($error ? "#ff4d4f" : "#d9d9d9")};
   border-radius: 6px;
   cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
   opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
@@ -410,7 +419,7 @@ const DatePickerButton = styled.button<{ $disabled?: boolean }>`
   flex-shrink: 0;
 
   &:hover {
-    border-color: ${({ $disabled }) => ($disabled ? "#d9d9d9" : "#4096ff")};
+    border-color: ${({ $disabled, $error }) => ($disabled ? "#d9d9d9" : $error ? "#ff4d4f" : "#4096ff")};
   }
 `
 
@@ -424,6 +433,16 @@ const DatePickerText = styled.span<{ $hasValue: boolean }>`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+`
+
+const DateErrorText = styled.span`
+  font-size: var(--fs-sm);
+  color: #ff4d4f;
+  line-height: 18px;
+  margin-block-start: 4px;
+  padding-right: 6px;
+  text-align: end;
+  width: 100%;
 `
 
 const DatePopoverContent = styled(PopoverContent)`

@@ -75,6 +75,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 	const { mutateAsync: upsertStatus } = useUpsertAssigneeTaskStatus()
 
 	const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
+	const [sourceDateError, setSourceDateError] = useState("")
 
 	async function handleUpdateSuccess() {
 		const currentAssignees = form.state.values.assignees ?? []
@@ -126,6 +127,11 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 		onSubmit: async ({
 			value: { source, sourceDate, linkedSource, ...rest },
 		}) => {
+			if (source.trim() && !linkedSource && !sourceDate) {
+				setSourceDateError("יש לבחור תאריך למקור חדש")
+				setIsDetailsExpanded(true)
+				return
+			}
 			if (isEditMode) {
 				const changedFields = omit(getChangedFields<FormState>(form), [
 					"source",
@@ -151,6 +157,12 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 					{ onSuccess: handleUpdateSuccess },
 				)
 			} else {
+				if (source.trim() && !linkedSource) {
+					const newSource = await createSource({
+						data: { workspaceId, name: source, date: sourceDate },
+					})
+					rest.sourceId = newSource.id
+				}
 				saveTasks([{ workspaceId, ...rest }])
 				onClose()
 			}
@@ -240,7 +252,10 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 	}
 
 	function handleSourceDateSelect(date: Date | undefined) {
-		if (date) form.setFieldValue("sourceDate", date)
+		if (date) {
+			form.setFieldValue("sourceDate", date)
+			setSourceDateError("")
+		}
 	}
 
 	function handleTagSelect(tag: string) {
@@ -427,6 +442,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 											linkedSource={values.linkedSource}
 											onSourceSelect={handleSourceSelect}
 											onDateSelect={handleSourceDateSelect}
+											dateError={sourceDateError}
 										/>
 
 										{/* Tag field */}

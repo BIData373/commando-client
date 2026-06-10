@@ -15,6 +15,7 @@ interface DiscussionFormProps {
 	onFileChange: (file: File | null) => void
 	existingAttachmentKey?: string | null
 	existingAttachmentName?: string | null
+	dateError?: string
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -28,6 +29,7 @@ function DiscussionForm({
 	onFileChange,
 	existingAttachmentKey,
 	existingAttachmentName,
+	dateError,
 }: DiscussionFormProps) {
 	return (
 		<FormContainer>
@@ -39,6 +41,7 @@ function DiscussionForm({
 				onDateSelect={onDateChange}
 				label="שם הדיון"
 				uniqueNames
+				dateError={dateError}
 			/>
 
 			<TagField
