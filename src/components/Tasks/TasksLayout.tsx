@@ -26,7 +26,6 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
 import { TooltipProvider } from "../ui/tooltip"
-import { EmptyState } from "./EmptyState"
 import { TaskCardGrid } from "./TaskCardGrid"
 import { TaskFilters } from "./TaskFilters"
 import { TaskTable } from "./TaskTable"
@@ -50,7 +49,6 @@ function TasksLayout({
 	const navigate = useNavigate({ from: "/workspace/$urlName/tasks" })
 
 	const {
-		searchQuery,
 		columnOrder,
 		hiddenColumns,
 		dateRange,
@@ -224,17 +222,17 @@ function TasksLayout({
 							activeValues={activeTopicFilters}
 							onApply={setActiveTopicFilters}
 							$active={activeTopicFilters.size > 0}
+							emptyTitle="טרם הוגדר נושאים"
+							emptyDescription={
+								"ביצירת הנחיות ניתן לחלק אותם\nלנושאים, קטגוריות או מאמצים"
+							}
 						/>
 					}
 					startSlot={<TasksDatePicker />}
 				/>
 
 				<ContentArea>
-					{!isLoading && tasks.length === 0 ? (
-						<EmptyState />
-					) : searchQuery && filteredTasks.length === 0 ? (
-						<EmptyState variant="search" />
-					) : view === TasksView.TABLE ? (
+					{view === TasksView.TABLE ? (
 						<TaskTable
 							queryKey={queryKey}
 							tasks={filteredTaskRows}
@@ -243,6 +241,7 @@ function TasksLayout({
 							deadlineTypeFilter={deadlineTypeFilter}
 							onFiltersChange={handleColumnFiltersChange}
 							onDoubleClick={handleOpenTask}
+							isLoading={isLoading}
 						/>
 					) : (
 						<TaskCardGrid tasks={filteredTasks} />
@@ -271,8 +270,8 @@ const TasksRoot = styled.div`
 const ContentArea = styled.div`
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  direction: ltr;
+  display: flex;
+  flex-direction: column;
 `
 
 // ─── Title Bar Actions ───────────────────────────────────────────────────────
