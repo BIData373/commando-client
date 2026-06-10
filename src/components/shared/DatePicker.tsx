@@ -103,21 +103,14 @@ const StyledCalendar = styled(Calendar)`
   }
 
   /* ── Today: purple border, no background (only when not in a range) ── */
-  .rdp-today:not([data-range-start]):not([data-range-end]):not([data-range-middle]) {
+  .rdp-today:not(.rdp-range_start):not(.rdp-range_end):not(.rdp-range_middle) {
     background: transparent !important;
     --muted: transparent;
   }
 
-  .rdp-today button {
+  .rdp-today:not(.rdp-range_start):not(.rdp-range_end):not(.rdp-range_middle) button {
     border: 1px solid var(--primary);
     color: rgba(0, 0, 0, 0.88) !important;
-  }
-
-  /* ── Today inside range: no border on button ── */
-  .rdp-today button[data-range-start='true'],
-  .rdp-today button[data-range-end='true'],
-  .rdp-today button[data-range-middle='true'] {
-    border: none !important;
   }
 
   /* ── Selected single: purple bg, white text ── */
