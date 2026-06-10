@@ -75,7 +75,6 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 	const { mutateAsync: upsertStatus } = useUpsertAssigneeTaskStatus()
 
 	const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
-	const [sourceDateError, setSourceDateError] = useState("")
 
 	async function handleUpdateSuccess() {
 		const currentAssignees = form.state.values.assignees ?? []
@@ -127,11 +126,6 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 		onSubmit: async ({
 			value: { source, sourceDate, linkedSource, ...rest },
 		}) => {
-			if (source.trim() && !linkedSource && !sourceDate) {
-				setSourceDateError("יש לבחור תאריך למקור חדש")
-				setIsDetailsExpanded(true)
-				return
-			}
 			if (isEditMode) {
 				const changedFields = omit(getChangedFields<FormState>(form), [
 					"source",
@@ -254,7 +248,6 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 	function handleSourceDateSelect(date: Date | undefined) {
 		if (date) {
 			form.setFieldValue("sourceDate", date)
-			setSourceDateError("")
 		}
 	}
 
@@ -331,6 +324,15 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 				]),
 			)
 		: undefined
+
+	function validateSourceDate({ value }: { value: Date | null }) {
+		const { source, linkedSource } = form.state.values
+		if (source.trim() && !linkedSource && !value) {
+			setIsDetailsExpanded(true)
+			return "יש לבחור תאריך למקור חדש"
+		}
+		return undefined
+	}
 
 	// ─── Render ────────────────────────────────────────────────────────────────
 
@@ -436,14 +438,21 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 								>
 									<AdditionalDetails>
 										{/* Source + Date row */}
-										<SourceField
-											source={values.source}
-											sourceDate={values.sourceDate}
-											linkedSource={values.linkedSource}
-											onSourceSelect={handleSourceSelect}
-											onDateSelect={handleSourceDateSelect}
-											dateError={sourceDateError}
-										/>
+										<form.Field
+											name="sourceDate"
+											validators={{ onSubmit: validateSourceDate }}
+										>
+											{(field) => (
+												<SourceField
+													source={values.source}
+													sourceDate={values.sourceDate}
+													linkedSource={values.linkedSource}
+													onSourceSelect={handleSourceSelect}
+													onDateSelect={handleSourceDateSelect}
+													dateError={field.state.meta.errors.join(", ")}
+												/>
+											)}
+										</form.Field>
 
 										{/* Tag field */}
 										<TagField
