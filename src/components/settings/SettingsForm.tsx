@@ -14,6 +14,7 @@ import type { ErrorType } from "src/axios"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { queryClient } from "src/queryClient"
+import { formatMesibaIcon } from "src/utils/icon-utils"
 import { FormField } from "../shared/FormField"
 import { Input } from "../ui/input"
 import { IconDropdown } from "./IconDropdown"
@@ -155,7 +156,7 @@ export function SettingsForm() {
 								<X size={16} />
 							</IconClearButton>
 							<img
-								src={values.icon}
+								src={formatMesibaIcon(values.icon)}
 								alt="סמל לשכה"
 								onError={handleImageNotFound}
 							/>

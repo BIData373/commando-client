@@ -11,6 +11,7 @@ import {
 	CardTitle,
 } from "src/components/ui/card"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
+import { formatMesibaIcon } from "src/utils/icon-utils"
 
 export const Route = createFileRoute("/")({
 	component: RouteComponent,
@@ -50,7 +51,7 @@ function WorkspaceCard({
 				<CardAction>
 					<Avatar>
 						<AvatarImage
-							src={icon ?? "/workspace-icon.png"}
+							src={formatMesibaIcon(icon)}
 							alt={title}
 							className="grayscale"
 						/>
