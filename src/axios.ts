@@ -27,7 +27,7 @@ export function resolveBypassValues(
 }
 
 export const axiosInstance = axios.create({
-	baseURL: `${API_BASE_URL}/${API_PREFIX}`,
+	baseURL: new URL(API_PREFIX, API_BASE_URL).toString(),
 	withCredentials: USE_SSO,
 	headers: {
 		"Content-Type": "application/json",
@@ -51,8 +51,8 @@ axiosInstance.interceptors.request.use((config) => {
 		delete config.headers[REQUEST_USERNAME_HEADER]
 	}
 
-	if (isBI) {
-		config.headers[IS_BI_HEADER] = "true"
+	if (isBI !== undefined && isBI !== null) {
+		config.headers[IS_BI_HEADER] = String(isBI)
 	} else {
 		delete config.headers[IS_BI_HEADER]
 	}
