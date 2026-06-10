@@ -48,6 +48,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 
 	const values = useStore(form.store, (state) => state.values)
 	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
+	const [dateError, setDateError] = useState("")
 
 	const isCurrentStepTasks = currentStep === Steps.Tasks
 
@@ -60,6 +61,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 	function handleDateChange(date: Date | undefined) {
 		if (date) {
 			form.setFieldValue("date", date)
+			setDateError("")
 		}
 	}
 
@@ -86,6 +88,10 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 	}
 
 	function handleContinue() {
+		if (!values.date) {
+			setDateError("יש לבחור תאריך")
+			return
+		}
 		setCurrentStep(Steps.Tasks)
 	}
 
@@ -172,6 +178,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 									onTagSelect={handleTagSelect}
 									onTagRemove={handleTagRemove}
 									onFileChange={handleFileChange}
+									dateError={dateError}
 								/>
 
 								<ModalFooter>
