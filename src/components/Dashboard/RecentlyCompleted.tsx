@@ -1,24 +1,18 @@
 import styled from "@emotion/styled"
 import type { QueryKey } from "@tanstack/react-query"
-import {
-	flexRender,
-	getCoreRowModel,
-	useReactTable,
-} from "@tanstack/react-table"
 import { useMemo } from "react"
 import { WorkspaceStatusType } from "src/api/model"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
-import compleateInstruction from "../../assets/icons/completeInstruction.svg"
+import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
+import { DataTable } from "../ui/data-table"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface RecentlyCompletedProps {
 	queryKey: QueryKey
 	tasks: TaskRow[]
 }
-
-const coreRowModel = getCoreRowModel()
 
 export default function RecentlyCompleted({
 	queryKey,
@@ -33,50 +27,19 @@ export default function RecentlyCompleted({
 		queryKey,
 		visibleColumns: ["title", "status", "assigneeStatuses"],
 		searchQuery: "",
-		filterOptionsMap: {},
-	})
-
-	const table = useReactTable({
-		data: completedTasks,
-		columns,
-		getCoreRowModel: coreRowModel,
 	})
 
 	return (
 		<Section>
 			<SectionTitle>הנחיות שבוצעו לאחרונה</SectionTitle>
 			<Card $hasContent={completedTasks.length > 0}>
-				{completedTasks.length === 0 ? (
-					<EmptyCardState
-						imgSrc={compleateInstruction}
-						title="טרם בוצעו הנחיות"
-						description={"לאחר שהנחיות יבצעו,\nההנחיות האחרונות יופיעו כאן"}
-					/>
-				) : (
-					<TaskList>
-						{table.getRowModel().rows.map((row) => (
-							<TaskTableRow key={row.id}>
-								{row.getVisibleCells().map((cell) =>
-									cell.column.id === "title" ? (
-										<TitleCellWrapper key={cell.id}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</TitleCellWrapper>
-									) : (
-										<FixedCell key={cell.id} $width={cell.column.getSize()}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</FixedCell>
-									),
-								)}
-							</TaskTableRow>
-						))}
-					</TaskList>
-				)}
+				<DataTable
+					columns={columns}
+					data={completedTasks}
+					showHeader={false}
+					emptyState={<EmptyCardState {...DASHBOARD_EMPTY_STATES.completed} />}
+					containerClassName="overflow-hidden"
+				/>
 			</Card>
 			<ViewMoreInstructions statusFilter={WorkspaceStatusType.COMPLETED} />
 		</Section>
@@ -105,13 +68,31 @@ const SectionTitle = styled.h2`
 `
 
 const Card = styled.div<{ $hasContent: boolean }>`
-  flex: 1;
+  flex: none;
   background: var(--background);
   border: 1px solid var(--border);
   border-radius: 8px;
-  min-height: 320px;
+  height: 308px;
   overflow: hidden;
   box-shadow: 0 1px 2px oklch(0 0 0 / 0.03), 0 1px 6px -1px oklch(0 0 0 / 0.02), 0 2px 4px oklch(0 0 0 / 0.02);
+
+  [data-slot="table-row"] {
+    border-bottom: none;
+    height: 44px;
+  }
+
+  [data-slot="table-cell"] {
+    height: 44px;
+    padding-block: 0;
+    vertical-align: middle;
+  }
+
+  [data-slot="table-cell"]:first-child {
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   ${({ $hasContent }) =>
 		$hasContent
 			? `
@@ -125,48 +106,4 @@ const Card = styled.div<{ $hasContent: boolean }>`
       align-items: center;
       justify-content: center;
     `}
-`
-
-const TaskList = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`
-
-const TaskTableRow = styled.div`
-  display: flex;
-  align-items: center;
-  height: 44px;
-  background: rgba(0, 0, 0, 0.02);
-
-  &:nth-of-type(even) {
-    background: rgba(0, 0, 0, 0);
-  }
-`
-
-const TitleCellWrapper = styled.div`
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 100%;
-  padding: 10px 12px;
-  background: var(--background);
-  direction: rtl;
-  border: 0.5px solid rgba(0, 0, 0, 0.01);
-`
-
-const FixedCell = styled.div<{ $width: number }>`
-  width: ${({ $width }) => $width}px;
-  flex-shrink: 0;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  padding-inline: 12px;
-  background: var(--background);
-  direction: rtl;
-  border: 0.5px solid rgba(0, 0, 0, 0.01);
 `
