@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, type ReactNode } from 'react'
 import styled from '@emotion/styled'
 import {
   flexRender,
@@ -16,8 +16,8 @@ import {
   type TableMeta,
 } from '@tanstack/react-table'
 
+import { LoadingSpinner } from '../shared/LoadingSpinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
-import { EmptyCardState, type EmptyCardStateProps } from '../shared/EmptyCardState'
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     grow?: boolean
@@ -43,7 +43,8 @@ interface DataTableProps<TData> {
   expansionColSpan?: number
   containerClassName?: string
   showHeader?: boolean
-  emptyStateProps?: EmptyCardStateProps
+  emptyState?: ReactNode
+  isLoading?: boolean
 }
 
 export function DataTable<TData>({
@@ -66,7 +67,8 @@ export function DataTable<TData>({
   expansionColSpan,
   containerClassName,
   showHeader = true,
-  emptyStateProps
+  emptyState,
+  isLoading
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -161,14 +163,16 @@ export function DataTable<TData>({
               )}
             </Fragment>
           ))
+        ) : isLoading ? (
+          <EmptyRow>
+            <EmptyCell colSpan={columns.length}>
+              <LoadingSpinner />
+            </EmptyCell>
+          </EmptyRow>
         ) : (
           <EmptyRow>
             <EmptyCell colSpan={columns.length}>
-              <EmptyCardState
-							imgSrc={emptyStateProps?.imgSrc}
-							title={emptyStateProps?.title}
-							description={emptyStateProps?.description}
-						/>
+              {emptyState}
             </EmptyCell>
           </EmptyRow>
         )}

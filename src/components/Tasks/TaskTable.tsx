@@ -24,6 +24,7 @@ import {
 import { getEmptyState } from "src/utils/empty-state-utils"
 import { buildFilterOptionsMap } from "../../functions/filter-utils"
 import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns"
+import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 
@@ -40,6 +41,7 @@ interface TaskTableProps {
 		statusFilter: WorkspaceStatusType[],
 		deadlineTypeFilter: DeadlineType[],
 	) => void
+	isLoading?: boolean
 }
 
 function TaskTable({
@@ -52,6 +54,7 @@ function TaskTable({
 	statusFilter = [],
 	deadlineTypeFilter = [],
 	onFiltersChange,
+	isLoading,
 }: TaskTableProps) {
 	const {
 		searchQuery,
@@ -227,12 +230,17 @@ function TaskTable({
 					onSortingChange={setSorting}
 					getRowId={(row) => row.rowKey}
 					showHeader={showHeader}
-					emptyStateProps={getEmptyState(
-						activeQuickFilters,
-						searchQuery,
-						tasks.length > 0,
-						dateRange,
-					)}
+					isLoading={isLoading}
+					emptyState={
+						<EmptyCardState
+							{...getEmptyState(
+								activeQuickFilters,
+								searchQuery,
+								tasks.length > 0,
+								dateRange,
+							)}
+						/>
+					}
 				/>
 			</TableWrapper>
 			{selectMode && (
@@ -261,7 +269,7 @@ export { TaskTable }
 const TableWrapper = styled.div`
   min-width: 0;
   width: 100%;
-  height: 100%;
+  max-height: 100%;
   box-sizing: border-box;
   direction: ltr;
   border-radius: 8px;

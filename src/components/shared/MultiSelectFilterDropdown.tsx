@@ -18,8 +18,8 @@ interface MultiSelectFilterDropdownProps<T extends string | number> {
 	activeValues: Set<T>
 	onApply: (selected: Set<T>) => void
 	$active: boolean
-	emptyTitle?: string
-	emptyDescription?: string
+	emptyTitle: string
+	emptyDescription: string
 }
 
 function MultiSelectFilterDropdown<T extends string | number>({
@@ -28,8 +28,8 @@ function MultiSelectFilterDropdown<T extends string | number>({
 	activeValues,
 	onApply,
 	$active,
-	emptyTitle = "טרם הוגדר נושאים",
-	emptyDescription = "ביצירת הנחיות ניתן לחלק אותם\nלנושאים, קטגוריות או מאמצים",
+	emptyTitle,
+	emptyDescription,
 }: MultiSelectFilterDropdownProps<T>) {
 	const [open, setOpen] = useState(false)
 	const [pending, setPending] = useState<Set<T>>(new Set(activeValues))

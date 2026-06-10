@@ -61,7 +61,11 @@ function TasksLayout({
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-	const { data: tasks = [], queryKey } = useListTasks({ workspaceId })
+	const {
+		data: tasks = [],
+		queryKey,
+		isLoading,
+	} = useListTasks({ workspaceId })
 
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
@@ -218,6 +222,10 @@ function TasksLayout({
 							activeValues={activeTopicFilters}
 							onApply={setActiveTopicFilters}
 							$active={activeTopicFilters.size > 0}
+							emptyTitle="טרם הוגדר נושאים"
+							emptyDescription={
+								"ביצירת הנחיות ניתן לחלק אותם\nלנושאים, קטגוריות או מאמצים"
+							}
 						/>
 					}
 					startSlot={<TasksDatePicker />}
@@ -233,6 +241,7 @@ function TasksLayout({
 							deadlineTypeFilter={deadlineTypeFilter}
 							onFiltersChange={handleColumnFiltersChange}
 							onDoubleClick={handleOpenTask}
+							isLoading={isLoading}
 						/>
 					) : (
 						<TaskCardGrid tasks={filteredTasks} />
@@ -261,8 +270,8 @@ const TasksRoot = styled.div`
 const ContentArea = styled.div`
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  direction: ltr;
+  display: flex;
+  flex-direction: column;
 `
 
 // ─── Title Bar Actions ───────────────────────────────────────────────────────

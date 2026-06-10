@@ -61,7 +61,7 @@ function PersonalTasksLayout() {
 	const { clearQuickFilters } = useTasksFilters()
 
 	const queryKey = getListPersonalTasksQueryKey()
-	const { data: rawTasks = [] } = useListPersonalTasks()
+	const { data: rawTasks = [], isLoading } = useListPersonalTasks()
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
@@ -165,6 +165,7 @@ function PersonalTasksLayout() {
 					queryKey={queryKey}
 					tasks={filteredTaskRows}
 					extraColumns={EXTRA_COLUMNS as Record<string, ColumnDef<TaskRow>>}
+					isLoading={isLoading}
 				/>
 			</PageRoot>
 		</TooltipProvider>
