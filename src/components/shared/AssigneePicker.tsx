@@ -2,12 +2,12 @@ import styled from "@emotion/styled"
 import { Check, Plus } from "lucide-react"
 import { type ReactNode, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AssigneeDialog } from "../settings/AssigneeDialog"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { AssigneeAvatar } from "./AssigneeAvatar"
 
 interface AssigneePickerProps {
+	workspaceId: number
 	selectedAssignees: number[]
 	trigger:
 		| ReactNode
@@ -20,6 +20,7 @@ interface AssigneePickerProps {
 }
 
 function AssigneePicker({
+	workspaceId,
 	selectedAssignees,
 	trigger,
 	onToggle,
@@ -29,9 +30,6 @@ function AssigneePicker({
 	const [search, setSearch] = useState("")
 	const [dialogOpen, setDialogOpen] = useState(false)
 
-	const {
-		workspace: { id: workspaceId },
-	} = useWorkspace()
 	const { data: assignees = [] } = useListAssignees({ workspaceId })
 
 	const filteredAssignees = assignees
@@ -109,7 +107,9 @@ function AssigneePicker({
 				</AssigneeDropdown>
 			</Popover>
 
-			<AssigneeDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+			{dialogOpen && (
+				<AssigneeDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+			)}
 		</>
 	)
 }

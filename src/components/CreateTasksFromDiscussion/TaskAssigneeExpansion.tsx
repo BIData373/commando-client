@@ -2,12 +2,14 @@ import AssigneeExpansionPanel from "./AssigneeExpansionPanel"
 import type { NewTaskRow } from "./TasksColumns"
 
 interface TaskAssigneeExpansionProps {
+	workspaceId: number
 	row: NewTaskRow
 	onUpdateRow: (updates: Partial<NewTaskRow>) => void
 	onCollapse: () => void
 }
 
 function TaskAssigneeExpansion({
+	workspaceId,
 	row,
 	onUpdateRow,
 	onCollapse,
@@ -37,6 +39,7 @@ function TaskAssigneeExpansion({
 
 	return (
 		<AssigneeExpansionPanel
+			workspaceId={workspaceId}
 			assigneeIds={row.assigneeIds}
 			directiveTitle={row.title}
 			assigneeDetails={row.assigneeDetails}

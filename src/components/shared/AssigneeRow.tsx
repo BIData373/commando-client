@@ -3,7 +3,6 @@ import { X } from "lucide-react"
 import { useRef } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import type { WorkspaceStatusDto } from "src/api/model"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
 import { AssigneeAvatar } from "./AssigneeAvatar"
 
@@ -15,6 +14,7 @@ export interface AssigneeExtra {
 }
 
 interface AssigneeRowListProps {
+	workspaceId: number
 	assigneeIds: number[]
 	directiveTitle: string
 	assigneeExtras?: Record<number, AssigneeExtra>
@@ -33,6 +33,7 @@ interface AssigneeRowListProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function AssigneeRowList({
+	workspaceId,
 	assigneeIds,
 	directiveTitle,
 	assigneeExtras,
@@ -44,10 +45,6 @@ function AssigneeRowList({
 	taskId,
 }: AssigneeRowListProps) {
 	const detailRefs = useRef<Record<number, HTMLSpanElement | null>>({})
-
-	const {
-		workspace: { id: workspaceId },
-	} = useWorkspace()
 
 	const { data: assignees } = useListAssignees({ workspaceId })
 
