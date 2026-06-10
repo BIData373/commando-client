@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useEffect } from "react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 
 import { cn } from "src/lib/utils"
@@ -10,6 +11,12 @@ import { XIcon } from "lucide-react"
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
+  useEffect(() => {
+    return () => {
+      document.body.style.removeProperty("pointer-events")
+    }
+  }, [])
+
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
 }
 
