@@ -44,11 +44,13 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 
 	const form = useForm({
 		defaultValues,
+		onSubmit: () => {
+			setCurrentStep(Steps.Tasks)
+		},
 	})
 
 	const values = useStore(form.store, (state) => state.values)
 	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
-	const [dateError, setDateError] = useState("")
 
 	const isCurrentStepTasks = currentStep === Steps.Tasks
 
@@ -61,7 +63,6 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 	function handleDateChange(date: Date | undefined) {
 		if (date) {
 			form.setFieldValue("date", date)
-			setDateError("")
 		}
 	}
 
@@ -88,11 +89,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 	}
 
 	function handleContinue() {
-		if (!values.date) {
-			setDateError("יש לבחור תאריך")
-			return
-		}
-		setCurrentStep(Steps.Tasks)
+		form.handleSubmit()
 	}
 
 	function handleBack() {
@@ -119,6 +116,10 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 			console.error("createSource failed:", error)
 		}
 	}
+	function validateDate({ value }: { value: Date | null | undefined }) {
+		return !value ? "יש לבחור תאריך" : undefined
+	}
+
 	// ─── Render ───────────────────────────────────────────────────────────────
 
 	return (
@@ -171,15 +172,19 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 
 						{currentStep === Steps.Discussion ? (
 							<>
-								<DiscussionForm
-									form={values}
-									onNameChange={handleNameChange}
-									onDateChange={handleDateChange}
-									onTagSelect={handleTagSelect}
-									onTagRemove={handleTagRemove}
-									onFileChange={handleFileChange}
-									dateError={dateError}
-								/>
+								<form.Field name="date" validators={{ onSubmit: validateDate }}>
+									{(field) => (
+										<DiscussionForm
+											form={values}
+											onNameChange={handleNameChange}
+											onDateChange={handleDateChange}
+											onTagSelect={handleTagSelect}
+											onTagRemove={handleTagRemove}
+											onFileChange={handleFileChange}
+											dateError={field.state.meta.errors.join(", ")}
+										/>
+									)}
+								</form.Field>
 
 								<ModalFooter>
 									<ContinueButton
