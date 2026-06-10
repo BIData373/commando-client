@@ -1,6 +1,6 @@
 pre-commit:
   jobs:
     - name: biome
-      glob: "*.{js,jsx,ts,tsx,json}"
+      glob: "*.{js,jsx,ts,tsx}"
       run: npx biome check --write --diagnostic-level=error {staged_files}
       stage_fixed: true
