@@ -4,7 +4,6 @@ import { useStore } from "@tanstack/react-store"
 import { omit, uniq } from "lodash"
 import { ChevronDown, ChevronUp, X } from "lucide-react"
 import { useRef, useState } from "react"
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import {
 	type CreateTaskDto,
 	DeadlineType,
@@ -73,44 +72,14 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 	const { saveTasks, isPending } = useSaveTasks(workspaceId, onClose)
 
 	const { mutateAsync: createSource } = useCreateSource()
-	const { mutate: updateTask } = useUpdateTask()
-	const { mutateAsync: upsertStatus } = useUpsertAssigneeTaskStatus({
-		mutation: {
-			onSuccess() {
-				invalidateQueries([
-					getListTasksQueryKey({ workspaceId }),
-					getGetTaskQueryKey({ id: task!.id }),
-					getListPersonalTasksQueryKey(),
-				])
-			},
-		},
-	})
+	const { mutateAsync: updateTask } = useUpdateTask()
 
 	const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
 
-	async function handleUpdateSuccess() {
-		const currentAssignees = form.state.values.assignees ?? []
-		const statusUpdates = currentAssignees.filter(({ statusId, id }) => {
-			if (statusId == null) {
-				return false
-			}
-			const original = task!.assigneeStatuses.find(
-				(as) => as.assignee.id === id,
-			)
-			return !original || original.status.id !== statusId
-		})
-
-		await Promise.all(
-			statusUpdates.map((a) =>
-				upsertStatus({
-					data: { taskId: task!.id, assigneeId: a.id, statusId: a.statusId! },
-				}),
-			),
-		)
-
-		await invalidateQueries([
+	function handleUpdateSuccess() {
+		invalidateQueries([
 			getListTasksQueryKey({ workspaceId }),
-			getGetTaskQueryKey({ id: task!.id }),
+			...(task ? [getGetTaskQueryKey({ id: task.id })] : []),
 			getListPersonalTasksQueryKey(),
 		])
 
@@ -153,19 +122,14 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 					changedFields.sourceId = newSource.id
 				}
 
-				if (changedFields.assignees) {
-					changedFields.assignees = changedFields.assignees.map(
-						({ id, description }) => ({ id, description }),
-					)
-				}
-
 				await updateTask(
 					{ pathParams: { id: task.id }, data: changedFields },
 					{ onSuccess: handleUpdateSuccess },
 				)
 			} else {
-				await saveTasks([{ workspaceId, ...rest }])
+				saveTasks([{ workspaceId, ...rest }])
 			}
+
 			onClose()
 		},
 	})
