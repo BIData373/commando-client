@@ -8,7 +8,6 @@
 import type { CreateUserDto } from "./create-user-dto"
 
 export interface UpdateAssigneeDto {
-	workspaceId?: number
 	name?: string
 	color?: string
 	/** @nullable */
