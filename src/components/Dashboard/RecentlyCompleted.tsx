@@ -86,6 +86,13 @@ const Card = styled.div<{ $hasContent: boolean }>`
     padding-block: 0;
     vertical-align: middle;
   }
+
+  [data-slot="table-cell"]:first-child {
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   ${({ $hasContent }) =>
 		$hasContent
 			? `
