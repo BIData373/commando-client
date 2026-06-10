@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Archive, Trash2, X } from "lucide-react"
+import { Trash2, X } from "lucide-react"
 import { useState } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -23,7 +23,7 @@ interface BulkActionsBarProps {
 export function BulkActionsBar({
 	selectedCount,
 	onChangeStatus,
-	onArchive,
+	// onArchive,
 	onDelete,
 	onExitSelect,
 }: BulkActionsBarProps) {
