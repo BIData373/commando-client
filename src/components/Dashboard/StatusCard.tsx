@@ -21,10 +21,17 @@ export default function StatusCard({ tasks }: StatusCardProps) {
 	const { statuses } = useWorkspace()
 	const statusCounts = useMemo(
 		() =>
-			mapValues(groupBy(tasks, "status.id"), (tasks, id) => ({
-				count: tasks.length,
-				...(statuses[Number(id)] ?? EMPTY_STATUS),
-			})),
+			mapValues(
+				groupBy(tasks, (t) =>
+					t.status?.id != null && statuses[t.status.id]
+						? t.status.id
+						: "unassigned",
+				),
+				(tasks, id) => ({
+					count: tasks.length,
+					...(id === "unassigned" ? EMPTY_STATUS : statuses[Number(id)]),
+				}),
+			),
 		[tasks, statuses],
 	)
 
