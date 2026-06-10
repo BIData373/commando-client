@@ -44,7 +44,7 @@ const EMPTY_MESSAGES: Record<FocusedTab, EmptyMessage> = {
 		description: "לאחר שהנחיות יוגדרו כחשובות,\nההנחיות האחרונות יופיעו כאן",
 	},
 	[FocusedTab.APPROACHING]: {
-		title: "לא נמצאו הנחיות לביצוע מידיות",
+		title: "לא נמצאו הנחיות לביצוע מיידי",
 		description: "הנחיות לביצוע מידיות יופיעו כאן",
 	},
 	[FocusedTab.OVERDUE]: {
