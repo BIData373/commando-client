@@ -25,5 +25,11 @@ function TaskEdit() {
 		return null
 	}
 
-	return <CreateTaskModal task={task} onClose={handleClose} />
+	return (
+		<CreateTaskModal
+			workspaceId={task.workspace.id}
+			task={task}
+			onClose={handleClose}
+		/>
+	)
 }

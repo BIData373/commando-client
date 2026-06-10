@@ -9,7 +9,7 @@ import type { AssigneeStatusDto } from "./assignee-status-dto"
 import type { DeadlineType } from "./deadline-type"
 import type { SourceDto } from "./source-dto"
 import type { TagDto } from "./tag-dto"
-import type { WorkspaceDto } from "./workspace-dto"
+import type { WorkspaceWithPermissionDto } from "./workspace-with-permission-dto"
 
 export interface TaskWithWorkspaceDto {
 	createdAt: Date
@@ -35,5 +35,5 @@ export interface TaskWithWorkspaceDto {
 	source: SourceDto | null
 	tags: TagDto[]
 	assigneeStatuses: AssigneeStatusDto[]
-	workspace: WorkspaceDto
+	workspace: WorkspaceWithPermissionDto
 }

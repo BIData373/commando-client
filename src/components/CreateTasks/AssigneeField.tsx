@@ -7,6 +7,7 @@ import AssigneeRowList from "../shared/AssigneeRow"
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface AssigneeFieldProps {
+	workspaceId: number
 	selectedAssignees: number[]
 	directiveTitle: string
 	onToggle: (id: number) => void
@@ -24,6 +25,7 @@ interface AssigneeFieldProps {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function AssigneeField({
+	workspaceId,
 	selectedAssignees,
 	directiveTitle,
 	onToggle,
@@ -41,6 +43,7 @@ function AssigneeField({
 				</FormLabelRow>
 
 				<AssigneePicker
+					workspaceId={workspaceId}
 					selectedAssignees={selectedAssignees}
 					onToggle={onToggle}
 					closeOnFirstSelect
@@ -63,6 +66,7 @@ function AssigneeField({
 					</EmptyAssigneesBox>
 				) : (
 					<AssigneeRowList
+						workspaceId={workspaceId}
 						assigneeIds={selectedAssignees}
 						directiveTitle={directiveTitle}
 						showDetail={selectedAssignees.length > 1}

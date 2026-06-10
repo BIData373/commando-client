@@ -7,6 +7,7 @@ import FileUploadField from "./FileUploadField"
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface DiscussionFormProps {
+	workspaceId: number
 	form: CreateSourceDto | UpdateSourceDto
 	onNameChange: (name: string) => void
 	onDateChange: (date: Date | undefined) => void
@@ -20,6 +21,7 @@ interface DiscussionFormProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function DiscussionForm({
+	workspaceId,
 	form,
 	onNameChange,
 	onDateChange,
@@ -32,6 +34,7 @@ function DiscussionForm({
 	return (
 		<FormContainer>
 			<SourceField
+				workspaceId={workspaceId}
 				source={form.name ?? ""}
 				sourceDate={form.date ?? null}
 				linkedSource={null}
@@ -42,6 +45,7 @@ function DiscussionForm({
 			/>
 
 			<TagField
+				workspaceId={workspaceId}
 				tags={form.tags ?? []}
 				lockedTags={[]}
 				onTagSelect={onTagSelect}
