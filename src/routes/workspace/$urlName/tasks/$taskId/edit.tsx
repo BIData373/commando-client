@@ -29,7 +29,11 @@ function TaskEdit() {
 
 	return (
 		<AuthorizationWrapper type={PermissionType.MANAGER}>
-			<CreateTaskModal task={task} onClose={handleClose} />
+			<CreateTaskModal
+				workspaceId={task.workspace.id}
+				task={task}
+				onClose={handleClose}
+			/>
 		</AuthorizationWrapper>
 	)
 }
