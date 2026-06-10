@@ -45,7 +45,11 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 		(workspaceStatuses ?? []).map((s) => [s.id, s]),
 	)
 
-	const { error: permissionError } = useGetMyPermission(
+	const {
+		isLoading: isPermissionLoading,
+		error: permissionError,
+		isFetched: isFetchedPermission,
+	} = useGetMyPermission(
 		{ workspaceId },
 		{ query: { enabled: workspace?.id !== undefined } },
 	)
@@ -67,12 +71,14 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 		)
 	}
 
-	return isWorkspaceLoading || isWorkspaceStatusesLoading ? (
+	return isWorkspaceLoading ||
+		isWorkspaceStatusesLoading ||
+		isPermissionLoading ? (
 		<LoadingContainer>
 			<Spinner />
 		</LoadingContainer>
 	) : (
-		workspace && statuses && (
+		workspace && statuses && isFetchedPermission && (
 			<WorkspaceContext.Provider
 				value={{
 					workspace,
