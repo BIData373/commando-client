@@ -127,6 +127,12 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 					{ onSuccess: handleUpdateSuccess },
 				)
 			} else {
+				if (source.trim() && !linkedSource) {
+					const newSource = await createSource({
+						data: { workspaceId, name: source, date: sourceDate },
+					})
+					rest.sourceId = newSource.id
+				}
 				saveTasks([{ workspaceId, ...rest }])
 			}
 
@@ -217,7 +223,9 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 	}
 
 	function handleSourceDateSelect(date: Date | undefined) {
-		if (date) form.setFieldValue("sourceDate", date)
+		if (date) {
+			form.setFieldValue("sourceDate", date)
+		}
 	}
 
 	function handleTagSelect(tag: string) {
@@ -302,6 +310,15 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 				]),
 			)
 		: undefined
+
+	function validateSourceDate({ value }: { value: Date | null }) {
+		const { source, linkedSource } = form.state.values
+		if (source.trim() && !linkedSource && !value) {
+			setIsDetailsExpanded(true)
+			return "יש לבחור תאריך למקור חדש"
+		}
+		return undefined
+	}
 
 	// ─── Render ────────────────────────────────────────────────────────────────
 
@@ -408,14 +425,22 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 								>
 									<AdditionalDetails>
 										{/* Source + Date row */}
-										<SourceField
-											workspaceId={workspaceId}
-											source={values.source}
-											sourceDate={values.sourceDate}
-											linkedSource={values.linkedSource}
-											onSourceSelect={handleSourceSelect}
-											onDateSelect={handleSourceDateSelect}
-										/>
+										<form.Field
+											name="sourceDate"
+											validators={{ onSubmit: validateSourceDate }}
+										>
+											{(field) => (
+												<SourceField
+													workspaceId={workspaceId}
+													source={values.source}
+													sourceDate={values.sourceDate}
+													linkedSource={values.linkedSource}
+													onSourceSelect={handleSourceSelect}
+													onDateSelect={handleSourceDateSelect}
+													dateField={field}
+												/>
+											)}
+										</form.Field>
 
 										{/* Tag field */}
 										<TagField
