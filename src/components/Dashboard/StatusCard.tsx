@@ -1,13 +1,5 @@
 import styled from "@emotion/styled"
-import {
-	chain,
-	countBy,
-	groupBy,
-	map,
-	mapValues,
-	partition,
-	values,
-} from "lodash"
+import { chain, map, values } from "lodash"
 import { useMemo } from "react"
 import { Cell, Pie, PieChart } from "recharts"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
