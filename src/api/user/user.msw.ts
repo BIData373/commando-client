@@ -9,7 +9,7 @@ import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 
-import type { UserDto } from "../model"
+import type { MirageUserDto, UserDto } from "../model"
 
 export const getCreateUserResponseMock = (
 	overrideResponse: Partial<Extract<UserDto, object>> = {},
@@ -19,11 +19,22 @@ export const getCreateUserResponseMock = (
 	info: faker.helpers.arrayElement([
 		{
 			...{
-				id: faker.number.float({ fractionDigits: 2 }),
 				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				isBI: faker.datatype.boolean(),
+				displayName: faker.helpers.arrayElement([
+					faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						null,
+					]),
+					null,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						null,
+					]),
+					null,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
 			},
 		},
 		null,
@@ -41,32 +52,53 @@ export const getListUsersResponseMock = (): UserDto[] =>
 		info: faker.helpers.arrayElement([
 			{
 				...{
-					id: faker.number.float({ fractionDigits: 2 }),
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					isBI: faker.datatype.boolean(),
+					displayName: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
+					isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
 				},
 			},
 			null,
 		]),
 	}))
 
-export const getSearchUsersResponseMock = (): UserDto[] =>
+export const getSearchUsersResponseMock = (): MirageUserDto[] =>
 	Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		id: faker.number.float({ fractionDigits: 2 }),
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		info: faker.helpers.arrayElement([
 			{
 				...{
-					id: faker.number.float({ fractionDigits: 2 }),
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					isBI: faker.datatype.boolean(),
+					displayName: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
+					isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
 				},
 			},
 			null,
@@ -81,11 +113,22 @@ export const getGetUserResponseMock = (
 	info: faker.helpers.arrayElement([
 		{
 			...{
-				id: faker.number.float({ fractionDigits: 2 }),
 				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				isBI: faker.datatype.boolean(),
+				displayName: faker.helpers.arrayElement([
+					faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						null,
+					]),
+					null,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						null,
+					]),
+					null,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
 			},
 		},
 		null,
@@ -101,11 +144,22 @@ export const getUpdateUserResponseMock = (
 	info: faker.helpers.arrayElement([
 		{
 			...{
-				id: faker.number.float({ fractionDigits: 2 }),
 				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				isBI: faker.datatype.boolean(),
+				displayName: faker.helpers.arrayElement([
+					faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						null,
+					]),
+					null,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						null,
+					]),
+					null,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
 			},
 		},
 		null,
@@ -121,11 +175,22 @@ export const getDeleteUserResponseMock = (
 	info: faker.helpers.arrayElement([
 		{
 			...{
-				id: faker.number.float({ fractionDigits: 2 }),
 				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				isBI: faker.datatype.boolean(),
+				displayName: faker.helpers.arrayElement([
+					faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						null,
+					]),
+					null,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						null,
+					]),
+					null,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
 			},
 		},
 		null,
@@ -183,10 +248,10 @@ export const getListUsersMockHandler = (
 
 export const getSearchUsersMockHandler = (
 	overrideResponse?:
-		| UserDto[]
+		| MirageUserDto[]
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0],
-		  ) => Promise<UserDto[]> | UserDto[]),
+		  ) => Promise<MirageUserDto[]> | MirageUserDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(

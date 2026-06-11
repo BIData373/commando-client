@@ -52,11 +52,22 @@ export const getCreateAssigneeResponseMock = (
 		info: faker.helpers.arrayElement([
 			{
 				...{
-					id: faker.number.float({ fractionDigits: 2 }),
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					isBI: faker.datatype.boolean(),
+					displayName: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
+					isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
 				},
 			},
 			null,
@@ -108,11 +119,22 @@ export const getListAssigneesResponseMock = (): AssigneesDto[] =>
 			info: faker.helpers.arrayElement([
 				{
 					...{
-						id: faker.number.float({ fractionDigits: 2 }),
 						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-						name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-						displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-						isBI: faker.datatype.boolean(),
+						displayName: faker.helpers.arrayElement([
+							faker.helpers.arrayElement([
+								faker.string.alpha({ length: { min: 10, max: 20 } }),
+								null,
+							]),
+							null,
+						]),
+						name: faker.helpers.arrayElement([
+							faker.helpers.arrayElement([
+								faker.string.alpha({ length: { min: 10, max: 20 } }),
+								null,
+							]),
+							null,
+						]),
+						isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
 					},
 				},
 				null,
@@ -162,11 +184,22 @@ export const getGetAssigneeResponseMock = (
 		info: faker.helpers.arrayElement([
 			{
 				...{
-					id: faker.number.float({ fractionDigits: 2 }),
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					isBI: faker.datatype.boolean(),
+					displayName: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
+					isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
 				},
 			},
 			null,
@@ -216,11 +249,22 @@ export const getUpdateAssigneeResponseMock = (
 		info: faker.helpers.arrayElement([
 			{
 				...{
-					id: faker.number.float({ fractionDigits: 2 }),
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					isBI: faker.datatype.boolean(),
+					displayName: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
+					isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
 				},
 			},
 			null,
@@ -270,11 +314,22 @@ export const getDeleteAssigneeResponseMock = (
 		info: faker.helpers.arrayElement([
 			{
 				...{
-					id: faker.number.float({ fractionDigits: 2 }),
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					isBI: faker.datatype.boolean(),
+					displayName: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							null,
+						]),
+						null,
+					]),
+					isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
 				},
 			},
 			null,

@@ -1,6 +1,11 @@
 import styled from "@emotion/styled"
 import { useEffect, useMemo, useState } from "react"
-import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
+import {
+	type MirageUserDto,
+	type PermissionDto,
+	PermissionType,
+	type UserDto,
+} from "src/api/model"
 import {
 	useDeletePermission,
 	useListPermissions,
@@ -39,7 +44,7 @@ export function PermissionsContent() {
 
 	const [search, setSearch] = useState("")
 	const [activeTab, setActiveTab] = useState(PermissionsTab.ALL)
-	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null)
+	const [selectedUser, setSelectedUser] = useState<MirageUserDto | null>(null)
 	const [type, setType] = useState<PermissionType>(PermissionType.VIEWER)
 
 	const {
@@ -108,11 +113,9 @@ export function PermissionsContent() {
 			return
 		}
 
-		const { id, ...userToUpdate } = selectedUser
-
 		upsertPermission(
 			{
-				data: { ...userToUpdate, workspaceId, type },
+				data: { ...selectedUser, workspaceId, type },
 			},
 			{
 				onSuccess: handleSuccessUpsert,
@@ -161,7 +164,7 @@ export function PermissionsContent() {
 		if (!v) setSelectedUser(null)
 	}
 
-	function handleSearchSelect(user: UserDto | null) {
+	function handleSearchSelect(user: MirageUserDto | null) {
 		setSelectedUser(user)
 		if (user) {
 			setSearch(concatName(user))

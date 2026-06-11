@@ -6,7 +6,7 @@ import {
 	useListAssignees,
 	useUpdateAssignee,
 } from "src/api/assignee/assignee"
-import type { AssigneeDto, AssigneesDto, UserDto } from "src/api/model"
+import type { AssigneeDto, AssigneesDto, MirageUserDto } from "src/api/model"
 import { getListPersonalTasksQueryKey } from "src/api/task/task"
 import { type IMesibaIcon, useMesibaIconByName } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -51,7 +51,7 @@ export function AssigneeDialog({
 	const { mutateAsync: createAssignee } = useCreateAssignee()
 	const { mutateAsync: updateAssignee } = useUpdateAssignee()
 
-	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null)
+	const [selectedUser, setSelectedUser] = useState<MirageUserDto | null>(null)
 	const [searchValue, setSearchValue] = useState<string>("")
 
 	const [iconSearch, setIconSearch] = useState("")
@@ -95,7 +95,7 @@ export function AssigneeDialog({
 			name: assignee?.name ?? "",
 			color: assignee?.color ?? randomColor ?? PRESET_COLORS[0],
 			icon: assignee?.icon ?? "",
-			users: assignee?.users ?? [],
+			users: (assignee?.users ?? []) as MirageUserDto[],
 		},
 		onSubmit: async ({ value }) => {
 			const payload = {
@@ -160,7 +160,7 @@ export function AssigneeDialog({
 		)
 	}
 
-	function handleSearchSelect(user: UserDto) {
+	function handleSearchSelect(user: MirageUserDto) {
 		if (user) {
 			setSearchValue(concatName(user))
 		}
