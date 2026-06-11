@@ -48,7 +48,8 @@ const EMPTY_STATES: Record<EmptyStateKey, EmptyCardStateProps> = {
 	noData: {
 		imgSrc: emptyStateImage,
 		title: "טרם נוצרו הנחיות",
-		description: "לאחר שהנחיות יוצרו, ההנחיות האחרונות יופיעו כאן",
+		description: `לאחר שהנחיות יוצרו,
+		ההנחיות האחרונות יופיעו כאן`,
 	},
 	default: {
 		imgSrc: searchInstruction,
@@ -63,12 +64,23 @@ export function getEmptyState(
 	hasData: boolean,
 	dateRange?: DateRange,
 ): EmptyCardStateProps {
-	if (searchQuery) return EMPTY_STATES.search
-	for (const filter of activeFilters) {
-		if (EMPTY_STATES[filter]) return EMPTY_STATES[filter]
+	if (searchQuery) {
+		return EMPTY_STATES.search
 	}
-	if (dateRange) return EMPTY_STATES.dateRange
-	if (!hasData) return EMPTY_STATES.noData
+
+	const activeFilter = [...activeFilters].find((filter) => EMPTY_STATES[filter])
+	if (activeFilter) {
+		return EMPTY_STATES[activeFilter]
+	}
+
+	if (dateRange) {
+		return EMPTY_STATES.dateRange
+	}
+
+	if (!hasData) {
+		return EMPTY_STATES.noData
+	}
+
 	return EMPTY_STATES.default
 }
 

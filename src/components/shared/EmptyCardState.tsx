@@ -15,12 +15,10 @@ export const EmptyCardState = ({
 }: EmptyCardStateProps) => {
 	return (
 		<EmptyState>
-			{imgSrc && (
-				<EmptyIconWrapper>
-					<img src={imgSrc} alt="" />
-				</EmptyIconWrapper>
-			)}
+			{imgSrc && <EmptyImage src={imgSrc} alt="" />}
+
 			<EmptyTitle>{title}</EmptyTitle>
+
 			{description && (
 				<EmptyDescription>
 					{description.split("\n").map((line) => (
@@ -28,6 +26,7 @@ export const EmptyCardState = ({
 					))}
 				</EmptyDescription>
 			)}
+
 			{children}
 		</EmptyState>
 	)
@@ -37,14 +36,13 @@ const EmptyState = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 24px;
+  padding-top: 24px;
   max-width: none;
   text-align: center;
 `
 
 const EmptyTitle = styled.p`
-  font-size: 15px;
+  font-size: var(--fs-xl);
   font-weight: 500;
   color: var(--sea-ink);
   margin: 0;
@@ -60,13 +58,10 @@ const EmptyDescription = styled.div`
   line-height: 22px;
 `
 
-const EmptyIconWrapper = styled.div`
+const EmptyImage = styled.img`
   width: 100px;
-  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--purple-start);
-  opacity: 0.6;
-  margin-bottom: 8px;
+  aspect-ratio: 1/1;
 `
