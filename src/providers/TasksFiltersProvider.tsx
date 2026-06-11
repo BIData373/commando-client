@@ -1,4 +1,5 @@
 import { useLocalStorage } from "@mantine/hooks"
+import type { ColumnFiltersState } from "@tanstack/react-table"
 import {
 	createContext,
 	type PropsWithChildren,
@@ -50,6 +51,9 @@ interface TasksFiltersContextValue {
 	setDateType: (type: DATE_TYPE) => void
 	dateRange: DateRange | undefined
 	setDateRange: (range: DateRange | undefined) => void
+
+	columnsFilters: ColumnFiltersState
+	setColumnsFilters(columnsFilters: ColumnFiltersState): void
 }
 
 export const TASK_ROW_ID_SEPARATOR = "_"
@@ -90,6 +94,7 @@ export function TasksFiltersProvider({
 	const [activeQuickFilters, setActiveQuickFilters] = useState<
 		Set<QuickFilter>
 	>(currentActiveQuickFilters)
+	const [columnsFilters, setColumnsFilters] = useState<ColumnFiltersState>([])
 
 	const [columnsVisibility, setColumnsVisibility] =
 		useLocalStorage<ColumnsVisibilityStorage>({
@@ -174,6 +179,8 @@ export function TasksFiltersProvider({
 				setDateType,
 				dateRange,
 				setDateRange,
+				columnsFilters,
+				setColumnsFilters,
 			}}
 		>
 			{children}

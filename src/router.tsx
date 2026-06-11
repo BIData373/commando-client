@@ -1,4 +1,5 @@
 import { createRouter } from "@tanstack/react-router"
+import type { ReactNode } from "react"
 import { queryClient } from "./queryClient"
 import { routeTree } from "./routeTree.gen"
 
@@ -13,10 +14,9 @@ const router = createRouter({
 })
 
 export interface HeaderConfig {
-	title?: React.ReactNode
+	pageTitle?: ReactNode
+	headerTitle?: ReactNode
 	user?: boolean
-	navigation?: boolean
-	workspace?: boolean
 }
 
 declare module "@tanstack/react-router" {

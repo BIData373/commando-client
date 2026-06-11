@@ -1,7 +1,10 @@
 import styled from "@emotion/styled"
+import type { ColumnFiltersState } from "@tanstack/react-table"
+import { filter } from "lodash"
 import type { ReactNode } from "react"
 import { exportTasksToExcel } from "src/functions/export-excel"
 import { matchesQuickFilter } from "src/functions/filter-utils"
+import { getTaskValue } from "src/utils/filter-rows-map-utils"
 import { QuickFilter } from "src/utils/filter-utils"
 import type { TaskColumnMeta } from "../../hooks/useTaskColumns"
 import type { TaskRow } from "../../providers/TasksFiltersProvider"
@@ -19,6 +22,7 @@ interface TaskFiltersProps {
 	onToggleTabFilter?: (filter: QuickFilter) => void
 	startSlot?: ReactNode
 	allTasksLength: number
+	urlColumnFilters?: ColumnFiltersState
 }
 
 function TaskFilters({
@@ -31,6 +35,7 @@ function TaskFilters({
 	onToggleTabFilter,
 	startSlot,
 	allTasksLength,
+	urlColumnFilters = [],
 }: TaskFiltersProps) {
 	const {
 		activeQuickFilters,
@@ -41,6 +46,7 @@ function TaskFilters({
 		setColumnOrder,
 		hiddenColumns,
 		toggleColumn,
+		columnsFilters,
 	} = useTasksFilters()
 
 	const activeFilters =
@@ -49,13 +55,24 @@ function TaskFilters({
 
 	const hasActiveFilters = activeFilters.size > 0 || !!hasExtraActiveFilters
 
-	const overdueCount = taskRows.filter((t) =>
+	const allColumnFilters = [...urlColumnFilters, ...columnsFilters]
+
+	const filteredTasks = filter(taskRows, (task) =>
+		allColumnFilters.every(({ id, value }) => {
+			const idKey = id as keyof TaskRow
+			const taskValue = getTaskValue(idKey, task)
+			if (!Array.isArray(value) || value.length === 0) return true
+			return value.includes(taskValue)
+		}),
+	)
+
+	const overdueCount = filteredTasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.OVERDUE),
 	).length
-	const approachingCount = taskRows.filter((t) =>
+	const approachingCount = filteredTasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.APPROACHING),
 	).length
-	const flaggedCount = taskRows.filter((t) =>
+	const flaggedCount = filteredTasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.FLAGGED),
 	).length
 
