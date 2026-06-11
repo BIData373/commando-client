@@ -44,6 +44,9 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 
 	const form = useForm({
 		defaultValues,
+		onSubmit: () => {
+			setCurrentStep(Steps.Tasks)
+		},
 	})
 
 	const values = useStore(form.store, (state) => state.values)
@@ -86,7 +89,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 	}
 
 	function handleContinue() {
-		setCurrentStep(Steps.Tasks)
+		form.handleSubmit()
 	}
 
 	function handleBack() {
@@ -113,6 +116,10 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 			console.error("createSource failed:", error)
 		}
 	}
+	function validateDate({ value }: { value: Date | null | undefined }) {
+		return !value ? "יש לבחור תאריך" : undefined
+	}
+
 	// ─── Render ───────────────────────────────────────────────────────────────
 
 	return (
@@ -165,15 +172,20 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 
 						{currentStep === Steps.Discussion ? (
 							<>
-								<DiscussionForm
-									workspaceId={workspaceId}
-									form={values}
-									onNameChange={handleNameChange}
-									onDateChange={handleDateChange}
-									onTagSelect={handleTagSelect}
-									onTagRemove={handleTagRemove}
-									onFileChange={handleFileChange}
-								/>
+								<form.Field name="date" validators={{ onSubmit: validateDate }}>
+									{(field) => (
+										<DiscussionForm
+											workspaceId={workspaceId}
+											form={values}
+											onNameChange={handleNameChange}
+											onDateChange={handleDateChange}
+											onTagSelect={handleTagSelect}
+											onTagRemove={handleTagRemove}
+											onFileChange={handleFileChange}
+											dateField={field}
+										/>
+									)}
+								</form.Field>
 
 								<ModalFooter>
 									<ContinueButton

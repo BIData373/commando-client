@@ -54,7 +54,6 @@ const EmptyDescription = styled.div`
   align-items: center;
   font-size: var(--fs-btn);
   color: var(--sea-ink-soft);
-  margin: 0 0 12px;
   line-height: 22px;
 `
 
