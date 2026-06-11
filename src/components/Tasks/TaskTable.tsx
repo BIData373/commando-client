@@ -24,7 +24,7 @@ import {
 } from "src/providers/TasksFiltersProvider"
 import { getEmptyState } from "src/utils/empty-state-utils"
 import { buildFilterOptionsMap } from "../../functions/filter-utils"
-import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns"
+import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
@@ -214,7 +214,7 @@ function TaskTable({
 
 	const visibleColumns = columnOrder.filter(
 		(id) => !hiddenColumns.has(id) && !extraColumnIds.has(id),
-	) as TaskColumn[]
+	)
 
 	const { columns: baseColumns } = useTaskColumns({
 		queryKey,
@@ -241,7 +241,7 @@ function TaskTable({
 
 		if (extraColumns) {
 			for (const [id, colDef] of Object.entries(extraColumns)) {
-				const colId = id as TaskColumn
+				const colId = id as keyof TaskRow
 				const isVisible = !hiddenColumns.has(colId)
 				const orderIndex = columnOrder.indexOf(colId)
 				if (!isVisible || orderIndex === -1) continue
@@ -250,7 +250,7 @@ function TaskTable({
 					.slice(0, orderIndex)
 					.filter((colId) => !hiddenColumns.has(colId)).length
 
-				result.splice(visibleBeforeCount, 0, colDef as ColumnDef<TaskRow>)
+				result.splice(visibleBeforeCount, 0, colDef)
 			}
 		}
 

@@ -2,7 +2,6 @@ import { differenceInDays, startOfToday } from "date-fns"
 import ExcelJS from "exceljs"
 import { DeadlineType, type TaskDto } from "src/api/model"
 import { DEADLINE_LABELS } from "src/components/shared/DeadlineTag"
-import type { TaskColumn } from "src/hooks/useTaskColumns"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { formatDate } from "./date-utils"
 
@@ -62,7 +61,7 @@ function getDeadlineDateStyle(task: TaskDto): Pick<CellValue, "fontColor"> {
 	return {}
 }
 
-const COLUMN_DEFS: Record<string, ExportColumn<TaskRow>> = {
+const COLUMN_DEFS: Partial<Record<keyof TaskRow, ExportColumn<TaskRow>>> = {
 	title: {
 		header: "ההנחיה",
 		maxWidth: 60,
@@ -77,7 +76,7 @@ const COLUMN_DEFS: Record<string, ExportColumn<TaskRow>> = {
 			bgColor: t.status?.color,
 		}),
 	},
-	responsible: { header: "אחראי", accessor: (t) => t.assignee?.name ?? "" },
+	assignee: { header: "אחראי", accessor: (t) => t.assignee?.name ?? "" },
 	deadlineType: {
 		header: 'תג"ב',
 		accessor: (t) => {
@@ -88,7 +87,7 @@ const COLUMN_DEFS: Record<string, ExportColumn<TaskRow>> = {
 			return { value, ...getDeadlineDateStyle(t) }
 		},
 	},
-	discussionName: {
+	source: {
 		header: "מקור",
 		accessor: (t) => {
 			if (!t.source) {
@@ -117,26 +116,28 @@ const COLUMN_DEFS: Record<string, ExportColumn<TaskRow>> = {
 }
 
 interface ExportOptions {
-	columnOrder: TaskColumn[]
-	hiddenColumns: Set<TaskColumn>
+	columnOrder: (keyof TaskRow)[]
+	hiddenColumns: Set<keyof TaskRow>
 }
 
 export async function exportTasksToExcel(
 	tasks: TaskRow[],
-	options: ExportOptions,
+	{ columnOrder, hiddenColumns }: ExportOptions,
 ) {
-	const { columnOrder, hiddenColumns } = options
-
-	const idColumn: ExportColumn<TaskRow> = {
-		header: 'מס"ד',
-		accessor: (t) => String(t.id),
-	}
-
-	const visibleColumns = columnOrder
-		.filter((id) => !hiddenColumns.has(id) && COLUMN_DEFS[id])
-		.map((id) => COLUMN_DEFS[id])
-
-	await exportToExcel<TaskRow>(tasks, [idColumn, ...visibleColumns], "הנחיות")
+	await exportToExcel(
+		tasks,
+		[
+			{
+				header: 'מס"ד',
+				accessor: (t) => String(t.id),
+			},
+			...columnOrder
+				.filter((id) => !hiddenColumns.has(id) && id in COLUMN_DEFS)
+				.map((id) => COLUMN_DEFS[id as keyof TaskRow])
+				.filter((row) => !!row),
+		],
+		"הנחיות",
+	)
 }
 
 function downloadFile(blob: Blob, fileName: string) {

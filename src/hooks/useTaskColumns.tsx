@@ -28,14 +28,8 @@ import {
 } from "../components/ui/tooltip"
 import { formatDateShort } from "../functions/date-utils"
 
-export type TaskColumn =
-	| keyof TaskDto
-	| "status"
-	| "discussionName"
-	| "workspace"
-
 export interface TaskColumnMeta {
-	id: TaskColumn
+	id: keyof TaskRow
 	label: string
 }
 
@@ -45,28 +39,16 @@ export const TASK_COLUMNS_META: TaskColumnMeta[] = [
 	{ id: "status", label: "סטטוס" },
 	{ id: "assigneeStatuses", label: "אחראי" },
 	{ id: "deadlineType", label: 'תג"ב' },
-	{ id: "discussionName", label: "מקור" },
+	{ id: "source", label: "מקור" },
 	{ id: "tags", label: "נושא" },
 	{ id: "notes", label: "הערות" },
 	{ id: "createdAt", label: "תאריך יצירה" },
 	{ id: "updatedAt", label: "עודכן ב" },
 ]
 
-const COLUMN_LABELS: Record<TaskColumn, string> = Object.fromEntries(
+const COLUMN_LABELS = Object.fromEntries(
 	TASK_COLUMNS_META.map(({ id, label }) => [id, label]),
-) as Record<TaskColumn, string>
-
-const multiSelectFilter: FilterFn<TaskRow> = (
-	row,
-	columnId,
-	filterValue: string[],
-) => {
-	if (!filterValue?.length) return true
-	const value = row.getValue(columnId)
-	if (Array.isArray(value))
-		return value.some((v: string) => filterValue.includes(v))
-	return filterValue.includes(value as string)
-}
+) as Record<keyof TaskRow, string>
 
 interface SelectModeConfig {
 	enabled: boolean
@@ -83,18 +65,15 @@ interface ActionsConfig {
 	onEnterSelectMode: (taskId?: number) => void
 }
 
+type ColumnsMap = Partial<Record<string, ColumnDef<TaskRow>>>
+
 interface UseTaskColumnsOptions {
 	queryKey: QueryKey
-	visibleColumns: TaskColumn[]
+	visibleColumns: (keyof TaskRow)[]
 	searchQuery: string
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
 	selectMode?: SelectModeConfig
 	actions?: ActionsConfig
-}
-
-interface UseTaskColumnsReturn {
-	columns: ColumnDef<TaskRow>[]
-	availableColumns: TaskColumnMeta[]
 }
 
 function useTaskColumns({
@@ -104,7 +83,7 @@ function useTaskColumns({
 	filterOptionsMap,
 	selectMode,
 	actions,
-}: UseTaskColumnsOptions): UseTaskColumnsReturn {
+}: UseTaskColumnsOptions) {
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
 			onSuccess: ({ task }) => {
@@ -112,6 +91,18 @@ function useTaskColumns({
 			},
 		},
 	})
+
+	const multiSelectFilter: FilterFn<TaskRow> = (
+		row,
+		columnId,
+		filterValue: string[],
+	) => {
+		if (!filterValue?.length) return true
+		const value = row.getValue(columnId)
+		if (Array.isArray(value))
+			return value.some((v: string) => filterValue.includes(v))
+		return filterValue.includes(value as string)
+	}
 
 	function onUpdateStatus(
 		taskId: number,
@@ -149,8 +140,9 @@ function useTaskColumns({
 			}
 		: null
 
-	const columnMap: Partial<Record<TaskColumn, ColumnDef<TaskRow>>> = {
-		id: {
+	const allColumns = [
+		{
+			id: "id",
 			accessorKey: "id",
 			header: ({ column }) => (
 				<ColumnHeaderWithActions label={COLUMN_LABELS.id} column={column} />
@@ -165,7 +157,8 @@ function useTaskColumns({
 				<IdCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>{id}</IdCell>
 			),
 		},
-		title: {
+		{
+			id: "title",
 			accessorKey: "title",
 			header: COLUMN_LABELS.title,
 			size: 300,
@@ -221,7 +214,7 @@ function useTaskColumns({
 				</TitleCell>
 			),
 		},
-		status: {
+		{
 			id: "status",
 			accessorFn: (row) => row.status?.type,
 			header: ({ column }) => (
@@ -251,7 +244,7 @@ function useTaskColumns({
 					/>
 				),
 		},
-		assigneeStatuses: {
+		{
 			id: "assigneeStatuses",
 			accessorFn: (row) => row.assignee?.name,
 			header: ({ column }) => (
@@ -279,7 +272,8 @@ function useTaskColumns({
 					/>
 				),
 		},
-		deadlineType: {
+		{
+			id: "deadlineType",
 			accessorKey: "deadlineType",
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
@@ -353,14 +347,14 @@ function useTaskColumns({
 				)
 			},
 		},
-		discussionName: {
-			id: "discussionName",
+		{
+			id: "source",
 			accessorFn: (row) => row.source?.name,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
-					label={COLUMN_LABELS.discussionName}
+					label={COLUMN_LABELS.source}
 					column={column}
-					filterOptions={filterOptionsMap?.discussionName}
+					filterOptions={filterOptionsMap?.source}
 				/>
 			),
 			size: 120,
@@ -385,7 +379,8 @@ function useTaskColumns({
 				)
 			},
 		},
-		tags: {
+		{
+			id: "tags",
 			accessorKey: "tags",
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
@@ -406,7 +401,8 @@ function useTaskColumns({
 				return <TopicCell tags={allNames} />
 			},
 		},
-		notes: {
+		{
+			id: "notes",
 			accessorKey: "notes",
 			header: COLUMN_LABELS.notes,
 			size: 110,
@@ -419,7 +415,36 @@ function useTaskColumns({
 				) : null
 			},
 		},
-		createdAt: {
+		{
+			id: "workspace",
+			accessorFn: (row) => row.workspace?.title,
+			header: ({ column }) => (
+				<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
+			),
+			size: 170,
+			enableColumnFilter: false,
+			sortingFn: (rowA, rowB) => {
+				const a = rowA.original.workspace?.title ?? ""
+				const b = rowB.original.workspace?.title ?? ""
+				return a.localeCompare(b, "he")
+			},
+			cell: ({
+				row: {
+					original: { workspace },
+				},
+			}) =>
+				workspace ? (
+					<WorkspaceCell>
+						{workspace.icon && (
+							<WorkspaceIconImg src={workspace.icon} alt={workspace.title} />
+						)}
+
+						<WorkspaceCellName>{workspace.title}</WorkspaceCellName>
+					</WorkspaceCell>
+				) : null,
+		},
+		{
+			id: "createdAt",
 			accessorKey: "createdAt",
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
@@ -434,7 +459,8 @@ function useTaskColumns({
 				<DateText>{formatDateShort(getValue<Date>())}</DateText>
 			),
 		},
-		updatedAt: {
+		{
+			id: "updatedAt",
 			accessorKey: "updatedAt",
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
@@ -449,36 +475,42 @@ function useTaskColumns({
 				<DateText>{formatDateShort(getValue<Date>())}</DateText>
 			),
 		},
-	}
+	] as ColumnDef<TaskRow>[]
 
-	const actionsColumn: ColumnDef<TaskRow> | null = actions
-		? {
-				id: "actions",
-				size: 25,
-				enableSorting: false,
-				enableColumnFilter: false,
-				cell: ({
-					row: {
-						original: { id, workspaceId },
-					},
-				}) => (
-					<RowActionsMenu
-						workspaceId={workspaceId}
-						onEdit={() => actions.onEdit(id)}
-						onEnterSelect={() => actions.onEnterSelectMode(id)}
-						onDelete={() => actions.onDelete([id])}
-					/>
-				),
-			}
-		: null
+	const columnMap: ColumnsMap = Object.fromEntries(
+		allColumns.map((column) => [column.id, column]),
+	)
 
 	const visibleOrderedColumns = visibleColumns
 		.filter((id) => columnMap[id])
-		.map((id) => (selectColumn && id === "id" ? selectColumn : columnMap[id]!))
+		.map((id) => (selectColumn && id === "id" ? selectColumn : columnMap[id]))
+		.filter((column) => !!column)
+	console.log("columnMap", columnMap)
 
-	const columns: ColumnDef<TaskRow>[] = [
+	const columns = [
 		...visibleOrderedColumns,
-		...(actionsColumn ? [actionsColumn] : []),
+		...(actions
+			? [
+					{
+						id: "actions",
+						size: 25,
+						enableSorting: false,
+						enableColumnFilter: false,
+						cell: ({
+							row: {
+								original: { id, workspaceId },
+							},
+						}) => (
+							<RowActionsMenu
+								workspaceId={workspaceId}
+								onEdit={() => actions.onEdit(id)}
+								onEnterSelect={() => actions.onEnterSelectMode(id)}
+								onDelete={() => actions.onDelete([id])}
+							/>
+						),
+					} as ColumnDef<TaskRow>,
+				]
+			: []),
 	]
 
 	return {
@@ -642,6 +674,31 @@ const NotesText = styled.div`
   u {
     text-decoration: underline;
   }
+`
+
+const WorkspaceCell = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+`
+
+const WorkspaceCellName = styled.span`
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+const WorkspaceIconImg = styled.img`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 `
 
 const DateText = styled.span`
