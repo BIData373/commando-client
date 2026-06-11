@@ -72,7 +72,7 @@ export function AssigneeCard({
 							<StyledBadge key={id} variant="secondary">
 								<User size={16} />
 
-								{info?.name ?? info?.displayName ?? `#${id}`}
+								{info?.name ?? `#${id}`}
 							</StyledBadge>
 						))}
 
