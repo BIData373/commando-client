@@ -19,21 +19,22 @@ const EMPTY_STATUS = {
 
 export default function StatusCard({ tasks }: StatusCardProps) {
 	const { statuses } = useWorkspace()
-	const statusCounts = useMemo(
-		() =>
-			mapValues(
-				groupBy(tasks, (t) =>
-					t.status?.id != null && statuses[t.status.id]
-						? t.status.id
-						: "unassigned",
-				),
-				(tasks, id) => ({
-					count: tasks.length,
-					...(id === "unassigned" ? EMPTY_STATUS : statuses[Number(id)]),
-				}),
-			),
-		[tasks, statuses],
-	)
+	const statusCounts = useMemo(() => {
+		const statusesByType = Object.fromEntries(
+			Object.values(statuses).map((s) => [s.type, s]),
+		)
+		return mapValues(
+			groupBy(tasks, (t) => {
+				if (t.status?.id == null) return "unassigned"
+				if (statuses[t.status.id]) return t.status.id
+				return statusesByType[t.status.type]?.id ?? "unassigned"
+			}),
+			(groupTasks, id) => ({
+				count: groupTasks.length,
+				...(id === "unassigned" ? EMPTY_STATUS : statuses[Number(id)]),
+			}),
+		)
+	}, [tasks, statuses])
 
 	const total = tasks.length
 
@@ -48,7 +49,7 @@ export default function StatusCard({ tasks }: StatusCardProps) {
 	const cellFills =
 		total === 0
 			? [CHART_EMPTY_COLOR]
-			: Object.values(statuses).map(({ color }) => color)
+			: Object.values(statusCounts).map(({ color }) => color)
 
 	return (
 		<Section>
