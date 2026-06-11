@@ -1,6 +1,8 @@
 import styled from "@emotion/styled"
+import { filter } from "lodash"
 import type { ReactNode } from "react"
 import { matchesQuickFilter } from "src/functions/filter-utils"
+import { filterRows } from "src/utils/filter-rows-map-utils"
 import { QuickFilter } from "src/utils/filter-utils"
 import type { TaskColumnMeta } from "../../hooks/useTaskColumns"
 import type { TaskRow } from "../../providers/TasksFiltersProvider"
@@ -42,6 +44,7 @@ function TaskFilters({
 		setColumnOrder,
 		hiddenColumns,
 		toggleColumn,
+		columnsFilters,
 	} = useTasksFilters()
 
 	const activeFilters =
@@ -50,13 +53,22 @@ function TaskFilters({
 
 	const hasActiveFilters = activeFilters.size > 0 || !!hasExtraActiveFilters
 
-	const overdueCount = tasks.filter((t) =>
+	const filteredTasks = filter(tasks, (task) =>
+		columnsFilters.every(({ id, value }) => {
+			const idKey = id as keyof TaskRow
+			const taskValue = filterRows.getFilterColumnValue(idKey, task)
+			if (!Array.isArray(value) || value.length === 0) return true
+			return value.includes(taskValue)
+		}),
+	)
+
+	const overdueCount = filteredTasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.OVERDUE),
 	).length
-	const approachingCount = tasks.filter((t) =>
+	const approachingCount = filteredTasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.APPROACHING),
 	).length
-	const flaggedCount = tasks.filter((t) =>
+	const flaggedCount = filteredTasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.FLAGGED),
 	).length
 

@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import styled from '@emotion/styled'
 import {
   flexRender,
@@ -17,6 +17,7 @@ import {
 } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
+import { useTasksFilters } from 'src/providers/TasksFiltersProvider'
 
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -83,6 +84,11 @@ export function DataTable<TData>({
     getRowId,
     meta,
   })
+
+  const { setColumnsFilters } = useTasksFilters()
+  useEffect(() => (
+    setColumnsFilters(table.getState().columnFilters)
+  ), [])
 
   const allColumns = table.getAllColumns()
   const fixedTotal = allColumns.reduce((sum, col) => {
