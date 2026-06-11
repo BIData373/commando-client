@@ -1,5 +1,13 @@
 import styled from "@emotion/styled"
-import { groupBy, mapValues } from "lodash"
+import {
+	chain,
+	countBy,
+	groupBy,
+	map,
+	mapValues,
+	partition,
+	values,
+} from "lodash"
 import { useMemo } from "react"
 import { Cell, Pie, PieChart } from "recharts"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
@@ -12,28 +20,23 @@ interface StatusCardProps {
 const CHART_EMPTY_COLOR = "var(--chip-bg)"
 
 const EMPTY_STATUS = {
-	id: 0,
+	id: -1,
 	name: "לא משוייך",
 	color: CHART_EMPTY_COLOR, //  'black'
+	type: "UNASSIGNED",
 }
 
 export default function StatusCard({ tasks }: StatusCardProps) {
 	const { statuses } = useWorkspace()
+
 	const statusCounts = useMemo(() => {
-		const statusesByType = Object.fromEntries(
-			Object.values(statuses).map((s) => [s.type, s]),
-		)
-		return mapValues(
-			groupBy(tasks, (t) => {
-				if (t.status?.id == null) return "unassigned"
-				if (statuses[t.status.id]) return t.status.id
-				return statusesByType[t.status.type]?.id ?? "unassigned"
-			}),
-			(groupTasks, id) => ({
-				count: groupTasks.length,
-				...(id === "unassigned" ? EMPTY_STATUS : statuses[Number(id)]),
-			}),
-		)
+		return chain(tasks)
+			.groupBy((t) => t.status?.id ?? EMPTY_STATUS.type)
+			.mapValues((tasks) => ({
+				...(tasks[0].status ?? EMPTY_STATUS),
+				count: tasks.length,
+			}))
+			.value()
 	}, [tasks, statuses])
 
 	const total = tasks.length
@@ -41,15 +44,13 @@ export default function StatusCard({ tasks }: StatusCardProps) {
 	const chartData =
 		total === 0
 			? [{ key: "all", value: 1 }]
-			: Object.values(statusCounts).map(({ id, count }) => ({
+			: map(values(statusCounts), ({ id, count }) => ({
 					key: id,
 					value: count,
 				}))
 
 	const cellFills =
-		total === 0
-			? [CHART_EMPTY_COLOR]
-			: Object.values(statusCounts).map(({ color }) => color)
+		total === 0 ? [CHART_EMPTY_COLOR] : map(values(statusCounts), "color")
 
 	return (
 		<Section>

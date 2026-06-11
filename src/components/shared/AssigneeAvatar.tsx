@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import type { AssigneeDto } from "src/api/model"
+import { formatMesibaIcon } from "src/utils/icon-utils"
 import { Avatar, AvatarFallback } from "../ui/avatar"
 
 interface AssigneeAvatarProps {
@@ -27,7 +28,11 @@ export const AssigneeAvatar = ({
 	return (
 		<StyledAvatar $cursor={cursor} ref={ref} {...props}>
 			{assignee.icon ? (
-				<EmblemAvatarImg $size={size} src={assignee.icon} alt={assignee.name} />
+				<EmblemAvatarImg
+					$size={size}
+					src={formatMesibaIcon(assignee.icon)}
+					alt={assignee.name}
+				/>
 			) : (
 				<ColoredFallback $size={size} $color={assignee.color}>
 					{getInitials(assignee.name)}
