@@ -1,6 +1,6 @@
 import { useLocalStorage } from "@mantine/hooks"
 import { useEffect, useState } from "react"
-import type { UserDto } from "src/api/model"
+import type { CreateUserDto } from "src/api/model"
 import { isBIKey, requestUsernameKey, resolveBypassValues } from "src/axios"
 import { IS_BI, STATIC_TOKEN } from "src/utils/env-utils"
 import {
@@ -14,15 +14,13 @@ export const adminUserUpn = "s0000000"
 function buildAdminUser(
 	rawUsername: string | null,
 	rawIsBI: string | null,
-): UserDto {
+): CreateUserDto {
 	const { username, isBI } = resolveBypassValues(rawUsername, rawIsBI)
 	const upn = username ?? adminUserUpn
 
 	return {
-		id: 1,
 		upn,
 		info: {
-			id: 1,
 			upn,
 			name: "Admin",
 			displayName: "Admin",
@@ -31,7 +29,7 @@ function buildAdminUser(
 	}
 }
 
-export function useCurrentUser(): UserDto {
+export function useCurrentUser() {
 	const [storedUsername] = useLocalStorage<string | null>({
 		key: requestUsernameKey,
 		defaultValue: null,
@@ -41,7 +39,7 @@ export function useCurrentUser(): UserDto {
 		defaultValue: null,
 	})
 
-	const [user, setUser] = useState<UserDto>(() =>
+	const [user, setUser] = useState(() =>
 		buildAdminUser(storedUsername, storedIsBI),
 	)
 
@@ -64,10 +62,8 @@ export function useCurrentUser(): UserDto {
 			}
 
 			setUser({
-				id: ssoUser?.id ?? 0,
 				upn,
 				info: {
-					id: ssoUser?.id ?? 0,
 					upn,
 					name: ssoUser?.name ?? "",
 					displayName: ssoUser?.displayName ?? "",

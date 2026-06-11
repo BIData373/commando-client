@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import type { ReactNode } from "react"
+import { exportTasksToExcel } from "src/functions/export-excel"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { QuickFilter } from "src/utils/filter-utils"
 import type { TaskColumnMeta } from "../../hooks/useTaskColumns"
@@ -9,9 +10,8 @@ import { FilterBar, FilterDivider, FilterPill } from "../shared/FilterBar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface TaskFiltersProps {
-	tasks: TaskRow[]
+	taskRows: TaskRow[]
 	onClearAllFilters: () => void
-	onExport: () => void
 	hasExtraActiveFilters?: boolean
 	extraFilters?: ReactNode
 	extraColumnsMeta?: TaskColumnMeta[]
@@ -22,9 +22,8 @@ interface TaskFiltersProps {
 }
 
 function TaskFilters({
-	tasks,
+	taskRows,
 	onClearAllFilters,
-	onExport,
 	hasExtraActiveFilters,
 	extraFilters,
 	extraColumnsMeta,
@@ -50,15 +49,19 @@ function TaskFilters({
 
 	const hasActiveFilters = activeFilters.size > 0 || !!hasExtraActiveFilters
 
-	const overdueCount = tasks.filter((t) =>
+	const overdueCount = taskRows.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.OVERDUE),
 	).length
-	const approachingCount = tasks.filter((t) =>
+	const approachingCount = taskRows.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.APPROACHING),
 	).length
-	const flaggedCount = tasks.filter((t) =>
+	const flaggedCount = taskRows.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.FLAGGED),
 	).length
+
+	function handleExport() {
+		exportTasksToExcel(taskRows, { columnOrder, hiddenColumns })
+	}
 
 	return (
 		<FilterBar
@@ -66,7 +69,7 @@ function TaskFilters({
 			onClearAll={onClearAllFilters}
 			searchQuery={searchQuery}
 			onSearchChange={setSearchQuery}
-			onExport={onExport}
+			onExport={handleExport}
 			columnOrder={columnOrder}
 			hiddenColumns={hiddenColumns}
 			onColumnOrderChange={setColumnOrder}

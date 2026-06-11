@@ -169,10 +169,6 @@ function TasksLayout({
 		})
 	}
 
-	function handleExport() {
-		exportTasksToExcel(filteredTaskRows, { columnOrder, hiddenColumns })
-	}
-
 	// function handleViewChange(newView: TasksView) {
 	// 	navigateToTasks({ view: newView })
 	// }
@@ -208,10 +204,9 @@ function TasksLayout({
 		<TooltipProvider>
 			<TasksRoot>
 				<TaskFilters
-					tasks={filteredTaskRows}
+					taskRows={filteredTaskRows}
 					allTasksLength={allTaskRows.length}
 					onClearAllFilters={clearAllFilters}
-					onExport={handleExport}
 					tabFilter={tabFilter}
 					onToggleTabFilter={handleToggleTabFilter}
 					hasExtraActiveFilters={activeTopicFilters.size > 0 || !!dateRange}
