@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from 'react'
+import { Fragment, useEffect, type ReactNode } from 'react'
 import styled from '@emotion/styled'
 import {
   flexRender,
@@ -16,6 +16,7 @@ import {
   type TableMeta,
 } from '@tanstack/react-table'
 
+import { LoadingSpinner } from '../shared/LoadingSpinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
 import { useTasksFilters } from 'src/providers/TasksFiltersProvider'
 
@@ -44,6 +45,8 @@ interface DataTableProps<TData> {
   expansionColSpan?: number
   containerClassName?: string
   showHeader?: boolean
+  emptyState?: ReactNode
+  isLoading?: boolean
 }
 
 export function DataTable<TData>({
@@ -66,6 +69,8 @@ export function DataTable<TData>({
   expansionColSpan,
   containerClassName,
   showHeader = true,
+  emptyState,
+  isLoading
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -91,26 +96,18 @@ export function DataTable<TData>({
   ), [])
 
   const allColumns = table.getAllColumns()
-  const fixedTotal = allColumns.reduce((sum, col) => {
-    const grow = col.columnDef.meta?.grow
-    return grow ? sum : sum + (col.columnDef.size ?? 0)
-  }, 0)
+  const totalSize = allColumns.reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
 
   const colgroup = (
     <colgroup>
       {allColumns.map((column) => {
-        const grow = column.columnDef.meta?.grow
         const size = column.columnDef.size
-
-      return grow && size !== undefined ? (
-            <col
-              key={column.id}
-              style={{ width: `calc(100% - ${fixedTotal}px)`, minWidth: `${size}px` }}
-            />
-          ) : (
+        return (
           <col
             key={column.id}
-            style={size !== undefined ? { width: `${size}px` } : undefined}
+            style={size !== undefined && totalSize > 0
+              ? { width: `${((size / totalSize) * 100).toFixed(3)}%` }
+              : undefined}
           />
         )
       })}
@@ -122,8 +119,10 @@ export function DataTable<TData>({
     expansionContent: renderRowExpansion?.(row),
   }))
 
+  const tableMinWidth = totalSize > 0 ? totalSize : undefined
+
   return (
-    <Table containerClassName={containerClassName}>
+    <Table containerClassName={containerClassName} style={{ minWidth: tableMinWidth }}>
       {colgroup}
       {showHeader && (
         <TableHeader>
@@ -165,10 +164,18 @@ export function DataTable<TData>({
               )}
             </Fragment>
           ))
+        ) : isLoading ? (
+          <EmptyRow>
+            <EmptyCell colSpan={columns.length}>
+              <LoadingSpinner />
+            </EmptyCell>
+          </EmptyRow>
         ) : (
-          <TableRow>
-            <TableCell colSpan={columns.length}>אין נתונים להצגה</TableCell>
-          </TableRow>
+          <EmptyRow>
+            <EmptyCell colSpan={columns.length}>
+              {emptyState}
+            </EmptyCell>
+          </EmptyRow>
         )}
       </TableBody>
     </Table>
@@ -176,6 +183,17 @@ export function DataTable<TData>({
 }
 
 // ─── Styled Components ─────────────────────────────────────────────────────
+
+const EmptyRow = styled.tr`
+  &:hover {
+    background: none !important;
+  }
+`
+const EmptyCell = styled.td`
+  text-align: center;
+  padding: 72px 0 !important;
+
+`
 
 const ExpansionCell = styled.td`
   padding: 0;

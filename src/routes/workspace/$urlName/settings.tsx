@@ -5,8 +5,10 @@ import {
 	useNavigate,
 	useRouterState,
 } from "@tanstack/react-router"
+import { PermissionType } from "src/api/model"
 import { SETTINGS_TABS, SettingTabPath } from "src/utils/settings-utils"
 import { Tabs, TabsList, TabsTrigger } from "../../../components/ui/tabs"
+import { AuthorizationWrapper } from "../../../wrappers/AuthorizationWrapper"
 
 export const Route = createFileRoute("/workspace/$urlName/settings")({
 	component: SettingsLayout,
@@ -41,22 +43,24 @@ function SettingsLayout() {
 	}
 
 	return (
-		<SettingsRoot>
-			<Tabs value={activeTab} onValueChange={handleTabChange}>
-				<FullWidthTabsList variant="line">
-					{Object.values(SettingTabPath).map((value) => (
-						<StyledTabsTrigger key={value} value={value}>
-							{SETTINGS_TABS[value]}
-						</StyledTabsTrigger>
-					))}
-				</FullWidthTabsList>
-			</Tabs>
-			<ContentWrapper>
-				<OutletContainer>
-					<Outlet />
-				</OutletContainer>
-			</ContentWrapper>
-		</SettingsRoot>
+		<AuthorizationWrapper type={PermissionType.MANAGER}>
+			<SettingsRoot>
+				<Tabs value={activeTab} onValueChange={handleTabChange}>
+					<FullWidthTabsList variant="line">
+						{Object.values(SettingTabPath).map((value) => (
+							<StyledTabsTrigger key={value} value={value}>
+								{SETTINGS_TABS[value]}
+							</StyledTabsTrigger>
+						))}
+					</FullWidthTabsList>
+				</Tabs>
+				<ContentWrapper>
+					<OutletContainer>
+						<Outlet />
+					</OutletContainer>
+				</ContentWrapper>
+			</SettingsRoot>
+		</AuthorizationWrapper>
 	)
 }
 

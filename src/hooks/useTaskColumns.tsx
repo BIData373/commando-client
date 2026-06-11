@@ -87,7 +87,7 @@ interface UseTaskColumnsOptions {
 	queryKey: QueryKey
 	visibleColumns: TaskColumn[]
 	searchQuery: string
-	filterOptionsMap: Record<FilterOptions, FilterOption[]>
+	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
 	selectMode?: SelectModeConfig
 	actions?: ActionsConfig
 }
@@ -124,7 +124,7 @@ function useTaskColumns({
 	const selectColumn: ColumnDef<TaskRow> | null = selectMode?.enabled
 		? {
 				id: "select",
-				size: 70,
+				size: 35,
 				enableSorting: false,
 				enableColumnFilter: false,
 				header: () => (
@@ -155,7 +155,7 @@ function useTaskColumns({
 			header: ({ column }) => (
 				<ColumnHeaderWithActions label={COLUMN_LABELS.id} column={column} />
 			),
-			size: 70,
+			size: 35,
 			enableColumnFilter: false,
 			cell: ({
 				row: {
@@ -168,7 +168,7 @@ function useTaskColumns({
 		title: {
 			accessorKey: "title",
 			header: COLUMN_LABELS.title,
-			size: 400,
+			size: 300,
 			meta: { grow: true },
 			enableSorting: false,
 			enableColumnFilter: false,
@@ -228,10 +228,10 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.status}
 					column={column}
-					filterOptions={filterOptionsMap.status}
+					filterOptions={filterOptionsMap?.status}
 				/>
 			),
-			size: 100,
+			size: 50,
 			filterFn: multiSelectFilter,
 			sortingFn: (rowA, rowB) =>
 				(rowA.original.status?.id ?? 0) - (rowB.original.status?.id ?? 0),
@@ -258,10 +258,10 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.assigneeStatuses}
 					column={column}
-					filterOptions={filterOptionsMap.assigneeStatuses}
+					filterOptions={filterOptionsMap?.assigneeStatuses}
 				/>
 			),
-			size: 115,
+			size: 60,
 			filterFn: multiSelectFilter,
 			sortingFn: "text",
 			cell: ({
@@ -285,10 +285,10 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.deadlineType}
 					column={column}
-					filterOptions={filterOptionsMap.deadlineType}
+					filterOptions={filterOptionsMap?.deadlineType}
 				/>
 			),
-			size: 160,
+			size: 90,
 			filterFn: multiSelectFilter,
 			sortingFn: (
 				{ original: { dueDate: dueDateA } },
@@ -360,10 +360,10 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.discussionName}
 					column={column}
-					filterOptions={filterOptionsMap.discussionName}
+					filterOptions={filterOptionsMap?.discussionName}
 				/>
 			),
-			size: 260,
+			size: 120,
 			filterFn: multiSelectFilter,
 			sortingFn: "text",
 			cell: ({
@@ -391,10 +391,10 @@ function useTaskColumns({
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.tags}
 					column={column}
-					filterOptions={filterOptionsMap.tags}
+					filterOptions={filterOptionsMap?.tags}
 				/>
 			),
-			size: 160,
+			size: 90,
 			enableSorting: false,
 			filterFn: multiSelectFilter,
 			cell: ({
@@ -409,7 +409,7 @@ function useTaskColumns({
 		notes: {
 			accessorKey: "notes",
 			header: COLUMN_LABELS.notes,
-			size: 220,
+			size: 110,
 			enableSorting: false,
 			enableColumnFilter: false,
 			cell: ({ getValue }) => {
@@ -427,7 +427,7 @@ function useTaskColumns({
 					column={column}
 				/>
 			),
-			size: 132,
+			size: 70,
 			enableColumnFilter: false,
 			sortingFn: "datetime",
 			cell: ({ getValue }) => (
@@ -442,7 +442,7 @@ function useTaskColumns({
 					column={column}
 				/>
 			),
-			size: 100,
+			size: 70,
 			enableColumnFilter: false,
 			sortingFn: "datetime",
 			cell: ({ getValue }) => (
@@ -454,7 +454,7 @@ function useTaskColumns({
 	const actionsColumn: ColumnDef<TaskRow> | null = actions
 		? {
 				id: "actions",
-				size: 43,
+				size: 25,
 				enableSorting: false,
 				enableColumnFilter: false,
 				cell: ({

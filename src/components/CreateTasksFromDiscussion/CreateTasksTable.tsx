@@ -123,6 +123,7 @@ function CreateTasksTable({
 						row.original.assigneeIds.length > 1 &&
 						expandedRows.has(row.original.id) ? (
 							<TaskAssigneeExpansion
+								workspaceId={workspaceId}
 								row={row.original}
 								onUpdateRow={(updates) => updateRow(row.original.id, updates)}
 								onCollapse={() => toggleRowExpansion(row.original.id)}
@@ -157,12 +158,12 @@ const TableWrapper = styled.div`
   flex: 1;
   min-height: 0;
   justify-content: space-between;
-  overflow-x: hidden;
+  overflow-x: auto;
   `
 
 const TableOuterContainer = styled.div`
   direction: ltr;
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: auto;
 
   table {

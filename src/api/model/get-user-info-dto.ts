@@ -7,7 +7,7 @@
  */
 
 export interface GetUserInfoDto {
-	id: number
+	id?: number
 	upn: string
 	name?: string
 	displayName?: string

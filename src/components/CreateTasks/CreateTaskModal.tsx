@@ -4,7 +4,6 @@ import { useStore } from "@tanstack/react-store"
 import { omit, uniq } from "lodash"
 import { ChevronDown, ChevronUp, X } from "lucide-react"
 import { useRef, useState } from "react"
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import {
 	type CreateTaskDto,
 	DeadlineType,
@@ -16,11 +15,12 @@ import {
 import { useCreateSource } from "src/api/source/source"
 import {
 	getGetTaskQueryKey,
+	getListPersonalTasksQueryKey,
 	getListTasksQueryKey,
 	useUpdateTask,
 } from "src/api/task/task"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries, queryClient } from "src/queryClient"
+import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
+import { invalidateQueries } from "src/queryClient"
 import { getChangedFields } from "src/utils/form-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { CancelButton } from "../shared/CancelButton"
@@ -56,49 +56,31 @@ interface FormState extends Omit<CreateTaskDto, "workspaceId" | "assignees"> {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 interface CreateTaskModalProps {
+	workspaceId: number
 	onClose: () => void
 	task?: TaskWithWorkspaceDto
 }
 
-function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
+function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 	const isEditMode = !!task
 
-	const {
-		workspace: { id: workspaceId },
-		statuses,
-	} = useWorkspace()
+	const { data: workspaceStatuses = [] } = useListWorkspaceStatuses({
+		workspaceId,
+	})
+	const statusById = Object.fromEntries(workspaceStatuses.map((s) => [s.id, s]))
 
-	const { saveTasks, isPending } = useSaveTasks(onClose)
+	const { saveTasks, isPending } = useSaveTasks(workspaceId, onClose)
 
 	const { mutateAsync: createSource } = useCreateSource()
-	const { mutate: updateTask } = useUpdateTask()
-	const { mutateAsync: upsertStatus } = useUpsertAssigneeTaskStatus()
+	const { mutateAsync: updateTask } = useUpdateTask()
 
 	const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
 
-	async function handleUpdateSuccess() {
-		const currentAssignees = form.state.values.assignees ?? []
-		const statusUpdates = currentAssignees.filter(({ statusId, id }) => {
-			if (statusId == null) {
-				return false
-			}
-			const original = task!.assigneeStatuses.find(
-				(as) => as.assignee.id === id,
-			)
-			return !original || original.status.id !== statusId
-		})
-
-		await Promise.all(
-			statusUpdates.map((a) =>
-				upsertStatus({
-					data: { taskId: task!.id, assigneeId: a.id, statusId: a.statusId! },
-				}),
-			),
-		)
-
-		await invalidateQueries([
+	function handleUpdateSuccess() {
+		invalidateQueries([
 			getListTasksQueryKey({ workspaceId }),
-			getGetTaskQueryKey({ id: task!.id }),
+			...(task ? [getGetTaskQueryKey({ id: task.id })] : []),
+			getListPersonalTasksQueryKey(),
 		])
 
 		onClose()
@@ -140,20 +122,21 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 					changedFields.sourceId = newSource.id
 				}
 
-				if (changedFields.assignees) {
-					changedFields.assignees = changedFields.assignees.map(
-						({ id, description }) => ({ id, description }),
-					)
-				}
-
-				updateTask(
+				await updateTask(
 					{ pathParams: { id: task.id }, data: changedFields },
 					{ onSuccess: handleUpdateSuccess },
 				)
 			} else {
+				if (source.trim() && !linkedSource) {
+					const newSource = await createSource({
+						data: { workspaceId, name: source, date: sourceDate },
+					})
+					rest.sourceId = newSource.id
+				}
 				saveTasks([{ workspaceId, ...rest }])
-				onClose()
 			}
+
+			onClose()
 		},
 	})
 
@@ -184,7 +167,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 			)
 		} else {
 			const defaultStatusId = isEditMode
-				? Object.values(statuses).find(
+				? Object.values(statusById).find(
 						(s) => s.type === WorkspaceStatusType.NOT_STARTED,
 					)?.id
 				: undefined
@@ -240,7 +223,9 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 	}
 
 	function handleSourceDateSelect(date: Date | undefined) {
-		if (date) form.setFieldValue("sourceDate", date)
+		if (date) {
+			form.setFieldValue("sourceDate", date)
+		}
 	}
 
 	function handleTagSelect(tag: string) {
@@ -296,8 +281,8 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 		setScrollShadow({ top: !atTop, bottom: !atBottom })
 	}
 
-	const handleOpenChange = (open: boolean) => {
-		if (!open) {
+	const handleOpenChange = (isOpen: boolean) => {
+		if (!isOpen) {
 			onClose()
 		}
 	}
@@ -305,17 +290,35 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 	const linkedTagNames = values.linkedSource?.tags.map((t) => t.name) ?? []
 	const mergedTags = uniq([...linkedTagNames, ...(values.tags ?? [])])
 
+	const taskStatusByAssigneeId = isEditMode
+		? Object.fromEntries(
+				task!.assigneeStatuses.map((as) => [as.assignee.id, as.status]),
+			)
+		: {}
+
 	const assigneeExtras = isEditMode
 		? Object.fromEntries(
 				(values.assignees ?? []).map((a) => [
 					a.id,
 					{
-						status: a.statusId != null ? statuses[a.statusId] : undefined,
+						status:
+							a.statusId != null
+								? (statusById[a.statusId] ?? taskStatusByAssigneeId[a.id])
+								: undefined,
 						description: a.description,
 					},
 				]),
 			)
 		: undefined
+
+	function validateSourceDate({ value }: { value: Date | null }) {
+		const { source, linkedSource } = form.state.values
+		if (source.trim() && !linkedSource && !value) {
+			setIsDetailsExpanded(true)
+			return "יש לבחור תאריך למקור חדש"
+		}
+		return undefined
+	}
 
 	// ─── Render ────────────────────────────────────────────────────────────────
 
@@ -367,6 +370,7 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 
 								{/* ─── Responsible ─────────────────────────────────────────── */}
 								<AssigneeField
+									workspaceId={workspaceId}
 									selectedAssignees={(values.assignees ?? []).map((a) => a.id)}
 									directiveTitle={values.title}
 									onToggle={handleAssigneeToggle}
@@ -421,16 +425,26 @@ function CreateTaskModal({ onClose, task }: CreateTaskModalProps) {
 								>
 									<AdditionalDetails>
 										{/* Source + Date row */}
-										<SourceField
-											source={values.source}
-											sourceDate={values.sourceDate}
-											linkedSource={values.linkedSource}
-											onSourceSelect={handleSourceSelect}
-											onDateSelect={handleSourceDateSelect}
-										/>
+										<form.Field
+											name="sourceDate"
+											validators={{ onSubmit: validateSourceDate }}
+										>
+											{(field) => (
+												<SourceField
+													workspaceId={workspaceId}
+													source={values.source}
+													sourceDate={values.sourceDate}
+													linkedSource={values.linkedSource}
+													onSourceSelect={handleSourceSelect}
+													onDateSelect={handleSourceDateSelect}
+													dateField={field}
+												/>
+											)}
+										</form.Field>
 
 										{/* Tag field */}
 										<TagField
+											workspaceId={workspaceId}
 											tags={mergedTags}
 											lockedTags={linkedTagNames}
 											onTagSelect={handleTagSelect}

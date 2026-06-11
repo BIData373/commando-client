@@ -1,8 +1,11 @@
 import styled from "@emotion/styled"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import type { AssigneeStatusDto } from "src/api/model"
-import { getGetTaskQueryKey, getListTasksQueryKey } from "src/api/task/task"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
+import {
+	getGetTaskQueryKey,
+	getListPersonalTasksQueryKey,
+	getListTasksQueryKey,
+} from "src/api/task/task"
 import { invalidateQueries } from "src/queryClient"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { StatusTag } from "../shared/StatusTag"
@@ -10,6 +13,8 @@ import { StatusDropdown } from "../Tasks/StatusDropdown"
 
 interface AssigneeContainerProps {
 	taskId: number
+	workspaceId: number
+	assigneeStatusEditable?: boolean | null
 	isAdmin: boolean
 	editable: boolean
 	assignee: AssigneeStatusDto
@@ -17,14 +22,12 @@ interface AssigneeContainerProps {
 
 export const AssigneeContainer = ({
 	taskId,
+	workspaceId,
+	assigneeStatusEditable,
 	assignee: { assignee, status, description },
 	isAdmin,
 	editable,
 }: AssigneeContainerProps) => {
-	const {
-		workspace: { id: workspaceId, assigneeStatusEditable },
-	} = useWorkspace()
-
 	// FIX Get query key from params?
 	const { mutateAsync: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus(
 		{
@@ -33,6 +36,7 @@ export const AssigneeContainer = ({
 					invalidateQueries([
 						getGetTaskQueryKey({ id: taskId }),
 						getListTasksQueryKey({ workspaceId }),
+						getListPersonalTasksQueryKey(),
 					])
 				},
 			},

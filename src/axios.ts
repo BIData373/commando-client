@@ -1,32 +1,87 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios"
+import createAuthRefreshInterceptor from "axios-auth-refresh"
 import { parseISO } from "date-fns"
+import { clearToken, refreshAccessToken, storeToken } from "./utils/auth-utils"
 import {
 	API_BASE_URL,
+	API_PREFIX,
 	IS_BI,
 	REQUEST_USERNAME,
 	STATIC_TOKEN,
 	USE_SSO,
 } from "./utils/env-utils"
 
-const STATIC_TOKEN_HEADER = "static-token"
-const REQUEST_USERNAME_HEADER = "requestusername"
-const IS_BI_HEADER = "is-bi"
+export const STATIC_TOKEN_HEADER = "static-token"
+export const REQUEST_USERNAME_HEADER = "requestusername"
+export const IS_BI_HEADER = "is-bi"
+
+export const requestUsernameKey = "request_username"
+export const isBIKey = "is_bi"
+
+export function resolveBypassValues(
+	rawUsername: string | null,
+	rawIsBI: string | null,
+) {
+	return {
+		username: rawUsername || REQUEST_USERNAME || null,
+		isBI: rawIsBI !== null ? rawIsBI === "true" : !!IS_BI,
+	}
+}
 
 export const axiosInstance = axios.create({
-	baseURL: API_BASE_URL,
+	baseURL: new URL(API_PREFIX, API_BASE_URL).toString(),
 	withCredentials: USE_SSO,
 	headers: {
 		"Content-Type": "application/json",
 		...(STATIC_TOKEN && { [STATIC_TOKEN_HEADER]: STATIC_TOKEN }),
-		...(REQUEST_USERNAME && { [REQUEST_USERNAME_HEADER]: REQUEST_USERNAME }),
-		...(IS_BI && { [IS_BI_HEADER]: IS_BI }),
 	},
+})
+
+axiosInstance.interceptors.request.use((config) => {
+	const rawUsername = localStorage.getItem(requestUsernameKey)
+	const parsedUsername =
+		rawUsername !== null ? (JSON.parse(rawUsername) as string | null) : null
+
+	const { username, isBI } = resolveBypassValues(
+		parsedUsername,
+		localStorage.getItem(isBIKey),
+	)
+
+	if (username && username.length > 0) {
+		config.headers[REQUEST_USERNAME_HEADER] = username
+	} else {
+		delete config.headers[REQUEST_USERNAME_HEADER]
+	}
+
+	if (isBI !== undefined && isBI !== null) {
+		config.headers[IS_BI_HEADER] = String(isBI)
+	} else {
+		delete config.headers[IS_BI_HEADER]
+	}
+
+	return config
 })
 
 axiosInstance.interceptors.response.use((originalResponse) => {
 	handleDates(originalResponse.data)
 	return originalResponse
 })
+
+if (USE_SSO) {
+	createAuthRefreshInterceptor(
+		axiosInstance,
+		async (_failedRequest: AxiosError) => {
+			const newToken = await refreshAccessToken()
+			if (!newToken) {
+				await clearToken()
+				throw new Error(
+					"SSO token refresh failed. Ensure the SSO service is running.",
+				)
+			}
+			await storeToken(newToken)
+		},
+	)
+}
 
 export async function sendRequest<T>(config: AxiosRequestConfig) {
 	return (await axiosInstance<T>(config)).data

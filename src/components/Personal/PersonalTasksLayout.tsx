@@ -1,14 +1,20 @@
 import styled from "@emotion/styled"
+import { Outlet, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
-import { type WorkspaceDto, WorkspaceStatusType } from "src/api/model"
+import {
+	PermissionType,
+	type WorkspaceDto,
+	WorkspaceStatusType,
+} from "src/api/model"
 import {
 	getListPersonalTasksQueryKey,
 	useListPersonalTasks,
 } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { toTaskRows } from "../../functions/tasks-table"
 import {
 	type TaskRow,
@@ -17,7 +23,6 @@ import {
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
-import { EmptyState } from "../Tasks/EmptyState"
 import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
@@ -57,9 +62,9 @@ const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
 }
 
 function PersonalTasksLayout() {
-	// const navigate = useNavigate()
+	const navigate = useNavigate()
 
-	const { searchQuery, clearQuickFilters } = useTasksFilters()
+	const { clearQuickFilters } = useTasksFilters()
 
 	const queryKey = getListPersonalTasksQueryKey()
 	const { data: rawTasks = [], isLoading } = useListPersonalTasks()
@@ -113,6 +118,39 @@ function PersonalTasksLayout() {
 		// placeholder for export
 	}
 
+	const taskPermissions = useMemo(
+		() =>
+			Object.fromEntries(
+				rawTasks.map((t) => [
+					t.id,
+					{
+						canDelete: t.workspace.permissionType === PermissionType.MANAGER,
+						canChangeStatus: !(
+							t.workspace.permissionType === PermissionType.MANAGER ||
+							!t.workspace.assigneeStatusEditable
+						),
+					},
+				]),
+			),
+		[rawTasks],
+	)
+
+	function handleOpenTask(taskId: number) {
+		navigate({
+			to: "/personal/task/$taskId",
+			params: { taskId: String(taskId) },
+			search: { view: TasksView.TABLE },
+		})
+	}
+
+	function handleEdit(taskId: number) {
+		navigate({
+			to: "/personal/task/$taskId/edit",
+			params: { taskId: String(taskId) },
+			search: { view: TasksView.TABLE },
+		})
+	}
+
 	// function handleViewChange(newView: TasksView) {
 	// 	navigate({ to: "/personal", search: { view: newView } })
 	// }
@@ -156,23 +194,24 @@ function PersonalTasksLayout() {
 							activeValues={activeWorkspaceFilters}
 							onApply={setActiveWorkspaceFilters}
 							$active={activeWorkspaceFilters.size > 0}
+							emptyTitle="טרם הוגדרו סביבות"
+							emptyDescription="לאחר שסביבות יוצרו, הן יופיעו כאן"
 						/>
 					}
 					startSlot={<TasksDatePicker />}
 				/>
-
-				{!isLoading && rawTasks.length === 0 ? (
-					<EmptyState />
-				) : searchQuery && filteredTasks.length === 0 ? (
-					<EmptyState variant="search" />
-				) : (
-					<TaskTable
-						queryKey={queryKey}
-						tasks={filteredTaskRows}
-						extraColumns={EXTRA_COLUMNS as Record<string, ColumnDef<TaskRow>>}
-					/>
-				)}
+				<TaskTable
+					queryKey={queryKey}
+					tasks={filteredTaskRows}
+					extraColumns={EXTRA_COLUMNS as Record<string, ColumnDef<TaskRow>>}
+					isLoading={isLoading}
+					onEdit={handleEdit}
+					onDoubleClick={handleOpenTask}
+					taskPermissions={taskPermissions}
+					hideStatusAction
+				/>
 			</PageRoot>
+			<Outlet />
 		</TooltipProvider>
 	)
 }

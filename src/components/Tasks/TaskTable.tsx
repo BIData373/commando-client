@@ -7,6 +7,7 @@ import type {
 	RowSelectionState,
 	SortingState,
 } from "@tanstack/react-table"
+import { uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
@@ -21,10 +22,17 @@ import {
 	type TaskRow,
 	useTasksFilters,
 } from "src/providers/TasksFiltersProvider"
+import { getEmptyState } from "src/utils/empty-state-utils"
 import { buildFilterOptionsMap } from "../../functions/filter-utils"
 import { type TaskColumn, useTaskColumns } from "../../hooks/useTaskColumns"
+import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
+
+interface TaskPermissions {
+	canDelete: boolean
+	canChangeStatus: boolean
+}
 
 interface TaskTableProps {
 	queryKey: QueryKey
@@ -39,6 +47,9 @@ interface TaskTableProps {
 		statusFilter: WorkspaceStatusType[],
 		deadlineTypeFilter: DeadlineType[],
 	) => void
+	isLoading?: boolean
+	taskPermissions?: Record<number, TaskPermissions>
+	hideStatusAction?: boolean
 }
 
 function TaskTable({
@@ -51,9 +62,18 @@ function TaskTable({
 	statusFilter = [],
 	deadlineTypeFilter = [],
 	onFiltersChange,
+	isLoading,
+	taskPermissions,
+	hideStatusAction = false,
 }: TaskTableProps) {
-	const { searchQuery, columnOrder, hiddenColumns, setColumnsFilters } =
-		useTasksFilters()
+	const {
+		searchQuery,
+		columnOrder,
+		hiddenColumns,
+		activeQuickFilters,
+		dateRange,
+		setColumnsFilters,
+	} = useTasksFilters()
 	const queryClient = useQueryClient()
 
 	function handleSuccess() {
@@ -115,6 +135,14 @@ function TaskTable({
 		.filter((key) => rowSelection[key])
 		.map((key) => Number(key.split(TASK_ROW_ID_SEPARATOR)[0]))
 
+	const bulkDeleteDisabled =
+		taskPermissions != null &&
+		selectedTaskIds.some((id) => !taskPermissions[id]?.canDelete)
+
+	const bulkStatusDisabled =
+		taskPermissions != null &&
+		selectedTaskIds.some((id) => !taskPermissions[id]?.canChangeStatus)
+
 	function handleEnterSelectMode(taskId?: number) {
 		setSelectMode(true)
 		const task = tasks.find((t) => t.id === taskId)
@@ -145,6 +173,16 @@ function TaskTable({
 		})
 	}
 
+	function handleBulkArchive() {
+		removeTasks(selectedTaskIds)
+		handleExitSelectMode()
+	}
+
+	function handleBulkDelete() {
+		removeTasks(selectedTaskIds)
+		handleExitSelectMode()
+	}
+
 	function bulkUpdateStatus(taskIds: number[], status: WorkspaceStatusDto) {
 		taskIds.forEach((id) => {
 			const task = tasks.find((t) => t.id === id)
@@ -159,6 +197,19 @@ function TaskTable({
 	}
 
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
+
+	const uniqueStatuses = useMemo(
+		() =>
+			hideStatusAction
+				? undefined
+				: uniqBy(
+						tasks
+							.map((t) => t.status)
+							.filter((s): s is WorkspaceStatusDto => !!s),
+						"id",
+					),
+		[tasks, hideStatusAction],
+	)
 
 	const extraColumnIds = extraColumns
 		? new Set(Object.keys(extraColumns))
@@ -223,23 +274,30 @@ function TaskTable({
 					onSortingChange={setSorting}
 					getRowId={(row) => row.rowKey}
 					showHeader={showHeader}
+					isLoading={isLoading}
+					emptyState={
+						<EmptyCardState
+							{...getEmptyState(
+								activeQuickFilters,
+								searchQuery,
+								tasks.length > 0,
+								dateRange,
+							)}
+						/>
+					}
 				/>
 			</TableWrapper>
-			{selectMode && (
-				<BulkActionsBar
-					selectedCount={selectedTaskIds.length}
-					onChangeStatus={(status) => bulkUpdateStatus(selectedTaskIds, status)}
-					onArchive={() => {
-						removeTasks(selectedTaskIds)
-						handleExitSelectMode()
-					}}
-					onDelete={() => {
-						removeTasks(selectedTaskIds)
-						handleExitSelectMode()
-					}}
-					onExitSelect={handleExitSelectMode}
-				/>
-			)}
+			<BulkActionsBar
+				isVisible={selectMode}
+				selectedCount={selectedTaskIds.length}
+				statuses={uniqueStatuses}
+				onChangeStatus={(status) => bulkUpdateStatus(selectedTaskIds, status)}
+				onArchive={handleBulkArchive}
+				onDelete={handleBulkDelete}
+				deleteDisabled={bulkDeleteDisabled}
+				statusDisabled={bulkStatusDisabled}
+				onExitSelect={handleExitSelectMode}
+			/>
 		</>
 	)
 }
@@ -249,7 +307,6 @@ export { TaskTable }
 // ─── Table ────────────────────────────────────────────────────────────────────
 
 const TableWrapper = styled.div`
-  overflow-y: auto;
   min-width: 0;
   width: 100%;
   max-height: 100%;
@@ -259,10 +316,12 @@ const TableWrapper = styled.div`
   border: 0.5px solid var(--Background-color-bg-text-active);
   background: var(--background);
   box-shadow: var(--card-shadow-default);
+  overflow: hidden;
 
   [data-slot="table-container"] {
-    overflow-x: auto;
-    direction: rtl;
+    overflow: auto;
+    max-height: 100%;
+    direction: ltr;
   }
 
   table {
@@ -293,6 +352,7 @@ const TableWrapper = styled.div`
     white-space: nowrap;
     background: var(--background);
     border-right: 0.5px solid var(--Background-color-bg-text-active);
+    box-shadow: inset 0 -0.5px 0 0 var(--Background-color-bg-text-active);
 
     &:first-of-type {
       border-right: none;

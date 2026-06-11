@@ -10,7 +10,7 @@ CONTAINER_FILE_PATH="/home/app/client.tar.gz"
 
 rm -rf $REPO_NAME
 
-git clone git@github.com:BIData373/$REPO_NAME.git
+git clone git@github.com:BIData373/$REPO_NAME.git --depth=1
 cd $REPO_NAME
 git checkout dev
 
@@ -18,7 +18,7 @@ cp ../Dockerfile .
 
 docker rm -f $CONTAINER_NAME
 docker rmi -f $IMAGE_NAME
-docker build -t $IMAGE_NAME .
+docker build -t $IMAGE_NAME --platform linux/amd64 .
 docker run -d --name $CONTAINER_NAME $IMAGE_NAME
 docker cp $CONTAINER_NAME:$CONTAINER_FILE_PATH ../
 docker rm -f $CONTAINER_NAME

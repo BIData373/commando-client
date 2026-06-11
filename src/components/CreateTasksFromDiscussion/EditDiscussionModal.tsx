@@ -1,6 +1,5 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
-import { useQueryClient } from "@tanstack/react-query"
 import { useStore } from "@tanstack/react-store"
 import { AlertCircle, X } from "lucide-react"
 import {
@@ -9,6 +8,7 @@ import {
 } from "radix-ui"
 import { useState } from "react"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { invalidateQueries } from "src/queryClient"
 import type { UpdateSourceDto } from "../../api/model"
 import {
 	getGetSourceQueryKey,
@@ -16,6 +16,7 @@ import {
 	useUpdateSource,
 } from "../../api/source/source"
 import { getGetTaskQueryKey, getListTasksQueryKey } from "../../api/task/task"
+import { PrimaryButton } from "../shared/PrimaryButton"
 import { DialogOverlay } from "../ui/dialog"
 import { Popover, PopoverTrigger } from "../ui/popover"
 import DiscussionForm from "./DiscussionForm"
@@ -38,9 +39,9 @@ function EditDiscussionModal({
 	} = useWorkspace()
 	const { data: source } = useGetSource({ id: sourceId })
 
-	const queryClient = useQueryClient()
 	const { mutateAsync: updateSource } = useUpdateSource()
 	const [showConfirmation, setShowConfirmation] = useState(false)
+	const [isSubmitting, setIsSubmitting] = useState(false)
 
 	const defaultValues: UpdateSourceDto = {
 		name: source?.name ?? "",
@@ -69,16 +70,11 @@ function EditDiscussionModal({
 
 			try {
 				await updateSource({ pathParams: { id: sourceId }, data })
-				const queryKeys = [
+				invalidateQueries([
 					getListTasksQueryKey({ workspaceId }),
 					getGetTaskQueryKey({ id: taskId }),
 					getGetSourceQueryKey({ id: sourceId }),
-				]
-				await Promise.all(
-					queryKeys.map((queryKey) =>
-						queryClient.invalidateQueries({ queryKey }),
-					),
-				)
+				])
 				setShowConfirmation(false)
 				onClose()
 			} catch (error) {
@@ -128,13 +124,13 @@ function EditDiscussionModal({
 		if (!open) onClose()
 	}
 
-	function handleEditConfirm() {
-		form.handleSubmit()
-	}
-
-	function handleSaveClick(e: React.MouseEvent) {
-		if (!hasChanges) {
-			e.preventDefault()
+	async function handleEditConfirm() {
+		setIsSubmitting(true)
+		setShowConfirmation(false)
+		try {
+			await form.handleSubmit()
+		} finally {
+			setIsSubmitting(false)
 		}
 	}
 
@@ -161,23 +157,28 @@ function EditDiscussionModal({
 						</HeaderSection>
 
 						<DiscussionForm
+							workspaceId={workspaceId}
 							form={values}
 							onNameChange={handleNameChange}
 							onDateChange={handleDateChange}
 							onTagSelect={handleTagSelect}
 							onTagRemove={handleTagRemove}
 							onFileChange={handleFileChange}
+							existingAttachmentKey={source.attachmentKey}
+							existingAttachmentName={source.attachmentName}
 						/>
 
 						<EditFooter>
 							<Popover
-								open={showConfirmation}
+								open={showConfirmation && !isSubmitting}
 								onOpenChange={setShowConfirmation}
 							>
 								<PopoverTrigger asChild>
-									<SaveButton $disabled={!hasChanges} onClick={handleSaveClick}>
-										שמור שינויים
-									</SaveButton>
+									<PrimaryButton
+										title="שמור שינויים"
+										disabled={!hasChanges}
+										loading={isSubmitting}
+									/>
 								</PopoverTrigger>
 								<ConfirmationContent side="top" align="start" sideOffset={13}>
 									<ConfirmationHeader>
@@ -290,38 +291,6 @@ const EditFooter = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   flex-shrink: 0;
-`
-
-const SaveButton = styled.button<{ $disabled?: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-inline: 24px;
-  height: 40px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(165deg, #6866ff 0%, #7604c8 100%);
-  color: white;
-  font-size: var(--fs-base);
-  font-weight: 400;
-  line-height: 24px;
-  cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
-  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
-  white-space: nowrap;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: var(--shadow-inset);
-    pointer-events: none;
-  }
-
-  &:hover {
-    opacity: ${({ $disabled }) => ($disabled ? 0.5 : 0.9)};
-  }
 `
 
 const CancelButton = styled.button`
