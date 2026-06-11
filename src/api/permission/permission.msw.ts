@@ -24,20 +24,17 @@ export const getListPermissionsResponseMock = (): PermissionDto[] =>
 					...{
 						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 						displayName: faker.helpers.arrayElement([
-							faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								null,
-							]),
-							null,
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
 						]),
 						name: faker.helpers.arrayElement([
-							faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								null,
-							]),
-							null,
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
 						]),
-						isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+						isBI: faker.helpers.arrayElement([
+							faker.datatype.boolean(),
+							undefined,
+						]),
 					},
 				},
 				null,
@@ -58,20 +55,17 @@ export const getUpsertPermissionResponseMock = (
 				...{
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 					displayName: faker.helpers.arrayElement([
-						faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							null,
-						]),
-						null,
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
 					]),
 					name: faker.helpers.arrayElement([
-						faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							null,
-						]),
-						null,
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
 					]),
-					isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
 				},
 			},
 			null,
@@ -93,20 +87,17 @@ export const getDeletePermissionResponseMock = (
 				...{
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 					displayName: faker.helpers.arrayElement([
-						faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							null,
-						]),
-						null,
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
 					]),
 					name: faker.helpers.arrayElement([
-						faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							null,
-						]),
-						null,
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
 					]),
-					isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
 				},
 			},
 			null,
@@ -128,20 +119,17 @@ export const getGetMyPermissionResponseMock = (
 				...{
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 					displayName: faker.helpers.arrayElement([
-						faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							null,
-						]),
-						null,
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
 					]),
 					name: faker.helpers.arrayElement([
-						faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							null,
-						]),
-						null,
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
 					]),
-					isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
 				},
 			},
 			null,

@@ -6,7 +6,7 @@ import { useRef, useState } from "react"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group"
 import { Spinner } from "../ui/spinner"
 
-interface SearchDropdownProps<T extends { id?: number | string }> {
+interface SearchDropdownProps<T> {
 	items: T[]
 	renderItem: (item: T) => ReactNode
 	onSelect: (item: T) => void
@@ -19,7 +19,7 @@ interface SearchDropdownProps<T extends { id?: number | string }> {
 	getItemKey?: (item: T) => string | number
 }
 
-export function SearchDropdown<T extends { id?: number | string }>({
+export function SearchDropdown<T>({
 	items,
 	renderItem,
 	onSelect,
@@ -29,7 +29,8 @@ export function SearchDropdown<T extends { id?: number | string }>({
 	isLoading,
 	onClear,
 	selectedItem,
-	getItemKey,
+	getItemKey = (item: T) =>
+		(item as { id?: string | number }).id as string | number,
 }: SearchDropdownProps<T>) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [isFocused, setIsFocused] = useState(false)
@@ -114,7 +115,7 @@ export function SearchDropdown<T extends { id?: number | string }>({
 					>
 						{items.map((item) => (
 							<DropdownItem
-								key={getItemKey ? getItemKey(item) : item.id}
+								key={getItemKey(item)}
 								onMouseDown={() => handleSelect(item)}
 							>
 								{renderItem(item)}

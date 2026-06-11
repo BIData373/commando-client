@@ -21,20 +21,14 @@ export const getCreateUserResponseMock = (
 			...{
 				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				displayName: faker.helpers.arrayElement([
-					faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						null,
-					]),
-					null,
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
 				]),
 				name: faker.helpers.arrayElement([
-					faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						null,
-					]),
-					null,
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
 				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
 		null,
@@ -54,20 +48,17 @@ export const getListUsersResponseMock = (): UserDto[] =>
 				...{
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 					displayName: faker.helpers.arrayElement([
-						faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							null,
-						]),
-						null,
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
 					]),
 					name: faker.helpers.arrayElement([
-						faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							null,
-						]),
-						null,
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
 					]),
-					isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
 				},
 			},
 			null,
@@ -85,20 +76,17 @@ export const getSearchUsersResponseMock = (): MirageUserDto[] =>
 				...{
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 					displayName: faker.helpers.arrayElement([
-						faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							null,
-						]),
-						null,
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
 					]),
 					name: faker.helpers.arrayElement([
-						faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							null,
-						]),
-						null,
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
 					]),
-					isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
 				},
 			},
 			null,
@@ -115,20 +103,14 @@ export const getGetUserResponseMock = (
 			...{
 				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				displayName: faker.helpers.arrayElement([
-					faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						null,
-					]),
-					null,
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
 				]),
 				name: faker.helpers.arrayElement([
-					faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						null,
-					]),
-					null,
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
 				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
 		null,
@@ -146,20 +128,14 @@ export const getUpdateUserResponseMock = (
 			...{
 				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				displayName: faker.helpers.arrayElement([
-					faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						null,
-					]),
-					null,
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
 				]),
 				name: faker.helpers.arrayElement([
-					faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						null,
-					]),
-					null,
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
 				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
 		null,
@@ -177,20 +153,14 @@ export const getDeleteUserResponseMock = (
 			...{
 				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				displayName: faker.helpers.arrayElement([
-					faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						null,
-					]),
-					null,
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
 				]),
 				name: faker.helpers.arrayElement([
-					faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						null,
-					]),
-					null,
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
 				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
 		null,

@@ -187,22 +187,16 @@ export const getListAssigneeTaskStatusesResponseMock =
 									...{
 										upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 										displayName: faker.helpers.arrayElement([
-											faker.helpers.arrayElement([
-												faker.string.alpha({ length: { min: 10, max: 20 } }),
-												null,
-											]),
-											null,
+											faker.string.alpha({ length: { min: 10, max: 20 } }),
+											undefined,
 										]),
 										name: faker.helpers.arrayElement([
-											faker.helpers.arrayElement([
-												faker.string.alpha({ length: { min: 10, max: 20 } }),
-												null,
-											]),
-											null,
+											faker.string.alpha({ length: { min: 10, max: 20 } }),
+											undefined,
 										]),
 										isBI: faker.helpers.arrayElement([
 											faker.datatype.boolean(),
-											null,
+											undefined,
 										]),
 									},
 								},
@@ -263,22 +257,16 @@ export const getListAssigneeTaskStatusesResponseMock =
 							...{
 								upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 								displayName: faker.helpers.arrayElement([
-									faker.helpers.arrayElement([
-										faker.string.alpha({ length: { min: 10, max: 20 } }),
-										null,
-									]),
-									null,
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
 								]),
 								name: faker.helpers.arrayElement([
-									faker.helpers.arrayElement([
-										faker.string.alpha({ length: { min: 10, max: 20 } }),
-										null,
-									]),
-									null,
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
 								]),
 								isBI: faker.helpers.arrayElement([
 									faker.datatype.boolean(),
-									null,
+									undefined,
 								]),
 							},
 						},
@@ -459,22 +447,16 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 							...{
 								upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 								displayName: faker.helpers.arrayElement([
-									faker.helpers.arrayElement([
-										faker.string.alpha({ length: { min: 10, max: 20 } }),
-										null,
-									]),
-									null,
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
 								]),
 								name: faker.helpers.arrayElement([
-									faker.helpers.arrayElement([
-										faker.string.alpha({ length: { min: 10, max: 20 } }),
-										null,
-									]),
-									null,
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
 								]),
 								isBI: faker.helpers.arrayElement([
 									faker.datatype.boolean(),
-									null,
+									undefined,
 								]),
 							},
 						},
@@ -533,20 +515,17 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 					...{
 						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 						displayName: faker.helpers.arrayElement([
-							faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								null,
-							]),
-							null,
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
 						]),
 						name: faker.helpers.arrayElement([
-							faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								null,
-							]),
-							null,
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
 						]),
-						isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+						isBI: faker.helpers.arrayElement([
+							faker.datatype.boolean(),
+							undefined,
+						]),
 					},
 				},
 				null,
@@ -727,22 +706,16 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 							...{
 								upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 								displayName: faker.helpers.arrayElement([
-									faker.helpers.arrayElement([
-										faker.string.alpha({ length: { min: 10, max: 20 } }),
-										null,
-									]),
-									null,
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
 								]),
 								name: faker.helpers.arrayElement([
-									faker.helpers.arrayElement([
-										faker.string.alpha({ length: { min: 10, max: 20 } }),
-										null,
-									]),
-									null,
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
 								]),
 								isBI: faker.helpers.arrayElement([
 									faker.datatype.boolean(),
-									null,
+									undefined,
 								]),
 							},
 						},
@@ -801,20 +774,17 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					...{
 						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 						displayName: faker.helpers.arrayElement([
-							faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								null,
-							]),
-							null,
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
 						]),
 						name: faker.helpers.arrayElement([
-							faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								null,
-							]),
-							null,
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
 						]),
-						isBI: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+						isBI: faker.helpers.arrayElement([
+							faker.datatype.boolean(),
+							undefined,
+						]),
 					},
 				},
 				null,

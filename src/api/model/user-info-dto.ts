@@ -8,10 +8,7 @@
 
 export interface UserInfoDto {
 	upn: string
-	/** @nullable */
-	displayName: string | null
-	/** @nullable */
-	name: string | null
-	/** @nullable */
-	isBI: boolean | null
+	displayName?: string
+	name?: string
+	isBI?: boolean
 }
