@@ -6,7 +6,12 @@ import {
 	useListAssignees,
 	useUpdateAssignee,
 } from "src/api/assignee/assignee"
-import type { AssigneeDto, AssigneesDto, MirageUserDto } from "src/api/model"
+import type {
+	AssigneeDto,
+	AssigneesDto,
+	MirageUserDto,
+	UserDto,
+} from "src/api/model"
 import { getListPersonalTasksQueryKey } from "src/api/task/task"
 import { type IMesibaIcon, useMesibaIconByName } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -95,7 +100,7 @@ export function AssigneeDialog({
 			name: assignee?.name ?? "",
 			color: assignee?.color ?? randomColor ?? PRESET_COLORS[0],
 			icon: assignee?.icon ?? "",
-			users: (assignee?.users ?? []) as MirageUserDto[],
+			users: assignee?.users ?? [],
 		},
 		onSubmit: async ({ value }) => {
 			const payload = {
@@ -138,7 +143,9 @@ export function AssigneeDialog({
 		form.setFieldValue("users", (prev) =>
 			prev.some((user) => user.upn === selectedUser.upn)
 				? prev
-				: [...prev, selectedUser],
+				: // TODO - maybe have the API return MirageUser, cause technically,
+					// users dont actually have ids, they are based on UPN anyway...
+					[...prev, selectedUser as UserDto],
 		)
 
 		setSearchValue("")
