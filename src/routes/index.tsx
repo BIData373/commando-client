@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
 	component: RouteComponent,
 	staticData: {
 		header: {
-			title: "סביבות",
+			pageTitle: "סביבות",
 			user: false,
 		},
 	},

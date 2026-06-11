@@ -8,7 +8,7 @@ export const Route = createFileRoute("/workspace/$urlName/dashboard")({
 	component: Dashboard,
 	staticData: {
 		header: {
-			title: <TitleSection />,
+			pageTitle: <TitleSection />,
 			user: true,
 		},
 	},

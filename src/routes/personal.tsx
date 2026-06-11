@@ -13,16 +13,17 @@ export const Route = createFileRoute("/personal")({
 	}),
 	staticData: {
 		header: {
-			title: "הנחיות שקיבלתי",
+			headerTitle: "אזור אישי",
+			pageTitle: "הנחיות שקיבלתי",
 			user: true,
 		},
 	},
 })
 
-const PERSONAL_DEFAULT_COLUMN_ORDER = [
+const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRow)[] = [
 	"title",
 	"status",
-	"responsible",
+	"assignee",
 	"deadlineType",
 	"source",
 	"tags",

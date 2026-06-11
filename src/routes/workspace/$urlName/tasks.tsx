@@ -31,7 +31,7 @@ export const Route = createFileRoute("/workspace/$urlName/tasks")({
 	validateSearch: TasksSearchSchema,
 	staticData: {
 		header: {
-			title: "הנחיות",
+			pageTitle: "הנחיות",
 			user: true,
 		},
 	},

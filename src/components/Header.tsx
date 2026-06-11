@@ -9,6 +9,12 @@ import {
 	DropdownMenuContent,
 	DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "./ui/tooltip"
 
 export default function Header() {
 	const { matches } = useRouterState()
@@ -16,13 +22,15 @@ export default function Header() {
 	const headerConfig = [...matches].reverse().find((m) => m.staticData.header)
 		?.staticData.header as HeaderConfig | undefined
 
-	const { title = "" } = headerConfig ?? {}
+	const { pageTitle = "", headerTitle } = headerConfig ?? {}
 
 	const {
 		elementPlacements: { right, center, titleBar },
 	} = useHeader()
 
-	const showTitleBar = title || titleBar
+	const showTitleBar = pageTitle || titleBar
+
+	const title = headerTitle ?? center
 
 	return (
 		<HeaderContainer>
@@ -36,7 +44,18 @@ export default function Header() {
 						{right}
 					</StartSection>
 
-					<CenterSection>{center}</CenterSection>
+					<CenterSection>
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger>
+									<TooltipTrigger asChild>
+										<CenterTitle>{title}</CenterTitle>
+									</TooltipTrigger>
+									<TooltipContent>{title}</TooltipContent>
+								</TooltipTrigger>
+							</Tooltip>
+						</TooltipProvider>
+					</CenterSection>
 
 					<EndSection>
 						<DropdownMenu>
@@ -56,7 +75,7 @@ export default function Header() {
 
 			{showTitleBar && (
 				<TitleBar>
-					{title && <PageTitle>{title}</PageTitle>}
+					{pageTitle && <PageTitle>{pageTitle}</PageTitle>}
 
 					{titleBar}
 				</TitleBar>
@@ -99,6 +118,21 @@ const CenterSection = styled.div`
   align-items: center;
   gap: 8px;
   min-width: 0;
+`
+
+const CenterTitle = styled.p`
+  margin: 0;
+  font-size: var(--fs-heading-3);
+  font-weight: 500;
+  line-height: 32px;
+  color: #C7C9CB;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 `
 
 const EndSection = styled.div`
