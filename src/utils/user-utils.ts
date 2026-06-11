@@ -49,12 +49,8 @@ export function onCookieChange(
 	return () => cookieStore.removeEventListener("change", handler)
 }
 
-export function concatName(
-	user: UserDto | MirageUserDto,
-	type?: PermissionType,
-): string {
-	const id = "id" in user ? ` ${user.id}` : ""
-	return `${user.info?.name}${id} ${user.upn}${type ? ` / ${type}` : ""}`
+export function concatName(user: UserDto, type?: PermissionType): string {
+	return `${user.info?.name} ${user.id ?? ""} ${user.upn}${type ? ` / ${type}` : ""}`
 }
 
 export function extractUpnFromUser({ upn }: UserDto): string {
