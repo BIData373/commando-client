@@ -20,9 +20,9 @@ import {
 import styled from "@emotion/styled"
 import { Columns3 } from "lucide-react"
 import { useState } from "react"
+import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import {
 	TASK_COLUMNS_META,
-	type TaskColumn,
 	type TaskColumnMeta,
 } from "../../hooks/useTaskColumns"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
@@ -35,10 +35,10 @@ export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter(
 export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id)
 
 interface ColumnVisibilityDropdownProps {
-	columnOrder: TaskColumn[]
-	hiddenColumns: Set<TaskColumn>
-	onColumnOrderChange: (order: TaskColumn[]) => void
-	onToggleColumn: (columnId: TaskColumn) => void
+	columnOrder: (keyof TaskRow)[]
+	hiddenColumns: Set<keyof TaskRow>
+	onColumnOrderChange: (order: (keyof TaskRow)[]) => void
+	onToggleColumn: (columnId: keyof TaskRow) => void
 	extraColumnsMeta?: TaskColumnMeta[]
 }
 
@@ -65,8 +65,8 @@ function ColumnVisibilityDropdown({
 	function handleDragEnd(event: DragEndEvent) {
 		const { active, over } = event
 		if (over && active.id !== over.id) {
-			const oldIndex = columnOrder.indexOf(active.id as TaskColumn)
-			const newIndex = columnOrder.indexOf(over.id as TaskColumn)
+			const oldIndex = columnOrder.indexOf(active.id as keyof TaskRow)
+			const newIndex = columnOrder.indexOf(over.id as keyof TaskRow)
 			onColumnOrderChange(arrayMove(columnOrder, oldIndex, newIndex))
 		}
 	}

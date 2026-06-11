@@ -1,8 +1,10 @@
 import styled from "@emotion/styled"
 import { useLocalStorage } from "@mantine/hooks"
+import { debounce } from "lodash"
 import type { ChangeEvent } from "react"
 import { isBIKey, requestUsernameKey } from "src/axios"
 import { adminUserUpn } from "src/hooks/useCurrentUser"
+import { queryClient } from "src/queryClient"
 import { IS_BI, REQUEST_USERNAME, STATIC_TOKEN } from "../utils/env-utils"
 import {
 	DropdownMenuItem,
@@ -13,28 +15,35 @@ import { Input } from "./ui/input"
 import { Switch } from "./ui/switch"
 
 export function BIHeaderBypass() {
-	const [bypassUsername, setBypassUsername] = useLocalStorage({
+	const [username, setUsername] = useLocalStorage({
 		key: requestUsernameKey,
 		defaultValue: REQUEST_USERNAME ?? "",
 	})
 
-	const [bypassIsBI, setBypassIsBI] = useLocalStorage({
+	const [isBI, setIsBI] = useLocalStorage({
 		key: isBIKey,
 		defaultValue: !!IS_BI,
 	})
 
-	function handleChangeBypassUsername({
+	function handleChangeUsername({
 		target: { value },
 	}: ChangeEvent<HTMLInputElement>) {
 		const cleanValue = value.replace(" ", "")
 
-		setBypassUsername(cleanValue.length > 0 ? cleanValue : undefined)
+		setUsername(cleanValue.length > 0 ? cleanValue : undefined)
 	}
+
+	function handleChangeIsBI(checked: boolean) {
+		setIsBI(checked)
+		queryClient.invalidateQueries()
+	}
+
+	const handleChangeIsBIDebounced = debounce(handleChangeIsBI, 300)
 
 	return (
 		STATIC_TOKEN && (
 			<>
-				<DropdownMenuLabel>BI Bypass</DropdownMenuLabel>
+				<DropdownMenuLabel>BI </DropdownMenuLabel>
 
 				<DropdownMenuSeparator />
 
@@ -43,15 +52,15 @@ export function BIHeaderBypass() {
 					onPointerMove={(e) => e.preventDefault()}
 					onPointerLeave={(e) => e.preventDefault()}
 				>
-					<BypassRow>
-						<BypassLabel>UPN</BypassLabel>
+					<Row>
+						<Label>UPN</Label>
 
 						<Input
-							value={bypassUsername}
-							onChange={handleChangeBypassUsername}
+							value={username}
+							onChange={handleChangeUsername}
 							placeholder={adminUserUpn}
 						/>
-					</BypassRow>
+					</Row>
 				</DropdownMenuItem>
 
 				<DropdownMenuItem
@@ -59,23 +68,23 @@ export function BIHeaderBypass() {
 					onPointerMove={(e) => e.preventDefault()}
 					onPointerLeave={(e) => e.preventDefault()}
 				>
-					<BypassRow>
-						<BypassLabel>Is BI</BypassLabel>
+					<Row>
+						<Label>Is BI</Label>
 
 						<Switch
-							checked={bypassIsBI}
-							onCheckedChange={setBypassIsBI}
+							checked={isBI}
+							onCheckedChange={handleChangeIsBIDebounced}
 							size="sm"
 							dir="rtl"
 						/>
-					</BypassRow>
+					</Row>
 				</DropdownMenuItem>
 			</>
 		)
 	)
 }
 
-const BypassRow = styled.div`
+const Row = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -83,7 +92,7 @@ const BypassRow = styled.div`
   width: 100%;
 `
 
-const BypassLabel = styled.span`
+const Label = styled.span`
   font-size: 12px;
   color: var(--muted-foreground);
   white-space: nowrap;

@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router"
-import type { TaskColumn } from "src/hooks/useTaskColumns"
 import PersonalTasksLayout from "../components/Personal/PersonalTasksLayout"
 import { TasksView } from "../components/Tasks/TasksLayout"
-import { TasksFiltersProvider } from "../providers/TasksFiltersProvider"
+import {
+	type TaskRow,
+	TasksFiltersProvider,
+} from "../providers/TasksFiltersProvider"
 
 export const Route = createFileRoute("/personal")({
 	component: PersonalPage,
@@ -18,24 +20,24 @@ export const Route = createFileRoute("/personal")({
 	},
 })
 
-const PERSONAL_DEFAULT_COLUMN_ORDER: TaskColumn[] = [
+const PERSONAL_DEFAULT_COLUMN_ORDER = [
 	"title",
 	"status",
 	"responsible",
 	"deadlineType",
-	"discussionName",
+	"source",
 	"tags",
 	"notes",
 	"workspace",
 	"createdAt",
 	"updatedAt",
-] as TaskColumn[]
+]
 
-const PERSONAL_DEFAULT_HIDDEN = new Set<TaskColumn>([
+const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRow>([
 	"tags",
 	"notes",
 	"updatedAt",
-] as TaskColumn[])
+])
 
 function PersonalPage() {
 	// const { view } = Route.useSearch()

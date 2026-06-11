@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import type { ColumnFiltersState } from "@tanstack/react-table"
 import { filter } from "lodash"
 import type { ReactNode } from "react"
+import { exportTasksToExcel } from "src/functions/export-excel"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { getTaskValue } from "src/utils/filter-rows-map-utils"
 import { QuickFilter } from "src/utils/filter-utils"
@@ -12,9 +13,8 @@ import { FilterBar, FilterDivider, FilterPill } from "../shared/FilterBar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface TaskFiltersProps {
-	tasks: TaskRow[]
+	taskRows: TaskRow[]
 	onClearAllFilters: () => void
-	onExport: () => void
 	hasExtraActiveFilters?: boolean
 	extraFilters?: ReactNode
 	extraColumnsMeta?: TaskColumnMeta[]
@@ -26,9 +26,8 @@ interface TaskFiltersProps {
 }
 
 function TaskFilters({
-	tasks,
+	taskRows,
 	onClearAllFilters,
-	onExport,
 	hasExtraActiveFilters,
 	extraFilters,
 	extraColumnsMeta,
@@ -58,7 +57,7 @@ function TaskFilters({
 
 	const allColumnFilters = [...urlColumnFilters, ...columnsFilters]
 
-	const filteredTasks = filter(tasks, (task) =>
+	const filteredTasks = filter(taskRows, (task) =>
 		allColumnFilters.every(({ id, value }) => {
 			const idKey = id as keyof TaskRow
 			const taskValue = getTaskValue(idKey, task)
@@ -77,13 +76,17 @@ function TaskFilters({
 		matchesQuickFilter(t, QuickFilter.FLAGGED),
 	).length
 
+	function handleExport() {
+		exportTasksToExcel(taskRows, { columnOrder, hiddenColumns })
+	}
+
 	return (
 		<FilterBar
 			hasActiveFilters={hasActiveFilters}
 			onClearAll={onClearAllFilters}
 			searchQuery={searchQuery}
 			onSearchChange={setSearchQuery}
-			onExport={onExport}
+			onExport={handleExport}
 			columnOrder={columnOrder}
 			hiddenColumns={hiddenColumns}
 			onColumnOrderChange={setColumnOrder}

@@ -47,7 +47,7 @@ export type FilterOptions =
 	| "assigneeStatuses"
 	| "status"
 	| "deadlineType"
-	| "discussionName"
+	| "source"
 	| "tags"
 
 export function buildFilterOptionsMap(
@@ -55,7 +55,7 @@ export function buildFilterOptionsMap(
 ): Record<FilterOptions, FilterOption[]> {
 	const assigneeSet = new Set<string>()
 	const deadlineTypeSet = new Set<string>()
-	const discussionNameSet = new Set<string>()
+	const sourceSet = new Set<string>()
 	const tagsSet = new Set<string>()
 	for (const t of tasks) {
 		deadlineTypeSet.add(t.deadlineType)
@@ -63,7 +63,7 @@ export function buildFilterOptionsMap(
 			assigneeSet.add(assignee.name)
 		}
 		if (t.source?.name) {
-			discussionNameSet.add(t.source.name)
+			sourceSet.add(t.source.name)
 		}
 		t.tags.forEach((tag) => {
 			tagsSet.add(tag.name)
@@ -83,7 +83,7 @@ export function buildFilterOptionsMap(
 			.filter((status) => !!status)
 			.map((s) => ({ value: s.type, label: s.name })),
 		deadlineType: toOptions(deadlineTypeSet, DEADLINE_LABELS),
-		discussionName: toOptions(discussionNameSet),
+		source: toOptions(sourceSet),
 		tags: toOptions(tagsSet),
 	}
 }

@@ -26,7 +26,7 @@ export const AssigneeSection = ({
 	const currentUserAssigneStatuses = isAdmin
 		? assigneeStatuses
 		: assigneeStatuses.filter(({ assignee: { users } }) =>
-				users.some(({ id }) => id === currentUser.id),
+				users.some(({ upn }) => upn === currentUser.upn),
 			)
 
 	const otherUsersAssigneeStatuses = assigneeStatuses.filter(
