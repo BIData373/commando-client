@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { debounce } from "lodash"
 import { UserPlus } from "lucide-react"
 import { type PropsWithChildren, useEffect, useMemo, useState } from "react"
-import type { UserDto } from "src/api/model"
+import type { MirageUserDto } from "src/api/model"
 import { useSearchUsers } from "src/api/user/user"
 import { SearchDropdown } from "./SearchDropdown"
 import { UserItem } from "./UserItem"
@@ -10,10 +10,10 @@ import { UserItem } from "./UserItem"
 interface DropdownUsersProps extends PropsWithChildren {
 	value: string
 	onChange(value: string): void
-	onSelect(user: UserDto | null): void
+	onSelect(user: MirageUserDto | null): void
 	onClear(): void
 	onAdd?: () => void
-	selectedUser?: UserDto | null
+	selectedUser?: MirageUserDto | null
 	showAddButton?: boolean
 	placeholder?: string
 }
@@ -53,7 +53,7 @@ export function DropdownUsers({
 
 	return (
 		<Row>
-			<SearchDropdown<UserDto>
+			<SearchDropdown<MirageUserDto>
 				items={rawUsers}
 				value={localValue}
 				onChange={handleChange}
@@ -61,6 +61,7 @@ export function DropdownUsers({
 				onClear={onClear}
 				placeholder={placeholder}
 				isLoading={isLoading}
+				getItemKey={(item) => item.upn}
 				renderItem={(item) => <UserItem user={item} />}
 			/>
 			{children}

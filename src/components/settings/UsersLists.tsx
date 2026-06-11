@@ -1,12 +1,12 @@
 import styled from "@emotion/styled"
 import { X } from "lucide-react"
 import { Tooltip as TooltipPrimitive } from "radix-ui"
-import type { CreateUserDto } from "src/api/model"
+import type { MirageUserDto } from "src/api/model"
 import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { UserItem } from "./UserItem"
 
 interface UsersListsProps {
-	users: CreateUserDto[]
+	users: MirageUserDto[]
 	onRemove: (upn: string) => void
 }
 
