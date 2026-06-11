@@ -1,6 +1,5 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
-import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
@@ -22,41 +21,10 @@ import type { TaskRow } from "../../providers/TasksFiltersProvider"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
-import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
-
-const EXTRA_COLUMNS: Record<string, ColumnDef<TaskRow>> = {
-	workspace: {
-		id: "workspace",
-		accessorFn: (row) => row.workspace?.title,
-		header: ({ column }) => (
-			<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
-		),
-		size: 170,
-		enableColumnFilter: false,
-		sortingFn: (rowA, rowB) => {
-			const a = rowA.original.workspace?.title ?? ""
-			const b = rowB.original.workspace?.title ?? ""
-			return a.localeCompare(b, "he")
-		},
-		cell: ({ row }) => {
-			const { workspace } = row.original
-			if (!workspace) return null
-			return (
-				<WorkspaceCell>
-					<WorkspaceIconImg
-						src={workspace.icon ?? undefined}
-						alt={workspace.title}
-					/>
-					<WorkspaceCellName>{workspace.title}</WorkspaceCellName>
-				</WorkspaceCell>
-			)
-		},
-	},
-}
 
 function toPersonalTaskRows(
 	tasks: TaskWithWorkspaceDto[],
@@ -211,7 +179,6 @@ function PersonalTasksLayout() {
 				<TaskTable
 					queryKey={queryKey}
 					tasks={filteredTaskRows}
-					extraColumns={EXTRA_COLUMNS}
 					isLoading={isLoading}
 					onEdit={handleEdit}
 					onDoubleClick={handleOpenTask}
@@ -241,29 +208,4 @@ const WorkspaceIcon = styled.img`
   height: 20px;
   border-radius: 50%;
   object-fit: cover;
-`
-
-const WorkspaceCell = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: flex-start;
-`
-
-const WorkspaceCellName = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`
-
-const WorkspaceIconImg = styled.img`
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
 `
