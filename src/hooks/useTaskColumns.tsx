@@ -416,6 +416,34 @@ function useTaskColumns({
 			},
 		},
 		{
+			id: "workspace",
+			accessorFn: (row) => row.workspace?.title,
+			header: ({ column }) => (
+				<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
+			),
+			size: 170,
+			enableColumnFilter: false,
+			sortingFn: (rowA, rowB) => {
+				const a = rowA.original.workspace?.title ?? ""
+				const b = rowB.original.workspace?.title ?? ""
+				return a.localeCompare(b, "he")
+			},
+			cell: ({
+				row: {
+					original: { workspace },
+				},
+			}) =>
+				workspace ? (
+					<WorkspaceCell>
+						{workspace.icon && (
+							<WorkspaceIconImg src={workspace.icon} alt={workspace.title} />
+						)}
+
+						<WorkspaceCellName>{workspace.title}</WorkspaceCellName>
+					</WorkspaceCell>
+				) : null,
+		},
+		{
 			id: "createdAt",
 			accessorKey: "createdAt",
 			header: ({ column }) => (
@@ -646,6 +674,31 @@ const NotesText = styled.div`
   u {
     text-decoration: underline;
   }
+`
+
+const WorkspaceCell = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+`
+
+const WorkspaceCellName = styled.span`
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+const WorkspaceIconImg = styled.img`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 `
 
 const DateText = styled.span`
