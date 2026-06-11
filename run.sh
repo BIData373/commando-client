@@ -18,7 +18,7 @@ cp ../Dockerfile .
 
 docker rm -f $CONTAINER_NAME
 docker rmi -f $IMAGE_NAME
-docker build -t $IMAGE_NAME .
+docker build -t $IMAGE_NAME --platform linux/amd64 .
 docker run -d --name $CONTAINER_NAME $IMAGE_NAME
 docker cp $CONTAINER_NAME:$CONTAINER_FILE_PATH ../
 docker rm -f $CONTAINER_NAME
