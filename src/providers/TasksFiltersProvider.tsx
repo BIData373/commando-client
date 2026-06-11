@@ -1,4 +1,5 @@
 import { useLocalStorage } from "@mantine/hooks"
+import type { ColumnFiltersState } from "@tanstack/react-table"
 import {
 	createContext,
 	type PropsWithChildren,
@@ -11,6 +12,7 @@ import type {
 	AssigneeStatusDto,
 	TaskDto,
 	WorkspaceStatusDto,
+	WorkspaceWithPermissionDto,
 } from "src/api/model"
 import { DATE_TYPE } from "src/utils/date-utils"
 import {
@@ -19,7 +21,6 @@ import {
 } from "src/utils/filter-keys-utils"
 import type { QuickFilter } from "src/utils/filter-utils"
 import { DEFAULT_COLUMN_ORDER } from "../components/Tasks/ColumnVisibilityDropdown"
-import type { TaskColumn } from "../hooks/useTaskColumns"
 
 export type NewTaskInput = Omit<TaskDto, "id" | "createdAt" | "updatedAt"> & {
 	groupKey?: string
@@ -30,6 +31,7 @@ export type TaskRow = TaskDto & {
 	assignee?: AssigneeDto
 	status?: WorkspaceStatusDto
 	otherAssignees?: AssigneeStatusDto[]
+	workspace?: WorkspaceWithPermissionDto
 }
 
 interface TasksFiltersContextValue {
@@ -40,37 +42,40 @@ interface TasksFiltersContextValue {
 	toggleQuickFilter: (filter: QuickFilter) => void
 	clearQuickFilters: () => void
 
-	columnOrder: TaskColumn[]
-	hiddenColumns: Set<TaskColumn>
-	setColumnOrder: (order: TaskColumn[]) => void
-	toggleColumn: (columnId: TaskColumn) => void
+	columnOrder: (keyof TaskRow)[]
+	hiddenColumns: Set<keyof TaskRow>
+	setColumnOrder: (order: (keyof TaskRow)[]) => void
+	toggleColumn: (columnId: keyof TaskRow) => void
 
 	dateType: DATE_TYPE
 	setDateType: (type: DATE_TYPE) => void
 	dateRange: DateRange | undefined
 	setDateRange: (range: DateRange | undefined) => void
+
+	columnsFilters: ColumnFiltersState
+	setColumnsFilters(columnsFilters: ColumnFiltersState): void
 }
 
 export const TASK_ROW_ID_SEPARATOR = "_"
 
-const WORKSPACE_DEFAULT_HIDDEN = new Set<TaskColumn>([
+const WORKSPACE_DEFAULT_HIDDEN = new Set<keyof TaskRow>([
 	"notes",
 	"updatedAt",
-] as TaskColumn[])
+] as (keyof TaskRow)[])
 
 const TasksFiltersContext = createContext<TasksFiltersContextValue | null>(null)
 
 type ColumnsStorageKey = "personal" | "tasks" | "dashboard"
 
 interface ColumnsVisibilityStorage {
-	columnOrder: TaskColumn[]
-	hiddenColumns: TaskColumn[]
+	columnOrder: (keyof TaskRow)[]
+	hiddenColumns: (keyof TaskRow)[]
 }
 
 interface TasksFiltersProviderProps extends PropsWithChildren {
 	storageKey: ColumnsStorageKey
-	defaultColumnOrder?: TaskColumn[]
-	defaultHiddenColumns?: Set<TaskColumn>
+	defaultColumnOrder?: (keyof TaskRow)[]
+	defaultHiddenColumns?: Set<keyof TaskRow>
 	activeQuickFilters?: Set<QuickFilter>
 }
 
@@ -89,20 +94,21 @@ export function TasksFiltersProvider({
 	const [activeQuickFilters, setActiveQuickFilters] = useState<
 		Set<QuickFilter>
 	>(currentActiveQuickFilters)
+	const [columnsFilters, setColumnsFilters] = useState<ColumnFiltersState>([])
 
 	const [columnsVisibility, setColumnsVisibility] =
 		useLocalStorage<ColumnsVisibilityStorage>({
 			key: `${storageKey}:columnsVisibility`,
 			defaultValue: {
-				columnOrder: ["id" as TaskColumn, ...defaultColumnOrder],
+				columnOrder: ["id" as keyof TaskRow, ...defaultColumnOrder],
 				hiddenColumns: [...defaultHiddenColumns],
 			},
 		})
 
 	const columnOrder = columnsVisibility.columnOrder
-	const hiddenColumns = new Set<TaskColumn>(columnsVisibility.hiddenColumns)
+	const hiddenColumns = new Set<keyof TaskRow>(columnsVisibility.hiddenColumns)
 
-	function setColumnOrder(order: TaskColumn[]) {
+	function setColumnOrder(order: (keyof TaskRow)[]) {
 		setColumnsVisibility((prev) => ({ ...prev, columnOrder: order }))
 	}
 
@@ -129,7 +135,7 @@ export function TasksFiltersProvider({
 		},
 	})
 
-	function toggleColumn(columnId: TaskColumn) {
+	function toggleColumn(columnId: keyof TaskRow) {
 		setColumnsVisibility((prev) => {
 			const set = new Set(prev.hiddenColumns)
 			if (set.has(columnId)) {
@@ -173,6 +179,8 @@ export function TasksFiltersProvider({
 				setDateType,
 				dateRange,
 				setDateRange,
+				columnsFilters,
+				setColumnsFilters,
 			}}
 		>
 			{children}

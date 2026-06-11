@@ -14,10 +14,8 @@ export const Route = createFileRoute("/workspace/$urlName/settings")({
 	component: SettingsLayout,
 	staticData: {
 		header: {
-			title: "הגדרות סביבת המפקד",
+			pageTitle: "הגדרות סביבת המפקד",
 			user: true,
-			navigation: true,
-			workspace: true,
 		},
 	},
 })

@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
+import type { ColumnFiltersState } from "@tanstack/react-table"
 import { concat, uniq } from "lodash"
 import { ChevronDown, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
@@ -7,6 +8,7 @@ import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import {
 	type TasksSearchSchemaType,
@@ -14,9 +16,7 @@ import {
 } from "src/routes/workspace/$urlName/tasks"
 import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new"
 import type { QuickFilter } from "src/utils/filter-utils"
-import { exportTasksToExcel } from "../../functions/export-excel"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
-import { useTitleBar } from "../../providers/TitleBarProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import {
@@ -48,14 +48,8 @@ function TasksLayout({
 }: TasksLayoutProps) {
 	const navigate = useNavigate({ from: "/workspace/$urlName/tasks" })
 
-	const {
-		columnOrder,
-		hiddenColumns,
-		dateRange,
-		setDateRange,
-		toggleQuickFilter,
-		clearQuickFilters,
-	} = useTasksFilters()
+	const { dateRange, setDateRange, toggleQuickFilter, clearQuickFilters } =
+		useTasksFilters()
 
 	const {
 		workspace: { id: workspaceId },
@@ -90,6 +84,13 @@ function TasksLayout({
 	)
 
 	const allTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
+
+	const urlColumnFilters: ColumnFiltersState = [
+		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
+		...(deadlineTypeFilter.length
+			? [{ id: "deadlineType", value: deadlineTypeFilter }]
+			: []),
+	]
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -169,52 +170,47 @@ function TasksLayout({
 		})
 	}
 
-	function handleExport() {
-		exportTasksToExcel(filteredTaskRows, { columnOrder, hiddenColumns })
-	}
-
 	// function handleViewChange(newView: TasksView) {
 	// 	navigateToTasks({ view: newView })
 	// }
 
-	useTitleBar(
-		() => (
-			<ButtonGroup>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<CreateButton>
-							<Plus size={18} color="white" />
-							<CreateButtonText>צור הנחייה</CreateButtonText>
-							<ChevronDown size={18} color="white" />
-						</CreateButton>
-					</DropdownMenuTrigger>
-					<StyledDropdownContent align="end" sideOffset={6}>
-						<StyledDropdownItem onSelect={handleCreateTaskFromDiscussion}>
-							הנחיות מתוך דיון
-						</StyledDropdownItem>
-						<StyledDropdownItem onSelect={handleCreateTask}>
-							הנחייה בודדת
-						</StyledDropdownItem>
-					</StyledDropdownContent>
-				</DropdownMenu>
-				{/* <SectionDivider />
+	useRenderInHeader(
+		"titleBar",
+		<ButtonGroup>
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
+					<CreateButton>
+						<Plus size={18} color="white" />
+						<CreateButtonText>צור הנחייה</CreateButtonText>
+						<ChevronDown size={18} color="white" />
+					</CreateButton>
+				</DropdownMenuTrigger>
+				<StyledDropdownContent align="end" sideOffset={6}>
+					<StyledDropdownItem onSelect={handleCreateTaskFromDiscussion}>
+						הנחיות מתוך דיון
+					</StyledDropdownItem>
+					<StyledDropdownItem onSelect={handleCreateTask}>
+						הנחייה בודדת
+					</StyledDropdownItem>
+				</StyledDropdownContent>
+			</DropdownMenu>
+			{/* <SectionDivider />
 				<ViewToggle view={view} onViewChange={handleViewChange} /> */}
-			</ButtonGroup>
-		),
-		[view, urlName],
+		</ButtonGroup>,
+		[urlName],
 	)
 
 	return (
 		<TooltipProvider>
 			<TasksRoot>
 				<TaskFilters
-					tasks={filteredTaskRows}
+					taskRows={filteredTaskRows}
 					allTasksLength={allTaskRows.length}
 					onClearAllFilters={clearAllFilters}
-					onExport={handleExport}
 					tabFilter={tabFilter}
 					onToggleTabFilter={handleToggleTabFilter}
 					hasExtraActiveFilters={activeTopicFilters.size > 0 || !!dateRange}
+					urlColumnFilters={urlColumnFilters}
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label="נושא"

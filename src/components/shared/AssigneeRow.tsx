@@ -234,6 +234,7 @@ const InfoBlock = styled.div`
   width: 161px;
   flex-shrink: 0;
   justify-content: flex-end;
+  min-width: 0;
 `
 
 const RoleText = styled.span`
@@ -243,4 +244,8 @@ const RoleText = styled.span`
   color: rgba(0, 0, 0, 0.88);
   white-space: nowrap;
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
 `

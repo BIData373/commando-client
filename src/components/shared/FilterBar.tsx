@@ -1,7 +1,8 @@
 import styled from "@emotion/styled"
 import { Download, FilterX, Search, X } from "lucide-react"
 import type { ReactNode } from "react"
-import type { TaskColumn, TaskColumnMeta } from "../../hooks/useTaskColumns"
+import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import type { TaskColumnMeta } from "../../hooks/useTaskColumns"
 import { ColumnVisibilityDropdown } from "../Tasks/ColumnVisibilityDropdown"
 
 interface FilterBarProps {
@@ -11,10 +12,10 @@ interface FilterBarProps {
 	searchQuery: string
 	onSearchChange: (value: string) => void
 	onExport: () => void
-	columnOrder: TaskColumn[]
-	hiddenColumns: Set<TaskColumn>
-	onColumnOrderChange: (order: TaskColumn[]) => void
-	onToggleColumn: (columnId: TaskColumn) => void
+	columnOrder: (keyof TaskRow)[]
+	hiddenColumns: Set<keyof TaskRow>
+	onColumnOrderChange: (order: (keyof TaskRow)[]) => void
+	onToggleColumn: (columnId: keyof TaskRow) => void
 	extraColumnsMeta?: TaskColumnMeta[]
 	startSlot?: ReactNode
 }

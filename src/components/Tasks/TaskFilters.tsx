@@ -1,6 +1,10 @@
 import styled from "@emotion/styled"
+import type { ColumnFiltersState } from "@tanstack/react-table"
+import { filter } from "lodash"
 import type { ReactNode } from "react"
+import { exportTasksToExcel } from "src/functions/export-excel"
 import { matchesQuickFilter } from "src/functions/filter-utils"
+import { getTaskValue } from "src/utils/filter-rows-map-utils"
 import { QuickFilter } from "src/utils/filter-utils"
 import type { TaskColumnMeta } from "../../hooks/useTaskColumns"
 import type { TaskRow } from "../../providers/TasksFiltersProvider"
@@ -9,9 +13,8 @@ import { FilterBar, FilterDivider, FilterPill } from "../shared/FilterBar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface TaskFiltersProps {
-	tasks: TaskRow[]
+	taskRows: TaskRow[]
 	onClearAllFilters: () => void
-	onExport: () => void
 	hasExtraActiveFilters?: boolean
 	extraFilters?: ReactNode
 	extraColumnsMeta?: TaskColumnMeta[]
@@ -19,12 +22,12 @@ interface TaskFiltersProps {
 	onToggleTabFilter?: (filter: QuickFilter) => void
 	startSlot?: ReactNode
 	allTasksLength: number
+	urlColumnFilters?: ColumnFiltersState
 }
 
 function TaskFilters({
-	tasks,
+	taskRows,
 	onClearAllFilters,
-	onExport,
 	hasExtraActiveFilters,
 	extraFilters,
 	extraColumnsMeta,
@@ -32,6 +35,7 @@ function TaskFilters({
 	onToggleTabFilter,
 	startSlot,
 	allTasksLength,
+	urlColumnFilters = [],
 }: TaskFiltersProps) {
 	const {
 		activeQuickFilters,
@@ -42,6 +46,7 @@ function TaskFilters({
 		setColumnOrder,
 		hiddenColumns,
 		toggleColumn,
+		columnsFilters,
 	} = useTasksFilters()
 
 	const activeFilters =
@@ -50,15 +55,30 @@ function TaskFilters({
 
 	const hasActiveFilters = activeFilters.size > 0 || !!hasExtraActiveFilters
 
-	const overdueCount = tasks.filter((t) =>
+	const allColumnFilters = [...urlColumnFilters, ...columnsFilters]
+
+	const filteredTasks = filter(taskRows, (task) =>
+		allColumnFilters.every(({ id, value }) => {
+			const idKey = id as keyof TaskRow
+			const taskValue = getTaskValue(idKey, task)
+			if (!Array.isArray(value) || value.length === 0) return true
+			return value.includes(taskValue)
+		}),
+	)
+
+	const overdueCount = filteredTasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.OVERDUE),
 	).length
-	const approachingCount = tasks.filter((t) =>
+	const approachingCount = filteredTasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.APPROACHING),
 	).length
-	const flaggedCount = tasks.filter((t) =>
+	const flaggedCount = filteredTasks.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.FLAGGED),
 	).length
+
+	function handleExport() {
+		exportTasksToExcel(taskRows, { columnOrder, hiddenColumns })
+	}
 
 	return (
 		<FilterBar
@@ -66,7 +86,7 @@ function TaskFilters({
 			onClearAll={onClearAllFilters}
 			searchQuery={searchQuery}
 			onSearchChange={setSearchQuery}
-			onExport={onExport}
+			onExport={handleExport}
 			columnOrder={columnOrder}
 			hiddenColumns={hiddenColumns}
 			onColumnOrderChange={setColumnOrder}

@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode } from 'react'
+import { Fragment, useEffect, type ReactNode } from 'react'
 import styled from '@emotion/styled'
 import {
   flexRender,
@@ -18,6 +18,8 @@ import {
 
 import { LoadingSpinner } from '../shared/LoadingSpinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
+import { useTasksFilters } from 'src/providers/TasksFiltersProvider'
+
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     grow?: boolean
@@ -88,7 +90,7 @@ export function DataTable<TData>({
     meta,
   })
 
-  const allColumns = table.getAllColumns()
+const allColumns = table.getAllColumns()
   const totalSize = allColumns.reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
 
   const colgroup = (

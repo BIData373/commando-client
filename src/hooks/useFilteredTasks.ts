@@ -1,13 +1,17 @@
 import { endOfDay, isWithinInterval, startOfDay } from "date-fns"
 import { useMemo } from "react"
-import type { TaskDto } from "src/api/model"
+import type { TaskDto, WorkspaceWithPermissionDto } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { DATE_TYPE } from "src/utils/date-utils"
 import { useFuse } from "./useFuse"
 
-function getTaskDateByDateType<TTask extends TaskDto>(
-	task: TTask,
+interface TaskWithOptionalWorkspaceDto extends TaskDto {
+	workspace?: WorkspaceWithPermissionDto
+}
+
+function getTaskDate(
+	task: TaskWithOptionalWorkspaceDto,
 	type: DATE_TYPE,
 ): Date | null {
 	switch (type) {
@@ -24,10 +28,10 @@ function getTaskDateByDateType<TTask extends TaskDto>(
 	}
 }
 
-export function useFilteredTasks<TTask extends TaskDto>(
-	tasks: TTask[],
-	additionalFilter?: (task: TTask) => boolean,
-) {
+export function useFilteredTasks(
+	tasks: TaskWithOptionalWorkspaceDto[],
+	additionalFilter?: (task: TaskWithOptionalWorkspaceDto) => boolean,
+): TaskWithOptionalWorkspaceDto[] {
 	const { searchQuery, activeQuickFilters, dateRange, dateType } =
 		useTasksFilters()
 
@@ -56,7 +60,7 @@ export function useFilteredTasks<TTask extends TaskDto>(
 						return true
 					}
 
-					const date = getTaskDateByDateType(task, dateType)
+					const date = getTaskDate(task, dateType)
 
 					return (
 						date &&
