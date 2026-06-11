@@ -124,7 +124,7 @@ function TaskConversationPanel({
 							<DateLabel>{group.dateLabel}</DateLabel>
 
 							{group.messages.map(({ id, user, content, createdAt }) => (
-								<MessageOuter key={id} $isOwn={user.id === currentUser.id}>
+								<MessageOuter key={id} $isOwn={user.upn === currentUser.upn}>
 									<MessageCard>
 										<MessageHeader>
 											<AuthorText>

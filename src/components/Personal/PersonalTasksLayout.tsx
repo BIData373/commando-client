@@ -5,21 +5,21 @@ import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
 import {
+	type CreateUserDto,
 	PermissionType,
-	type WorkspaceDto,
+	type TaskWithWorkspaceDto,
 	WorkspaceStatusType,
 } from "src/api/model"
 import {
 	getListPersonalTasksQueryKey,
 	useListPersonalTasks,
 } from "src/api/task/task"
+import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { toTaskRows } from "../../functions/tasks-table"
-import {
-	type TaskRow,
-	useTasksFilters,
-} from "../../providers/TasksFiltersProvider"
+import type { TaskRow } from "../../providers/TasksFiltersProvider"
+import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
@@ -28,41 +28,53 @@ import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
 
-type PersonalTaskRow = TaskRow & { workspace: WorkspaceDto }
-
-const WORKSPACE_COLUMN: ColumnDef<PersonalTaskRow> = {
-	id: "workspace",
-	accessorFn: (row) => row.workspace.title,
-	header: ({ column }) => (
-		<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
-	),
-	size: 170,
-	enableColumnFilter: false,
-	sortingFn: (rowA, rowB) =>
-		rowA.original.workspace.title.localeCompare(
-			rowB.original.workspace.title,
-			"he",
+const EXTRA_COLUMNS: Record<string, ColumnDef<TaskRow>> = {
+	workspace: {
+		id: "workspace",
+		accessorFn: (row) => row.workspace?.title,
+		header: ({ column }) => (
+			<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
 		),
-	cell: ({ row }) => {
-		const { workspace } = row.original
-		return (
-			<WorkspaceCell>
-				<WorkspaceIconImg
-					src={workspace.icon ?? undefined}
-					alt={workspace.title}
-				/>
-				<WorkspaceCellName>{workspace.title}</WorkspaceCellName>
-			</WorkspaceCell>
-		)
+		size: 170,
+		enableColumnFilter: false,
+		sortingFn: (rowA, rowB) => {
+			const a = rowA.original.workspace?.title ?? ""
+			const b = rowB.original.workspace?.title ?? ""
+			return a.localeCompare(b, "he")
+		},
+		cell: ({ row }) => {
+			const { workspace } = row.original
+			if (!workspace) return null
+			return (
+				<WorkspaceCell>
+					<WorkspaceIconImg
+						src={workspace.icon ?? undefined}
+						alt={workspace.title}
+					/>
+					<WorkspaceCellName>{workspace.title}</WorkspaceCellName>
+				</WorkspaceCell>
+			)
+		},
 	},
 }
 
-const EXTRA_COLUMNS: Record<string, ColumnDef<PersonalTaskRow>> = {
-	workspace: WORKSPACE_COLUMN,
+function toPersonalTaskRows(
+	tasks: TaskWithWorkspaceDto[],
+	currentUser: CreateUserDto,
+): TaskRow[] {
+	return tasks.flatMap((task) =>
+		toTaskRows([task])
+			.map((row) => ({ ...row, workspace: task.workspace }))
+			.filter(({ assignee }) =>
+				assignee?.users.some(({ upn }) => upn === currentUser.upn),
+			),
+	)
 }
 
 function PersonalTasksLayout() {
 	const navigate = useNavigate()
+
+	const currentUser = useCurrentUser()
 
 	const { clearQuickFilters } = useTasksFilters()
 
@@ -73,23 +85,26 @@ function PersonalTasksLayout() {
 		Set<number>
 	>(new Set())
 
-	const taskRows = toTaskRows(rawTasks)
+	const allTaskRows = useMemo(
+		() => toPersonalTaskRows(rawTasks, currentUser),
+		[rawTasks, currentUser],
+	)
 
 	const workspaces = uniqBy(rawTasks, "workspace.id").map(
 		({ workspace }) => workspace,
 	)
 
-	const totalCount = taskRows.length
+	const totalCount = allTaskRows.length
 
-	const notStartedCount = taskRows.filter(
+	const notStartedCount = allTaskRows.filter(
 		(t) => t.status?.type === WorkspaceStatusType.NOT_STARTED,
 	).length
 
-	const inProgressCount = taskRows.filter(
+	const inProgressCount = allTaskRows.filter(
 		(t) => t.status?.type === WorkspaceStatusType.IN_PROGRESS,
 	).length
 
-	const weeklyNew = taskRows.filter((t) =>
+	const weeklyNew = allTaskRows.filter((t) =>
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
 	).length
 
@@ -103,19 +118,13 @@ function PersonalTasksLayout() {
 			: baseFilteredTasks
 
 	const filteredTaskRows = useMemo(
-		() => toTaskRows(filteredTasks),
-		[filteredTasks],
+		() => toPersonalTaskRows(filteredTasks, currentUser),
+		[filteredTasks, currentUser],
 	)
-
-	const allTaskRows = useMemo(() => toTaskRows(rawTasks), [rawTasks])
 
 	function clearAllFilters() {
 		clearQuickFilters()
 		setActiveWorkspaceFilters(new Set())
-	}
-
-	function handleExport() {
-		// placeholder for export
 	}
 
 	const taskPermissions = useMemo(
@@ -171,10 +180,9 @@ function PersonalTasksLayout() {
 				/>
 
 				<TaskFilters
-					tasks={filteredTaskRows}
+					taskRows={filteredTaskRows}
 					allTasksLength={allTaskRows.length}
 					onClearAllFilters={clearAllFilters}
-					onExport={handleExport}
 					hasExtraActiveFilters={activeWorkspaceFilters.size > 0}
 					extraColumnsMeta={[{ id: "workspace", label: "מפקד מנחה" }]}
 					extraFilters={
@@ -203,7 +211,7 @@ function PersonalTasksLayout() {
 				<TaskTable
 					queryKey={queryKey}
 					tasks={filteredTaskRows}
-					extraColumns={EXTRA_COLUMNS as Record<string, ColumnDef<TaskRow>>}
+					extraColumns={EXTRA_COLUMNS}
 					isLoading={isLoading}
 					onEdit={handleEdit}
 					onDoubleClick={handleOpenTask}
