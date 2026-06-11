@@ -72,6 +72,7 @@ function TaskTable({
 		hiddenColumns,
 		activeQuickFilters,
 		dateRange,
+		columnsFilters,
 		setColumnsFilters,
 	} = useTasksFilters()
 	const queryClient = useQueryClient()
@@ -96,11 +97,9 @@ function TaskTable({
 			? [{ id: "deadlineType", value: deadlineTypeFilter }]
 			: []),
 	]
-	const [localColumnFilters, setLocalColumnFilters] =
-		useState<ColumnFiltersState>([])
 	const columnFilters: ColumnFiltersState = [
 		...urlColumnFilters,
-		...localColumnFilters,
+		...columnsFilters,
 	]
 
 	function getColumnFilter(columnFilters: ColumnFiltersState, id: string) {
@@ -124,8 +123,7 @@ function TaskTable({
 		) as DeadlineType[]
 
 		const urlFilterIds = new Set(urlColumnFilters.map((f) => f.id))
-		setLocalColumnFilters(newFilters.filter((f) => !urlFilterIds.has(f.id)))
-		setColumnsFilters(newFilters)
+		setColumnsFilters(newFilters.filter((f) => !urlFilterIds.has(f.id)))
 
 		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
 	}

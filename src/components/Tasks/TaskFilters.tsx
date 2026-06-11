@@ -1,8 +1,9 @@
 import styled from "@emotion/styled"
+import type { ColumnFiltersState } from "@tanstack/react-table"
 import { filter } from "lodash"
 import type { ReactNode } from "react"
 import { matchesQuickFilter } from "src/functions/filter-utils"
-import { filterRows } from "src/utils/filter-rows-map-utils"
+import { getTaskValue } from "src/utils/filter-rows-map-utils"
 import { QuickFilter } from "src/utils/filter-utils"
 import type { TaskColumnMeta } from "../../hooks/useTaskColumns"
 import type { TaskRow } from "../../providers/TasksFiltersProvider"
@@ -21,6 +22,7 @@ interface TaskFiltersProps {
 	onToggleTabFilter?: (filter: QuickFilter) => void
 	startSlot?: ReactNode
 	allTasksLength: number
+	urlColumnFilters?: ColumnFiltersState
 }
 
 function TaskFilters({
@@ -34,6 +36,7 @@ function TaskFilters({
 	onToggleTabFilter,
 	startSlot,
 	allTasksLength,
+	urlColumnFilters = [],
 }: TaskFiltersProps) {
 	const {
 		activeQuickFilters,
@@ -53,10 +56,12 @@ function TaskFilters({
 
 	const hasActiveFilters = activeFilters.size > 0 || !!hasExtraActiveFilters
 
+	const allColumnFilters = [...urlColumnFilters, ...columnsFilters]
+
 	const filteredTasks = filter(tasks, (task) =>
-		columnsFilters.every(({ id, value }) => {
+		allColumnFilters.every(({ id, value }) => {
 			const idKey = id as keyof TaskRow
-			const taskValue = filterRows.getFilterColumnValue(idKey, task)
+			const taskValue = getTaskValue(idKey, task)
 			if (!Array.isArray(value) || value.length === 0) return true
 			return value.includes(taskValue)
 		}),

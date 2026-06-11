@@ -90,12 +90,7 @@ export function DataTable<TData>({
     meta,
   })
 
-  const { setColumnsFilters } = useTasksFilters()
-  useEffect(() => (
-    setColumnsFilters(table.getState().columnFilters)
-  ), [])
-
-  const allColumns = table.getAllColumns()
+const allColumns = table.getAllColumns()
   const totalSize = allColumns.reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
 
   const colgroup = (
