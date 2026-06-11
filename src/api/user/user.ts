@@ -28,6 +28,7 @@ import type {
 	CreateUserDto,
 	DeleteUserPathParameters,
 	GetUserPathParameters,
+	MirageUserDto,
 	SearchUsersParams,
 	UpdateUserDto,
 	UpdateUserPathParameters,
@@ -227,7 +228,7 @@ export const searchUsers = (
 	params: SearchUsersParams,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<UserDto[]>({
+	return sendRequest<MirageUserDto[]>({
 		url: `/user/search`,
 		method: "GET",
 		params,

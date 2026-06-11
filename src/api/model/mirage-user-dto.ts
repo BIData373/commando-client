@@ -5,10 +5,10 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
+import type { UserInfoDto } from "./user-info-dto"
 
-export interface UserInfoDto {
+export interface MirageUserDto {
 	upn: string
-	displayName?: string
-	name?: string
-	isBI?: boolean
+	/** @nullable */
+	info: UserInfoDto | null
 }

@@ -6,7 +6,12 @@ import {
 	useListAssignees,
 	useUpdateAssignee,
 } from "src/api/assignee/assignee"
-import type { AssigneeDto, AssigneesDto, UserDto } from "src/api/model"
+import type {
+	AssigneeDto,
+	AssigneesDto,
+	MirageUserDto,
+	UserDto,
+} from "src/api/model"
 import { getListPersonalTasksQueryKey } from "src/api/task/task"
 import { type IMesibaIcon, useMesibaIconByName } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -51,7 +56,7 @@ export function AssigneeDialog({
 	const { mutateAsync: createAssignee } = useCreateAssignee()
 	const { mutateAsync: updateAssignee } = useUpdateAssignee()
 
-	const [selectedUser, setSelectedUser] = useState<UserDto | null>(null)
+	const [selectedUser, setSelectedUser] = useState<MirageUserDto | null>(null)
 	const [searchValue, setSearchValue] = useState<string>("")
 
 	const [iconSearch, setIconSearch] = useState("")
@@ -138,7 +143,9 @@ export function AssigneeDialog({
 		form.setFieldValue("users", (prev) =>
 			prev.some((user) => user.upn === selectedUser.upn)
 				? prev
-				: [...prev, selectedUser],
+				: // TODO - maybe have the API return MirageUser, cause technically,
+					// users dont actually have ids, they are based on UPN anyway...
+					[...prev, selectedUser as UserDto],
 		)
 
 		setSearchValue("")
@@ -160,7 +167,7 @@ export function AssigneeDialog({
 		)
 	}
 
-	function handleSearchSelect(user: UserDto) {
+	function handleSearchSelect(user: MirageUserDto) {
 		if (user) {
 			setSearchValue(concatName(user))
 		}
