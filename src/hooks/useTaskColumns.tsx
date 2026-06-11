@@ -11,6 +11,7 @@ import { getGetTaskQueryKey } from "src/api/task/task"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
+import { formatMesibaIcon } from "src/utils/icon-utils"
 import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 import FlagIcon from "../components/shared/FlagIcon"
 import HighlightMatch from "../components/shared/HighlightMatch"
@@ -436,7 +437,10 @@ function useTaskColumns({
 				workspace ? (
 					<WorkspaceCell>
 						{workspace.icon && (
-							<WorkspaceIconImg src={workspace.icon} alt={workspace.title} />
+							<WorkspaceIconImage
+								src={formatMesibaIcon(workspace.icon)}
+								alt={workspace.title}
+							/>
 						)}
 
 						<WorkspaceCellName>{workspace.title}</WorkspaceCellName>
@@ -692,7 +696,7 @@ const WorkspaceCellName = styled.span`
   white-space: nowrap;
 `
 
-const WorkspaceIconImg = styled.img`
+const WorkspaceIconImage = styled.img`
   width: 24px;
   height: 24px;
   border-radius: 50%;

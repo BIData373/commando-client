@@ -16,6 +16,7 @@ import {
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
+import { formatMesibaIcon } from "src/utils/icon-utils"
 import { toTaskRows } from "../../functions/tasks-table"
 import type { TaskRow } from "../../providers/TasksFiltersProvider"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
@@ -164,7 +165,10 @@ function PersonalTasksLayout() {
 								value: ws.id,
 								label: ws.title,
 								icon: (
-									<WorkspaceIcon src={ws.icon ?? undefined} alt={ws.title} />
+									<WorkspaceIcon
+										src={formatMesibaIcon(ws.icon)}
+										alt={ws.title}
+									/>
 								),
 							}))}
 							activeValues={activeWorkspaceFilters}
