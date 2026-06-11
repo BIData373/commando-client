@@ -1,7 +1,7 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios"
 import createAuthRefreshInterceptor from "axios-auth-refresh"
 import { parseISO } from "date-fns"
-import { clearToken, refreshAccessToken, storeToken } from "./utils/auth-utils"
+import { AUTH_ENABLED, authenticate } from "./utils/auth-utils"
 import {
 	API_BASE_URL,
 	API_PREFIX,
@@ -71,14 +71,9 @@ if (USE_SSO) {
 	createAuthRefreshInterceptor(
 		axiosInstance,
 		async (_failedRequest: AxiosError) => {
-			const newToken = await refreshAccessToken()
-			if (!newToken) {
-				await clearToken()
-				throw new Error(
-					"SSO token refresh failed. Ensure the SSO service is running.",
-				)
+			if (AUTH_ENABLED) {
+				await authenticate()
 			}
-			await storeToken(newToken)
 		},
 	)
 }
