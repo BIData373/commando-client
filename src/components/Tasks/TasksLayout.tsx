@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
+import type { ColumnFiltersState } from "@tanstack/react-table"
 import { concat, uniq } from "lodash"
 import { ChevronDown, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
@@ -83,6 +84,13 @@ function TasksLayout({
 	)
 
 	const allTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
+
+	const urlColumnFilters: ColumnFiltersState = [
+		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
+		...(deadlineTypeFilter.length
+			? [{ id: "deadlineType", value: deadlineTypeFilter }]
+			: []),
+	]
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -202,6 +210,7 @@ function TasksLayout({
 					tabFilter={tabFilter}
 					onToggleTabFilter={handleToggleTabFilter}
 					hasExtraActiveFilters={activeTopicFilters.size > 0 || !!dateRange}
+					urlColumnFilters={urlColumnFilters}
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label="נושא"
