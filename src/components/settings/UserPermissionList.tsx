@@ -93,11 +93,13 @@ const UserHeader = styled.div`
 
 const UserInfo = styled.div<{ $type: PermissionType }>`
   color: ${({ $type }) => ($type === PermissionType.MANAGER ? "var(--active-color)" : " var(--sea-ink)")};
-
+  
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 4px;
+
+  cursor: ${({ $type }) => ($type === PermissionType.MANAGER ? "pointer" : "default")};
 `
 
 const UserName = styled.span`
