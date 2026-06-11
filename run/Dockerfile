@@ -14,10 +14,8 @@ RUN rm -rf client.tar.gz
 
 RUN cp -a tmp/archive/* . && rm -rf tmp/archive
 
-RUN ls node_modules/ | grep lefthook | tee /dev/stderr
+RUN npm run build
 
-# RUN npm run build
+EXPOSE 8080
 
-# EXPOSE 8080
-
-# ENTRYPOINT ["tail", "-f", "/dev/null"]
+ENTRYPOINT ["tail", "-f", "/dev/null"]
