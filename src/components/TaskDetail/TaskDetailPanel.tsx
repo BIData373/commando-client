@@ -464,29 +464,6 @@ const MetaText = styled.span`
   white-space: nowrap;
 `
 
-const HistoryButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.04);
-  color: var(--text-color-400);
-  flex-shrink: 0;
-  cursor: pointer;
-
-  &:hover {
-    background: var(--button-hover);
-    color: var(--sea-ink);
-  }
-
-  &:active {
-    background: var(--button-active);
-    color: var(--sea-ink);
-  }
-`
-
 // ─── Divider ───────────────────────────────────────────────────────────────────
 const DividerRow = styled.div`
   display: flex;

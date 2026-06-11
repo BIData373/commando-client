@@ -1,4 +1,3 @@
-import { Fragment, useEffect, type ReactNode } from 'react'
 import styled from '@emotion/styled'
 import {
   flexRender,
@@ -15,10 +14,10 @@ import {
   type SortingState,
   type TableMeta,
 } from '@tanstack/react-table'
+import { Fragment, type ReactNode } from 'react'
 
 import { LoadingSpinner } from '../shared/LoadingSpinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
-import { useTasksFilters } from 'src/providers/TasksFiltersProvider'
 
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
