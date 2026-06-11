@@ -30,6 +30,7 @@ export function IconDropdown({
 			placeholder="חפש סמל"
 			selectedItem={selectedItem}
 			renderItem={(item) => <MesibaIcon icon={item} />}
+			getItemKey={(i) => i.id}
 		/>
 	)
 }

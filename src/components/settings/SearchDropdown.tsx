@@ -16,7 +16,7 @@ interface SearchDropdownProps<T> {
 	isLoading?: boolean
 	onClear?: () => void
 	selectedItem?: T
-	getItemKey?: (item: T) => string | number
+	getItemKey: (item: T) => string | number
 }
 
 export function SearchDropdown<T>({
@@ -29,8 +29,7 @@ export function SearchDropdown<T>({
 	isLoading,
 	onClear,
 	selectedItem,
-	getItemKey = (item: T) =>
-		(item as { id?: string | number }).id as string | number,
+	getItemKey,
 }: SearchDropdownProps<T>) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [isFocused, setIsFocused] = useState(false)
