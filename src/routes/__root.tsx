@@ -9,7 +9,7 @@ import { ErrorModal } from "../components/ErrorModal"
 import Header from "../components/Header"
 import { Toaster } from "../components/ui/sonner"
 import { TooltipProvider } from "../components/ui/tooltip"
-import { TitleBarProvider } from "../providers/TitleBarProvider"
+import { HeaderProvider } from "../providers/HeaderProvider"
 import "../styles.css"
 import { IS_DEV } from "../utils/env-utils"
 
@@ -23,14 +23,14 @@ function RootComponent() {
 	return (
 		<StrictMode>
 			<TooltipProvider>
-				<TitleBarProvider>
+				<HeaderProvider>
 					<AppShell>
 						<Header />
 						<PageContainer>
 							<Outlet />
 						</PageContainer>
 					</AppShell>
-				</TitleBarProvider>
+				</HeaderProvider>
 			</TooltipProvider>
 			<ErrorModal />
 			<Toaster />
