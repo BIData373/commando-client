@@ -1,12 +1,19 @@
 import { endOfDay, isWithinInterval, startOfDay } from "date-fns"
 import { useMemo } from "react"
-import type { TaskWithWorkspaceDto } from "src/api/model"
+import type { TaskDto, WorkspaceWithPermissionDto } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { DATE_TYPE } from "src/utils/date-utils"
 import { useFuse } from "./useFuse"
 
-function getTaskDate(task: TaskWithWorkspaceDto, type: DATE_TYPE): Date | null {
+interface TaskWithOptionalWorkspaceDto extends TaskDto {
+	workspace?: WorkspaceWithPermissionDto
+}
+
+function getTaskDate(
+	task: TaskWithOptionalWorkspaceDto,
+	type: DATE_TYPE,
+): Date | null {
 	switch (type) {
 		case DATE_TYPE.CREATION_DATE:
 			return task.createdAt
@@ -22,9 +29,9 @@ function getTaskDate(task: TaskWithWorkspaceDto, type: DATE_TYPE): Date | null {
 }
 
 export function useFilteredTasks(
-	tasks: TaskWithWorkspaceDto[],
-	additionalFilter?: (task: TaskWithWorkspaceDto) => boolean,
-): TaskWithWorkspaceDto[] {
+	tasks: TaskWithOptionalWorkspaceDto[],
+	additionalFilter?: (task: TaskWithOptionalWorkspaceDto) => boolean,
+): TaskWithOptionalWorkspaceDto[] {
 	const { searchQuery, activeQuickFilters, dateRange, dateType } =
 		useTasksFilters()
 

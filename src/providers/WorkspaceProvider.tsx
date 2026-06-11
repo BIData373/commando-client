@@ -8,7 +8,6 @@ import type { WorkspaceDto } from "../api/model/workspace-dto"
 import { useListWorkspaces } from "../api/workspace/workspace"
 import { Spinner } from "../components/ui/spinner"
 import { useErrorHandler } from "./ErrorModalProvider"
-import { useWorkspaceHeader } from "./TitleBarProvider"
 
 export interface WorkspaceContext {
 	workspace: WorkspaceDto
@@ -45,8 +44,6 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 	)
 
 	useErrorHandler(workspacesError, workspaceStatusesError)
-
-	useWorkspaceHeader(workspace)
 
 	const setWorkspace = (data: UpdateWorkspaceDto) => {
 		queryClient.setQueryData(
