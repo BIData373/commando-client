@@ -33,8 +33,6 @@ export const Route = createFileRoute("/workspace/$urlName/tasks")({
 		header: {
 			title: "הנחיות",
 			user: true,
-			navigation: true,
-			workspace: true,
 		},
 	},
 })

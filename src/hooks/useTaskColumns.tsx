@@ -485,7 +485,6 @@ function useTaskColumns({
 		.filter((id) => columnMap[id])
 		.map((id) => (selectColumn && id === "id" ? selectColumn : columnMap[id]))
 		.filter((column) => !!column)
-	console.log("columnMap", columnMap)
 
 	const columns = [
 		...visibleOrderedColumns,

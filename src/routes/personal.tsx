@@ -14,7 +14,6 @@ export const Route = createFileRoute("/personal")({
 	staticData: {
 		header: {
 			title: "הנחיות שקיבלתי",
-			navigation: false,
 			user: true,
 		},
 	},

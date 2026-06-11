@@ -10,8 +10,6 @@ export const Route = createFileRoute("/workspace/$urlName/dashboard")({
 		header: {
 			title: <TitleSection />,
 			user: true,
-			navigation: true,
-			workspace: true,
 		},
 	},
 })

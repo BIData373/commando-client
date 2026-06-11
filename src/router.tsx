@@ -15,8 +15,6 @@ const router = createRouter({
 export interface HeaderConfig {
 	title?: React.ReactNode
 	user?: boolean
-	navigation?: boolean
-	workspace?: boolean
 }
 
 declare module "@tanstack/react-router" {

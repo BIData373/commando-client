@@ -18,7 +18,6 @@ export const Route = createFileRoute("/")({
 	staticData: {
 		header: {
 			title: "סביבות",
-			navigation: false,
 			user: false,
 		},
 	},

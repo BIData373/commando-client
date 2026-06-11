@@ -16,8 +16,6 @@ export const Route = createFileRoute("/workspace/$urlName/settings")({
 		header: {
 			title: "הגדרות סביבת המפקד",
 			user: true,
-			navigation: true,
-			workspace: true,
 		},
 	},
 })
