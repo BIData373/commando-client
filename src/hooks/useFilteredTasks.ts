@@ -28,10 +28,10 @@ function getTaskDate(
 	}
 }
 
-export function useFilteredTasks(
-	tasks: TaskWithOptionalWorkspaceDto[],
-	additionalFilter?: (task: TaskWithOptionalWorkspaceDto) => boolean,
-): TaskWithOptionalWorkspaceDto[] {
+export function useFilteredTasks<T extends TaskDto>(
+	tasks: T[],
+	additionalFilter?: (task: T) => boolean,
+): T[] {
 	const { searchQuery, activeQuickFilters, dateRange, dateType } =
 		useTasksFilters()
 
