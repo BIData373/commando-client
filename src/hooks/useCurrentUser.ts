@@ -2,6 +2,7 @@ import { useLocalStorage } from "@mantine/hooks"
 import { useEffect, useState } from "react"
 import type { CreateUserDto } from "src/api/model"
 import { isBIKey, requestUsernameKey, resolveBypassValues } from "src/axios"
+import { getStoredToken } from "src/utils/auth-utils"
 import { IS_BI, STATIC_TOKEN } from "src/utils/env-utils"
 import {
 	COOKIE_NAME,
@@ -50,8 +51,8 @@ export function useCurrentUser() {
 		}
 
 		async function syncUser() {
-			const cookie = await cookieStore.get(COOKIE_NAME).catch(() => null)
-			const ssoUser = decodeSsoUserJwt(cookie?.value)
+			const cookie = await getStoredToken()
+			const ssoUser = decodeSsoUserJwt(cookie)
 
 			const upn = storedUsername ?? ssoUser?.upn
 			const isBI =
