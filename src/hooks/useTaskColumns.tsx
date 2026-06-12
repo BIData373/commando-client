@@ -239,6 +239,7 @@ function useTaskColumns({
 					<StatusDropdown
 						status={status}
 						assigneeId={assignee.id}
+						assigneeUsers={assignee.users}
 						taskId={id}
 						workspaceId={workspaceId}
 						onUpdate={onUpdateStatus}

@@ -11,9 +11,12 @@ export const CHAT_LINK = import.meta.env.VITE_CHAT_LINK
 
 export const STATIC_TOKEN = import.meta.env.VITE_STATIC_TOKEN
 export const IS_BI = (import.meta.env.VITE_IS_BI ?? "true") === "true"
-export const MATOMO_ENABLED = import.meta.env.VITE_MATOMO_ENABLED === "true"
+
 export const REQUEST_USERNAME = import.meta.env.VITE_REQUEST_USERNAME
 
 export const MESIBA_S3_URL = import.meta.env.VITE_MESIBA_S3_URL
 
 export const AUTH_SERVER_URL = import.meta.env.VITE_SSO_URL ?? ""
+
+export const MATOMO_ENABLED = import.meta.env.VITE_MATOMO_ENABLED === "true"
+export const MATOMO_SITE_ID = import.meta.env.VITE_MATOMO_SITE_ID

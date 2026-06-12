@@ -1,25 +1,24 @@
 import styled from "@emotion/styled"
-import { forwardRef, type ReactNode } from "react"
+import { type ButtonHTMLAttributes, forwardRef, type ReactNode } from "react"
 import { Spinner } from "../ui/spinner"
 
-interface PrimaryButtonProps {
-	onClick?(): void
+interface PrimaryButtonProps
+	extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "title"> {
 	title: ReactNode
 	height?: number
 	width?: number
-	disabled?: boolean
 	loading?: boolean
 }
 
 export const PrimaryButton = forwardRef<HTMLButtonElement, PrimaryButtonProps>(
-	({ onClick, title, height, width, disabled, loading }, ref) => {
+	({ title, height, width, disabled, loading, ...rest }, ref) => {
 		return (
 			<Button
 				ref={ref}
-				onClick={onClick}
 				$height={height}
 				$width={width}
 				disabled={disabled || loading}
+				{...rest}
 			>
 				{title}
 				{loading && <Spinner />}

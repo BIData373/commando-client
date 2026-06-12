@@ -1,7 +1,10 @@
 import styled from "@emotion/styled"
+import { Avatar } from "radix-ui"
 import type { AssigneeDto } from "src/api/model"
 import { formatMesibaIcon } from "src/utils/icon-utils"
-import { Avatar, AvatarFallback } from "../ui/avatar"
+import { AvatarFallback } from "../ui/avatar"
+
+const DEFAULT_SIZE = 32
 
 interface AssigneeAvatarProps {
 	assignee: AssigneeDto
@@ -20,57 +23,52 @@ function getInitials(name: string): string {
 
 export const AssigneeAvatar = ({
 	assignee,
-	size,
+	size = DEFAULT_SIZE,
 	ref,
 	cursor,
 	...props
 }: AssigneeAvatarProps) => {
 	return (
-		<StyledAvatar $cursor={cursor} ref={ref} {...props}>
-			{assignee.icon ? (
-				<EmblemAvatarImg
-					$size={size}
-					src={formatMesibaIcon(assignee.icon)}
-					alt={assignee.name}
-				/>
-			) : (
-				<ColoredFallback $size={size} $color={assignee.color}>
-					{getInitials(assignee.name)}
-				</ColoredFallback>
-			)}
-		</StyledAvatar>
+		<StyledRoot $size={size} $cursor={cursor} ref={ref} {...props}>
+			<StyledImage
+				$size={size}
+				src={formatMesibaIcon(assignee.icon)}
+				alt={assignee.name}
+			/>
+			<ColoredFallback $size={size} $color={assignee.color}>
+				{getInitials(assignee.name)}
+			</ColoredFallback>
+		</StyledRoot>
 	)
 }
 
-const StyledAvatar = styled(Avatar)<{ $cursor?: boolean }>`
-	display: flex;
-	align-items: center;
+const StyledRoot = styled(Avatar.Root)<{
+	$size: number
+	$cursor?: boolean
+}>`
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  width: ${({ $size }) => $size}px;
+  height: ${({ $size }) => $size}px;
+  cursor: ${({ $cursor }) => ($cursor ? "pointer" : "default")};
+`
 
-	&:hover {
-      cursor: ${({ $cursor }) => ($cursor ? "pointer" : "default")};
-    }
-
-	::after {
-      content: none;
-      border: none;
-  	}
+const StyledImage = styled(Avatar.Image)<{ $size: number }>`
+  width: ${({ $size }) => $size}px;
+  height: ${({ $size }) => $size}px;
+  object-fit: contain;
 `
 
 const ColoredFallback = styled(AvatarFallback)<{
 	$color: string | null
-	$size?: number
+	$size: number
 }>`
   background: ${({ $color }) => $color ?? "var(--chip-bg)"};
   color: var(--background);
   font-size: var(--fs-btn);
   font-weight: 400;
-  width: ${({ $size }) => ($size ? `${$size}px` : "none")};
-  height: ${({ $size }) => ($size ? `${$size}px` : "none")};
-`
-
-const EmblemAvatarImg = styled.img<{ $size?: number }>`
-  width: ${({ $size }) => ($size ? `${$size}px` : "none")};
-  height: ${({ $size }) => ($size ? `${$size}px` : "none")};
-  object-fit: contain;
+  width: ${({ $size }) => $size}px;
+  height: ${({ $size }) => $size}px;
   border-radius: 50%;
 `
