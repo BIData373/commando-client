@@ -233,9 +233,9 @@ function useTaskColumns({
 				row: {
 					original: { id, status, assignee, workspaceId },
 				},
-			}) => {
-				if (!status || !assignee) return null
-				return (
+			}) =>
+				status &&
+				assignee && (
 					<StatusDropdown
 						status={status}
 						assigneeId={assignee.id}
@@ -244,8 +244,7 @@ function useTaskColumns({
 						workspaceId={workspaceId}
 						onUpdate={onUpdateStatus}
 					/>
-				)
-			},
+				),
 		},
 		{
 			id: "assigneeStatuses",
