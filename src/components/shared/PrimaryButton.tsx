@@ -2,7 +2,8 @@ import styled from "@emotion/styled"
 import { type ButtonHTMLAttributes, forwardRef, type ReactNode } from "react"
 import { Spinner } from "../ui/spinner"
 
-interface PrimaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface PrimaryButtonProps
+	extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "title"> {
 	title: ReactNode
 	height?: number
 	width?: number
