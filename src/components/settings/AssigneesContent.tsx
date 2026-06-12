@@ -2,7 +2,10 @@ import styled from "@emotion/styled"
 import { CircleQuestionMarkIcon, Plus, Search } from "lucide-react"
 import { type ChangeEvent, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
-import { useUpdateWorkspace } from "src/api/workspace/workspace"
+import {
+	getGetWorkspaceQueryKey,
+	useUpdateWorkspace,
+} from "src/api/workspace/workspace"
 import { AssigneeCard } from "src/components/settings/AssigneeCard"
 import { AssigneeDialog } from "src/components/settings/AssigneeDialog"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
@@ -20,6 +23,7 @@ import {
 } from "src/components/ui/tooltip"
 import { useFuse } from "src/hooks/useFuse"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { invalidateQueries } from "src/queryClient"
 import addPerson from "../../assets/icons/addPerson.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { Spinner } from "../ui/spinner"
@@ -32,7 +36,13 @@ export function AssigneesContent() {
 		setWorkspace,
 	} = useWorkspace()
 
-	const { mutateAsync: updateSettings } = useUpdateWorkspace()
+	const { mutateAsync: updateSettings } = useUpdateWorkspace({
+		mutation: {
+			onSuccess(data) {
+				setWorkspace(data)
+			},
+		},
+	})
 
 	const [searchQuery, setSearchQuery] = useState("")
 	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -45,17 +55,10 @@ export function AssigneesContent() {
 	})
 
 	function handleCheckboxChange(checked: boolean) {
-		updateSettings(
-			{
-				pathParams: { id: workspaceId },
-				data: { assigneeStatusEditable: checked },
-			},
-			{
-				onSuccess(data) {
-					setWorkspace(data)
-				},
-			},
-		)
+		updateSettings({
+			pathParams: { id: workspaceId },
+			data: { assigneeStatusEditable: checked },
+		})
 	}
 
 	function handleSearchChange(e: ChangeEvent<HTMLInputElement>) {
@@ -74,7 +77,7 @@ export function AssigneesContent() {
 			/>
 			<StyledContent>
 				<CheckboxRow>
-					<Checkbox
+					<StyledCheckbox
 						id={assigneeStatusEditableId}
 						checked={assigneeStatusEditable}
 						onCheckedChange={handleCheckboxChange}
@@ -145,6 +148,13 @@ export function AssigneesContent() {
 		</ContentRoot>
 	)
 }
+
+const StyledCheckbox = styled(Checkbox)`
+  &:not([data-state="checked"]) {
+    background: var(--background);
+    border-color: var(--card-border);
+  }
+`
 
 const SearchWrapper = styled.div`
   max-width: 300px;

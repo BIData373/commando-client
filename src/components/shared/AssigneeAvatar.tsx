@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import type { AssigneeDto } from "src/api/model"
 import { formatMesibaIcon } from "src/utils/icon-utils"
-import { Avatar, AvatarFallback } from "../ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 
 interface AssigneeAvatarProps {
 	assignee: AssigneeDto
@@ -27,17 +27,14 @@ export const AssigneeAvatar = ({
 }: AssigneeAvatarProps) => {
 	return (
 		<StyledAvatar $cursor={cursor} ref={ref} {...props}>
-			{assignee.icon ? (
-				<EmblemAvatarImg
-					$size={size}
-					src={formatMesibaIcon(assignee.icon)}
-					alt={assignee.name}
-				/>
-			) : (
-				<ColoredFallback $size={size} $color={assignee.color}>
-					{getInitials(assignee.name)}
-				</ColoredFallback>
-			)}
+			<EmblemAvatarImg
+				$size={size}
+				src={formatMesibaIcon(assignee.icon)}
+				alt={assignee.name}
+			/>
+			<ColoredFallback $size={size} $color={assignee.color}>
+				{getInitials(assignee.name)}
+			</ColoredFallback>
 		</StyledAvatar>
 	)
 }
@@ -68,7 +65,7 @@ const ColoredFallback = styled(AvatarFallback)<{
   height: ${({ $size }) => ($size ? `${$size}px` : "none")};
 `
 
-const EmblemAvatarImg = styled.img<{ $size?: number }>`
+const EmblemAvatarImg = styled(AvatarImage)<{ $size?: number }>`
   width: ${({ $size }) => ($size ? `${$size}px` : "none")};
   height: ${({ $size }) => ($size ? `${$size}px` : "none")};
   object-fit: contain;
