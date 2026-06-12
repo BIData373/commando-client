@@ -1,7 +1,14 @@
 import styled from "@emotion/styled"
 import { useState } from "react"
-import type { WorkspaceStatusDto } from "src/api/model"
+import {
+	PermissionType,
+	type UserDto,
+	type WorkspaceStatusDto,
+} from "src/api/model"
+import { useGetMyPermission } from "src/api/permission/permission"
+import { useGetWorkspace } from "src/api/workspace/workspace"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
+import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { StatusTag } from "../shared/StatusTag"
 import {
 	DropdownMenu,
@@ -15,6 +22,7 @@ interface StatusDropdownProps {
 	taskId: number
 	workspaceId: number
 	assigneeId: number
+	assigneeUsers: UserDto[]
 	onUpdate: (taskId: number, assigneeId: number, statusId: number) => void
 	withArrow?: boolean
 }
@@ -24,48 +32,60 @@ export function StatusDropdown({
 	taskId,
 	assigneeId,
 	workspaceId,
+	assigneeUsers,
 	onUpdate,
 	withArrow = false,
 }: StatusDropdownProps) {
 	const [isOpen, setIsOpen] = useState(false)
 
+	const currentUser = useCurrentUser()
+	const { data: workspace } = useGetWorkspace({ id: workspaceId })
+	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const { data: statuses = [], isLoading } = useListWorkspaceStatuses({
 		workspaceId,
 	})
 
+	const isManager = myPermission?.type === PermissionType.MANAGER
+	const isAssignee = assigneeUsers.some((u) => u.upn === currentUser.upn)
+	const editable =
+		isManager || (!!workspace?.assigneeStatusEditable && isAssignee)
+
 	function handleSelectStatus(newStatusId: number) {
-		if (newStatusId === status.id) {
-			return
-		}
+		if (newStatusId === status.id) return
 		onUpdate(taskId, assigneeId, newStatusId)
 	}
 
 	return (
 		!isLoading && (
 			<CellCenter>
-				<DropdownMenu onOpenChange={setIsOpen}>
-					<DropdownMenuTrigger asChild>
-						<TriggerWrapper tabIndex={0}>
-							<StatusTag
-								open={isOpen}
-								status={status}
-								interactive
-								withArrow={withArrow}
-							/>
-						</TriggerWrapper>
-					</DropdownMenuTrigger>
-					<StatusDropdownContent align="center" sideOffset={6}>
-						{Object.values(statuses).map((s) => (
-							<StatusDropdownItem
-								key={s.id}
-								$selected={s.id === status.id}
-								onSelect={() => handleSelectStatus(s.id)}
-							>
-								<StatusTag status={s} />
-							</StatusDropdownItem>
-						))}
-					</StatusDropdownContent>
-				</DropdownMenu>
+				{editable ? (
+					<DropdownMenu onOpenChange={setIsOpen}>
+						<DropdownMenuTrigger asChild>
+							<TriggerWrapper tabIndex={0}>
+								<StatusTag
+									open={isOpen}
+									status={status}
+									interactive
+									editable
+									withArrow={withArrow}
+								/>
+							</TriggerWrapper>
+						</DropdownMenuTrigger>
+						<StatusDropdownContent align="center" sideOffset={6}>
+							{Object.values(statuses).map((s) => (
+								<StatusDropdownItem
+									key={s.id}
+									$selected={s.id === status.id}
+									onSelect={() => handleSelectStatus(s.id)}
+								>
+									<StatusTag status={s} />
+								</StatusDropdownItem>
+							))}
+						</StatusDropdownContent>
+					</DropdownMenu>
+				) : (
+					<StatusTag status={status} />
+				)}
 			</CellCenter>
 		)
 	)
@@ -74,6 +94,7 @@ export function StatusDropdown({
 const CellCenter = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
 `
 
 const TriggerWrapper = styled.span`

@@ -2,9 +2,10 @@ import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
 import type { ColumnFiltersState } from "@tanstack/react-table"
 import { concat, uniq } from "lodash"
-import { ChevronDown, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
+import { PermissionType } from "src/api/model"
+import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
@@ -14,17 +15,11 @@ import {
 	type TasksSearchSchemaType,
 	TasksView,
 } from "src/routes/workspace/$urlName/tasks"
-import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new"
 import type { QuickFilter } from "src/utils/filter-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
+import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
 import { TooltipProvider } from "../ui/tooltip"
 import { TaskCardGrid } from "./TaskCardGrid"
 import { TaskFilters } from "./TaskFilters"
@@ -61,6 +56,8 @@ function TasksLayout({
 		isLoading,
 	} = useListTasks({ workspaceId })
 
+	const { data: myPermission } = useGetMyPermission({ workspaceId })
+
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
 	)
@@ -85,6 +82,26 @@ function TasksLayout({
 
 	const allTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
 
+	const taskPermissions = useMemo(() => {
+		const result: Record<
+			number,
+			{ canDelete: boolean; canChangeStatus: boolean }
+		> = {}
+		filteredTaskRows.forEach((task) => {
+			const isManager =
+				task.workspace?.permissionType === PermissionType.MANAGER
+			const isAssignee =
+				task.assignee?.users.some((u) => u.upn === myPermission?.user.upn) ??
+				false
+			result[task.id] = {
+				canDelete: isManager,
+				canChangeStatus:
+					isManager || (!!task.workspace?.assigneeStatusEditable && isAssignee),
+			}
+		})
+		return result
+	}, [filteredTaskRows, myPermission?.user.upn])
+
 	const urlColumnFilters: ColumnFiltersState = [
 		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
 		...(deadlineTypeFilter.length
@@ -106,14 +123,6 @@ function TasksLayout({
 		})
 	}
 
-	function navigateWithMode(mode: NewTaskMode) {
-		navigate({
-			to: "/workspace/$urlName/tasks/new",
-			params: { urlName },
-			search: { view, mode },
-		})
-	}
-
 	function handleOpenTask(taskId: number) {
 		navigate({
 			to: "/workspace/$urlName/tasks/$taskId",
@@ -128,14 +137,6 @@ function TasksLayout({
 			params: { urlName, taskId: String(taskId) },
 			search: { view },
 		})
-	}
-
-	function handleCreateTask() {
-		navigateWithMode(NewTaskMode.SINGLE)
-	}
-
-	function handleCreateTaskFromDiscussion() {
-		navigateWithMode(NewTaskMode.DISCUSSION)
 	}
 
 	function handleToggleTabFilter(filter: QuickFilter) {
@@ -174,30 +175,16 @@ function TasksLayout({
 	// 	navigateToTasks({ view: newView })
 	// }
 
+	const isManager = myPermission?.type === PermissionType.MANAGER
+
 	useRenderInHeader(
 		"titleBar",
 		<ButtonGroup>
-			<DropdownMenu>
-				<DropdownMenuTrigger asChild>
-					<CreateButton>
-						<Plus size={18} color="white" />
-						<CreateButtonText>צור הנחייה</CreateButtonText>
-						<ChevronDown size={18} color="white" />
-					</CreateButton>
-				</DropdownMenuTrigger>
-				<StyledDropdownContent align="end" sideOffset={6}>
-					<StyledDropdownItem onSelect={handleCreateTaskFromDiscussion}>
-						הנחיות מתוך דיון
-					</StyledDropdownItem>
-					<StyledDropdownItem onSelect={handleCreateTask}>
-						הנחייה בודדת
-					</StyledDropdownItem>
-				</StyledDropdownContent>
-			</DropdownMenu>
+			{isManager && <CreateTaskButton view={view} />}
 			{/* <SectionDivider />
 				<ViewToggle view={view} onViewChange={handleViewChange} /> */}
 		</ButtonGroup>,
-		[urlName],
+		[urlName, view, isManager],
 	)
 
 	return (
@@ -232,12 +219,14 @@ function TasksLayout({
 						<TaskTable
 							queryKey={queryKey}
 							tasks={filteredTaskRows}
+							workspaceId={workspaceId}
 							onEdit={handleEdit}
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
 							onFiltersChange={handleColumnFiltersChange}
 							onDoubleClick={handleOpenTask}
 							isLoading={isLoading}
+							taskPermissions={taskPermissions}
 						/>
 					) : (
 						<TaskCardGrid tasks={filteredTasks} />
@@ -277,76 +266,4 @@ const ButtonGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-`
-
-const CreateButton = styled.button`
-  direction: rtl;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 40px;
-  padding-inline: 15px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(165deg, #615FFF 0%, #9810FA 100%);
-  color: white;
-  font-size: var(--fs-base);
-  font-weight: 400;
-  line-height: 24px;
-  cursor: pointer;
-  white-space: nowrap;
-  position: relative;
-  outline: none;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: inset 0px 2px 4px 0px rgba(0, 0, 0, 0.05);
-    pointer-events: none;
-  }
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:active {
-    opacity: 0.85;
-  }
-`
-
-const CreateButtonText = styled.span`
-  direction: rtl;
-`
-
-// ─── Create Dropdown ─────────────────────────────────────────────────────────
-
-const StyledDropdownContent = styled(DropdownMenuContent)`
-  direction: rtl;
-  min-width: var(--radix-dropdown-menu-trigger-width);
-  padding: 4px;
-  border-radius: 8px;
-  box-shadow:
-    0px 9px 28px 0px rgba(0, 0, 0, 0.05),
-    0px 3px 6px -4px rgba(0, 0, 0, 0.12),
-    0px 6px 16px 0px rgba(0, 0, 0, 0.08);
-`
-
-const StyledDropdownItem = styled(DropdownMenuItem)`
-  direction: rtl;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  height: 32px;
-  padding-inline: 12px;
-  padding-block: 5px;
-  border-radius: 4px;
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
-  white-space: nowrap;
-  cursor: pointer;
 `

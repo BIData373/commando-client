@@ -7,14 +7,12 @@ import { AssigneeContainer } from "./AssigneeContainer"
 interface AssigneeSectionProps {
 	taskId: number
 	workspaceId: number
-	assigneeStatusEditable?: boolean | null
 	assigneeStatuses: AssigneeStatusDto[]
 }
 
 export const AssigneeSection = ({
 	taskId,
 	workspaceId,
-	assigneeStatusEditable,
 	assigneeStatuses,
 }: AssigneeSectionProps) => {
 	const currentUser = useCurrentUser()
@@ -58,7 +56,6 @@ export const AssigneeSection = ({
 								key={item.assignee.id}
 								taskId={taskId}
 								workspaceId={workspaceId}
-								assigneeStatusEditable={assigneeStatusEditable}
 								assignee={item}
 								isAdmin={isAdmin}
 								editable={true}
@@ -77,7 +74,6 @@ export const AssigneeSection = ({
 									key={item.assignee.id}
 									taskId={taskId}
 									workspaceId={workspaceId}
-									assigneeStatusEditable={assigneeStatusEditable}
 									assignee={item}
 									isAdmin={isAdmin}
 									editable={false}

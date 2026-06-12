@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
+import { useListAssignees } from "src/api/assignee/assignee"
 import AssigneePicker from "../shared/AssigneePicker"
 import type { AssigneeExtra } from "../shared/AssigneeRow"
 import AssigneeRowList from "../shared/AssigneeRow"
@@ -35,6 +36,11 @@ function AssigneeField({
 	onStatusChange,
 	taskId,
 }: AssigneeFieldProps) {
+	const { data: allAssignees = [] } = useListAssignees({ workspaceId })
+	const assignees = allAssignees.filter(({ id }) =>
+		selectedAssignees.includes(id),
+	)
+
 	return (
 		<>
 			<AssigneeSection>
@@ -66,9 +72,9 @@ function AssigneeField({
 					</EmptyAssigneesBox>
 				) : (
 					<AssigneeRowList
-						workspaceId={workspaceId}
-						assigneeIds={selectedAssignees}
+						assignees={assignees}
 						directiveTitle={directiveTitle}
+						workspaceId={workspaceId}
 						showDetail={selectedAssignees.length > 1}
 						detailPlaceholder="פירוט נוסף לאחראי"
 						assigneeExtras={assigneeExtras}

@@ -5,6 +5,7 @@ import type { WorkspaceStatusDto } from "src/api/model"
 interface StatusTagProps {
 	status: WorkspaceStatusDto
 	interactive?: boolean
+	editable?: boolean
 	withArrow?: boolean
 	open?: boolean
 }
@@ -12,6 +13,7 @@ interface StatusTagProps {
 export function StatusTag({
 	status: { name, color },
 	interactive,
+	editable,
 	withArrow = false,
 	open = false,
 }: StatusTagProps) {
@@ -20,6 +22,7 @@ export function StatusTag({
 			$fontColor={color}
 			$backgroundColor={color}
 			$interactive={interactive}
+			$editable={editable}
 			$withArrow={withArrow}
 		>
 			{name}
@@ -39,6 +42,7 @@ const Tag = styled.span<{
 	$fontColor: string
 	$backgroundColor: string
 	$interactive?: boolean
+	$editable?: boolean
 	$withArrow?: boolean
 }>`
   display: inline-flex;
@@ -51,7 +55,8 @@ const Tag = styled.span<{
   font-size: var(--fs-sm);
   line-height: 20px;
   white-space: nowrap;
-  cursor: ${({ $interactive }) => ($interactive ? "pointer" : "default")};
+  cursor: ${({ $interactive, $editable }) =>
+		$interactive ? ($editable ? "pointer" : "not-allowed") : "default"};
   ${({ $fontColor }) => `color: ${$fontColor};`}
   ${({ $backgroundColor }) => `background:  rgb(from ${$backgroundColor} r g b / 0.1);`}
 

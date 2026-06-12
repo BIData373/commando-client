@@ -1,20 +1,19 @@
 import styled from "@emotion/styled"
 import { useNavigate, useParams } from "@tanstack/react-router"
-import { ChevronDown, Plus, Users } from "lucide-react"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new"
+import { Users } from "lucide-react"
+import { PermissionType } from "src/api/model"
+import { useGetMyPermission } from "src/api/permission/permission"
+import { useListWorkspaces } from "src/api/workspace/workspace"
+import { CreateTaskButton } from "src/components/shared/CreateTaskButton"
 
 export const TitleSection = () => {
 	const { urlName } = useParams({ from: "/workspace/$urlName/dashboard" })
 	const navigate = useNavigate()
+	const { data: workspaces = [] } = useListWorkspaces()
+	const workspaceId = workspaces.find((w) => w.urlName === urlName)?.id ?? 0
+	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
-	function handleNavigateToNewInstruction() {
-		navigate({
-			to: "/workspace/$urlName/tasks/new",
-			params: { urlName },
-			search: { view: TasksView.TABLE, mode: NewTaskMode.SINGLE },
-		})
-	}
+	const isManager = myPermission?.type === PermissionType.MANAGER
 
 	function handleNavigateToAssigneeSettings() {
 		navigate({
@@ -30,17 +29,15 @@ export const TitleSection = () => {
 				<TitleDivider />
 				<WorkspaceName>לשכת מקשא&quot;פ</WorkspaceName>
 			</TitleGroup>
-			<ButtonGroup>
-				<AssigneesButton onClick={handleNavigateToAssigneeSettings}>
-					<Users size={16} />
-					הגדרת מקבלי הנחיות
-				</AssigneesButton>
-				<CreateButton onClick={handleNavigateToNewInstruction}>
-					<Plus size={16} />
-					צור הנחייה
-					<ChevronDown size={16} />
-				</CreateButton>
-			</ButtonGroup>
+			{isManager && (
+				<ButtonGroup>
+					<AssigneesButton onClick={handleNavigateToAssigneeSettings}>
+						<Users size={16} />
+						הגדרת מקבלי הנחיות
+					</AssigneesButton>
+					<CreateTaskButton context="dashboard" />
+				</ButtonGroup>
+			)}
 		</TitleSectionContainer>
 	)
 }
@@ -84,27 +81,6 @@ const ButtonGroup = styled.div`
   display: flex;
   gap: 12px;
   align-items: center;
-`
-
-const CreateButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 15px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(165deg, var(--purple-start) 0%, var(--purple-end) 100%);
-  color: var(--primary-foreground);
-  font-size: var(--fs-base);
-  font-weight: 400;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: opacity 0.15s;
-
-  &:hover {
-    opacity: 0.9;
-  }
 `
 
 const AssigneesButton = styled.button`

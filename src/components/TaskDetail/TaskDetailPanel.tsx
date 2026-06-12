@@ -48,7 +48,7 @@ function TaskDetailPanel({
 		source,
 		tags,
 		assigneeStatuses,
-		workspace: { id: workspaceId, assigneeStatusEditable },
+		workspace: { id: workspaceId },
 	},
 	onClose,
 	onDelete,
@@ -170,7 +170,6 @@ function TaskDetailPanel({
 						<AssigneeSection
 							taskId={id}
 							workspaceId={workspaceId}
-							assigneeStatusEditable={assigneeStatusEditable}
 							assigneeStatuses={assigneeStatuses}
 						/>
 

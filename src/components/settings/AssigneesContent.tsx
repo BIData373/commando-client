@@ -32,7 +32,13 @@ export function AssigneesContent() {
 		setWorkspace,
 	} = useWorkspace()
 
-	const { mutateAsync: updateSettings } = useUpdateWorkspace()
+	const { mutateAsync: updateSettings } = useUpdateWorkspace({
+		mutation: {
+			onSuccess(data) {
+				setWorkspace(data)
+			},
+		},
+	})
 
 	const [searchQuery, setSearchQuery] = useState("")
 	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -45,17 +51,10 @@ export function AssigneesContent() {
 	})
 
 	function handleCheckboxChange(checked: boolean) {
-		updateSettings(
-			{
-				pathParams: { id: workspaceId },
-				data: { assigneeStatusEditable: checked },
-			},
-			{
-				onSuccess(data) {
-					setWorkspace(data)
-				},
-			},
-		)
+		updateSettings({
+			pathParams: { id: workspaceId },
+			data: { assigneeStatusEditable: checked },
+		})
 	}
 
 	function handleSearchChange(e: ChangeEvent<HTMLInputElement>) {
@@ -74,7 +73,7 @@ export function AssigneesContent() {
 			/>
 			<StyledContent>
 				<CheckboxRow>
-					<Checkbox
+					<StyledCheckbox
 						id={assigneeStatusEditableId}
 						checked={assigneeStatusEditable}
 						onCheckedChange={handleCheckboxChange}
@@ -145,6 +144,13 @@ export function AssigneesContent() {
 		</ContentRoot>
 	)
 }
+
+const StyledCheckbox = styled(Checkbox)`
+  &:not([data-state="checked"]) {
+    background: var(--background);
+    border-color: var(--card-border);
+  }
+`
 
 const SearchWrapper = styled.div`
   max-width: 300px;

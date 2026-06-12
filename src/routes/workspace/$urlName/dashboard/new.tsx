@@ -4,21 +4,20 @@ import {
 	newTaskSearchSchema,
 } from "src/components/shared/NewTaskModal"
 
-export const Route = createFileRoute("/workspace/$urlName/tasks/new")({
-	component: NewTask,
+export const Route = createFileRoute("/workspace/$urlName/dashboard/new")({
+	component: DashboardNewTask,
 	validateSearch: newTaskSearchSchema,
 })
 
-function NewTask() {
+function DashboardNewTask() {
 	const { urlName } = Route.useParams()
-	const { view, mode } = Route.useSearch()
+	const { mode } = Route.useSearch()
 	const navigate = useNavigate()
 
 	function handleClose() {
 		navigate({
-			to: "/workspace/$urlName/tasks",
+			to: "/workspace/$urlName/dashboard",
 			params: { urlName },
-			search: { view },
 		})
 	}
 
