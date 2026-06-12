@@ -9,7 +9,6 @@ import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assign
 import { DeadlineType, type TaskDto } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
-import { useCurrentUser } from "src/hooks/useCurrentUser"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
 import { formatMesibaIcon } from "src/utils/icon-utils"
@@ -86,8 +85,6 @@ function useTaskColumns({
 	selectMode,
 	actions,
 }: UseTaskColumnsOptions) {
-	const currentUser = useCurrentUser()
-
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
 			onSuccess: ({ task }) => {

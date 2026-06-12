@@ -10,7 +10,11 @@ import type {
 import type React from "react"
 import { useMemo, useState } from "react"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
-import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
+import type {
+	DeadlineType,
+	WorkspaceStatusDto,
+	WorkspaceStatusType,
+} from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import {
@@ -33,7 +37,7 @@ interface TaskPermissions {
 interface TaskTableProps {
 	queryKey: QueryKey
 	tasks: TaskRow[]
-	workspaceId: number
+	workspaceId?: number
 	onEdit?: (taskId: number) => void
 	onDoubleClick?: (taskId: number) => void
 	extraColumns?: Record<string, ColumnDef<TaskRow>>
@@ -52,7 +56,7 @@ interface TaskTableProps {
 function TaskTable({
 	queryKey,
 	tasks,
-	workspaceId,
+	workspaceId = 0,
 	onEdit = () => {},
 	onDoubleClick,
 	extraColumns,

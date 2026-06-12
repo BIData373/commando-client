@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { ChevronUp } from "lucide-react"
+import { useListAssignees } from "src/api/assignee/assignee"
 import type { AssigneeExtra } from "../shared/AssigneeRow"
 import AssigneeRowList from "../shared/AssigneeRow"
 
@@ -34,6 +35,9 @@ function AssigneeExpansionPanel({
 	onRemoveAssignee,
 	onCollapse,
 }: AssigneeExpansionPanelProps) {
+	const { data: allAssignees = [] } = useListAssignees({ workspaceId })
+	const assignees = allAssignees.filter(({ id }) => assigneeIds.includes(id))
+
 	return (
 		<PanelContainer>
 			<PanelHeader>
@@ -46,9 +50,9 @@ function AssigneeExpansionPanel({
 
 			<RowsWrapper>
 				<AssigneeRowList
-					workspaceId={workspaceId}
-					assigneeIds={assigneeIds}
+					assignees={assignees}
 					directiveTitle={directiveTitle}
+					workspaceId={workspaceId}
 					assigneeExtras={toExtras(assigneeDetails)}
 					onDetailChange={onDetailChange}
 					onRemove={onRemoveAssignee}

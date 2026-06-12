@@ -1,8 +1,7 @@
 import styled from "@emotion/styled"
 import { X } from "lucide-react"
 import { useRef } from "react"
-import { useListAssignees } from "src/api/assignee/assignee"
-import type { WorkspaceStatusDto } from "src/api/model"
+import type { AssigneesDto, WorkspaceStatusDto } from "src/api/model"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
 import { AssigneeAvatar } from "./AssigneeAvatar"
 
@@ -14,9 +13,9 @@ export interface AssigneeExtra {
 }
 
 interface AssigneeRowListProps {
-	workspaceId: number
-	assigneeIds: number[]
+	assignees: AssigneesDto[]
 	directiveTitle: string
+	workspaceId: number
 	assigneeExtras?: Record<number, AssigneeExtra>
 	showDetail?: boolean
 	detailPlaceholder?: string
@@ -33,9 +32,9 @@ interface AssigneeRowListProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function AssigneeRowList({
-	workspaceId,
-	assigneeIds,
+	assignees,
 	directiveTitle,
+	workspaceId,
 	assigneeExtras,
 	showDetail = true,
 	detailPlaceholder = "פירוט לאחראי",
@@ -45,12 +44,6 @@ function AssigneeRowList({
 	taskId,
 }: AssigneeRowListProps) {
 	const detailRefs = useRef<Record<number, HTMLSpanElement | null>>({})
-
-	const { data: assignees } = useListAssignees({ workspaceId })
-
-	const filteredAssignees = (assignees ?? []).filter(({ id }) =>
-		assigneeIds.includes(id),
-	)
 
 	function handleDetailInput(id: number, e: React.FormEvent<HTMLSpanElement>) {
 		onDetailChange(id, e.currentTarget.textContent ?? "")
@@ -76,7 +69,7 @@ function AssigneeRowList({
 
 	return (
 		<RowsList>
-			{filteredAssignees.map((assignee) => (
+			{assignees.map((assignee) => (
 				<RowItem key={assignee.id}>
 					<RemoveButton onClick={() => onRemove(assignee.id)}>
 						<X size={14} />

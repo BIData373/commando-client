@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Avatar as AvatarPrimitive } from "radix-ui"
+import { Avatar } from "radix-ui"
 import type { AssigneeDto } from "src/api/model"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import { AvatarFallback } from "../ui/avatar"
@@ -42,7 +42,7 @@ export const AssigneeAvatar = ({
 	)
 }
 
-const StyledRoot = styled(AvatarPrimitive.Root)<{
+const StyledRoot = styled(Avatar.Root)<{
 	$size: number
 	$cursor?: boolean
 }>`
@@ -54,7 +54,7 @@ const StyledRoot = styled(AvatarPrimitive.Root)<{
   cursor: ${({ $cursor }) => ($cursor ? "pointer" : "default")};
 `
 
-const StyledImage = styled(AvatarPrimitive.Image)<{ $size: number }>`
+const StyledImage = styled(Avatar.Image)<{ $size: number }>`
   width: ${({ $size }) => $size}px;
   height: ${({ $size }) => $size}px;
   object-fit: contain;
