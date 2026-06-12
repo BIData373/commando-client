@@ -5,8 +5,10 @@ import { concat, uniq } from "lodash"
 import { ChevronDown, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
+import { PermissionType } from "src/api/model"
 import { useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
+import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -78,12 +80,33 @@ function TasksLayout({
 			: undefined,
 	)
 
+	const currentUser = useCurrentUser()
+
 	const filteredTaskRows = useMemo(
 		() => toTaskRows(filteredTasks),
 		[filteredTasks],
 	)
 
 	const allTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
+
+	const taskPermissions = useMemo(() => {
+		const result: Record<
+			number,
+			{ canDelete: boolean; canChangeStatus: boolean }
+		> = {}
+		filteredTaskRows.forEach((task) => {
+			const isManager =
+				task.workspace?.permissionType === PermissionType.MANAGER
+			const isAssignee =
+				task.assignee?.users.some((u) => u.upn === currentUser.upn) ?? false
+			result[task.id] = {
+				canDelete: isManager,
+				canChangeStatus:
+					isManager || (!!task.workspace?.assigneeStatusEditable && isAssignee),
+			}
+		})
+		return result
+	}, [filteredTaskRows, currentUser.upn])
 
 	const urlColumnFilters: ColumnFiltersState = [
 		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
@@ -232,12 +255,14 @@ function TasksLayout({
 						<TaskTable
 							queryKey={queryKey}
 							tasks={filteredTaskRows}
+							workspaceId={workspaceId}
 							onEdit={handleEdit}
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
 							onFiltersChange={handleColumnFiltersChange}
 							onDoubleClick={handleOpenTask}
 							isLoading={isLoading}
+							taskPermissions={taskPermissions}
 						/>
 					) : (
 						<TaskCardGrid tasks={filteredTasks} />

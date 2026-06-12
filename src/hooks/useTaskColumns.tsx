@@ -6,9 +6,10 @@ import { concat, map, uniq } from "lodash"
 import { AlertTriangle } from "lucide-react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
-import { DeadlineType, type TaskDto } from "src/api/model"
+import { DeadlineType, PermissionType, type TaskDto } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
+import { useCurrentUser } from "src/hooks/useCurrentUser"
 import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
 import { formatMesibaIcon } from "src/utils/icon-utils"
@@ -85,6 +86,8 @@ function useTaskColumns({
 	selectMode,
 	actions,
 }: UseTaskColumnsOptions) {
+	const currentUser = useCurrentUser()
+
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
 			onSuccess: ({ task }) => {
@@ -231,19 +234,25 @@ function useTaskColumns({
 				(rowA.original.status?.id ?? 0) - (rowB.original.status?.id ?? 0),
 			cell: ({
 				row: {
-					original: { id, status, assignee, workspaceId },
+					original: { id, status, assignee, workspaceId, workspace },
 				},
-			}) =>
-				status &&
-				assignee && (
+			}) => {
+				if (!status || !assignee) return null
+				const isManager = workspace?.permissionType === PermissionType.MANAGER
+				const isAssignee = assignee.users.some((u) => u.upn === currentUser.upn)
+				const editable =
+					isManager || (!!workspace?.assigneeStatusEditable && isAssignee)
+				return (
 					<StatusDropdown
 						status={status}
 						assigneeId={assignee.id}
 						taskId={id}
 						workspaceId={workspaceId}
 						onUpdate={onUpdateStatus}
+						editable={editable}
 					/>
-				),
+				)
+			},
 		},
 		{
 			id: "assigneeStatuses",

@@ -17,6 +17,7 @@ interface StatusDropdownProps {
 	assigneeId: number
 	onUpdate: (taskId: number, assigneeId: number, statusId: number) => void
 	withArrow?: boolean
+	editable?: boolean
 }
 
 export function StatusDropdown({
@@ -26,6 +27,7 @@ export function StatusDropdown({
 	workspaceId,
 	onUpdate,
 	withArrow = false,
+	editable = true,
 }: StatusDropdownProps) {
 	const [isOpen, setIsOpen] = useState(false)
 
@@ -42,38 +44,50 @@ export function StatusDropdown({
 
 	return (
 		!isLoading && (
-			<CellCenter>
-				<DropdownMenu onOpenChange={setIsOpen}>
-					<DropdownMenuTrigger asChild>
-						<TriggerWrapper tabIndex={0}>
-							<StatusTag
-								open={isOpen}
-								status={status}
-								interactive
-								withArrow={withArrow}
-							/>
-						</TriggerWrapper>
-					</DropdownMenuTrigger>
-					<StatusDropdownContent align="center" sideOffset={6}>
-						{Object.values(statuses).map((s) => (
-							<StatusDropdownItem
-								key={s.id}
-								$selected={s.id === status.id}
-								onSelect={() => handleSelectStatus(s.id)}
-							>
-								<StatusTag status={s} />
-							</StatusDropdownItem>
-						))}
-					</StatusDropdownContent>
-				</DropdownMenu>
+			<CellCenter $readOnly={!editable}>
+				{editable ? (
+					<DropdownMenu onOpenChange={setIsOpen}>
+						<DropdownMenuTrigger asChild>
+							<TriggerWrapper tabIndex={0}>
+								<StatusTag
+									open={isOpen}
+									status={status}
+									interactive
+									editable
+									withArrow={withArrow}
+								/>
+							</TriggerWrapper>
+						</DropdownMenuTrigger>
+						<StatusDropdownContent align="center" sideOffset={6}>
+							{Object.values(statuses).map((s) => (
+								<StatusDropdownItem
+									key={s.id}
+									$selected={s.id === status.id}
+									onSelect={() => handleSelectStatus(s.id)}
+								>
+									<StatusTag status={s} />
+								</StatusDropdownItem>
+							))}
+						</StatusDropdownContent>
+					</DropdownMenu>
+				) : (
+					<StatusTag status={status} interactive withArrow={withArrow} />
+				)}
 			</CellCenter>
 		)
 	)
 }
 
-const CellCenter = styled.div`
+const CellCenter = styled.div<{ $readOnly?: boolean }>`
   display: flex;
   justify-content: center;
+  ${({ $readOnly }) =>
+		$readOnly &&
+		`
+    position: absolute;
+    inset: 0;
+    align-items: center;
+  `}
 `
 
 const TriggerWrapper = styled.span`

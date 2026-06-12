@@ -7,16 +7,12 @@ import type {
 	RowSelectionState,
 	SortingState,
 } from "@tanstack/react-table"
-import { uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
-import type {
-	DeadlineType,
-	WorkspaceStatusDto,
-	WorkspaceStatusType,
-} from "src/api/model"
+import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
+import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import {
 	TASK_ROW_ID_SEPARATOR,
 	type TaskRow,
@@ -37,6 +33,7 @@ interface TaskPermissions {
 interface TaskTableProps {
 	queryKey: QueryKey
 	tasks: TaskRow[]
+	workspaceId: number
 	onEdit?: (taskId: number) => void
 	onDoubleClick?: (taskId: number) => void
 	extraColumns?: Record<string, ColumnDef<TaskRow>>
@@ -55,6 +52,7 @@ interface TaskTableProps {
 function TaskTable({
 	queryKey,
 	tasks,
+	workspaceId,
 	onEdit = () => {},
 	onDoubleClick,
 	extraColumns,
@@ -196,18 +194,11 @@ function TaskTable({
 
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
 
-	const uniqueStatuses = useMemo(
-		() =>
-			hideStatusAction
-				? undefined
-				: uniqBy(
-						tasks
-							.map((t) => t.status)
-							.filter((s): s is WorkspaceStatusDto => !!s),
-						"id",
-					),
-		[tasks, hideStatusAction],
+	const { data: allStatuses = [] } = useListWorkspaceStatuses(
+		{ workspaceId },
+		{ query: { enabled: !hideStatusAction } },
 	)
+	const uniqueStatuses = hideStatusAction ? undefined : allStatuses
 
 	const extraColumnIds = extraColumns
 		? new Set(Object.keys(extraColumns))
@@ -358,6 +349,7 @@ const TableWrapper = styled.div`
   }
 
   td {
+    position: relative;
     padding: 0 6px;
     height: 43px;
     max-height: 43px;
