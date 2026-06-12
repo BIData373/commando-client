@@ -1,5 +1,5 @@
 import { type PropsWithChildren, useEffect } from "react"
-import { MATOMO_ENABLED } from "src/utils/env-utils"
+import { MATOMO_ENABLED, MATOMO_SITE_ID } from "src/utils/env-utils"
 import {
 	COOKIE_NAME,
 	decodeSsoUserJwt,
@@ -27,7 +27,9 @@ function pushMatomoUserId(cookieValue?: string): void {
 
 export default function MatomoWrapper({ children }: PropsWithChildren) {
 	useEffect(() => {
-		if (!MATOMO_ENABLED) return
+		if (!(MATOMO_ENABLED && MATOMO_SITE_ID)) {
+			return
+		}
 
 		window._paq = window._paq || []
 		const _paq = window._paq
@@ -39,7 +41,7 @@ export default function MatomoWrapper({ children }: PropsWithChildren) {
 
 		const u = "//matomo.idf.cts/"
 		_paq.push(["setTrackerUrl", `${u}matomo.php`])
-		_paq.push(["setSiteId", "2073"])
+		_paq.push(["setSiteId", MATOMO_SITE_ID])
 
 		const d = document,
 			g = d.createElement("script"),
