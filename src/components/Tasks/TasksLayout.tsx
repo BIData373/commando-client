@@ -8,7 +8,6 @@ import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
-import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -76,8 +75,6 @@ function TasksLayout({
 			: undefined,
 	)
 
-	const currentUser = useCurrentUser()
-
 	const filteredTaskRows = useMemo(
 		() => toTaskRows(filteredTasks),
 		[filteredTasks],
@@ -94,7 +91,8 @@ function TasksLayout({
 			const isManager =
 				task.workspace?.permissionType === PermissionType.MANAGER
 			const isAssignee =
-				task.assignee?.users.some((u) => u.upn === currentUser.upn) ?? false
+				task.assignee?.users.some((u) => u.upn === myPermission?.user.upn) ??
+				false
 			result[task.id] = {
 				canDelete: isManager,
 				canChangeStatus:
@@ -102,7 +100,7 @@ function TasksLayout({
 			}
 		})
 		return result
-	}, [filteredTaskRows, currentUser.upn])
+	}, [filteredTaskRows, myPermission?.user.upn])
 
 	const urlColumnFilters: ColumnFiltersState = [
 		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
