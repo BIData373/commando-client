@@ -6,6 +6,8 @@ export const AUTH_ENABLED = !USE_MOCK_API && USE_SSO
 
 export const REFRESH_BUFFER_SECONDS = 70
 
+export const SSO_PATH = "sso"
+
 export async function getStoredToken() {
 	return (await cookieStore.get(COOKIE_NAME).catch(() => null))?.value
 }
@@ -83,7 +85,7 @@ export async function authenticate() {
 	comebackUrl.searchParams.set(SSO_STATE_KEY, state)
 
 	window.location.href = new URL(
-		`auth/comeback?comeback=${encodeURIComponent(comebackUrl.href)}`,
+		`${SSO_PATH}/auth/comeback?comeback=${encodeURIComponent(comebackUrl.href)}`,
 		AUTH_SERVER_URL,
 	).href
 
