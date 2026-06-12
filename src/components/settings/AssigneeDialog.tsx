@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useEffect, useMemo, useRef, useState } from "react"
 import {
+	getListAssigneesQueryKey,
 	useCreateAssignee,
 	useListAssignees,
 	useUpdateAssignee,
@@ -12,7 +13,10 @@ import type {
 	MirageUserDto,
 	UserDto,
 } from "src/api/model"
-import { getListPersonalTasksQueryKey } from "src/api/task/task"
+import {
+	getListPersonalTasksQueryKey,
+	getListTasksQueryKey,
+} from "src/api/task/task"
 import { type IMesibaIcon, useMesibaIconByName } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries, queryClient } from "src/queryClient"
@@ -52,10 +56,6 @@ export function AssigneeDialog({
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-	const { queryKey } = useListAssignees({ workspaceId })
-	const { mutateAsync: createAssignee } = useCreateAssignee()
-	const { mutateAsync: updateAssignee } = useUpdateAssignee()
-
 	const [selectedUser, setSelectedUser] = useState<MirageUserDto | null>(null)
 	const [searchValue, setSearchValue] = useState<string>("")
 
@@ -63,20 +63,6 @@ export function AssigneeDialog({
 	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
 
 	const { data: existingIcon } = useMesibaIconByName(assignee?.icon ?? "")
-
-	useEffect(() => {
-		if (existingIcon) setSelectedIcon(existingIcon)
-	}, [existingIcon])
-
-	const randomColor = useMemo(() => {
-		if (!open) {
-			return
-		}
-		const randomColorIdx = Math.floor(
-			Math.random() * (PRESET_COLORS.length - 1),
-		)
-		return PRESET_COLORS[randomColorIdx]
-	}, [open])
 
 	const handleSubmitSuccess = (data: AssigneeDto) => {
 		queryClient.setQueryData(queryKey, (prev?: AssigneesDto[]) => {
@@ -92,8 +78,38 @@ export function AssigneeDialog({
 			return updated
 		})
 
-		invalidateQueries([getListPersonalTasksQueryKey()])
+		invalidateQueries([
+			getListPersonalTasksQueryKey(),
+			getListTasksQueryKey({ workspaceId }),
+			// TODO - maybe somehow invalidate all tasks in this workspace that are connected?
+		])
 	}
+
+	const queryKey = getListAssigneesQueryKey({ workspaceId })
+	const { mutateAsync: createAssignee } = useCreateAssignee({
+		mutation: {
+			onSuccess: handleSubmitSuccess,
+		},
+	})
+	const { mutateAsync: updateAssignee } = useUpdateAssignee({
+		mutation: {
+			onSuccess: handleSubmitSuccess,
+		},
+	})
+
+	useEffect(() => {
+		if (existingIcon) setSelectedIcon(existingIcon)
+	}, [existingIcon])
+
+	const randomColor = useMemo(() => {
+		if (!open) {
+			return
+		}
+		const randomColorIdx = Math.floor(
+			Math.random() * (PRESET_COLORS.length - 1),
+		)
+		return PRESET_COLORS[randomColorIdx]
+	}, [open])
 
 	const form = useForm({
 		defaultValues: {
@@ -111,24 +127,14 @@ export function AssigneeDialog({
 			}
 
 			if (assignee) {
-				await updateAssignee(
-					{
-						pathParams: { id: assignee.id },
-						data: payload,
-					},
-					{
-						onSuccess: handleSubmitSuccess,
-					},
-				)
+				await updateAssignee({
+					pathParams: { id: assignee.id },
+					data: payload,
+				})
 			} else {
-				await createAssignee(
-					{
-						data: { workspaceId, ...payload },
-					},
-					{
-						onSuccess: handleSubmitSuccess,
-					},
-				)
+				await createAssignee({
+					data: { workspaceId, ...payload },
+				})
 			}
 
 			onOpenChange(false)
