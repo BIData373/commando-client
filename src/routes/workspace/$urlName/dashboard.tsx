@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { createFileRoute } from "@tanstack/react-router"
 import { DashboardContent } from "src/components/Dashboard/DashboardContent"
-import { TitleSection } from "src/components/Dashboard/TileSection"
+import { TitleSection } from "src/components/Dashboard/TitleSection"
 import { TasksFiltersProvider } from "src/providers/TasksFiltersProvider"
 
 export const Route = createFileRoute("/workspace/$urlName/dashboard")({
