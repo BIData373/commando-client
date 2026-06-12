@@ -177,7 +177,7 @@ function TasksLayout({
 	useRenderInHeader(
 		"titleBar",
 		<ButtonGroup>
-			<CreateTaskButton view={view} />
+			<CreateTaskButton view={view} workspaceId={workspaceId} />
 			{/* <SectionDivider />
 				<ViewToggle view={view} onViewChange={handleViewChange} /> */}
 		</ButtonGroup>,
