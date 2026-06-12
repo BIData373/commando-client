@@ -56,7 +56,7 @@ interface TaskTableProps {
 function TaskTable({
 	queryKey,
 	tasks,
-	workspaceId = -1,
+	workspaceId,
 	onEdit = () => {},
 	onDoubleClick,
 	extraColumns,
@@ -199,8 +199,10 @@ function TaskTable({
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
 
 	const { data: allStatuses = [] } = useListWorkspaceStatuses(
-		{ workspaceId },
-		{ query: { enabled: !hideStatusAction } },
+		{ workspaceId: workspaceId ?? -1 },
+		{
+			query: { enabled: !hideStatusAction && typeof workspaceId === "number" },
+		},
 	)
 	const uniqueStatuses = hideStatusAction ? undefined : allStatuses
 
