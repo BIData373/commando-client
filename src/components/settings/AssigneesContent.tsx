@@ -2,10 +2,7 @@ import styled from "@emotion/styled"
 import { CircleQuestionMarkIcon, Plus, Search } from "lucide-react"
 import { type ChangeEvent, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
-import {
-	getGetWorkspaceQueryKey,
-	useUpdateWorkspace,
-} from "src/api/workspace/workspace"
+import { useUpdateWorkspace } from "src/api/workspace/workspace"
 import { AssigneeCard } from "src/components/settings/AssigneeCard"
 import { AssigneeDialog } from "src/components/settings/AssigneeDialog"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
@@ -23,7 +20,6 @@ import {
 } from "src/components/ui/tooltip"
 import { useFuse } from "src/hooks/useFuse"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries } from "src/queryClient"
 import addPerson from "../../assets/icons/addPerson.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { Spinner } from "../ui/spinner"
