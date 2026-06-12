@@ -1,12 +1,19 @@
 import styled from "@emotion/styled"
 import { useNavigate, useParams } from "@tanstack/react-router"
 import { Users } from "lucide-react"
+import { PermissionType } from "src/api/model"
+import { useGetMyPermission } from "src/api/permission/permission"
+import { useListWorkspaces } from "src/api/workspace/workspace"
 import { CreateTaskButton } from "src/components/shared/CreateTaskButton"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
 export const TitleSection = () => {
 	const { urlName } = useParams({ from: "/workspace/$urlName/dashboard" })
 	const navigate = useNavigate()
+	const { data: workspaces = [] } = useListWorkspaces()
+	const workspaceId = workspaces.find((w) => w.urlName === urlName)?.id ?? 0
+	const { data: myPermission } = useGetMyPermission({ workspaceId })
+
+	const isManager = myPermission?.type === PermissionType.MANAGER
 
 	function handleNavigateToAssigneeSettings() {
 		navigate({
@@ -22,13 +29,15 @@ export const TitleSection = () => {
 				<TitleDivider />
 				<WorkspaceName>לשכת מקשא&quot;פ</WorkspaceName>
 			</TitleGroup>
-			<ButtonGroup>
-				<AssigneesButton onClick={handleNavigateToAssigneeSettings}>
-					<Users size={16} />
-					הגדרת מקבלי הנחיות
-				</AssigneesButton>
-				<CreateTaskButton view={TasksView.TABLE} />
-			</ButtonGroup>
+			{isManager && (
+				<ButtonGroup>
+					<AssigneesButton onClick={handleNavigateToAssigneeSettings}>
+						<Users size={16} />
+						הגדרת מקבלי הנחיות
+					</AssigneesButton>
+					<CreateTaskButton context="dashboard" />
+				</ButtonGroup>
+			)}
 		</TitleSectionContainer>
 	)
 }

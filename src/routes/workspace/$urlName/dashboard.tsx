@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { DashboardContent } from "src/components/Dashboard/DashboardContent"
 import { TitleSection } from "src/components/Dashboard/TitleSection"
 import { TasksFiltersProvider } from "src/providers/TasksFiltersProvider"
@@ -20,6 +20,7 @@ function Dashboard() {
 			<PageWrapper>
 				<DashboardContent />
 			</PageWrapper>
+			<Outlet />
 		</TasksFiltersProvider>
 	)
 }

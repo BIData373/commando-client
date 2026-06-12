@@ -5,6 +5,7 @@ import { concat, uniq } from "lodash"
 import { useMemo, useState } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { PermissionType } from "src/api/model"
+import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTasks } from "src/api/task/task"
 import { toTaskRows } from "src/functions/tasks-table"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
@@ -55,6 +56,8 @@ function TasksLayout({
 		queryKey,
 		isLoading,
 	} = useListTasks({ workspaceId })
+
+	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
 	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
 		new Set(),
@@ -174,14 +177,16 @@ function TasksLayout({
 	// 	navigateToTasks({ view: newView })
 	// }
 
+	const isManager = myPermission?.type === PermissionType.MANAGER
+
 	useRenderInHeader(
 		"titleBar",
 		<ButtonGroup>
-			<CreateTaskButton view={view} />
+			{isManager && <CreateTaskButton view={view} />}
 			{/* <SectionDivider />
 				<ViewToggle view={view} onViewChange={handleViewChange} /> */}
 		</ButtonGroup>,
-		[urlName, view],
+		[urlName, view, isManager],
 	)
 
 	return (

@@ -56,7 +56,7 @@ interface TaskTableProps {
 function TaskTable({
 	queryKey,
 	tasks,
-	workspaceId = 0,
+	workspaceId = -1,
 	onEdit = () => {},
 	onDoubleClick,
 	extraColumns,
