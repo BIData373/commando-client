@@ -1,4 +1,4 @@
-import type { PermissionType, UserInfoDto } from "src/api/model"
+import type { MirageUserDto, PermissionType, UserInfoDto } from "src/api/model"
 import { CHAT_LINK } from "./env-utils"
 
 export const COOKIE_NAME = "ssoUser"
@@ -44,17 +44,11 @@ export function onCookieChange(
 	return () => cookieStore.removeEventListener("change", handler)
 }
 
-interface UserLike {
-	upn: string
-	info: UserInfoDto | null
-	id?: number
+export function concatName(user: MirageUserDto, type?: PermissionType): string {
+	return `${user.info?.name} ${user.upn}${type ? ` / ${type}` : ""}`
 }
 
-export function concatName(user: UserLike, type?: PermissionType): string {
-	return `${user.info?.name} ${user.id ?? ""} ${user.upn}${type ? ` / ${type}` : ""}`
-}
-
-export function extractUpnFromUser({ upn }: { upn: string }): string {
+export function extractUpnFromUser({ upn }: MirageUserDto): string {
 	return upn.split("@")[0]
 }
 
