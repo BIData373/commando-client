@@ -109,6 +109,7 @@ function AssigneeRowList({
 									status={assigneeExtras[assignee.id].status!}
 									taskId={taskId}
 									assigneeId={assignee.id}
+									assigneeUsers={assignee.users}
 									workspaceId={workspaceId}
 									onUpdate={onStatusChange}
 									withArrow={true}

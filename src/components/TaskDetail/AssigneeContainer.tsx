@@ -8,13 +8,11 @@ import {
 } from "src/api/task/task"
 import { invalidateQueries } from "src/queryClient"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
-import { StatusTag } from "../shared/StatusTag"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
 
 interface AssigneeContainerProps {
 	taskId: number
 	workspaceId: number
-	assigneeStatusEditable?: boolean | null
 	isAdmin: boolean
 	editable: boolean
 	assignee: AssigneeStatusDto
@@ -23,12 +21,10 @@ interface AssigneeContainerProps {
 export const AssigneeContainer = ({
 	taskId,
 	workspaceId,
-	assigneeStatusEditable,
 	assignee: { assignee, status, description },
 	isAdmin,
 	editable,
 }: AssigneeContainerProps) => {
-	// FIX Get query key from params?
 	const { mutateAsync: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus(
 		{
 			mutation: {
@@ -43,8 +39,6 @@ export const AssigneeContainer = ({
 		},
 	)
 
-	const canEdit = editable && (isAdmin || (assigneeStatusEditable ?? false))
-
 	function handleUpdateAssigneeStatus(
 		taskId: number,
 		assigneeId: number,
@@ -56,24 +50,23 @@ export const AssigneeContainer = ({
 	}
 
 	return (
-		<AssigneeRowContainer key={assignee.id} $white={editable && !isAdmin}>
+		<AssigneeRowContainer $white={editable && !isAdmin}>
 			<AssigneeInfoBlock>
 				<AssigneeAvatar assignee={assignee} />
 				<AssigneeRoleText>{assignee.name}</AssigneeRoleText>
 			</AssigneeInfoBlock>
 
 			<StatusBlock>
-				{canEdit ? (
+				{status && (
 					<StatusDropdown
 						status={status}
 						taskId={taskId}
 						assigneeId={assignee.id}
+						assigneeUsers={assignee.users}
 						workspaceId={workspaceId}
 						onUpdate={handleUpdateAssigneeStatus}
 						withArrow
 					/>
-				) : (
-					status && <StatusTag status={status} />
 				)}
 			</StatusBlock>
 
