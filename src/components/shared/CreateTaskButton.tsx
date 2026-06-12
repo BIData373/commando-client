@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "@tanstack/react-router"
 import { ChevronDown, Plus } from "lucide-react"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
+import { useListWorkspaces } from "src/api/workspace/workspace"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { NewTaskMode } from "src/routes/workspace/$urlName/tasks/new"
 import {
@@ -14,17 +15,23 @@ import {
 
 interface CreateTaskButtonProps {
 	view?: TasksView
-	workspaceId: number
 }
 
 export function CreateTaskButton({
 	view = TasksView.TABLE,
-	workspaceId,
 }: CreateTaskButtonProps) {
 	const { urlName } = useParams({ from: "/workspace/$urlName" })
 	const navigate = useNavigate()
 
-	const { data: myPermission, isLoading } = useGetMyPermission({ workspaceId })
+	const { data } = useListWorkspaces(
+		{ urlName },
+		{ query: { enabled: !!urlName } },
+	)
+	const workspace = data?.[0]
+	const { data: myPermission, isLoading } = useGetMyPermission(
+		{ workspaceId: workspace?.id ?? -1 },
+		{ query: { enabled: !!workspace } },
+	)
 
 	if (isLoading || myPermission?.type !== PermissionType.MANAGER) {
 		return null

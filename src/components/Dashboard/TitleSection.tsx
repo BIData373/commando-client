@@ -27,7 +27,7 @@ export const TitleSection = () => {
 					<Users size={16} />
 					הגדרת מקבלי הנחיות
 				</AssigneesButton>
-				<CreateTaskButton view={TasksView.TABLE} workspaceId={workspaceId} />
+				<CreateTaskButton view={TasksView.TABLE} />
 			</ButtonGroup>
 		</TitleSectionContainer>
 	)
