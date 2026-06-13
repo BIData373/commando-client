@@ -20,7 +20,8 @@ export function CreateTaskButton({
 	view = TasksView.TABLE,
 	context = "tasks",
 }: CreateTaskButtonProps) {
-	const { urlName } = useParams({ from: "/workspace/$urlName" })
+	const { urlName = "" } =
+		useParams({ from: "/workspace/$urlName", shouldThrow: false }) ?? {}
 	const navigate = useNavigate()
 
 	const newTaskTo =
