@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { Flag } from "lucide-react"
 import { DeadlineType, type TaskDto } from "src/api/model"
-import { toTaskRows } from "src/functions/tasks-table"
+import { toTaskRows } from "src/utils/task-table-utils"
 import { formatDateShort } from "../../functions/date-utils"
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import { StatusTag } from "../shared/StatusTag"

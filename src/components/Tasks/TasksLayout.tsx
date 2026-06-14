@@ -7,7 +7,6 @@ import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTasks } from "src/api/task/task"
-import { toTaskRows } from "src/functions/tasks-table"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -16,6 +15,7 @@ import {
 	TasksView,
 } from "src/routes/workspace/$urlName/tasks"
 import type { QuickFilter } from "src/utils/filter-utils"
+import { toTaskRows } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
@@ -24,7 +24,6 @@ import { TooltipProvider } from "../ui/tooltip"
 import { TaskCardGrid } from "./TaskCardGrid"
 import { TaskFilters } from "./TaskFilters"
 import { TaskTable } from "./TaskTable"
-export { TasksView }
 
 export interface TasksLayoutProps {
 	view: TasksView

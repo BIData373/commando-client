@@ -17,8 +17,7 @@ import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { formatMesibaIcon } from "src/utils/icon-utils"
-import { toTaskRows } from "../../functions/tasks-table"
-import type { TaskRow } from "../../providers/TasksFiltersProvider"
+import { type TaskRow, toTaskRows } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
@@ -166,6 +165,7 @@ function PersonalTasksLayout() {
 					onEdit={handleEdit}
 					onDoubleClick={handleOpenTask}
 					hideStatusAction
+					showMenuColumn={false}
 				/>
 			</PageRoot>
 			<Outlet />

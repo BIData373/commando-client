@@ -2,7 +2,7 @@ import { differenceInDays, startOfToday } from "date-fns"
 import ExcelJS from "exceljs"
 import { DeadlineType, type TaskDto } from "src/api/model"
 import { DEADLINE_LABELS } from "src/components/shared/DeadlineTag"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import type { TaskRow } from "../utils/task-table-utils"
 import { formatDate } from "./date-utils"
 
 interface CellValue {

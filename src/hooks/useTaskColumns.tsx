@@ -9,9 +9,9 @@ import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assign
 import { DeadlineType, type TaskDto } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
 import { formatMesibaIcon } from "src/utils/icon-utils"
+import { TASK_COLUMNS_META, type TaskRow } from "src/utils/task-table-utils"
 import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 import FlagIcon from "../components/shared/FlagIcon"
 import HighlightMatch from "../components/shared/HighlightMatch"
@@ -28,24 +28,6 @@ import {
 	TooltipTrigger,
 } from "../components/ui/tooltip"
 import { formatDateShort } from "../functions/date-utils"
-
-export interface TaskColumnMeta {
-	id: keyof TaskRow
-	label: string
-}
-
-export const TASK_COLUMNS_META: TaskColumnMeta[] = [
-	{ id: "id", label: 'מס"ד' },
-	{ id: "title", label: "ההנחיה" },
-	{ id: "status", label: "סטטוס" },
-	{ id: "assigneeStatuses", label: "אחראי" },
-	{ id: "deadlineType", label: 'תג"ב' },
-	{ id: "source", label: "מקור" },
-	{ id: "tags", label: "נושא" },
-	{ id: "notes", label: "הערות" },
-	{ id: "createdAt", label: "תאריך יצירה" },
-	{ id: "updatedAt", label: "עודכן ב" },
-]
 
 const COLUMN_LABELS = Object.fromEntries(
 	TASK_COLUMNS_META.map(({ id, label }) => [id, label]),
@@ -75,6 +57,7 @@ interface UseTaskColumnsOptions {
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
 	selectMode?: SelectModeConfig
 	actions?: ActionsConfig
+	showMenuColumn?: boolean
 }
 
 function useTaskColumns({
@@ -84,6 +67,7 @@ function useTaskColumns({
 	filterOptionsMap,
 	selectMode,
 	actions,
+	showMenuColumn = true,
 }: UseTaskColumnsOptions) {
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
@@ -493,7 +477,7 @@ function useTaskColumns({
 
 	const columns = [
 		...visibleOrderedColumns,
-		...(actions
+		...(showMenuColumn && actions
 			? [
 					{
 						id: "actions",
@@ -524,7 +508,6 @@ function useTaskColumns({
 }
 
 export { useTaskColumns }
-
 // ─── Styled Components ───────────────────────────────────────────────────────
 
 const CheckboxCenter = styled.div`

@@ -2,8 +2,8 @@ import styled from "@emotion/styled"
 import { chain, map, values } from "lodash"
 import { useMemo } from "react"
 import { Cell, Pie, PieChart } from "recharts"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import type { TaskRow } from "src/utils/task-table-utils"
 
 interface StatusCardProps {
 	tasks: TaskRow[]
