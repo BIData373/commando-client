@@ -82,8 +82,10 @@ export function SearchDropdown<T>({
 						</InputGroupAddon>
 						{selectedItem ? (
 							<SelectedDisplay>
-								{renderItem(selectedItem)}
-								<X size={16} cursor="pointer" onMouseDown={handleClear} />
+								<SelectedItem>{renderItem(selectedItem)}</SelectedItem>
+								<InputGroupAddon align="inline-end">
+									<StyledX onMouseDown={handleClear} />
+								</InputGroupAddon>
 							</SelectedDisplay>
 						) : (
 							<>
@@ -95,7 +97,7 @@ export function SearchDropdown<T>({
 								/>
 								{onClear && value.length > 0 && (
 									<InputGroupAddon align="inline-end">
-										<X size={16} cursor="pointer" onMouseDown={handleClear} />
+										<StyledX onMouseDown={handleClear} />
 									</InputGroupAddon>
 								)}
 							</>
@@ -135,6 +137,10 @@ const StyledInputGroup = styled(InputGroup)`
   background: var(--background);
 `
 
+const StyledX = styled(X)`
+	cursor: pointer;
+`
+
 const DropdownContent = styled(PopoverPrimitive.Content)`
   width: var(--radix-popover-trigger-width);
   background: var(--background);
@@ -152,9 +158,14 @@ const SelectedDisplay = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 10px;
   flex: 1;
   min-width: 0;
+`
+
+const SelectedItem = styled.div`
+  	min-width: 0;
+	width: 100%;
+	padding: 0 10px;
 `
 
 const DropdownItem = styled.div`
