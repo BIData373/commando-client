@@ -3,7 +3,6 @@ import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
 import { omit, uniq } from "lodash"
 import { ChevronDown, ChevronUp, X } from "lucide-react"
-import type { Form } from "radix-ui"
 import { useRef, useState } from "react"
 import {
 	type CreateTaskDto,

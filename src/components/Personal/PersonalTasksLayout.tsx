@@ -5,7 +5,6 @@ import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
 import {
 	type CreateUserDto,
-	PermissionType,
 	type TaskWithWorkspaceDto,
 	WorkspaceStatusType,
 } from "src/api/model"
