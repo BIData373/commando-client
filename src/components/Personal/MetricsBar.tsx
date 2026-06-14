@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import { useState } from "react"
 import { WorkspaceStatusType } from "src/api/model"
+import { STATUS_DEFAULTS } from "../../functions/status-defaults"
 import { StatusTag } from "../shared/StatusTag"
 
 interface MetricsBarProps {
@@ -30,7 +31,9 @@ function MetricsBar({
 					<MetricCard>
 						<CardHeader>
 							<CardLabel>בעבודה</CardLabel>
-							<StatusTag type={WorkspaceStatusType.IN_PROGRESS} />
+							<StatusTag
+								status={STATUS_DEFAULTS[WorkspaceStatusType.IN_PROGRESS]}
+							/>
 						</CardHeader>
 						<CardNumber>{inProgressCount}</CardNumber>
 					</MetricCard>
@@ -38,7 +41,9 @@ function MetricsBar({
 					<MetricCard>
 						<CardHeader>
 							<CardLabel>טרם בוצעו</CardLabel>
-							<StatusTag type={WorkspaceStatusType.NOT_STARTED} />
+							<StatusTag
+								status={STATUS_DEFAULTS[WorkspaceStatusType.NOT_STARTED]}
+							/>
 						</CardHeader>
 						<CardNumber>{notStartedCount}</CardNumber>
 					</MetricCard>

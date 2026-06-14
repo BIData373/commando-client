@@ -1,23 +1,9 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
-import {
-	WorkspaceStatusType as StatusType,
-	type WorkspaceStatusDto,
-	type WorkspaceStatusType,
-} from "src/api/model"
-
-const STATUS_DEFAULTS: Record<
-	WorkspaceStatusType,
-	{ name: string; color: string }
-> = {
-	[StatusType.NOT_STARTED]: { name: "טרם בוצע", color: "#FA541C" },
-	[StatusType.IN_PROGRESS]: { name: "בעבודה", color: "#2F54EB" },
-	[StatusType.COMPLETED]: { name: "בוצע", color: "#52c41a" },
-}
+import type { WorkspaceStatusDto } from "src/api/model"
 
 interface StatusTagProps {
-	status?: WorkspaceStatusDto
-	type?: WorkspaceStatusType
+	status: Pick<WorkspaceStatusDto, "name" | "color">
 	interactive?: boolean
 	editable?: boolean
 	withArrow?: boolean
@@ -25,16 +11,12 @@ interface StatusTagProps {
 }
 
 export function StatusTag({
-	status,
-	type,
+	status: { name, color },
 	interactive,
 	editable,
 	withArrow = false,
 	open = false,
 }: StatusTagProps) {
-	const defaults = type ? STATUS_DEFAULTS[type] : undefined
-	const name = status?.name ?? defaults?.name ?? ""
-	const color = status?.color ?? defaults?.color ?? "#8c8c8c"
 	return (
 		<Tag
 			$fontColor={color}
