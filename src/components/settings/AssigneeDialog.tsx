@@ -58,7 +58,7 @@ export function AssigneeDialog({
 	const [selectedUser, setSelectedUser] = useState<MirageUserDto | null>(null)
 	const [searchValue, setSearchValue] = useState<string>("")
 
-	const [iconSearch, setIconSearch] = useState("")
+	const [iconSearch, setIconSearch] = useState(assignee?.icon ?? "")
 	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
 
 	const { data: existingIcon } = useMesibaIconByName(assignee?.icon ?? "")
