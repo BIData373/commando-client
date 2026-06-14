@@ -146,6 +146,7 @@ const CloseButton = styled(PopoverPrimitive.Close)`
   height: 24px;
   border-radius: 4px;
   border: none;
+  outline: none;
   background: transparent;
   color: var(--sea-ink-soft);
   cursor: pointer;
@@ -153,10 +154,10 @@ const CloseButton = styled(PopoverPrimitive.Close)`
   &:hover {
     background: var(--icon-hover);
   }
-  `
+`
 
 const XIcon = styled(X)`
-  color: var(--Components-Dropdown-Global-controlItemBgHover);
+  color: var(--text-color-400);
 
   &:active {
     color: var(--text-color-2);
