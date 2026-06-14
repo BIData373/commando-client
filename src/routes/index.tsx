@@ -1,17 +1,7 @@
 import styled from "@emotion/styled"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import type { WorkspaceDto } from "src/api/model"
-import { useListWorkspaces } from "src/api/workspace/workspace"
-import { Avatar, AvatarFallback, AvatarImage } from "src/components/ui/avatar"
-import {
-	Card,
-	CardAction,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "src/components/ui/card"
+import SpacesContainer from "src/components/SpacesContainer/SpacesContainer"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import { formatMesibaIcon } from "src/utils/icon-utils"
 
 export const Route = createFileRoute("/")({
 	component: RouteComponent,
@@ -23,51 +13,8 @@ export const Route = createFileRoute("/")({
 	},
 })
 
-// FIX Move to file?
-interface WorkspaceCardProps {
-	workspace: WorkspaceDto
-}
-
-function WorkspaceCard({
-	workspace: { title, urlName, icon },
-}: WorkspaceCardProps) {
-	const navigate = useNavigate()
-
-	function handleWorkspaceClick() {
-		navigate({
-			to: "/workspace/$urlName",
-			params: { urlName },
-		})
-	}
-
-	return (
-		<Card className="cursor-pointer" onClick={handleWorkspaceClick}>
-			<CardHeader>
-				<CardTitle>{title}</CardTitle>
-				{/* // FIX Add description */}
-				<CardDescription>{title}</CardDescription>
-
-				<CardAction>
-					<Avatar>
-						<AvatarImage
-							src={formatMesibaIcon(icon)}
-							alt={title}
-							className="grayscale"
-						/>
-						<AvatarFallback>CN</AvatarFallback>
-					</Avatar>
-				</CardAction>
-			</CardHeader>
-			{/* // FIX Check if needed */}
-			{/* <CardFooter>{memberCount} משתמשים</CardFooter> */}
-		</Card>
-	)
-}
-
 function RouteComponent() {
 	const navigate = useNavigate()
-
-	const { data: workspaces = [] } = useListWorkspaces()
 
 	function handlePersonalClick() {
 		navigate({ to: "/personal", search: { view: TasksView.TABLE } })
@@ -80,13 +27,7 @@ function RouteComponent() {
 				<PersonalSub>משימות ופעולות אישיות</PersonalSub>
 			</PersonalBanner>
 
-			<SectionTitle>סביבות עבודה</SectionTitle>
-
-			<WorkspaceGrid>
-				{workspaces.map((ws) => (
-					<WorkspaceCard key={ws.urlName} workspace={ws} />
-				))}
-			</WorkspaceGrid>
+			<SpacesContainer />
 		</PageRoot>
 	)
 }
@@ -125,19 +66,4 @@ const PersonalLabel = styled.span`
 const PersonalSub = styled.span`
   font-size: var(--fs-btn);
   color: var(--sea-ink-soft);
-`
-
-const SectionTitle = styled.h2`
-  font-size: var(--fs-btn);
-  font-weight: 600;
-  color: var(--sea-ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0;
-`
-
-const WorkspaceGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
 `
