@@ -58,7 +58,7 @@ export const AssigneeSection = ({
 								workspaceId={workspaceId}
 								assignee={item}
 								isAdmin={isAdmin}
-								editable={true}
+								editable={isAdmin || item.editable}
 							/>
 						))}
 					</AssigneeRowsList>
@@ -76,7 +76,7 @@ export const AssigneeSection = ({
 									workspaceId={workspaceId}
 									assignee={item}
 									isAdmin={isAdmin}
-									editable={false}
+									editable={item.editable}
 								/>
 							))}
 						</AssigneeRowsList>

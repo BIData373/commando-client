@@ -231,7 +231,7 @@ function useTaskColumns({
 				(rowA.original.status?.id ?? 0) - (rowB.original.status?.id ?? 0),
 			cell: ({
 				row: {
-					original: { id, status, assignee, workspaceId },
+					original: { id, status, assignee, workspaceId, editable },
 				},
 			}) =>
 				status &&
@@ -239,7 +239,7 @@ function useTaskColumns({
 					<StatusDropdown
 						status={status}
 						assigneeId={assignee.id}
-						assigneeUsers={assignee.users}
+						editable={editable ?? false}
 						taskId={id}
 						workspaceId={workspaceId}
 						onUpdate={onUpdateStatus}

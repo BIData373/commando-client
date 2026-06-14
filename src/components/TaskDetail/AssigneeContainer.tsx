@@ -62,7 +62,7 @@ export const AssigneeContainer = ({
 						status={status}
 						taskId={taskId}
 						assigneeId={assignee.id}
-						assigneeUsers={assignee.users}
+						editable={editable}
 						workspaceId={workspaceId}
 						onUpdate={handleUpdateAssigneeStatus}
 						withArrow

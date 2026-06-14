@@ -30,6 +30,7 @@ export type TaskRow = TaskDto & {
 	rowKey: string
 	assignee?: AssigneeDto
 	status?: WorkspaceStatusDto
+	editable?: boolean
 	otherAssignees?: AssigneeStatusDto[]
 	workspace?: WorkspaceWithPermissionDto
 }

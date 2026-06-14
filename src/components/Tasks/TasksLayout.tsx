@@ -88,19 +88,14 @@ function TasksLayout({
 			{ canDelete: boolean; canChangeStatus: boolean }
 		> = {}
 		filteredTaskRows.forEach((task) => {
-			const isManager =
-				task.workspace?.permissionType === PermissionType.MANAGER
-			const isAssignee =
-				task.assignee?.users.some((u) => u.upn === myPermission?.user.upn) ??
-				false
+			const isManager = myPermission?.type === PermissionType.MANAGER
 			result[task.id] = {
 				canDelete: isManager,
-				canChangeStatus:
-					isManager || (!!task.workspace?.assigneeStatusEditable && isAssignee),
+				canChangeStatus: isManager || (task.editable ?? false),
 			}
 		})
 		return result
-	}, [filteredTaskRows, myPermission?.user.upn])
+	}, [filteredTaskRows, myPermission?.type])
 
 	const urlColumnFilters: ColumnFiltersState = [
 		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),

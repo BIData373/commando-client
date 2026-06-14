@@ -99,18 +99,22 @@ function PersonalTasksLayout() {
 	const taskPermissions = useMemo(
 		() =>
 			Object.fromEntries(
-				rawTasks.map((t) => [
-					t.id,
-					{
-						canDelete: t.workspace.permissionType === PermissionType.MANAGER,
-						canChangeStatus: !(
-							t.workspace.permissionType === PermissionType.MANAGER ||
-							!t.workspace.assigneeStatusEditable
-						),
-					},
-				]),
+				rawTasks.map((t) => {
+					const isManager =
+						t.workspace.permissionType === PermissionType.MANAGER
+					const myAssigneeStatus = t.assigneeStatuses.find((as) =>
+						as.assignee.users.some(({ upn }) => upn === currentUser.upn),
+					)
+					return [
+						t.id,
+						{
+							canDelete: isManager,
+							canChangeStatus: isManager || !!myAssigneeStatus?.editable,
+						},
+					]
+				}),
 			),
-		[rawTasks],
+		[rawTasks, currentUser.upn],
 	)
 
 	function handleOpenTask(taskId: number) {
