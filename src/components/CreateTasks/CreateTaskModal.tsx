@@ -286,9 +286,9 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 	const linkedTagNames = values.linkedSource?.tags.map((t) => t.name) ?? []
 	const mergedTags = uniq([...linkedTagNames, ...(values.tags ?? [])])
 
-	const taskStatusByAssigneeId = isEditMode
+	const assigneeStatusById = isEditMode
 		? Object.fromEntries(
-				task!.assigneeStatuses.map((as) => [as.assignee.id, as.status]),
+				task!.assigneeStatuses.map((as) => [as.assignee.id, as]),
 			)
 		: {}
 
@@ -299,9 +299,10 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 					{
 						status:
 							a.statusId != null
-								? (statusById[a.statusId] ?? taskStatusByAssigneeId[a.id])
+								? (statusById[a.statusId] ?? assigneeStatusById[a.id]?.status)
 								: undefined,
 						description: a.description,
+						editable: assigneeStatusById[a.id]?.editable ?? false,
 					},
 				]),
 			)

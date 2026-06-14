@@ -16,7 +16,6 @@ export const AssigneeSection = ({
 	assigneeStatuses,
 }: AssigneeSectionProps) => {
 	const currentUser = useCurrentUser()
-
 	const { data: permission } = useGetMyPermission({ workspaceId })
 
 	const isAdmin = permission?.type === PermissionType.MANAGER

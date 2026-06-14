@@ -10,6 +10,7 @@ import { AssigneeAvatar } from "./AssigneeAvatar"
 export interface AssigneeExtra {
 	status?: WorkspaceStatusDto
 	description?: string
+	editable?: boolean
 }
 
 interface AssigneeRowListProps {
@@ -102,7 +103,7 @@ function AssigneeRowList({
 									status={assigneeExtras[assignee.id].status!}
 									taskId={taskId}
 									assigneeId={assignee.id}
-									editable={true}
+									editable={assigneeExtras[assignee.id].editable ?? false}
 									workspaceId={workspaceId}
 									onUpdate={onStatusChange}
 									withArrow={true}
