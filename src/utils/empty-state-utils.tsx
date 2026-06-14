@@ -1,7 +1,6 @@
 import type { DateRange } from "react-day-picker"
-import emptyStateImage from "../../public/empty-state.svg"
-import compleateInstruction from "../assets/icons/completeInstruction.svg"
-import searchInstruction from "../assets/icons/searchInstruction.svg"
+import emptyState from "../assets/empty-states/empty-state.svg"
+import noResultsFound from "../assets/empty-states/no-results-found.svg"
 import type { EmptyCardStateProps } from "../components/shared/EmptyCardState"
 import { QuickFilter } from "./filter-utils"
 
@@ -11,7 +10,7 @@ export type DashboardEmptyStateKey = QuickFilter | "completed"
 
 const EMPTY_STATES: Record<EmptyStateKey, EmptyCardStateProps> = {
 	[QuickFilter.OVERDUE]: {
-		imgSrc: searchInstruction,
+		imgSrc: noResultsFound,
 		title: (
 			<>
 				לא נמצאו הנחיות
@@ -21,7 +20,7 @@ const EMPTY_STATES: Record<EmptyStateKey, EmptyCardStateProps> = {
 		description: "יש לנסות סינון אחר",
 	},
 	[QuickFilter.APPROACHING]: {
-		imgSrc: searchInstruction,
+		imgSrc: noResultsFound,
 		title: (
 			<>
 				לא נמצאו הנחיות
@@ -31,28 +30,28 @@ const EMPTY_STATES: Record<EmptyStateKey, EmptyCardStateProps> = {
 		description: "יש לנסות סינון אחר",
 	},
 	[QuickFilter.FLAGGED]: {
-		imgSrc: searchInstruction,
+		imgSrc: noResultsFound,
 		title: <>לא נמצאו הנחיות חשובות</>,
 		description: "יש לנסות סינון אחר",
 	},
 	search: {
-		imgSrc: searchInstruction,
+		imgSrc: noResultsFound,
 		title: "לא הצלחנו למצוא הנחיות",
 		description: "יש לנסות ניסוח אחר או לבדוק אם ההנחיה נמצאת בארכיון",
 	},
 	dateRange: {
-		imgSrc: searchInstruction,
+		imgSrc: noResultsFound,
 		title: "לא נמצאו הנחיות בטווח התאריכים שנבחר",
 		description: "יש לנסות טווח תאריכים אחר או לנקות את הסינון",
 	},
 	noData: {
-		imgSrc: emptyStateImage,
+		imgSrc: emptyState,
 		title: "טרם נוצרו הנחיות",
 		description: `לאחר שהנחיות יוצרו,
 		ההנחיות האחרונות יופיעו כאן`,
 	},
 	default: {
-		imgSrc: searchInstruction,
+		imgSrc: noResultsFound,
 		title: "לא נמצאו הנחיות מתאימות לסינון",
 		description: "יש לנסות סינון אחר או לנקות את כל הפילטרים",
 	},
@@ -89,22 +88,22 @@ export const DASHBOARD_EMPTY_STATES: Record<
 	EmptyCardStateProps
 > = {
 	[QuickFilter.FLAGGED]: {
-		imgSrc: searchInstruction,
+		imgSrc: noResultsFound,
 		title: "לא נמצאו הנחיות חשובות",
 		description: "לאחר שהנחיות יוגדרו כחשובות,\nההנחיות האחרונות יופיעו כאן",
 	},
 	[QuickFilter.APPROACHING]: {
-		imgSrc: searchInstruction,
+		imgSrc: noResultsFound,
 		title: "לא נמצאו הנחיות לביצוע מיידי",
 		description: "הנחיות לביצוע מידיות יופיעו כאן",
 	},
 	[QuickFilter.OVERDUE]: {
-		imgSrc: searchInstruction,
+		imgSrc: noResultsFound,
 		title: 'לא נמצאו חריגות מתג"ב',
 		description: 'חריגות מתג"ב יופיעו כאן',
 	},
 	completed: {
-		imgSrc: compleateInstruction,
+		imgSrc: emptyState,
 		title: "טרם בוצעו הנחיות",
 		description: "לאחר שהנחיות יבצעו,\nההנחיות האחרונות יופיעו כאן",
 	},

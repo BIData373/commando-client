@@ -1,4 +1,4 @@
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import type { TaskRow } from "./task-table-utils"
 
 export enum QuickFilter {
 	OVERDUE = "overdue",
