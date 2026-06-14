@@ -72,7 +72,7 @@ const UserCardItem = styled.div`
     gap: 6px;
     padding-right: 8px;
     background: rgba(0, 0, 0, 0.02);
-    border: 1px solid var(--card-border);
+    border: 1px solid #f0f0f0;
     border-radius: 4px;
 `
 
