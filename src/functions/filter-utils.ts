@@ -2,10 +2,11 @@ import { differenceInDays, startOfToday } from "date-fns"
 import { uniqBy } from "lodash"
 import type { TaskDto } from "src/api/model"
 import { DeadlineType } from "src/api/model"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { QuickFilter } from "src/utils/filter-utils"
+import type { TaskRow } from "src/utils/task-table-utils"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 
+// TODO Move to utils/filter-utils
 // ─── Shared Types ────────────────────────────────────────────────────────────
 
 export interface FilterOption {

@@ -1,8 +1,7 @@
 import styled from "@emotion/styled"
 import { Download, FilterX, Search, X } from "lucide-react"
 import type { ReactNode } from "react"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
-import type { TaskColumnMeta } from "../../hooks/useTaskColumns"
+import type { TaskColumnMeta, TaskRow } from "src/utils/task-table-utils"
 import { ColumnVisibilityDropdown } from "../Tasks/ColumnVisibilityDropdown"
 
 interface FilterBarProps {

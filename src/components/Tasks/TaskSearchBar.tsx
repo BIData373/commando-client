@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { Download, Search } from "lucide-react"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
+import type { TaskRow } from "src/utils/task-table-utils"
 import { ColumnVisibilityDropdown } from "./ColumnVisibilityDropdown"
 
 interface TaskSearchBarProps {

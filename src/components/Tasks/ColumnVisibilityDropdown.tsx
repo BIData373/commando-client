@@ -20,19 +20,13 @@ import {
 import styled from "@emotion/styled"
 import { Columns3 } from "lucide-react"
 import { useState } from "react"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import {
-	TASK_COLUMNS_META,
+	CONFIGURABLE_COLUMNS,
 	type TaskColumnMeta,
-} from "../../hooks/useTaskColumns"
+	type TaskRow,
+} from "src/utils/task-table-utils"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { SortableColumnItem } from "./SortableColumnItem"
-
-export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter(
-	(c) => c.id !== "id",
-)
-
-export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id)
 
 interface ColumnVisibilityDropdownProps {
 	columnOrder: (keyof TaskRow)[]

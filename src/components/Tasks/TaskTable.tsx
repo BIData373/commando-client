@@ -16,13 +16,9 @@ import type {
 	WorkspaceStatusType,
 } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
-import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
-import {
-	TASK_ROW_ID_SEPARATOR,
-	type TaskRow,
-	useTasksFilters,
-} from "src/providers/TasksFiltersProvider"
+import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { getEmptyState } from "src/utils/empty-state-utils"
+import { TASK_ROW_ID_SEPARATOR, type TaskRow } from "src/utils/task-table-utils"
 import { buildFilterOptionsMap } from "../../functions/filter-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -51,6 +47,7 @@ interface TaskTableProps {
 	isLoading?: boolean
 	taskPermissions?: Record<number, TaskPermissions>
 	hideStatusAction?: boolean
+	showMenuColumn?: boolean
 }
 
 function TaskTable({
@@ -67,6 +64,7 @@ function TaskTable({
 	isLoading,
 	taskPermissions,
 	hideStatusAction = false,
+	showMenuColumn = true,
 }: TaskTableProps) {
 	const {
 		searchQuery,
@@ -216,6 +214,7 @@ function TaskTable({
 			selectedTaskIds,
 			onSelectAll: handleSelectAll,
 		},
+		showMenuColumn,
 		actions: {
 			onEdit,
 			onDoubleClick,
@@ -276,7 +275,7 @@ function TaskTable({
 			<BulkActionsBar
 				isVisible={selectMode}
 				selectedCount={selectedTaskIds.length}
-				statuses={statuses}
+				statuses={hideStatusAction ? undefined : statuses}
 				onChangeStatus={(status) => bulkUpdateStatus(selectedTaskIds, status)}
 				onArchive={handleBulkArchive}
 				onDelete={handleBulkDelete}
