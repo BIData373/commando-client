@@ -6,6 +6,7 @@ import {
 	API_BASE_URL,
 	API_PREFIX,
 	IS_BI,
+	IS_BI_DEFINED,
 	REQUEST_USERNAME,
 	STATIC_TOKEN,
 	USE_SSO,
@@ -24,7 +25,8 @@ export function resolveBypassValues(
 ) {
 	return {
 		username: rawUsername || REQUEST_USERNAME || null,
-		isBI: rawIsBI !== null ? rawIsBI === "true" : !!IS_BI,
+		isBI:
+			rawIsBI !== null ? rawIsBI === "true" : IS_BI_DEFINED ? !!IS_BI : null,
 	}
 }
 
@@ -37,30 +39,36 @@ export const axiosInstance = axios.create({
 	},
 })
 
-axiosInstance.interceptors.request.use((config) => {
-	const rawUsername = localStorage.getItem(requestUsernameKey)
-	const parsedUsername =
-		rawUsername !== null ? (JSON.parse(rawUsername) as string | null) : null
+if (STATIC_TOKEN) {
+	axiosInstance.interceptors.request.use((config) => {
+		if (config.headers[STATIC_TOKEN_HEADER] !== STATIC_TOKEN) {
+			return config
+		}
 
-	const { username, isBI } = resolveBypassValues(
-		parsedUsername,
-		localStorage.getItem(isBIKey),
-	)
+		const rawUsername = localStorage.getItem(requestUsernameKey)
+		const parsedUsername =
+			rawUsername !== null ? (JSON.parse(rawUsername) as string | null) : null
 
-	if (username && username.length > 0) {
-		config.headers[REQUEST_USERNAME_HEADER] = username
-	} else {
-		delete config.headers[REQUEST_USERNAME_HEADER]
-	}
+		const { username, isBI } = resolveBypassValues(
+			parsedUsername,
+			localStorage.getItem(isBIKey),
+		)
 
-	if (isBI !== undefined && isBI !== null) {
-		config.headers[IS_BI_HEADER] = String(isBI)
-	} else {
-		delete config.headers[IS_BI_HEADER]
-	}
+		if (username && username.length > 0) {
+			config.headers[REQUEST_USERNAME_HEADER] = username
+		} else {
+			delete config.headers[REQUEST_USERNAME_HEADER]
+		}
 
-	return config
-})
+		if (isBI !== undefined && isBI !== null) {
+			config.headers[IS_BI_HEADER] = String(isBI)
+		} else {
+			delete config.headers[IS_BI_HEADER]
+		}
+
+		return config
+	})
+}
 
 axiosInstance.interceptors.response.use((originalResponse) => {
 	handleDates(originalResponse.data)

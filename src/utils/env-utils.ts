@@ -11,6 +11,7 @@ export const CHAT_LINK = import.meta.env.VITE_CHAT_LINK
 
 export const STATIC_TOKEN = import.meta.env.VITE_STATIC_TOKEN
 export const IS_BI = (import.meta.env.VITE_IS_BI ?? "true") === "true"
+export const IS_BI_DEFINED = import.meta.env.VITE_IS_BI !== undefined
 
 export const REQUEST_USERNAME = import.meta.env.VITE_REQUEST_USERNAME
 
