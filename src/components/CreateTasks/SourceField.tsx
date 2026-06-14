@@ -108,66 +108,67 @@ function SourceField({
 	return (
 		<SourceDateRow>
 			<SourceFormItem>
-				<FormLabelRow>
-					<LabelText>{label}</LabelText>
-					{required && <RequiredMark>*</RequiredMark>}
-				</FormLabelRow>
-				<SourceFieldWrapper>
-					<SourceInputBox onFocus={openDropdown}>
-						<SourceChevron size={16} />
-						<SourceInputField
-							value={sourceQuery}
-							onChange={handleInputChange}
-							onFocus={openDropdown}
-							onBlur={handleInputBlur}
-							placeholder='לדוגמה: חתמ"צ שבועי'
-							dir="rtl"
-						/>
-						{linkedSource && !!linkedSource?.attachmentKey && (
-							<Paperclip size={16} />
-						)}
-					</SourceInputBox>
-					{isDropdownOpen &&
-						(sourceQuery || filteredDiscussions.length > 0) && (
-							<DropdownMenu>
-								{filteredDiscussions.length > 0 && (
-									<>
-										<DropdownGroupTitle>מקורות קיימים</DropdownGroupTitle>
-										{filteredDiscussions.map((d) => (
-											<SourceOption
-												key={uniqueNames ? d.name : d.id}
-												onMouseDown={(e) => handleOptionMouseDown(e, d)}
-											>
-												{!uniqueNames && (
-													<SourceOptionDate>
-														{formatDateShort(d.date)}
-													</SourceOptionDate>
-												)}
-												<SourceOptionName>
-													{sourceQuery ? (
-														<HighlightMatch text={d.name} query={sourceQuery} />
-													) : (
-														d.name
+				<FormField label={label} required={required}>
+					<SourceFieldWrapper>
+						<SourceInputBox onFocus={openDropdown}>
+							<SourceChevron size={16} />
+							<SourceInputField
+								value={sourceQuery}
+								onChange={handleInputChange}
+								onFocus={openDropdown}
+								onBlur={handleInputBlur}
+								placeholder='לדוגמה: חתמ"צ שבועי'
+								dir="rtl"
+							/>
+							{linkedSource && !!linkedSource?.attachmentKey && (
+								<Paperclip size={16} />
+							)}
+						</SourceInputBox>
+						{isDropdownOpen &&
+							(sourceQuery || filteredDiscussions.length > 0) && (
+								<DropdownMenu>
+									{filteredDiscussions.length > 0 && (
+										<>
+											<DropdownGroupTitle>מקורות קיימים</DropdownGroupTitle>
+											{filteredDiscussions.map((d) => (
+												<SourceOption
+													key={uniqueNames ? d.name : d.id}
+													onMouseDown={(e) => handleOptionMouseDown(e, d)}
+												>
+													{!uniqueNames && (
+														<SourceOptionDate>
+															{formatDateShort(d.date)}
+														</SourceOptionDate>
 													)}
-												</SourceOptionName>
-											</SourceOption>
-										))}
-									</>
-								)}
-								{sourceQuery && (
-									<>
-										<DropdownDivider />
-										<CreateNewOption onMouseDown={handleCreateNewMouseDown}>
-											<CreateNewText>
-												<HighlightedText>{sourceQuery}</HighlightedText>
-												{" (חדש)"}
-											</CreateNewText>
-										</CreateNewOption>
-									</>
-								)}
-							</DropdownMenu>
-						)}
-				</SourceFieldWrapper>
+													<SourceOptionName>
+														{sourceQuery ? (
+															<HighlightMatch
+																text={d.name}
+																query={sourceQuery}
+															/>
+														) : (
+															d.name
+														)}
+													</SourceOptionName>
+												</SourceOption>
+											))}
+										</>
+									)}
+									{sourceQuery && (
+										<>
+											<DropdownDivider />
+											<CreateNewOption onMouseDown={handleCreateNewMouseDown}>
+												<CreateNewText>
+													<HighlightedText>{sourceQuery}</HighlightedText>
+													{" (חדש)"}
+												</CreateNewText>
+											</CreateNewOption>
+										</>
+									)}
+								</DropdownMenu>
+							)}
+					</SourceFieldWrapper>
+				</FormField>
 			</SourceFormItem>
 			<DateFormItem>
 				<FormField field={dateField} label="תאריך" required={required}>
@@ -240,28 +241,8 @@ const DateFormItem = styled.div`
   flex-shrink: 0;
 `
 
-const FormLabelRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  padding-block-end: 8px;
-  font-weight: 400;
-  font-size: var(--fs-btn);
-  line-height: 22px;
-  white-space: nowrap;
-`
-
-const LabelText = styled.span`
-  color: rgba(0, 0, 0, 0.88);
-`
-
-const RequiredMark = styled.span`
-  color: #ff4d4f;
-  font-size: var(--fs-btn);
-`
-
 const SourceFieldWrapper = styled.div`
+  direction: ltr;
   position: relative;
   width: 100%;
 `
