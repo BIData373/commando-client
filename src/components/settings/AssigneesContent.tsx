@@ -1,10 +1,10 @@
 import styled from "@emotion/styled"
+import { useNavigate, useParams } from "@tanstack/react-router"
 import { CircleQuestionMarkIcon, Plus, Search } from "lucide-react"
 import { type ChangeEvent, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { useUpdateWorkspace } from "src/api/workspace/workspace"
 import { AssigneeCard } from "src/components/settings/AssigneeCard"
-import { AssigneeDialog } from "src/components/settings/AssigneeDialog"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
 import { Checkbox } from "src/components/ui/checkbox"
 import {
@@ -41,8 +41,9 @@ export function AssigneesContent() {
 		},
 	})
 
+	const { urlName } = useParams({ strict: false })
+	const navigate = useNavigate()
 	const [searchQuery, setSearchQuery] = useState("")
-	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
 	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
 
@@ -63,15 +64,14 @@ export function AssigneesContent() {
 	}
 
 	function handleOpenCreateDialog() {
-		setIsCreateDialogOpen(true)
+		navigate({
+			to: "/workspace/$urlName/settings/assignees/new",
+			params: { urlName: urlName! },
+		})
 	}
 
 	return (
 		<ContentRoot>
-			<AssigneeDialog
-				open={isCreateDialogOpen}
-				onOpenChange={setIsCreateDialogOpen}
-			/>
 			<StyledContent>
 				<CheckboxRow>
 					<StyledCheckbox

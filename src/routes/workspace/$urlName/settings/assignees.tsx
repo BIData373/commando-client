@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { AssigneesContent } from "src/components/settings/AssigneesContent"
 import { SectionTitle } from "src/components/settings/SectionTitle"
 import { SETTINGS_TABS, SettingTabPath } from "src/utils/settings-utils"
@@ -18,6 +18,8 @@ function SettingsAssignees() {
 			<CardScrollArea>
 				<AssigneesContent />
 			</CardScrollArea>
+
+			<Outlet />
 		</AssigneesRoot>
 	)
 }

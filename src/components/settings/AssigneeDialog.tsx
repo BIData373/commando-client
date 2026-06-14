@@ -22,11 +22,11 @@ import { invalidateQueries, queryClient } from "src/queryClient"
 import { concatName } from "src/utils/user-utils"
 import { CancelButton } from "../shared/CancelButton"
 import { FormField } from "../shared/FormField"
+import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import {
 	Dialog,
 	DialogClose,
-	DialogContent,
 	DialogDescription,
 	DialogTitle,
 } from "../ui/dialog"
@@ -97,7 +97,9 @@ export function AssigneeDialog({
 	})
 
 	useEffect(() => {
-		if (existingIcon) setSelectedIcon(existingIcon)
+		if (existingIcon) {
+			setSelectedIcon(existingIcon)
+		}
 	}, [existingIcon])
 
 	const randomColor = useMemo(() => {
@@ -229,7 +231,7 @@ export function AssigneeDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
-			<WideDialogContent>
+			<AssigneeDialogContent>
 				<DialogHeader $shadow={scrollShadow.top}>
 					<DialogTitleLarge>
 						{isUpdate ? "עריכת אחראי" : "יצירת אחראי"}
@@ -327,21 +329,18 @@ export function AssigneeDialog({
 						onClick={form.handleSubmit}
 					/>
 				</DialogActions>
-			</WideDialogContent>
+			</AssigneeDialogContent>
 		</Dialog>
 	)
 }
 
-const WideDialogContent = styled(DialogContent)`
-  max-width: 700px;
+const AssigneeDialogContent = styled(ModalContent)`
+  width: 700px;
+  max-width: calc(100vw - 2rem);
   max-height: 70vh;
   padding: 26px 38px;
-  text-align: end;
-  justify-items: flex-start;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
-  z-index: 500;
+  direction: rtl;
 `
 
 const DialogTitleLarge = styled(DialogTitle)`
