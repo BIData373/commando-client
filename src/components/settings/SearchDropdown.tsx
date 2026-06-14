@@ -82,7 +82,7 @@ export function SearchDropdown<T>({
 						</InputGroupAddon>
 						{selectedItem ? (
 							<SelectedDisplay>
-								{renderItem(selectedItem)}
+								<SelectedLabel>{value}</SelectedLabel>
 								<X size={16} cursor="pointer" onMouseDown={handleClear} />
 							</SelectedDisplay>
 						) : (
@@ -103,7 +103,7 @@ export function SearchDropdown<T>({
 					</StyledInputGroup>
 				</Root>
 			</PopoverPrimitive.Trigger>
-			{items.length > 0 && (
+			{isOpen && !isLoading && (
 				<PopoverPrimitive.Portal>
 					<DropdownContent
 						ref={handleContentRef}
@@ -112,14 +112,18 @@ export function SearchDropdown<T>({
 						onOpenAutoFocus={(e: Event) => e.preventDefault()}
 						onMouseDown={(e: React.MouseEvent) => e.preventDefault()}
 					>
-						{items.map((item) => (
-							<DropdownItem
-								key={getItemKey(item)}
-								onMouseDown={() => handleSelect(item)}
-							>
-								{renderItem(item)}
-							</DropdownItem>
-						))}
+						{items.length > 0 ? (
+							items.map((item) => (
+								<DropdownItem
+									key={getItemKey(item)}
+									onMouseDown={() => handleSelect(item)}
+								>
+									{renderItem(item)}
+								</DropdownItem>
+							))
+						) : (
+							<EmptyMessage>לא נמצאו תוצאות</EmptyMessage>
+						)}
 					</DropdownContent>
 				</PopoverPrimitive.Portal>
 			)}
@@ -155,6 +159,22 @@ const SelectedDisplay = styled.div`
   padding: 0 10px;
   flex: 1;
   min-width: 0;
+`
+
+const SelectedLabel = styled.span`
+  font-size: var(--fs-btn);
+  color: var(--sea-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+const EmptyMessage = styled.div`
+  padding: 8px 12px;
+  font-size: var(--fs-btn);
+  color: var(--sea-ink-soft);
+  text-align: center;
+  direction: rtl;
 `
 
 const DropdownItem = styled.div`
