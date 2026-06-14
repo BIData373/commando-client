@@ -3,6 +3,7 @@ import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
 import { omit, uniq } from "lodash"
 import { ChevronDown, ChevronUp, X } from "lucide-react"
+import type { Form } from "radix-ui"
 import { useRef, useState } from "react"
 import {
 	type CreateTaskDto,
@@ -41,6 +42,7 @@ import TagField from "./TagField"
 
 interface FormAssignee extends GetTaskAssigneeDto {
 	statusId?: number
+	editable?: boolean
 }
 
 interface FormState extends Omit<CreateTaskDto, "workspaceId" | "assignees"> {
@@ -98,12 +100,17 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 					id: as.assignee.id,
 					description: as.description || undefined,
 					statusId: as.status.id,
+					editable: as.editable,
 				})) ?? [],
 			linkedSource: task?.source ?? null,
 		} as FormState,
 		onSubmit: async ({
 			value: { source, sourceDate, linkedSource, ...rest },
 		}) => {
+			rest.assignees = (rest.assignees ?? []).map((assignee) =>
+				omit(assignee, "editable"),
+			)
+
 			if (isEditMode) {
 				const changedFields = omit(getChangedFields<FormState>(form), [
 					"source",
@@ -293,9 +300,7 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 					{
 						status: a.statusId != null ? statusById[a.statusId] : undefined,
 						description: a.description,
-						editable:
-							task!.assigneeStatuses.find((as) => as.assignee.id === a.id)
-								?.editable ?? false,
+						editable: a.editable ?? false,
 					},
 				]),
 			)
