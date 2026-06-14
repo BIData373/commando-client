@@ -143,10 +143,9 @@ function TaskTable({
 		taskPermissions != null &&
 		selectedTaskIds.some((id) => !taskPermissions[id]?.canChangeStatus)
 
-	function handleEnterSelectMode(taskId?: number) {
+	function handleEnterSelectMode(rowKey: string) {
 		setSelectMode(true)
-		const task = tasks.find((t) => t.id === taskId)
-		setRowSelection(task ? { [task.rowKey]: true } : {})
+		setRowSelection({ [rowKey]: true })
 	}
 
 	function handleExitSelectMode() {
