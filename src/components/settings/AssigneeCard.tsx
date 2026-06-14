@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
+import { useNavigate, useParams } from "@tanstack/react-router"
 import { User } from "lucide-react"
-import { useState } from "react"
 import type { AssigneesDto } from "src/api/model"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { Badge } from "../ui/badge"
@@ -12,36 +12,33 @@ import {
 	CardTitle,
 } from "../ui/card"
 import { Separator } from "../ui/separator"
-import { AssigneeDialog } from "./AssigneeDialog"
 import { DeleteAssigneePopconfirm } from "./DeleteAssigneePopconfirm"
 
 const MAX_VISIBLE_TAGS = 2
 
-interface IAssigneeCardProps {
+interface AssigneeCardProps {
 	assignee: AssigneesDto
 }
 
 export function AssigneeCard({
 	assignee,
 	assignee: { users, tasksCount },
-}: IAssigneeCardProps) {
+}: AssigneeCardProps) {
 	const visibleUsers = users.slice(0, MAX_VISIBLE_TAGS)
 	const remainingUsers = users.length - MAX_VISIBLE_TAGS
 
-	const [isUpdateCardOpen, setIsUpdateCardOpen] = useState(false)
+	const { urlName } = useParams({ strict: false })
+	const navigate = useNavigate()
 
 	function onCardClick() {
-		setIsUpdateCardOpen(true)
+		navigate({
+			to: "/workspace/$urlName/settings/assignees/$assigneeId",
+			params: { urlName: urlName!, assigneeId: String(assignee.id) },
+		})
 	}
 
 	return (
 		<>
-			<AssigneeDialog
-				assignee={assignee}
-				open={isUpdateCardOpen}
-				onOpenChange={setIsUpdateCardOpen}
-			/>
-
 			<StyledCard onClick={onCardClick}>
 				<StyledCardHeader>
 					<CardHeaderRow>

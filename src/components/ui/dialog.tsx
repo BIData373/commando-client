@@ -50,7 +50,7 @@ function DialogOverlay({
         "fixed inset-0 duration-100 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
         className
       )}
-      style={{ background: "var(--text-color-400)", zIndex: "var(--z-dropdown)", backdropFilter: "blur(2px)" }}
+      style={{ background: "var(--text-color-400)", zIndex: "var(--z-dropdown)", backdropFilter: "blur(4px)" }}
       {...props}
     />
   )

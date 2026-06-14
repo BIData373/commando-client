@@ -45,7 +45,12 @@ workspace/
     settings/
       index.tsx                               /workspace/:urlName/settings/  → redirect to general
       general.tsx                             /workspace/:urlName/settings/general
-      assignees.tsx                           /workspace/:urlName/settings/assignees
+      assignees.tsx                           /workspace/:urlName/settings/assignees  (layout: renders list + Outlet for modals)
+      assignees/
+        new.tsx                               /workspace/:urlName/settings/assignees/new  (modal overlay)
+        $assigneeId.tsx                       /workspace/:urlName/settings/assignees/:assigneeId  (Outlet passthrough)
+        $assigneeId/
+          index.tsx                           /workspace/:urlName/settings/assignees/:assigneeId/  (modal overlay)
       permissions.tsx                         /workspace/:urlName/settings/permissions
 ```
 
@@ -181,6 +186,34 @@ All semantic tokens are defined in both `:root` (light mode) and `.dark` in `src
 - Flex items flow right-to-left: first DOM child = rightmost visually.
 - Always use logical CSS properties: `inset-inline-start`, `margin-inline-end`, `padding-block`, etc.
 - To control item order for RTL: reverse the array (not the DOM structure).
+
+## Modal / Dialog Pattern
+
+**Never use `DialogContent` (the ShadCN wrapper) for full modals.** It has enter/exit CSS animations that get cut off when a route unmounts, causing a visible flash.
+
+**Always use `ModalContent`** (`src/components/shared/ModalContent.tsx`) instead. It wraps `DialogPortal + DialogOverlay + DialogContentPrimitive` with base styles (centered, shadow, border, background) and no animation. Extend it per-consumer:
+
+```tsx
+// In your component file:
+const Panel = styled(ModalContent)`
+  width: 700px;
+  max-height: 70vh;
+  // only size/padding/direction overrides here
+`
+
+// In JSX (always open={true} when route-based):
+<Dialog open onOpenChange={handleClose}>
+  <Panel>...</Panel>
+</Dialog>
+```
+
+**Route-based modals** — entity create/edit dialogs live as child routes of the list layout, not as local `useState`. The layout route renders the list + `<Outlet />`. Child routes (`new.tsx`, `$id.tsx`, `$id/index.tsx`) render the dialog. When the user closes, navigate back to the list route. This keeps the URL in sync and avoids unmount-animation issues.
+
+| Wrong | Right |
+|-------|-------|
+| `styled(DialogContent)` for a modal | `styled(ModalContent)` |
+| `const [isOpen, setIsOpen] = useState(false)` + `<SomeDialog open={isOpen}>` | Route-based modal (`new.tsx` / `$id/index.tsx`) |
+| `DialogPortal + DialogOverlay + DialogContentPrimitive` inline | `ModalContent` |
 
 ## Component Notes
 

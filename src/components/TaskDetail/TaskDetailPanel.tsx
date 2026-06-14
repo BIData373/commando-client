@@ -18,13 +18,9 @@ import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import FlagIcon from "../shared/FlagIcon"
+import { ModalContent } from "../shared/ModalContent"
 import { RowActionsMenu } from "../Tasks/RowActionsMenu"
-import {
-	Dialog,
-	DialogContentPrimitive,
-	DialogOverlay,
-	DialogPortal,
-} from "../ui/dialog"
+import { Dialog } from "../ui/dialog"
 import { AssigneeSection } from "./AssigneeSection"
 import TaskConversationPanel from "./TaskConversationPanel"
 import TaskHistoryPanel from "./TaskHistoryPanel"
@@ -113,167 +109,162 @@ function TaskDetailPanel({
 
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
-			<DialogPortal>
-				<DialogOverlay />
-				<Panel>
-					<TaskIdLabel>#{id}</TaskIdLabel>
-					<CloseBtn onClick={onClose} aria-label="סגור">
-						<X size={16} />
-					</CloseBtn>
+			<Panel>
+				<TaskIdLabel>#{id}</TaskIdLabel>
+				<CloseBtn onClick={onClose} aria-label="סגור">
+					<X size={16} />
+				</CloseBtn>
 
-					<HeaderRow $shadow={scrollShadow.top}>
-						<TextWrapper>
-							{flagged && <FlagIcon />}
-							<TitleText>{title}</TitleText>
-						</TextWrapper>
-						<RowActionsMenu
-							workspaceId={workspaceId}
-							onEdit={onEdit}
-							onDelete={onDelete}
-						/>
-					</HeaderRow>
+				<HeaderRow $shadow={scrollShadow.top}>
+					<TextWrapper>
+						{flagged && <FlagIcon />}
+						<TitleText>{title}</TitleText>
+					</TextWrapper>
+					<RowActionsMenu
+						workspaceId={workspaceId}
+						onEdit={onEdit}
+						onDelete={onDelete}
+					/>
+				</HeaderRow>
 
-					<ScrollContent
-						$noScroll={showConversation}
-						ref={scrollRef}
-						onScroll={handleScroll}
-					>
-						<DeadlineSection>
-							<SectionLabel>תג"ב</SectionLabel>
-							<MetaRow>
-								<DueDateGroup>
-									{deadlineType !== DeadlineType.DATE && (
-										<DeadlineTag $type={deadlineType}>
-											{DEADLINE_LABELS[deadlineType]}
-										</DeadlineTag>
-									)}
-									{dueDate && (
-										<DateContainer>
-											<MetaLabel>עד</MetaLabel>
-											<DueDateText>{formatDateMonthYear(dueDate)}</DueDateText>
-											<Calendar size={16} />
-										</DateContainer>
-									)}
-								</DueDateGroup>
-								<CreatedGroup>
-									{/* <HistoryButton onClick={() => setShowHistory(true)}>
+				<ScrollContent
+					$noScroll={showConversation}
+					ref={scrollRef}
+					onScroll={handleScroll}
+				>
+					<DeadlineSection>
+						<SectionLabel>תג"ב</SectionLabel>
+						<MetaRow>
+							<DueDateGroup>
+								{deadlineType !== DeadlineType.DATE && (
+									<DeadlineTag $type={deadlineType}>
+										{DEADLINE_LABELS[deadlineType]}
+									</DeadlineTag>
+								)}
+								{dueDate && (
+									<DateContainer>
+										<MetaLabel>עד</MetaLabel>
+										<DueDateText>{formatDateMonthYear(dueDate)}</DueDateText>
+										<Calendar size={16} />
+									</DateContainer>
+								)}
+							</DueDateGroup>
+							<CreatedGroup>
+								{/* <HistoryButton onClick={() => setShowHistory(true)}>
 										<History size={16} />
 									</HistoryButton> */}
-									<MetaText>
-										{formatMinutesHours(createdAt)} -{" "}
-										{formatDateMonthYear(createdAt)}
-									</MetaText>
-								</CreatedGroup>
-							</MetaRow>
-						</DeadlineSection>
+								<MetaText>
+									{formatMinutesHours(createdAt)} -{" "}
+									{formatDateMonthYear(createdAt)}
+								</MetaText>
+							</CreatedGroup>
+						</MetaRow>
+					</DeadlineSection>
 
-						<AssigneeSection
-							taskId={id}
-							workspaceId={workspaceId}
-							assigneeStatuses={assigneeStatuses}
-						/>
+					<AssigneeSection
+						taskId={id}
+						workspaceId={workspaceId}
+						assigneeStatuses={assigneeStatuses}
+					/>
 
-						{showExtraInfo && (
-							<>
-								<DividerRow>
-									<DividerLine />
-									<DividerText>פרטים נוספים</DividerText>
-									<DividerLine />
-								</DividerRow>
+					{showExtraInfo && (
+						<>
+							<DividerRow>
+								<DividerLine />
+								<DividerText>פרטים נוספים</DividerText>
+								<DividerLine />
+							</DividerRow>
 
-								<InfoGrid>
-									{source?.name && (
-										<InfoBlock>
-											<SectionLabel>מקור</SectionLabel>
-											<SourceRow>
-												<PencilButton
-													onClick={() => setShowEditDiscussion(true)}
-												>
-													<Pencil size={14} />
-												</PencilButton>
-												<SourceName>{source.name}</SourceName>
-												<SourceDate>
-													{formatDateMonthYear(source.date)}
-												</SourceDate>
-											</SourceRow>
-											<InfoAttachment>
-												{source.attachmentKey && (
-													<>
-														<Paperclip size={16} />
-														<AttachmentDownloadButton
-															onClick={handleAttachmentDownload}
-															disabled={isDownloadingAttachment}
-														>
-															{source.attachmentName}
-															{isDownloadingAttachment && (
-																<AttachmentSpinIcon size={12} />
-															)}
-														</AttachmentDownloadButton>
-													</>
-												)}
-											</InfoAttachment>
-										</InfoBlock>
-									)}
-									{allTags.length > 0 && (
-										<InfoBlock>
-											<SectionLabel>נושא</SectionLabel>
-											<TagsRow>
-												{allTags.map((tag) => (
-													<TagChip key={tag.id}>{tag.name}</TagChip>
-												))}
-											</TagsRow>
-										</InfoBlock>
-									)}
-								</InfoGrid>
-
-								{notes && (
-									<NotesSection>
-										<SectionLabel>הערות הנחיה</SectionLabel>
-										<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
-									</NotesSection>
+							<InfoGrid>
+								{source?.name && (
+									<InfoBlock>
+										<SectionLabel>מקור</SectionLabel>
+										<SourceRow>
+											<PencilButton onClick={() => setShowEditDiscussion(true)}>
+												<Pencil size={14} />
+											</PencilButton>
+											<SourceName>{source.name}</SourceName>
+											<SourceDate>
+												{formatDateMonthYear(source.date)}
+											</SourceDate>
+										</SourceRow>
+										<InfoAttachment>
+											{source.attachmentKey && (
+												<>
+													<Paperclip size={16} />
+													<AttachmentDownloadButton
+														onClick={handleAttachmentDownload}
+														disabled={isDownloadingAttachment}
+													>
+														{source.attachmentName}
+														{isDownloadingAttachment && (
+															<AttachmentSpinIcon size={12} />
+														)}
+													</AttachmentDownloadButton>
+												</>
+											)}
+										</InfoAttachment>
+									</InfoBlock>
 								)}
-							</>
-						)}
-					</ScrollContent>
+								{allTags.length > 0 && (
+									<InfoBlock>
+										<SectionLabel>נושא</SectionLabel>
+										<TagsRow>
+											{allTags.map((tag) => (
+												<TagChip key={tag.id}>{tag.name}</TagChip>
+											))}
+										</TagsRow>
+									</InfoBlock>
+								)}
+							</InfoGrid>
 
-					<BottomBar
-						onClick={handleBottomBarClick}
-						$hidden={showConversation}
-						$shadow={scrollShadow.bottom}
-					>
-						<ChatGroup>
-							<ChatLabel>שיחה ועדכונים</ChatLabel>
-						</ChatGroup>
-						<ChevronUp size={20} />
-					</BottomBar>
-
-					{showHistory && (
-						<>
-							<HistoryOverlay />
-							<TaskHistoryPanel
-								history={history ?? []}
-								onClose={() => setShowHistory(false)}
-							/>
+							{notes && (
+								<NotesSection>
+									<SectionLabel>הערות הנחיה</SectionLabel>
+									<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
+								</NotesSection>
+							)}
 						</>
 					)}
-					{showConversation && (
-						<>
-							<HistoryOverlay />
-							<TaskConversationPanel
-								taskId={id}
-								onClose={() => setShowConversation(false)}
-							/>
-						</>
-					)}
-					{showEditDiscussion && source?.id && (
-						<EditDiscussionModal
-							onClose={handleCloseEditDiscussion}
-							sourceId={source.id}
-							taskId={id}
+				</ScrollContent>
+
+				<BottomBar
+					onClick={handleBottomBarClick}
+					$hidden={showConversation}
+					$shadow={scrollShadow.bottom}
+				>
+					<ChatGroup>
+						<ChatLabel>שיחה ועדכונים</ChatLabel>
+					</ChatGroup>
+					<ChevronUp size={20} />
+				</BottomBar>
+
+				{showHistory && (
+					<>
+						<HistoryOverlay />
+						<TaskHistoryPanel
+							history={history ?? []}
+							onClose={() => setShowHistory(false)}
 						/>
-					)}
-				</Panel>
-			</DialogPortal>
+					</>
+				)}
+				{showConversation && (
+					<>
+						<HistoryOverlay />
+						<TaskConversationPanel
+							taskId={id}
+							onClose={() => setShowConversation(false)}
+						/>
+					</>
+				)}
+				{showEditDiscussion && source?.id && (
+					<EditDiscussionModal
+						onClose={handleCloseEditDiscussion}
+						sourceId={source.id}
+						taskId={id}
+					/>
+				)}
+			</Panel>
 		</Dialog>
 	)
 }
@@ -282,23 +273,11 @@ export default TaskDetailPanel
 
 // ─── Layout ────────────────────────────────────────────────────────────────────
 
-const Panel = styled(DialogContentPrimitive)`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  overflow: hidden;
-  background: var(--background);
-  border-radius: 8px;
+const Panel = styled(ModalContent)`
   width: 1094px;
   height: 850px;
   max-height: 85vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.08), 0 3px 3px rgba(0, 0, 0, 0.12), 0 9px 14px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--line);
-  z-index: var(--z-dropdown);
-  outline: none;
+  overflow: hidden;
   direction: rtl;
 `
 
