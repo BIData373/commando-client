@@ -8,11 +8,9 @@ export const API_PREFIX = import.meta.env.VITE_API_PREFIX ?? ""
 export const MESIBA_BASE_API_URL = import.meta.env.VITE_MESIBA_BASE_URL_API
 
 export const CHAT_URL = import.meta.env.VITE_CHAT_URL
-export const CHAT_CHANNEL_NAME = import.meta.env.VITE_CHAT_CHANNEL
+export const CHAT_SUPPORT_PATH = import.meta.env.VITE_CHAT_SUPPORT_PATH
 export const CHAT_CHANNEL_URL =
-	CHAT_URL &&
-	CHAT_CHANNEL_NAME &&
-	new URL(`channel/${CHAT_CHANNEL_NAME}`, CHAT_URL)
+	CHAT_URL && CHAT_SUPPORT_PATH && new URL(CHAT_SUPPORT_PATH, CHAT_URL)
 
 export const STATIC_TOKEN = import.meta.env.VITE_STATIC_TOKEN
 export const IS_BI = (import.meta.env.VITE_IS_BI ?? "true") === "true"
