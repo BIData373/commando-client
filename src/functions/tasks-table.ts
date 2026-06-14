@@ -7,6 +7,7 @@ function formatTaskRow(
 	assigneeStatus?: AssigneeStatusDto,
 ): TaskRow {
 	const { id, assigneeStatuses } = task
+
 	return {
 		...task,
 		rowKey: formatTaskRowId(id, assigneeStatus?.assignee?.id),

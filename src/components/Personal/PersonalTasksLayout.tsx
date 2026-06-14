@@ -32,11 +32,9 @@ function toPersonalTaskRows(
 	currentUser: CreateUserDto,
 ): TaskRow[] {
 	return tasks.flatMap((task) =>
-		toTaskRows([task])
-			.map((row) => ({ ...row, workspace: task.workspace }))
-			.filter(({ assignee }) =>
-				assignee?.users.some(({ upn }) => upn === currentUser.upn),
-			),
+		toTaskRows([task]).filter(({ assignee }) =>
+			assignee?.users.some(({ upn }) => upn === currentUser.upn),
+		),
 	)
 }
 
