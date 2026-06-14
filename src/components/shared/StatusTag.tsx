@@ -12,7 +12,7 @@ const STATUS_DEFAULTS: Record<
 > = {
 	[StatusType.NOT_STARTED]: { name: "טרם בוצע", color: "#FA541C" },
 	[StatusType.IN_PROGRESS]: { name: "בעבודה", color: "#2F54EB" },
-	[StatusType.COMPLETED]: { name: "הושלם", color: "#52c41a" },
+	[StatusType.COMPLETED]: { name: "בוצע", color: "#52c41a" },
 }
 
 interface StatusTagProps {
