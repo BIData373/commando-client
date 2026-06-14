@@ -92,27 +92,6 @@ function PersonalTasksLayout() {
 		setActiveWorkspaceFilters(new Set())
 	}
 
-	const taskPermissions = useMemo(
-		() =>
-			Object.fromEntries(
-				rawTasks.map((t) => {
-					const isManager =
-						t.workspace.permissionType === PermissionType.MANAGER
-					const myAssigneeStatus = t.assigneeStatuses.find((as) =>
-						as.assignee.users.some(({ upn }) => upn === currentUser.upn),
-					)
-					return [
-						t.id,
-						{
-							canDelete: isManager,
-							canChangeStatus: isManager || !!myAssigneeStatus?.editable,
-						},
-					]
-				}),
-			),
-		[rawTasks, currentUser.upn],
-	)
-
 	function handleOpenTask(taskId: number) {
 		navigate({
 			to: "/personal/task/$taskId",
@@ -186,7 +165,6 @@ function PersonalTasksLayout() {
 					isLoading={isLoading}
 					onEdit={handleEdit}
 					onDoubleClick={handleOpenTask}
-					taskPermissions={taskPermissions}
 					hideStatusAction
 				/>
 			</PageRoot>

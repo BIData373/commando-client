@@ -15,6 +15,7 @@ import type {
 	WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
+import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import {
@@ -28,11 +29,6 @@ import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
-
-interface TaskPermissions {
-	canDelete: boolean
-	canChangeStatus: boolean
-}
 
 interface TaskTableProps {
 	queryKey: QueryKey
@@ -49,7 +45,7 @@ interface TaskTableProps {
 		deadlineTypeFilter: DeadlineType[],
 	) => void
 	isLoading?: boolean
-	taskPermissions?: Record<number, TaskPermissions>
+	isManager?: boolean
 	hideStatusAction?: boolean
 }
 
@@ -65,7 +61,7 @@ function TaskTable({
 	deadlineTypeFilter = [],
 	onFiltersChange,
 	isLoading,
-	taskPermissions,
+	isManager,
 	hideStatusAction = false,
 }: TaskTableProps) {
 	const {
@@ -131,17 +127,26 @@ function TaskTable({
 	}
 	const [sorting, setSorting] = useState<SortingState>([])
 
-	const selectedTaskIds = Object.keys(rowSelection)
-		.filter((key) => rowSelection[key])
-		.map((key) => Number(key.split(TASK_ROW_ID_SEPARATOR)[0]))
+	const selectedRowKeys = Object.keys(rowSelection).filter(
+		(key) => rowSelection[key],
+	)
+
+	const selectedTaskIds = selectedRowKeys.map((key) =>
+		Number(key.split(TASK_ROW_ID_SEPARATOR)[0]),
+	)
 
 	const bulkDeleteDisabled =
-		taskPermissions != null &&
-		selectedTaskIds.some((id) => !taskPermissions[id]?.canDelete)
+		isManager != null
+			? !isManager
+			: selectedTaskIds.some(
+					(id) =>
+						tasks.find((t) => t.id === id)?.workspace?.permissionType !==
+						PermissionType.MANAGER,
+				)
 
-	const bulkStatusDisabled =
-		taskPermissions != null &&
-		selectedTaskIds.some((id) => !taskPermissions[id]?.canChangeStatus)
+	const bulkStatusDisabled = selectedRowKeys.some(
+		(rowKey) => !tasks.find((t) => t.rowKey === rowKey)?.editable,
+	)
 
 	function handleEnterSelectMode(rowKey: string) {
 		setSelectMode(true)
