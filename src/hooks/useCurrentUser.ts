@@ -25,7 +25,7 @@ function buildAdminUser(
 			upn,
 			name: "Admin",
 			displayName: "Admin",
-			isBI,
+			...(isBI !== null && { isBI }),
 		},
 	}
 }
