@@ -200,7 +200,6 @@ export default PersonalTasksLayout
 const PageRoot = styled.div`
   display: flex;
   flex-direction: column;
-  padding-top: 32px;
   padding-block-end: 24px;
   gap: 28px;
   height: 100%;
