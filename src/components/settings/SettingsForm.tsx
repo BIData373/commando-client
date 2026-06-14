@@ -102,7 +102,7 @@ export function SettingsForm() {
 	function handleIconSelect(icon: IMesibaIcon) {
 		form.setFieldValue("icon", icon.iconName)
 		setSelectedIcon(icon)
-		setIconSearch("")
+		setIconSearch(icon.heb_name)
 	}
 
 	function handleIconClear() {
@@ -209,8 +209,8 @@ const IconPreview = styled.div`
   width: 100%;
 
   img {
-    width: 48px;
-    height: 48px;
+    width: 100px;
+    height: 100px;
     object-fit: contain;
     border-radius: 50%;
   }
