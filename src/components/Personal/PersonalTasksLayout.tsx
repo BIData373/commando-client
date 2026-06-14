@@ -164,7 +164,7 @@ function PersonalTasksLayout() {
 					onEdit={handleEdit}
 					onDoubleClick={handleOpenTask}
 					hideStatusAction
-					showMenuColumn={false}
+					showActions={false}
 				/>
 			</PageRoot>
 			<Outlet />

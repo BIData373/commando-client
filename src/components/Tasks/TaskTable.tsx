@@ -43,7 +43,7 @@ interface TaskTableProps {
 	isLoading?: boolean
 	isManager?: boolean
 	hideStatusAction?: boolean
-	showMenuColumn?: boolean
+	showActions?: boolean
 }
 
 function TaskTable({
@@ -60,7 +60,7 @@ function TaskTable({
 	isLoading,
 	isManager,
 	hideStatusAction = false,
-	showMenuColumn = true,
+	showActions: showMenuColumn = true,
 }: TaskTableProps) {
 	const {
 		searchQuery,
