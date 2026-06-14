@@ -6,8 +6,9 @@ import { PermissionType } from "src/api/model"
 import { useListPermissions } from "src/api/permission/permission"
 import { useListWorkspaces } from "src/api/workspace/workspace"
 import { useErrorModal } from "src/providers/ErrorModalProvider"
-import { CHAT_LINK } from "src/utils/env-utils"
+import { CHAT_CHANNEL_URL } from "src/utils/env-utils"
 import { ErrorCode, isErrorCode } from "src/utils/error-utils"
+import { navigateToUserChat } from "src/utils/user-utils"
 
 interface ErrorContent {
 	title: string
@@ -66,8 +67,7 @@ export function ErrorModal() {
 	}
 
 	function navigateToChat() {
-		setErrorCode(null)
-		window.open(CHAT_LINK)
+		window.open(CHAT_CHANNEL_URL)
 	}
 
 	const content =
@@ -97,7 +97,9 @@ export function ErrorModal() {
 											<AdminContactRow key={user.id}>
 												<AdminContainer>
 													<AdminDot />
-													<AdminContactLink onClick={navigateToChat}>
+													<AdminContactLink
+														onClick={() => navigateToUserChat(user)}
+													>
 														{user.info?.name}
 														{user.info?.name || user.info?.upn ? " - " : ""}
 														{user.info?.upn}
