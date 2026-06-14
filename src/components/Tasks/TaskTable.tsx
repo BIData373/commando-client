@@ -37,7 +37,7 @@ interface TaskPermissions {
 interface TaskTableProps {
 	queryKey: QueryKey
 	tasks: TaskRow[]
-	workspaceId?: number
+	statuses?: WorkspaceStatusDto[]
 	onEdit?: (taskId: number) => void
 	onDoubleClick?: (taskId: number) => void
 	extraColumns?: Record<string, ColumnDef<TaskRow>>
@@ -56,7 +56,7 @@ interface TaskTableProps {
 function TaskTable({
 	queryKey,
 	tasks,
-	workspaceId,
+	statuses,
 	onEdit = () => {},
 	onDoubleClick,
 	extraColumns,
@@ -198,14 +198,6 @@ function TaskTable({
 
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
 
-	const { data: allStatuses = [] } = useListWorkspaceStatuses(
-		{ workspaceId: workspaceId ?? -1 },
-		{
-			query: { enabled: !hideStatusAction && typeof workspaceId === "number" },
-		},
-	)
-	const uniqueStatuses = hideStatusAction ? undefined : allStatuses
-
 	const extraColumnIds = extraColumns
 		? new Set(Object.keys(extraColumns))
 		: new Set<string>()
@@ -285,7 +277,7 @@ function TaskTable({
 			<BulkActionsBar
 				isVisible={selectMode}
 				selectedCount={selectedTaskIds.length}
-				statuses={uniqueStatuses}
+				statuses={statuses}
 				onChangeStatus={(status) => bulkUpdateStatus(selectedTaskIds, status)}
 				onArchive={handleBulkArchive}
 				onDelete={handleBulkDelete}

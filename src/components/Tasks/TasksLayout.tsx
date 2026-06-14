@@ -48,6 +48,7 @@ function TasksLayout({
 
 	const {
 		workspace: { id: workspaceId },
+		statuses,
 	} = useWorkspace()
 
 	const {
@@ -219,7 +220,7 @@ function TasksLayout({
 						<TaskTable
 							queryKey={queryKey}
 							tasks={filteredTaskRows}
-							workspaceId={workspaceId}
+							statuses={Object.values(statuses)}
 							onEdit={handleEdit}
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
