@@ -60,10 +60,10 @@ interface SelectModeConfig {
 
 interface ActionsConfig {
 	onEdit: (taskId: number) => void
-	onDoubleClick?: (taskId: number) => void
-	onArchive: (taskIds: number[]) => void
-	onDelete: (taskIds: number[]) => void
-	onEnterSelectMode: (taskId?: number) => void
+	onDoubleClick?(taskId: number): void
+	onArchive(taskIds: number[]): void
+	onDelete(taskIds: number[]): void
+	onEnterSelectMode(rowKey?: string): void
 }
 
 type ColumnsMap = Partial<Record<string, ColumnDef<TaskRow>>>
@@ -502,13 +502,13 @@ function useTaskColumns({
 						enableColumnFilter: false,
 						cell: ({
 							row: {
-								original: { id, workspaceId },
+								original: { id, workspaceId, rowKey },
 							},
 						}) => (
 							<RowActionsMenu
 								workspaceId={workspaceId}
 								onEdit={() => actions.onEdit(id)}
-								onEnterSelect={() => actions.onEnterSelectMode(id)}
+								onEnterSelect={() => actions.onEnterSelectMode(rowKey)}
 								onDelete={() => actions.onDelete([id])}
 							/>
 						),
