@@ -50,10 +50,9 @@ const LabelRow = styled.div`
 `
 
 const LabelText = styled.span`
-  font-size: var(--fs-base);
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.65);
 `
 
 const RequiredMark = styled.span`

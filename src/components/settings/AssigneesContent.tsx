@@ -21,6 +21,7 @@ import {
 import { useFuse } from "src/hooks/useFuse"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import addPerson from "../../assets/icons/addPerson.svg"
+import searchInstruction from "../../assets/icons/searchInstruction.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { Spinner } from "../ui/spinner"
 
@@ -131,6 +132,14 @@ export function AssigneesContent() {
 							imgSrc={addPerson}
 							title="טרם הוגדרו אחראים"
 							description="לא נמצאו אחראים כדי להציג נתונים"
+						/>
+					</CenterContainer>
+				) : filteredAssignees.length === 0 ? (
+					<CenterContainer>
+						<EmptyCardState
+							imgSrc={searchInstruction}
+							title="לא נמצאו אחראים"
+							description={`לא נמצאו אחראים התואמים ל-"${searchQuery}"`}
 						/>
 					</CenterContainer>
 				) : (

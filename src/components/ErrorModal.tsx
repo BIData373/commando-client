@@ -99,6 +99,7 @@ export function ErrorModal() {
 													<AdminDot />
 													<AdminContactLink onClick={navigateToChat}>
 														{user.info?.name}
+														{user.info?.name || user.info?.upn ? " - " : ""}
 														{user.info?.upn}
 													</AdminContactLink>
 												</AdminContainer>
