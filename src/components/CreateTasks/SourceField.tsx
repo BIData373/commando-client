@@ -29,6 +29,7 @@ interface SourceFieldProps {
 	label?: string
 	uniqueNames?: boolean
 	dateField?: AnyFieldApi
+	required?: boolean
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -43,6 +44,7 @@ function SourceField({
 	label = "מקור",
 	uniqueNames = false,
 	dateField,
+	required = false,
 }: SourceFieldProps) {
 	const [sourceQuery, setSourceQuery] = useState(source)
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -108,6 +110,7 @@ function SourceField({
 			<SourceFormItem>
 				<FormLabelRow>
 					<LabelText>{label}</LabelText>
+					{required && <RequiredMark>*</RequiredMark>}
 				</FormLabelRow>
 				<SourceFieldWrapper>
 					<SourceInputBox onFocus={openDropdown}>
@@ -167,7 +170,7 @@ function SourceField({
 				</SourceFieldWrapper>
 			</SourceFormItem>
 			<DateFormItem>
-				<FormField field={dateField} label="תאריך">
+				<FormField field={dateField} label="תאריך" required={required}>
 					<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
 						<TooltipProvider>
 							<Tooltip>
@@ -251,6 +254,11 @@ const FormLabelRow = styled.div`
 
 const LabelText = styled.span`
   color: rgba(0, 0, 0, 0.88);
+`
+
+const RequiredMark = styled.span`
+  color: #ff4d4f;
+  font-size: var(--fs-btn);
 `
 
 const SourceFieldWrapper = styled.div`
