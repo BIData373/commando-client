@@ -164,7 +164,6 @@ const LogoImage = styled.img`
   width: 28px;
   height: 28px;
   margin-inline-end: 20px;
-  object-fit: contain;
 `
 
 const TitleBar = styled.div`
