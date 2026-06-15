@@ -39,7 +39,6 @@ export function BIHeaderBypass() {
 	return (
 		STATIC_TOKEN && (
 			<>
-				<DropdownMenuSeparator />
 				<DropdownMenuItem
 					onSelect={(e) => e.preventDefault()}
 					onPointerMove={(e) => e.preventDefault()}
