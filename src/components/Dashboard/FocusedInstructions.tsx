@@ -1,5 +1,4 @@
 import styled from "@emotion/styled"
-import type { QueryKey } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import { DeadlineType } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
@@ -16,11 +15,6 @@ interface TabConfig {
 	label: string
 	count: number
 	weekDelta: number
-}
-
-interface IFocusedInstruction {
-	queryKey: QueryKey
-	tasks: TaskRow[]
 }
 
 const TAB_LABELS: Pick<TabConfig, "id" | "label" | "weekDelta">[] = [
@@ -40,10 +34,15 @@ function getFilteredTasks(tab: FocusedTab, tasks: TaskRow[]): TaskRow[] {
 	}
 }
 
+interface FocusedInstructionProps {
+	tasks: TaskRow[]
+	onUpdateStatusSuccess?(): void
+}
+
 export default function FocusedInstructions({
-	queryKey,
 	tasks,
-}: IFocusedInstruction) {
+	onUpdateStatusSuccess,
+}: FocusedInstructionProps) {
 	const [activeTab, setActiveTab] = useState<FocusedTab>(FocusedTab.FLAGGED)
 
 	function handleTabClick(tabId: FocusedTab) {
@@ -71,7 +70,7 @@ export default function FocusedInstructions({
 	}))
 
 	const { columns } = useTaskColumns({
-		queryKey,
+		onUpdateStatusSuccess,
 		visibleColumns: ["title", "status", "assigneeStatuses", "deadlineType"],
 		searchQuery: "",
 	})

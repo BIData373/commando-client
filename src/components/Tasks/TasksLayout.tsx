@@ -10,6 +10,7 @@ import { useListTasks } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { invalidateQueries } from "src/queryClient"
 import {
 	type TasksSearchSchemaType,
 	TasksView,
@@ -151,6 +152,10 @@ function TasksLayout({
 		})
 	}
 
+	function handleChangeSuccess() {
+		invalidateQueries([queryKey])
+	}
+
 	// function handleViewChange(newView: TasksView) {
 	// 	navigateToTasks({ view: newView })
 	// }
@@ -197,7 +202,7 @@ function TasksLayout({
 				<ContentArea>
 					{view === TasksView.TABLE ? (
 						<TaskTable
-							queryKey={queryKey}
+							onChangeSuccess={handleChangeSuccess}
 							tasks={filteredTaskRows}
 							statuses={Object.values(statuses)}
 							onEdit={handleEdit}

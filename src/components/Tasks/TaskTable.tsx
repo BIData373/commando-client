@@ -1,6 +1,4 @@
 import styled from "@emotion/styled"
-import type { QueryKey } from "@tanstack/react-query"
-import { useQueryClient } from "@tanstack/react-query"
 import type {
 	ColumnDef,
 	ColumnFiltersState,
@@ -27,7 +25,6 @@ import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 
 interface TaskTableProps {
-	queryKey: QueryKey
 	tasks: TaskRow[]
 	statuses?: WorkspaceStatusDto[]
 	onEdit?: (taskId: number) => void
@@ -44,10 +41,10 @@ interface TaskTableProps {
 	isManager?: boolean
 	hideStatusAction?: boolean
 	showActionsColumn?: boolean
+	onChangeSuccess?(): void
 }
 
 function TaskTable({
-	queryKey,
 	tasks,
 	statuses,
 	onEdit = () => {},
@@ -57,6 +54,7 @@ function TaskTable({
 	statusFilter = [],
 	deadlineTypeFilter = [],
 	onFiltersChange,
+	onChangeSuccess,
 	isLoading,
 	isManager,
 	hideStatusAction = false,
@@ -71,18 +69,13 @@ function TaskTable({
 		columnsFilters,
 		setColumnsFilters,
 	} = useTasksFilters()
-	const queryClient = useQueryClient()
-
-	function handleSuccess() {
-		queryClient.invalidateQueries({ queryKey })
-	}
 
 	const { mutate: deleteTaskMutate } = useDeleteTask({
-		mutation: { onSuccess: handleSuccess },
+		mutation: { onSuccess: onChangeSuccess },
 	})
 
 	const { mutate: upsertStatus } = useUpsertAssigneeTaskStatus({
-		mutation: { onSuccess: handleSuccess },
+		mutation: { onSuccess: onChangeSuccess },
 	})
 
 	const [selectMode, setSelectMode] = useState(false)
@@ -212,7 +205,7 @@ function TaskTable({
 	)
 
 	const { columns: baseColumns } = useTaskColumns({
-		queryKey,
+		onUpdateStatusSuccess: onChangeSuccess,
 		visibleColumns,
 		searchQuery,
 		filterOptionsMap,

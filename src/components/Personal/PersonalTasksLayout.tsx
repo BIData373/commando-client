@@ -14,6 +14,7 @@ import {
 } from "src/api/task/task"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import { invalidateQueries } from "src/queryClient"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import { type TaskRow, toTaskRows } from "src/utils/task-table-utils"
@@ -106,14 +107,13 @@ function PersonalTasksLayout() {
 		})
 	}
 
+	function handleChangeSuccess() {
+		invalidateQueries([queryKey])
+	}
+
 	// function handleViewChange(newView: TasksView) {
 	// 	navigate({ to: "/personal", search: { view: newView } })
 	// }
-
-	// useTitleBar(
-	// 	() => <ViewToggle view={view} onViewChange={handleViewChange} />,
-	// 	[view],
-	// )
 
 	return (
 		<TooltipProvider>
@@ -158,7 +158,7 @@ function PersonalTasksLayout() {
 					startSlot={<TasksDatePicker />}
 				/>
 				<TaskTable
-					queryKey={queryKey}
+					onChangeSuccess={handleChangeSuccess}
 					tasks={filteredTaskRows}
 					isLoading={isLoading}
 					onEdit={handleEdit}
