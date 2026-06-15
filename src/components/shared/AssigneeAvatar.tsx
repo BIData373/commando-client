@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { Avatar } from "radix-ui"
 import type { AssigneeDto } from "src/api/model"
+import { getInitials } from "src/utils/avatar-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import { AvatarFallback } from "../ui/avatar"
 
@@ -11,14 +12,6 @@ interface AssigneeAvatarProps {
 	size?: number
 	ref?: React.Ref<HTMLButtonElement>
 	cursor?: boolean
-}
-
-function getInitials(name: string): string {
-	return name
-		.split(" ")
-		.map((part) => part[0])
-		.join("")
-		.slice(0, 2)
 }
 
 export const AssigneeAvatar = ({
