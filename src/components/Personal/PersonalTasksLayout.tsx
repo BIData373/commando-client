@@ -131,6 +131,7 @@ function PersonalTasksLayout() {
 					onClearAllFilters={clearAllFilters}
 					hasExtraActiveFilters={activeWorkspaceFilters.size > 0}
 					extraColumnsMeta={[{ id: "workspace", label: "מפקד מנחה" }]}
+					startSlot={<TasksDatePicker />}
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label={
@@ -155,7 +156,6 @@ function PersonalTasksLayout() {
 							emptyDescription="לאחר שסביבות יוצרו, הן יופיעו כאן"
 						/>
 					}
-					startSlot={<TasksDatePicker />}
 				/>
 				<TaskTable
 					onChangeSuccess={handleChangeSuccess}

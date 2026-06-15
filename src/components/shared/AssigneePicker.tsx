@@ -89,7 +89,7 @@ function AssigneePicker({
 							onClick={() => handleAssigneeClick(assignee.id)}
 						>
 							<AssigneeOptionEnd>
-								<AssigneeAvatar assignee={assignee} size={20} />
+								<AssigneeAvatar assignee={assignee} size={22} />
 
 								<AssigneeOptionName
 									title={assignee.name}
