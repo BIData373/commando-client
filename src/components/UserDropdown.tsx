@@ -10,7 +10,11 @@ import {
 	USER_GUIDE_URL,
 } from "src/utils/env-utils"
 import { BIHeaderBypass } from "./BIHeaderBypass"
-import { DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu"
+import {
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+} from "./ui/dropdown-menu"
 
 const PERMISSION_LABEL: Record<PermissionType, string> = {
 	VIEWER: "צופה",
@@ -65,13 +69,18 @@ export function UserDropdown({
 				)}
 			</UserInfo>
 
+			<DropdownMenuSeparator />
+
 			{showPersonalArea && (
-				<DropdownMenuItem onSelect={handleNavigateToPersonal}>
-					<PersonalAreaNavItem>
-						מעבר לאזור אישי
-						<PersonalAreaIcon />
-					</PersonalAreaNavItem>
-				</DropdownMenuItem>
+				<>
+					<DropdownMenuItem onSelect={handleNavigateToPersonal}>
+						<PersonalAreaNavItem>
+							מעבר לאזור אישי
+							<PersonalAreaIcon />
+						</PersonalAreaNavItem>
+					</DropdownMenuItem>
+					<DropdownMenuSeparator />
+				</>
 			)}
 
 			{USER_GUIDE_URL && (
