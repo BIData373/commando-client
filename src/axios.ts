@@ -5,9 +5,6 @@ import { AUTH_ENABLED, authenticate } from "./utils/auth-utils"
 import {
 	API_BASE_URL,
 	API_PREFIX,
-	IS_BI,
-	IS_BI_DEFINED,
-	REQUEST_USERNAME,
 	STATIC_TOKEN,
 	USE_SSO,
 } from "./utils/env-utils"
@@ -18,17 +15,6 @@ export const IS_BI_HEADER = "is-bi"
 
 export const requestUsernameKey = "request_username"
 export const isBIKey = "is_bi"
-
-export function resolveBypassValues(
-	rawUsername: string | null,
-	rawIsBI: string | null,
-) {
-	return {
-		username: rawUsername || REQUEST_USERNAME || null,
-		isBI:
-			rawIsBI !== null ? rawIsBI === "true" : IS_BI_DEFINED ? !!IS_BI : null,
-	}
-}
 
 export const axiosInstance = axios.create({
 	baseURL: new URL(API_PREFIX, API_BASE_URL).toString(),
@@ -46,13 +32,11 @@ if (STATIC_TOKEN) {
 		}
 
 		const rawUsername = localStorage.getItem(requestUsernameKey)
-		const parsedUsername =
+		const username =
 			rawUsername !== null ? (JSON.parse(rawUsername) as string | null) : null
 
-		const { username, isBI } = resolveBypassValues(
-			parsedUsername,
-			localStorage.getItem(isBIKey),
-		)
+		const rawIsBI = localStorage.getItem(isBIKey)
+		const isBI = rawIsBI !== null ? rawIsBI === "true" : null
 
 		if (username && username.length > 0) {
 			config.headers[REQUEST_USERNAME_HEADER] = username

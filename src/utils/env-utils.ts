@@ -15,10 +15,6 @@ export const USER_GUIDE_URL = import.meta.env.VITE_USER_GUIDE_URL
 export const PORTAL_CATALOG_URL = import.meta.env.VITE_PORTAL_CATALOG_URL
 
 export const STATIC_TOKEN = import.meta.env.VITE_STATIC_TOKEN
-export const IS_BI = (import.meta.env.VITE_IS_BI ?? "true") === "true"
-export const IS_BI_DEFINED = import.meta.env.VITE_IS_BI !== undefined
-
-export const REQUEST_USERNAME = import.meta.env.VITE_REQUEST_USERNAME
 
 export const MESIBA_S3_URL = import.meta.env.VITE_MESIBA_S3_URL
 

@@ -5,20 +5,18 @@ import type { ChangeEvent } from "react"
 import { isBIKey, requestUsernameKey } from "src/axios"
 import { adminUserUpn } from "src/hooks/useCurrentUser"
 import { queryClient } from "src/queryClient"
-import { IS_BI, REQUEST_USERNAME, STATIC_TOKEN } from "../utils/env-utils"
-import { DropdownMenuItem, DropdownMenuSeparator } from "./ui/dropdown-menu"
+import { STATIC_TOKEN } from "../utils/env-utils"
+import { DropdownMenuItem } from "./ui/dropdown-menu"
 import { Input } from "./ui/input"
 import { Switch } from "./ui/switch"
 
 export function BIHeaderBypass() {
 	const [username, setUsername] = useLocalStorage({
 		key: requestUsernameKey,
-		defaultValue: REQUEST_USERNAME ?? "",
 	})
 
-	const [isBI, setIsBI] = useLocalStorage({
+	const [isBI, setIsBI] = useLocalStorage<boolean>({
 		key: isBIKey,
-		defaultValue: !!IS_BI,
 	})
 
 	function handleChangeUsername({
@@ -31,6 +29,7 @@ export function BIHeaderBypass() {
 
 	function handleChangeIsBI(checked: boolean) {
 		setIsBI(checked)
+
 		queryClient.invalidateQueries()
 	}
 

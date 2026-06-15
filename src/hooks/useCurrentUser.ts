@@ -1,9 +1,9 @@
 import { useLocalStorage } from "@mantine/hooks"
 import { useEffect, useState } from "react"
 import type { CreateUserDto } from "src/api/model"
-import { isBIKey, requestUsernameKey, resolveBypassValues } from "src/axios"
+import { isBIKey, requestUsernameKey } from "src/axios"
 import { getStoredToken } from "src/utils/auth-utils"
-import { IS_BI, STATIC_TOKEN } from "src/utils/env-utils"
+import { STATIC_TOKEN } from "src/utils/env-utils"
 import {
 	COOKIE_NAME,
 	decodeSsoUserJwt,
@@ -13,12 +13,8 @@ import {
 
 export const adminUserUpn = "s0000000"
 
-function buildAdminUser(
-	rawUsername: string | null,
-	rawIsBI: string | null,
-): CreateUserDto {
-	const { username, isBI } = resolveBypassValues(rawUsername, rawIsBI)
-	const upn = username ?? adminUserUpn
+function buildAdminUser(username?: string, isBI?: boolean): CreateUserDto {
+	const upn = username && username.length > 0 ? username : adminUserUpn
 
 	return {
 		upn,
@@ -26,19 +22,17 @@ function buildAdminUser(
 			upn,
 			name: "Admin",
 			displayName: "Admin",
-			...(isBI !== null && { isBI }),
+			isBI: isBI !== undefined ? isBI : true,
 		},
 	}
 }
 
 export function useCurrentUser() {
-	const [storedUsername] = useLocalStorage<string | null>({
+	const [storedUsername] = useLocalStorage({
 		key: requestUsernameKey,
-		defaultValue: null,
 	})
-	const [storedIsBI] = useLocalStorage<string | null>({
+	const [storedIsBI] = useLocalStorage<boolean>({
 		key: isBIKey,
-		defaultValue: null,
 	})
 
 	const [user, setUser] = useState(() =>
@@ -55,10 +49,7 @@ export function useCurrentUser() {
 			const cookie = await getStoredToken()
 			const ssoUser = decodeSsoUserJwt(cookie)
 
-			const upn = storedUsername ?? ssoUser?.upn
-			const isBI =
-				storedIsBI !== null ? storedIsBI === "true" : (ssoUser?.isBI ?? IS_BI)
-
+			const upn = ssoUser?.upn
 			if (!upn) {
 				return
 			}
@@ -71,7 +62,7 @@ export function useCurrentUser() {
 					upn: normalizedUpn,
 					name: ssoUser?.name ?? "",
 					displayName: ssoUser?.displayName ?? "",
-					isBI,
+					isBI: ssoUser?.isBI,
 				},
 			})
 		}
