@@ -190,7 +190,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 								<ModalFooter>
 									<ContinueButton
 										onClick={handleContinue}
-										disabled={!values.name.trim()}
+										disabled={!values.name.trim() && !values.date}
 									>
 										המשך
 									</ContinueButton>

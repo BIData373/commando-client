@@ -56,9 +56,7 @@ function SourceField({
 	function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const value = e.target.value
 		setSourceQuery(value)
-		if (linkedSource) {
-			onSourceSelect(value, null)
-		}
+		onSourceSelect(value, null)
 	}
 
 	function handleSelect(discussion: SourceDto) {
