@@ -11,6 +11,8 @@ export const CHAT_URL = import.meta.env.VITE_CHAT_URL
 export const CHAT_SUPPORT_PATH = import.meta.env.VITE_CHAT_SUPPORT_PATH
 export const CHAT_CHANNEL_URL =
 	CHAT_URL && CHAT_SUPPORT_PATH && new URL(CHAT_SUPPORT_PATH, CHAT_URL)
+export const USER_GUIDE_URL = import.meta.env.VITE_USER_GUIDE_URL
+export const PORTAL_CATALOG_URL = import.meta.env.VITE_PORTAL_CATALOG_URL
 
 export const STATIC_TOKEN = import.meta.env.VITE_STATIC_TOKEN
 export const IS_BI = (import.meta.env.VITE_IS_BI ?? "true") === "true"

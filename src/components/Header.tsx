@@ -4,12 +4,8 @@ import { ChevronDown, User } from "lucide-react"
 import type { HeaderConfig } from "src/router"
 import logoWithText from "../assets/logo-with-text.svg"
 import { useHeader } from "../providers/HeaderProvider"
-import { BIHeaderBypass } from "./BIHeaderBypass"
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuTrigger,
-} from "./ui/dropdown-menu"
+import { UserDropdown } from "./UserDropdown"
+import { DropdownMenu, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Separator } from "./ui/separator"
 import {
 	Tooltip,
@@ -27,7 +23,7 @@ export default function Header() {
 	const { pageTitle = "", headerTitle } = headerConfig ?? {}
 
 	const {
-		elementPlacements: { right, center, titleBar },
+		elementPlacements: { right, center, titleBar, user },
 	} = useHeader()
 
 	const showTitleBar = pageTitle || titleBar
@@ -61,9 +57,7 @@ export default function Header() {
 									<ChevronDown size={16} />
 								</UserTrigger>
 							</DropdownMenuTrigger>
-							<UserDropdownContent>
-								<BIHeaderBypass />
-							</UserDropdownContent>
+							{user ?? <UserDropdown showPersonalArea={false} />}
 						</DropdownMenu>
 
 						<EndSectionSeparator orientation="vertical" />
@@ -145,11 +139,7 @@ const EndSection = styled.div`
 
 const EndSectionSeparator = styled(Separator)`
   margin: 0px 12px;
-  background-color: var(--line);
-`
-
-const UserDropdownContent = styled(DropdownMenuContent)`
-  min-width: 220px;
+  background-color: rgba(255, 255, 255, 0.5);
 `
 
 const UserTrigger = styled.button`
@@ -163,6 +153,7 @@ const UserTrigger = styled.button`
   height: 32px;
   cursor: pointer;
   color: var(--muted-foreground);
+  outline: none;
 `
 
 const TitleBar = styled.div`
