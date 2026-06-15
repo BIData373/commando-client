@@ -163,6 +163,7 @@ const UserMenuButton = styled.button`
 `
 
 const UserMenuIcon = styled(User)`
+  width: 16px;
   cursor: pointer;
 `
 
