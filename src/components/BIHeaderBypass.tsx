@@ -6,7 +6,7 @@ import { isBIKey, requestUsernameKey } from "src/axios"
 import { adminUserUpn } from "src/hooks/useCurrentUser"
 import { queryClient } from "src/queryClient"
 import { STATIC_TOKEN } from "../utils/env-utils"
-import { DropdownMenuItem } from "./ui/dropdown-menu"
+import { DropdownMenuItem, DropdownMenuSeparator } from "./ui/dropdown-menu"
 import { Input } from "./ui/input"
 import { Switch } from "./ui/switch"
 
