@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { useCallback } from "react"
 import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { navigateToUserChat } from "src/utils/user-utils"
@@ -27,6 +28,12 @@ export function UserPermissionList({
 		}
 	}
 
+	const isCurrentUserPermitted = useCallback(
+		(user: UserDto) =>
+			user.upn !== currentUser.upn || !!currentUser?.info?.isBI,
+		[currentUser],
+	)
+
 	return (
 		<UserListRoot>
 			{permissions.length === 0 ? (
@@ -52,20 +59,20 @@ export function UserPermissionList({
 						</UserInfo>
 						<DropdownPermission
 							value={type}
-							disabled={user.upn === currentUser.upn}
+							disabled={!isCurrentUserPermitted(user)}
 							onChange={(type) => onTypeChange(user, type)}
 						/>
 						<Tooltip>
 							<TooltipTrigger asChild>
 								<span>
 									<TrashButton
-										visible={user.upn !== currentUser.upn}
+										visible={isCurrentUserPermitted(user)}
 										onClick={() => onDelete(user)}
 										size={22}
 									/>
 								</span>
 							</TooltipTrigger>
-							<TooltipContent hidden={user.upn === currentUser.upn}>
+							<TooltipContent hidden={!isCurrentUserPermitted(user)}>
 								הסרת הרשאות
 							</TooltipContent>
 						</Tooltip>

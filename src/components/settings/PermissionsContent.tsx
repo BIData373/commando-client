@@ -82,7 +82,8 @@ export function PermissionsContent() {
 			: permissions.filter((user) => user.type === taggedType)
 	}, [activeTab, permissions])
 
-	const isSelectedUserMe = selectedUser?.upn === currentUser.upn
+	const isSelectedUserMe =
+		selectedUser?.upn === currentUser.upn && !currentUser?.info?.isBI
 
 	function handleSuccess(
 		data: PermissionDto,
@@ -210,7 +211,7 @@ export function PermissionsContent() {
 					{search.length > 0 && (
 						<AddUserRow>
 							<DropdownPermission
-								ghost
+								ghost={!selectedUser}
 								value={type}
 								onChange={setType}
 								disabled={!selectedUser || isSelectedUserMe}

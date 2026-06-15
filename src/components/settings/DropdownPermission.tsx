@@ -22,8 +22,8 @@ interface SelectDropdownPermissionProps {
 
 export function DropdownPermission({
 	value,
-	ghost,
-	disabled,
+	ghost = false,
+	disabled = false,
 	onChange,
 }: SelectDropdownPermissionProps) {
 	function onSelectPermission(value: string) {
@@ -34,7 +34,7 @@ export function DropdownPermission({
 		<DropdownMenu>
 			<RoleTrigger $ghost={ghost} disabled={disabled} $enabled={!disabled}>
 				{permissionTypeNames[value]}
-				{!ghost && <StyledChevronDown $visible={!disabled} size={16} />}
+				<StyledChevronDown $visible={!disabled || ghost} size={16} />
 			</RoleTrigger>
 			<StyledDropdownMenuContent>
 				{Object.entries(permissionTypeNames).map(([key, value]) => (

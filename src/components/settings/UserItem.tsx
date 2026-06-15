@@ -7,26 +7,43 @@ interface UserItemProps {
 
 export function UserItem({ user: { upn, info } }: UserItemProps) {
 	return (
-		<>
-			<UserName>
-				{upn}
-				{info?.name ? " - " : ""}
-				{info?.name ?? ""}
-			</UserName>
+		<StyledUser>
+			{info?.name && (
+				<UserName>
+					{info?.name}
+					{" - "}
+				</UserName>
+			)}
 
-			<UserMeta>{info?.displayName}</UserMeta>
-		</>
+			<UserUpn>{upn}</UserUpn>
+
+			<UserMeta>{info?.displayName ?? ""}</UserMeta>
+		</StyledUser>
 	)
 }
 
+const StyledUser = styled.div`
+	display: flex;
+	gap: 8px;
+	height: 100%;
+	align-items: center;
+	/* text-align: center; */
+`
+
 const UserName = styled.span`
-  font-size: var(--fs-btn);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+`
+
+const UserUpn = styled.span`
+  font-size: var(--fs-base);
   font-weight: 400;
   color: rgba(0, 0, 0, 0.88);
 `
 
 const UserMeta = styled.span`
-  font-size: var(--fs-sm);
+  font-size: var(--fs-btn);
   font-weight: 400;
   color: var(--text-color);
   color: rgba(0, 0, 0, 0.45);
