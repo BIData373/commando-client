@@ -151,6 +151,7 @@ const UserMenuButton = styled.button`
   border-radius: 6px;
   background: transparent;
   outline: none;
+  cursor: pointer;
   
   transition: background 150ms ease-in-out;
 
