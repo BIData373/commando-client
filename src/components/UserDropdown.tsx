@@ -123,7 +123,7 @@ const UserDropdownContent = styled(DropdownMenuContent)`
 const UserInfo = styled(DropdownMenuItem)`
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: start ;
 `
 
 const UserInfoRow = styled.div`
@@ -137,6 +137,10 @@ const UserName = styled.span`
   font-size: var(--fs-btn);
   font-weight: 600;
   color: var(--sea-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50%;
 `
 
 const UserUpn = styled.span`
