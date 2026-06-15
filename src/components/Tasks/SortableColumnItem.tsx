@@ -2,8 +2,7 @@ import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import styled from "@emotion/styled"
 import { Eye, EyeOff, GripVertical } from "lucide-react"
-
-import type { TaskColumnMeta } from "../../hooks/useTaskColumns"
+import type { TaskColumnMeta } from "src/utils/task-table-utils"
 
 interface SortableColumnItemProps {
 	column: TaskColumnMeta

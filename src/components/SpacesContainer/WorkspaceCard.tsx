@@ -35,11 +35,7 @@ export default function WorkspaceCard({
 
 				<CardAction>
 					<Avatar>
-						<AvatarImage
-							src={formatMesibaIcon(icon)}
-							alt={title}
-							className="grayscale"
-						/>
+						<AvatarImage src={formatMesibaIcon(icon)} alt={title} />
 						<AvatarFallback>CN</AvatarFallback>
 					</Avatar>
 				</CardAction>

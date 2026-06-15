@@ -20,8 +20,8 @@ import {
 } from "src/components/ui/tooltip"
 import { useFuse } from "src/hooks/useFuse"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import addPerson from "../../assets/icons/addPerson.svg"
-import searchInstruction from "../../assets/icons/searchInstruction.svg"
+import noResultsFound from "../../assets/empty-states/no-results-found.svg"
+import addPerson from "../../assets/icons/add-person.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { Spinner } from "../ui/spinner"
 
@@ -137,7 +137,7 @@ export function AssigneesContent() {
 				) : filteredAssignees.length === 0 ? (
 					<CenterContainer>
 						<EmptyCardState
-							imgSrc={searchInstruction}
+							imgSrc={noResultsFound}
 							title="לא נמצאו אחראים"
 							description={`לא נמצאו אחראים התואמים ל-"${searchQuery}"`}
 						/>

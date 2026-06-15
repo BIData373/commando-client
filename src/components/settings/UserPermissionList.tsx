@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
 import { navigateToUserChat } from "src/utils/user-utils"
-import noUsersFound from "../../assets/noUsersFound.svg"
+import noUsersFound from "../../assets/empty-states/no-users-found.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { TrashButton } from "../shared/TrashButton"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"

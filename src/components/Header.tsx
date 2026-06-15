@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { Link, useRouterState } from "@tanstack/react-router"
 import { ChevronDown, User } from "lucide-react"
 import type { HeaderConfig } from "src/router"
+import logoWithText from "../assets/logo-with-text.svg"
 import { useHeader } from "../providers/HeaderProvider"
 import { BIHeaderBypass } from "./BIHeaderBypass"
 import {
@@ -9,6 +10,7 @@ import {
 	DropdownMenuContent,
 	DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
+import { Separator } from "./ui/separator"
 import {
 	Tooltip,
 	TooltipContent,
@@ -36,13 +38,7 @@ export default function Header() {
 		<HeaderContainer>
 			<HeaderRoot>
 				<HeaderInner>
-					<StartSection>
-						<Link to="/">
-							<LogoImage src="/logo.svg" alt="Logo" />
-						</Link>
-
-						{right}
-					</StartSection>
+					<StartSection>{right}</StartSection>
 
 					<CenterSection>
 						<TooltipProvider>
@@ -69,6 +65,12 @@ export default function Header() {
 								<BIHeaderBypass />
 							</UserDropdownContent>
 						</DropdownMenu>
+
+						<EndSectionSeparator orientation="vertical" />
+
+						<Link to="/">
+							<img src={logoWithText} alt="Logo" />
+						</Link>
 					</EndSection>
 				</HeaderInner>
 			</HeaderRoot>
@@ -141,6 +143,11 @@ const EndSection = styled.div`
   justify-content: flex-end;
 `
 
+const EndSectionSeparator = styled(Separator)`
+  margin: 0px 12px;
+  background-color: var(--line);
+`
+
 const UserDropdownContent = styled(DropdownMenuContent)`
   min-width: 220px;
 `
@@ -150,20 +157,12 @@ const UserTrigger = styled.button`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #FFFFFF1F;
   border: none;
   border-radius: 40px;
   width: 64px;
   height: 32px;
   cursor: pointer;
-  color: white;
-  margin-block: 15px;
-`
-
-const LogoImage = styled.img`
-  width: 28px;
-  height: 28px;
-  margin-inline-end: 20px;
+  color: var(--muted-foreground);
 `
 
 const TitleBar = styled.div`

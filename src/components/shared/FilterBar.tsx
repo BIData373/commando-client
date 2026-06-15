@@ -145,10 +145,11 @@ const SearchInputWrapper = styled.div`
   align-items: center;
   height: 40px;
   width: 222px;
-  border: 0.5px solid rgba(0, 0, 0, 0.25);
-  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
   background: white;
   overflow: hidden;
+  box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
 
   &:focus-within {
     border-color: rgba(9, 88, 217, 0.6);
