@@ -7,6 +7,7 @@ import { IS_BI, STATIC_TOKEN } from "src/utils/env-utils"
 import {
 	COOKIE_NAME,
 	decodeSsoUserJwt,
+	normalizeUpn,
 	onCookieChange,
 } from "src/utils/user-utils"
 
@@ -62,10 +63,12 @@ export function useCurrentUser() {
 				return
 			}
 
+			const normalizedUpn = normalizeUpn(upn)
+
 			setUser({
-				upn,
+				upn: normalizedUpn,
 				info: {
-					upn,
+					upn: normalizedUpn,
 					name: ssoUser?.name ?? "",
 					displayName: ssoUser?.displayName ?? "",
 					isBI,

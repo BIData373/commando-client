@@ -3,6 +3,7 @@ import { MATOMO_ENABLED, MATOMO_SITE_ID } from "src/utils/env-utils"
 import {
 	COOKIE_NAME,
 	decodeSsoUserJwt,
+	normalizeUpn,
 	onCookieChange,
 } from "src/utils/user-utils"
 
@@ -14,14 +15,14 @@ declare global {
 
 function pushMatomoUserId(cookieValue?: string): void {
 	const user = cookieValue ? decodeSsoUserJwt(cookieValue) : null
-	const userName = user?.displayName
-	const privateNumber = user?.upn
+	const displayName = user?.displayName
+	const upn = user?.upn
 
 	window._paq = window._paq || []
 
 	window._paq.push([
 		"setUserId",
-		privateNumber && userName ? `${privateNumber}\n${userName}` : "",
+		upn ? `${normalizeUpn(upn)}\n${displayName ?? ""}` : "",
 	])
 }
 

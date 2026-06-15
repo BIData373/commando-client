@@ -1,6 +1,5 @@
 import styled from "@emotion/styled"
 import type { MirageUserDto } from "src/api/model"
-import { extractUpnFromUser } from "src/utils/user-utils"
 
 interface UserItemProps {
 	user: MirageUserDto
@@ -10,7 +9,7 @@ export function UserItem({ user: { upn, info } }: UserItemProps) {
 	return (
 		<>
 			<UserName>
-				{extractUpnFromUser(upn)}
+				{upn}
 				{info?.name ? " - " : ""}
 				{info?.name ?? ""}
 			</UserName>

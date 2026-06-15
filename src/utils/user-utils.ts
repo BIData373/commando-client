@@ -48,8 +48,8 @@ export function concatName(user: MirageUserDto, type?: PermissionType): string {
 	return `${user.info?.name} ${user.upn}${type ? ` / ${type}` : ""}`
 }
 
-export function extractUpnFromUser(upn: string): string {
-	return upn.split("@")[0]
+export function normalizeUpn(upn: string): string {
+	return upn.split("@")[0].toLowerCase()
 }
 
 export function formatDirectChatLink(upn: string): string {
@@ -57,7 +57,7 @@ export function formatDirectChatLink(upn: string): string {
 }
 
 export function navigateToUserChat(user: MirageUserDto) {
-	const upn = extractUpnFromUser(user.upn)
+	const upn = normalizeUpn(user.upn)
 	const url = formatDirectChatLink(upn)
 	return window.open(url)
 }
