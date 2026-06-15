@@ -10,7 +10,7 @@ export interface IMesibaIcon {
 
 const delay = (ms = 200) => new Promise((r) => setTimeout(r, ms))
 
-const mockIcon = "/logo512.png"
+const mockIcon = "/logo.svg"
 
 const mockMesibaIcons: IMesibaIcon[] = [
 	{ id: 1, iconName: mockIcon, heb_name: "פיקוד צפון" },
@@ -45,28 +45,14 @@ const mockMesibaApi = {
 export function useSearchMesibaIcons(search: string) {
 	return useQuery<IMesibaIcon[]>({
 		queryKey: ["mesiba", search],
+		enabled: search.length > 0,
 		queryFn: () =>
 			mesibaMockActive
 				? mockMesibaApi.search(search)
 				: search
 					? axios
-							.get<IMesibaIcon[]>(new URL(search, MESIBA_BASE_API_URL).href)
+							.get<IMesibaIcon[]>(MESIBA_BASE_API_URL, { params: { search } })
 							.then((r) => r.data)
 					: Promise.resolve([]),
-	})
-}
-
-export function useMesibaIconByName(iconName?: string) {
-	return useQuery<IMesibaIcon | null>({
-		queryKey: ["mesiba-by-name", iconName],
-		queryFn: () =>
-			mesibaMockActive
-				? mockMesibaApi.getByIconName(iconName as string)
-				: axios
-						.get<IMesibaIcon>(
-							new URL(`by-name/${iconName}`, MESIBA_BASE_API_URL).href,
-						)
-						.then((r) => r.data),
-		enabled: !!iconName,
 	})
 }

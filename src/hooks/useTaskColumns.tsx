@@ -320,7 +320,7 @@ function useTaskColumns({
 										</WarningTrigger>
 										<TooltipContent>
 											{isOverdue
-												? `חריגה של ${Math.abs(daysUntil!)} ימים`
+												? `חריגה של ${Math.abs(daysUntil)} ימים`
 												: daysUntil === 0
 													? 'תג"ב היום'
 													: 'תג"ב מחר'}

@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import {
 	getListAssigneesQueryKey,
 	useCreateAssignee,
@@ -16,7 +16,7 @@ import {
 	getListPersonalTasksQueryKey,
 	getListTasksQueryKey,
 } from "src/api/task/task"
-import { type IMesibaIcon, useMesibaIconByName } from "src/hooks/useMesiba"
+import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries, queryClient } from "src/queryClient"
 import { concatName } from "src/utils/user-utils"
@@ -58,10 +58,8 @@ export function AssigneeDialog({
 	const [selectedUser, setSelectedUser] = useState<MirageUserDto | null>(null)
 	const [searchValue, setSearchValue] = useState<string>("")
 
-	const [iconSearch, setIconSearch] = useState(assignee?.icon ?? "")
+	const [iconSearch, setIconSearch] = useState("")
 	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
-
-	const { data: existingIcon } = useMesibaIconByName(assignee?.icon ?? "")
 
 	const handleSubmitSuccess = (data: AssigneeDto) => {
 		queryClient.setQueryData(queryKey, (prev?: AssigneesDto[]) => {
@@ -95,12 +93,6 @@ export function AssigneeDialog({
 			onSuccess: handleSubmitSuccess,
 		},
 	})
-
-	useEffect(() => {
-		if (existingIcon) {
-			setSelectedIcon(existingIcon)
-		}
-	}, [existingIcon])
 
 	const randomColor = useMemo(() => {
 		if (!open) {
@@ -206,7 +198,7 @@ export function AssigneeDialog({
 	function resetForm() {
 		form.setFieldValue("users", assignee?.users ?? [])
 		setIconSearch("")
-		setSelectedIcon(existingIcon ?? null)
+		setSelectedIcon(null)
 		form.reset()
 	}
 
