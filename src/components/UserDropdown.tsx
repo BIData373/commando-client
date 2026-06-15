@@ -45,11 +45,11 @@ export function UserDropdown({
 	}
 
 	function handleOpenUserGuide() {
-		window.open(String(USER_GUIDE_URL))
+		window.open(USER_GUIDE_URL)
 	}
 
 	function handleOpenChat() {
-		window.open(String(CHAT_CHANNEL_URL))
+		window.open(CHAT_CHANNEL_URL)
 	}
 
 	function handleOpenPortalCatalog() {
