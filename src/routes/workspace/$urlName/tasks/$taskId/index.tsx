@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router"
 import { useGetTask } from "src/api/task/task"
+import { useEntityInWorkspace } from "src/hooks/useEntityInWorkspace"
 import TaskDetailPanel from "../../../../../components/TaskDetail/TaskDetailPanel"
 
 export const Route = createFileRoute("/workspace/$urlName/tasks/$taskId/")({
@@ -12,6 +13,7 @@ function TaskDetail() {
 	const navigate = useNavigate()
 
 	const { data: task } = useGetTask({ id: Number(taskId) })
+	useEntityInWorkspace(task)
 
 	function handleClose() {
 		navigate({
@@ -33,14 +35,14 @@ function TaskDetail() {
 		})
 	}
 
-	if (!task) return null
-
 	return (
-		<TaskDetailPanel
-			task={task}
-			onClose={handleClose}
-			onDelete={handleDelete}
-			onEdit={handleEdit}
-		/>
+		task && (
+			<TaskDetailPanel
+				task={task}
+				onClose={handleClose}
+				onDelete={handleDelete}
+				onEdit={handleEdit}
+			/>
+		)
 	)
 }
