@@ -1,5 +1,4 @@
 import styled from "@emotion/styled"
-import type { QueryKey } from "@tanstack/react-query"
 import type { ColumnDef, FilterFn } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
 import { concat, map, uniq } from "lodash"
@@ -51,28 +50,29 @@ interface ActionsConfig {
 type ColumnsMap = Partial<Record<string, ColumnDef<TaskRow>>>
 
 interface UseTaskColumnsOptions {
-	queryKey: QueryKey
 	visibleColumns: (keyof TaskRow)[]
 	searchQuery: string
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
 	selectMode?: SelectModeConfig
 	actions?: ActionsConfig
 	showMenuColumn?: boolean
+	onUpdateStatusSuccess?(): void
 }
 
 function useTaskColumns({
-	queryKey,
 	visibleColumns,
 	searchQuery,
 	filterOptionsMap,
 	selectMode,
 	actions,
 	showMenuColumn = true,
+	onUpdateStatusSuccess,
 }: UseTaskColumnsOptions) {
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
-			onSuccess: ({ task }) => {
-				invalidateQueries([queryKey, getGetTaskQueryKey({ id: task.id })])
+			onSuccess: ({ task: { id } }) => {
+				invalidateQueries([getGetTaskQueryKey({ id })])
+				onUpdateStatusSuccess?.()
 			},
 		},
 	})
@@ -89,7 +89,7 @@ function useTaskColumns({
 		return filterValue.includes(value as string)
 	}
 
-	function onUpdateStatus(
+	function handleUpdateStatus(
 		taskId: number,
 		assigneeId: number,
 		statusId: number,
@@ -226,7 +226,7 @@ function useTaskColumns({
 						editable={editable ?? false}
 						taskId={id}
 						workspaceId={workspaceId}
-						onUpdate={onUpdateStatus}
+						onUpdate={handleUpdateStatus}
 					/>
 				),
 		},
@@ -367,7 +367,8 @@ function useTaskColumns({
 		},
 		{
 			id: "tags",
-			accessorKey: "tags",
+			accessorFn: (row) =>
+				uniq(map(concat(row.tags, row.source?.tags ?? []), "name")),
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.tags}

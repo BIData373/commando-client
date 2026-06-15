@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useGetAssignee } from "src/api/assignee/assignee"
 import { AssigneeDialog } from "src/components/settings/AssigneeDialog"
+import { useWorkspaceMismatchError } from "src/hooks/useWorkspaceMismatchError"
 
 export const Route = createFileRoute(
 	"/workspace/$urlName/settings/assignees/$assigneeId/",
@@ -13,6 +14,7 @@ function EditAssignee() {
 	const navigate = useNavigate()
 
 	const { data: assignee } = useGetAssignee({ id: Number(assigneeId) })
+	useWorkspaceMismatchError(assignee)
 
 	function handleClose() {
 		navigate({
