@@ -134,17 +134,20 @@ function TaskTable({
 	)
 
 	const bulkDeleteDisabled =
-		isManager != null
+		selectedTaskIds.length === 0 ||
+		(isManager != null
 			? !isManager
 			: selectedTaskIds.some(
 					(id) =>
 						tasks.find((t) => t.id === id)?.workspace?.permissionType !==
 						PermissionType.MANAGER,
-				)
+				))
 
-	const bulkStatusDisabled = selectedRowKeys.some(
-		(rowKey) => !tasks.find((t) => t.rowKey === rowKey)?.editable,
-	)
+	const bulkStatusDisabled =
+		selectedTaskIds.length === 0 ||
+		selectedRowKeys.some(
+			(rowKey) => !tasks.find((t) => t.rowKey === rowKey)?.editable,
+		)
 
 	function handleEnterSelectMode(rowKey: string) {
 		setSelectMode(true)
