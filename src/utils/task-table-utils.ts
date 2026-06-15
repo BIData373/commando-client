@@ -12,6 +12,7 @@ export type TaskRow = TaskDto & {
 	status?: WorkspaceStatusDto
 	otherAssignees?: AssigneeStatusDto[]
 	workspace?: WorkspaceWithPermissionDto
+	editable?: boolean
 }
 
 export interface TaskColumnMeta {

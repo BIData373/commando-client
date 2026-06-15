@@ -16,7 +16,6 @@ export const AssigneeSection = ({
 	assigneeStatuses,
 }: AssigneeSectionProps) => {
 	const currentUser = useCurrentUser()
-
 	const { data: permission } = useGetMyPermission({ workspaceId })
 
 	const isAdmin = permission?.type === PermissionType.MANAGER
@@ -58,7 +57,7 @@ export const AssigneeSection = ({
 								workspaceId={workspaceId}
 								assignee={item}
 								isAdmin={isAdmin}
-								editable={true}
+								editable={item.editable}
 							/>
 						))}
 					</AssigneeRowsList>
@@ -76,7 +75,7 @@ export const AssigneeSection = ({
 									workspaceId={workspaceId}
 									assignee={item}
 									isAdmin={isAdmin}
-									editable={false}
+									editable={item.editable}
 								/>
 							))}
 						</AssigneeRowsList>

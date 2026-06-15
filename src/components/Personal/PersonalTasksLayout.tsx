@@ -5,7 +5,6 @@ import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
 import {
 	type CreateUserDto,
-	PermissionType,
 	type TaskWithWorkspaceDto,
 	WorkspaceStatusType,
 } from "src/api/model"
@@ -30,12 +29,8 @@ function toPersonalTaskRows(
 	tasks: TaskWithWorkspaceDto[],
 	currentUser: CreateUserDto,
 ): TaskRow[] {
-	return tasks.flatMap((task) =>
-		toTaskRows([task])
-			.map((row) => ({ ...row, workspace: task.workspace }))
-			.filter(({ assignee }) =>
-				assignee?.users.some(({ upn }) => upn === currentUser.upn),
-			),
+	return toTaskRows(tasks).filter(({ assignee }) =>
+		assignee?.users.some(({ upn }) => upn === currentUser.upn),
 	)
 }
 
@@ -94,23 +89,6 @@ function PersonalTasksLayout() {
 		clearQuickFilters()
 		setActiveWorkspaceFilters(new Set())
 	}
-
-	const taskPermissions = useMemo(
-		() =>
-			Object.fromEntries(
-				rawTasks.map((t) => [
-					t.id,
-					{
-						canDelete: t.workspace.permissionType === PermissionType.MANAGER,
-						canChangeStatus: !(
-							t.workspace.permissionType === PermissionType.MANAGER ||
-							!t.workspace.assigneeStatusEditable
-						),
-					},
-				]),
-			),
-		[rawTasks],
-	)
 
 	function handleOpenTask(taskId: number) {
 		navigate({
@@ -185,9 +163,8 @@ function PersonalTasksLayout() {
 					isLoading={isLoading}
 					onEdit={handleEdit}
 					onDoubleClick={handleOpenTask}
-					taskPermissions={taskPermissions}
 					hideStatusAction
-					showMenuColumn={false}
+					showActionsColumn={false}
 				/>
 			</PageRoot>
 			<Outlet />
