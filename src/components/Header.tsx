@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { Link, useRouterState } from "@tanstack/react-router"
-import { ChevronDown, User } from "lucide-react"
+import { User } from "lucide-react"
 import type { HeaderConfig } from "src/router"
 import logoWithText from "../assets/logo-with-text.svg"
 import { useHeader } from "../providers/HeaderProvider"
@@ -52,10 +52,9 @@ export default function Header() {
 					<EndSection>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<UserTrigger>
-									<User size={16} />
-									<ChevronDown size={16} />
-								</UserTrigger>
+								<UserMenuButton>
+									<UserMenuIcon />
+								</UserMenuButton>
 							</DropdownMenuTrigger>
 							{user ?? <UserDropdown showPersonalArea={false} />}
 						</DropdownMenu>
@@ -138,22 +137,35 @@ const EndSection = styled.div`
 `
 
 const EndSectionSeparator = styled(Separator)`
-  margin: 0px 12px;
+  margin: 0px 4px 0px 12px;
   background-color: rgba(255, 255, 255, 0.5);
 `
 
-const UserTrigger = styled.button`
+const UserMenuButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  border: none;
-  border-radius: 40px;
-  width: 64px;
   height: 32px;
-  cursor: pointer;
-  color: var(--muted-foreground);
+  padding-inline: 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
   outline: none;
+  cursor: pointer;
+  
+  transition: background 150ms ease-in-out;
+
+  &:hover,
+  &:active,
+  &[data-state="open"] {
+    background: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.85);
+  }
+`
+
+const UserMenuIcon = styled(User)`
+  width: 16px;
+  cursor: pointer;
 `
 
 const TitleBar = styled.div`
