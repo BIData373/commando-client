@@ -12,4 +12,5 @@ export interface AssigneeStatusDto {
 	assignee: AssigneeDto
 	status: WorkspaceStatusDto
 	description: string
+	editable: boolean
 }

@@ -82,26 +82,6 @@ function TasksLayout({
 
 	const allTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
 
-	const taskPermissions = useMemo(() => {
-		const result: Record<
-			number,
-			{ canDelete: boolean; canChangeStatus: boolean }
-		> = {}
-		filteredTaskRows.forEach((task) => {
-			const isManager =
-				task.workspace?.permissionType === PermissionType.MANAGER
-			const isAssignee =
-				task.assignee?.users.some((u) => u.upn === myPermission?.user.upn) ??
-				false
-			result[task.id] = {
-				canDelete: isManager,
-				canChangeStatus:
-					isManager || (!!task.workspace?.assigneeStatusEditable && isAssignee),
-			}
-		})
-		return result
-	}, [filteredTaskRows, myPermission?.user.upn])
-
 	const urlColumnFilters: ColumnFiltersState = [
 		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
 		...(deadlineTypeFilter.length
@@ -226,7 +206,7 @@ function TasksLayout({
 							onFiltersChange={handleColumnFiltersChange}
 							onDoubleClick={handleOpenTask}
 							isLoading={isLoading}
-							taskPermissions={taskPermissions}
+							isManager={isManager}
 						/>
 					) : (
 						<TaskCardGrid tasks={filteredTasks} />

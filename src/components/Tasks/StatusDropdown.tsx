@@ -1,14 +1,7 @@
 import styled from "@emotion/styled"
 import { useState } from "react"
-import {
-	PermissionType,
-	type UserDto,
-	type WorkspaceStatusDto,
-} from "src/api/model"
-import { useGetMyPermission } from "src/api/permission/permission"
-import { useGetWorkspace } from "src/api/workspace/workspace"
+import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
-import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { StatusTag } from "../shared/StatusTag"
 import {
 	DropdownMenu,
@@ -22,7 +15,7 @@ interface StatusDropdownProps {
 	taskId: number
 	workspaceId: number
 	assigneeId: number
-	assigneeUsers: UserDto[]
+	editable: boolean
 	onUpdate: (taskId: number, assigneeId: number, statusId: number) => void
 	withArrow?: boolean
 }
@@ -32,23 +25,15 @@ export function StatusDropdown({
 	taskId,
 	assigneeId,
 	workspaceId,
-	assigneeUsers,
+	editable,
 	onUpdate,
 	withArrow = false,
 }: StatusDropdownProps) {
 	const [isOpen, setIsOpen] = useState(false)
 
-	const currentUser = useCurrentUser()
-	const { data: workspace } = useGetWorkspace({ id: workspaceId })
-	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const { data: statuses = [], isLoading } = useListWorkspaceStatuses({
 		workspaceId,
 	})
-
-	const isManager = myPermission?.type === PermissionType.MANAGER
-	const isAssignee = assigneeUsers.some((u) => u.upn === currentUser.upn)
-	const editable =
-		isManager || (!!workspace?.assigneeStatusEditable && isAssignee)
 
 	function handleSelectStatus(newStatusId: number) {
 		if (newStatusId === status.id) return
