@@ -1,6 +1,8 @@
 import styled from "@emotion/styled"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import SpacesContainer from "src/components/SpacesContainer/SpacesContainer"
+import { UserDropdown } from "src/components/UserDropdown"
+import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
 export const Route = createFileRoute("/")({
@@ -15,6 +17,8 @@ export const Route = createFileRoute("/")({
 
 function RouteComponent() {
 	const navigate = useNavigate()
+
+	useRenderInHeader("user", <UserDropdown showPersonalArea={false} />)
 
 	function handlePersonalClick() {
 		navigate({ to: "/personal", search: { view: TasksView.TABLE } })
