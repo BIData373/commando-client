@@ -73,41 +73,41 @@ export function UserDropdown({
 
 			{showPersonalArea && (
 				<>
-					<DropdownMenuItem onSelect={handleNavigateToPersonal}>
+					<UserDropdownItem onSelect={handleNavigateToPersonal}>
 						<PersonalAreaNavItem>
 							מעבר לאזור אישי
 							<PersonalAreaIcon />
 						</PersonalAreaNavItem>
-					</DropdownMenuItem>
+					</UserDropdownItem>
 					<DropdownMenuSeparator />
 				</>
 			)}
 
 			{USER_GUIDE_URL && (
-				<DropdownMenuItem onSelect={handleOpenUserGuide}>
+				<UserDropdownItem onSelect={handleOpenUserGuide}>
 					<NavItem>
 						<BookOpen size={16} />
 						מארז הדרכה
 					</NavItem>
-				</DropdownMenuItem>
+				</UserDropdownItem>
 			)}
 
 			{CHAT_CHANNEL_URL && (
-				<DropdownMenuItem onSelect={handleOpenChat}>
+				<UserDropdownItem onSelect={handleOpenChat}>
 					<NavItem>
 						<MessageSquareText size={16} />
 						צור קשר
 					</NavItem>
-				</DropdownMenuItem>
+				</UserDropdownItem>
 			)}
 
 			{PORTAL_CATALOG_URL && (
-				<DropdownMenuItem onSelect={handleOpenPortalCatalog}>
+				<UserDropdownItem onSelect={handleOpenPortalCatalog}>
 					<NavItem>
 						<Grip size={16} />
 						עוד מאיתנו
 					</NavItem>
-				</DropdownMenuItem>
+				</UserDropdownItem>
 			)}
 
 			<BIHeaderBypass />
@@ -118,6 +118,10 @@ export function UserDropdown({
 const UserDropdownContent = styled(DropdownMenuContent)`
   min-width: 220px;
   direction: rtl;
+`
+
+const UserDropdownItem = styled(DropdownMenuItem)`
+  cursor: pointer;
 `
 
 const UserInfo = styled.div`
