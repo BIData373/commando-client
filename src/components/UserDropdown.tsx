@@ -120,10 +120,10 @@ const UserDropdownContent = styled(DropdownMenuContent)`
   direction: rtl;
 `
 
-const UserInfo = styled(DropdownMenuItem)`
+const UserInfo = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: start ;
+  padding: 0 4px;
 `
 
 const UserInfoRow = styled.div`
@@ -140,7 +140,7 @@ const UserName = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 50%;
+  max-width: 120px;
 `
 
 const UserUpn = styled.span`
