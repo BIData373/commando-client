@@ -181,4 +181,6 @@ const AssigneeTagName = styled.span`
   line-height: 20px;
   color: var(--text-color-2);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `

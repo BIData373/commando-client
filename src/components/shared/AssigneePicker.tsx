@@ -91,7 +91,10 @@ function AssigneePicker({
 							<AssigneeOptionEnd>
 								<AssigneeAvatar assignee={assignee} size={20} />
 
-								<AssigneeOptionName $selected={assignee.selected}>
+								<AssigneeOptionName
+									title={assignee.name}
+									$selected={assignee.selected}
+								>
 									{assignee.name}
 								</AssigneeOptionName>
 							</AssigneeOptionEnd>
@@ -120,6 +123,7 @@ const AssigneeDropdown = styled(PopoverContent)`
   width: var(--radix-popover-trigger-width);
   max-height: 200px;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 4px;
   gap: 1.5px;
   z-index: var(--z-dropdown);
@@ -146,6 +150,7 @@ const AssigneeOptionEnd = styled.div`
   gap: 8px;
   padding: 0 12px;
   height: 32px;
+  width: 100%;
 `
 
 const AssigneeOptionName = styled.span<{ $selected: boolean }>`
@@ -154,6 +159,8 @@ const AssigneeOptionName = styled.span<{ $selected: boolean }>`
   line-height: 22px;
   color: ${({ $selected }) => ($selected ? "var(--tab-active-color)" : "var(--text-color-2)")};
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const CreateNewButton = styled.button`

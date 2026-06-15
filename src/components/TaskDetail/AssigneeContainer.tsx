@@ -53,7 +53,9 @@ export const AssigneeContainer = ({
 		<AssigneeRowContainer $enabled={editable && !isAdmin}>
 			<AssigneeInfoBlock>
 				<AssigneeAvatar assignee={assignee} />
-				<AssigneeRoleText>{assignee.name}</AssigneeRoleText>
+				<AssigneeRoleText title={assignee.name}>
+					{assignee.name}
+				</AssigneeRoleText>
 			</AssigneeInfoBlock>
 
 			<StatusBlock>
@@ -106,6 +108,8 @@ const AssigneeRoleText = styled.span`
   line-height: 22px;
   color: var(--text-color-2);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const DescriptionText = styled.span`
