@@ -10,7 +10,11 @@ import {
 	X,
 } from "lucide-react"
 import { useRef, useState } from "react"
-import { DeadlineType, type TaskWithWorkspaceDto } from "src/api/model"
+import {
+	DeadlineType,
+	PermissionType,
+	type TaskWithWorkspaceDto,
+} from "src/api/model"
 import { getAttachmentSignedUrl } from "src/api/s3/s3"
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { downloadFromUrl } from "src/functions/download-utils"
@@ -44,7 +48,7 @@ function TaskDetailPanel({
 		source,
 		tags,
 		assigneeStatuses,
-		workspace: { id: workspaceId },
+		workspace: { id: workspaceId, permissionType },
 	},
 	onClose,
 	onDelete,
@@ -118,7 +122,7 @@ function TaskDetailPanel({
 				<HeaderRow $shadow={scrollShadow.top}>
 					<TextWrapper>
 						{flagged && <FlagIcon />}
-						<TitleText>{title}</TitleText>
+						<TitleText title={title}>{title}</TitleText>
 					</TextWrapper>
 					<RowActionsMenu
 						workspaceId={workspaceId}
@@ -180,9 +184,13 @@ function TaskDetailPanel({
 									<InfoBlock>
 										<SectionLabel>מקור</SectionLabel>
 										<SourceRow>
-											<PencilButton onClick={() => setShowEditDiscussion(true)}>
-												<Pencil size={14} />
-											</PencilButton>
+											{permissionType === PermissionType.MANAGER && (
+												<PencilButton
+													onClick={() => setShowEditDiscussion(true)}
+												>
+													<Pencil size={14} />
+												</PencilButton>
+											)}
 											<SourceName>{source.name}</SourceName>
 											<SourceDate>
 												{formatDateMonthYear(source.date)}
@@ -373,15 +381,22 @@ const TextWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
 `
 
-const TitleText = styled.p`
+const TitleText = styled.span`
   margin: 0 auto;
   font-size: var(--fs-heading-3);
   font-weight: 500;
   line-height: 32px;
   color: var(--text-color);
   text-align: end;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  width: 100%;
+  direction: ltr;
 `
 
 // ─── Deadline ──────────────────────────────────────────────────────────────────
