@@ -48,7 +48,7 @@ export function useFilteredTasks<T extends TaskDto>(
 			searchedTasks
 				.filter(
 					(task) =>
-						additionalFilter?.(task) ||
+						(additionalFilter ? additionalFilter(task) : true) &&
 						(activeQuickFilters.size > 0
 							? Array.from(activeQuickFilters).some((filter) =>
 									matchesQuickFilter(task, filter),

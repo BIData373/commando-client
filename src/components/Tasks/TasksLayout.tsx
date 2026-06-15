@@ -71,7 +71,10 @@ function TasksLayout({
 	const filteredTasks = useFilteredTasks(
 		tasks,
 		activeTopicFilters.size > 0
-			? (task) => task.tags.some((tag) => activeTopicFilters.has(tag.name))
+			? (task) =>
+					concat(task.tags, task.source?.tags ?? []).some((tag) =>
+						activeTopicFilters.has(tag.name),
+					)
 			: undefined,
 	)
 

@@ -367,7 +367,8 @@ function useTaskColumns({
 		},
 		{
 			id: "tags",
-			accessorKey: "tags",
+			accessorFn: (row) =>
+				uniq(map(concat(row.tags, row.source?.tags ?? []), "name")),
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.tags}
