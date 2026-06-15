@@ -1,4 +1,5 @@
 import { endOfDay, isWithinInterval, startOfDay } from "date-fns"
+import { some } from "lodash"
 import { useMemo } from "react"
 import type { TaskDto, WorkspaceWithPermissionDto } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
@@ -47,15 +48,17 @@ export function useFilteredTasks<T extends TaskDto>(
 		() =>
 			searchedTasks
 				.filter((task) => {
-					const matchers: boolean[] = []
-					if (additionalFilter) matchers.push(additionalFilter(task))
-					if (activeQuickFilters.size > 0)
-						matchers.push(
-							Array.from(activeQuickFilters).some((filter) =>
-								matchesQuickFilter(task, filter),
-							),
-						)
-					return matchers.length === 0 || matchers.some(Boolean)
+					const matchers = [
+						...(additionalFilter ? [additionalFilter(task)] : []),
+						...(activeQuickFilters.size > 0
+							? [
+									some(Array.from(activeQuickFilters), (filter) =>
+										matchesQuickFilter(task, filter),
+									),
+								]
+							: []),
+					]
+					return matchers.length === 0 || some(matchers)
 				})
 				.filter((task) => {
 					if (!from || !to) {
