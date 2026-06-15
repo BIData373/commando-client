@@ -25,6 +25,7 @@ export function TasksDatePicker() {
 		<DatePickerPopover
 			value={dateRange}
 			mode={CalendarMode.Range}
+			hasConfirm
 			onChange={handleConfirm}
 			triggerButton={({ value }) => (
 				<TasksDatePickerTriggerButton

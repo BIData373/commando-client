@@ -19,6 +19,7 @@ interface DatePickerPopoverProps {
 	triggerButton: (props: DatePickerSlotProps) => ReactNode
 	header?: (props: DatePickerSlotProps) => ReactNode
 	footer?: (props: DatePickerSlotProps) => ReactNode
+	hasConfirm?: boolean
 	onChange?: (value: DatePickerValue | undefined) => void
 	open?: boolean
 	value?: DatePickerValue
@@ -34,6 +35,7 @@ function DatePickerPopover({
 	triggerButton,
 	header,
 	footer,
+	hasConfirm = false,
 	onChange,
 	open: controlledOpen,
 	value: initialValue,
@@ -52,14 +54,14 @@ function DatePickerPopover({
 
 	function handleOpenChange(next: boolean) {
 		setUncontrolledOpen(next)
-		if (!next && footer) {
+		if (!next && hasConfirm) {
 			setValue(initialValue)
 		}
 	}
 
 	function handleSelect(newValue: DatePickerValue | undefined) {
 		setValue(newValue)
-		if (!footer) {
+		if (!hasConfirm) {
 			onChange?.(newValue)
 		}
 	}

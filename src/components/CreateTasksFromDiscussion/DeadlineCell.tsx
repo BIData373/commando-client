@@ -98,6 +98,7 @@ function DeadlineCell({
 						))}
 						<DatePickerPopover
 							mode={CalendarMode.Single}
+							hasConfirm
 							open={
 								deadlineType === DeadlineType.DATE ||
 								deadlineType === DeadlineType.ROLLING
