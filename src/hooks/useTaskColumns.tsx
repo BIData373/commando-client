@@ -1,5 +1,4 @@
 import styled from "@emotion/styled"
-import type { QueryKey } from "@tanstack/react-query"
 import type { ColumnDef, FilterFn } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
 import { concat, map, uniq } from "lodash"
@@ -9,9 +8,9 @@ import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assign
 import { DeadlineType, type TaskDto } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
 import { formatMesibaIcon } from "src/utils/icon-utils"
+import { TASK_COLUMNS_META, type TaskRow } from "src/utils/task-table-utils"
 import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 import FlagIcon from "../components/shared/FlagIcon"
 import HighlightMatch from "../components/shared/HighlightMatch"
@@ -29,24 +28,6 @@ import {
 } from "../components/ui/tooltip"
 import { formatDateShort } from "../functions/date-utils"
 
-export interface TaskColumnMeta {
-	id: keyof TaskRow
-	label: string
-}
-
-export const TASK_COLUMNS_META: TaskColumnMeta[] = [
-	{ id: "id", label: 'מס"ד' },
-	{ id: "title", label: "ההנחיה" },
-	{ id: "status", label: "סטטוס" },
-	{ id: "assigneeStatuses", label: "אחראי" },
-	{ id: "deadlineType", label: 'תג"ב' },
-	{ id: "source", label: "מקור" },
-	{ id: "tags", label: "נושא" },
-	{ id: "notes", label: "הערות" },
-	{ id: "createdAt", label: "תאריך יצירה" },
-	{ id: "updatedAt", label: "עודכן ב" },
-]
-
 const COLUMN_LABELS = Object.fromEntries(
 	TASK_COLUMNS_META.map(({ id, label }) => [id, label]),
 ) as Record<keyof TaskRow, string>
@@ -60,35 +41,38 @@ interface SelectModeConfig {
 
 interface ActionsConfig {
 	onEdit: (taskId: number) => void
-	onDoubleClick?: (taskId: number) => void
-	onArchive: (taskIds: number[]) => void
-	onDelete: (taskIds: number[]) => void
-	onEnterSelectMode: (taskId?: number) => void
+	onDoubleClick?(taskId: number): void
+	onArchive(taskIds: number[]): void
+	onDelete(taskIds: number[]): void
+	onEnterSelectMode(rowKey?: string): void
 }
 
 type ColumnsMap = Partial<Record<string, ColumnDef<TaskRow>>>
 
 interface UseTaskColumnsOptions {
-	queryKey: QueryKey
 	visibleColumns: (keyof TaskRow)[]
 	searchQuery: string
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
 	selectMode?: SelectModeConfig
 	actions?: ActionsConfig
+	showMenuColumn?: boolean
+	onUpdateStatusSuccess?(): void
 }
 
 function useTaskColumns({
-	queryKey,
 	visibleColumns,
 	searchQuery,
 	filterOptionsMap,
 	selectMode,
 	actions,
+	showMenuColumn = true,
+	onUpdateStatusSuccess,
 }: UseTaskColumnsOptions) {
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
-			onSuccess: ({ task }) => {
-				invalidateQueries([queryKey, getGetTaskQueryKey({ id: task.id })])
+			onSuccess: ({ task: { id } }) => {
+				invalidateQueries([getGetTaskQueryKey({ id })])
+				onUpdateStatusSuccess?.()
 			},
 		},
 	})
@@ -105,7 +89,7 @@ function useTaskColumns({
 		return filterValue.includes(value as string)
 	}
 
-	function onUpdateStatus(
+	function handleUpdateStatus(
 		taskId: number,
 		assigneeId: number,
 		statusId: number,
@@ -231,7 +215,7 @@ function useTaskColumns({
 				(rowA.original.status?.id ?? 0) - (rowB.original.status?.id ?? 0),
 			cell: ({
 				row: {
-					original: { id, status, assignee, workspaceId },
+					original: { id, status, assignee, workspaceId, editable },
 				},
 			}) =>
 				status &&
@@ -239,10 +223,10 @@ function useTaskColumns({
 					<StatusDropdown
 						status={status}
 						assigneeId={assignee.id}
-						assigneeUsers={assignee.users}
+						editable={editable ?? false}
 						taskId={id}
 						workspaceId={workspaceId}
-						onUpdate={onUpdateStatus}
+						onUpdate={handleUpdateStatus}
 					/>
 				),
 		},
@@ -383,7 +367,8 @@ function useTaskColumns({
 		},
 		{
 			id: "tags",
-			accessorKey: "tags",
+			accessorFn: (row) =>
+				uniq(map(concat(row.tags, row.source?.tags ?? []), "name")),
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.tags}
@@ -493,7 +478,7 @@ function useTaskColumns({
 
 	const columns = [
 		...visibleOrderedColumns,
-		...(actions
+		...(showMenuColumn && actions
 			? [
 					{
 						id: "actions",
@@ -502,13 +487,13 @@ function useTaskColumns({
 						enableColumnFilter: false,
 						cell: ({
 							row: {
-								original: { id, workspaceId },
+								original: { id, workspaceId, rowKey },
 							},
 						}) => (
 							<RowActionsMenu
 								workspaceId={workspaceId}
 								onEdit={() => actions.onEdit(id)}
-								onEnterSelect={() => actions.onEnterSelectMode(id)}
+								onEnterSelect={() => actions.onEnterSelectMode(rowKey)}
 								onDelete={() => actions.onDelete([id])}
 							/>
 						),
@@ -524,7 +509,6 @@ function useTaskColumns({
 }
 
 export { useTaskColumns }
-
 // ─── Styled Components ───────────────────────────────────────────────────────
 
 const CheckboxCenter = styled.div`

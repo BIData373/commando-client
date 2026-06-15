@@ -55,6 +55,7 @@ const EmptyDescription = styled.div`
   font-size: var(--fs-btn);
   color: var(--sea-ink-soft);
   line-height: 22px;
+  direction: rtl;
 `
 
 const EmptyImage = styled.img`

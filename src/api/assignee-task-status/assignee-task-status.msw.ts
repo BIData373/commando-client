@@ -214,6 +214,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 						workspaceId: faker.number.float({ fractionDigits: 2 }),
 					},
 					description: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					editable: faker.datatype.boolean(),
 				})),
 			},
 			assignee: {
@@ -472,6 +473,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			editable: faker.datatype.boolean(),
 		})),
 	},
 	assignee: {
@@ -731,6 +733,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			editable: faker.datatype.boolean(),
 		})),
 	},
 	assignee: {

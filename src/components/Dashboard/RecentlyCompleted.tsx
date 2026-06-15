@@ -1,22 +1,21 @@
 import styled from "@emotion/styled"
-import type { QueryKey } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { WorkspaceStatusType } from "src/api/model"
-import type { TaskRow } from "src/providers/TasksFiltersProvider"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
+import type { TaskRow } from "src/utils/task-table-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface RecentlyCompletedProps {
-	queryKey: QueryKey
 	tasks: TaskRow[]
+	onUpdateStatusSuccess?(): void
 }
 
 export default function RecentlyCompleted({
-	queryKey,
 	tasks,
+	onUpdateStatusSuccess,
 }: RecentlyCompletedProps) {
 	const completedTasks = useMemo(
 		() => tasks.filter((t) => t.status?.type === WorkspaceStatusType.COMPLETED),
@@ -24,7 +23,7 @@ export default function RecentlyCompleted({
 	)
 
 	const { columns } = useTaskColumns({
-		queryKey,
+		onUpdateStatusSuccess,
 		visibleColumns: ["title", "status", "assigneeStatuses"],
 		searchQuery: "",
 	})

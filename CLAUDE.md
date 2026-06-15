@@ -1,29 +1,23 @@
 # Role
 Senior Frontend Engineer, building a task management system
 
----
-
 # Stack
 - **Frontend:** React, TypeScript, Shadcn, TanStack Router
 - **Styling:** `@emotion/styled`
 - **Types:** External `Shared` library only. No local entity/DTO interfaces. All fields `camelCase`.
 
----
-
 # Folder Structure (`src/`)
 ```
 components/
-  ui/            ← ShadCN components, All of their components are available for usage
+  ui/            ← ShadCN components, all available for usage
   [Feature]/     ← Feature folders; co-locate child components used only here
-lib/              ← Pure helpers grouped by subject (dateUtils, filterUtils, etc.)
+lib/             ← Pure helpers grouped by subject (dateUtils, filterUtils, etc.)
 hooks/           ← Custom React hooks
 providers/       ← Contexts (avoid prop drilling)
 store/           ← Global state (Zustand)
 routes/          ← Route definitions via TanStack Router (folder-based, $param for dynamic segments)
 router.tsx       ← TanStack router object
 ```
-
----
 
 # Route Tree (`src/routes/`)
 ```
@@ -45,15 +39,18 @@ workspace/
     settings/
       index.tsx                               /workspace/:urlName/settings/  → redirect to general
       general.tsx                             /workspace/:urlName/settings/general
-      assignees.tsx                           /workspace/:urlName/settings/assignees
+      assignees.tsx                           /workspace/:urlName/settings/assignees  (layout: renders list + Outlet for modals)
+      assignees/
+        new.tsx                               /workspace/:urlName/settings/assignees/new  (modal overlay)
+        $assigneeId.tsx                       /workspace/:urlName/settings/assignees/:assigneeId  (Outlet passthrough)
+        $assigneeId/
+          index.tsx                           /workspace/:urlName/settings/assignees/:assigneeId/  (modal overlay)
       permissions.tsx                         /workspace/:urlName/settings/permissions
 ```
 
----
-
 # Coding Rules
 
-**Naming:** Files `PascalCase.tsx`, variables/functions `camelCase`.
+**Naming:** Component files `PascalCase.tsx`, route/utility files `kebab-case.ts(x)`, variables/functions `camelCase`.
 **One component per file.** Each props/state shape gets its own interface — no inline typing.
 **Errors:** Display exclusively via internal `Popup` component.
 **Comments:** English only; complex logic only — prefer self-documenting code.
@@ -62,8 +59,6 @@ workspace/
 **Lucide Icons:** Use `size={16}` prop, never `className="w-4 h-4"`.
 **Handlers:** Define named functions above `return` — never complex inline in JSX.
 **Helper location:** Reused across components → `src/functions/`. Component-specific → above `return`.
-
----
 
 # Styling: @emotion/styled
 
@@ -77,34 +72,15 @@ workspace/
 - **Group-hover:** Use Emotion interpolation: `&:hover ${Child}`. Child must be defined **before** parent.
 - **Extend generics:** `styled(DropdownMenuTrigger)` — never override component internals.
 
-### Transient Props
 ```tsx
 const TabButton = styled.button<{ $active: boolean }>`
   color: ${({ $active }) => $active ? 'var(--color-primary)' : 'var(--color-text-disabled)'};
 `;
 ```
-Common: `$color $active $open $selected $minWidth $variant $type $isActive $isDragging $isDragOver $completed`
 
 # State Management
 
-**4+ related fields → merged state + `setField`:**
-```tsx
-const [form, setForm] = useState<FormState>({ title: '', ... });
-const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
-  setForm((prev) => ({ ...prev, [key]: value }));
-```
-
-**No `useMemo`/`useCallback`** unless a concrete profiling bottleneck is documented.
-
----
-
-# `functions/` File Conventions
-- `dateUtils.ts` — `formatDate`, `formatDateShort`, `getDueDateDisplay`, `isNew`, `toInputDate`
-- `filterUtils.ts` — `applyAllFilters`, `applyQuickFilter`, `applyColumnFilters`, `applySearch`, `sortInstructions`, `buildFilterOptions`
-- `assigneeStatus.ts` — assignee/status helpers
-- `exportCsv.ts` — CSV export
-
----
+**4+ related fields → merged state + `setField`.** No `useMemo`/`useCallback` unless a concrete profiling bottleneck is documented.
 
 # Common Mistakes
 
@@ -122,74 +98,71 @@ const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
 | Repeated string/number literal | `const` in `functions/` file |
 | `any` type | Explicit interface or generic |
 | `className="w-4 h-4"` on icon | `size={16}` |
-
----
+| `styled(DialogContent)` for a modal | `styled(ModalContent)` |
+| `useState` open flag for dialogs | Route-based modal (`new.tsx` / `$id/index.tsx`) |
 
 ## Typography Variables
 
-All font sizes come from the design token scale — never hardcode `px` sizes inline.
+| Variable | Usage |
+| -------- | ----- |
+| `var(--fs-heading-h1)` | Display / hero headings |
+| `var(--fs-heading-1)` | Page-level H1 |
+| `var(--fs-heading-2)` | Section headings |
+| `var(--fs-heading-3)` | Sub-section headings |
+| `var(--fs-xl)` | Large body / card titles |
+| `var(--fs-lg)` | Medium emphasis text |
+| `var(--fs-base)` | Default body text |
+| `var(--fs-btn)` | Button labels |
+| `var(--fs-sm)` | Captions, labels, meta text |
 
-| Variable          | Value (desktop) | Usage                        |
-| ----------------- | --------------- | ---------------------------- |
-| `var(--fs-heading-h1)` | 42px       | Display / hero headings      |
-| `var(--fs-heading-1)`  | 38px       | Page-level H1                |
-| `var(--fs-heading-2)`  | 30px       | Section headings             |
-| `var(--fs-heading-3)`  | 24px       | Sub-section headings         |
-| `var(--fs-xl)`         | 20px       | Large body / card titles     |
-| `var(--fs-lg)`         | 18px       | Medium emphasis text         |
-| `var(--fs-base)`       | 16px       | Default body text            |
-| `var(--fs-btn)`        | 14px       | Button labels (all sizes)    |
-| `var(--fs-sm)`         | 12px       | Captions, labels, meta text  |
+## CSS Variables
 
-Responsive breakpoints automatically scale heading variables down at ≤1024px and ≤768px — body/button/sm sizes stay fixed.
+| Variable | Usage |
+| -------- | ----- |
+| `var(--header-bg)` | Header background (dark navy) |
+| `var(--line)` | Border color |
+| `var(--chip-bg)` | Pill/chip background |
+| `var(--chip-line)` | Pill/chip border |
+| `var(--sea-ink)` | Primary text color |
+| `var(--sea-ink-soft)` | Secondary/muted text |
+| `var(--link-bg-hover)` | Nav link hover background |
+| `var(--z-dropdown)` | Z-index for dropdowns/overlays |
+| `var(--purple-start)` | Gradient start (buttons, tabs) |
+| `var(--purple-end)` | Gradient end (buttons, tabs) |
+| `var(--status-done)` | Green text – done status |
+| `var(--status-done-bg)` | Green bg – done status |
+| `var(--status-progress)` | Orange text – in-progress |
+| `var(--status-progress-bg)` | Orange bg – in-progress |
+| `var(--status-pending)` | Gray text – pending status |
+| `var(--status-pending-bg)` | Gray bg – pending status |
 
----
-
-## Known CSS Variables (from existing components)
-
-| Variable                  | Usage                          |
-| ------------------------- | ------------------------------ |
-| `var(--header-bg)`        | Header background (dark navy)  |
-| `var(--line)`             | Border color                   |
-| `var(--chip-bg)`          | Pill/chip background           |
-| `var(--chip-line)`        | Pill/chip border               |
-| `var(--sea-ink)`          | Primary text color             |
-| `var(--sea-ink-soft)`     | Secondary/muted text           |
-| `var(--link-bg-hover)`    | Nav link hover background      |
-| `var(--z-dropdown)`       | Z-index for dropdowns/overlays |
-| `var(--purple-start)`     | Gradient start (buttons, tabs) |
-| `var(--purple-end)`       | Gradient end (buttons, tabs)   |
-| `var(--status-done)`      | Green text – done status       |
-| `var(--status-done-bg)`   | Green bg – done status         |
-| `var(--status-progress)`  | Orange text – in-progress      |
-| `var(--status-progress-bg)` | Orange bg – in-progress      |
-| `var(--status-pending)`   | Gray text – pending status     |
-| `var(--status-pending-bg)` | Gray bg – pending status      |
-
-All semantic tokens are defined in both `:root` (light mode) and `.dark` in `src/styles.css`.
-
-## Static Assets (`public/`)
-
-| File                 | Description                                    |
-| -------------------- | ---------------------------------------------- |
-| `workspace-icon.png` | 32px circular workspace logo (PNG 800×796)     |
-| `logo.svg`           | App logo used in Header right side             |
+All tokens defined in `:root` (light) and `.dark` in `src/styles.css`.
 
 ## RTL Notes (`dir="rtl"` on `<html>`)
 
-- CSS Grid column order reverses in RTL: column 1 = visual RIGHT, column 3 = visual LEFT.
+- CSS Grid column order reverses: column 1 = visual RIGHT, column 3 = visual LEFT.
 - Flex items flow right-to-left: first DOM child = rightmost visually.
 - Always use logical CSS properties: `inset-inline-start`, `margin-inline-end`, `padding-block`, etc.
 - To control item order for RTL: reverse the array (not the DOM structure).
 
-## Component Notes
+## Modal / Dialog Pattern
 
-**Header.tsx** — `HeaderContainer` wraps `HeaderRoot` (sticky bar) + optional `TitleBar`. `HeaderInner` is a 3-column CSS Grid (`1fr auto 1fr`). Config via `useMatches()` → `HeaderConfig`: `{ title, navigation, user, workspace }`.
-- **Col 1 – `StartSection`** (visual RIGHT in RTL): `LogoImage` + `NavigationMenu`; shown when `navigation` is true. Nav links order: `['בית', 'הנחיות', 'הגדרות לשכה']` — first item is rightmost in RTL. `LogoImage` has `margin-inline-end: 20px` (gap between logo and first nav link).
-- **Col 2 – `CenterSection`**: `WorkspaceIcon` then `WorkspaceName`; shown when `workspace` is true. Icon is first = rightmost in RTL.
-- **Col 3 – `EndSection`** (visual LEFT in RTL, `justify-content: flex-end`): `UserTrigger` pill (52px tall, Avatar + ChevronDown); shown when `user` is true.
-- `TitleBar` renders below bar when `title` is non-empty. `PageTitle` is an `h1`.
-- Image paths: `/logo.svg` and `/workspace-icon.png` (no `/public/` prefix).
+**Never use `DialogContent`** — it has enter/exit animations that flash on route unmount.
+
+**Always use `ModalContent`** (`src/components/shared/ModalContent.tsx`) — wraps `DialogPortal + DialogOverlay + DialogContentPrimitive` with no animation. Extend per-consumer:
+
+```tsx
+const Panel = styled(ModalContent)`
+  width: 700px;
+  max-height: 70vh;
+`
+
+<Dialog open onOpenChange={handleClose}>
+  <Panel>...</Panel>
+</Dialog>
+```
+
+**Route-based modals** — create/edit dialogs live as child routes of the list layout. Layout renders list + `<Outlet />`. Child routes (`new.tsx`, `$id/index.tsx`) render the dialog. On close, navigate back to the list route.
 
 # Workflow (MANDATORY — follow for every file)
 

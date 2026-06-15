@@ -27,14 +27,10 @@ import { CancelButton } from "../shared/CancelButton"
 import FlagIcon from "../shared/FlagIcon"
 import { FormField } from "../shared/FormField"
 import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
+import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { Checkbox } from "../ui/checkbox"
-import {
-	Dialog,
-	DialogContentPrimitive,
-	DialogOverlay,
-	DialogPortal,
-} from "../ui/dialog"
+import { Dialog } from "../ui/dialog"
 import AssigneeField from "./AssigneeField"
 import DeadlineField from "./DeadlineField"
 import NotesField from "./NotesField"
@@ -45,6 +41,7 @@ import TagField from "./TagField"
 
 interface FormAssignee extends GetTaskAssigneeDto {
 	statusId?: number
+	editable?: boolean
 }
 
 interface FormState extends Omit<CreateTaskDto, "workspaceId" | "assignees"> {
@@ -102,12 +99,17 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 					id: as.assignee.id,
 					description: as.description || undefined,
 					statusId: as.status.id,
+					editable: as.editable,
 				})) ?? [],
 			linkedSource: task?.source ?? null,
 		} as FormState,
 		onSubmit: async ({
 			value: { source, sourceDate, linkedSource, ...rest },
 		}) => {
+			rest.assignees = (rest.assignees ?? []).map((assignee) =>
+				omit(assignee, "editable"),
+			)
+
 			if (isEditMode) {
 				const changedFields = omit(getChangedFields<FormState>(form), [
 					"source",
@@ -290,22 +292,14 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 	const linkedTagNames = values.linkedSource?.tags.map((t) => t.name) ?? []
 	const mergedTags = uniq([...linkedTagNames, ...(values.tags ?? [])])
 
-	const taskStatusByAssigneeId = isEditMode
-		? Object.fromEntries(
-				task!.assigneeStatuses.map((as) => [as.assignee.id, as.status]),
-			)
-		: {}
-
 	const assigneeExtras = isEditMode
 		? Object.fromEntries(
 				(values.assignees ?? []).map((a) => [
 					a.id,
 					{
-						status:
-							a.statusId != null
-								? (statusById[a.statusId] ?? taskStatusByAssigneeId[a.id])
-								: undefined,
+						status: a.statusId != null ? statusById[a.statusId] : undefined,
 						description: a.description,
+						editable: a.editable ?? false,
 					},
 				]),
 			)
@@ -324,157 +318,154 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
-			<DialogPortal>
-				<DialogOverlay />
-				<ModalCard>
-					<ModalCloseButton onClick={onClose}>
-						<X size={16} />
-					</ModalCloseButton>
+			<ModalCard>
+				<ModalCloseButton onClick={onClose}>
+					<X size={16} />
+				</ModalCloseButton>
 
-					<ModalBody>
-						<ModalHeader $shadow={scrollShadow.top}>
-							<ModalTitle>
-								{isEditMode ? "עריכת הנחיה" : "יצירת הנחיה"}
-							</ModalTitle>
-						</ModalHeader>
+				<ModalBody>
+					<ModalHeader $shadow={scrollShadow.top}>
+						<ModalTitle>
+							{isEditMode ? "עריכת הנחיה" : "יצירת הנחיה"}
+						</ModalTitle>
+					</ModalHeader>
 
-						<ScrollableContent ref={scrollRef} onScroll={handleScroll}>
-							<FormContainer>
-								{/* ─── Directive Name ──────────────────────────────────────── */}
-								<form.Field
-									name="title"
-									validators={{
-										onSubmit: ({ value }) =>
-											!value.trim() ? "הנחיה היא שדה חובה" : undefined,
-									}}
-								>
-									{(field) => (
-										<FormField field={field} label="הנחיה" required>
-											<DirectiveTextarea
-												value={field.state.value}
-												onChange={(e) => field.handleChange(e.target.value)}
-												placeholder="תיאור הנחיה"
-												dir="rtl"
-											/>
-										</FormField>
-									)}
-								</form.Field>
-
-								{/* ─── Deadline ────────────────────────────────────────────── */}
-								<DeadlineField
-									deadlineType={values.deadlineType}
-									dueDate={values.dueDate ?? null}
-									onDeadlineTypeChange={handleDeadlineTypeChange}
-									onDateChange={handleDeadlineDateChange}
-								/>
-
-								{/* ─── Responsible ─────────────────────────────────────────── */}
-								<AssigneeField
-									workspaceId={workspaceId}
-									selectedAssignees={(values.assignees ?? []).map((a) => a.id)}
-									directiveTitle={values.title}
-									onToggle={handleAssigneeToggle}
-									onRemove={handleRemoveAssignee}
-									onDetailChange={handleAssigneeDetailChange}
-									assigneeExtras={assigneeExtras}
-									onStatusChange={
-										isEditMode ? handleAssigneeStatusChange : undefined
-									}
-									taskId={task?.id}
-								/>
-
-								{/* ─── Important Checkbox ──────────────────────────────────── */}
-								<form.Field name="flagged">
-									{(field) => (
-										<ImportantRow>
-											<ImportantFlagTooltip side="left" />
-											<FlagIcon />
-											<CheckboxRow>
-												<CheckboxLabelText>הגדר כהנחיה חשובה</CheckboxLabelText>
-												<Checkbox
-													checked={field.state.value}
-													onCheckedChange={(checked) =>
-														field.handleChange(checked === true)
-													}
-												/>
-											</CheckboxRow>
-										</ImportantRow>
-									)}
-								</form.Field>
-
-								{/* ─── Expand / Collapse Divider ──────────────────────────── */}
-								<DividerRow>
-									<DividerLine />
-									<ExpandButton onClick={handleToggleDetails}>
-										{isDetailsExpanded ? (
-											<ChevronUp size={16} />
-										) : (
-											<ChevronDown size={16} />
-										)}
-										<ExpandButtonText $expanded={isDetailsExpanded}>
-											פרטים נוספים
-										</ExpandButtonText>
-									</ExpandButton>
-									<DividerLine />
-								</DividerRow>
-
-								{/* ─── Additional Details ─────────────────────────────────── */}
-								<AdditionalDetailsWrapper
-									$expanded={isDetailsExpanded}
-									aria-hidden={!isDetailsExpanded}
-								>
-									<AdditionalDetails>
-										{/* Source + Date row */}
-										<form.Field
-											name="sourceDate"
-											validators={{ onSubmit: validateSourceDate }}
-										>
-											{(field) => (
-												<SourceField
-													workspaceId={workspaceId}
-													source={values.source}
-													sourceDate={values.sourceDate}
-													linkedSource={values.linkedSource}
-													onSourceSelect={handleSourceSelect}
-													onDateSelect={handleSourceDateSelect}
-													dateField={field}
-												/>
-											)}
-										</form.Field>
-
-										{/* Tag field */}
-										<TagField
-											workspaceId={workspaceId}
-											tags={mergedTags}
-											lockedTags={linkedTagNames}
-											onTagSelect={handleTagSelect}
-											onTagRemove={handleTagRemove}
+					<ScrollableContent ref={scrollRef} onScroll={handleScroll}>
+						<FormContainer>
+							{/* ─── Directive Name ──────────────────────────────────────── */}
+							<form.Field
+								name="title"
+								validators={{
+									onSubmit: ({ value }) =>
+										!value.trim() ? "הנחיה היא שדה חובה" : undefined,
+								}}
+							>
+								{(field) => (
+									<FormField field={field} label="הנחיה" required>
+										<DirectiveTextarea
+											value={field.state.value}
+											onChange={(e) => field.handleChange(e.target.value)}
+											placeholder="תיאור הנחיה"
+											dir="rtl"
 										/>
+									</FormField>
+								)}
+							</form.Field>
 
-										{/* Notes */}
-										<NotesField
-											notes={values.notes ?? ""}
-											onNotesChange={handleNotesChange}
-										/>
-									</AdditionalDetails>
-								</AdditionalDetailsWrapper>
-							</FormContainer>
-						</ScrollableContent>
-
-						{/* ─── Action Buttons ──────────────────────────────────────── */}
-						<ActionRow $shadow={scrollShadow.bottom}>
-							<PrimaryButton
-								title="שמור"
-								onClick={form.handleSubmit}
-								disabled={!values.title.trim() || (isEditMode && !hasChanges)}
-								loading={isPending}
-								width={133}
+							{/* ─── Deadline ────────────────────────────────────────────── */}
+							<DeadlineField
+								deadlineType={values.deadlineType}
+								dueDate={values.dueDate ?? null}
+								onDeadlineTypeChange={handleDeadlineTypeChange}
+								onDateChange={handleDeadlineDateChange}
 							/>
-							<CancelButton title="ביטול" onClick={onClose} />
-						</ActionRow>
-					</ModalBody>
-				</ModalCard>
-			</DialogPortal>
+
+							{/* ─── Responsible ─────────────────────────────────────────── */}
+							<AssigneeField
+								workspaceId={workspaceId}
+								selectedAssignees={(values.assignees ?? []).map((a) => a.id)}
+								directiveTitle={values.title}
+								onToggle={handleAssigneeToggle}
+								onRemove={handleRemoveAssignee}
+								onDetailChange={handleAssigneeDetailChange}
+								assigneeExtras={assigneeExtras}
+								onStatusChange={
+									isEditMode ? handleAssigneeStatusChange : undefined
+								}
+								taskId={task?.id}
+							/>
+
+							{/* ─── Important Checkbox ──────────────────────────────────── */}
+							<form.Field name="flagged">
+								{(field) => (
+									<ImportantRow>
+										<ImportantFlagTooltip side="left" />
+										<FlagIcon />
+										<CheckboxRow>
+											<CheckboxLabelText>הגדר כהנחיה חשובה</CheckboxLabelText>
+											<Checkbox
+												checked={field.state.value}
+												onCheckedChange={(checked) =>
+													field.handleChange(checked === true)
+												}
+											/>
+										</CheckboxRow>
+									</ImportantRow>
+								)}
+							</form.Field>
+
+							{/* ─── Expand / Collapse Divider ──────────────────────────── */}
+							<DividerRow>
+								<DividerLine />
+								<ExpandButton onClick={handleToggleDetails}>
+									{isDetailsExpanded ? (
+										<ChevronUp size={16} />
+									) : (
+										<ChevronDown size={16} />
+									)}
+									<ExpandButtonText $expanded={isDetailsExpanded}>
+										פרטים נוספים
+									</ExpandButtonText>
+								</ExpandButton>
+								<DividerLine />
+							</DividerRow>
+
+							{/* ─── Additional Details ─────────────────────────────────── */}
+							<AdditionalDetailsWrapper
+								$expanded={isDetailsExpanded}
+								aria-hidden={!isDetailsExpanded}
+							>
+								<AdditionalDetails>
+									{/* Source + Date row */}
+									<form.Field
+										name="sourceDate"
+										validators={{ onSubmit: validateSourceDate }}
+									>
+										{(field) => (
+											<SourceField
+												workspaceId={workspaceId}
+												source={values.source}
+												sourceDate={values.sourceDate}
+												linkedSource={values.linkedSource}
+												onSourceSelect={handleSourceSelect}
+												onDateSelect={handleSourceDateSelect}
+												dateField={field}
+											/>
+										)}
+									</form.Field>
+
+									{/* Tag field */}
+									<TagField
+										workspaceId={workspaceId}
+										tags={mergedTags}
+										lockedTags={linkedTagNames}
+										onTagSelect={handleTagSelect}
+										onTagRemove={handleTagRemove}
+									/>
+
+									{/* Notes */}
+									<NotesField
+										notes={values.notes ?? ""}
+										onNotesChange={handleNotesChange}
+									/>
+								</AdditionalDetails>
+							</AdditionalDetailsWrapper>
+						</FormContainer>
+					</ScrollableContent>
+
+					{/* ─── Action Buttons ──────────────────────────────────────── */}
+					<ActionRow $shadow={scrollShadow.bottom}>
+						<PrimaryButton
+							title="שמור"
+							onClick={form.handleSubmit}
+							disabled={!values.title.trim() || (isEditMode && !hasChanges)}
+							loading={isPending}
+							width={133}
+						/>
+						<CancelButton title="ביטול" onClick={onClose} />
+					</ActionRow>
+				</ModalBody>
+			</ModalCard>
 		</Dialog>
 	)
 }
@@ -483,28 +474,13 @@ export default CreateTaskModal
 
 // ─── Modal Shell ─────────────────────────────────────────────────────────────
 
-const ModalCard = styled(DialogContentPrimitive)`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+const ModalCard = styled(ModalContent)`
   width: 100%;
   max-width: 900px;
   max-height: 82vh;
   min-height: 800px;
   overflow: hidden;
-  background: white;
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
-  box-shadow:
-    0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px rgba(0, 0, 0, 0.12),
-    0px 9px 28px rgba(0, 0, 0, 0.05);
-  z-index: var(--z-dropdown);
-  display: flex;
-  flex-direction: column;
   padding-block-start: 36px;
-  outline: none;
 `
 
 const ModalCloseButton = styled.button`

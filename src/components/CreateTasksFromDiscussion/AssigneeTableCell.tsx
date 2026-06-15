@@ -10,6 +10,8 @@ import type {
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import AssigneePicker from "../shared/AssigneePicker"
 
+const ASSIGNEE_AVATAR_SIZE = 22
+
 interface AssigneeTableCellProps {
 	row: NewTaskRow
 	meta: TaskTableMeta
@@ -76,20 +78,20 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 										<StackedAssigneeAvatar
 											key={id}
 											assignee={assigneeMap[id]}
-											size={22}
+											size={ASSIGNEE_AVATAR_SIZE}
 										/>
 									) : null,
 								)}
 							</CompactAvatarStack>
 						) : assigneeIds.length === 1 && assigneeMap[assigneeIds[0]] ? (
 							<AssigneeTag>
+								<AssigneeAvatar
+									assignee={assigneeMap[assigneeIds[0]]}
+									size={ASSIGNEE_AVATAR_SIZE}
+								/>
 								<AssigneeTagName>
 									{assigneeMap[assigneeIds[0]].name}
 								</AssigneeTagName>
-								<AssigneeAvatar
-									assignee={assigneeMap[assigneeIds[0]]}
-									size={18}
-								/>
 							</AssigneeTag>
 						) : (
 							<CompactLabel>בחר אחראי</CompactLabel>
@@ -172,8 +174,12 @@ const StackedAssigneeAvatar = styled(AssigneeAvatar)`
 const AssigneeTag = styled.div`
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 4px;
   padding: 2px 4px;
+  width: 100%;
+  min-width: 0;
+  direction: rtl;
 `
 
 const AssigneeTagName = styled.span`
@@ -181,4 +187,8 @@ const AssigneeTagName = styled.span`
   line-height: 20px;
   color: var(--text-color-2);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  direction: rtl;
 `

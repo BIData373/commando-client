@@ -1,6 +1,9 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import { useState } from "react"
+import { WorkspaceStatusType } from "src/api/model"
+import { STATUS_DEFAULTS } from "../../functions/status-defaults"
+import { StatusTag } from "../shared/StatusTag"
 
 interface MetricsBarProps {
 	totalCount: number
@@ -21,7 +24,6 @@ function MetricsBar({
 		setOpen((prev) => !prev)
 	}
 
-	// TODO - fix status tags here
 	return (
 		<MetricsSection>
 			<CardsWrapper $open={open}>
@@ -29,7 +31,9 @@ function MetricsBar({
 					<MetricCard>
 						<CardHeader>
 							<CardLabel>בעבודה</CardLabel>
-							{/* <StatusTag status="in_progress" /> */}
+							<StatusTag
+								status={STATUS_DEFAULTS[WorkspaceStatusType.IN_PROGRESS]}
+							/>
 						</CardHeader>
 						<CardNumber>{inProgressCount}</CardNumber>
 					</MetricCard>
@@ -37,7 +41,9 @@ function MetricsBar({
 					<MetricCard>
 						<CardHeader>
 							<CardLabel>טרם בוצעו</CardLabel>
-							{/* <StatusTag status="not_started" /> */}
+							<StatusTag
+								status={STATUS_DEFAULTS[WorkspaceStatusType.NOT_STARTED]}
+							/>
 						</CardHeader>
 						<CardNumber>{notStartedCount}</CardNumber>
 					</MetricCard>
@@ -85,6 +91,7 @@ const CardsWrapper = styled.div<{ $open: boolean }>`
 const CardsRow = styled.div`
   display: flex;
   gap: 48px;
+  padding-top: 24px;
 `
 
 const MetricCard = styled.div<{ $highlighted?: boolean }>`

@@ -1,7 +1,8 @@
 import styled from "@emotion/styled"
 import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
-import { extractUpnFromUser, formatDirectChatLink } from "src/utils/user-utils"
-import noUsersFound from "../../assets/noUsersFound.svg"
+import { useCurrentUser } from "src/hooks/useCurrentUser"
+import { navigateToUserChat } from "src/utils/user-utils"
+import noUsersFound from "../../assets/empty-states/no-users-found.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { TrashButton } from "../shared/TrashButton"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
@@ -18,9 +19,12 @@ export function UserPermissionList({
 	onDelete,
 	onTypeChange,
 }: UserPermissionListProps) {
-	function navigateToChat(user: UserDto) {
-		const upn = extractUpnFromUser(user)
-		window.open(formatDirectChatLink(upn))
+	const currentUser = useCurrentUser()
+
+	function handleClickUserInfo(user: UserDto, type: PermissionType) {
+		if (type === PermissionType.MANAGER) {
+			navigateToUserChat(user)
+		}
 	}
 
 	return (
@@ -38,9 +42,7 @@ export function UserPermissionList({
 					<UserRow key={user.id}>
 						<UserInfo
 							$type={type}
-							onClick={() =>
-								type === PermissionType.MANAGER && navigateToChat(user)
-							}
+							onClick={() => handleClickUserInfo(user, type)}
 						>
 							<UserHeader>
 								<UserName>{user.info?.name}</UserName>
@@ -50,15 +52,22 @@ export function UserPermissionList({
 						</UserInfo>
 						<DropdownPermission
 							value={type}
+							disabled={user.upn === currentUser.upn}
 							onChange={(type) => onTypeChange(user, type)}
 						/>
 						<Tooltip>
 							<TooltipTrigger asChild>
 								<span>
-									<TrashButton onClick={() => onDelete(user)} size={22} />
+									<TrashButton
+										visible={user.upn !== currentUser.upn}
+										onClick={() => onDelete(user)}
+										size={22}
+									/>
 								</span>
 							</TooltipTrigger>
-							<TooltipContent>הסרת הרשאות</TooltipContent>
+							<TooltipContent hidden={user.upn === currentUser.upn}>
+								הסרת הרשאות
+							</TooltipContent>
 						</Tooltip>
 					</UserRow>
 				))

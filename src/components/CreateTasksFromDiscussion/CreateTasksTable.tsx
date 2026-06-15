@@ -171,6 +171,8 @@ const TableOuterContainer = styled.div`
     border-collapse: separate;
     border-spacing: 0;
     table-layout: fixed;
+    min-width: 0 !important;
+    width: 100% !important;
   }
 
   th {

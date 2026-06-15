@@ -46,6 +46,7 @@ function DiscussionForm({
 				label="שם הדיון"
 				uniqueNames
 				dateField={dateField}
+				required
 			/>
 
 			<TagField

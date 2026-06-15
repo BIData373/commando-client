@@ -1,11 +1,12 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
-import { toTaskRows } from "src/functions/tasks-table"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { invalidateQueries } from "src/queryClient"
 import { DATE_TYPE } from "src/utils/date-utils"
+import { toTaskRows } from "src/utils/task-table-utils"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import FocusedInstructions from "./FocusedInstructions"
 import RecentlyCompleted from "./RecentlyCompleted"
@@ -41,14 +42,24 @@ export function DashboardContent() {
 		})
 	}
 
+	function handleUpdateSuccess() {
+		invalidateQueries([tasksQueryKey])
+	}
+
 	return (
 		<ContentArea>
 			<TasksDatePicker />
 
 			<GridLayout>
-				<FocusedInstructions queryKey={tasksQueryKey} tasks={tasks} />
+				<FocusedInstructions
+					onUpdateStatusSuccess={handleUpdateSuccess}
+					tasks={tasks}
+				/>
 				<StatusCard tasks={tasks} />
-				<RecentlyCompleted queryKey={tasksQueryKey} tasks={tasks} />
+				<RecentlyCompleted
+					onUpdateStatusSuccess={handleUpdateSuccess}
+					tasks={tasks}
+				/>
 				<SystemDistribution onSetAssignees={handleSetAssignees} tasks={tasks} />
 			</GridLayout>
 		</ContentArea>

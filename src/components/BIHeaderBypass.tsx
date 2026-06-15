@@ -6,11 +6,7 @@ import { isBIKey, requestUsernameKey } from "src/axios"
 import { adminUserUpn } from "src/hooks/useCurrentUser"
 import { queryClient } from "src/queryClient"
 import { IS_BI, REQUEST_USERNAME, STATIC_TOKEN } from "../utils/env-utils"
-import {
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-} from "./ui/dropdown-menu"
+import { DropdownMenuItem, DropdownMenuSeparator } from "./ui/dropdown-menu"
 import { Input } from "./ui/input"
 import { Switch } from "./ui/switch"
 
@@ -43,10 +39,7 @@ export function BIHeaderBypass() {
 	return (
 		STATIC_TOKEN && (
 			<>
-				<DropdownMenuLabel>BI </DropdownMenuLabel>
-
 				<DropdownMenuSeparator />
-
 				<DropdownMenuItem
 					onSelect={(e) => e.preventDefault()}
 					onPointerMove={(e) => e.preventDefault()}
@@ -90,6 +83,7 @@ const Row = styled.div`
   justify-content: space-between;
   gap: 12px;
   width: 100%;
+  direction: ltr;
 `
 
 const Label = styled.span`

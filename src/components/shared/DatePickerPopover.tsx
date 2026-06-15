@@ -11,6 +11,7 @@ export interface DatePickerSlotProps {
 	value: DatePickerValue | undefined
 	onChange: (value: DatePickerValue | undefined) => void
 	onClose: () => void
+	onConfirm: () => void
 }
 
 interface DatePickerPopoverProps {
@@ -18,6 +19,8 @@ interface DatePickerPopoverProps {
 	triggerButton: (props: DatePickerSlotProps) => ReactNode
 	header?: (props: DatePickerSlotProps) => ReactNode
 	footer?: (props: DatePickerSlotProps) => ReactNode
+	hasConfirm?: boolean
+	onChange?: (value: DatePickerValue | undefined) => void
 	open?: boolean
 	value?: DatePickerValue
 	align?: "start" | "center" | "end"
@@ -32,6 +35,8 @@ function DatePickerPopover({
 	triggerButton,
 	header,
 	footer,
+	hasConfirm = false,
+	onChange,
 	open: controlledOpen,
 	value: initialValue,
 	align = "end",
@@ -47,14 +52,32 @@ function DatePickerPopover({
 
 	const open = controlledOpen ?? uncontrolledOpen
 
+	function handleOpenChange(next: boolean) {
+		setUncontrolledOpen(next)
+		if (!next && hasConfirm) {
+			setValue(initialValue)
+		}
+	}
+
+	function handleSelect(newValue: DatePickerValue | undefined) {
+		setValue(newValue)
+		if (!hasConfirm) {
+			onChange?.(newValue)
+		}
+	}
+
 	const slotProps: DatePickerSlotProps = {
 		value,
 		onChange: setValue,
-		onClose: () => setUncontrolledOpen(false),
+		onClose: () => handleOpenChange(false),
+		onConfirm: () => {
+			onChange?.(value)
+			setUncontrolledOpen(false)
+		},
 	}
 
 	return (
-		<Popover.Root open={open} onOpenChange={setUncontrolledOpen}>
+		<Popover.Root open={open} onOpenChange={handleOpenChange}>
 			<Popover.Trigger asChild>{triggerButton(slotProps)}</Popover.Trigger>
 			<Popover.Portal>
 				<PopoverContent
@@ -64,7 +87,7 @@ function DatePickerPopover({
 					sideOffset={sideOffset}
 				>
 					{header?.(slotProps)}
-					<DatePicker mode={mode} selected={value} onSelect={setValue} />
+					<DatePicker mode={mode} selected={value} onSelect={handleSelect} />
 					{footer?.(slotProps)}
 				</PopoverContent>
 			</Popover.Portal>

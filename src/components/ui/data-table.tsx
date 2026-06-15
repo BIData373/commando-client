@@ -15,7 +15,6 @@ import {
   type TableMeta,
 } from '@tanstack/react-table'
 import { Fragment, type ReactNode } from 'react'
-
 import { LoadingSpinner } from '../shared/LoadingSpinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
 

@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react"
 import type { WorkspaceStatusDto } from "src/api/model"
 
 interface StatusTagProps {
-	status: WorkspaceStatusDto
+	status: Pick<WorkspaceStatusDto, "name" | "color">
 	interactive?: boolean
 	editable?: boolean
 	withArrow?: boolean

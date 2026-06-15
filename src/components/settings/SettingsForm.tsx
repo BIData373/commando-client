@@ -60,7 +60,9 @@ export function SettingsForm() {
 						const messageList = Array.isArray(messages) ? messages : [messages]
 
 						if (messageList.includes(titleExistsError)) {
-							toast.error("שם סביבה זה כבר קיים, אנא נסו שוב")
+							toast.error("שם סביבה זה כבר קיים, אנא נסו שוב", {
+								closeButton: true,
+							})
 						}
 
 						formApi.reset()
@@ -88,7 +90,9 @@ export function SettingsForm() {
 	function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const next = e.target.value.slice(0, NAME_MAX_LENGTH)
 		if (!next.trim()) {
-			toast.error("שם סביבה הוא שדה חובה")
+			toast.error("שם סביבה הוא שדה חובה", {
+				closeButton: true,
+			})
 			return
 		}
 
@@ -102,7 +106,7 @@ export function SettingsForm() {
 	function handleIconSelect(icon: IMesibaIcon) {
 		form.setFieldValue("icon", icon.iconName)
 		setSelectedIcon(icon)
-		setIconSearch("")
+		setIconSearch(icon.heb_name)
 	}
 
 	function handleIconClear() {
@@ -209,8 +213,8 @@ const IconPreview = styled.div`
   width: 100%;
 
   img {
-    width: 48px;
-    height: 48px;
+    width: 100px;
+    height: 100px;
     object-fit: contain;
     border-radius: 50%;
   }

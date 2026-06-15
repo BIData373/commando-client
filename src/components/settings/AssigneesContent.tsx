@@ -1,10 +1,10 @@
 import styled from "@emotion/styled"
+import { useNavigate, useParams } from "@tanstack/react-router"
 import { CircleQuestionMarkIcon, Plus, Search } from "lucide-react"
 import { type ChangeEvent, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { useUpdateWorkspace } from "src/api/workspace/workspace"
 import { AssigneeCard } from "src/components/settings/AssigneeCard"
-import { AssigneeDialog } from "src/components/settings/AssigneeDialog"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
 import { Checkbox } from "src/components/ui/checkbox"
 import {
@@ -20,7 +20,8 @@ import {
 } from "src/components/ui/tooltip"
 import { useFuse } from "src/hooks/useFuse"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import addPerson from "../../assets/icons/addPerson.svg"
+import noResultsFound from "../../assets/empty-states/no-results-found.svg"
+import addPerson from "../../assets/icons/add-person.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { Spinner } from "../ui/spinner"
 
@@ -40,8 +41,9 @@ export function AssigneesContent() {
 		},
 	})
 
+	const { urlName } = useParams({ strict: false })
+	const navigate = useNavigate()
 	const [searchQuery, setSearchQuery] = useState("")
-	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
 	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
 
@@ -62,15 +64,14 @@ export function AssigneesContent() {
 	}
 
 	function handleOpenCreateDialog() {
-		setIsCreateDialogOpen(true)
+		navigate({
+			to: "/workspace/$urlName/settings/assignees/new",
+			params: { urlName: urlName! },
+		})
 	}
 
 	return (
 		<ContentRoot>
-			<AssigneeDialog
-				open={isCreateDialogOpen}
-				onOpenChange={setIsCreateDialogOpen}
-			/>
 			<StyledContent>
 				<CheckboxRow>
 					<StyledCheckbox
@@ -131,6 +132,14 @@ export function AssigneesContent() {
 							imgSrc={addPerson}
 							title="טרם הוגדרו אחראים"
 							description="לא נמצאו אחראים כדי להציג נתונים"
+						/>
+					</CenterContainer>
+				) : filteredAssignees.length === 0 ? (
+					<CenterContainer>
+						<EmptyCardState
+							imgSrc={noResultsFound}
+							title="לא נמצאו אחראים"
+							description={`לא נמצאו אחראים התואמים ל-"${searchQuery}"`}
 						/>
 					</CenterContainer>
 				) : (

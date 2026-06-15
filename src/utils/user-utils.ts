@@ -1,5 +1,5 @@
 import type { MirageUserDto, PermissionType, UserInfoDto } from "src/api/model"
-import { CHAT_LINK } from "./env-utils"
+import { CHAT_URL } from "./env-utils"
 
 export const COOKIE_NAME = "ssoUser"
 
@@ -48,10 +48,16 @@ export function concatName(user: MirageUserDto, type?: PermissionType): string {
 	return `${user.info?.name} ${user.upn}${type ? ` / ${type}` : ""}`
 }
 
-export function extractUpnFromUser({ upn }: MirageUserDto): string {
-	return upn.split("@")[0]
+export function normalizeUpn(upn: string): string {
+	return upn.split("@")[0].toLowerCase()
 }
 
 export function formatDirectChatLink(upn: string): string {
-	return `${CHAT_LINK}/direct/${upn}`
+	return `${CHAT_URL}/direct/${upn}`
+}
+
+export function navigateToUserChat(user: MirageUserDto) {
+	const upn = normalizeUpn(user.upn)
+	const url = formatDirectChatLink(upn)
+	return window.open(url)
 }

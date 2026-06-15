@@ -1,6 +1,4 @@
 import styled from "@emotion/styled"
-import type { QueryKey } from "@tanstack/react-query"
-import { useQueryClient } from "@tanstack/react-query"
 import type {
 	ColumnDef,
 	ColumnFiltersState,
@@ -15,29 +13,20 @@ import type {
 	WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
+import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
-import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
-import {
-	TASK_ROW_ID_SEPARATOR,
-	type TaskRow,
-	useTasksFilters,
-} from "src/providers/TasksFiltersProvider"
+import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { getEmptyState } from "src/utils/empty-state-utils"
+import { TASK_ROW_ID_SEPARATOR, type TaskRow } from "src/utils/task-table-utils"
 import { buildFilterOptionsMap } from "../../functions/filter-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 
-interface TaskPermissions {
-	canDelete: boolean
-	canChangeStatus: boolean
-}
-
 interface TaskTableProps {
-	queryKey: QueryKey
 	tasks: TaskRow[]
-	workspaceId?: number
+	statuses?: WorkspaceStatusDto[]
 	onEdit?: (taskId: number) => void
 	onDoubleClick?: (taskId: number) => void
 	extraColumns?: Record<string, ColumnDef<TaskRow>>
@@ -49,14 +38,15 @@ interface TaskTableProps {
 		deadlineTypeFilter: DeadlineType[],
 	) => void
 	isLoading?: boolean
-	taskPermissions?: Record<number, TaskPermissions>
+	isManager?: boolean
 	hideStatusAction?: boolean
+	showActionsColumn?: boolean
+	onChangeSuccess?(): void
 }
 
 function TaskTable({
-	queryKey,
 	tasks,
-	workspaceId,
+	statuses,
 	onEdit = () => {},
 	onDoubleClick,
 	extraColumns,
@@ -64,9 +54,11 @@ function TaskTable({
 	statusFilter = [],
 	deadlineTypeFilter = [],
 	onFiltersChange,
+	onChangeSuccess,
 	isLoading,
-	taskPermissions,
+	isManager,
 	hideStatusAction = false,
+	showActionsColumn = true,
 }: TaskTableProps) {
 	const {
 		searchQuery,
@@ -77,18 +69,13 @@ function TaskTable({
 		columnsFilters,
 		setColumnsFilters,
 	} = useTasksFilters()
-	const queryClient = useQueryClient()
-
-	function handleSuccess() {
-		queryClient.invalidateQueries({ queryKey })
-	}
 
 	const { mutate: deleteTaskMutate } = useDeleteTask({
-		mutation: { onSuccess: handleSuccess },
+		mutation: { onSuccess: onChangeSuccess },
 	})
 
 	const { mutate: upsertStatus } = useUpsertAssigneeTaskStatus({
-		mutation: { onSuccess: handleSuccess },
+		mutation: { onSuccess: onChangeSuccess },
 	})
 
 	const [selectMode, setSelectMode] = useState(false)
@@ -131,22 +118,33 @@ function TaskTable({
 	}
 	const [sorting, setSorting] = useState<SortingState>([])
 
-	const selectedTaskIds = Object.keys(rowSelection)
-		.filter((key) => rowSelection[key])
-		.map((key) => Number(key.split(TASK_ROW_ID_SEPARATOR)[0]))
+	const selectedRowKeys = Object.keys(rowSelection).filter(
+		(key) => rowSelection[key],
+	)
+
+	const selectedTaskIds = selectedRowKeys.map((key) =>
+		Number(key.split(TASK_ROW_ID_SEPARATOR)[0]),
+	)
 
 	const bulkDeleteDisabled =
-		taskPermissions != null &&
-		selectedTaskIds.some((id) => !taskPermissions[id]?.canDelete)
+		selectedTaskIds.length === 0 ||
+		(isManager != null
+			? !isManager
+			: selectedTaskIds.some(
+					(id) =>
+						tasks.find((t) => t.id === id)?.workspace?.permissionType !==
+						PermissionType.MANAGER,
+				))
 
 	const bulkStatusDisabled =
-		taskPermissions != null &&
-		selectedTaskIds.some((id) => !taskPermissions[id]?.canChangeStatus)
+		selectedTaskIds.length === 0 ||
+		selectedRowKeys.some(
+			(rowKey) => !tasks.find((t) => t.rowKey === rowKey)?.editable,
+		)
 
-	function handleEnterSelectMode(taskId?: number) {
+	function handleEnterSelectMode(rowKey: string) {
 		setSelectMode(true)
-		const task = tasks.find((t) => t.id === taskId)
-		setRowSelection(task ? { [task.rowKey]: true } : {})
+		setRowSelection({ [rowKey]: true })
 	}
 
 	function handleExitSelectMode() {
@@ -198,14 +196,6 @@ function TaskTable({
 
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
 
-	const { data: allStatuses = [] } = useListWorkspaceStatuses(
-		{ workspaceId: workspaceId ?? -1 },
-		{
-			query: { enabled: !hideStatusAction && typeof workspaceId === "number" },
-		},
-	)
-	const uniqueStatuses = hideStatusAction ? undefined : allStatuses
-
 	const extraColumnIds = extraColumns
 		? new Set(Object.keys(extraColumns))
 		: new Set<string>()
@@ -215,7 +205,7 @@ function TaskTable({
 	)
 
 	const { columns: baseColumns } = useTaskColumns({
-		queryKey,
+		onUpdateStatusSuccess: onChangeSuccess,
 		visibleColumns,
 		searchQuery,
 		filterOptionsMap,
@@ -225,6 +215,7 @@ function TaskTable({
 			selectedTaskIds,
 			onSelectAll: handleSelectAll,
 		},
+		showMenuColumn: showActionsColumn,
 		actions: {
 			onEdit,
 			onDoubleClick,
@@ -285,7 +276,7 @@ function TaskTable({
 			<BulkActionsBar
 				isVisible={selectMode}
 				selectedCount={selectedTaskIds.length}
-				statuses={uniqueStatuses}
+				statuses={hideStatusAction ? undefined : statuses}
 				onChangeStatus={(status) => bulkUpdateStatus(selectedTaskIds, status)}
 				onArchive={handleBulkArchive}
 				onDelete={handleBulkDelete}

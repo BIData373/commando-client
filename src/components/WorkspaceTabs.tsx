@@ -21,17 +21,18 @@ export function WorkspaceTabs() {
 	const isManager = myPermission?.type === PermissionType.MANAGER
 
 	const links: LinkComponentProps[] = [
-		{ to: "/workspace/$urlName/dashboard", children: "בית" },
-		{ to: "/workspace/$urlName/tasks", children: "הנחיות" },
 		...(isManager
 			? [
 					{
 						to: "/workspace/$urlName/settings",
-						children: "הגדרות לשכה",
+						children: "הגדרות סביבה",
 					} as LinkComponentProps,
 				]
 			: []),
+		{ to: "/workspace/$urlName/tasks", children: "הנחיות" },
+		{ to: "/workspace/$urlName/dashboard", children: "מסך המפקד" },
 	]
+
 	useRenderInHeader(
 		"right",
 		<NavigationMenu>

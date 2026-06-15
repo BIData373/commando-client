@@ -50,10 +50,12 @@ export const AssigneeContainer = ({
 	}
 
 	return (
-		<AssigneeRowContainer $white={editable && !isAdmin}>
+		<AssigneeRowContainer $enabled={editable && !isAdmin}>
 			<AssigneeInfoBlock>
 				<AssigneeAvatar assignee={assignee} />
-				<AssigneeRoleText>{assignee.name}</AssigneeRoleText>
+				<AssigneeRoleText title={assignee.name}>
+					{assignee.name}
+				</AssigneeRoleText>
 			</AssigneeInfoBlock>
 
 			<StatusBlock>
@@ -62,7 +64,7 @@ export const AssigneeContainer = ({
 						status={status}
 						taskId={taskId}
 						assigneeId={assignee.id}
-						assigneeUsers={assignee.users}
+						editable={editable}
 						workspaceId={workspaceId}
 						onUpdate={handleUpdateAssigneeStatus}
 						withArrow
@@ -75,13 +77,13 @@ export const AssigneeContainer = ({
 	)
 }
 
-const AssigneeRowContainer = styled.div<{ $white?: boolean }>`
+const AssigneeRowContainer = styled.div<{ $enabled?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 24px;
   padding: 7px 12px;
-  background: ${({ $white }) => ($white ? "var(--background)" : "var(--background-assignee)")};
+  background: ${({ $enabled }) => ($enabled ? "var(--background)" : "var(--background-assignee)")};
   border: 0.5px solid var(--line);
   border-radius: 8px;
   width: 100%;
@@ -106,6 +108,8 @@ const AssigneeRoleText = styled.span`
   line-height: 22px;
   color: var(--text-color-2);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const DescriptionText = styled.span`

@@ -9,12 +9,12 @@ export function UserItem({ user: { upn, info } }: UserItemProps) {
 	return (
 		<>
 			<UserName>
+				{upn}
+				{info?.name ? " - " : ""}
 				{info?.name ?? ""}
-				{info?.displayName ? " - " : ""}
-				{info?.displayName ?? ""}
 			</UserName>
 
-			<UserMeta>{upn.split("@idf.il")[0]}</UserMeta>
+			<UserMeta>{info?.displayName}</UserMeta>
 		</>
 	)
 }

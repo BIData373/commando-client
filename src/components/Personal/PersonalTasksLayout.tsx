@@ -5,7 +5,6 @@ import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
 import {
 	type CreateUserDto,
-	PermissionType,
 	type TaskWithWorkspaceDto,
 	WorkspaceStatusType,
 } from "src/api/model"
@@ -15,10 +14,10 @@ import {
 } from "src/api/task/task"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import { invalidateQueries } from "src/queryClient"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { formatMesibaIcon } from "src/utils/icon-utils"
-import { toTaskRows } from "../../functions/tasks-table"
-import type { TaskRow } from "../../providers/TasksFiltersProvider"
+import { type TaskRow, toTaskRows } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
@@ -31,12 +30,8 @@ function toPersonalTaskRows(
 	tasks: TaskWithWorkspaceDto[],
 	currentUser: CreateUserDto,
 ): TaskRow[] {
-	return tasks.flatMap((task) =>
-		toTaskRows([task])
-			.map((row) => ({ ...row, workspace: task.workspace }))
-			.filter(({ assignee }) =>
-				assignee?.users.some(({ upn }) => upn === currentUser.upn),
-			),
+	return toTaskRows(tasks).filter(({ assignee }) =>
+		assignee?.users.some(({ upn }) => upn === currentUser.upn),
 	)
 }
 
@@ -96,23 +91,6 @@ function PersonalTasksLayout() {
 		setActiveWorkspaceFilters(new Set())
 	}
 
-	const taskPermissions = useMemo(
-		() =>
-			Object.fromEntries(
-				rawTasks.map((t) => [
-					t.id,
-					{
-						canDelete: t.workspace.permissionType === PermissionType.MANAGER,
-						canChangeStatus: !(
-							t.workspace.permissionType === PermissionType.MANAGER ||
-							!t.workspace.assigneeStatusEditable
-						),
-					},
-				]),
-			),
-		[rawTasks],
-	)
-
 	function handleOpenTask(taskId: number) {
 		navigate({
 			to: "/personal/task/$taskId",
@@ -129,14 +107,13 @@ function PersonalTasksLayout() {
 		})
 	}
 
+	function handleChangeSuccess() {
+		invalidateQueries([queryKey])
+	}
+
 	// function handleViewChange(newView: TasksView) {
 	// 	navigate({ to: "/personal", search: { view: newView } })
 	// }
-
-	// useTitleBar(
-	// 	() => <ViewToggle view={view} onViewChange={handleViewChange} />,
-	// 	[view],
-	// )
 
 	return (
 		<TooltipProvider>
@@ -154,6 +131,7 @@ function PersonalTasksLayout() {
 					onClearAllFilters={clearAllFilters}
 					hasExtraActiveFilters={activeWorkspaceFilters.size > 0}
 					extraColumnsMeta={[{ id: "workspace", label: "מפקד מנחה" }]}
+					startSlot={<TasksDatePicker />}
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label={
@@ -178,16 +156,15 @@ function PersonalTasksLayout() {
 							emptyDescription="לאחר שסביבות יוצרו, הן יופיעו כאן"
 						/>
 					}
-					startSlot={<TasksDatePicker />}
 				/>
 				<TaskTable
-					queryKey={queryKey}
+					onChangeSuccess={handleChangeSuccess}
 					tasks={filteredTaskRows}
 					isLoading={isLoading}
 					onEdit={handleEdit}
 					onDoubleClick={handleOpenTask}
-					taskPermissions={taskPermissions}
 					hideStatusAction
+					showActionsColumn={false}
 				/>
 			</PageRoot>
 			<Outlet />
@@ -200,7 +177,6 @@ export default PersonalTasksLayout
 const PageRoot = styled.div`
   display: flex;
   flex-direction: column;
-  padding-top: 32px;
   padding-block-end: 24px;
   gap: 28px;
   height: 100%;

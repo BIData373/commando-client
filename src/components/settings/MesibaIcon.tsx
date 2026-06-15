@@ -6,11 +6,11 @@ interface MesibaIconProps {
 	icon: IMesibaIcon
 }
 
-export function MesibaIcon({ icon }: MesibaIconProps) {
+export function MesibaIcon({ icon: { heb_name, iconName } }: MesibaIconProps) {
 	return (
 		<IconItemRow>
-			<IconLabel>{icon.heb_name}</IconLabel>
-			<IconThumb src={formatMesibaIcon(icon.iconName)} alt={icon.heb_name} />
+			<IconLabel title={heb_name}>{heb_name}</IconLabel>
+			<IconThumb src={formatMesibaIcon(iconName)} alt={heb_name} />
 		</IconItemRow>
 	)
 }
@@ -20,7 +20,8 @@ const IconItemRow = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  width: 100%;
+  min-width: 0;
 `
 
 const IconThumb = styled.img`
@@ -34,4 +35,8 @@ const IconThumb = styled.img`
 const IconLabel = styled.span`
   font-size: var(--fs-btn);
   color: var(--sea-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  white-space: nowrap;
 `

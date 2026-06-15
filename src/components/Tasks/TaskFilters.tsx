@@ -1,13 +1,11 @@
 import styled from "@emotion/styled"
 import type { ColumnFiltersState } from "@tanstack/react-table"
 import { filter } from "lodash"
-import type { ReactNode } from "react"
+import { type ReactNode, useCallback } from "react"
 import { exportTasksToExcel } from "src/functions/export-excel"
 import { matchesQuickFilter } from "src/functions/filter-utils"
-import { getTaskValue } from "src/utils/filter-rows-map-utils"
-import { QuickFilter } from "src/utils/filter-utils"
-import type { TaskColumnMeta } from "../../hooks/useTaskColumns"
-import type { TaskRow } from "../../providers/TasksFiltersProvider"
+import { getTaskValue, QuickFilter } from "src/utils/filter-utils"
+import type { TaskColumnMeta, TaskRow } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { FilterBar, FilterDivider, FilterPill } from "../shared/FilterBar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
@@ -57,7 +55,7 @@ function TaskFilters({
 
 	const allColumnFilters = [...urlColumnFilters, ...columnsFilters]
 
-	const filteredTasks = filter(taskRows, (task) =>
+	const filteredTaskRows = filter(taskRows, (task) =>
 		allColumnFilters.every(({ id, value }) => {
 			const idKey = id as keyof TaskRow
 			const taskValue = getTaskValue(idKey, task)
@@ -66,19 +64,19 @@ function TaskFilters({
 		}),
 	)
 
-	const overdueCount = filteredTasks.filter((t) =>
+	const overdueCount = filteredTaskRows.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.OVERDUE),
 	).length
-	const approachingCount = filteredTasks.filter((t) =>
+	const approachingCount = filteredTaskRows.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.APPROACHING),
 	).length
-	const flaggedCount = filteredTasks.filter((t) =>
+	const flaggedCount = filteredTaskRows.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.FLAGGED),
 	).length
 
-	function handleExport() {
-		exportTasksToExcel(taskRows, { columnOrder, hiddenColumns })
-	}
+	const handleExport = useCallback(() => {
+		exportTasksToExcel(filteredTaskRows, { columnOrder, hiddenColumns })
+	}, [filteredTaskRows, columnOrder, hiddenColumns])
 
 	return (
 		<FilterBar

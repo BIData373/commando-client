@@ -1,10 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
+import type { TaskRow } from "src/utils/task-table-utils"
 import PersonalTasksLayout from "../components/Personal/PersonalTasksLayout"
-import { TasksView } from "../components/Tasks/TasksLayout"
-import {
-	type TaskRow,
-	TasksFiltersProvider,
-} from "../providers/TasksFiltersProvider"
+import { TasksFiltersProvider } from "../providers/TasksFiltersProvider"
+import { TasksView } from "./workspace/$urlName/tasks"
 
 export const Route = createFileRoute("/personal")({
 	component: PersonalPage,

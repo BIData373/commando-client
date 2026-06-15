@@ -7,32 +7,13 @@ import {
 	useState,
 } from "react"
 import type { DateRange } from "react-day-picker"
-import type {
-	AssigneeDto,
-	AssigneeStatusDto,
-	TaskDto,
-	WorkspaceStatusDto,
-	WorkspaceWithPermissionDto,
-} from "src/api/model"
 import { DATE_TYPE } from "src/utils/date-utils"
 import {
 	dashboardFilterDataTypeKey,
 	dashboardFilterRangeKey,
-} from "src/utils/filter-keys-utils"
-import type { QuickFilter } from "src/utils/filter-utils"
-import { DEFAULT_COLUMN_ORDER } from "../components/Tasks/ColumnVisibilityDropdown"
-
-export type NewTaskInput = Omit<TaskDto, "id" | "createdAt" | "updatedAt"> & {
-	groupKey?: string
-}
-
-export type TaskRow = TaskDto & {
-	rowKey: string
-	assignee?: AssigneeDto
-	status?: WorkspaceStatusDto
-	otherAssignees?: AssigneeStatusDto[]
-	workspace?: WorkspaceWithPermissionDto
-}
+	type QuickFilter,
+} from "src/utils/filter-utils"
+import { DEFAULT_COLUMN_ORDER, type TaskRow } from "src/utils/task-table-utils"
 
 interface TasksFiltersContextValue {
 	searchQuery: string
@@ -56,8 +37,6 @@ interface TasksFiltersContextValue {
 	setColumnsFilters(columnsFilters: ColumnFiltersState): void
 }
 
-export const TASK_ROW_ID_SEPARATOR = "_"
-
 const WORKSPACE_DEFAULT_HIDDEN = new Set<keyof TaskRow>([
 	"notes",
 	"updatedAt",
@@ -77,10 +56,6 @@ interface TasksFiltersProviderProps extends PropsWithChildren {
 	defaultColumnOrder?: (keyof TaskRow)[]
 	defaultHiddenColumns?: Set<keyof TaskRow>
 	activeQuickFilters?: Set<QuickFilter>
-}
-
-export function formatTaskRowId(taskId: number, assigneeId?: number) {
-	return `${taskId}${TASK_ROW_ID_SEPARATOR}${assigneeId}`
 }
 
 export function TasksFiltersProvider({

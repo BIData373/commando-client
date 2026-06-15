@@ -34,7 +34,7 @@ export function DropdownPermission({
 		<DropdownMenu>
 			<RoleTrigger $ghost={ghost} disabled={disabled} $enabled={!disabled}>
 				{permissionTypeNames[value]}
-				<ChevronDown size={16} />
+				{!ghost && <StyledChevronDown $visible={!disabled} size={16} />}
 			</RoleTrigger>
 			<StyledDropdownMenuContent>
 				{Object.entries(permissionTypeNames).map(([key, value]) => (
@@ -54,33 +54,35 @@ const RoleTrigger = styled(DropdownMenuTrigger)<{
 	$ghost?: boolean
 	$enabled: boolean
 }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 3px 16px;
-  border: none;
-  outline: none;
-  font-size: var(--fs-base);
-  font-weight: 400;
-  color: ${({ $enabled }) => ($enabled ? "rgba(0, 0, 0, 0.65);" : "rgba(0, 0, 0, 0.25);")};
-  cursor: ${({ $enabled }) => ($enabled ? "pointer" : "default")};
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 3px 16px;
+	border: none;
+	outline: none;
+	font-size: var(--fs-base);
+	font-weight: 400;
+	color: ${({ $enabled }) => ($enabled ? "rgba(0, 0, 0, 0.65);" : "rgba(0, 0, 0, 0.25);")};
+  	cursor: ${({ $enabled }) => ($enabled ? "pointer" : "default")};
 
-   ${({ $ghost }) =>
-			$ghost &&
-			`
+	${({ $ghost, $enabled }) =>
+		$ghost
+			? `
     border-radius: 6px;
     border: 1px solid var(--card-border);
     background: rgba(0, 0, 0, 0.04);
-  `}
-
-  ${({ $ghost }) =>
-		!$ghost &&
-		`
+  `
+			: $enabled &&
+				`
     &:hover {
         color: var(--button-color-hover)
     }
-  `}
+  	`}
+`
+
+const StyledChevronDown = styled(ChevronDown)<{ $visible: boolean }>`
+	${({ $visible }) => !$visible && `visibility: hidden;`}
 `
 
 const StyledDropdownMenuContent = styled(DropdownMenuContent)`

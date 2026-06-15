@@ -7,15 +7,16 @@ import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTasks } from "src/api/task/task"
-import { toTaskRows } from "src/functions/tasks-table"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { invalidateQueries } from "src/queryClient"
 import {
 	type TasksSearchSchemaType,
 	TasksView,
 } from "src/routes/workspace/$urlName/tasks"
 import type { QuickFilter } from "src/utils/filter-utils"
+import { toTaskRows } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
@@ -24,7 +25,6 @@ import { TooltipProvider } from "../ui/tooltip"
 import { TaskCardGrid } from "./TaskCardGrid"
 import { TaskFilters } from "./TaskFilters"
 import { TaskTable } from "./TaskTable"
-export { TasksView }
 
 export interface TasksLayoutProps {
 	view: TasksView
@@ -48,6 +48,7 @@ function TasksLayout({
 
 	const {
 		workspace: { id: workspaceId },
+		statuses,
 	} = useWorkspace()
 
 	const {
@@ -71,7 +72,10 @@ function TasksLayout({
 	const filteredTasks = useFilteredTasks(
 		tasks,
 		activeTopicFilters.size > 0
-			? (task) => task.tags.some((tag) => activeTopicFilters.has(tag.name))
+			? (task) =>
+					concat(task.tags, task.source?.tags ?? []).some((tag) =>
+						activeTopicFilters.has(tag.name),
+					)
 			: undefined,
 	)
 
@@ -81,26 +85,6 @@ function TasksLayout({
 	)
 
 	const allTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
-
-	const taskPermissions = useMemo(() => {
-		const result: Record<
-			number,
-			{ canDelete: boolean; canChangeStatus: boolean }
-		> = {}
-		filteredTaskRows.forEach((task) => {
-			const isManager =
-				task.workspace?.permissionType === PermissionType.MANAGER
-			const isAssignee =
-				task.assignee?.users.some((u) => u.upn === myPermission?.user.upn) ??
-				false
-			result[task.id] = {
-				canDelete: isManager,
-				canChangeStatus:
-					isManager || (!!task.workspace?.assigneeStatusEditable && isAssignee),
-			}
-		})
-		return result
-	}, [filteredTaskRows, myPermission?.user.upn])
 
 	const urlColumnFilters: ColumnFiltersState = [
 		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
@@ -171,6 +155,10 @@ function TasksLayout({
 		})
 	}
 
+	function handleChangeSuccess() {
+		invalidateQueries([queryKey])
+	}
+
 	// function handleViewChange(newView: TasksView) {
 	// 	navigateToTasks({ view: newView })
 	// }
@@ -217,16 +205,16 @@ function TasksLayout({
 				<ContentArea>
 					{view === TasksView.TABLE ? (
 						<TaskTable
-							queryKey={queryKey}
+							onChangeSuccess={handleChangeSuccess}
 							tasks={filteredTaskRows}
-							workspaceId={workspaceId}
+							statuses={Object.values(statuses)}
 							onEdit={handleEdit}
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
 							onFiltersChange={handleColumnFiltersChange}
 							onDoubleClick={handleOpenTask}
 							isLoading={isLoading}
-							taskPermissions={taskPermissions}
+							isManager={isManager}
 						/>
 					) : (
 						<TaskCardGrid tasks={filteredTasks} />

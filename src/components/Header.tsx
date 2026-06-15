@@ -1,14 +1,12 @@
 import styled from "@emotion/styled"
 import { Link, useRouterState } from "@tanstack/react-router"
-import { ChevronDown, User } from "lucide-react"
+import { User } from "lucide-react"
 import type { HeaderConfig } from "src/router"
+import logoWithText from "../assets/logo-with-text.svg"
 import { useHeader } from "../providers/HeaderProvider"
-import { BIHeaderBypass } from "./BIHeaderBypass"
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuTrigger,
-} from "./ui/dropdown-menu"
+import { UserDropdown } from "./UserDropdown"
+import { DropdownMenu, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { Separator } from "./ui/separator"
 import {
 	Tooltip,
 	TooltipContent,
@@ -25,7 +23,7 @@ export default function Header() {
 	const { pageTitle = "", headerTitle } = headerConfig ?? {}
 
 	const {
-		elementPlacements: { right, center, titleBar },
+		elementPlacements: { right, center, titleBar, user },
 	} = useHeader()
 
 	const showTitleBar = pageTitle || titleBar
@@ -36,13 +34,7 @@ export default function Header() {
 		<HeaderContainer>
 			<HeaderRoot>
 				<HeaderInner>
-					<StartSection>
-						<Link to="/">
-							<LogoImage src="/logo.svg" alt="Logo" />
-						</Link>
-
-						{right}
-					</StartSection>
+					<StartSection>{right}</StartSection>
 
 					<CenterSection>
 						<TooltipProvider>
@@ -60,15 +52,18 @@ export default function Header() {
 					<EndSection>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<UserTrigger>
-									<User size={16} />
-									<ChevronDown size={16} />
-								</UserTrigger>
+								<UserMenuButton>
+									<UserMenuIcon />
+								</UserMenuButton>
 							</DropdownMenuTrigger>
-							<UserDropdownContent>
-								<BIHeaderBypass />
-							</UserDropdownContent>
+							{user ?? <UserDropdown showPersonalArea={false} />}
 						</DropdownMenu>
+
+						<EndSectionSeparator orientation="vertical" />
+
+						<Link to="/">
+							<img src={logoWithText} alt="Logo" />
+						</Link>
 					</EndSection>
 				</HeaderInner>
 			</HeaderRoot>
@@ -141,29 +136,36 @@ const EndSection = styled.div`
   justify-content: flex-end;
 `
 
-const UserDropdownContent = styled(DropdownMenuContent)`
-  min-width: 220px;
+const EndSectionSeparator = styled(Separator)`
+  margin: 0px 4px 0px 12px;
+  background-color: rgba(255, 255, 255, 0.5);
 `
 
-const UserTrigger = styled.button`
+const UserMenuButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  background: #FFFFFF1F;
-  border: none;
-  border-radius: 40px;
-  width: 64px;
   height: 32px;
+  padding-inline: 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  outline: none;
   cursor: pointer;
-  color: white;
-  margin-block: 15px;
+  
+  transition: background 150ms ease-in-out;
+
+  &:hover,
+  &:active,
+  &[data-state="open"] {
+    background: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.85);
+  }
 `
 
-const LogoImage = styled.img`
-  width: 28px;
-  height: 28px;
-  margin-inline-end: 20px;
+const UserMenuIcon = styled(User)`
+  width: 16px;
+  cursor: pointer;
 `
 
 const TitleBar = styled.div`
