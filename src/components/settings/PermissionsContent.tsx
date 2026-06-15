@@ -21,6 +21,7 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "src/components/ui/tabs"
+import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { queryClient } from "src/queryClient"
 import { concatName } from "src/utils/user-utils"
@@ -41,6 +42,8 @@ export function PermissionsContent() {
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
+
+	const currentUser = useCurrentUser()
 
 	const [search, setSearch] = useState("")
 	const [activeTab, setActiveTab] = useState(PermissionsTab.ALL)
@@ -78,6 +81,8 @@ export function PermissionsContent() {
 			? permissions
 			: permissions.filter((user) => user.type === taggedType)
 	}, [activeTab, permissions])
+
+	const isSelectedUserMe = selectedUser?.upn === currentUser.upn
 
 	function handleSuccess(
 		data: PermissionDto,
@@ -198,7 +203,9 @@ export function PermissionsContent() {
 					onAdd={() => handleUserAdd(type)}
 					selectedUser={selectedUser}
 					placeholder="חפש שם/ תפקיד/ מספר אישי"
-					showAddButton={!userPermissionExist && !!selectedUser}
+					showAddButton={
+						!userPermissionExist && !!selectedUser && !isSelectedUserMe
+					}
 				>
 					{search.length > 0 && (
 						<AddUserRow>
@@ -206,9 +213,9 @@ export function PermissionsContent() {
 								ghost
 								value={type}
 								onChange={setType}
-								disabled={!selectedUser}
+								disabled={!selectedUser || isSelectedUserMe}
 							/>
-							{userPermissionExist && (
+							{userPermissionExist && !isSelectedUserMe && (
 								<UpdateButton
 									disabled={userPermissionExist?.type === type}
 									onClick={handleUserUpdate}
