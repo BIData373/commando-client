@@ -27,7 +27,7 @@ export function WorkspaceTabs() {
 			? [
 					{
 						to: "/workspace/$urlName/settings",
-						children: "הגדרות לשכה",
+						children: "הגדרות סביבה",
 					} as LinkComponentProps,
 				]
 			: []),
