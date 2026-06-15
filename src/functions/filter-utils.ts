@@ -69,6 +69,9 @@ export function buildFilterOptionsMap(
 		t.tags.forEach((tag) => {
 			tagsSet.add(tag.name)
 		})
+		t.source?.tags?.forEach((tag) => {
+			tagsSet.add(tag.name)
+		})
 	}
 
 	const toOptions = (
