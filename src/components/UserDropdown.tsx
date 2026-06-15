@@ -120,11 +120,10 @@ const UserDropdownContent = styled(DropdownMenuContent)`
   direction: rtl;
 `
 
-const UserInfo = styled.div`
+const UserInfo = styled(DropdownMenuItem)`
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 12px 12px 8px;
+  align-items: start;
 `
 
 const UserInfoRow = styled.div`
@@ -146,7 +145,6 @@ const UserUpn = styled.span`
 `
 
 const PermissionBadge = styled.span`
-  margin-block-start: 4px;
   font-size: var(--fs-sm);
   color: var(--sea-ink-soft);
 `
