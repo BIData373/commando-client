@@ -46,15 +46,17 @@ export function useFilteredTasks<T extends TaskDto>(
 	return useMemo(
 		() =>
 			searchedTasks
-				.filter(
-					(task) =>
-						(additionalFilter ? additionalFilter(task) : true) &&
-						(activeQuickFilters.size > 0
-							? Array.from(activeQuickFilters).some((filter) =>
-									matchesQuickFilter(task, filter),
-								)
-							: true),
-				)
+				.filter((task) => {
+					const matchers: boolean[] = []
+					if (additionalFilter) matchers.push(additionalFilter(task))
+					if (activeQuickFilters.size > 0)
+						matchers.push(
+							Array.from(activeQuickFilters).some((filter) =>
+								matchesQuickFilter(task, filter),
+							),
+						)
+					return matchers.length === 0 || matchers.some(Boolean)
+				})
 				.filter((task) => {
 					if (!from || !to) {
 						return true
