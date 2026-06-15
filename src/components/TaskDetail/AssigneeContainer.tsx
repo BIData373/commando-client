@@ -50,7 +50,7 @@ export const AssigneeContainer = ({
 	}
 
 	return (
-		<AssigneeRowContainer $white={editable && !isAdmin}>
+		<AssigneeRowContainer $enabled={editable && !isAdmin}>
 			<AssigneeInfoBlock>
 				<AssigneeAvatar assignee={assignee} />
 				<AssigneeRoleText>{assignee.name}</AssigneeRoleText>
@@ -75,13 +75,13 @@ export const AssigneeContainer = ({
 	)
 }
 
-const AssigneeRowContainer = styled.div<{ $white?: boolean }>`
+const AssigneeRowContainer = styled.div<{ $enabled?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 24px;
   padding: 7px 12px;
-  background: ${({ $white }) => ($white ? "var(--background)" : "var(--background-assignee)")};
+  background: ${({ $enabled }) => ($enabled ? "var(--background)" : "var(--background-assignee)")};
   border: 0.5px solid var(--line);
   border-radius: 8px;
   width: 100%;
