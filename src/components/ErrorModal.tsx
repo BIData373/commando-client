@@ -5,6 +5,8 @@ import { MessageCircle } from "lucide-react"
 import { PermissionType } from "src/api/model"
 import { useListPermissions } from "src/api/permission/permission"
 import { useListWorkspaces } from "src/api/workspace/workspace"
+import { ModalContent } from "src/components/shared/ModalContent"
+import { Dialog } from "src/components/ui/dialog"
 import { useErrorModal } from "src/providers/ErrorModalProvider"
 import { CHAT_CHANNEL_URL } from "src/utils/env-utils"
 import { ErrorCode, isErrorCode } from "src/utils/error-utils"
@@ -61,9 +63,9 @@ export function ErrorModal() {
 		setErrorCode(null)
 	}
 
-	function navigateToHomePage() {
+	async function navigateToHomePage() {
+		await navigate({ to: "/" })
 		setErrorCode(null)
-		navigate({ to: "/" })
 	}
 
 	function navigateToChat() {
@@ -76,90 +78,72 @@ export function ErrorModal() {
 			: null
 
 	return (
-		content &&
-		errorCode && (
-			<Overlay onClick={handleClose}>
-				<Card onClick={(e) => e.stopPropagation()}>
-					<ContentContainer>
-						<ErrorCodeDisplay>{errorCode}</ErrorCodeDisplay>
-						<ErrorText>
-							<ErrorTitle>{content.title}</ErrorTitle>
-							<ErrorDescription>{content.description}</ErrorDescription>
-						</ErrorText>
-						{errorCode === ErrorCode.UNAUTHORIZED && admins.length > 0 && (
-							<AdminContactsBox>
-								<AdminContactsContent>
-									<AdminContactsTitle>
-										פנו בצ'אט המבצעי לקבלת הרשאות
-									</AdminContactsTitle>
-									<AdminContactsList>
-										{admins.map(({ user }) => (
-											<AdminContactRow key={user.id}>
-												<AdminContainer>
-													<AdminDot />
-													<AdminContactLink
-														onClick={() => navigateToUserChat(user)}
-													>
-														{user.info?.name}
-														{user.info?.name || user.info?.upn ? " - " : ""}
-														{user.info?.upn}
-													</AdminContactLink>
-												</AdminContainer>
-												<ChatMessageContainer>
-													<MessageCircle size={16} />
-													<IconText>צ</IconText>
-												</ChatMessageContainer>
-											</AdminContactRow>
-										))}
-									</AdminContactsList>
-								</AdminContactsContent>
-							</AdminContactsBox>
-						)}
-						<Actions>
-							<ButtonRow>
-								<SecondaryButton onClick={navigateToChat}>
-									לערוץ תמיכה
-								</SecondaryButton>
-								<PrimaryButton onClick={navigateToHomePage}>
-									חזרה למסך הבית
-								</PrimaryButton>
-							</ButtonRow>
-							<SupportNote>צוות התמיכה זמין עבורך 24/7</SupportNote>
-						</Actions>
-					</ContentContainer>
-				</Card>
-			</Overlay>
-		)
+		<Dialog open={!!content} onOpenChange={(open) => !open && handleClose()}>
+			<FullScreenPanel>
+				<ContentContainer>
+					<ErrorCodeDisplay>{errorCode}</ErrorCodeDisplay>
+					<ErrorText>
+						<ErrorTitle>{content?.title}</ErrorTitle>
+						<ErrorDescription>{content?.description}</ErrorDescription>
+					</ErrorText>
+					{errorCode === ErrorCode.UNAUTHORIZED && admins.length > 0 && (
+						<AdminContactsBox>
+							<AdminContactsContent>
+								<AdminContactsTitle>
+									פנו בצ'אט המבצעי לקבלת הרשאות
+								</AdminContactsTitle>
+								<AdminContactsList>
+									{admins.map(({ user }) => (
+										<AdminContactRow key={user.id}>
+											<AdminContainer>
+												<AdminDot />
+												<AdminContactLink
+													onClick={() => navigateToUserChat(user)}
+												>
+													{user.info?.name}
+													{user.info?.name || user.info?.upn ? " - " : ""}
+													{user.info?.upn}
+												</AdminContactLink>
+											</AdminContainer>
+											<ChatMessageContainer>
+												<MessageCircle size={16} />
+												<IconText>צ</IconText>
+											</ChatMessageContainer>
+										</AdminContactRow>
+									))}
+								</AdminContactsList>
+							</AdminContactsContent>
+						</AdminContactsBox>
+					)}
+					<Actions>
+						<ButtonRow>
+							<SecondaryButton onClick={navigateToChat}>
+								לערוץ תמיכה
+							</SecondaryButton>
+							<PrimaryButton onClick={navigateToHomePage}>
+								חזרה למסך הבית
+							</PrimaryButton>
+						</ButtonRow>
+						<SupportNote>צוות התמיכה זמין עבורך 24/7</SupportNote>
+					</Actions>
+				</ContentContainer>
+			</FullScreenPanel>
+		</Dialog>
 	)
 }
 
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
-`
-
 const slideUp = keyframes`
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 16px)); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
 `
 
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-dropdown);
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: ${fadeIn} 0.15s ease;
-`
-
-const Card = styled.div`
+const FullScreenPanel = styled(ModalContent)`
   background: var(--background-area);
   width: 1890px;
   height: 990px;
   text-align: center;
-  position: relative;
+  border-radius: 0;
+  border: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -283,7 +267,7 @@ const ChatMessageContainer = styled.div`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 0 3px var(--active-color); 
+  box-shadow: 0 0 0 3px var(--active-color);
   border-radius: 50%;
 
   &:hover {
