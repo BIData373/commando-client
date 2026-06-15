@@ -32,7 +32,7 @@ export default function WorkspaceCard({
 			<StyledContent>
 				<BigAvatar>
 					<BigAvatarImage src={formatMesibaIcon(icon)} alt={title} />
-					<AvatarFallback>{getInitials(title)}</AvatarFallback>
+					<WorkspaceInitials>{getInitials(title)}</WorkspaceInitials>
 				</BigAvatar>
 				<Tooltip>
 					<TooltipTrigger asChild>
@@ -69,6 +69,10 @@ const BigAvatarImage = styled(AvatarImage)`
   width: 100%;
   height: auto;
   object-fit: contain;
+`
+
+const WorkspaceInitials = styled(AvatarFallback)`
+  font-size: var(--fs-heading-1);
 `
 
 const TitleText = styled.span`
