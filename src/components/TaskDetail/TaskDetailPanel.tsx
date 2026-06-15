@@ -67,7 +67,8 @@ function TaskDetailPanel({
 	const { data: history } = useListTaskHistory({ taskId: id })
 
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
-	const showExtraInfo = allTags.length > 0 || !!source?.attachmentKey || notes
+	const showExtraInfo =
+		allTags.length > 0 || !!source || (notes && notes.length > 0)
 
 	const [isDownloadingAttachment, setIsDownloadingAttachment] = useState(false)
 
@@ -180,7 +181,7 @@ function TaskDetailPanel({
 							</DividerRow>
 
 							<InfoGrid>
-								{source?.name && (
+								{!!source && (
 									<InfoBlock>
 										<SectionLabel>מקור</SectionLabel>
 										<SourceRow>

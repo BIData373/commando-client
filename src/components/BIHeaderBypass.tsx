@@ -39,8 +39,6 @@ export function BIHeaderBypass() {
 	return (
 		STATIC_TOKEN && (
 			<>
-				<DropdownMenuSeparator />
-
 				<DropdownMenuItem
 					onSelect={(e) => e.preventDefault()}
 					onPointerMove={(e) => e.preventDefault()}
@@ -84,6 +82,7 @@ const Row = styled.div`
   justify-content: space-between;
   gap: 12px;
   width: 100%;
+  direction: ltr;
 `
 
 const Label = styled.span`
