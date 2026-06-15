@@ -7,7 +7,7 @@ interface IWorkspaceId {
 	workspaceId: number
 }
 
-export function useEntityInWorkspace<T extends IWorkspaceId>(entity?: T) {
+export function useWorkspaceMismatchError<T extends IWorkspaceId>(entity?: T) {
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
