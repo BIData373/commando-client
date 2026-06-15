@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
-import { type DateRange, isDateRange } from "react-day-picker"
+import { isDateRange } from "react-day-picker"
 import { CalendarMode } from "src/components/shared/DatePicker"
 import DatePickerPopover from "src/components/shared/DatePickerPopover"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
+import type { DatePickerValue } from "src/utils/date-utils"
 import { TasksDatePickerHeader } from "./TasksDatePickerHeader"
 import { TasksDatePickerTriggerButton } from "./TasksDatePickerTriggerButton"
 import { TasksDatePickerFooter } from "./TasksPickerFooter"
@@ -15,15 +16,16 @@ export function TasksDatePicker() {
 		setPendingDataType(dateType)
 	}, [dateType])
 
-	function handleConfirm(range: DateRange | undefined) {
+	function handleConfirm(range: DatePickerValue | undefined) {
 		setDateType(pendingDataType)
-		setDateRange(range)
+		setDateRange(isDateRange(range) ? range : undefined)
 	}
 
 	return (
 		<DatePickerPopover
 			value={dateRange}
 			mode={CalendarMode.Range}
+			onChange={handleConfirm}
 			triggerButton={({ value }) => (
 				<TasksDatePickerTriggerButton
 					label={dateType}
@@ -36,9 +38,7 @@ export function TasksDatePicker() {
 					onDateTypeChange={setPendingDataType}
 				/>
 			)}
-			footer={(slotProps) => (
-				<TasksDatePickerFooter slots={slotProps} onConfirm={handleConfirm} />
-			)}
+			footer={(slotProps) => <TasksDatePickerFooter slots={slotProps} />}
 		/>
 	)
 }

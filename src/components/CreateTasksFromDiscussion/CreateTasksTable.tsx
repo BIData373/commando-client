@@ -155,6 +155,7 @@ const TableWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-width: 100%;
   flex: 1;
   min-height: 0;
   justify-content: space-between;
@@ -163,6 +164,8 @@ const TableWrapper = styled.div`
 
 const TableOuterContainer = styled.div`
   direction: ltr;
+  flex: 1;
+  min-height: 0;
   overflow-x: auto;
   overflow-y: auto;
 
@@ -171,6 +174,8 @@ const TableOuterContainer = styled.div`
     border-collapse: separate;
     border-spacing: 0;
     table-layout: fixed;
+    min-width: 0 !important;
+    width: 100% !important;
   }
 
   th {
