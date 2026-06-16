@@ -260,13 +260,13 @@ const SourceInputBox = styled.div<{ $error?: boolean }>`
   height: 40px;
   padding-inline: 11px;
   background: white;
-  border: 1px solid ${({ $error }) => ($error ? "#ff4d4f" : "#d9d9d9")};
+  border: 1px solid ${({ $error }) => ($error ? "var(--Components-Form-Component-labelRequiredMarkColor)" : "var(--card-border)")};
   border-radius: 8px;
   gap: 4px;
   cursor: text;
 
   &:focus-within {
-    border-color: ${({ $error }) => ($error ? "#ff4d4f" : "#4096ff")};
+    border-color: ${({ $error }) => ($error ? "var(--Components-Form-Component-labelRequiredMarkColor)" : "var(--button-color-hover)")};
     box-shadow: 0 0 0 2px ${({ $error }) => ($error ? "rgba(255, 77, 79, 0.1)" : "rgba(5, 145, 255, 0.1)")};
   }
 `
