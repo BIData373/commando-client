@@ -7,9 +7,9 @@ import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import { DeadlineType, type TaskDto } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
+import WorkspaceCell from "src/components/shared/WorkspaceCell"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { invalidateQueries } from "src/queryClient"
-import { formatMesibaIcon } from "src/utils/icon-utils"
 import {
 	multiSelectFilter,
 	TASK_COLUMN_DEFS,
@@ -414,19 +414,7 @@ function useTaskColumns({
 				row: {
 					original: { workspace },
 				},
-			}) =>
-				workspace ? (
-					<WorkspaceCell>
-						{workspace.icon && (
-							<WorkspaceIconImage
-								src={formatMesibaIcon(workspace.icon)}
-								alt={workspace.title}
-							/>
-						)}
-
-						<WorkspaceCellName>{workspace.title}</WorkspaceCellName>
-					</WorkspaceCell>
-				) : null,
+			}) => <WorkspaceCell workspace={workspace} />,
 		},
 		{
 			id: "createdAt",
@@ -645,31 +633,6 @@ const NotesText = styled.div`
   u {
     text-decoration: underline;
   }
-`
-
-const WorkspaceCell = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: flex-start;
-`
-
-const WorkspaceCellName = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`
-
-const WorkspaceIconImage = styled.img`
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
 `
 
 const DateText = styled.span`

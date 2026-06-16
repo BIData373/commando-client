@@ -27,7 +27,12 @@ function PersonalTaskDetail() {
 
 	return (
 		task && (
-			<TaskDetailPanel task={task} onClose={handleClose} onEdit={handleEdit} />
+			<TaskDetailPanel
+				task={task}
+				showWorkspace={true}
+				onClose={handleClose}
+				onEdit={handleEdit}
+			/>
 		)
 	)
 }

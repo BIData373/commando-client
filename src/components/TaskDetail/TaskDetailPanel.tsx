@@ -30,6 +30,7 @@ import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModa
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import FlagIcon from "../shared/FlagIcon"
 import { ModalContent } from "../shared/ModalContent"
+import WorkspaceCell from "../shared/WorkspaceCell"
 import { RowActionsMenu } from "../Tasks/RowActionsMenu"
 import { Dialog } from "../ui/dialog"
 import { AssigneeSection } from "./AssigneeSection"
@@ -40,6 +41,7 @@ interface TaskDetailPanelProps {
 	task: TaskWithWorkspaceDto
 	onClose: () => void
 	onEdit: () => void
+	showWorkspace?: boolean
 }
 
 function TaskDetailPanel({
@@ -54,8 +56,10 @@ function TaskDetailPanel({
 		source,
 		tags,
 		assigneeStatuses,
+		workspace,
 		workspace: { id: workspaceId, permissionType },
 	},
+	showWorkspace = false,
 	onClose,
 	onEdit,
 }: TaskDetailPanelProps) {
@@ -143,16 +147,22 @@ function TaskDetailPanel({
 					<X size={16} />
 				</CloseBtn>
 
-				<HeaderRow $shadow={scrollShadow.top}>
-					<TextWrapper>
-						{flagged && <FlagIcon />}
-						<TitleText title={title}>{title}</TitleText>
-					</TextWrapper>
-					<RowActionsMenu
-						workspaceId={workspaceId}
-						onEdit={isManager ? onEdit : undefined}
-						onDelete={isManager ? handleDelete : undefined}
-					/>
+				<HeaderRow>
+					{showWorkspace && (
+						<WorkspaceCell workspace={workspace} iconSize={20} />
+					)}
+
+					<TitleRow $shadow={scrollShadow.top}>
+						<TextWrapper>
+							{flagged && <FlagIcon size={20} />}
+							<TitleText title={title}>{title}</TitleText>
+						</TextWrapper>
+						<RowActionsMenu
+							workspaceId={workspaceId}
+							onEdit={isManager ? onEdit : undefined}
+							onDelete={isManager ? handleDelete : undefined}
+						/>
+					</TitleRow>
 				</HeaderRow>
 
 				<ScrollContent
@@ -384,11 +394,14 @@ const SectionLabel = styled.p`
   white-space: nowrap;
 `
 
-// ─── Header ────────────────────────────────────────────────────────────────────
+const HeaderRow = styled.div`
+	display: flex;
+	flex-direction: column;
+	padding: 36px 48px 20px;
+`
 
-const HeaderRow = styled.div<{ $shadow: boolean }>`
+const TitleRow = styled.div<{ $shadow: boolean }>`
   display: flex;
-  padding: 36px 48px 20px;
   align-items: center;
   justify-content: space-between;
   min-width: 0;
