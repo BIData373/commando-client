@@ -38,48 +38,48 @@ export function AssigneeCard({
 	}
 
 	return (
-		<>
-			<StyledCard onClick={onCardClick}>
-				<StyledCardHeader>
-					<CardHeaderRow>
-						<AssigneeAvatar assignee={assignee} />
+		<StyledCard onClick={onCardClick}>
+			<StyledCardHeader>
+				<CardHeaderRow>
+					<AssigneeAvatar assignee={assignee} />
 
-						<CardWrapper>
-							<CardMeta>
-								<CardTitle>{assignee.name}</CardTitle>
+					<CardWrapper>
+						<CardMeta>
+							<StyledCardTitle>{assignee.name}</StyledCardTitle>
 
-								<DeleteAssigneePopconfirm
-									assigneeId={assignee.id}
-									tasksCount={tasksCount}
-								/>
-							</CardMeta>
+							<DeleteAssigneePopconfirm
+								assigneeId={assignee.id}
+								tasksCount={tasksCount}
+							/>
+						</CardMeta>
 
-							<StyledCardDescription>
-								{users.length} משתמשים
-							</StyledCardDescription>
-						</CardWrapper>
-					</CardHeaderRow>
-				</StyledCardHeader>
+						<StyledCardDescription>
+							{users.length} משתמשים
+						</StyledCardDescription>
+					</CardWrapper>
+				</CardHeaderRow>
+			</StyledCardHeader>
 
-				<CardContent>
-					<Separator />
+			<CardContent>
+				<Separator />
 
-					<TagRow>
-						{visibleUsers.map(({ id, info }) => (
-							<StyledBadge key={id} variant="secondary">
-								<User size={16} />
+				<TagRow>
+					{visibleUsers.map(({ id, info }) => (
+						<StyledBadge key={id} variant="secondary">
+							<User size={16} />
 
-								{info?.name ?? `#${id}`}
-							</StyledBadge>
-						))}
+							<BageText>{info?.name ?? `#${id}`}</BageText>
+						</StyledBadge>
+					))}
 
-						{remainingUsers > 0 && (
-							<StyledBadge variant="outline">+{remainingUsers}</StyledBadge>
-						)}
-					</TagRow>
-				</CardContent>
-			</StyledCard>
-		</>
+					{remainingUsers > 0 && (
+						<StyledBadge variant="outline">
+							<BageText>+{remainingUsers}</BageText>
+						</StyledBadge>
+					)}
+				</TagRow>
+			</CardContent>
+		</StyledCard>
 	)
 }
 
@@ -119,6 +119,7 @@ const CardHeaderRow = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 8px;
+  min-width: 0;
 `
 
 const CardWrapper = styled.div`
@@ -126,6 +127,7 @@ const CardWrapper = styled.div`
   flex-direction: column;
   flex: 1;
   gap: 12px;
+  min-width: 0;
 `
 
 const CardMeta = styled.div`
@@ -135,17 +137,38 @@ const CardMeta = styled.div`
   gap: 4px;
 `
 
+const StyledCardTitle = styled(CardTitle)`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
 const TagRow = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   padding-block-start: 6px;
+  min-width: 0;
+  overflow: hidden;
 `
 
 const StyledBadge = styled(Badge)`
+	min-width: 0;
+	max-width: 100px;
     border-radius: 9999px;
     font-size: var(--fs-btn);
     padding: 0 7px;
     background: rgba(0, 0, 0, 0.04);
     font-weight: 400;
+	flex: 1;
+
+	svg {
+		flex-shrink: 0;
+	}
+`
+
+const BageText = styled.span`
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 `
