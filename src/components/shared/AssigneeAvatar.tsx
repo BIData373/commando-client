@@ -1,8 +1,12 @@
 import styled from "@emotion/styled"
 import type { AssigneeDto } from "src/api/model"
-import { Avatar, AvatarFallback, AvatarImage } from "src/components/ui/avatar"
 import { getInitials } from "src/utils/avatar-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
+import {
+	MesibaAvatarFallback,
+	MesibaAvatarImage,
+	MesibaAvatarRoot,
+} from "./MesibaAvatar"
 
 const DEFAULT_SIZE = 32
 
@@ -22,7 +26,10 @@ export const AssigneeAvatar = ({
 }: AssigneeAvatarProps) => {
 	return (
 		<StyledRoot $size={size} $cursor={cursor} ref={ref} {...props}>
-			<StyledImage src={formatMesibaIcon(assignee.icon)} alt={assignee.name} />
+			<MesibaAvatarImage
+				src={formatMesibaIcon(assignee.icon)}
+				alt={assignee.name}
+			/>
 			<ColoredFallback $color={assignee.color}>
 				{getInitials(assignee.name)}
 			</ColoredFallback>
@@ -30,7 +37,7 @@ export const AssigneeAvatar = ({
 	)
 }
 
-const StyledRoot = styled(Avatar)<{
+const StyledRoot = styled(MesibaAvatarRoot)<{
 	$size: number
 	$cursor?: boolean
 }>`
@@ -39,24 +46,9 @@ const StyledRoot = styled(Avatar)<{
   border-radius: 50%;
   flex-shrink: 0;
   cursor: ${({ $cursor }) => ($cursor ? "pointer" : "default")};
-
-  &:has(img) {
-    border: 0;
-
-    &::after {
-      border: none;
-    }
-  }
 `
 
-const StyledImage = styled(AvatarImage)`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 0;
-`
-
-const ColoredFallback = styled(AvatarFallback)<{
+const ColoredFallback = styled(MesibaAvatarFallback)<{
 	$color: string | null
 }>`
   background: ${({ $color }) => $color ?? "var(--chip-bg)"};

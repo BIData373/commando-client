@@ -1,5 +1,7 @@
 function appendValue(formData: FormData, key: string, value: unknown): void {
-	if (value === undefined || value === null) return
+	if (value === undefined || value === null) {
+		return
+	}
 
 	if (value instanceof File || value instanceof Blob) {
 		formData.append(key, value)
