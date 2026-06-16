@@ -17,10 +17,6 @@ function PersonalTaskDetail() {
 		navigate({ to: "/personal", search: { view: TasksView.TABLE } })
 	}
 
-	function handleDelete() {
-		handleClose()
-	}
-
 	function handleEdit() {
 		navigate({
 			to: "/personal/task/$taskId/edit",
@@ -29,14 +25,9 @@ function PersonalTaskDetail() {
 		})
 	}
 
-	if (!task) return null
-
 	return (
-		<TaskDetailPanel
-			task={task}
-			onClose={handleClose}
-			onDelete={handleDelete}
-			onEdit={handleEdit}
-		/>
+		task && (
+			<TaskDetailPanel task={task} onClose={handleClose} onEdit={handleEdit} />
+		)
 	)
 }

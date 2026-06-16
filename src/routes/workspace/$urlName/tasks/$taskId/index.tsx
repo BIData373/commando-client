@@ -13,6 +13,7 @@ function TaskDetail() {
 	const navigate = useNavigate()
 
 	const { data: task } = useGetTask({ id: Number(taskId) })
+
 	useWorkspaceMismatchError(task)
 
 	function handleClose() {
@@ -21,10 +22,6 @@ function TaskDetail() {
 			params: { urlName },
 			search: { view },
 		})
-	}
-
-	function handleDelete() {
-		handleClose()
 	}
 
 	function handleEdit() {
@@ -37,12 +34,7 @@ function TaskDetail() {
 
 	return (
 		task && (
-			<TaskDetailPanel
-				task={task}
-				onClose={handleClose}
-				onDelete={handleDelete}
-				onEdit={handleEdit}
-			/>
+			<TaskDetailPanel task={task} onClose={handleClose} onEdit={handleEdit} />
 		)
 	)
 }

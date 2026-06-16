@@ -15,9 +15,16 @@ import {
 	PermissionType,
 	type TaskWithWorkspaceDto,
 } from "src/api/model"
+import { useGetMyPermission } from "src/api/permission/permission"
 import { getAttachmentSignedUrl } from "src/api/s3/s3"
+import {
+	getListPersonalTasksQueryKey,
+	getListTasksQueryKey,
+	useDeleteTask,
+} from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { downloadFromUrl } from "src/functions/download-utils"
+import { invalidateQueries } from "src/queryClient"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
@@ -32,7 +39,6 @@ import TaskHistoryPanel from "./TaskHistoryPanel"
 interface TaskDetailPanelProps {
 	task: TaskWithWorkspaceDto
 	onClose: () => void
-	onDelete: () => void
 	onEdit: () => void
 }
 
@@ -51,7 +57,6 @@ function TaskDetailPanel({
 		workspace: { id: workspaceId, permissionType },
 	},
 	onClose,
-	onDelete,
 	onEdit,
 }: TaskDetailPanelProps) {
 	const [showHistory, setShowHistory] = useState(false)
@@ -64,7 +69,20 @@ function TaskDetailPanel({
 		bottom: false,
 	})
 
+	const { data: myPermission } = useGetMyPermission({ workspaceId })
+	const isManager = myPermission?.type === PermissionType.MANAGER
+
 	const { data: history } = useListTaskHistory({ taskId: id })
+	const { mutate: deleteTaskMutate } = useDeleteTask({
+		mutation: {
+			onSuccess: () => {
+				invalidateQueries([
+					getListTasksQueryKey({ workspaceId }),
+					getListPersonalTasksQueryKey(),
+				])
+			},
+		},
+	})
 
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
 	const showExtraInfo =
@@ -112,6 +130,11 @@ function TaskDetailPanel({
 		if (!open) onClose()
 	}
 
+	function handleDelete() {
+		deleteTaskMutate({ pathParams: { id } })
+		onClose()
+	}
+
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
 			<Panel>
@@ -127,8 +150,8 @@ function TaskDetailPanel({
 					</TextWrapper>
 					<RowActionsMenu
 						workspaceId={workspaceId}
-						onEdit={onEdit}
-						onDelete={onDelete}
+						onEdit={isManager ? onEdit : undefined}
+						onDelete={isManager ? handleDelete : undefined}
 					/>
 				</HeaderRow>
 
