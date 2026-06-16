@@ -10,7 +10,12 @@ import { getGetTaskQueryKey } from "src/api/task/task"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { invalidateQueries } from "src/queryClient"
 import { formatMesibaIcon } from "src/utils/icon-utils"
-import { TASK_COLUMNS_META, type TaskRow } from "src/utils/task-table-utils"
+import {
+	multiSelectFilter,
+	TASK_COLUMN_DEFS,
+	TASK_COLUMNS_META,
+	type TaskRow,
+} from "src/utils/task-table-utils"
 import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 import FlagIcon from "../components/shared/FlagIcon"
 import HighlightMatch from "../components/shared/HighlightMatch"
@@ -47,8 +52,6 @@ interface ActionsConfig {
 	onEnterSelectMode(rowKey?: string): void
 }
 
-type ColumnsMap = Partial<Record<string, ColumnDef<TaskRow>>>
-
 interface UseTaskColumnsOptions {
 	visibleColumns: (keyof TaskRow)[]
 	searchQuery: string
@@ -77,16 +80,12 @@ function useTaskColumns({
 		},
 	})
 
-	const multiSelectFilter: FilterFn<TaskRow> = (
+	const multiSelectColumnFilter: FilterFn<TaskRow> = (
 		row,
 		columnId,
 		filterValue: string[],
 	) => {
-		if (!filterValue?.length) return true
-		const value = row.getValue(columnId)
-		if (Array.isArray(value))
-			return value.some((v: string) => filterValue.includes(v))
-		return filterValue.includes(value as string)
+		return multiSelectFilter(row.getValue<string>(columnId), filterValue)
 	}
 
 	function handleUpdateStatus(
@@ -97,51 +96,64 @@ function useTaskColumns({
 		upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } })
 	}
 
-	const selectColumn: ColumnDef<TaskRow> | null = selectMode?.enabled
-		? {
-				id: "select",
-				size: 35,
-				enableSorting: false,
-				enableColumnFilter: false,
-				header: () => (
-					<CheckboxCenter>
-						<Checkbox
-							checked={
-								selectMode.tasks.length > 0 &&
-								selectMode.selectedTaskIds.length === selectMode.tasks.length
-							}
-							onCheckedChange={(checked) => selectMode.onSelectAll(!!checked)}
-						/>
-					</CheckboxCenter>
-				),
-				cell: ({ row }) => (
-					<CheckboxCenter>
-						<Checkbox
-							checked={row.getIsSelected()}
-							onCheckedChange={(checked) => row.toggleSelected(!!checked)}
-						/>
-					</CheckboxCenter>
-				),
-			}
-		: null
+	const allVisibleColumns = [...visibleColumns, "id", "select", "actions"]
 
+	// TODO Move all constant fields to task-table-utils
 	const allColumns = [
-		{
-			id: "id",
-			accessorKey: "id",
-			header: ({ column }) => (
-				<ColumnHeaderWithActions label={COLUMN_LABELS.id} column={column} />
-			),
-			size: 35,
-			enableColumnFilter: false,
-			cell: ({
-				row: {
-					original: { id },
-				},
-			}) => (
-				<IdCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>{id}</IdCell>
-			),
-		},
+		...(selectMode?.enabled
+			? [
+					{
+						id: "select",
+						size: 35,
+						enableSorting: false,
+						enableColumnFilter: false,
+						header: () => (
+							<CheckboxCenter>
+								<Checkbox
+									checked={
+										selectMode.tasks.length > 0 &&
+										selectMode.selectedTaskIds.length ===
+											selectMode.tasks.length
+									}
+									onCheckedChange={(checked) =>
+										selectMode.onSelectAll(!!checked)
+									}
+								/>
+							</CheckboxCenter>
+						),
+						cell: ({ row }) => (
+							<CheckboxCenter>
+								<Checkbox
+									checked={row.getIsSelected()}
+									onCheckedChange={(checked) => row.toggleSelected(!!checked)}
+								/>
+							</CheckboxCenter>
+						),
+					} as ColumnDef<TaskRow>,
+				]
+			: [
+					{
+						id: "id",
+						accessorKey: "id",
+						header: ({ column }) => (
+							<ColumnHeaderWithActions
+								label={COLUMN_LABELS.id}
+								column={column}
+							/>
+						),
+						size: 35,
+						enableColumnFilter: false,
+						cell: ({
+							row: {
+								original: { id },
+							},
+						}) => (
+							<IdCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
+								{id}
+							</IdCell>
+						),
+					} as ColumnDef<TaskRow>,
+				]),
 		{
 			id: "title",
 			accessorKey: "title",
@@ -201,7 +213,6 @@ function useTaskColumns({
 		},
 		{
 			id: "status",
-			accessorFn: (row) => row.status?.type,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.status}
@@ -210,9 +221,8 @@ function useTaskColumns({
 				/>
 			),
 			size: 50,
-			filterFn: multiSelectFilter,
-			sortingFn: (rowA, rowB) =>
-				(rowA.original.status?.id ?? 0) - (rowB.original.status?.id ?? 0),
+			filterFn: multiSelectColumnFilter,
+			...TASK_COLUMN_DEFS.status,
 			cell: ({
 				row: {
 					original: { id, status, assignee, workspaceId, editable },
@@ -232,7 +242,6 @@ function useTaskColumns({
 		},
 		{
 			id: "assigneeStatuses",
-			accessorFn: (row) => row.assignee?.name,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.assigneeStatuses}
@@ -241,8 +250,8 @@ function useTaskColumns({
 				/>
 			),
 			size: 60,
-			filterFn: multiSelectFilter,
-			sortingFn: "text",
+			filterFn: multiSelectColumnFilter,
+			...TASK_COLUMN_DEFS.assigneeStatuses,
 			cell: ({
 				row: {
 					original: { assignee, otherAssignees },
@@ -269,15 +278,8 @@ function useTaskColumns({
 				/>
 			),
 			size: 90,
-			filterFn: multiSelectFilter,
-			sortingFn: (
-				{ original: { dueDate: dueDateA } },
-				{ original: { dueDate: dueDateB } },
-			) => {
-				const a = dueDateA ? new Date(dueDateA).getTime() : Infinity
-				const b = dueDateB ? new Date(dueDateB).getTime() : Infinity
-				return a > b ? 1 : a < b ? -1 : 0
-			},
+			filterFn: multiSelectColumnFilter,
+			...TASK_COLUMN_DEFS.deadlineType,
 			cell: ({
 				row: {
 					original: { deadlineType: rawDeadlineType, dueDate },
@@ -335,7 +337,6 @@ function useTaskColumns({
 		},
 		{
 			id: "source",
-			accessorFn: (row) => row.source?.name,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.source}
@@ -344,8 +345,8 @@ function useTaskColumns({
 				/>
 			),
 			size: 120,
-			filterFn: multiSelectFilter,
-			sortingFn: "text",
+			filterFn: multiSelectColumnFilter,
+			...TASK_COLUMN_DEFS.deadlineType,
 			cell: ({
 				row: {
 					original: { source },
@@ -367,8 +368,6 @@ function useTaskColumns({
 		},
 		{
 			id: "tags",
-			accessorFn: (row) =>
-				uniq(map(concat(row.tags, row.source?.tags ?? []), "name")),
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
 					label={COLUMN_LABELS.tags}
@@ -378,7 +377,8 @@ function useTaskColumns({
 			),
 			size: 90,
 			enableSorting: false,
-			filterFn: multiSelectFilter,
+			filterFn: multiSelectColumnFilter,
+			...TASK_COLUMN_DEFS.tags,
 			cell: ({
 				row: {
 					original: { tags, source },
@@ -404,17 +404,12 @@ function useTaskColumns({
 		},
 		{
 			id: "workspace",
-			accessorFn: (row) => row.workspace?.title,
 			header: ({ column }) => (
 				<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
 			),
 			size: 170,
 			enableColumnFilter: false,
-			sortingFn: (rowA, rowB) => {
-				const a = rowA.original.workspace?.title ?? ""
-				const b = rowB.original.workspace?.title ?? ""
-				return a.localeCompare(b, "he")
-			},
+			...TASK_COLUMN_DEFS.workspace,
 			cell: ({
 				row: {
 					original: { workspace },
@@ -444,7 +439,7 @@ function useTaskColumns({
 			),
 			size: 70,
 			enableColumnFilter: false,
-			sortingFn: "datetime",
+			...TASK_COLUMN_DEFS.createdAt,
 			cell: ({ getValue }) => (
 				<DateText>{formatDateShort(getValue<Date>())}</DateText>
 			),
@@ -460,24 +455,11 @@ function useTaskColumns({
 			),
 			size: 70,
 			enableColumnFilter: false,
-			sortingFn: "datetime",
+			...TASK_COLUMN_DEFS.updatedAt,
 			cell: ({ getValue }) => (
 				<DateText>{formatDateShort(getValue<Date>())}</DateText>
 			),
 		},
-	] as ColumnDef<TaskRow>[]
-
-	const columnMap: ColumnsMap = Object.fromEntries(
-		allColumns.map((column) => [column.id, column]),
-	)
-
-	const visibleOrderedColumns = visibleColumns
-		.filter((id) => columnMap[id])
-		.map((id) => (selectColumn && id === "id" ? selectColumn : columnMap[id]))
-		.filter((column) => !!column)
-
-	const columns = [
-		...visibleOrderedColumns,
 		...(showMenuColumn && actions
 			? [
 					{
@@ -500,11 +482,12 @@ function useTaskColumns({
 					} as ColumnDef<TaskRow>,
 				]
 			: []),
-	]
+	] as ColumnDef<TaskRow>[]
 
 	return {
-		columns,
-		availableColumns: TASK_COLUMNS_META,
+		columns: allColumns.filter((column) =>
+			allVisibleColumns.some((id) => column.id === id),
+		),
 	}
 }
 

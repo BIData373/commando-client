@@ -4,8 +4,14 @@ import { filter } from "lodash"
 import { type ReactNode, useCallback } from "react"
 import { exportTasksToExcel } from "src/functions/export-excel"
 import { matchesQuickFilter } from "src/functions/filter-utils"
-import { getTaskValue, QuickFilter } from "src/utils/filter-utils"
-import type { TaskColumnMeta, TaskRow } from "src/utils/task-table-utils"
+import { QuickFilter } from "src/utils/filter-utils"
+import {
+	multiSelectFilter,
+	sortByTaskColumns,
+	TASK_COLUMN_DEFS,
+	type TaskColumnMeta,
+	type TaskRow,
+} from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { FilterBar, FilterDivider, FilterPill } from "../shared/FilterBar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
@@ -38,13 +44,10 @@ function TaskFilters({
 	const {
 		activeQuickFilters,
 		toggleQuickFilter,
-		searchQuery,
-		setSearchQuery,
 		columnOrder,
-		setColumnOrder,
 		hiddenColumns,
-		toggleColumn,
 		columnsFilters,
+		sorting,
 	} = useTasksFilters()
 
 	const activeFilters =
@@ -56,13 +59,15 @@ function TaskFilters({
 	const allColumnFilters = [...urlColumnFilters, ...columnsFilters]
 
 	const filteredTaskRows = filter(taskRows, (task) =>
-		allColumnFilters.every(({ id, value }) => {
-			const idKey = id as keyof TaskRow
-			const taskValue = getTaskValue(idKey, task)
-			if (!Array.isArray(value) || value.length === 0) return true
-			return value.includes(taskValue)
-		}),
+		allColumnFilters.every(({ id, value }, index) =>
+			multiSelectFilter(
+				TASK_COLUMN_DEFS[id as keyof TaskRow]?.accessorFn?.(task, index),
+				value as string[],
+			),
+		),
 	)
+
+	filter
 
 	const overdueCount = filteredTaskRows.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.OVERDUE),
@@ -75,20 +80,17 @@ function TaskFilters({
 	).length
 
 	const handleExport = useCallback(() => {
-		exportTasksToExcel(filteredTaskRows, { columnOrder, hiddenColumns })
-	}, [filteredTaskRows, columnOrder, hiddenColumns])
+		exportTasksToExcel(sortByTaskColumns(filteredTaskRows, sorting), {
+			columnOrder,
+			hiddenColumns,
+		})
+	}, [filteredTaskRows, columnOrder, hiddenColumns, sorting])
 
 	return (
 		<FilterBar
 			hasActiveFilters={hasActiveFilters}
 			onClearAll={onClearAllFilters}
-			searchQuery={searchQuery}
-			onSearchChange={setSearchQuery}
 			onExport={handleExport}
-			columnOrder={columnOrder}
-			hiddenColumns={hiddenColumns}
-			onColumnOrderChange={setColumnOrder}
-			onToggleColumn={toggleColumn}
 			extraColumnsMeta={extraColumnsMeta}
 			startSlot={startSlot}
 		>

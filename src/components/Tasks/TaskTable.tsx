@@ -3,7 +3,6 @@ import type {
 	ColumnDef,
 	ColumnFiltersState,
 	RowSelectionState,
-	SortingState,
 } from "@tanstack/react-table"
 import type React from "react"
 import { useMemo, useState } from "react"
@@ -66,6 +65,8 @@ function TaskTable({
 		hiddenColumns,
 		activeQuickFilters,
 		dateRange,
+		sorting,
+		setSorting,
 		columnsFilters,
 		setColumnsFilters,
 	} = useTasksFilters()
@@ -116,7 +117,6 @@ function TaskTable({
 
 		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
 	}
-	const [sorting, setSorting] = useState<SortingState>([])
 
 	const selectedRowKeys = Object.keys(rowSelection).filter(
 		(key) => rowSelection[key],
