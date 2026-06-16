@@ -1,7 +1,11 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import type { WorkspaceDto } from "src/api/model"
-import { Avatar, AvatarFallback, AvatarImage } from "src/components/ui/avatar"
+import {
+	MesibaAvatarFallback,
+	MesibaAvatarImage,
+	MesibaAvatarRoot,
+} from "src/components/shared/MesibaAvatar"
 import { Card, CardContent } from "src/components/ui/card"
 import {
 	Tooltip,
@@ -58,20 +62,18 @@ const StyledContent = styled(CardContent)`
   padding: 20px 16px;
 `
 
-const BigAvatar = styled(Avatar)`
+const BigAvatar = styled(MesibaAvatarRoot)`
   width: 100%;
   height: auto;
   aspect-ratio: 1;
   border-radius: 4px;
 `
 
-const BigAvatarImage = styled(AvatarImage)`
-  width: 100%;
+const BigAvatarImage = styled(MesibaAvatarImage)`
   height: auto;
-  object-fit: contain;
 `
 
-const WorkspaceInitials = styled(AvatarFallback)`
+const WorkspaceInitials = styled(MesibaAvatarFallback)`
   font-size: var(--fs-heading-1);
 `
 

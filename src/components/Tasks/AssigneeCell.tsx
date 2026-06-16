@@ -176,6 +176,10 @@ const RoleText = styled.span`
   font-size: var(--fs-btn);
   font-weight: 500;
   color: var(--sea-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 `
 
 const SectionLabel = styled.span`
@@ -258,11 +262,13 @@ const CompactRow = styled.div`
 `
 
 const CompactRole = styled.span`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  direction: rtl;
   font-size: var(--fs-btn);
   color: var(--sea-ink);
   flex: 1;
+  min-width: 0;
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 `

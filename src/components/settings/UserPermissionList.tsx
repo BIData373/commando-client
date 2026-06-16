@@ -104,6 +104,7 @@ const UserRow = styled.div`
 
 const UserHeader = styled.div`
   display: flex;
+  align-items: center;
   gap: 4px;
 `
 
@@ -114,6 +115,7 @@ const UserInfo = styled.div<{ $type: PermissionType }>`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 
   cursor: ${({ $type }) => ($type === PermissionType.MANAGER ? "pointer" : "default")};
 `
@@ -126,12 +128,18 @@ const UserName = styled.span`
 const UserPersonalId = styled.span`
   font-size: var(--fs-base);
   font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const UserSubtext = styled.span`
   font-size: var(--fs-btn);
   font-weight: 400;
   color: rgba(0, 0, 0, 0.65);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const CenterContainer = styled.div`
