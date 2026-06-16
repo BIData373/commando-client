@@ -113,6 +113,7 @@ const CenterSection = styled.div`
   align-items: center;
   gap: 8px;
   min-width: 0;
+  overflow: hidden;
 `
 
 const CenterTitle = styled.p`
@@ -121,12 +122,10 @@ const CenterTitle = styled.p`
   font-weight: 500;
   line-height: 32px;
   color: #C7C9CB;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   min-width: 0;
+  overflow: hidden;
   display: flex;
-  flex-direction: row;
+  align-items: center;
   gap: 10px;
 `
 

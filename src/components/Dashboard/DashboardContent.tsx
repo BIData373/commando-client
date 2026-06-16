@@ -2,10 +2,8 @@ import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
-import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
-import { DATE_TYPE } from "src/utils/date-utils"
 import { toTaskRows } from "src/utils/task-table-utils"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import FocusedInstructions from "./FocusedInstructions"
@@ -20,19 +18,15 @@ export function DashboardContent() {
 
 	const navigate = useNavigate()
 
-	const { dateType } = useTasksFilters()
-
 	const tasksQueryKey = getListTasksQueryKey({ workspaceId: id })
 	const { data: rawTasks = [] } = useListTasks({ workspaceId: id })
 
 	const filteredTasks = useFilteredTasks(rawTasks)
 
 	const tasks = toTaskRows(
-		dateType === DATE_TYPE.UPDATED_DATE
-			? [...filteredTasks].sort(
-					(a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
-				)
-			: filteredTasks,
+		[...filteredTasks].sort(
+			(a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
+		),
 	)
 
 	function handleSetAssignees() {
