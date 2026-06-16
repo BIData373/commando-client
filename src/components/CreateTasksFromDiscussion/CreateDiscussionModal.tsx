@@ -191,7 +191,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 													onTagSelect={handleTagSelect}
 													onTagRemove={handleTagRemove}
 													onFileChange={handleFileChange}
-													fieldApis={{ name: nameField, date: dateField }}
+													fields={{ name: nameField, date: dateField }}
 												/>
 											)}
 										</form.Field>

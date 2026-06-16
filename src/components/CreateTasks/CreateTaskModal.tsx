@@ -429,7 +429,7 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 												linkedSource={values.linkedSource}
 												onSourceSelect={handleSourceSelect}
 												onDateSelect={handleSourceDateSelect}
-												fieldApis={{ date: field }}
+												fields={{ date: field }}
 											/>
 										)}
 									</form.Field>

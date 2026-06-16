@@ -19,6 +19,11 @@ import {
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
+export interface SourceFieldValidation {
+	name?: AnyFieldApi
+	date?: AnyFieldApi
+}
+
 interface SourceFieldProps {
 	workspaceId: number
 	source: string
@@ -28,7 +33,7 @@ interface SourceFieldProps {
 	onDateSelect: (date: Date | undefined) => void
 	label?: string
 	uniqueNames?: boolean
-	fieldApis?: { name?: AnyFieldApi; date?: AnyFieldApi }
+	fields?: SourceFieldValidation
 	required?: boolean
 }
 
@@ -43,7 +48,7 @@ function SourceField({
 	onDateSelect,
 	label = "מקור",
 	uniqueNames = false,
-	fieldApis,
+	fields,
 	required = false,
 }: SourceFieldProps) {
 	const [sourceQuery, setSourceQuery] = useState(source)
@@ -106,11 +111,11 @@ function SourceField({
 	return (
 		<SourceDateRow>
 			<SourceFormItem>
-				<FormField label={label} required={required} field={fieldApis?.name}>
+				<FormField label={label} required={required} field={fields?.name}>
 					<SourceFieldWrapper>
 						<SourceInputBox
 							onFocus={openDropdown}
-							$error={!!fieldApis?.name?.state.meta.errors.length}
+							$error={!!fields?.name?.state.meta.errors.length}
 						>
 							<SourceChevron size={16} />
 							<SourceInputField
@@ -172,7 +177,7 @@ function SourceField({
 				</FormField>
 			</SourceFormItem>
 			<DateFormItem>
-				<FormField field={fieldApis?.date} label="תאריך" required={required}>
+				<FormField field={fields?.date} label="תאריך" required={required}>
 					<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
 						<TooltipProvider>
 							<Tooltip>
@@ -180,7 +185,7 @@ function SourceField({
 									<PopoverTrigger asChild>
 										<DatePickerButton
 											$disabled={isSourceLinked}
-											$error={!!fieldApis?.date?.state.meta.errors.length}
+											$error={!!fields?.date?.state.meta.errors.length}
 										>
 											<CalendarIcon size={18} />
 											<DatePickerText $hasValue={!!sourceDate}>
