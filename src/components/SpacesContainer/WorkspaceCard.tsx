@@ -31,14 +31,7 @@ export default function WorkspaceCard({
 		<StyledCard onClick={handleWorkspaceClick}>
 			<StyledContent>
 				<BigAvatar>
-					<BigAvatarImage
-						src={
-							Math.random() > 0.5
-								? formatMesibaIcon(icon)
-								: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQENQrEaUft50MRucTsyvb38W6bV58KWHoRyw&s"
-						}
-						alt={title}
-					/>
+					<BigAvatarImage src={formatMesibaIcon(icon)} alt={title} />
 					<WorkspaceInitials>{getInitials(title)}</WorkspaceInitials>
 				</BigAvatar>
 				<Tooltip>
