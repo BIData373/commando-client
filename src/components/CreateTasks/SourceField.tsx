@@ -28,7 +28,7 @@ interface SourceFieldProps {
 	onDateSelect: (date: Date | undefined) => void
 	label?: string
 	uniqueNames?: boolean
-	dateField?: AnyFieldApi
+	fieldApis?: { name?: AnyFieldApi; date?: AnyFieldApi }
 	required?: boolean
 }
 
@@ -43,7 +43,7 @@ function SourceField({
 	onDateSelect,
 	label = "מקור",
 	uniqueNames = false,
-	dateField,
+	fieldApis,
 	required = false,
 }: SourceFieldProps) {
 	const [sourceQuery, setSourceQuery] = useState(source)
@@ -106,9 +106,12 @@ function SourceField({
 	return (
 		<SourceDateRow>
 			<SourceFormItem>
-				<FormField label={label} required={required}>
+				<FormField label={label} required={required} field={fieldApis?.name}>
 					<SourceFieldWrapper>
-						<SourceInputBox onFocus={openDropdown}>
+						<SourceInputBox
+							onFocus={openDropdown}
+							$error={!!fieldApis?.name?.state.meta.errors.length}
+						>
 							<SourceChevron size={16} />
 							<SourceInputField
 								value={sourceQuery}
@@ -169,7 +172,7 @@ function SourceField({
 				</FormField>
 			</SourceFormItem>
 			<DateFormItem>
-				<FormField field={dateField} label="תאריך" required={required}>
+				<FormField field={fieldApis?.date} label="תאריך" required={required}>
 					<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
 						<TooltipProvider>
 							<Tooltip>
@@ -177,7 +180,7 @@ function SourceField({
 									<PopoverTrigger asChild>
 										<DatePickerButton
 											$disabled={isSourceLinked}
-											$error={!!dateField?.state.meta.errors.length}
+											$error={!!fieldApis?.date?.state.meta.errors.length}
 										>
 											<CalendarIcon size={18} />
 											<DatePickerText $hasValue={!!sourceDate}>
@@ -245,21 +248,21 @@ const SourceFieldWrapper = styled.div`
   width: 100%;
 `
 
-const SourceInputBox = styled.div`
+const SourceInputBox = styled.div<{ $error?: boolean }>`
   display: flex;
   align-items: center;
   width: 100%;
   height: 40px;
   padding-inline: 11px;
   background: white;
-  border: 1px solid #d9d9d9;
+  border: 1px solid ${({ $error }) => ($error ? "#ff4d4f" : "#d9d9d9")};
   border-radius: 8px;
   gap: 4px;
   cursor: text;
 
   &:focus-within {
-    border-color: #4096ff;
-    box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+    border-color: ${({ $error }) => ($error ? "#ff4d4f" : "#4096ff")};
+    box-shadow: 0 0 0 2px ${({ $error }) => ($error ? "rgba(255, 77, 79, 0.1)" : "rgba(5, 145, 255, 0.1)")};
   }
 `
 

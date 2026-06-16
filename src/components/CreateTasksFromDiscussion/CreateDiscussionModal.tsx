@@ -116,6 +116,10 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 			console.error("createSource failed:", error)
 		}
 	}
+	function validateName({ value }: { value: string }) {
+		return !value.trim() ? "יש להזין שם דיון" : undefined
+	}
+
 	function validateDate({ value }: { value: Date | null | undefined }) {
 		return !value ? "יש לבחור תאריך" : undefined
 	}
@@ -172,18 +176,25 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 
 						{currentStep === Steps.Discussion ? (
 							<>
-								<form.Field name="date" validators={{ onSubmit: validateDate }}>
-									{(field) => (
-										<DiscussionForm
-											workspaceId={workspaceId}
-											form={values}
-											onNameChange={handleNameChange}
-											onDateChange={handleDateChange}
-											onTagSelect={handleTagSelect}
-											onTagRemove={handleTagRemove}
-											onFileChange={handleFileChange}
-											dateField={field}
-										/>
+								<form.Field name="name" validators={{ onSubmit: validateName }}>
+									{(nameField) => (
+										<form.Field
+											name="date"
+											validators={{ onSubmit: validateDate }}
+										>
+											{(dateField) => (
+												<DiscussionForm
+													workspaceId={workspaceId}
+													form={values}
+													onNameChange={handleNameChange}
+													onDateChange={handleDateChange}
+													onTagSelect={handleTagSelect}
+													onTagRemove={handleTagRemove}
+													onFileChange={handleFileChange}
+													fieldApis={{ name: nameField, date: dateField }}
+												/>
+											)}
+										</form.Field>
 									)}
 								</form.Field>
 
