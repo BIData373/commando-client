@@ -48,6 +48,7 @@ function EditDiscussionModal({
 		date: source?.date ?? null,
 		tags: source?.tags.map((t) => t.name) ?? [],
 		attachment: source?.attachmentKey ? undefined : null,
+		deleteAttachment: false,
 	}
 
 	const form = useForm({
@@ -62,6 +63,9 @@ function EditDiscussionModal({
 			}
 			if (value.attachment !== defaultValues.attachment) {
 				data.attachment = value.attachment ?? undefined
+			}
+			if (value.deleteAttachment) {
+				data.deleteAttachment = true
 			}
 
 			if (Object.keys(data).length === 0) {
@@ -85,11 +89,7 @@ function EditDiscussionModal({
 
 	const values = useStore(form.store, (state) => state.values)
 
-	const hasChanges =
-		values.name?.trim() !== defaultValues.name ||
-		values.date?.getTime() !== defaultValues.date?.getTime() ||
-		JSON.stringify(values.tags) !== JSON.stringify(defaultValues.tags) ||
-		values.attachment !== defaultValues.attachment
+	const hasChanges = !form.state.isDefaultValue
 
 	// ─── Handlers ─────────────────────────────────────────────────────────────
 
@@ -118,6 +118,7 @@ function EditDiscussionModal({
 
 	function handleFileChange(file: File | null) {
 		form.setFieldValue("attachment", file)
+		form.setFieldValue("deleteAttachment", !file && !!source?.attachmentKey)
 	}
 
 	function handleOpenChange(open: boolean) {
