@@ -50,10 +50,7 @@ export default function FocusedInstructions({
 	}
 
 	const filteredTasks = useMemo(
-		() =>
-			getFilteredTasks(activeTab, tasks)
-				.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-				.slice(0, 7),
+		() => getFilteredTasks(activeTab, tasks).slice(0, 7),
 		[activeTab, tasks],
 	)
 
