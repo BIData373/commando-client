@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useMemo, useRef, useState } from "react"
 import {
+	getGetAssigneeQueryKey,
 	getListAssigneesQueryKey,
 	useCreateAssignee,
 	useUpdateAssignee,
@@ -41,8 +42,8 @@ const MAX_NAME_LENGTH = 30
 
 interface AssigneeDialogProps {
 	open: boolean
-	onOpenChange: (open: boolean) => void
 	assignee?: AssigneeDto
+	onOpenChange: (open: boolean) => void
 }
 
 export function AssigneeDialog({
@@ -62,8 +63,10 @@ export function AssigneeDialog({
 	const [iconSearch, setIconSearch] = useState("")
 	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
 
+	const assigneesQueryKey = getListAssigneesQueryKey({ workspaceId })
+
 	const handleSubmitSuccess = (data: AssigneeDto) => {
-		queryClient.setQueryData(queryKey, (prev?: AssigneesDto[]) => {
+		queryClient.setQueryData(assigneesQueryKey, (prev?: AssigneesDto[]) => {
 			const updated = [...(prev ?? [])]
 			const foundIndex = updated.findIndex(({ id }) => id === data.id)
 
@@ -76,14 +79,14 @@ export function AssigneeDialog({
 			return updated
 		})
 
+		// TODO - maybe somehow invalidate all tasks in this workspace that are connected?
 		invalidateQueries([
 			getListPersonalTasksQueryKey(),
 			getListTasksQueryKey({ workspaceId }),
-			// TODO - maybe somehow invalidate all tasks in this workspace that are connected?
+			...(assignee ? [getGetAssigneeQueryKey({ id: assignee.id })] : []),
 		])
 	}
 
-	const queryKey = getListAssigneesQueryKey({ workspaceId })
 	const { mutateAsync: createAssignee } = useCreateAssignee({
 		mutation: {
 			onSuccess: handleSubmitSuccess,
