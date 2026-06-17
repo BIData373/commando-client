@@ -43,7 +43,6 @@ export function SettingsForm() {
 	})
 
 	const [iconSearch, setIconSearch] = useState("")
-	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
 
 	const form = useForm({
 		defaultValues: { title, pikudId, icon } as UpdateWorkspaceDto,
@@ -105,14 +104,15 @@ export function SettingsForm() {
 
 	function handleIconSelect(icon: IMesibaIcon) {
 		form.setFieldValue("icon", icon.iconName)
-		setSelectedIcon(icon)
 		setIconSearch(icon.heb_name)
+	}
+
+	function handleIconSearchClear() {
+		setIconSearch("")
 	}
 
 	function handleIconClear() {
 		form.setFieldValue("icon", "")
-		setSelectedIcon(null)
-		setIconSearch("")
 	}
 
 	function handleImageNotFound(e: React.SyntheticEvent<HTMLImageElement>) {
@@ -149,9 +149,8 @@ export function SettingsForm() {
 				<IconDropdown
 					value={iconSearch}
 					onChange={setIconSearch}
-					onClear={handleIconClear}
+					onClear={handleIconSearchClear}
 					onSelect={handleIconSelect}
-					selectedItem={selectedIcon ?? undefined}
 				/>
 				<IconPreview>
 					{values.icon ? (
