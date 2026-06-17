@@ -75,6 +75,11 @@ const Card = styled.div<{ $hasContent: boolean }>`
   overflow: hidden;
   box-shadow: 0 1px 2px oklch(0 0 0 / 0.03), 0 1px 6px -1px oklch(0 0 0 / 0.02), 0 2px 4px oklch(0 0 0 / 0.02);
 
+  [data-slot="table"] {
+    width: 100%;
+    table-layout: fixed;
+  }
+
   [data-slot="table-row"] {
     border-bottom: none;
     height: 44px;
@@ -84,13 +89,7 @@ const Card = styled.div<{ $hasContent: boolean }>`
     height: 44px;
     padding-block: 0;
     vertical-align: middle;
-  }
-
-  [data-slot="table-cell"]:first-child {
-    max-width: 0;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   ${({ $hasContent }) =>
 		$hasContent

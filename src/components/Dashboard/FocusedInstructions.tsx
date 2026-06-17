@@ -91,7 +91,7 @@ export default function FocusedInstructions({
 					))}
 				</TabsHeader>
 				<ContentPanel>
-					<DataTable
+					<StyledTable
 						columns={columns}
 						data={filteredTasks}
 						showHeader={false}
@@ -215,6 +215,13 @@ const ContentPanel = styled.div`
   flex-direction: column;
   height: 308px;
   overflow: hidden;
+  min-width: 0;
+  width: 100%;
+
+  [data-slot="table"] {
+    width: 100%;
+    table-layout: fixed;
+  }
 
   [data-slot="table-row"] {
     border-bottom: none;
@@ -225,12 +232,10 @@ const ContentPanel = styled.div`
     height: 44px;
     padding-block: 0;
     vertical-align: middle;
-  }
-
-  [data-slot="table-cell"]:first-child {
-    max-width: 0;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
+`
+
+const StyledTable = styled(DataTable<TaskRow>)`
+	width: 100%;
 `
