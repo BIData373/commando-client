@@ -1,9 +1,9 @@
-import { AxiosError } from "axios"
 import { type PropsWithChildren, useMemo } from "react"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useErrorHandler } from "src/providers/ErrorModalProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { ErrorCode } from "src/utils/error-utils"
 
 const allowedTypes: Record<PermissionType, PermissionType[]> = {
 	[PermissionType.VIEWER]: [PermissionType.VIEWER, PermissionType.MANAGER],
@@ -29,12 +29,11 @@ export function AuthorizationWrapper({
 	const permitted =
 		!myPermission || allowedTypes[type].includes(myPermission.type)
 	const permittedError = useMemo(
-		() =>
-			myPermission && !permitted ? new AxiosError(undefined, "403") : null,
+		() => (myPermission && !permitted ? ErrorCode.UNAUTHORIZED : null),
 		[myPermission, permitted],
 	)
 
-	useErrorHandler(permissionError, permittedError)
+	useErrorHandler(permissionError?.status, permittedError)
 
 	return myPermission && children
 }

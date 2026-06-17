@@ -43,7 +43,7 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 		(workspaceStatuses ?? []).map((s) => [s.id, s]),
 	)
 
-	useErrorHandler(workspacesError, workspaceStatusesError)
+	useErrorHandler(workspacesError?.status, workspaceStatusesError?.status)
 
 	const setWorkspace = (data: UpdateWorkspaceDto) => {
 		queryClient.setQueryData(

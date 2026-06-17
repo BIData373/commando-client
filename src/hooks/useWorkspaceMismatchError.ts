@@ -1,7 +1,7 @@
-import { AxiosError } from "axios"
 import { useMemo } from "react"
 import { useErrorHandler } from "src/providers/ErrorModalProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { ErrorCode } from "src/utils/error-utils"
 
 interface IWorkspaceId {
 	workspaceId: number
@@ -15,7 +15,7 @@ export function useWorkspaceMismatchError<T extends IWorkspaceId>(entity?: T) {
 	const workspaceMismatchError = useMemo(
 		() =>
 			entity?.workspaceId && entity.workspaceId !== workspaceId
-				? new AxiosError(undefined, "404")
+				? ErrorCode.NOT_FOUND
 				: null,
 		[entity?.workspaceId, workspaceId],
 	)
