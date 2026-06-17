@@ -24,9 +24,12 @@ export function UserItem({ user: { upn, info } }: UserItemProps) {
 
 const StyledUser = styled.div`
 	display: flex;
+	flex-wrap: wrap;
 	gap: 8px;
 	height: 100%;
 	align-items: center;
+	align-content: center;
+	overflow: hidden;
 `
 
 const UserName = styled.span`
@@ -55,6 +58,5 @@ const UserMeta = styled.span`
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	flex-shrink: 100;
-	min-width: 0;
 	text-align: end;
 `

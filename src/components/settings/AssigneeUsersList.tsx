@@ -5,12 +5,12 @@ import type { MirageUserDto } from "src/api/model"
 import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { UserItem } from "./UserItem"
 
-interface UsersListsProps {
+interface AssigneeUsersListProps {
 	users: MirageUserDto[]
 	onRemove: (upn: string) => void
 }
 
-export function UsersLists({ users, onRemove }: UsersListsProps) {
+export function AssigneeUsersList({ users, onRemove }: AssigneeUsersListProps) {
 	return (
 		<UserListArea>
 			{users.length > 0 && (

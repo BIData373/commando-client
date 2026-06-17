@@ -33,10 +33,10 @@ import {
 	DialogTitle,
 } from "../ui/dialog"
 import { Input } from "../ui/input"
+import { AssigneeUsersList } from "./AssigneeUsersList"
 import { ColorPicker, PRESET_COLORS } from "./ColorPicker"
 import { DropdownUsers } from "./DropdownUsers"
 import { IconDropdown } from "./IconDropdown"
-import { UsersLists } from "./UsersLists"
 
 const MAX_NAME_LENGTH = 30
 
@@ -311,7 +311,7 @@ export function AssigneeDialog({
 											placeholder="חפש שם/ תפקיד/ מספר אישי"
 										/>
 									</SearchRow>
-									<UsersLists
+									<AssigneeUsersList
 										users={field.state.value}
 										onRemove={handleRemoveAssignee}
 									/>
