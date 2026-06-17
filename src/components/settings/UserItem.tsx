@@ -36,7 +36,6 @@ const UserName = styled.span`
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	flex-grow: 1;
 	flex-shrink: 1;
 	min-width: 0;
 `
@@ -46,7 +45,6 @@ const UserUpn = styled.span`
 	font-weight: 400;
 	color: rgba(0, 0, 0, 0.88);
 	white-space: nowrap;
-	flex-shrink: 0;
 `
 
 const UserMeta = styled.span`
