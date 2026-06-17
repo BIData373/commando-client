@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
 import { omit, uniq } from "lodash"
-import { ChevronDown, ChevronUp, X } from "lucide-react"
+import { ChevronDown, ChevronUp } from "lucide-react"
 import { useRef, useState } from "react"
 import {
 	type CreateTaskDto,
@@ -27,6 +27,7 @@ import { CancelButton } from "../shared/CancelButton"
 import FlagIcon from "../shared/FlagIcon"
 import { FormField } from "../shared/FormField"
 import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
+import ModalCloseButton from "../shared/ModalCloseButton"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { Checkbox } from "../ui/checkbox"
@@ -319,9 +320,7 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
 			<ModalCard>
-				<ModalCloseButton onClick={onClose}>
-					<X size={16} />
-				</ModalCloseButton>
+				<ModalCloseButton onClose={onClose} />
 
 				<ModalBody>
 					<ModalHeader $shadow={scrollShadow.top}>
@@ -481,28 +480,6 @@ const ModalCard = styled(ModalContent)`
   min-height: 800px;
   overflow: hidden;
   padding-block-start: 36px;
-`
-
-const ModalCloseButton = styled.button`
-  position: absolute;
-  inset-block-start: 15px;
-  inset-inline-end: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 2px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: rgba(0, 0, 0, 0.45);
-  outline: none;
-
-  &:hover {
-    color: rgba(0, 0, 0, 0.88);
-    background: rgba(0, 0, 0, 0.04);
-  }
 `
 
 const ModalBody = styled.div`

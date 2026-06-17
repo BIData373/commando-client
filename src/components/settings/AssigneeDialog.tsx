@@ -22,6 +22,7 @@ import { invalidateQueries, queryClient } from "src/queryClient"
 import { concatName } from "src/utils/user-utils"
 import { CancelButton } from "../shared/CancelButton"
 import { FormField } from "../shared/FormField"
+import ModalCloseButton from "../shared/ModalCloseButton"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import {
@@ -221,9 +222,14 @@ export function AssigneeDialog({
 		onOpenChange(open)
 	}
 
+	function handleClose() {
+		handleOpenChange(false)
+	}
+
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<AssigneeDialogContent>
+				<ModalCloseButton onClose={handleClose} />
 				<DialogHeader $shadow={scrollShadow.top}>
 					<DialogTitleLarge>
 						{isUpdate ? "עריכת אחראי" : "יצירת אחראי"}
