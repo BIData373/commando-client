@@ -9,15 +9,15 @@ export function UserItem({ user: { upn, info } }: UserItemProps) {
 	return (
 		<StyledUser>
 			{info?.name && (
-				<UserName>
+				<UserName title={info?.name}>
 					{info?.name}
 					{" - "}
 				</UserName>
 			)}
 
-			<UserUpn>{upn}</UserUpn>
+			<UserUpn title={upn}>{upn}</UserUpn>
 
-			<UserMeta>{info?.displayName ?? ""}</UserMeta>
+			<UserMeta title={info?.displayName}>{info?.displayName ?? ""}</UserMeta>
 		</StyledUser>
 	)
 }
@@ -27,24 +27,36 @@ const StyledUser = styled.div`
 	gap: 8px;
 	height: 100%;
 	align-items: center;
-	/* text-align: center; */
 `
 
 const UserName = styled.span`
-  font-size: var(--fs-base);
-  font-weight: 600;
-  color: rgba(0, 0, 0, 0.88);
+	font-size: var(--fs-base);
+	font-weight: 600;
+	color: rgba(0, 0, 0, 0.88);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	flex-grow: 1;
+	flex-shrink: 1;
+	min-width: 0;
 `
 
 const UserUpn = styled.span`
-  font-size: var(--fs-base);
-  font-weight: 400;
-  color: rgba(0, 0, 0, 0.88);
+	font-size: var(--fs-base);
+	font-weight: 400;
+	color: rgba(0, 0, 0, 0.88);
+	white-space: nowrap;
+	flex-shrink: 0;
 `
 
 const UserMeta = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  color: var(--text-color);
-  color: rgba(0, 0, 0, 0.45);
+	font-size: var(--fs-btn);
+	font-weight: 400;
+	color: rgba(0, 0, 0, 0.45);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	flex-shrink: 100;
+	min-width: 0;
+	text-align: end;
 `
