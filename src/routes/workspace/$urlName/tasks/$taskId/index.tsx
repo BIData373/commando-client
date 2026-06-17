@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router"
 import { useGetTask } from "src/api/task/task"
 import { useWorkspaceMismatchError } from "src/hooks/useWorkspaceMismatchError"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import TaskDetailPanel from "../../../../../components/TaskDetail/TaskDetailPanel"
 
 export const Route = createFileRoute("/workspace/$urlName/tasks/$taskId/")({
@@ -8,8 +9,13 @@ export const Route = createFileRoute("/workspace/$urlName/tasks/$taskId/")({
 })
 
 function TaskDetail() {
-	const { urlName, taskId } = Route.useParams()
+	const { taskId } = Route.useParams()
 	const { view } = useSearch({ from: "/workspace/$urlName/tasks" })
+
+	const {
+		workspace: { urlName },
+	} = useWorkspace()
+
 	const navigate = useNavigate()
 
 	const { data: task } = useGetTask({ id: Number(taskId) })

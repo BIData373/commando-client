@@ -18,6 +18,7 @@ import {
 import { useGetMyPermission } from "src/api/permission/permission"
 import { getAttachmentSignedUrl } from "src/api/s3/s3"
 import {
+	getGetTaskQueryKey,
 	getListPersonalTasksQueryKey,
 	getListTasksQueryKey,
 	useDeleteTask,
@@ -77,15 +78,16 @@ function TaskDetailPanel({
 	const isManager = myPermission?.type === PermissionType.MANAGER
 
 	const { data: history } = useListTaskHistory({ taskId: id })
+
+	function handleSuccess() {
+		invalidateQueries([
+			getListTasksQueryKey({ workspaceId }),
+			getListPersonalTasksQueryKey(),
+		])
+	}
+
 	const { mutate: deleteTaskMutate } = useDeleteTask({
-		mutation: {
-			onSuccess: () => {
-				invalidateQueries([
-					getListTasksQueryKey({ workspaceId }),
-					getListPersonalTasksQueryKey(),
-				])
-			},
-		},
+		mutation: { onSuccess: handleSuccess },
 	})
 
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
@@ -134,9 +136,21 @@ function TaskDetailPanel({
 		if (!open) onClose()
 	}
 
+	function handleEdit() {
+		handleSuccess()
+		onEdit()
+	}
+
 	function handleDelete() {
 		deleteTaskMutate({ pathParams: { id } })
 		onClose()
+	}
+
+	function handleEditDiscussionSuccess() {
+		invalidateQueries([
+			getListTasksQueryKey({ workspaceId }),
+			getGetTaskQueryKey({ id }),
+		])
 	}
 
 	return (
@@ -159,7 +173,7 @@ function TaskDetailPanel({
 						</TextWrapper>
 						<RowActionsMenu
 							workspaceId={workspaceId}
-							onEdit={isManager ? onEdit : undefined}
+							onEdit={isManager ? handleEdit : undefined}
 							onDelete={isManager ? handleDelete : undefined}
 						/>
 					</TitleRow>
@@ -299,11 +313,12 @@ function TaskDetailPanel({
 						/>
 					</>
 				)}
-				{showEditDiscussion && source?.id && (
+				{showEditDiscussion && source && (
 					<EditDiscussionModal
-						onClose={handleCloseEditDiscussion}
 						sourceId={source.id}
-						taskId={id}
+						workspaceId={workspaceId}
+						onClose={handleCloseEditDiscussion}
+						onSuccess={handleEditDiscussionSuccess}
 					/>
 				)}
 			</Panel>

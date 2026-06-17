@@ -7,7 +7,6 @@ import {
 	Popover as PopoverPrimitive,
 } from "radix-ui"
 import { useState } from "react"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
 import type { UpdateSourceDto } from "../../api/model"
 import {
@@ -15,7 +14,6 @@ import {
 	useGetSource,
 	useUpdateSource,
 } from "../../api/source/source"
-import { getGetTaskQueryKey, getListTasksQueryKey } from "../../api/task/task"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { DialogOverlay } from "../ui/dialog"
 import { Popover, PopoverTrigger } from "../ui/popover"
@@ -24,19 +22,18 @@ import DiscussionForm from "./DiscussionForm"
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface EditDiscussionModalProps {
-	onClose: () => void
 	sourceId: number
-	taskId: number
+	workspaceId: number
+	onClose(): void
+	onSuccess(): void
 }
 
 function EditDiscussionModal({
-	onClose,
 	sourceId,
-	taskId,
+	workspaceId,
+	onClose,
+	onSuccess,
 }: EditDiscussionModalProps) {
-	const {
-		workspace: { id: workspaceId },
-	} = useWorkspace()
 	const { data: source } = useGetSource({ id: sourceId })
 
 	const { mutateAsync: updateSource } = useUpdateSource()
@@ -74,11 +71,10 @@ function EditDiscussionModal({
 
 			try {
 				await updateSource({ pathParams: { id: sourceId }, data })
-				invalidateQueries([
-					getListTasksQueryKey({ workspaceId }),
-					getGetTaskQueryKey({ id: taskId }),
-					getGetSourceQueryKey({ id: sourceId }),
-				])
+
+				invalidateQueries([getGetSourceQueryKey({ id: sourceId })])
+				onSuccess()
+
 				setShowConfirmation(false)
 				onClose()
 			} catch (error) {
