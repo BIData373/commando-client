@@ -1,8 +1,7 @@
 import styled from "@emotion/styled"
-import { useLocalStorage } from "@mantine/hooks"
 import { debounce } from "lodash"
 import type { ChangeEvent } from "react"
-import { isBIKey, requestUsernameKey } from "src/axios"
+import { useBIBypass } from "src/hooks/useBIBypass"
 import { adminUserUpn } from "src/hooks/useCurrentUser"
 import { queryClient } from "src/queryClient"
 import { STATIC_TOKEN } from "../utils/env-utils"
@@ -11,20 +10,14 @@ import { Input } from "./ui/input"
 import { Switch } from "./ui/switch"
 
 export function BIHeaderBypass() {
-	const [username, setUsername] = useLocalStorage({
-		key: requestUsernameKey,
-	})
-
-	const [isBI, setIsBI] = useLocalStorage<boolean>({
-		key: isBIKey,
-	})
+	const { username, setUsername, isBI, setIsBI } = useBIBypass()
 
 	function handleChangeUsername({
 		target: { value },
 	}: ChangeEvent<HTMLInputElement>) {
 		const cleanValue = value.replace(" ", "")
 
-		setUsername(cleanValue.length > 0 ? cleanValue : undefined)
+		setUsername(cleanValue.length > 0 ? cleanValue : null)
 	}
 
 	function handleChangeIsBI(checked: boolean) {
@@ -48,7 +41,7 @@ export function BIHeaderBypass() {
 						<Label>UPN</Label>
 
 						<Input
-							value={username}
+							value={username ?? undefined}
 							onChange={handleChangeUsername}
 							placeholder={adminUserUpn}
 						/>
@@ -64,7 +57,7 @@ export function BIHeaderBypass() {
 						<Label>Is BI</Label>
 
 						<Switch
-							checked={isBI}
+							checked={isBI ?? true}
 							onCheckedChange={handleChangeIsBIDebounced}
 							size="sm"
 							dir="rtl"
