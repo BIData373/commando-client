@@ -26,11 +26,12 @@ export function AuthorizationWrapper({
 		workspaceId,
 	})
 
-	const permitted =
-		!myPermission || allowedTypes[type].includes(myPermission.type)
 	const permittedError = useMemo(
-		() => (myPermission && !permitted ? ErrorCode.UNAUTHORIZED : null),
-		[myPermission, permitted],
+		() =>
+			myPermission && !allowedTypes[type].includes(myPermission.type)
+				? ErrorCode.UNAUTHORIZED
+				: null,
+		[myPermission, type],
 	)
 
 	useErrorHandler(permissionError?.status, permittedError)
