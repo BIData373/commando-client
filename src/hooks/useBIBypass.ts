@@ -9,7 +9,7 @@ export function useBIBypass() {
 
 	const [isBI, setIsBI] = useLocalStorage<boolean | null>({
 		key: isBIKey,
-		defaultValue: null,
+		defaultValue: true,
 	})
 
 	return { username, setUsername, isBI, setIsBI }
