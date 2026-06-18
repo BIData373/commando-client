@@ -158,7 +158,7 @@ export function SettingsForm() {
 							<IconClearButton type="button" onClick={handleIconClear}>
 								<X size={16} />
 							</IconClearButton>
-							<img
+							<IconImg
 								src={formatMesibaIcon(values.icon)}
 								alt="סמל לשכה"
 								onError={handleImageNotFound}
@@ -210,13 +210,11 @@ const IconPreview = styled.div`
   padding: 16px;
   height: 166px;
   width: 100%;
+`
 
-  img {
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
-    border-radius: 50%;
-  }
+const IconImg = styled.img`
+  width: 100px;
+  object-fit: contain;
 `
 
 const IconPlaceholder = styled.span`
