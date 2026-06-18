@@ -54,7 +54,7 @@ interface ActionsConfig {
 
 interface UseTaskColumnsOptions {
 	visibleColumns: (keyof TaskRow)[]
-	searchQuery: string
+	searchQuery?: string
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
 	selectMode?: SelectModeConfig
 	actions?: ActionsConfig
@@ -96,7 +96,7 @@ function useTaskColumns({
 		upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } })
 	}
 
-	const allVisibleColumns = [...visibleColumns, "id", "select", "actions"]
+	const allVisibleColumns = [...visibleColumns, "select", "actions"]
 
 	// TODO Move all constant fields to task-table-utils
 	const allColumns = [

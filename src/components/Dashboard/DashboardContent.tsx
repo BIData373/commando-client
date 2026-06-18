@@ -83,6 +83,7 @@ const GridLayout = styled.div`
 
   @media (max-width: 1300px) {
     grid-template-columns: 1fr 1fr;
+    grid-auto-flow: dense;
     gap: 48px 24px;
   }
 `
