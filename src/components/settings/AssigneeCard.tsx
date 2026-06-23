@@ -60,25 +60,27 @@ export function AssigneeCard({
 				</CardHeaderRow>
 			</StyledCardHeader>
 
-			<CardContent>
-				<Separator />
+			{visibleUsers.length > 0 && (
+				<CardContent>
+					<Separator />
 
-				<TagRow>
-					{visibleUsers.map(({ id, info }) => (
-						<StyledBadge key={id} variant="secondary">
-							<User size={16} />
+					<TagRow>
+						{visibleUsers.map(({ id, info }) => (
+							<StyledBadge key={id} variant="secondary">
+								<User size={16} />
 
-							<BageText>{info?.name ?? `#${id}`}</BageText>
-						</StyledBadge>
-					))}
+								<BageText>{info?.name ?? `#${id}`}</BageText>
+							</StyledBadge>
+						))}
 
-					{remainingUsers > 0 && (
-						<StyledBadge variant="outline">
-							<BageText>+{remainingUsers}</BageText>
-						</StyledBadge>
-					)}
-				</TagRow>
-			</CardContent>
+						{remainingUsers > 0 && (
+							<StyledBadge variant="outline">
+								<BageText>+{remainingUsers}</BageText>
+							</StyledBadge>
+						)}
+					</TagRow>
+				</CardContent>
+			)}
 		</StyledCard>
 	)
 }
