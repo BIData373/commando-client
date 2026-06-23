@@ -44,6 +44,8 @@ export function SettingsForm() {
 
 	const [iconSearch, setIconSearch] = useState("")
 	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
+	const [titleHovered, setTitleHovered] = useState(false)
+	const [titleFocused, setTitleFocused] = useState(false)
 
 	const form = useForm({
 		defaultValues: { title, pikudId, icon } as UpdateWorkspaceDto,
@@ -123,15 +125,21 @@ export function SettingsForm() {
 	return (
 		<FormRoot>
 			<FormField label="שם סביבה">
-				<InputWrapper>
+				<InputWrapper
+					onMouseEnter={() => setTitleHovered(true)}
+					onMouseLeave={() => setTitleHovered(false)}
+				>
 					<StyledInput
 						value={values.title ?? ""}
 						onChange={handleTitleChange}
 						placeholder="הזן שם סביבה"
 						maxLength={NAME_MAX_LENGTH}
+						onFocus={() => setTitleFocused(true)}
+						onBlur={() => setTitleFocused(false)}
 					/>
 					<CharCounter
 						$atLimit={(values.title ?? "").length >= NAME_MAX_LENGTH}
+						$visible={titleHovered || titleFocused}
 					>
 						{(values.title ?? "").length}/{NAME_MAX_LENGTH}
 					</CharCounter>
@@ -182,6 +190,14 @@ const FormRoot = styled.div`
   direction: rtl;
 `
 
+const CharCounter = styled.span<{ $atLimit: boolean; $visible: boolean }>`
+  font-size: var(--fs-sm);
+  color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger, #e53e3e)" : "var(--sea-ink-soft)")};
+  text-align: end;
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  transition: opacity 0.15s;
+`
+
 const InputWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -191,12 +207,6 @@ const InputWrapper = styled.div`
 
 const StyledInput = styled(Input)`
   background: var(--background);
-`
-
-const CharCounter = styled.span<{ $atLimit: boolean }>`
-  font-size: var(--fs-sm);
-  color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger, #e53e3e)" : "var(--sea-ink-soft)")};
-  text-align: end;
 `
 
 const IconPreview = styled.div`

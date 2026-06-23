@@ -25,7 +25,7 @@ export function AssigneeCard({
 	assignee: { users, tasksCount },
 }: AssigneeCardProps) {
 	const visibleUsers = users.slice(0, MAX_VISIBLE_TAGS)
-	const remainingUsers = users.length - MAX_VISIBLE_TAGS
+	const remainingUsers = users.slice(MAX_VISIBLE_TAGS)
 
 	const { urlName } = useParams({ strict: false })
 	const navigate = useNavigate()
@@ -73,9 +73,9 @@ export function AssigneeCard({
 							</StyledBadge>
 						))}
 
-						{remainingUsers > 0 && (
+						{remainingUsers.length > 0 && (
 							<StyledBadge variant="outline">
-								<BageText>+{remainingUsers}</BageText>
+								<BageText>+{remainingUsers.length}</BageText>
 							</StyledBadge>
 						)}
 					</TagRow>
