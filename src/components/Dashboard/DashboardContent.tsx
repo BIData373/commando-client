@@ -42,7 +42,7 @@ export function DashboardContent() {
 
 	return (
 		<ContentArea>
-			<TasksDatePicker />
+			<TasksDatePicker showPlaceholder />
 
 			<GridLayout>
 				<FocusedInstructions
