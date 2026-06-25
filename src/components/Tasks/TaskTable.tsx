@@ -194,6 +194,17 @@ function TaskTable({
 		})
 	}
 
+	const sortedTasks = useMemo(
+		() =>
+			sorting.length > 0
+				? tasks
+				: [...tasks].sort(
+						(a, b) =>
+							new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+					),
+		[tasks, sorting],
+	)
+
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
 
 	const extraColumnIds = extraColumns
@@ -251,7 +262,7 @@ function TaskTable({
 			<TableWrapper>
 				<DataTable
 					columns={columns}
-					data={tasks}
+					data={sortedTasks}
 					rowSelection={selectMode ? rowSelection : undefined}
 					onRowSelectionChange={selectMode ? setRowSelection : undefined}
 					columnFilters={columnFilters}
