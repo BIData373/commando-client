@@ -21,7 +21,7 @@ export const Route = createFileRoute("/personal")({
 const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRow)[] = [
 	"title",
 	"status",
-	"assignee",
+	"assigneeStatuses",
 	"deadlineType",
 	"source",
 	"tags",
