@@ -69,7 +69,20 @@ export function TopicCell({ tags }: TopicCellProps) {
 		calculateVisibleTags()
 	}, [tags, calculateVisibleTags])
 
+	const [overflowOpen, setOverflowOpen] = useState(false)
 	const hiddenTags = tags.slice(visibleCount)
+
+	function handleOpenOverflow() {
+		setOverflowOpen(true)
+	}
+
+	function handleCloseOverflow() {
+		setOverflowOpen(false)
+	}
+
+	function handlePreventAutoFocus(e: Event) {
+		e.preventDefault()
+	}
 
 	return (
 		<CellRoot ref={containerRef}>
@@ -85,11 +98,22 @@ export function TopicCell({ tags }: TopicCellProps) {
 			))}
 
 			{hiddenTags.length > 0 && (
-				<Popover>
+				<Popover open={overflowOpen} onOpenChange={setOverflowOpen}>
 					<PopoverTrigger asChild>
-						<OverflowTag>{hiddenTags.length}+</OverflowTag>
+						<OverflowTag
+							onMouseEnter={handleOpenOverflow}
+							onMouseLeave={handleCloseOverflow}
+						>
+							{hiddenTags.length}+
+						</OverflowTag>
 					</PopoverTrigger>
-					<StyledPopoverContent side="top" sideOffset={6}>
+					<StyledPopoverContent
+						side="top"
+						sideOffset={6}
+						onMouseEnter={handleOpenOverflow}
+						onMouseLeave={handleCloseOverflow}
+						onOpenAutoFocus={handlePreventAutoFocus}
+					>
 						<OverflowList>
 							{hiddenTags.map((tag) => (
 								<Tag key={tag}>{tag}</Tag>

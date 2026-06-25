@@ -496,6 +496,9 @@ const IdCell = styled.span`
   font-weight: 400;
   line-height: 24px;
   color:rgba(0, 0, 0, 0.65);
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 `
 
 const TitleCell = styled.div`
@@ -507,6 +510,9 @@ const TitleCell = styled.div`
   font-weight: 400;
   line-height: 20px;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 `
 
 const TitlePart = styled.span`
