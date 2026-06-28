@@ -73,7 +73,6 @@ export default function FocusedInstructions({
 	const { columns } = useTaskColumns({
 		onUpdateStatusSuccess,
 		visibleColumns: ["title", "status", "assigneeStatuses", "deadlineType"],
-		searchQuery: "",
 		onTitleDoubleClick: onTaskDoubleClick,
 	})
 

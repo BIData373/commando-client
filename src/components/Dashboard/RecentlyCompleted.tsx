@@ -28,7 +28,6 @@ export default function RecentlyCompleted({
 	const { columns } = useTaskColumns({
 		onUpdateStatusSuccess,
 		visibleColumns: ["title", "status", "assigneeStatuses"],
-		searchQuery: "",
 		onTitleDoubleClick: onTaskDoubleClick,
 	})
 
@@ -51,14 +50,6 @@ export default function RecentlyCompleted({
 		</DashboardSection>
 	)
 }
-
-const Section = styled.div`
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`
 
 const TabsButtons = styled.div`
 	display: flex;
