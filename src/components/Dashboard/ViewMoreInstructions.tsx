@@ -38,7 +38,7 @@ export const ViewMoreInstructions = ({
 
 	return (
 		<ViewMoreButton onClick={handleViewMore}>
-			צפה בעוד הנחיות
+			פרטים נוספים
 			<ChevronLeft size={16} />
 		</ViewMoreButton>
 	)
@@ -51,13 +51,18 @@ const ViewMoreButton = styled.button`
   padding: 4px 15px;
   font-size: var(--fs-btn);
   color: var(--foreground);
-  background: transparent;
   border: none;
   cursor: pointer;
   border-radius: 6px;
-  align-self: flex-end;
+  align-self: flex-start;
 
-  &:hover {
-    background: var(--chip-bg);
+  background: rgba(0, 0, 0, 0.04);
+
+  :hover {
+	background: var(--button-hover);
+  }
+
+  :active {
+	background: var(--button-active);
   }
 `

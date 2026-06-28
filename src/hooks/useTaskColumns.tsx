@@ -60,6 +60,7 @@ interface UseTaskColumnsOptions {
 	actions?: ActionsConfig
 	showMenuColumn?: boolean
 	onUpdateStatusSuccess?(): void
+	onTitleDoubleClick?: (taskId: number) => void
 }
 
 function useTaskColumns({
@@ -70,6 +71,7 @@ function useTaskColumns({
 	actions,
 	showMenuColumn = true,
 	onUpdateStatusSuccess,
+	onTitleDoubleClick,
 }: UseTaskColumnsOptions) {
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
@@ -167,7 +169,12 @@ function useTaskColumns({
 					original: { id, title, description, flagged },
 				},
 			}) => (
-				<TitleCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
+				<TitleCell
+					$clickable={!!(onTitleDoubleClick ?? actions?.onDoubleClick)}
+					onDoubleClick={() =>
+						(onTitleDoubleClick ?? actions?.onDoubleClick)?.(id)
+					}
+				>
 					{flagged && <FlagIcon />}
 					{description ? (
 						<>
@@ -498,7 +505,7 @@ const IdCell = styled.span`
   color:rgba(0, 0, 0, 0.65);
 `
 
-const TitleCell = styled.div`
+const TitleCell = styled.div<{ $clickable?: boolean }>`
   display: flex;
   align-items: center;
   gap: 6px;
@@ -507,6 +514,7 @@ const TitleCell = styled.div`
   font-weight: 400;
   line-height: 20px;
   overflow: hidden;
+  cursor: ${({ $clickable }) => ($clickable ? "pointer" : "default")};
 `
 
 const TitlePart = styled.span`
