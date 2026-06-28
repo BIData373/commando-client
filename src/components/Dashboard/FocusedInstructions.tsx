@@ -9,6 +9,7 @@ import type { TaskRow } from "src/utils/task-table-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
+import { DashboardSection } from "./DashboardSection"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface TabConfig {
@@ -77,8 +78,9 @@ export default function FocusedInstructions({
 	})
 
 	return (
-		<Section>
-			<TabsWrapper>
+		<DashboardSection
+			gap={0}
+			tabButtons={
 				<TabsButtons>
 					<TabsHeader>
 						{tabs.map((tab) => (
@@ -103,45 +105,23 @@ export default function FocusedInstructions({
 						}
 					/>
 				</TabsButtons>
-				<ContentPanel>
-					<DataTable
-						columns={columns}
-						data={filteredTasks}
-						showHeader={false}
-						emptyState={
-							<EmptyCardState {...DASHBOARD_EMPTY_STATES[activeTab]} />
-						}
-					/>
-				</ContentPanel>
-			</TabsWrapper>
-		</Section>
+			}
+		>
+			<DataTable
+				columns={columns}
+				data={filteredTasks}
+				showHeader={false}
+				emptyState={<EmptyCardState {...DASHBOARD_EMPTY_STATES[activeTab]} />}
+			/>
+		</DashboardSection>
 	)
 }
-
-const Section = styled.div`
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-
-  @media (max-width: 1300px) {
-    grid-column: 1 / -1;
-    grid-row: 1;
-  }
-`
 
 const TabsButtons = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	min-width: 0;
-`
-
-const TabsWrapper = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 `
 
 const TabsHeader = styled.div`
@@ -164,6 +144,7 @@ const TabItem = styled.button<{ $active: boolean }>`
   border-radius: 6px 6px 0 0;
   cursor: pointer;
   margin-bottom: -1px;
+  border: 1px solid var(--line);
   align-items: flex-start;
 `
 
@@ -194,47 +175,4 @@ const TabCount = styled.span<{ $active: boolean }>`
       background-clip: text;
     `
 			: css`color: var(--foreground);`}
-`
-
-const ContentPanel = styled.div`
-  min-height: 352px;
-  max-height: 352px;
-  background: var(--background);
-  border-radius: 8px;
-  border-start-start-radius: 0;
-  position: relative;
-  overflow: hidden;
-
-  [data-slot="table-container"] {
-    overflow-y: auto;
-    max-height: 352px;
-    direction: ltr;
-  }
-
-  table {
-    direction: rtl;
-  }
-
-  [data-slot="table-row"] {
-    border-bottom: 0.5px solid rgba(0, 0, 0, 0.04);
-    height: 44px;
-  }
-
-  [data-slot="table-row"]:last-of-type {
-    border-bottom: none;
-  }
-
-  [data-slot="table-cell"] {
-    height: 44px;
-    padding-block: 0;
-    vertical-align: middle;
-    border-inline-start: 0.5px solid rgba(0, 0, 0, 0.04);
-  }
-
-  [data-slot="table-cell"]:first-child {
-    max-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
 `
