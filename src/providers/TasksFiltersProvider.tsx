@@ -1,8 +1,10 @@
 import { useLocalStorage } from "@mantine/hooks"
-import type { ColumnFiltersState } from "@tanstack/react-table"
+import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
 import {
 	createContext,
+	type Dispatch,
 	type PropsWithChildren,
+	type SetStateAction,
 	useContext,
 	useState,
 } from "react"
@@ -35,6 +37,9 @@ interface TasksFiltersContextValue {
 
 	columnsFilters: ColumnFiltersState
 	setColumnsFilters(columnsFilters: ColumnFiltersState): void
+
+	sorting: SortingState
+	setSorting: Dispatch<SetStateAction<SortingState>>
 }
 
 const WORKSPACE_DEFAULT_HIDDEN = new Set<keyof TaskRow>([
@@ -70,6 +75,7 @@ export function TasksFiltersProvider({
 		Set<QuickFilter>
 	>(currentActiveQuickFilters)
 	const [columnsFilters, setColumnsFilters] = useState<ColumnFiltersState>([])
+	const [sorting, setSorting] = useState<SortingState>([])
 
 	const [columnsVisibility, setColumnsVisibility] =
 		useLocalStorage<ColumnsVisibilityStorage>({
@@ -81,6 +87,7 @@ export function TasksFiltersProvider({
 		})
 
 	const columnOrder = columnsVisibility.columnOrder
+
 	const hiddenColumns = new Set<keyof TaskRow>(columnsVisibility.hiddenColumns)
 
 	function setColumnOrder(order: (keyof TaskRow)[]) {
@@ -156,6 +163,8 @@ export function TasksFiltersProvider({
 				setDateRange,
 				columnsFilters,
 				setColumnsFilters,
+				sorting,
+				setSorting,
 			}}
 		>
 			{children}

@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useMemo, useRef, useState } from "react"
 import {
+	getGetAssigneeQueryKey,
 	getListAssigneesQueryKey,
 	useCreateAssignee,
 	useUpdateAssignee,
@@ -22,6 +23,7 @@ import { invalidateQueries, queryClient } from "src/queryClient"
 import { concatName } from "src/utils/user-utils"
 import { CancelButton } from "../shared/CancelButton"
 import { FormField } from "../shared/FormField"
+import ModalCloseButton from "../shared/ModalCloseButton"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import {
@@ -31,17 +33,17 @@ import {
 	DialogTitle,
 } from "../ui/dialog"
 import { Input } from "../ui/input"
+import { AssigneeUsersList } from "./AssigneeUsersList"
 import { ColorPicker, PRESET_COLORS } from "./ColorPicker"
 import { DropdownUsers } from "./DropdownUsers"
 import { IconDropdown } from "./IconDropdown"
-import { UsersLists } from "./UsersLists"
 
 const MAX_NAME_LENGTH = 30
 
 interface AssigneeDialogProps {
 	open: boolean
-	onOpenChange: (open: boolean) => void
 	assignee?: AssigneeDto
+	onOpenChange: (open: boolean) => void
 }
 
 export function AssigneeDialog({
@@ -60,8 +62,10 @@ export function AssigneeDialog({
 	const [iconSearch, setIconSearch] = useState("")
 	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
 
+	const assigneesQueryKey = getListAssigneesQueryKey({ workspaceId })
+
 	const handleSubmitSuccess = (data: AssigneeDto) => {
-		queryClient.setQueryData(queryKey, (prev?: AssigneesDto[]) => {
+		queryClient.setQueryData(assigneesQueryKey, (prev?: AssigneesDto[]) => {
 			const updated = [...(prev ?? [])]
 			const foundIndex = updated.findIndex(({ id }) => id === data.id)
 
@@ -74,14 +78,14 @@ export function AssigneeDialog({
 			return updated
 		})
 
+		// TODO - maybe somehow invalidate all tasks in this workspace that are connected?
 		invalidateQueries([
 			getListPersonalTasksQueryKey(),
 			getListTasksQueryKey({ workspaceId }),
-			// TODO - maybe somehow invalidate all tasks in this workspace that are connected?
+			...(assignee ? [getGetAssigneeQueryKey({ id: assignee.id })] : []),
 		])
 	}
 
-	const queryKey = getListAssigneesQueryKey({ workspaceId })
 	const { mutateAsync: createAssignee } = useCreateAssignee({
 		mutation: {
 			onSuccess: handleSubmitSuccess,
@@ -207,9 +211,14 @@ export function AssigneeDialog({
 		onOpenChange(open)
 	}
 
+	function handleClose() {
+		handleOpenChange(false)
+	}
+
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<AssigneeDialogContent>
+				<ModalCloseButton onClose={handleClose} />
 				<DialogHeader $shadow={scrollShadow.top}>
 					<DialogTitleLarge>
 						{isUpdate ? "עריכת אחראי" : "יצירת אחראי"}
@@ -286,7 +295,7 @@ export function AssigneeDialog({
 											placeholder="חפש שם/ תפקיד/ מספר אישי"
 										/>
 									</SearchRow>
-									<UsersLists
+									<AssigneeUsersList
 										users={field.state.value}
 										onRemove={handleRemoveAssignee}
 									/>

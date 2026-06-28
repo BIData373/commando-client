@@ -3,7 +3,6 @@ import type {
 	ColumnDef,
 	ColumnFiltersState,
 	RowSelectionState,
-	SortingState,
 } from "@tanstack/react-table"
 import type React from "react"
 import { useMemo, useState } from "react"
@@ -66,6 +65,8 @@ function TaskTable({
 		hiddenColumns,
 		activeQuickFilters,
 		dateRange,
+		sorting,
+		setSorting,
 		columnsFilters,
 		setColumnsFilters,
 	} = useTasksFilters()
@@ -116,7 +117,6 @@ function TaskTable({
 
 		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
 	}
-	const [sorting, setSorting] = useState<SortingState>([])
 
 	const selectedRowKeys = Object.keys(rowSelection).filter(
 		(key) => rowSelection[key],
@@ -181,15 +181,19 @@ function TaskTable({
 		handleExitSelectMode()
 	}
 
-	function bulkUpdateStatus(taskIds: number[], status: WorkspaceStatusDto) {
-		taskIds.forEach((id) => {
-			const task = tasks.find((t) => t.id === id)
+	function bulkUpdateStatus(rowKeys: string[], status: WorkspaceStatusDto) {
+		rowKeys.forEach((rowKey) => {
+			const task = tasks.find((t) => t.rowKey === rowKey)
 			if (!task || !task.assignee) {
 				return
 			}
 
 			upsertStatus({
-				data: { taskId: id, assigneeId: task.assignee.id, statusId: status.id },
+				data: {
+					taskId: task.id,
+					assigneeId: task.assignee.id,
+					statusId: status.id,
+				},
 			})
 		})
 	}
@@ -277,7 +281,7 @@ function TaskTable({
 				isVisible={selectMode}
 				selectedCount={selectedTaskIds.length}
 				statuses={hideStatusAction ? undefined : statuses}
-				onChangeStatus={(status) => bulkUpdateStatus(selectedTaskIds, status)}
+				onChangeStatus={(status) => bulkUpdateStatus(selectedRowKeys, status)}
 				onArchive={handleBulkArchive}
 				onDelete={handleBulkDelete}
 				deleteDisabled={bulkDeleteDisabled}

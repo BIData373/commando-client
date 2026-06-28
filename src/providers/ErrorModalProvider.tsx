@@ -1,19 +1,15 @@
-import { AxiosError } from "axios"
 import {
 	createContext,
 	type ReactNode,
-	useCallback,
 	useContext,
 	useEffect,
 	useMemo,
 	useState,
 } from "react"
-import { ErrorCode, isErrorCode } from "../utils/error-utils"
 
 interface ErrorModalContextValue {
 	errorCode: number | null
 	setErrorCode(errorCode: number | null): void
-	handleError(error: Error): void
 }
 
 const ErrorModalContext = createContext<ErrorModalContextValue | null>(null)
@@ -25,29 +21,8 @@ interface ErrorModalProviderProps {
 export function ErrorModalProvider({ children }: ErrorModalProviderProps) {
 	const [errorCode, setErrorCode] = useState<number | null>(null)
 
-	const handleError = useCallback((error: Error) => {
-		if (error instanceof AxiosError) {
-			const possibleStatuses = [
-				error?.code,
-				error?.status,
-				error?.response?.status,
-			]
-
-			const code =
-				Number(
-					possibleStatuses.find(
-						(status) => status && isErrorCode(Number(status)),
-					),
-				) ?? ErrorCode.SERVER_ERROR
-
-			setErrorCode(code)
-		}
-	}, [])
-
 	return (
-		<ErrorModalContext.Provider
-			value={{ errorCode, setErrorCode, handleError }}
-		>
+		<ErrorModalContext.Provider value={{ errorCode, setErrorCode }}>
 			{children}
 		</ErrorModalContext.Provider>
 	)
@@ -61,14 +36,14 @@ export function useErrorModal() {
 	return context
 }
 
-export function useErrorHandler(...errors: (Error | null)[]) {
-	const { handleError } = useErrorModal()
+export function useErrorHandler(...errors: (number | null | undefined)[]) {
+	const { setErrorCode } = useErrorModal()
 
-	const error = useMemo(() => errors.find(Boolean) ?? null, [errors])
+	const error = useMemo(() => errors.find(Boolean), [errors])
 
 	useEffect(() => {
 		if (error) {
-			handleError(error)
+			setErrorCode(error)
 		}
-	}, [error, handleError])
+	}, [error, setErrorCode])
 }

@@ -43,7 +43,6 @@ export function SettingsForm() {
 	})
 
 	const [iconSearch, setIconSearch] = useState("")
-	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
 	const [titleHovered, setTitleHovered] = useState(false)
 	const [titleFocused, setTitleFocused] = useState(false)
 
@@ -107,14 +106,15 @@ export function SettingsForm() {
 
 	function handleIconSelect(icon: IMesibaIcon) {
 		form.setFieldValue("icon", icon.iconName)
-		setSelectedIcon(icon)
 		setIconSearch(icon.heb_name)
+	}
+
+	function handleIconSearchClear() {
+		setIconSearch("")
 	}
 
 	function handleIconClear() {
 		form.setFieldValue("icon", "")
-		setSelectedIcon(null)
-		setIconSearch("")
 	}
 
 	function handleImageNotFound(e: React.SyntheticEvent<HTMLImageElement>) {
@@ -157,9 +157,8 @@ export function SettingsForm() {
 				<IconDropdown
 					value={iconSearch}
 					onChange={setIconSearch}
-					onClear={handleIconClear}
+					onClear={handleIconSearchClear}
 					onSelect={handleIconSelect}
-					selectedItem={selectedIcon ?? undefined}
 				/>
 				<IconPreview>
 					{values.icon ? (
@@ -167,7 +166,7 @@ export function SettingsForm() {
 							<IconClearButton type="button" onClick={handleIconClear}>
 								<X size={16} />
 							</IconClearButton>
-							<img
+							<IconImg
 								src={formatMesibaIcon(values.icon)}
 								alt="סמל לשכה"
 								onError={handleImageNotFound}
@@ -221,13 +220,11 @@ const IconPreview = styled.div`
   padding: 16px;
   height: 166px;
   width: 100%;
+`
 
-  img {
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
-    border-radius: 50%;
-  }
+const IconImg = styled.img`
+  width: 100px;
+  object-fit: contain;
 `
 
 const IconPlaceholder = styled.span`

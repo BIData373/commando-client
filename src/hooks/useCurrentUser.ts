@@ -1,7 +1,5 @@
-import { useLocalStorage } from "@mantine/hooks"
 import { useEffect, useState } from "react"
 import type { CreateUserDto } from "src/api/model"
-import { isBIKey, requestUsernameKey } from "src/axios"
 import { getStoredToken } from "src/utils/auth-utils"
 import { STATIC_TOKEN } from "src/utils/env-utils"
 import {
@@ -10,10 +8,14 @@ import {
 	normalizeUpn,
 	onCookieChange,
 } from "src/utils/user-utils"
+import { useBIBypass } from "./useBIBypass"
 
 export const adminUserUpn = "s0000000"
 
-function buildAdminUser(username?: string, isBI?: boolean): CreateUserDto {
+function buildAdminUser(
+	username?: string | null,
+	isBI?: boolean | null,
+): CreateUserDto {
 	const upn = username && username.length > 0 ? username : adminUserUpn
 
 	return {
@@ -22,26 +24,19 @@ function buildAdminUser(username?: string, isBI?: boolean): CreateUserDto {
 			upn,
 			name: "Admin",
 			displayName: "Admin",
-			isBI: isBI !== undefined ? isBI : true,
+			isBI: isBI !== undefined && isBI !== null ? isBI : true,
 		},
 	}
 }
 
 export function useCurrentUser() {
-	const [storedUsername] = useLocalStorage({
-		key: requestUsernameKey,
-	})
-	const [storedIsBI] = useLocalStorage<boolean>({
-		key: isBIKey,
-	})
+	const { username, isBI } = useBIBypass()
 
-	const [user, setUser] = useState(() =>
-		buildAdminUser(storedUsername, storedIsBI),
-	)
+	const [user, setUser] = useState(() => buildAdminUser(username, isBI))
 
 	useEffect(() => {
 		if (STATIC_TOKEN) {
-			setUser(buildAdminUser(storedUsername, storedIsBI))
+			setUser(buildAdminUser(username, isBI))
 			return
 		}
 
@@ -70,7 +65,7 @@ export function useCurrentUser() {
 		syncUser()
 
 		return onCookieChange(COOKIE_NAME, syncUser)
-	}, [storedUsername, storedIsBI])
+	}, [username, isBI])
 
 	return user
 }

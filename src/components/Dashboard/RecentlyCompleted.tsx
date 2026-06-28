@@ -1,3 +1,4 @@
+import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import { useMemo } from "react"
 import { WorkspaceStatusType } from "src/api/model"
@@ -6,6 +7,8 @@ import type { TaskRow } from "src/utils/task-table-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
+import { DashboardSection } from "./DashboardSection"
+import { DashboardTableCard } from "./DashboardTableCard"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface RecentlyCompletedProps {
@@ -25,12 +28,15 @@ export default function RecentlyCompleted({
 	const { columns } = useTaskColumns({
 		onUpdateStatusSuccess,
 		visibleColumns: ["title", "status", "assigneeStatuses"],
-		searchQuery: "",
 	})
 
 	return (
-		<Section>
-			<SectionTitle>הנחיות שבוצעו לאחרונה</SectionTitle>
+		<DashboardSection
+			title="הנחיות שבוצעו לאחרונה"
+			viewMore={
+				<ViewMoreInstructions statusFilter={WorkspaceStatusType.COMPLETED} />
+			}
+		>
 			<Card $hasContent={completedTasks.length > 0}>
 				<DataTable
 					columns={columns}
@@ -40,67 +46,26 @@ export default function RecentlyCompleted({
 					containerClassName="overflow-hidden"
 				/>
 			</Card>
-			<ViewMoreInstructions statusFilter={WorkspaceStatusType.COMPLETED} />
-		</Section>
+		</DashboardSection>
 	)
 }
 
-const Section = styled.div`
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-
-  @media (max-width: 1300px) {
-    grid-column: 1 / -1;
-    grid-row: 3;
-  }
-`
-
-const SectionTitle = styled.h2`
-  margin: 0;
-  font-size: var(--fs-heading-2);
-  font-weight: 400;
-  color: var(--sea-ink);
-  text-align: start;
-`
-
-const Card = styled.div<{ $hasContent: boolean }>`
+const Card = styled(DashboardTableCard)<{ $hasContent: boolean }>`
   flex: none;
   background: var(--background);
-  border: 1px solid var(--border);
   border-radius: 8px;
   height: 308px;
   overflow: hidden;
   box-shadow: 0 1px 2px oklch(0 0 0 / 0.03), 0 1px 6px -1px oklch(0 0 0 / 0.02), 0 2px 4px oklch(0 0 0 / 0.02);
-
-  [data-slot="table-row"] {
-    border-bottom: none;
-    height: 44px;
-  }
-
-  [data-slot="table-cell"] {
-    height: 44px;
-    padding-block: 0;
-    vertical-align: middle;
-  }
-
-  [data-slot="table-cell"]:first-child {
-    max-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
   ${({ $hasContent }) =>
 		$hasContent
-			? `
+			? css`
       display: flex;
       flex-direction: column;
       align-items: stretch;
       justify-content: flex-start;
     `
-			: `
+			: css`
       display: flex;
       align-items: center;
       justify-content: center;

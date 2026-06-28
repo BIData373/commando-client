@@ -1,8 +1,10 @@
 import styled from "@emotion/styled"
-import { useNavigate, useParams } from "@tanstack/react-router"
+import { useNavigate } from "@tanstack/react-router"
 import { User } from "lucide-react"
 import type { AssigneesDto } from "src/api/model"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
+import { OverflowRow } from "../shared/OverflowRow"
 import { Badge } from "../ui/badge"
 import {
 	Card,
@@ -14,8 +16,6 @@ import {
 import { Separator } from "../ui/separator"
 import { DeleteAssigneePopconfirm } from "./DeleteAssigneePopconfirm"
 
-const MAX_VISIBLE_TAGS = 2
-
 interface AssigneeCardProps {
 	assignee: AssigneesDto
 }
@@ -24,16 +24,16 @@ export function AssigneeCard({
 	assignee,
 	assignee: { users, tasksCount },
 }: AssigneeCardProps) {
-	const visibleUsers = users.slice(0, MAX_VISIBLE_TAGS)
-	const remainingUsers = users.slice(MAX_VISIBLE_TAGS)
+	const {
+		workspace: { urlName },
+	} = useWorkspace()
 
-	const { urlName } = useParams({ strict: false })
 	const navigate = useNavigate()
 
 	function onCardClick() {
 		navigate({
 			to: "/workspace/$urlName/settings/assignees/$assigneeId",
-			params: { urlName: urlName!, assigneeId: String(assignee.id) },
+			params: { urlName, assigneeId: String(assignee.id) },
 		})
 	}
 
@@ -60,27 +60,24 @@ export function AssigneeCard({
 				</CardHeaderRow>
 			</StyledCardHeader>
 
-			{visibleUsers.length > 0 && (
-				<CardContent>
-					<Separator />
+			<CardContent>
+				{users.length > 0 && <StyledSeparator />}
 
-					<TagRow>
-						{visibleUsers.map(({ id, info }) => (
-							<StyledBadge key={id} variant="secondary">
-								<User size={16} />
+				<OverflowRow
+					items={users.map(({ id, info, upn }) => (
+						<StyledBadge key={id} variant="secondary">
+							<User size={16} />
 
-								<BageText>{info?.name ?? `#${id}`}</BageText>
-							</StyledBadge>
-						))}
-
-						{remainingUsers.length > 0 && (
-							<StyledBadge variant="outline">
-								<BageText>+{remainingUsers.length}</BageText>
-							</StyledBadge>
-						)}
-					</TagRow>
-				</CardContent>
-			)}
+							<BadgeText>{info?.name ?? upn}</BadgeText>
+						</StyledBadge>
+					))}
+					renderOverflow={(remaining) => (
+						<StyledBadge variant="secondary">
+							<BadgeText>+{remaining}</BadgeText>
+						</StyledBadge>
+					)}
+				/>
+			</CardContent>
 		</StyledCard>
 	)
 }
@@ -145,31 +142,24 @@ const StyledCardTitle = styled(CardTitle)`
   text-overflow: ellipsis;
 `
 
-const TagRow = styled.div`
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 8px;
-  padding-block-start: 6px;
-  min-width: 0;
-  overflow: hidden;
+const StyledSeparator = styled(Separator)`
+  margin-bottom: 6px;
 `
 
 const StyledBadge = styled(Badge)`
 	min-width: 0;
-	max-width: 100px;
     border-radius: 9999px;
     font-size: var(--fs-btn);
     padding: 0 7px;
     background: rgba(0, 0, 0, 0.04);
     font-weight: 400;
-	flex: 1;
 
 	svg {
 		flex-shrink: 0;
 	}
 `
 
-const BageText = styled.span`
+const BadgeText = styled.span`
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;

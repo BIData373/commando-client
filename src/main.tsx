@@ -2,6 +2,7 @@ import { QueryClientProvider } from "@tanstack/react-query"
 import { RouterProvider } from "@tanstack/react-router"
 import ReactDOM from "react-dom/client"
 import * as mockHandlers from "src/api/index.msw" // Orval generated MSW handlers
+import { NoConnectionMonitor } from "./components/NoConnectionMonitor"
 import { ErrorModalProvider } from "./providers/ErrorModalProvider"
 import { queryClient } from "./queryClient"
 import router from "./router"
@@ -37,6 +38,7 @@ enableMocking().then(() => {
 		const root = ReactDOM.createRoot(rootElement)
 		root.render(
 			<ErrorModalProvider>
+				<NoConnectionMonitor />
 				<MatomoWrapper>
 					<QueryClientProvider client={queryClient}>
 						<AuthenticationWrapper>

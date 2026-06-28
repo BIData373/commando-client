@@ -66,7 +66,6 @@ const BigAvatar = styled(MesibaAvatarRoot)`
   width: 100%;
   height: auto;
   aspect-ratio: 1;
-  border-radius: 4px;
 `
 
 const BigAvatarImage = styled(MesibaAvatarImage)`

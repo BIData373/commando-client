@@ -9,6 +9,7 @@ import type { CreateSourceDto } from "../../api/model"
 import { useCreateSource } from "../../api/source/source"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
+import ModalCloseButton from "../shared/ModalCloseButton"
 import { DialogOverlay } from "../ui/dialog"
 import CreateTasksTable from "./CreateTasksTable"
 import DiscussionForm from "./DiscussionForm"
@@ -131,9 +132,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 			<DialogPrimitive.Portal>
 				<DialogOverlay />
 				<ModalCard $step={currentStep}>
-					<ModalCloseButton onClick={onClose}>
-						<X size={16} />
-					</ModalCloseButton>
+					<ModalCloseButton onClose={onClose} />
 
 					<ModalBody>
 						<HeaderSection>
@@ -247,28 +246,6 @@ const ModalCard = styled(DialogPrimitive.Content)<{ $step: Steps }>`
   padding-block: 36px;
   padding-inline: 48px;
   outline: none;
-`
-
-const ModalCloseButton = styled.button`
-  position: absolute;
-  inset-block-start: 15px;
-  inset-inline-end: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 2px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: rgba(0, 0, 0, 0.45);
-  outline: none;
-
-  &:hover {
-    color: var(--text-color-2);
-    background: rgba(0, 0, 0, 0.04);
-  }
 `
 
 const ModalBody = styled.div`

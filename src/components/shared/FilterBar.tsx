@@ -1,20 +1,15 @@
 import styled from "@emotion/styled"
 import { Download, FilterX, Search, X } from "lucide-react"
 import type { ReactNode } from "react"
-import type { TaskColumnMeta, TaskRow } from "src/utils/task-table-utils"
+import { useTasksFilters } from "src/providers/TasksFiltersProvider"
+import type { TaskColumnMeta } from "src/utils/task-table-utils"
 import { ColumnVisibilityDropdown } from "../Tasks/ColumnVisibilityDropdown"
 
 interface FilterBarProps {
 	children: ReactNode
 	hasActiveFilters: boolean
 	onClearAll: () => void
-	searchQuery: string
-	onSearchChange: (value: string) => void
 	onExport: () => void
-	columnOrder: (keyof TaskRow)[]
-	hiddenColumns: Set<keyof TaskRow>
-	onColumnOrderChange: (order: (keyof TaskRow)[]) => void
-	onToggleColumn: (columnId: keyof TaskRow) => void
 	extraColumnsMeta?: TaskColumnMeta[]
 	startSlot?: ReactNode
 }
@@ -23,27 +18,17 @@ function FilterBar({
 	children,
 	hasActiveFilters,
 	onClearAll,
-	searchQuery,
-	onSearchChange,
 	onExport,
-	columnOrder,
-	hiddenColumns,
-	onColumnOrderChange,
-	onToggleColumn,
 	extraColumnsMeta,
 	startSlot,
 }: FilterBarProps) {
+	const { searchQuery, setSearchQuery } = useTasksFilters()
+
 	return (
 		<BarRoot>
 			<BarStart>
 				{startSlot}
-				<ColumnVisibilityDropdown
-					columnOrder={columnOrder}
-					hiddenColumns={hiddenColumns}
-					onColumnOrderChange={onColumnOrderChange}
-					onToggleColumn={onToggleColumn}
-					extraColumnsMeta={extraColumnsMeta}
-				/>
+				<ColumnVisibilityDropdown extraColumnsMeta={extraColumnsMeta} />
 				<ActionButton onClick={onExport}>
 					<Download size={16} />
 					ייצוא
@@ -52,11 +37,11 @@ function FilterBar({
 					<SearchField
 						placeholder="חפש הנחייה"
 						value={searchQuery}
-						onChange={(e) => onSearchChange(e.target.value)}
+						onChange={(e) => setSearchQuery(e.target.value)}
 					/>
 					<SearchIconBox>
 						{searchQuery ? (
-							<ClearIcon size={14} onClick={() => onSearchChange("")} />
+							<ClearIcon size={14} onClick={() => setSearchQuery("")} />
 						) : (
 							<SearchIcon size={16} />
 						)}

@@ -13,7 +13,12 @@ const config = defineConfig({
 		allowedHosts: ["np.vector.idf.cts", "pp.vector.idf.cts", "vector.idf.cts"],
 	},
 	plugins: [
-		devtools(),
+		devtools({
+			consolePiping: {
+				levels: ["log", "warn", "error"],
+			},
+			enhancedLogs: { enabled: true },
+		}),
 		tsconfigPaths({ projects: ["./tsconfig.json"] }),
 		tailwindcss(),
 		tanstackRouter({ target: "react", autoCodeSplitting: true }),

@@ -22,25 +22,14 @@ interface RowActionsMenuProps {
 
 export function RowActionsMenu({
 	trigger,
-	workspaceId,
 	onEdit,
 	onEnterSelect,
 	onDelete,
 }: RowActionsMenuProps) {
-	const { data: myPermission } = useGetMyPermission({ workspaceId })
-
-	const hasPermission = (permission: PermissionType, func?: () => void) =>
-		myPermission?.type === permission && func
-
-	const handleEdit = hasPermission(PermissionType.MANAGER, onEdit)
-	const handleDelete = hasPermission(PermissionType.MANAGER, onDelete)
-
 	const [dropdownOpen, setDropdownOpen] = useState(false)
 	const [popoverOpen, setPopoverOpen] = useState(false)
 
-	const itemCount = [onEnterSelect, handleEdit, handleDelete].filter(
-		Boolean,
-	).length
+	const itemCount = [onEdit, onEnterSelect, onDelete].filter(Boolean).length
 	const hasMoreThanTwo = itemCount >= 2
 
 	function handleDropdownOpenChange(open: boolean) {
@@ -71,8 +60,8 @@ export function RowActionsMenu({
 					)}
 				</DropdownMenuTrigger>
 				<MenuContent align="start" sideOffset={4}>
-					{handleEdit && (
-						<MenuItem onSelect={handleEdit}>
+					{onEdit && (
+						<MenuItem onSelect={onEdit}>
 							<Pencil size={16} />
 							עריכה
 						</MenuItem>
@@ -84,12 +73,12 @@ export function RowActionsMenu({
 						</MenuItem>
 					)}
 					{hasMoreThanTwo && <MenuSeparator />}
-					{handleDelete && (
+					{onDelete && (
 						<DeletePopover
 							count={1}
 							side="right"
 							align="end"
-							onConfirm={handleDelete}
+							onConfirm={onDelete}
 							open={popoverOpen}
 							onOpenChange={handlePopoverOpenChange}
 							trigger={
