@@ -53,10 +53,6 @@ const ContentPanel = styled.div`
     border-bottom: 0.5px solid rgba(0, 0, 0, 0.04);
     height: 44px;
   }
-
-  [data-slot="table-row"]:last-of-type {
-    border-bottom-color: transparent;
-  }
   
   [data-slot="table-cell"] {
     height: 44px;

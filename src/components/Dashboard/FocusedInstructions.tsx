@@ -125,7 +125,6 @@ const TabsButtons = styled.div`
 
 const TabsHeader = styled.div`
   display: flex;
-  gap: 2px;
   position: relative;
   flex: 1;
   min-width: 0;
@@ -140,11 +139,19 @@ const TabItem = styled.button<{ $active: boolean }>`
   align-items: center;
   justify-content: space-between;
   gap: 4px;
-  border-radius: 6px 6px 0 0;
   cursor: pointer;
   margin-bottom: -1px;
   border: 1px solid var(--line);
   align-items: flex-start;
+  background: ${({ $active }) => $active && "var(--background)"};
+  
+  &:first-child {
+	border-radius: 0 8px 0 0;
+  }
+
+  &:last-child {
+	border-radius: 8px 0 0 0;
+  }
 `
 
 const TabTitle = styled.span<{ $active: boolean }>`
