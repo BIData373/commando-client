@@ -5,7 +5,7 @@ import { concat, map, uniq } from "lodash"
 import { AlertTriangle } from "lucide-react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
-import { DeadlineType, type TaskDto } from "src/api/model"
+import { DeadlineType, type TaskDto, WorkspaceStatusType } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
 import WorkspaceCell from "src/components/shared/WorkspaceCell"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
@@ -284,7 +284,7 @@ function useTaskColumns({
 			...TASK_COLUMN_DEFS.deadlineType,
 			cell: ({
 				row: {
-					original: { deadlineType: rawDeadlineType, dueDate },
+					original: { deadlineType: rawDeadlineType, dueDate, status },
 				},
 			}) => {
 				const deadlineType = rawDeadlineType
@@ -296,6 +296,7 @@ function useTaskColumns({
 					daysUntil !== null &&
 					daysUntil < 0 &&
 					deadlineType !== DeadlineType.IMMEDIATE
+
 				const isApproaching =
 					!isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
 
@@ -315,13 +316,15 @@ function useTaskColumns({
 							<DeadlineWarning>
 								<TooltipProvider>
 									<Tooltip>
-										<WarningTrigger>
-											{isOverdue ? (
-												<OverdueIcon size={16} />
-											) : (
-												<ApproachingIcon size={16} />
-											)}
-										</WarningTrigger>
+										{status?.type !== WorkspaceStatusType.COMPLETED && (
+											<WarningTrigger>
+												{isOverdue ? (
+													<OverdueIcon size={16} />
+												) : (
+													<ApproachingIcon size={16} />
+												)}
+											</WarningTrigger>
+										)}
 										<TooltipContent>
 											{isOverdue
 												? `חריגה של ${Math.abs(daysUntil)} ימים`
