@@ -293,8 +293,7 @@ function useTaskColumns({
 				const isOverdue =
 					daysUntil !== null &&
 					daysUntil < 0 &&
-					deadlineType !== DeadlineType.IMMEDIATE &&
-					status?.type !== WorkspaceStatusType.COMPLETED
+					deadlineType !== DeadlineType.IMMEDIATE
 
 				const isApproaching =
 					!isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
@@ -315,13 +314,15 @@ function useTaskColumns({
 							<DeadlineWarning>
 								<TooltipProvider>
 									<Tooltip>
-										<WarningTrigger>
-											{isOverdue ? (
-												<OverdueIcon size={16} />
-											) : (
-												<ApproachingIcon size={16} />
-											)}
-										</WarningTrigger>
+										{status?.type !== WorkspaceStatusType.COMPLETED && (
+											<WarningTrigger>
+												{isOverdue ? (
+													<OverdueIcon size={16} />
+												) : (
+													<ApproachingIcon size={16} />
+												)}
+											</WarningTrigger>
+										)}
 										<TooltipContent>
 											{isOverdue
 												? `חריגה של ${Math.abs(daysUntil)} ימים`
