@@ -44,12 +44,14 @@ interface AssigneeDialogProps {
 	open: boolean
 	assignee?: AssigneeDto
 	onOpenChange: (open: boolean) => void
+	onCreated?: (assignee: AssigneeDto) => void
 }
 
 export function AssigneeDialog({
 	assignee,
 	open,
 	onOpenChange,
+	onCreated,
 }: AssigneeDialogProps) {
 	const isUpdate = !!assignee
 
@@ -85,6 +87,10 @@ export function AssigneeDialog({
 			getListTasksQueryKey({ workspaceId }),
 			...(assignee ? [getGetAssigneeQueryKey({ id: assignee.id })] : []),
 		])
+
+		if (!isUpdate) {
+			onCreated?.(data)
+		}
 	}
 
 	const { mutateAsync: createAssignee } = useCreateAssignee({
