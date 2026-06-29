@@ -58,8 +58,15 @@ const HEADER_LABELS = {
 
 function buildDistribution<T extends { name: string }>(
 	sourceList: T[],
-	counts: Dictionary<number>,
+	field: Extract<keyof TaskRow, "assignee" | "tags">,
+	tasks: TaskRow[],
 ): { name: string; count: number }[] {
+	const items =
+		field === "tags"
+			? tasks.flatMap((t) => t.tags)
+			: tasks.filter((t) => t.assignee).map((t) => t.assignee)
+	const counts = countBy(items, (item) => item?.name)
+
 	return orderBy(
 		sourceList
 			.map((s) => ({ name: s.name, count: counts[s.name] ?? 0 }))
@@ -83,23 +90,15 @@ export default function SystemDistribution({
 	const { data: assignees = [] } = useListAssignees({ workspaceId })
 	const { data: tags = [] } = useListTags({ workspaceId })
 
-	const assigneeDistribution = useMemo(() => {
-		const assigneeCounts = countBy(
-			tasks.filter((t) => t.assignee),
-			(t) => t.assignee?.name,
-		)
+	const assigneeDistribution = useMemo(
+		() => buildDistribution(assignees, "assignee", tasks),
+		[tasks, assignees],
+	)
 
-		return buildDistribution(assignees, assigneeCounts)
-	}, [tasks, assignees])
-
-	const tagDistribution = useMemo(() => {
-		const tagsCounts = countBy(
-			tasks.flatMap((t) => t.tags),
-			(t) => t.name,
-		)
-
-		return buildDistribution(tags, tagsCounts)
-	}, [tasks, tags])
+	const tagDistribution = useMemo(
+		() => buildDistribution(tags, "tags", tasks),
+		[tasks, tags],
+	)
 
 	const activeData =
 		activeTab === DistributionTab.LOAD ? assigneeDistribution : tagDistribution
