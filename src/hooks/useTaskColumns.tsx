@@ -312,11 +312,11 @@ function useTaskColumns({
 								{formatDateShort(new Date(dueDate))}
 							</DeadlineDateText>
 						)}
-						{(isOverdue || isApproaching) && (
-							<DeadlineWarning>
-								<TooltipProvider>
-									<Tooltip>
-										{status?.type !== WorkspaceStatusType.COMPLETED && (
+						{status?.type !== WorkspaceStatusType.COMPLETED &&
+							(isOverdue || isApproaching) && (
+								<DeadlineWarning>
+									<TooltipProvider>
+										<Tooltip>
 											<WarningTrigger>
 												{isOverdue ? (
 													<OverdueIcon size={16} />
@@ -324,18 +324,17 @@ function useTaskColumns({
 													<ApproachingIcon size={16} />
 												)}
 											</WarningTrigger>
-										)}
-										<TooltipContent>
-											{isOverdue
-												? `חריגה של ${Math.abs(daysUntil)} ימים`
-												: daysUntil === 0
-													? 'תג"ב היום'
-													: 'תג"ב מחר'}
-										</TooltipContent>
-									</Tooltip>
-								</TooltipProvider>
-							</DeadlineWarning>
-						)}
+											<TooltipContent>
+												{isOverdue
+													? `חריגה של ${Math.abs(daysUntil)} ימים`
+													: daysUntil === 0
+														? 'תג"ב היום'
+														: 'תג"ב מחר'}
+											</TooltipContent>
+										</Tooltip>
+									</TooltipProvider>
+								</DeadlineWarning>
+							)}
 					</DeadlineCell>
 				)
 			},
