@@ -293,8 +293,7 @@ function useTaskColumns({
 				const isOverdue =
 					daysUntil !== null &&
 					daysUntil < 0 &&
-					deadlineType !== DeadlineType.IMMEDIATE &&
-					status?.type !== WorkspaceStatusType.COMPLETED
+					deadlineType !== DeadlineType.IMMEDIATE
 
 				const isApproaching =
 					!isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
