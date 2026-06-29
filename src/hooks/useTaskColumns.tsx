@@ -5,7 +5,7 @@ import { concat, map, uniq } from "lodash"
 import { AlertTriangle } from "lucide-react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
-import { DeadlineType, type TaskDto } from "src/api/model"
+import { DeadlineType, type TaskDto, WorkspaceStatusType } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
 import WorkspaceCell from "src/components/shared/WorkspaceCell"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
@@ -282,7 +282,7 @@ function useTaskColumns({
 			...TASK_COLUMN_DEFS.deadlineType,
 			cell: ({
 				row: {
-					original: { deadlineType: rawDeadlineType, dueDate },
+					original: { status, deadlineType: rawDeadlineType, dueDate },
 				},
 			}) => {
 				const deadlineType = rawDeadlineType
@@ -309,28 +309,29 @@ function useTaskColumns({
 								{formatDateShort(new Date(dueDate))}
 							</DeadlineDateText>
 						)}
-						{(isOverdue || isApproaching) && (
-							<DeadlineWarning>
-								<TooltipProvider>
-									<Tooltip>
-										<WarningTrigger>
-											{isOverdue ? (
-												<OverdueIcon size={16} />
-											) : (
-												<ApproachingIcon size={16} />
-											)}
-										</WarningTrigger>
-										<TooltipContent>
-											{isOverdue
-												? `חריגה של ${Math.abs(daysUntil)} ימים`
-												: daysUntil === 0
-													? 'תג"ב היום'
-													: 'תג"ב מחר'}
-										</TooltipContent>
-									</Tooltip>
-								</TooltipProvider>
-							</DeadlineWarning>
-						)}
+						{status?.type !== WorkspaceStatusType.COMPLETED &&
+							(isOverdue || isApproaching) && (
+								<DeadlineWarning>
+									<TooltipProvider>
+										<Tooltip>
+											<WarningTrigger>
+												{isOverdue ? (
+													<OverdueIcon size={16} />
+												) : (
+													<ApproachingIcon size={16} />
+												)}
+											</WarningTrigger>
+											<TooltipContent>
+												{isOverdue
+													? `חריגה של ${Math.abs(daysUntil)} ימים`
+													: daysUntil === 0
+														? 'תג"ב היום'
+														: 'תג"ב מחר'}
+											</TooltipContent>
+										</Tooltip>
+									</TooltipProvider>
+								</DeadlineWarning>
+							)}
 					</DeadlineCell>
 				)
 			},
