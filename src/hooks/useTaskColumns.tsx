@@ -11,10 +11,10 @@ import WorkspaceCell from "src/components/shared/WorkspaceCell"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { invalidateQueries } from "src/queryClient"
 import {
-  multiSelectFilter,
-  TASK_COLUMN_DEFS,
-  TASK_COLUMNS_META,
-  type TaskRow,
+	multiSelectFilter,
+	TASK_COLUMN_DEFS,
+	TASK_COLUMNS_META,
+	type TaskRow,
 } from "src/utils/task-table-utils"
 import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 import FlagIcon from "../components/shared/FlagIcon"
@@ -26,40 +26,40 @@ import { StatusDropdown } from "../components/Tasks/StatusDropdown"
 import { TopicCell } from "../components/Tasks/TopicCell"
 import { Checkbox } from "../components/ui/checkbox"
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from "../components/ui/tooltip"
 import { formatDateShort } from "../functions/date-utils"
 
 const COLUMN_LABELS = Object.fromEntries(
-  TASK_COLUMNS_META.map(({ id, label }) => [id, label]),
+	TASK_COLUMNS_META.map(({ id, label }) => [id, label]),
 ) as Record<keyof TaskRow, string>
 
 interface SelectModeConfig {
-  enabled: boolean
-  tasks: TaskDto[]
-  selectedTaskIds: number[]
-  onSelectAll: (checked: boolean) => void
+	enabled: boolean
+	tasks: TaskDto[]
+	selectedTaskIds: number[]
+	onSelectAll: (checked: boolean) => void
 }
 
 interface ActionsConfig {
-  onEdit: (taskId: number) => void
-  onDoubleClick?(taskId: number): void
-  onArchive(taskIds: number[]): void
-  onDelete(taskIds: number[]): void
-  onEnterSelectMode(rowKey?: string): void
+	onEdit: (taskId: number) => void
+	onDoubleClick?(taskId: number): void
+	onArchive(taskIds: number[]): void
+	onDelete(taskIds: number[]): void
+	onEnterSelectMode(rowKey?: string): void
 }
 
 interface UseTaskColumnsOptions {
-  visibleColumns: (keyof TaskRow)[]
-  searchQuery?: string
-  filterOptionsMap?: Record<FilterOptions, FilterOption[]>
-  selectMode?: SelectModeConfig
-  actions?: ActionsConfig
-  showMenuColumn?: boolean
-  onUpdateStatusSuccess?(): void
+	visibleColumns: (keyof TaskRow)[]
+	searchQuery?: string
+	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
+	selectMode?: SelectModeConfig
+	actions?: ActionsConfig
+	showMenuColumn?: boolean
+	onUpdateStatusSuccess?(): void
 }
 
 function useTaskColumns({
