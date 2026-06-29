@@ -11,10 +11,10 @@ import WorkspaceCell from "src/components/shared/WorkspaceCell"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { invalidateQueries } from "src/queryClient"
 import {
-	multiSelectFilter,
-	TASK_COLUMN_DEFS,
-	TASK_COLUMNS_META,
-	type TaskRow,
+  multiSelectFilter,
+  TASK_COLUMN_DEFS,
+  TASK_COLUMNS_META,
+  type TaskRow,
 } from "src/utils/task-table-utils"
 import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 import FlagIcon from "../components/shared/FlagIcon"
@@ -26,458 +26,460 @@ import { StatusDropdown } from "../components/Tasks/StatusDropdown"
 import { TopicCell } from "../components/Tasks/TopicCell"
 import { Checkbox } from "../components/ui/checkbox"
 import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "../components/ui/tooltip"
 import { formatDateShort } from "../functions/date-utils"
 
 const COLUMN_LABELS = Object.fromEntries(
-	TASK_COLUMNS_META.map(({ id, label }) => [id, label]),
+  TASK_COLUMNS_META.map(({ id, label }) => [id, label]),
 ) as Record<keyof TaskRow, string>
 
 interface SelectModeConfig {
-	enabled: boolean
-	tasks: TaskDto[]
-	selectedTaskIds: number[]
-	onSelectAll: (checked: boolean) => void
+  enabled: boolean
+  tasks: TaskDto[]
+  selectedTaskIds: number[]
+  onSelectAll: (checked: boolean) => void
 }
 
 interface ActionsConfig {
-	onEdit: (taskId: number) => void
-	onDoubleClick?(taskId: number): void
-	onArchive(taskIds: number[]): void
-	onDelete(taskIds: number[]): void
-	onEnterSelectMode(rowKey?: string): void
+  onEdit: (taskId: number) => void
+  onDoubleClick?(taskId: number): void
+  onArchive(taskIds: number[]): void
+  onDelete(taskIds: number[]): void
+  onEnterSelectMode(rowKey?: string): void
 }
 
 interface UseTaskColumnsOptions {
-	visibleColumns: (keyof TaskRow)[]
-	searchQuery?: string
-	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
-	selectMode?: SelectModeConfig
-	actions?: ActionsConfig
-	showMenuColumn?: boolean
-	onUpdateStatusSuccess?(): void
+  visibleColumns: (keyof TaskRow)[]
+  searchQuery?: string
+  filterOptionsMap?: Record<FilterOptions, FilterOption[]>
+  selectMode?: SelectModeConfig
+  actions?: ActionsConfig
+  showMenuColumn?: boolean
+  onUpdateStatusSuccess?(): void
 }
 
 function useTaskColumns({
-	visibleColumns,
-	searchQuery,
-	filterOptionsMap,
-	selectMode,
-	actions,
-	showMenuColumn = true,
-	onUpdateStatusSuccess,
+  visibleColumns,
+  searchQuery,
+  filterOptionsMap,
+  selectMode,
+  actions,
+  showMenuColumn = true,
+  onUpdateStatusSuccess,
 }: UseTaskColumnsOptions) {
-	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
-		mutation: {
-			onSuccess: ({ task: { id } }) => {
-				invalidateQueries([getGetTaskQueryKey({ id })])
-				onUpdateStatusSuccess?.()
-			},
-		},
-	})
+  const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
+    mutation: {
+      onSuccess: ({ task: { id } }) => {
+        invalidateQueries([getGetTaskQueryKey({ id })])
+        onUpdateStatusSuccess?.()
+      },
+    },
+  })
 
-	const multiSelectColumnFilter: FilterFn<TaskRow> = (
-		row,
-		columnId,
-		filterValue: string[],
-	) => {
-		return multiSelectFilter(row.getValue<string>(columnId), filterValue)
-	}
+  const multiSelectColumnFilter: FilterFn<TaskRow> = (
+    row,
+    columnId,
+    filterValue: string[],
+  ) => {
+    return multiSelectFilter(row.getValue<string>(columnId), filterValue)
+  }
 
-	function handleUpdateStatus(
-		taskId: number,
-		assigneeId: number,
-		statusId: number,
-	) {
-		upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } })
-	}
+  function handleUpdateStatus(
+    taskId: number,
+    assigneeId: number,
+    statusId: number,
+  ) {
+    upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } })
+  }
 
-	const allVisibleColumns = [...visibleColumns, "select", "actions"]
+  const allVisibleColumns = [...visibleColumns, "select", "actions"]
 
-	// TODO Move all constant fields to task-table-utils
-	const allColumns = [
-		...(selectMode?.enabled
-			? [
-					{
-						id: "select",
-						size: 35,
-						enableSorting: false,
-						enableColumnFilter: false,
-						header: () => (
-							<CheckboxCenter>
-								<Checkbox
-									checked={
-										selectMode.tasks.length > 0 &&
-										selectMode.selectedTaskIds.length ===
-											selectMode.tasks.length
-									}
-									onCheckedChange={(checked) =>
-										selectMode.onSelectAll(!!checked)
-									}
-								/>
-							</CheckboxCenter>
-						),
-						cell: ({ row }) => (
-							<CheckboxCenter>
-								<Checkbox
-									checked={row.getIsSelected()}
-									onCheckedChange={(checked) => row.toggleSelected(!!checked)}
-								/>
-							</CheckboxCenter>
-						),
-					} as ColumnDef<TaskRow>,
-				]
-			: [
-					{
-						id: "id",
-						accessorKey: "id",
-						header: ({ column }) => (
-							<ColumnHeaderWithActions
-								label={COLUMN_LABELS.id}
-								column={column}
-							/>
-						),
-						size: 35,
-						enableColumnFilter: false,
-						cell: ({
-							row: {
-								original: { id },
-							},
-						}) => (
-							<IdCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
-								{id}
-							</IdCell>
-						),
-					} as ColumnDef<TaskRow>,
-				]),
-		{
-			id: "title",
-			accessorKey: "title",
-			header: COLUMN_LABELS.title,
-			size: 300,
-			meta: { grow: true },
-			enableSorting: false,
-			enableColumnFilter: false,
-			cell: ({
-				row: {
-					original: { id, title, description, flagged },
-				},
-			}) => (
-				<TitleCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
-					{flagged && <FlagIcon />}
-					{description ? (
-						<>
-							<TitlePart>
-								{searchQuery ? (
-									<HighlightMatch
-										text={title}
-										query={searchQuery}
-										variant="mark"
-									/>
-								) : (
-									title
-								)}
-							</TitlePart>
-							<TitleSeparator> - </TitleSeparator>
-							<DetailsPart>
-								{searchQuery ? (
-									<HighlightMatch
-										text={description}
-										query={searchQuery}
-										variant="mark"
-									/>
-								) : (
-									description
-								)}
-							</DetailsPart>
-						</>
-					) : (
-						<TitleFull>
-							{searchQuery ? (
-								<HighlightMatch
-									text={title}
-									query={searchQuery}
-									variant="mark"
-								/>
-							) : (
-								title
-							)}
-						</TitleFull>
-					)}
-				</TitleCell>
-			),
-		},
-		{
-			id: "status",
-			header: ({ column }) => (
-				<ColumnHeaderWithActions
-					label={COLUMN_LABELS.status}
-					column={column}
-					filterOptions={filterOptionsMap?.status}
-				/>
-			),
-			size: 50,
-			filterFn: multiSelectColumnFilter,
-			...TASK_COLUMN_DEFS.status,
-			cell: ({
-				row: {
-					original: { id, status, assignee, workspaceId, editable },
-				},
-			}) =>
-				status &&
-				assignee && (
-					<StatusDropdown
-						status={status}
-						assigneeId={assignee.id}
-						editable={editable ?? false}
-						taskId={id}
-						workspaceId={workspaceId}
-						onUpdate={handleUpdateStatus}
-					/>
-				),
-		},
-		{
-			id: "assigneeStatuses",
-			header: ({ column }) => (
-				<ColumnHeaderWithActions
-					label={COLUMN_LABELS.assigneeStatuses}
-					column={column}
-					filterOptions={filterOptionsMap?.assigneeStatuses}
-				/>
-			),
-			size: 60,
-			filterFn: multiSelectColumnFilter,
-			...TASK_COLUMN_DEFS.assigneeStatuses,
-			cell: ({
-				row: {
-					original: { assignee, otherAssignees },
-				},
-			}) =>
-				assignee && (
-					<AssigneeCell
-						responsible={assignee}
-						relatedDirectives={(otherAssignees ?? []).map((s) => ({
-							assignee: s.assignee,
-							status: s.status,
-						}))}
-					/>
-				),
-		},
-		{
-			id: "deadlineType",
-			accessorKey: "deadlineType",
-			header: ({ column }) => (
-				<ColumnHeaderWithActions
-					label={COLUMN_LABELS.deadlineType}
-					column={column}
-					filterOptions={filterOptionsMap?.deadlineType}
-				/>
-			),
-			size: 90,
-			filterFn: multiSelectColumnFilter,
-			...TASK_COLUMN_DEFS.deadlineType,
-			cell: ({
-				row: {
-					original: { status, deadlineType: rawDeadlineType, dueDate },
-				},
-			}) => {
-				const deadlineType = rawDeadlineType
-				const today = startOfToday()
-				const daysUntil = dueDate
-					? differenceInDays(new Date(dueDate), today)
-					: null
-				const isOverdue =
-					daysUntil !== null &&
-					daysUntil < 0 &&
-					deadlineType !== DeadlineType.IMMEDIATE
-				const isApproaching =
-					!isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
+  // TODO Move all constant fields to task-table-utils
+  const allColumns = [
+    ...(selectMode?.enabled
+      ? [
+        {
+          id: "select",
+          size: 35,
+          enableSorting: false,
+          enableColumnFilter: false,
+          header: () => (
+            <CheckboxCenter>
+              <Checkbox
+                checked={
+                  selectMode.tasks.length > 0 &&
+                  selectMode.selectedTaskIds.length ===
+                  selectMode.tasks.length
+                }
+                onCheckedChange={(checked) =>
+                  selectMode.onSelectAll(!!checked)
+                }
+              />
+            </CheckboxCenter>
+          ),
+          cell: ({ row }) => (
+            <CheckboxCenter>
+              <Checkbox
+                checked={row.getIsSelected()}
+                onCheckedChange={(checked) => row.toggleSelected(!!checked)}
+              />
+            </CheckboxCenter>
+          ),
+        } as ColumnDef<TaskRow>,
+      ]
+      : [
+        {
+          id: "id",
+          accessorKey: "id",
+          header: ({ column }) => (
+            <ColumnHeaderWithActions
+              label={COLUMN_LABELS.id}
+              column={column}
+            />
+          ),
+          size: 35,
+          enableColumnFilter: false,
+          cell: ({
+            row: {
+              original: { id },
+            },
+          }) => (
+            <IdCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
+              {id}
+            </IdCell>
+          ),
+        } as ColumnDef<TaskRow>,
+      ]),
+    {
+      id: "title",
+      accessorKey: "title",
+      header: COLUMN_LABELS.title,
+      size: 300,
+      meta: { grow: true },
+      enableSorting: false,
+      enableColumnFilter: false,
+      cell: ({
+        row: {
+          original: { id, title, description, flagged },
+        },
+      }) => (
+        <TitleCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
+          {flagged && <FlagIcon />}
+          {description ? (
+            <>
+              <TitlePart>
+                {searchQuery ? (
+                  <HighlightMatch
+                    text={title}
+                    query={searchQuery}
+                    variant="mark"
+                  />
+                ) : (
+                  title
+                )}
+              </TitlePart>
+              <TitleSeparator> - </TitleSeparator>
+              <DetailsPart>
+                {searchQuery ? (
+                  <HighlightMatch
+                    text={description}
+                    query={searchQuery}
+                    variant="mark"
+                  />
+                ) : (
+                  description
+                )}
+              </DetailsPart>
+            </>
+          ) : (
+            <TitleFull>
+              {searchQuery ? (
+                <HighlightMatch
+                  text={title}
+                  query={searchQuery}
+                  variant="mark"
+                />
+              ) : (
+                title
+              )}
+            </TitleFull>
+          )}
+        </TitleCell>
+      ),
+    },
+    {
+      id: "status",
+      header: ({ column }) => (
+        <ColumnHeaderWithActions
+          label={COLUMN_LABELS.status}
+          column={column}
+          filterOptions={filterOptionsMap?.status}
+        />
+      ),
+      size: 50,
+      filterFn: multiSelectColumnFilter,
+      ...TASK_COLUMN_DEFS.status,
+      cell: ({
+        row: {
+          original: { id, status, assignee, workspaceId, editable },
+        },
+      }) =>
+        status &&
+        assignee && (
+          <StatusDropdown
+            status={status}
+            assigneeId={assignee.id}
+            editable={editable ?? false}
+            taskId={id}
+            workspaceId={workspaceId}
+            onUpdate={handleUpdateStatus}
+          />
+        ),
+    },
+    {
+      id: "assigneeStatuses",
+      header: ({ column }) => (
+        <ColumnHeaderWithActions
+          label={COLUMN_LABELS.assigneeStatuses}
+          column={column}
+          filterOptions={filterOptionsMap?.assigneeStatuses}
+        />
+      ),
+      size: 60,
+      filterFn: multiSelectColumnFilter,
+      ...TASK_COLUMN_DEFS.assigneeStatuses,
+      cell: ({
+        row: {
+          original: { assignee, otherAssignees },
+        },
+      }) =>
+        assignee && (
+          <AssigneeCell
+            responsible={assignee}
+            relatedDirectives={(otherAssignees ?? []).map((s) => ({
+              assignee: s.assignee,
+              status: s.status,
+            }))}
+          />
+        ),
+    },
+    {
+      id: "deadlineType",
+      accessorKey: "deadlineType",
+      header: ({ column }) => (
+        <ColumnHeaderWithActions
+          label={COLUMN_LABELS.deadlineType}
+          column={column}
+          filterOptions={filterOptionsMap?.deadlineType}
+        />
+      ),
+      size: 90,
+      filterFn: multiSelectColumnFilter,
+      ...TASK_COLUMN_DEFS.deadlineType,
+      cell: ({
+        row: {
+          original: { deadlineType: rawDeadlineType, dueDate, status },
+        },
+      }) => {
+        const deadlineType = rawDeadlineType
+        const today = startOfToday()
+        const daysUntil = dueDate
+          ? differenceInDays(new Date(dueDate), today)
+          : null
+        const isOverdue =
+          daysUntil !== null &&
+          daysUntil < 0 &&
+          deadlineType !== DeadlineType.IMMEDIATE &&
+          status?.type !== WorkspaceStatusType.COMPLETED
 
-				return (
-					<DeadlineCell>
-						{deadlineType !== DeadlineType.DATE && (
-							<DeadlineTag $type={deadlineType}>
-								{DEADLINE_LABELS[deadlineType]}
-							</DeadlineTag>
-						)}
-						{dueDate && (
-							<DeadlineDateText>
-								{formatDateShort(new Date(dueDate))}
-							</DeadlineDateText>
-						)}
-						{status?.type !== WorkspaceStatusType.COMPLETED &&
-							(isOverdue || isApproaching) && (
-								<DeadlineWarning>
-									<TooltipProvider>
-										<Tooltip>
-											<WarningTrigger>
-												{isOverdue ? (
-													<OverdueIcon size={16} />
-												) : (
-													<ApproachingIcon size={16} />
-												)}
-											</WarningTrigger>
-											<TooltipContent>
-												{isOverdue
-													? `חריגה של ${Math.abs(daysUntil)} ימים`
-													: daysUntil === 0
-														? 'תג"ב היום'
-														: 'תג"ב מחר'}
-											</TooltipContent>
-										</Tooltip>
-									</TooltipProvider>
-								</DeadlineWarning>
-							)}
-					</DeadlineCell>
-				)
-			},
-		},
-		{
-			id: "source",
-			header: ({ column }) => (
-				<ColumnHeaderWithActions
-					label={COLUMN_LABELS.source}
-					column={column}
-					filterOptions={filterOptionsMap?.source}
-				/>
-			),
-			size: 120,
-			filterFn: multiSelectColumnFilter,
-			...TASK_COLUMN_DEFS.deadlineType,
-			cell: ({
-				row: {
-					original: { source },
-				},
-			}) => {
-				if (!source) {
-					return
-				}
-				const parts = [source.name, formatDateShort(source.date)].filter(
-					Boolean,
-				)
-				return (
-					<SourceCell>
-						{source.attachmentKey && <SourceIcon size={18} />}
-						{parts.length > 0 && <SourceText>{parts.join(" | ")}</SourceText>}
-					</SourceCell>
-				)
-			},
-		},
-		{
-			id: "tags",
-			header: ({ column }) => (
-				<ColumnHeaderWithActions
-					label={COLUMN_LABELS.tags}
-					column={column}
-					filterOptions={filterOptionsMap?.tags}
-				/>
-			),
-			size: 90,
-			enableSorting: false,
-			filterFn: multiSelectColumnFilter,
-			...TASK_COLUMN_DEFS.tags,
-			cell: ({
-				row: {
-					original: { tags, source },
-				},
-			}) => {
-				const allNames = uniq(map(concat(tags, source?.tags ?? []), "name"))
-				return <TopicCell tags={allNames} />
-			},
-		},
-		{
-			id: "notes",
-			accessorKey: "notes",
-			header: COLUMN_LABELS.notes,
-			size: 110,
-			enableSorting: false,
-			enableColumnFilter: false,
-			cell: ({ getValue }) => {
-				const notes = getValue<string>()
-				return notes ? (
-					<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
-				) : null
-			},
-		},
-		{
-			id: "workspace",
-			header: ({ column }) => (
-				<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
-			),
-			size: 170,
-			enableColumnFilter: false,
-			...TASK_COLUMN_DEFS.workspace,
-			cell: ({
-				row: {
-					original: { workspace },
-				},
-			}) => <WorkspaceCell workspace={workspace} />,
-		},
-		{
-			id: "createdAt",
-			accessorKey: "createdAt",
-			header: ({ column }) => (
-				<ColumnHeaderWithActions
-					label={COLUMN_LABELS.createdAt}
-					column={column}
-				/>
-			),
-			size: 70,
-			enableColumnFilter: false,
-			...TASK_COLUMN_DEFS.createdAt,
-			cell: ({ getValue }) => (
-				<DateText>{formatDateShort(getValue<Date>())}</DateText>
-			),
-		},
-		{
-			id: "updatedAt",
-			accessorKey: "updatedAt",
-			header: ({ column }) => (
-				<ColumnHeaderWithActions
-					label={COLUMN_LABELS.updatedAt}
-					column={column}
-				/>
-			),
-			size: 70,
-			enableColumnFilter: false,
-			...TASK_COLUMN_DEFS.updatedAt,
-			cell: ({ getValue }) => (
-				<DateText>{formatDateShort(getValue<Date>())}</DateText>
-			),
-		},
-		...(showMenuColumn && actions
-			? [
-					{
-						id: "actions",
-						size: 25,
-						enableSorting: false,
-						enableColumnFilter: false,
-						cell: ({
-							row: {
-								original: { id, workspaceId, rowKey },
-							},
-						}) => (
-							<RowActionsMenu
-								workspaceId={workspaceId}
-								onEdit={() => actions.onEdit(id)}
-								onEnterSelect={() => actions.onEnterSelectMode(rowKey)}
-								onDelete={() => actions.onDelete([id])}
-							/>
-						),
-					} as ColumnDef<TaskRow>,
-				]
-			: []),
-	] as ColumnDef<TaskRow>[]
+        const isApproaching =
+          !isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
 
-	return {
-		columns: allColumns.filter((column) =>
-			allVisibleColumns.some((id) => column.id === id),
-		),
-	}
+        return (
+          <DeadlineCell>
+            {deadlineType !== DeadlineType.DATE && (
+              <DeadlineTag $type={deadlineType}>
+                {DEADLINE_LABELS[deadlineType]}
+              </DeadlineTag>
+            )}
+            {dueDate && (
+              <DeadlineDateText>
+                {formatDateShort(new Date(dueDate))}
+              </DeadlineDateText>
+            )}
+            {status?.type !== WorkspaceStatusType.COMPLETED &&
+              (isOverdue || isApproaching) && (
+                <DeadlineWarning>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <WarningTrigger>
+                        {isOverdue ? (
+                          <OverdueIcon size={16} />
+                        ) : (
+                          <ApproachingIcon size={16} />
+                        )}
+                      </WarningTrigger>
+                      <TooltipContent>
+                        {isOverdue
+                          ? `חריגה של ${Math.abs(daysUntil)} ימים`
+                          : daysUntil === 0
+                            ? 'תג"ב היום'
+                            : 'תג"ב מחר'}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </DeadlineWarning>
+              )}
+          </DeadlineCell>
+        )
+      },
+    },
+    {
+      id: "source",
+      header: ({ column }) => (
+        <ColumnHeaderWithActions
+          label={COLUMN_LABELS.source}
+          column={column}
+          filterOptions={filterOptionsMap?.source}
+        />
+      ),
+      size: 120,
+      filterFn: multiSelectColumnFilter,
+      ...TASK_COLUMN_DEFS.deadlineType,
+      cell: ({
+        row: {
+          original: { source },
+        },
+      }) => {
+        if (!source) {
+          return
+        }
+        const parts = [source.name, formatDateShort(source.date)].filter(
+          Boolean,
+        )
+        return (
+          <SourceCell>
+            {source.attachmentKey && <SourceIcon size={18} />}
+            {parts.length > 0 && <SourceText>{parts.join(" | ")}</SourceText>}
+          </SourceCell>
+        )
+      },
+    },
+    {
+      id: "tags",
+      header: ({ column }) => (
+        <ColumnHeaderWithActions
+          label={COLUMN_LABELS.tags}
+          column={column}
+          filterOptions={filterOptionsMap?.tags}
+        />
+      ),
+      size: 90,
+      enableSorting: false,
+      filterFn: multiSelectColumnFilter,
+      ...TASK_COLUMN_DEFS.tags,
+      cell: ({
+        row: {
+          original: { tags, source },
+        },
+      }) => {
+        const allNames = uniq(map(concat(tags, source?.tags ?? []), "name"))
+        return <TopicCell tags={allNames} />
+      },
+    },
+    {
+      id: "notes",
+      accessorKey: "notes",
+      header: COLUMN_LABELS.notes,
+      size: 110,
+      enableSorting: false,
+      enableColumnFilter: false,
+      cell: ({ getValue }) => {
+        const notes = getValue<string>()
+        return notes ? (
+          <NotesText dangerouslySetInnerHTML={{ __html: notes }} />
+        ) : null
+      },
+    },
+    {
+      id: "workspace",
+      header: ({ column }) => (
+        <ColumnHeaderWithActions label="מפקד מנחה" column={column} />
+      ),
+      size: 170,
+      enableColumnFilter: false,
+      ...TASK_COLUMN_DEFS.workspace,
+      cell: ({
+        row: {
+          original: { workspace },
+        },
+      }) => <WorkspaceCell workspace={workspace} />,
+    },
+    {
+      id: "createdAt",
+      accessorKey: "createdAt",
+      header: ({ column }) => (
+        <ColumnHeaderWithActions
+          label={COLUMN_LABELS.createdAt}
+          column={column}
+        />
+      ),
+      size: 70,
+      enableColumnFilter: false,
+      ...TASK_COLUMN_DEFS.createdAt,
+      cell: ({ getValue }) => (
+        <DateText>{formatDateShort(getValue<Date>())}</DateText>
+      ),
+    },
+    {
+      id: "updatedAt",
+      accessorKey: "updatedAt",
+      header: ({ column }) => (
+        <ColumnHeaderWithActions
+          label={COLUMN_LABELS.updatedAt}
+          column={column}
+        />
+      ),
+      size: 70,
+      enableColumnFilter: false,
+      ...TASK_COLUMN_DEFS.updatedAt,
+      cell: ({ getValue }) => (
+        <DateText>{formatDateShort(getValue<Date>())}</DateText>
+      ),
+    },
+    ...(showMenuColumn && actions
+      ? [
+        {
+          id: "actions",
+          size: 25,
+          enableSorting: false,
+          enableColumnFilter: false,
+          cell: ({
+            row: {
+              original: { id, workspaceId, rowKey },
+            },
+          }) => (
+            <RowActionsMenu
+              workspaceId={workspaceId}
+              onEdit={() => actions.onEdit(id)}
+              onEnterSelect={() => actions.onEnterSelectMode(rowKey)}
+              onDelete={() => actions.onDelete([id])}
+            />
+          ),
+        } as ColumnDef<TaskRow>,
+      ]
+      : []),
+  ] as ColumnDef<TaskRow>[]
+
+  return {
+    columns: allColumns.filter((column) =>
+      allVisibleColumns.some((id) => column.id === id),
+    ),
+  }
 }
 
 export { useTaskColumns }
