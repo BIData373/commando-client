@@ -39,13 +39,13 @@ function getFilteredTasks(tab: FocusedTab, tasks: TaskRow[]): TaskRow[] {
 interface FocusedInstructionProps {
 	tasks: TaskRow[]
 	onUpdateStatusSuccess?(): void
-	onTaskDoubleClick?(taskId: number): void
+	onDoubleClick?(taskId: number): void
 }
 
 export default function FocusedInstructions({
 	tasks,
 	onUpdateStatusSuccess,
-	onTaskDoubleClick,
+	onDoubleClick,
 }: FocusedInstructionProps) {
 	const [activeTab, setActiveTab] = useState<FocusedTab>(FocusedTab.FLAGGED)
 
@@ -73,7 +73,10 @@ export default function FocusedInstructions({
 	const { columns } = useTaskColumns({
 		onUpdateStatusSuccess,
 		visibleColumns: ["title", "status", "assigneeStatuses", "deadlineType"],
-		onTitleDoubleClick: onTaskDoubleClick,
+		showMenuColumn: false,
+		actions: {
+			onDoubleClick,
+		},
 	})
 
 	return (

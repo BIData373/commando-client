@@ -45,11 +45,11 @@ interface SelectModeConfig {
 }
 
 interface ActionsConfig {
-	onEdit: (taskId: number) => void
+	onEdit?: (taskId: number) => void
 	onDoubleClick?(taskId: number): void
-	onArchive(taskIds: number[]): void
-	onDelete(taskIds: number[]): void
-	onEnterSelectMode(rowKey?: string): void
+	onArchive?(taskIds: number[]): void
+	onDelete?(taskIds: number[]): void
+	onEnterSelectMode?(rowKey?: string): void
 }
 
 interface UseTaskColumnsOptions {
@@ -71,7 +71,6 @@ function useTaskColumns({
 	actions,
 	showMenuColumn = true,
 	onUpdateStatusSuccess,
-	onTitleDoubleClick,
 }: UseTaskColumnsOptions) {
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
@@ -169,7 +168,10 @@ function useTaskColumns({
 					original: { id, title, description, flagged },
 				},
 			}) => (
-				<TitleCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
+				<TitleCell
+					$clickable={!!actions?.onDoubleClick}
+					onDoubleClick={() => actions?.onDoubleClick?.(id)}
+				>
 					{flagged && <FlagIcon />}
 					{description ? (
 						<>
@@ -466,9 +468,9 @@ function useTaskColumns({
 						}) => (
 							<RowActionsMenu
 								workspaceId={workspaceId}
-								onEdit={() => actions.onEdit(id)}
-								onEnterSelect={() => actions.onEnterSelectMode(rowKey)}
-								onDelete={() => actions.onDelete([id])}
+								onEdit={() => actions.onEdit?.(id)}
+								onEnterSelect={() => actions.onEnterSelectMode?.(rowKey)}
+								onDelete={() => actions.onDelete?.([id])}
 							/>
 						),
 					} as ColumnDef<TaskRow>,

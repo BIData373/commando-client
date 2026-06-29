@@ -59,7 +59,7 @@ export function DashboardContent() {
 			<GridLayout>
 				<FocusedInstructions
 					onUpdateStatusSuccess={handleUpdateSuccess}
-					onTaskDoubleClick={handleOpenTask}
+					onDoubleClick={handleOpenTask}
 					tasks={tasks.filter(
 						({ status }) => status?.type !== WorkspaceStatusType.COMPLETED,
 					)}
@@ -67,7 +67,7 @@ export function DashboardContent() {
 				<StatusCard tasks={tasks} />
 				<RecentlyCompleted
 					onUpdateStatusSuccess={handleUpdateSuccess}
-					onTaskDoubleClick={handleOpenTask}
+					onDoubleClick={handleOpenTask}
 					tasks={tasks}
 				/>
 				<SystemDistribution onSetAssignees={handleSetAssignees} tasks={tasks} />

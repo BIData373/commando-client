@@ -12,13 +12,13 @@ import { ViewMoreInstructions } from "./ViewMoreInstructions"
 interface RecentlyCompletedProps {
 	tasks: TaskRow[]
 	onUpdateStatusSuccess?(): void
-	onTaskDoubleClick?(taskId: number): void
+	onDoubleClick?(taskId: number): void
 }
 
 export default function RecentlyCompleted({
 	tasks,
 	onUpdateStatusSuccess,
-	onTaskDoubleClick,
+	onDoubleClick,
 }: RecentlyCompletedProps) {
 	const completedTasks = useMemo(
 		() => tasks.filter((t) => t.status?.type === WorkspaceStatusType.COMPLETED),
@@ -28,7 +28,10 @@ export default function RecentlyCompleted({
 	const { columns } = useTaskColumns({
 		onUpdateStatusSuccess,
 		visibleColumns: ["title", "status", "assigneeStatuses"],
-		onTitleDoubleClick: onTaskDoubleClick,
+		showMenuColumn: false,
+		actions: {
+			onDoubleClick,
+		},
 	})
 
 	return (
