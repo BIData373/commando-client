@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { Check, Plus } from "lucide-react"
 import { type ReactNode, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
+import type { AssigneeDto } from "src/api/model"
 import { AssigneeDialog } from "../settings/AssigneeDialog"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { AssigneeAvatar } from "./AssigneeAvatar"
@@ -67,6 +68,10 @@ function AssigneePicker({
 		setDialogOpen(true)
 	}
 
+	function handleCreateAssignee(assignee: AssigneeDto) {
+		onToggle(assignee.id)
+	}
+
 	return (
 		<>
 			<Popover open={open} onOpenChange={handleOpenChange}>
@@ -111,7 +116,11 @@ function AssigneePicker({
 			</Popover>
 
 			{dialogOpen && (
-				<AssigneeDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+				<AssigneeDialog
+					open={dialogOpen}
+					onOpenChange={setDialogOpen}
+					onCreate={handleCreateAssignee}
+				/>
 			)}
 		</>
 	)
