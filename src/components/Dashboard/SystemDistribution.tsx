@@ -1,8 +1,9 @@
 import styled from "@emotion/styled"
-import { countBy, orderBy } from "lodash"
+import { countBy, type Dictionary, orderBy } from "lodash"
 import { Users } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
+import type { AssigneesDto } from "src/api/model"
 import { useListTags } from "src/api/tag/tag"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import type { TaskRow } from "src/utils/task-table-utils"
@@ -55,6 +56,19 @@ const HEADER_LABELS = {
 	[DistributionTab.ATTENTION]: { name: "נושא", count: "כמות הנחיות" },
 }
 
+function buildDistribution<T extends { name: string }>(
+	sourceList: T[],
+	counts: Dictionary<number>,
+): { name: string; count: number }[] {
+	return orderBy(
+		sourceList
+			.map((s) => ({ name: s.name, count: counts[s.name] ?? 0 }))
+			.filter(({ count }) => count > 0),
+		"count",
+		"desc",
+	)
+}
+
 export default function SystemDistribution({
 	onSetAssignees,
 	tasks,
@@ -75,28 +89,16 @@ export default function SystemDistribution({
 			(t) => t.assignee?.name,
 		)
 
-		return orderBy(
-			assignees
-				.map((a) => ({ name: a.name, count: assigneeCounts[a.name] ?? 0 }))
-				.filter(({ count }) => count > 0),
-			"count",
-			"desc",
-		)
+		return buildDistribution(assignees, assigneeCounts)
 	}, [tasks, assignees])
 
 	const tagDistribution = useMemo(() => {
-		const tagCounts = countBy(
+		const tagsCounts = countBy(
 			tasks.flatMap((t) => t.tags),
-			(tag) => tag.name,
+			(t) => t.name,
 		)
 
-		return orderBy(
-			tags
-				.map((t) => ({ name: t.name, count: tagCounts[t.name] ?? 0 }))
-				.filter(({ count }) => count > 0),
-			"count",
-			"desc",
-		)
+		return buildDistribution(tags, tagsCounts)
 	}, [tasks, tags])
 
 	const activeData =

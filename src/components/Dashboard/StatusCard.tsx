@@ -30,7 +30,6 @@ export default function StatusCard({ tasks }: StatusCardProps) {
 	const statusCounts = useMemo(() => {
 		const result: Record<string, StatusCount> = {}
 
-		// For each workspace status, count how many tasks belong to it (0 if none)
 		for (const status of Object.values(statuses)) {
 			result[status.id] = {
 				...status,
@@ -38,7 +37,6 @@ export default function StatusCard({ tasks }: StatusCardProps) {
 			}
 		}
 
-		// Add an "unassigned" bucket for tasks with no status
 		const unassignedCount = tasks.filter((t) => t.status == null).length
 		if (unassignedCount > 0) {
 			result[EMPTY_STATUS.type] = { ...EMPTY_STATUS, count: unassignedCount }

@@ -169,12 +169,7 @@ function useTaskColumns({
 					original: { id, title, description, flagged },
 				},
 			}) => (
-				<TitleCell
-					$clickable={!!(onTitleDoubleClick ?? actions?.onDoubleClick)}
-					onDoubleClick={() =>
-						(onTitleDoubleClick ?? actions?.onDoubleClick)?.(id)
-					}
-				>
+				<TitleCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
 					{flagged && <FlagIcon />}
 					{description ? (
 						<>
