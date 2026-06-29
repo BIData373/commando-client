@@ -1,7 +1,8 @@
 import styled from "@emotion/styled"
-import { useNavigate, useParams } from "@tanstack/react-router"
+import { useNavigate } from "@tanstack/react-router"
 import { User } from "lucide-react"
 import type { AssigneesDto } from "src/api/model"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { Badge } from "../ui/badge"
 import {
@@ -26,14 +27,16 @@ export function AssigneeCard({
 }: AssigneeCardProps) {
 	const visibleUsers = users.slice(0, MAX_VISIBLE_TAGS)
 	const remainingUsers = users.slice(MAX_VISIBLE_TAGS)
+	const {
+		workspace: { urlName },
+	} = useWorkspace()
 
-	const { urlName } = useParams({ strict: false })
 	const navigate = useNavigate()
 
 	function onCardClick() {
 		navigate({
 			to: "/workspace/$urlName/settings/assignees/$assigneeId",
-			params: { urlName: urlName!, assigneeId: String(assignee.id) },
+			params: { urlName, assigneeId: String(assignee.id) },
 		})
 	}
 

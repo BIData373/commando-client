@@ -15,14 +15,23 @@ import {
 	PermissionType,
 	type TaskWithWorkspaceDto,
 } from "src/api/model"
+import { useGetMyPermission } from "src/api/permission/permission"
 import { getAttachmentSignedUrl } from "src/api/s3/s3"
+import {
+	getGetTaskQueryKey,
+	getListPersonalTasksQueryKey,
+	getListTasksQueryKey,
+	useDeleteTask,
+} from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { downloadFromUrl } from "src/functions/download-utils"
+import { invalidateQueries } from "src/queryClient"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import FlagIcon from "../shared/FlagIcon"
 import { ModalContent } from "../shared/ModalContent"
+import WorkspaceCell from "../shared/WorkspaceCell"
 import { RowActionsMenu } from "../Tasks/RowActionsMenu"
 import { Dialog } from "../ui/dialog"
 import { AssigneeSection } from "./AssigneeSection"
@@ -32,8 +41,8 @@ import TaskHistoryPanel from "./TaskHistoryPanel"
 interface TaskDetailPanelProps {
 	task: TaskWithWorkspaceDto
 	onClose: () => void
-	onDelete: () => void
 	onEdit: () => void
+	showWorkspace?: boolean
 }
 
 function TaskDetailPanel({
@@ -48,10 +57,11 @@ function TaskDetailPanel({
 		source,
 		tags,
 		assigneeStatuses,
+		workspace,
 		workspace: { id: workspaceId, permissionType },
 	},
+	showWorkspace = false,
 	onClose,
-	onDelete,
 	onEdit,
 }: TaskDetailPanelProps) {
 	const [showHistory, setShowHistory] = useState(false)
@@ -64,7 +74,21 @@ function TaskDetailPanel({
 		bottom: false,
 	})
 
+	const { data: myPermission } = useGetMyPermission({ workspaceId })
+	const isManager = myPermission?.type === PermissionType.MANAGER
+
 	const { data: history } = useListTaskHistory({ taskId: id })
+
+	function handleSuccess() {
+		invalidateQueries([
+			getListTasksQueryKey({ workspaceId }),
+			getListPersonalTasksQueryKey(),
+		])
+	}
+
+	const { mutate: deleteTaskMutate } = useDeleteTask({
+		mutation: { onSuccess: handleSuccess },
+	})
 
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
 	const showExtraInfo =
@@ -112,6 +136,23 @@ function TaskDetailPanel({
 		if (!open) onClose()
 	}
 
+	function handleEdit() {
+		handleSuccess()
+		onEdit()
+	}
+
+	function handleDelete() {
+		deleteTaskMutate({ pathParams: { id } })
+		onClose()
+	}
+
+	function handleEditDiscussionSuccess() {
+		invalidateQueries([
+			getListTasksQueryKey({ workspaceId }),
+			getGetTaskQueryKey({ id }),
+		])
+	}
+
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
 			<Panel>
@@ -120,16 +161,22 @@ function TaskDetailPanel({
 					<X size={16} />
 				</CloseBtn>
 
-				<HeaderRow $shadow={scrollShadow.top}>
-					<TextWrapper>
-						{flagged && <FlagIcon />}
-						<TitleText title={title}>{title}</TitleText>
-					</TextWrapper>
-					<RowActionsMenu
-						workspaceId={workspaceId}
-						onEdit={onEdit}
-						onDelete={onDelete}
-					/>
+				<HeaderRow>
+					{showWorkspace && (
+						<WorkspaceCell workspace={workspace} iconSize={20} />
+					)}
+
+					<TitleRow $shadow={scrollShadow.top}>
+						<TextWrapper>
+							{flagged && <FlagIcon size={20} />}
+							<TitleText title={title}>{title}</TitleText>
+						</TextWrapper>
+						<RowActionsMenu
+							workspaceId={workspaceId}
+							onEdit={isManager ? handleEdit : undefined}
+							onDelete={isManager ? handleDelete : undefined}
+						/>
+					</TitleRow>
 				</HeaderRow>
 
 				<ScrollContent
@@ -266,11 +313,12 @@ function TaskDetailPanel({
 						/>
 					</>
 				)}
-				{showEditDiscussion && source?.id && (
+				{showEditDiscussion && source && (
 					<EditDiscussionModal
-						onClose={handleCloseEditDiscussion}
 						sourceId={source.id}
-						taskId={id}
+						workspaceId={workspaceId}
+						onClose={handleCloseEditDiscussion}
+						onSuccess={handleEditDiscussionSuccess}
 					/>
 				)}
 			</Panel>
@@ -361,11 +409,14 @@ const SectionLabel = styled.p`
   white-space: nowrap;
 `
 
-// ─── Header ────────────────────────────────────────────────────────────────────
+const HeaderRow = styled.div`
+	display: flex;
+	flex-direction: column;
+	padding: 36px 48px 20px;
+`
 
-const HeaderRow = styled.div<{ $shadow: boolean }>`
+const TitleRow = styled.div<{ $shadow: boolean }>`
   display: flex;
-  padding: 36px 48px 20px;
   align-items: center;
   justify-content: space-between;
   min-width: 0;

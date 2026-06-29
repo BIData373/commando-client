@@ -72,10 +72,13 @@ export function ErrorModal() {
 		window.open(CHAT_CHANNEL_URL)
 	}
 
-	const content =
-		errorCode && isErrorCode(errorCode)
-			? ERROR_CONTENT[errorCode as ErrorCode]
-			: null
+	const content = errorCode
+		? ERROR_CONTENT[
+				isErrorCode(errorCode)
+					? (errorCode as ErrorCode)
+					: ErrorCode.SERVER_ERROR
+			]
+		: null
 
 	return (
 		<Dialog open={!!content} onOpenChange={(open) => !open && handleClose()}>

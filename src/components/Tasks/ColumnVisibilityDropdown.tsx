@@ -20,6 +20,7 @@ import {
 import styled from "@emotion/styled"
 import { Columns3 } from "lucide-react"
 import { useState } from "react"
+import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import {
 	CONFIGURABLE_COLUMNS,
 	type TaskColumnMeta,
@@ -29,20 +30,15 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { SortableColumnItem } from "./SortableColumnItem"
 
 interface ColumnVisibilityDropdownProps {
-	columnOrder: (keyof TaskRow)[]
-	hiddenColumns: Set<keyof TaskRow>
-	onColumnOrderChange: (order: (keyof TaskRow)[]) => void
-	onToggleColumn: (columnId: keyof TaskRow) => void
 	extraColumnsMeta?: TaskColumnMeta[]
 }
 
 function ColumnVisibilityDropdown({
-	columnOrder,
-	hiddenColumns,
-	onColumnOrderChange,
-	onToggleColumn,
 	extraColumnsMeta,
 }: ColumnVisibilityDropdownProps) {
+	const { columnOrder, setColumnOrder, hiddenColumns, toggleColumn } =
+		useTasksFilters()
+
 	const [open, setOpen] = useState(false)
 
 	const allColumns = extraColumnsMeta
@@ -61,7 +57,7 @@ function ColumnVisibilityDropdown({
 		if (over && active.id !== over.id) {
 			const oldIndex = columnOrder.indexOf(active.id as keyof TaskRow)
 			const newIndex = columnOrder.indexOf(over.id as keyof TaskRow)
-			onColumnOrderChange(arrayMove(columnOrder, oldIndex, newIndex))
+			setColumnOrder(arrayMove(columnOrder, oldIndex, newIndex))
 		}
 	}
 
@@ -94,7 +90,7 @@ function ColumnVisibilityDropdown({
 								column={col}
 								isHidden={hiddenColumns.has(col.id)}
 								isLocked={col.id === "title"}
-								onToggle={() => onToggleColumn(col.id)}
+								onToggle={() => toggleColumn(col.id)}
 							/>
 						))}
 					</SortableContext>

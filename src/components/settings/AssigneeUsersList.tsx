@@ -5,12 +5,12 @@ import type { MirageUserDto } from "src/api/model"
 import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { UserItem } from "./UserItem"
 
-interface UsersListsProps {
+interface AssigneeUsersListProps {
 	users: MirageUserDto[]
 	onRemove: (upn: string) => void
 }
 
-export function UsersLists({ users, onRemove }: UsersListsProps) {
+export function AssigneeUsersList({ users, onRemove }: AssigneeUsersListProps) {
 	return (
 		<UserListArea>
 			{users.length > 0 && (
@@ -78,13 +78,9 @@ const UserCardItem = styled.div`
 
 const UserCardInfo = styled.div`
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex: 1;
     min-width: 0;
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: clip;
-    gap: 2px;
 `
 
 const UserCardClose = styled.button`

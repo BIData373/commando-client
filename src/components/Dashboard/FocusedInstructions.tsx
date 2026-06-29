@@ -1,3 +1,4 @@
+import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import { useMemo, useState } from "react"
 import { DeadlineType } from "src/api/model"
@@ -8,6 +9,8 @@ import type { TaskRow } from "src/utils/task-table-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
+import { DashboardSection } from "./DashboardSection"
+import { DashboardTableCard } from "./DashboardTableCard"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface TabConfig {
@@ -69,12 +72,24 @@ export default function FocusedInstructions({
 	const { columns } = useTaskColumns({
 		onUpdateStatusSuccess,
 		visibleColumns: ["title", "status", "assigneeStatuses", "deadlineType"],
-		searchQuery: "",
 	})
 
 	return (
-		<Section>
-			<SectionTitle>הנחיות במיקוד</SectionTitle>
+		<DashboardSection
+			title="הנחיות במיקוד"
+			viewMore={
+				<ViewMoreInstructions
+					tabFilter={
+						activeTab === FocusedTab.APPROACHING ? undefined : activeTab
+					}
+					deadlineTypeFilter={
+						activeTab === FocusedTab.APPROACHING
+							? DeadlineType.IMMEDIATE
+							: undefined
+					}
+				/>
+			}
+		>
 			<TabsWrapper>
 				<TabsHeader>
 					{tabs.map((tab) => (
@@ -91,7 +106,7 @@ export default function FocusedInstructions({
 					))}
 				</TabsHeader>
 				<ContentPanel>
-					<DataTable
+					<StyledTable
 						columns={columns}
 						data={filteredTasks}
 						showHeader={false}
@@ -102,38 +117,9 @@ export default function FocusedInstructions({
 					/>
 				</ContentPanel>
 			</TabsWrapper>
-			<ViewMoreInstructions
-				tabFilter={activeTab === FocusedTab.APPROACHING ? undefined : activeTab}
-				deadlineTypeFilter={
-					activeTab === FocusedTab.APPROACHING
-						? DeadlineType.IMMEDIATE
-						: undefined
-				}
-			/>
-		</Section>
+		</DashboardSection>
 	)
 }
-
-const Section = styled.div`
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-
-  @media (max-width: 1300px) {
-    grid-column: 1 / -1;
-    grid-row: 1;
-  }
-`
-
-const SectionTitle = styled.h2`
-  margin: 0;
-  font-size: var(--fs-heading-2);
-  font-weight: 400;
-  color: var(--sea-ink);
-  text-align: start;
-`
 
 const TabsWrapper = styled.div`
   flex: 1;
@@ -157,15 +143,28 @@ const TabItem = styled.button<{ $active: boolean }>`
   flex-direction: column;
   align-items: flex-end;
   gap: 4px;
-  border: 1px solid var(--border);
-  border-bottom-color: ${({ $active }) => ($active ? "var(--background)" : "var(--border)")};
   border-radius: 6px 6px 0 0;
-  background: ${({ $active }) => ($active ? "var(--background)" : "transparent")};
-  opacity: ${({ $active }) => ($active ? 1 : 0.5)};
   cursor: pointer;
   margin-bottom: -1px;
   align-items: flex-start;
   flex: 1;
+  border-width: 1px;
+  border-style: solid;
+
+  ${({ $active }) =>
+		$active
+			? css`
+		border-bottom-color: var(--background);
+		background: var(--background);
+		opacity: 1;
+		border-color: #f5f5f5;
+	`
+			: css`
+		border-bottom-color: var(--border);
+		background: var(--transparent);
+		opacity: 0.5;
+		border-color: var(--border);
+	`}
 `
 
 const TabTitle = styled.span<{ $active: boolean }>`
@@ -173,13 +172,13 @@ const TabTitle = styled.span<{ $active: boolean }>`
   font-weight: 400;
   ${({ $active }) =>
 		$active
-			? `
+			? css`
       background: linear-gradient(150deg, var(--purple-start) 0%, var(--purple-end) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     `
-			: `color: var(--sea-ink);`}
+			: css`color: var(--sea-ink);`}
 `
 
 const TabBottom = styled.div`
@@ -195,19 +194,18 @@ const TabCount = styled.span<{ $active: boolean }>`
   line-height: 1.2;
   ${({ $active }) =>
 		$active
-			? `
+			? css`
       background: linear-gradient(122deg, var(--purple-start) 0%, var(--purple-end) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     `
-			: `color: var(--foreground);`}
+			: css`color: var(--foreground);`}
 `
 
-const ContentPanel = styled.div`
+const ContentPanel = styled(DashboardTableCard)`
   flex: none;
   background: var(--background);
-  border: 1px solid var(--border);
   border-radius: 8px;
   border-start-start-radius: 0;
   position: relative;
@@ -215,22 +213,10 @@ const ContentPanel = styled.div`
   flex-direction: column;
   height: 308px;
   overflow: hidden;
+  min-width: 0;
+  width: 100%;
+`
 
-  [data-slot="table-row"] {
-    border-bottom: none;
-    height: 44px;
-  }
-
-  [data-slot="table-cell"] {
-    height: 44px;
-    padding-block: 0;
-    vertical-align: middle;
-  }
-
-  [data-slot="table-cell"]:first-child {
-    max-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+const StyledTable = styled(DataTable<TaskRow>)`
+	width: 100%;
 `

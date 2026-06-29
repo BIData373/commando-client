@@ -52,10 +52,12 @@ export function UserPermissionList({
 							onClick={() => handleClickUserInfo(user, type)}
 						>
 							<UserHeader>
-								<UserName>{user.info?.name}</UserName>
-								<UserPersonalId> - {user.upn}</UserPersonalId>
+								<UserName title={user.info?.name}>{user.info?.name}</UserName>
+								<UserPersonalId title={user.upn}> - {user.upn}</UserPersonalId>
 							</UserHeader>
-							<UserSubtext>{user.info?.displayName}</UserSubtext>
+							<UserSubtext title={user.info?.displayName}>
+								{user.info?.displayName}
+							</UserSubtext>
 						</UserInfo>
 						<DropdownPermission
 							value={type}
@@ -123,14 +125,15 @@ const UserInfo = styled.div<{ $type: PermissionType }>`
 const UserName = styled.span`
   font-size: 15px;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const UserPersonalId = styled.span`
   font-size: var(--fs-base);
   font-weight: 400;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `
 
 const UserSubtext = styled.span`

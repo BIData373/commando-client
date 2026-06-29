@@ -23,7 +23,9 @@ function EditAssignee() {
 		})
 	}
 
-	if (!assignee) return null
-
-	return <AssigneeDialog open assignee={assignee} onOpenChange={handleClose} />
+	return (
+		assignee && (
+			<AssigneeDialog open assignee={assignee} onOpenChange={handleClose} />
+		)
+	)
 }

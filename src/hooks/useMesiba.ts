@@ -11,9 +11,10 @@ export interface IMesibaIcon {
 const delay = (ms = 200) => new Promise((r) => setTimeout(r, ms))
 
 const mockIcon = "/logo.svg"
+const mockIcon2 = "/shield-3086.svg"
 
 const mockMesibaIcons: IMesibaIcon[] = [
-	{ id: 1, iconName: mockIcon, heb_name: "פיקוד צפון" },
+	{ id: 1, iconName: mockIcon2, heb_name: "פיקוד צפון" },
 	{ id: 2, iconName: mockIcon, heb_name: "פיקוד מרכז" },
 	{ id: 3, iconName: mockIcon, heb_name: "פיקוד דרום" },
 	{ id: 4, iconName: mockIcon, heb_name: "פיקוד העורף" },
