@@ -112,10 +112,14 @@ const SectionValue = styled.p`
 `
 
 const AssigneesContainer = styled.div`
+  direction: ltr;
+  overflow-y: auto;
+  max-height: calc(46px * 3 + 4px * 2);
   width: 100%;
 `
 
 const AssigneeRowsList = styled.div`
+  direction: rtl;
   display: flex;
   flex-direction: column;
   gap: 4px;

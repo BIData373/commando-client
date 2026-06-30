@@ -12,12 +12,14 @@ interface ModalContentProps
 	extends ComponentProps<typeof DialogContentPrimitive> {
 	className?: string
 	headerActions?: ReactNode
+	closable?: boolean
 }
 
 export function ModalContent({
 	children,
 	className,
 	headerActions,
+	closable = true,
 	...props
 }: ModalContentProps) {
 	return (
@@ -26,9 +28,11 @@ export function ModalContent({
 			<ModalRoot className={className} {...props}>
 				<ModalHeader>
 					{headerActions}
-					<CloseButton>
-						<X size={16} />
-					</CloseButton>
+					{closable && (
+						<CloseButton>
+							<X size={16} />
+						</CloseButton>
+					)}
 				</ModalHeader>
 				{children}
 			</ModalRoot>

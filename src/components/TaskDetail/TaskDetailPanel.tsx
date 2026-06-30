@@ -383,7 +383,7 @@ const SectionLabel = styled.p`
 const HeaderRow = styled.div`
 	display: flex;
 	flex-direction: column;
-	padding: 16px 16px 20px;
+	padding: 16px 48px 20px;
 `
 
 const TitleRow = styled.div<{ $shadow: boolean }>`
@@ -414,12 +414,12 @@ const TitleText = styled.span`
   line-height: 32px;
   color: var(--text-color);
   text-align: end;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: normal;
   overflow-wrap: anywhere;
   width: 100%;
   direction: ltr;
+  max-height: 5lh;
+  overflow-y: auto;
 `
 
 // ─── Deadline ──────────────────────────────────────────────────────────────────
@@ -544,6 +544,7 @@ const SourceRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 `
 
 const InfoAttachment = styled.div`
@@ -588,6 +589,10 @@ const SourceName = styled.span`
   font-weight: 400;
   line-height: 22px;
   color: var(--sea-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 `
 
 const SourceDate = styled.span`
