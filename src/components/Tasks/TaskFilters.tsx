@@ -13,14 +13,15 @@ import {
 	type TaskRow,
 } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
-import { FilterBar, FilterDivider, FilterPill } from "../shared/FilterBar"
+import { FilterBar, FilterPill } from "../shared/FilterBar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface TaskFiltersProps {
 	taskRows: TaskRow[]
-	onClearAllFilters: () => void
-	hasExtraActiveFilters?: boolean
+	onClearColumnFilters?: () => void
+	onClearQuickFilters?: () => void
 	extraFilters?: ReactNode
+	extraButtons?: ReactNode
 	extraColumnsMeta?: TaskColumnMeta[]
 	tabFilter?: QuickFilter[]
 	onToggleTabFilter?: (filter: QuickFilter) => void
@@ -31,8 +32,8 @@ interface TaskFiltersProps {
 
 function TaskFilters({
 	taskRows,
-	onClearAllFilters,
-	hasExtraActiveFilters,
+	onClearColumnFilters,
+	onClearQuickFilters,
 	extraFilters,
 	extraColumnsMeta,
 	tabFilter,
@@ -40,13 +41,16 @@ function TaskFilters({
 	startSlot,
 	allTasksLength,
 	urlColumnFilters = [],
+	extraButtons,
 }: TaskFiltersProps) {
 	const {
 		activeQuickFilters,
 		toggleQuickFilter,
+		clearQuickFilters,
 		columnOrder,
 		hiddenColumns,
 		columnsFilters,
+		setColumnsFilters,
 		sorting,
 	} = useTasksFilters()
 
@@ -54,7 +58,18 @@ function TaskFilters({
 		tabFilter !== undefined ? new Set(tabFilter) : activeQuickFilters
 	const handleToggle = onToggleTabFilter ?? toggleQuickFilter
 
-	const hasActiveFilters = activeFilters.size > 0 || !!hasExtraActiveFilters
+	const hasActiveColumnFilters =
+		columnsFilters.length > 0 || urlColumnFilters.length > 0
+
+	function clearAllColumnFilters() {
+		setColumnsFilters([])
+		onClearColumnFilters?.()
+	}
+
+	function handleClearAllQuickFilters() {
+		clearQuickFilters()
+		onClearQuickFilters?.()
+	}
 
 	const allColumnFilters = [...urlColumnFilters, ...columnsFilters]
 
@@ -91,8 +106,8 @@ function TaskFilters({
 
 	return (
 		<FilterBar
-			hasActiveFilters={hasActiveFilters}
-			onClearAll={onClearAllFilters}
+			hasActiveFilters={hasActiveColumnFilters}
+			onClearAll={clearAllColumnFilters}
 			onExport={handleExport}
 			extraColumnsMeta={extraColumnsMeta}
 			startSlot={startSlot}
@@ -126,11 +141,13 @@ function TaskFilters({
 				חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
 			</FilterPill>
 
-			<FilterDivider />
-
-			<FilterPill $active={!hasActiveFilters} onClick={onClearAllFilters}>
+			<FilterPill
+				$active={activeFilters.size === 0}
+				onClick={handleClearAllQuickFilters}
+			>
 				הכל ({allTasksLength})
 			</FilterPill>
+			{extraButtons}
 		</FilterBar>
 	)
 }

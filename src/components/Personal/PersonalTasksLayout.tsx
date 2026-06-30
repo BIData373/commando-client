@@ -18,7 +18,6 @@ import { invalidateQueries } from "src/queryClient"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import { type TaskRow, toTaskRows } from "src/utils/task-table-utils"
-import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import { TaskFilters } from "../Tasks/TaskFilters"
@@ -39,8 +38,6 @@ function PersonalTasksLayout() {
 	const navigate = useNavigate()
 
 	const currentUser = useCurrentUser()
-
-	const { clearQuickFilters } = useTasksFilters()
 
 	const queryKey = getListPersonalTasksQueryKey()
 	const { data: rawTasks = [], isLoading } = useListPersonalTasks()
@@ -86,11 +83,6 @@ function PersonalTasksLayout() {
 		[filteredTasks, currentUser],
 	)
 
-	function clearAllFilters() {
-		clearQuickFilters()
-		setActiveWorkspaceFilters(new Set())
-	}
-
 	function handleOpenTask(taskId: number) {
 		navigate({
 			to: "/personal/task/$taskId",
@@ -128,8 +120,6 @@ function PersonalTasksLayout() {
 				<TaskFilters
 					taskRows={filteredTaskRows}
 					allTasksLength={allTaskRows.length}
-					onClearAllFilters={clearAllFilters}
-					hasExtraActiveFilters={activeWorkspaceFilters.size > 0}
 					extraColumnsMeta={[{ id: "workspace", label: "מפקד מנחה" }]}
 					startSlot={<TasksDatePicker />}
 					extraFilters={
