@@ -27,7 +27,6 @@ import { CancelButton } from "../shared/CancelButton"
 import FlagIcon from "../shared/FlagIcon"
 import { FormField } from "../shared/FormField"
 import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
-import ModalCloseButton from "../shared/ModalCloseButton"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { Checkbox } from "../ui/checkbox"
@@ -325,8 +324,6 @@ function CreateTaskModal({
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
 			<ModalCard>
-				<ModalCloseButton onClose={onClose} />
-
 				<ModalBody>
 					<ModalHeader $shadow={scrollShadow.top}>
 						<ModalTitle>
@@ -484,7 +481,6 @@ const ModalCard = styled(ModalContent)`
   max-height: 82vh;
   min-height: 800px;
   overflow: hidden;
-  padding-block-start: 36px;
 `
 
 const ModalBody = styled.div`
@@ -514,8 +510,6 @@ const ScrollableContent = styled.div`
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-block-end: 24px;
-  padding-inline-end: 24px;
 `
 
 // ─── Form Layout ─────────────────────────────────────────────────────────────

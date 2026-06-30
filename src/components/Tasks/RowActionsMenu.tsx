@@ -1,8 +1,6 @@
 import styled from "@emotion/styled"
 import { CheckCircle2, MoreVertical, Pencil, Trash2 } from "lucide-react"
 import { type ReactNode, useState } from "react"
-import { PermissionType } from "src/api/model"
-import { useGetMyPermission } from "src/api/permission/permission"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -153,7 +151,16 @@ const DefaultTrigger = styled.button`
   cursor: pointer;
   outline: none;
 
+  transition-property: background, color;
+  transition: 150ms ease-in-out;
+
   &:hover {
+    background: var(--button-hover);
+    color: var(--sea-ink);
+  }
+
+  &:active,
+  &[data-state="open"] {
     background: var(--button-hover);
     color: var(--sea-ink);
   }
