@@ -147,7 +147,7 @@ const TabItem = styled.button<{ $active: boolean }>`
   border: 1px solid var(--border);
   align-items: flex-start;
   background: ${({ $active }) => $active && "var(--background)"};
-  border-color: ${({ $active }) => $active && "rgb(245, 245, 245)"};
+  border-color: ${({ $active }) => $active && "var(--Tabs-border-color)"};
   
   &:first-child {
 	border-radius: 0 8px 0 0;

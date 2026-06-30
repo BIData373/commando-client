@@ -1,9 +1,8 @@
 import styled from "@emotion/styled"
-import { countBy, type Dictionary, orderBy } from "lodash"
+import { countBy, filter, flatMap, orderBy } from "lodash"
 import { Users } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
-import type { AssigneesDto } from "src/api/model"
 import { useListTags } from "src/api/tag/tag"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import type { TaskRow } from "src/utils/task-table-utils"
@@ -61,11 +60,7 @@ function buildDistribution<T extends { name: string }>(
 	field: Extract<keyof TaskRow, "assignee" | "tags">,
 	tasks: TaskRow[],
 ): { name: string; count: number }[] {
-	const items =
-		field === "tags"
-			? tasks.flatMap((t) => t.tags)
-			: tasks.filter((t) => t.assignee).map((t) => t.assignee)
-	const counts = countBy(items, (item) => item?.name)
+	const counts = countBy(filter(flatMap(tasks, field), Boolean), "name")
 
 	return orderBy(
 		sourceList

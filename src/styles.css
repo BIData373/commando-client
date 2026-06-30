@@ -68,6 +68,7 @@ body,
   --Components-Dropdown-Global-controlItemBgHover: rgba(0, 0, 0, 0.04);
   --Components-Button-Component-defaultBg: #141414;
   --Text-color-text-placeholder: rgba(0, 0, 0, 0.25);
+  --Tabs-border-color: rgb(245, 245, 245);
 
   /* Typography scale */
   --fs-heading-h1: 42px;
