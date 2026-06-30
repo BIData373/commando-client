@@ -409,7 +409,7 @@ const StyledInput = styled.input`
   outline: none;
 
   &::placeholder {
-    color: var(--text-color-200);
+    color: var(--Text-color-text-placeholder);
   }
 
   &:focus {

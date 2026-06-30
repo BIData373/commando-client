@@ -56,10 +56,16 @@ interface FormState extends Omit<CreateTaskDto, "workspaceId" | "assignees"> {
 interface CreateTaskModalProps {
 	workspaceId: number
 	onClose: () => void
+	onSave?: () => void
 	task?: TaskWithWorkspaceDto
 }
 
-function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
+function CreateTaskModal({
+	workspaceId,
+	onClose,
+	onSave,
+	task,
+}: CreateTaskModalProps) {
 	const isEditMode = !!task
 
 	const { data: workspaceStatuses = [] } = useListWorkspaceStatuses({
@@ -81,7 +87,7 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 			getListPersonalTasksQueryKey(),
 		])
 
-		onClose()
+		onSave ? onSave() : onClose()
 	}
 
 	const form = useForm({
@@ -137,9 +143,8 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 					rest.sourceId = newSource.id
 				}
 				saveTasks([{ workspaceId, ...rest }])
+				onClose()
 			}
-
-			onClose()
 		},
 	})
 
@@ -549,7 +554,7 @@ const DirectiveTextarea = styled.textarea`
   overflow-y: auto;
 
   &::placeholder {
-    color: rgba(0, 0, 0, 0.25);
+    color: var(--Text-color-text-placeholder);
   }
 
   &:focus {
