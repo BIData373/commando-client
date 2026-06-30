@@ -1,13 +1,11 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
 import type { ColumnFiltersState } from "@tanstack/react-table"
-import { concat } from "lodash"
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTasks } from "src/api/task/task"
-import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
 import {
@@ -57,22 +55,7 @@ function TasksLayout({
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
-	const [activeTopicFilters] = useState<Set<string>>(new Set())
-
-	const filteredTasks = useFilteredTasks(
-		tasks,
-		activeTopicFilters.size > 0
-			? (task) =>
-					concat(task.tags, task.source?.tags ?? []).some((tag) =>
-						activeTopicFilters.has(tag.name),
-					)
-			: undefined,
-	)
-
-	const filteredTaskRows = useMemo(
-		() => toTaskRows(filteredTasks),
-		[filteredTasks],
-	)
+	const filteredTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
 
 	const allTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
 
@@ -192,7 +175,7 @@ function TasksLayout({
 							isManager={isManager}
 						/>
 					) : (
-						<TaskCardGrid tasks={filteredTasks} />
+						<TaskCardGrid tasks={tasks} />
 					)}
 				</ContentArea>
 			</TasksRoot>

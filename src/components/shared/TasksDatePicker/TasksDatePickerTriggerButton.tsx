@@ -63,12 +63,12 @@ const TriggerButton = styled.button<{ $active: boolean }>`
   gap: 8px;
   height: 40px;
   border-radius: 8px;
-  border: 1px solid ${({ $active }) => ($active ? "rgba(9, 88, 217, 1)" : "var(--card-border)")};
+  border: 1px solid ${({ $active }) => ($active ? "var(--active-color-button)" : "var(--card-border)")};
   background: var(--background);
   box-shadow: var(--shadow-button);
   cursor: pointer;
   white-space: nowrap;
-  color: ${({ $active }) => ($active ? "rgba(9, 88, 217, 1)" : "var(--text-color-2)")};
+  color: ${({ $active }) => ($active ? "var(--active-color-button)" : "var(--text-color-2)")};
   font-size: var(--fs-base);
 
   &:hover {

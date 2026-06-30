@@ -66,6 +66,11 @@ function TaskFilters({
 		onClearColumnFilters?.()
 	}
 
+	function handleClearAllQuickFilters() {
+		clearQuickFilters()
+		onClearQuickFilters?.()
+	}
+
 	const allColumnFilters = [...urlColumnFilters, ...columnsFilters]
 
 	const filteredTaskRows = filter(taskRows, (task) =>
@@ -135,10 +140,7 @@ function TaskFilters({
 
 			<FilterPill
 				$active={activeFilters.size === 0}
-				onClick={() => {
-					clearQuickFilters()
-					onClearQuickFilters?.()
-				}}
+				onClick={handleClearAllQuickFilters}
 			>
 				הכל ({allTasksLength})
 			</FilterPill>
