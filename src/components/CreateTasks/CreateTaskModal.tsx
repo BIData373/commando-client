@@ -55,7 +55,7 @@ interface FormState extends Omit<CreateTaskDto, "workspaceId" | "assignees"> {
 interface CreateTaskModalProps {
 	workspaceId: number
 	onClose: () => void
-	onSave?: () => void
+	onSave: () => void
 	task?: TaskWithWorkspaceDto
 }
 
@@ -75,7 +75,11 @@ function CreateTaskModal({
 	const { saveTasks, isPending } = useSaveTasks(workspaceId, onClose)
 
 	const { mutateAsync: createSource } = useCreateSource()
-	const { mutateAsync: updateTask } = useUpdateTask()
+	const { mutateAsync: updateTask } = useUpdateTask({
+		mutation: {
+			onSuccess: handleUpdateSuccess,
+		},
+	})
 
 	const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
 
@@ -86,7 +90,7 @@ function CreateTaskModal({
 			getListPersonalTasksQueryKey(),
 		])
 
-		onSave ? onSave() : onClose()
+		onSave()
 	}
 
 	const form = useForm({
@@ -130,10 +134,7 @@ function CreateTaskModal({
 					changedFields.sourceId = newSource.id
 				}
 
-				await updateTask(
-					{ pathParams: { id: task.id }, data: changedFields },
-					{ onSuccess: handleUpdateSuccess },
-				)
+				await updateTask({ pathParams: { id: task.id }, data: changedFields })
 			} else {
 				if (source.trim() && !linkedSource) {
 					const newSource = await createSource({
