@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { countBy, filter, flatMap, orderBy } from "lodash"
+import { chain, countBy, filter, flatMap } from "lodash"
 import { Users } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
@@ -62,13 +62,11 @@ function buildDistribution<T extends { name: string }>(
 ): { name: string; count: number }[] {
 	const counts = countBy(filter(flatMap(tasks, field), Boolean), "name")
 
-	return orderBy(
-		sourceList
-			.map((s) => ({ name: s.name, count: counts[s.name] ?? 0 }))
-			.filter(({ count }) => count > 0),
-		"count",
-		"desc",
-	)
+	return chain(sourceList)
+		.map((s) => ({ name: s.name, count: counts[s.name] ?? 0 }))
+		.filter(({ count }) => count > 0)
+		.orderBy("count", "desc")
+		.value()
 }
 
 export default function SystemDistribution({
