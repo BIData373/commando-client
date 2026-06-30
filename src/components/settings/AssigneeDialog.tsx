@@ -7,12 +7,7 @@ import {
 	useCreateAssignee,
 	useUpdateAssignee,
 } from "src/api/assignee/assignee"
-import type {
-	AssigneeDto,
-	AssigneesDto,
-	MirageUserDto,
-	UserDto,
-} from "src/api/model"
+import type { AssigneeDto, AssigneesDto, MirageUserDto } from "src/api/model"
 import {
 	getListPersonalTasksQueryKey,
 	getListTasksQueryKey,
@@ -154,13 +149,8 @@ export function AssigneeDialog({
 
 	function handleSearchSelect(user: MirageUserDto) {
 		if (!user) return
-		// setSelectedUser(user)
 		form.setFieldValue("users", (prev) =>
-			prev.some(({ upn }) => upn === user.upn)
-				? prev
-				: // TODO - maybe have the API return MirageUser, cause technically,
-					// users dont actually have ids, they are based on UPN anyway...
-					[...prev, user as UserDto],
+			prev.some(({ upn }) => upn === user.upn) ? prev : [...prev, user],
 		)
 		setSearchValue("")
 	}

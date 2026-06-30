@@ -5,7 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { UserDto } from "./user-dto"
+import type { MirageUserDto } from "./mirage-user-dto"
 
 export interface AssigneeDto {
 	createdAt: Date
@@ -22,5 +22,5 @@ export interface AssigneeDto {
 	/** @nullable */
 	icon: string | null
 	workspaceId: number
-	users: UserDto[]
+	users: MirageUserDto[]
 }
