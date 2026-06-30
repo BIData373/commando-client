@@ -60,9 +60,7 @@ export function DashboardContent() {
 				<FocusedInstructions
 					onUpdateStatusSuccess={handleUpdateSuccess}
 					onDoubleClick={handleOpenTask}
-					tasks={tasks.filter(
-						({ status }) => status?.type !== WorkspaceStatusType.COMPLETED,
-					)}
+					tasks={tasks}
 				/>
 				<StatusCard tasks={tasks} />
 				<RecentlyCompleted

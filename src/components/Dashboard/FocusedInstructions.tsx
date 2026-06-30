@@ -1,7 +1,7 @@
 import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import { useMemo, useState } from "react"
-import { DeadlineType } from "src/api/model"
+import { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
 import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filter-utils"
@@ -25,15 +25,11 @@ const TAB_LABELS: Pick<TabConfig, "id" | "label" | "weekDelta">[] = [
 	{ id: FocusedTab.OVERDUE, label: 'חריגות מתג"ב', weekDelta: 0 },
 ]
 
-function getFilteredTasks(tab: FocusedTab, tasks: TaskRow[]): TaskRow[] {
-	switch (tab) {
-		case FocusedTab.FLAGGED:
-			return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED))
-		case FocusedTab.APPROACHING:
-			return tasks.filter((t) => t.deadlineType === DeadlineType.IMMEDIATE)
-		case FocusedTab.OVERDUE:
-			return tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
-	}
+const TAB_FILTERS: Record<FocusedTab, (task: TaskRow) => boolean> = {
+	[FocusedTab.FLAGGED]: (task) => matchesQuickFilter(task, QuickFilter.FLAGGED),
+	[FocusedTab.APPROACHING]: (task) =>
+		task.deadlineType === DeadlineType.IMMEDIATE,
+	[FocusedTab.OVERDUE]: (task) => matchesQuickFilter(task, QuickFilter.OVERDUE),
 }
 
 interface FocusedInstructionProps {
@@ -53,22 +49,23 @@ export default function FocusedInstructions({
 		setActiveTab(tabId)
 	}
 
-	const filteredTasks = useMemo(
-		() => getFilteredTasks(activeTab, tasks),
-		[activeTab, tasks],
+	const notCompletedTasks = tasks.filter(
+		({ status }) => status?.type !== WorkspaceStatusType.COMPLETED,
 	)
 
-	const tabs: TabConfig[] = TAB_LABELS.map((tab) => ({
-		...tab,
-		count:
-			tab.id === FocusedTab.FLAGGED
-				? tasks.filter((t) => matchesQuickFilter(t, QuickFilter.FLAGGED)).length
-				: tab.id === FocusedTab.APPROACHING
-					? tasks.filter((t) => t.deadlineType === DeadlineType.IMMEDIATE)
-							.length
-					: tasks.filter((t) => matchesQuickFilter(t, QuickFilter.OVERDUE))
-							.length,
-	}))
+	const filteredTasks = useMemo(
+		() => notCompletedTasks.filter(TAB_FILTERS[activeTab]),
+		[activeTab, notCompletedTasks],
+	)
+
+	const tabs: TabConfig[] = useMemo(
+		() =>
+			TAB_LABELS.map((tab) => ({
+				...tab,
+				count: notCompletedTasks.filter(TAB_FILTERS[tab.id]).length,
+			})),
+		[notCompletedTasks],
+	)
 
 	const { columns } = useTaskColumns({
 		onUpdateStatusSuccess,
