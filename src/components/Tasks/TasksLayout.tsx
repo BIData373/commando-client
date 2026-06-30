@@ -55,9 +55,7 @@ function TasksLayout({
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
-	const filteredTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
-
-	const allTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
+	const taskRows = useMemo(() => toTaskRows(tasks), [tasks])
 
 	const urlColumnFilters: ColumnFiltersState = [
 		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
@@ -142,8 +140,7 @@ function TasksLayout({
 		<TooltipProvider>
 			<TasksRoot>
 				<TaskFilters
-					taskRows={filteredTaskRows}
-					allTasksLength={allTaskRows.length}
+					taskRows={taskRows}
 					onClearColumnFilters={handleClearColumnFilters}
 					onClearQuickFilters={handleClearQuickFilters}
 					tabFilter={tabFilter}
@@ -164,7 +161,7 @@ function TasksLayout({
 					{view === TasksView.TABLE ? (
 						<TaskTable
 							onChangeSuccess={handleChangeSuccess}
-							tasks={filteredTaskRows}
+							tasks={taskRows}
 							statuses={Object.values(statuses)}
 							onEdit={handleEdit}
 							statusFilter={statusFilter}

@@ -26,7 +26,7 @@ interface TaskFiltersProps {
 	tabFilter?: QuickFilter[]
 	onToggleTabFilter?: (filter: QuickFilter) => void
 	startSlot?: ReactNode
-	allTasksLength: number
+	allTasksLength?: number
 	urlColumnFilters?: ColumnFiltersState
 }
 
@@ -39,7 +39,7 @@ function TaskFilters({
 	tabFilter,
 	onToggleTabFilter,
 	startSlot,
-	allTasksLength,
+	allTasksLength = taskRows.length,
 	urlColumnFilters = [],
 	extraButtons,
 }: TaskFiltersProps) {
