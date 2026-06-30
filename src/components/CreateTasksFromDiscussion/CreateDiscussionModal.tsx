@@ -128,7 +128,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
-			<ModalCard $step={currentStep}>
+			<ModalCard $step={currentStep} closable={false}>
 				<ModalBody>
 					<HeaderSection>
 						<ModalTitle>יצירת הנחיות מתוך דיון</ModalTitle>
@@ -223,6 +223,8 @@ const ModalCard = styled(ModalContent)<{ $step: Steps }>`
   transition: max-width 300ms ease;
   height: min(796px, calc(100vh - 48px));
   overflow: hidden;
+  border-color: var(--card-border);
+  box-shadow: var(--card-shadow);
 `
 
 const ModalBody = styled.div`

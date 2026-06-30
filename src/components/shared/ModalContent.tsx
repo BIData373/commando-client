@@ -13,6 +13,7 @@ interface ModalContentProps
 	className?: string
 	headerActions?: ReactNode
 	closable?: boolean
+	showCloseButton?: boolean
 }
 
 export function ModalContent({
@@ -20,15 +21,25 @@ export function ModalContent({
 	className,
 	headerActions,
 	closable = true,
+	showCloseButton = true,
 	...props
 }: ModalContentProps) {
+	function preventClose(e: { preventDefault(): void }) {
+		e.preventDefault()
+	}
+
 	return (
 		<DialogPortal>
 			<DialogOverlay />
-			<ModalRoot className={className} {...props}>
+			<ModalRoot
+				className={className}
+				onEscapeKeyDown={closable ? undefined : preventClose}
+				onPointerDownOutside={closable ? undefined : preventClose}
+				{...props}
+			>
 				<ModalHeader>
 					{headerActions}
-					{closable && (
+					{showCloseButton && (
 						<CloseButton>
 							<X size={16} />
 						</CloseButton>
