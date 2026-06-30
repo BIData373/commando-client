@@ -55,6 +55,7 @@ const AppShell = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
+  isolation: isolate;
 `
 
 const PageContainer = styled.div`
