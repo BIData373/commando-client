@@ -207,6 +207,7 @@ function SourceField({
 									mode={CalendarMode.Single}
 									selected={selectedDate}
 									onSelect={handleDateSelect}
+									showWeekNumber={false}
 								/>
 							</DatePopoverContent>
 						)}
