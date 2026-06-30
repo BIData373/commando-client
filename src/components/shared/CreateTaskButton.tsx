@@ -47,9 +47,9 @@ export function CreateTaskButton({
 				<PrimaryButton
 					title={
 						<>
-							<Plus size={16} color="white" />
-							צור הנחייה
-							<ChevronDown size={16} color="white" />
+							<Plus size={18} color="white" />
+							צור הנחיה
+							<ChevronDown size={18} color="white" />
 						</>
 					}
 				/>
@@ -59,7 +59,7 @@ export function CreateTaskButton({
 					הנחיות מתוך דיון
 				</StyledDropdownItem>
 				<StyledDropdownItem onSelect={handleCreateSingle}>
-					הנחייה בודדת
+					הנחיה בודדת
 				</StyledDropdownItem>
 			</StyledDropdownContent>
 		</DropdownMenu>

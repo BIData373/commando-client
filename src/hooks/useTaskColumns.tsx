@@ -45,11 +45,11 @@ interface SelectModeConfig {
 }
 
 interface ActionsConfig {
-	onEdit: (taskId: number) => void
+	onEdit?: (taskId: number) => void
 	onDoubleClick?(taskId: number): void
-	onArchive(taskIds: number[]): void
-	onDelete(taskIds: number[]): void
-	onEnterSelectMode(rowKey?: string): void
+	onArchive?(taskIds: number[]): void
+	onDelete?(taskIds: number[]): void
+	onEnterSelectMode?(rowKey?: string): void
 }
 
 interface UseTaskColumnsOptions {
@@ -60,6 +60,7 @@ interface UseTaskColumnsOptions {
 	actions?: ActionsConfig
 	showMenuColumn?: boolean
 	onUpdateStatusSuccess?(): void
+	onTitleDoubleClick?: (taskId: number) => void
 }
 
 function useTaskColumns({
@@ -167,7 +168,10 @@ function useTaskColumns({
 					original: { id, title, description, flagged },
 				},
 			}) => (
-				<TitleCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
+				<TitleCell
+					$clickable={!!actions?.onDoubleClick}
+					onDoubleClick={() => actions?.onDoubleClick?.(id)}
+				>
 					{flagged && <FlagIcon />}
 					{description ? (
 						<>
@@ -464,9 +468,9 @@ function useTaskColumns({
 						}) => (
 							<RowActionsMenu
 								workspaceId={workspaceId}
-								onEdit={() => actions.onEdit(id)}
-								onEnterSelect={() => actions.onEnterSelectMode(rowKey)}
-								onDelete={() => actions.onDelete([id])}
+								onEdit={() => actions.onEdit?.(id)}
+								onEnterSelect={() => actions.onEnterSelectMode?.(rowKey)}
+								onDelete={() => actions.onDelete?.([id])}
 							/>
 						),
 					} as ColumnDef<TaskRow>,
@@ -500,7 +504,7 @@ const IdCell = styled.span`
   color:rgba(0, 0, 0, 0.65);
 `
 
-const TitleCell = styled.div`
+const TitleCell = styled.div<{ $clickable?: boolean }>`
   display: flex;
   align-items: center;
   gap: 6px;
@@ -509,6 +513,7 @@ const TitleCell = styled.div`
   font-weight: 400;
   line-height: 20px;
   overflow: hidden;
+  cursor: ${({ $clickable }) => ($clickable ? "pointer" : "default")};
 `
 
 const TitlePart = styled.span`
