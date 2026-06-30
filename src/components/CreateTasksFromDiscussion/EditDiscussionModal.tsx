@@ -1,11 +1,8 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
-import { AlertCircle, X } from "lucide-react"
-import {
-	Dialog as DialogPrimitive,
-	Popover as PopoverPrimitive,
-} from "radix-ui"
+import { AlertCircle } from "lucide-react"
+import { Popover as PopoverPrimitive } from "radix-ui"
 import { useState } from "react"
 import { invalidateQueries } from "src/queryClient"
 import type { UpdateSourceDto } from "../../api/model"
@@ -14,8 +11,9 @@ import {
 	useGetSource,
 	useUpdateSource,
 } from "../../api/source/source"
+import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
-import { DialogOverlay } from "../ui/dialog"
+import { Dialog } from "../ui/dialog"
 import { Popover, PopoverTrigger } from "../ui/popover"
 import DiscussionForm from "./DiscussionForm"
 
@@ -140,71 +138,64 @@ function EditDiscussionModal({
 	if (!source) return null
 
 	return (
-		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
-			<DialogPrimitive.Portal>
-				<DialogOverlay />
-				<ModalCard>
-					<ModalCloseButton onClick={onClose}>
-						<X size={16} />
-					</ModalCloseButton>
+		<Dialog open onOpenChange={handleOpenChange}>
+			<ModalCard closable={false}>
+				<ModalBody>
+					<HeaderSection>
+						<ModalTitle>עריכת פרטי דיון</ModalTitle>
+					</HeaderSection>
 
-					<ModalBody>
-						<HeaderSection>
-							<ModalTitle>עריכת פרטי דיון</ModalTitle>
-						</HeaderSection>
+					<DiscussionForm
+						workspaceId={workspaceId}
+						form={values}
+						onNameChange={handleNameChange}
+						onDateChange={handleDateChange}
+						onTagSelect={handleTagSelect}
+						onTagRemove={handleTagRemove}
+						onFileChange={handleFileChange}
+						existingAttachmentKey={source.attachmentKey}
+						existingAttachmentName={source.attachmentName}
+					/>
 
-						<DiscussionForm
-							workspaceId={workspaceId}
-							form={values}
-							onNameChange={handleNameChange}
-							onDateChange={handleDateChange}
-							onTagSelect={handleTagSelect}
-							onTagRemove={handleTagRemove}
-							onFileChange={handleFileChange}
-							existingAttachmentKey={source.attachmentKey}
-							existingAttachmentName={source.attachmentName}
-						/>
-
-						<EditFooter>
-							<Popover
-								open={showConfirmation && !isSubmitting}
-								onOpenChange={setShowConfirmation}
-							>
-								<PopoverTrigger asChild>
-									<PrimaryButton
-										title="שמור שינויים"
-										disabled={!hasChanges}
-										loading={isSubmitting}
-									/>
-								</PopoverTrigger>
-								<ConfirmationContent side="top" align="start" sideOffset={13}>
-									<ConfirmationHeader>
-										<AlertCircleIcon size={16} />
-										<TextWrapper>
-											<ConfirmationTitle>
-												עריכת פרטי דיון לכל ההנחיות
-											</ConfirmationTitle>
-											<ConfirmationText>
-												כלל ההנחיות תחת דיון זה יתעדכנו בשינויים.
-											</ConfirmationText>
-										</TextWrapper>
-									</ConfirmationHeader>
-									<ConfirmationActions>
-										<ConfirmButton onClick={handleEditConfirm}>
-											בטוח
-										</ConfirmButton>
-										<CancelConfirmButton onClick={handleEditCancel}>
-											לא
-										</CancelConfirmButton>
-									</ConfirmationActions>
-								</ConfirmationContent>
-							</Popover>
-							<CancelButton onClick={onClose}>ביטול</CancelButton>
-						</EditFooter>
-					</ModalBody>
-				</ModalCard>
-			</DialogPrimitive.Portal>
-		</DialogPrimitive.Root>
+					<EditFooter>
+						<Popover
+							open={showConfirmation && !isSubmitting}
+							onOpenChange={setShowConfirmation}
+						>
+							<PopoverTrigger asChild>
+								<PrimaryButton
+									title="שמור שינויים"
+									disabled={!hasChanges}
+									loading={isSubmitting}
+								/>
+							</PopoverTrigger>
+							<ConfirmationContent side="top" align="start" sideOffset={13}>
+								<ConfirmationHeader>
+									<AlertCircleIcon size={16} />
+									<TextWrapper>
+										<ConfirmationTitle>
+											עריכת פרטי דיון לכל ההנחיות
+										</ConfirmationTitle>
+										<ConfirmationText>
+											כלל ההנחיות תחת דיון זה יתעדכנו בשינויים.
+										</ConfirmationText>
+									</TextWrapper>
+								</ConfirmationHeader>
+								<ConfirmationActions>
+									<ConfirmButton onClick={handleEditConfirm}>
+										בטוח
+									</ConfirmButton>
+									<CancelConfirmButton onClick={handleEditCancel}>
+										לא
+									</CancelConfirmButton>
+								</ConfirmationActions>
+							</ConfirmationContent>
+						</Popover>
+						<CancelButton onClick={onClose}>ביטול</CancelButton>
+					</EditFooter>
+				</ModalBody>
+			</ModalCard>
+		</Dialog>
 	)
 }
 
@@ -212,48 +203,13 @@ export default EditDiscussionModal
 
 // ─── Modal Shell ────────────────────────────────────────────────────────────
 
-const ModalCard = styled(DialogPrimitive.Content)`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+const ModalCard = styled(ModalContent)`
   width: 100%;
   max-width: 753px;
   height: min(796px, calc(100vh - 48px));
-  overflow-y: auto;
   overflow: hidden;
-  background: var(--background);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
+  border-color: var(--card-border);
   box-shadow: var(--card-shadow);
-  z-index: var(--z-dropdown);
-  display: flex;
-  flex-direction: column;
-  padding-block: 36px;
-  padding-inline: 48px;
-  outline: none;
-`
-
-const ModalCloseButton = styled.button`
-  position: absolute;
-  inset-block-start: 15px;
-  inset-inline-end: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 2px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: rgba(0, 0, 0, 0.45);
-  outline: none;
-
-  &:hover {
-    color: var(--text-color-2);
-    background: rgba(0, 0, 0, 0.04);
-  }
 `
 
 const ModalBody = styled.div`
@@ -263,6 +219,8 @@ const ModalBody = styled.div`
   gap: 24px;
   min-height: 0;
   flex: 1;
+  padding-inline: 48px;
+  padding-block-end: 36px;
 `
 
 const HeaderSection = styled.div`
