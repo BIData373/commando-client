@@ -29,6 +29,7 @@ interface DataTableProps<TData> {
   data: TData[]
   onRowClick?: (row: Row<TData>) => void
   onRowDoubleClick?: (row: Row<TData>) => void
+  disabledClickColumns?: string[]
   rowSelection?: RowSelectionState
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
   columnFilters?: ColumnFiltersState
@@ -53,6 +54,7 @@ export function DataTable<TData>({
   onRowClick,
   // TODO - maybe implement?
   // onRowDoubleClick,
+  disabledClickColumns,
   rowSelection,
   onRowSelectionChange,
   columnFilters,
@@ -139,10 +141,17 @@ const allColumns = table.getAllColumns()
               <TableRow
                 data-state={row.getIsSelected() ? 'selected' : undefined}
                 data-highlighted={highlightedRowIds?.has(row.id) ? '' : undefined}
-                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                onClick={onRowClick ? (e) => {
+                  if (disabledClickColumns?.length) {
+                    const td = (e.target as HTMLElement).closest('td')
+                    const columnId = td?.getAttribute('data-column-id')
+                    if (columnId && disabledClickColumns.includes(columnId)) return
+                  }
+                  onRowClick(row)
+                } : undefined}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} data-column-id={cell.column.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

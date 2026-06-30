@@ -23,11 +23,18 @@ import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 
+const DISABLED_CLICK_COLUMNS = [
+	"assigneeStatuses",
+	"status",
+	"actions",
+	"select",
+]
+
 interface TaskTableProps {
 	tasks: TaskRow[]
 	statuses?: WorkspaceStatusDto[]
 	onEdit?: (taskId: number) => void
-	onDoubleClick?: (taskId: number) => void
+	onClick?: (taskId: number) => void
 	extraColumns?: Record<string, ColumnDef<TaskRow>>
 	showHeader?: boolean
 	statusFilter?: WorkspaceStatusType[]
@@ -47,7 +54,7 @@ function TaskTable({
 	tasks,
 	statuses,
 	onEdit = () => {},
-	onDoubleClick,
+	onClick,
 	extraColumns,
 	showHeader = true,
 	statusFilter = [],
@@ -218,7 +225,7 @@ function TaskTable({
 		showMenuColumn: showActionsColumn,
 		actions: {
 			onEdit,
-			onDoubleClick,
+			onClick,
 			onArchive: removeTasks,
 			onDelete: removeTasks,
 			onEnterSelectMode: handleEnterSelectMode,
@@ -259,6 +266,8 @@ function TaskTable({
 					sorting={sorting}
 					onSortingChange={setSorting}
 					getRowId={(row) => row.rowKey}
+					onRowClick={(row) => onClick?.(row.original.id)}
+					disabledClickColumns={DISABLED_CLICK_COLUMNS}
 					showHeader={showHeader}
 					isLoading={isLoading}
 					emptyState={
@@ -318,7 +327,7 @@ const TableWrapper = styled.div`
 
   tr {
     &:hover {
-      background: var(--link-bg-hover);
+      background: var(--table-rows-bg-hover);
     }
 
     &:last-of-type td {
@@ -362,6 +371,16 @@ const TableWrapper = styled.div`
 
     &:last-of-type {
       border-left: none;
+    }
+
+    &[data-column-id="status"] {
+      cursor: pointer;
+
+      &:hover {
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.06) 100%),
+          linear-gradient(0deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.04) 100%),
+          var(--Background-color-bg-container, #FFF);
+      }
     }
   }
 `

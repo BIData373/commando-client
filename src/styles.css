@@ -151,6 +151,7 @@ body,
   --link-bg-hover: oklch(0.93 0.008 252);
   --line: oklch(0.91 0 0);
   --header-bg: oklch(0.14 0.035 258);
+  --table-rows-bg-hover: linear-gradient(0deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.04) 100%, #FFF);
 
   /* Status colors */
   --status-done: #52c41a;

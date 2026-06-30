@@ -46,7 +46,7 @@ interface SelectModeConfig {
 
 interface ActionsConfig {
 	onEdit: (taskId: number) => void
-	onDoubleClick?(taskId: number): void
+	onClick?(taskId: number): void
 	onArchive(taskIds: number[]): void
 	onDelete(taskIds: number[]): void
 	onEnterSelectMode(rowKey?: string): void
@@ -147,11 +147,7 @@ function useTaskColumns({
 							row: {
 								original: { id },
 							},
-						}) => (
-							<IdCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
-								{id}
-							</IdCell>
-						),
+						}) => <IdCell>{id}</IdCell>,
 					} as ColumnDef<TaskRow>,
 				]),
 		{
@@ -164,10 +160,10 @@ function useTaskColumns({
 			enableColumnFilter: false,
 			cell: ({
 				row: {
-					original: { id, title, description, flagged },
+					original: { title, description, flagged },
 				},
 			}) => (
-				<TitleCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
+				<TitleCell>
 					{flagged && <FlagIcon />}
 					{description ? (
 						<>
@@ -352,9 +348,7 @@ function useTaskColumns({
 					original: { source },
 				},
 			}) => {
-				if (!source) {
-					return
-				}
+				if (!source) return null
 				const parts = [source.name, formatDateShort(source.date)].filter(
 					Boolean,
 				)
