@@ -5,14 +5,14 @@ import { concat, map, uniq } from "lodash"
 import { AlertTriangle } from "lucide-react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
-import { DeadlineType, type TaskDto } from "src/api/model"
+import { DeadlineType, type TaskDto, WorkspaceStatusType } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
 import WorkspaceCell from "src/components/shared/WorkspaceCell"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { invalidateQueries } from "src/queryClient"
 import {
 	multiSelectFilter,
-	TASK_COLUMN_DEFS,
+	TASK_COLUMN_DEFINITIONS,
 	TASK_COLUMNS_META,
 	type TaskRow,
 } from "src/utils/task-table-utils"
@@ -218,7 +218,7 @@ function useTaskColumns({
 			),
 			size: 50,
 			filterFn: multiSelectColumnFilter,
-			...TASK_COLUMN_DEFS.status,
+			...TASK_COLUMN_DEFINITIONS.status,
 			cell: ({
 				row: {
 					original: { id, status, assignee, workspaceId, editable },
@@ -247,7 +247,7 @@ function useTaskColumns({
 			),
 			size: 60,
 			filterFn: multiSelectColumnFilter,
-			...TASK_COLUMN_DEFS.assigneeStatuses,
+			...TASK_COLUMN_DEFINITIONS.assigneeStatuses,
 			cell: ({
 				row: {
 					original: { assignee, otherAssignees },
@@ -275,10 +275,10 @@ function useTaskColumns({
 			),
 			size: 90,
 			filterFn: multiSelectColumnFilter,
-			...TASK_COLUMN_DEFS.deadlineType,
+			...TASK_COLUMN_DEFINITIONS.deadlineType,
 			cell: ({
 				row: {
-					original: { deadlineType: rawDeadlineType, dueDate },
+					original: { deadlineType: rawDeadlineType, dueDate, status },
 				},
 			}) => {
 				const deadlineType = rawDeadlineType
@@ -290,6 +290,7 @@ function useTaskColumns({
 					daysUntil !== null &&
 					daysUntil < 0 &&
 					deadlineType !== DeadlineType.IMMEDIATE
+
 				const isApproaching =
 					!isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
 
@@ -305,28 +306,29 @@ function useTaskColumns({
 								{formatDateShort(new Date(dueDate))}
 							</DeadlineDateText>
 						)}
-						{(isOverdue || isApproaching) && (
-							<DeadlineWarning>
-								<TooltipProvider>
-									<Tooltip>
-										<WarningTrigger>
-											{isOverdue ? (
-												<OverdueIcon size={16} />
-											) : (
-												<ApproachingIcon size={16} />
-											)}
-										</WarningTrigger>
-										<TooltipContent>
-											{isOverdue
-												? `חריגה של ${Math.abs(daysUntil)} ימים`
-												: daysUntil === 0
-													? 'תג"ב היום'
-													: 'תג"ב מחר'}
-										</TooltipContent>
-									</Tooltip>
-								</TooltipProvider>
-							</DeadlineWarning>
-						)}
+						{status?.type !== WorkspaceStatusType.COMPLETED &&
+							(isOverdue || isApproaching) && (
+								<DeadlineWarning>
+									<TooltipProvider>
+										<Tooltip>
+											<WarningTrigger>
+												{isOverdue ? (
+													<OverdueIcon size={16} />
+												) : (
+													<ApproachingIcon size={16} />
+												)}
+											</WarningTrigger>
+											<TooltipContent>
+												{isOverdue
+													? `חריגה של ${Math.abs(daysUntil)} ימים`
+													: daysUntil === 0
+														? 'תג"ב היום'
+														: 'תג"ב מחר'}
+											</TooltipContent>
+										</Tooltip>
+									</TooltipProvider>
+								</DeadlineWarning>
+							)}
 					</DeadlineCell>
 				)
 			},
@@ -342,7 +344,7 @@ function useTaskColumns({
 			),
 			size: 120,
 			filterFn: multiSelectColumnFilter,
-			...TASK_COLUMN_DEFS.deadlineType,
+			...TASK_COLUMN_DEFINITIONS.deadlineType,
 			cell: ({
 				row: {
 					original: { source },
@@ -372,7 +374,7 @@ function useTaskColumns({
 			size: 90,
 			enableSorting: false,
 			filterFn: multiSelectColumnFilter,
-			...TASK_COLUMN_DEFS.tags,
+			...TASK_COLUMN_DEFINITIONS.tags,
 			cell: ({
 				row: {
 					original: { tags, source },
@@ -403,7 +405,7 @@ function useTaskColumns({
 			),
 			size: 170,
 			enableColumnFilter: false,
-			...TASK_COLUMN_DEFS.workspace,
+			...TASK_COLUMN_DEFINITIONS.workspace,
 			cell: ({
 				row: {
 					original: { workspace },
@@ -421,7 +423,7 @@ function useTaskColumns({
 			),
 			size: 70,
 			enableColumnFilter: false,
-			...TASK_COLUMN_DEFS.createdAt,
+			...TASK_COLUMN_DEFINITIONS.createdAt,
 			cell: ({ getValue }) => (
 				<DateText>{formatDateShort(getValue<Date>())}</DateText>
 			),
@@ -437,7 +439,7 @@ function useTaskColumns({
 			),
 			size: 70,
 			enableColumnFilter: false,
-			...TASK_COLUMN_DEFS.updatedAt,
+			...TASK_COLUMN_DEFINITIONS.updatedAt,
 			cell: ({ getValue }) => (
 				<DateText>{formatDateShort(getValue<Date>())}</DateText>
 			),
