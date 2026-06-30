@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { X } from "lucide-react"
+import type React from "react"
 import type { ComponentProps, ReactNode } from "react"
 import {
 	DialogClose,
@@ -24,7 +25,7 @@ export function ModalContent({
 	showCloseButton = true,
 	...props
 }: ModalContentProps) {
-	function preventClose(e: { preventDefault(): void }) {
+	function preventClose(e: Event) {
 		e.preventDefault()
 	}
 
