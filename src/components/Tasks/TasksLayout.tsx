@@ -1,14 +1,11 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
 import type { ColumnFiltersState } from "@tanstack/react-table"
-import { concat, uniq } from "lodash"
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTasks } from "src/api/task/task"
-import { useFilteredTasks } from "src/hooks/useFilteredTasks"
-import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
 import {
@@ -19,7 +16,7 @@ import type { QuickFilter } from "src/utils/filter-utils"
 import { toTaskRows } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
-import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
+import { FilterSeparator } from "../shared/FilterBar"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import { TooltipProvider } from "../ui/tooltip"
 import { TaskCardGrid } from "./TaskCardGrid"
@@ -43,8 +40,7 @@ function TasksLayout({
 }: TasksLayoutProps) {
 	const navigate = useNavigate({ from: "/workspace/$urlName/tasks" })
 
-	const { dateRange, setDateRange, toggleQuickFilter, clearQuickFilters } =
-		useTasksFilters()
+	const { toggleQuickFilter } = useTasksFilters()
 
 	const {
 		workspace: { id: workspaceId },
@@ -59,30 +55,7 @@ function TasksLayout({
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
-	const [activeTopicFilters, setActiveTopicFilters] = useState<Set<string>>(
-		new Set(),
-	)
-
-	const allTopics = uniq(
-		tasks.flatMap((t) =>
-			concat(t.tags, t.source?.tags ?? []).map((tag) => tag.name),
-		),
-	)
-
-	const filteredTasks = useFilteredTasks(
-		tasks,
-		activeTopicFilters.size > 0
-			? (task) =>
-					concat(task.tags, task.source?.tags ?? []).some((tag) =>
-						activeTopicFilters.has(tag.name),
-					)
-			: undefined,
-	)
-
-	const filteredTaskRows = useMemo(
-		() => toTaskRows(filteredTasks),
-		[filteredTasks],
-	)
+	const filteredTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
 
 	const allTaskRows = useMemo(() => toTaskRows(tasks), [tasks])
 
@@ -131,20 +104,6 @@ function TasksLayout({
 		navigate({ search: (prev) => ({ ...prev, tabFilter: next }) })
 	}
 
-	function clearAllFilters() {
-		setActiveTopicFilters(new Set())
-		setDateRange(undefined)
-		clearQuickFilters()
-		navigate({
-			search: (prev) => ({
-				...prev,
-				tabFilter: [],
-				statusFilter: [],
-				deadlineTypeFilter: [],
-			}),
-		})
-	}
-
 	function handleColumnFiltersChange(
 		newStatusFilter: WorkspaceStatusType[],
 		newDeadlineTypeFilter: DeadlineType[],
@@ -163,17 +122,21 @@ function TasksLayout({
 	// 	navigateToTasks({ view: newView })
 	// }
 
-	const isManager = myPermission?.type === PermissionType.MANAGER
+	function handleClearColumnFilters() {
+		navigate({
+			search: (prev) => ({
+				...prev,
+				statusFilter: [],
+				deadlineTypeFilter: [],
+			}),
+		})
+	}
 
-	useRenderInHeader(
-		"titleBar",
-		<ButtonGroup>
-			{isManager && <CreateTaskButton view={view} />}
-			{/* <SectionDivider />
-				<ViewToggle view={view} onViewChange={handleViewChange} /> */}
-		</ButtonGroup>,
-		[urlName, view, isManager],
-	)
+	function handleClearQuickFilters() {
+		navigate({ search: (prev) => ({ ...prev, tabFilter: [] }) })
+	}
+
+	const isManager = myPermission?.type === PermissionType.MANAGER
 
 	return (
 		<TooltipProvider>
@@ -181,25 +144,20 @@ function TasksLayout({
 				<TaskFilters
 					taskRows={filteredTaskRows}
 					allTasksLength={allTaskRows.length}
-					onClearAllFilters={clearAllFilters}
+					onClearColumnFilters={handleClearColumnFilters}
+					onClearQuickFilters={handleClearQuickFilters}
 					tabFilter={tabFilter}
 					onToggleTabFilter={handleToggleTabFilter}
-					hasExtraActiveFilters={activeTopicFilters.size > 0 || !!dateRange}
 					urlColumnFilters={urlColumnFilters}
-					extraFilters={
-						<MultiSelectFilterDropdown
-							label="נושא"
-							options={allTopics.map((t) => ({ value: t, label: t }))}
-							activeValues={activeTopicFilters}
-							onApply={setActiveTopicFilters}
-							$active={activeTopicFilters.size > 0}
-							emptyTitle="טרם הוגדר נושאים"
-							emptyDescription={
-								"ביצירת הנחיות ניתן לחלק אותם\nלנושאים, קטגוריות או מאמצים"
-							}
-						/>
-					}
 					startSlot={<TasksDatePicker />}
+					extraButtons={
+						isManager && (
+							<ButtonGroup>
+								<FilterSeparator />
+								<CreateTaskButton view={view} />
+							</ButtonGroup>
+						)
+					}
 				/>
 
 				<ContentArea>
@@ -217,7 +175,7 @@ function TasksLayout({
 							isManager={isManager}
 						/>
 					) : (
-						<TaskCardGrid tasks={filteredTasks} />
+						<TaskCardGrid tasks={tasks} />
 					)}
 				</ContentArea>
 			</TasksRoot>
@@ -250,8 +208,7 @@ const ContentArea = styled.div`
 // ─── Title Bar Actions ───────────────────────────────────────────────────────
 
 const ButtonGroup = styled.div`
-  direction: ltr;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 `

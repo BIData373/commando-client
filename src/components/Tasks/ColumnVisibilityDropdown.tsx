@@ -69,8 +69,7 @@ function ColumnVisibilityDropdown({
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
 				<TriggerButton>
-					<Columns3 size={16} />
-					תצוגת עמודות
+					<Columns3 size={18} />
 				</TriggerButton>
 			</PopoverTrigger>
 			<StyledPopoverContent align="end" sideOffset={4}>
@@ -105,20 +104,19 @@ export { ColumnVisibilityDropdown }
 // ─── Styled ──────────────────────────────────────────────────────────────────
 
 const TriggerButton = styled.button`
-  direction: rtl;
   display: flex;
+  padding: 0 12px;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
   gap: 8px;
-  padding-inline: 15px;
   height: 40px;
-  border: 1px solid #d9d9d9;
   border-radius: 8px;
-  font-size: var(--fs-base);
-  color: rgba(0, 0, 0, 0.88);
+  border: 1px solid var(--card-border);
+  background: var(--background);
+  box-shadow: var(--shadow-button);
   cursor: pointer;
-  background: white;
   white-space: nowrap;
-  box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
 
   &:hover {
     background: var(--link-bg-hover);

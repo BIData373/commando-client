@@ -53,7 +53,7 @@ export function DashboardContent() {
 		<ContentArea>
 			<ButtonGroup>
 				<CreateTaskButton context="dashboard" />
-				<TasksDatePicker />
+				<TasksDatePicker showPlaceholder />
 			</ButtonGroup>
 
 			<GridLayout>

@@ -28,10 +28,10 @@ function FilterBar({
 		<BarRoot>
 			<BarStart>
 				{startSlot}
+				<FilterDivider />
 				<ColumnVisibilityDropdown extraColumnsMeta={extraColumnsMeta} />
 				<ActionButton onClick={onExport}>
-					<Download size={16} />
-					ייצוא
+					<Download size={18} />
 				</ActionButton>
 				<SearchInputWrapper>
 					<SearchField
@@ -50,10 +50,13 @@ function FilterBar({
 			</BarStart>
 			<BarEnd>
 				{hasActiveFilters && (
-					<ClearButton onClick={onClearAll}>
-						<FilterX size={16} />
-						נקה סננים
-					</ClearButton>
+					<>
+						<ClearButton onClick={onClearAll}>
+							<FilterX size={18} />
+							נקה סננים
+						</ClearButton>
+						<FilterSeparator />
+					</>
 				)}
 				{children}
 			</BarEnd>
@@ -74,7 +77,7 @@ const BarRoot = styled.div`
 const BarStart = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
 `
 
 const BarEnd = styled.div`
@@ -86,17 +89,17 @@ const BarEnd = styled.div`
 const ClearButton = styled.button`
   direction: rtl;
   display: flex;
+  padding: 0 15px;
+  justify-content: center;
   align-items: center;
   gap: 8px;
-  padding-inline: 15px;
-  height: 32px;
-  border-radius: 999px;
-  font-size: var(--fs-btn);
-  color: rgba(0, 0, 0, 0.88);
+  height: 40px;
+  border-radius: 8px;
+  font-size: var(--fs-base);
+  color: var(--text-color-2);
   cursor: pointer;
-  background: transparent;
+  background: var(--Components-Dropdown-Global-controlItemBgHover);
   white-space: nowrap;
-  transition: background 150ms ease-in-out;
 
   &:hover {
     background: var(--link-bg-hover);
@@ -104,20 +107,19 @@ const ClearButton = styled.button`
 `
 
 const ActionButton = styled.button`
-  direction: rtl;
   display: flex;
+  padding: 0 15px;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
   gap: 8px;
-  padding-inline: 15px;
   height: 40px;
-  border: 1px solid #d9d9d9;
   border-radius: 8px;
-  font-size: var(--fs-base);
-  color: rgba(0, 0, 0, 0.88);
+  border: 1px solid var(--card-border);
+  background: var(--background);
+  box-shadow: var(--shadow-button);
   cursor: pointer;
-  background: white;
   white-space: nowrap;
-  box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
 
   &:hover {
     background: var(--link-bg-hover);
@@ -176,13 +178,13 @@ const SearchField = styled.input`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
-  padding-inline: 11px;
+  color: var(--text-color-2);
+  padding: 0 11px 0 0;
   text-align: right;
   direction: rtl;
 
   &::placeholder {
-    color: rgba(0, 0, 0, 0.25);
+    color: var(--Text-color-text-placeholder);
   }
 `
 
@@ -206,8 +208,14 @@ export const FilterPill = styled.div<{ $active: boolean }>`
   }
 `
 
-export const FilterDivider = styled.div`
+const FilterDivider = styled.div`
+  width: 1px;
+  height: 39px;
+  background: var(--card-border);
+`
+
+export const FilterSeparator = styled.div`
   width: 1px;
   height: 25px;
-  background: var(--Colors-Neutral-Text-colorTextQuaternary, rgba(0, 0, 0, 0.25));
+  background: var(--Text-color-text-placeholder);
 `
