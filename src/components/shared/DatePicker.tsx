@@ -15,9 +15,15 @@ interface DatePickerProps {
 	mode: CalendarMode
 	selected?: DatePickerValue
 	onSelect?: (val: DatePickerValue | undefined) => void
+	showWeekNumber?: boolean
 }
 
-function DatePicker({ mode, selected, onSelect }: DatePickerProps) {
+function DatePicker({
+	mode,
+	selected,
+	onSelect,
+	showWeekNumber = true,
+}: DatePickerProps) {
 	const defaultMonth =
 		mode === CalendarMode.Range
 			? selected && "from" in selected
@@ -29,7 +35,7 @@ function DatePicker({ mode, selected, onSelect }: DatePickerProps) {
 
 	return (
 		<StyledCalendar
-			showWeekNumber
+			showWeekNumber={showWeekNumber}
 			fixedWeeks
 			defaultMonth={defaultMonth}
 			{...({ mode, selected, onSelect } as React.ComponentProps<
