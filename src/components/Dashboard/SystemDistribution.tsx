@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { chain, countBy, filter, flatMap } from "lodash"
+import { chain, compact, countBy, flatMap, get } from "lodash"
 import { Users } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
@@ -55,12 +55,22 @@ const HEADER_LABELS = {
 	[DistributionTab.ATTENTION]: { name: "נושא", count: "כמות הנחיות" },
 }
 
-function buildDistribution<T extends { name: string }>(
+type NamedEntity = { name: string }
+
+type DistributionKey = "assignee" | "tags" | "source.tags"
+
+function buildDistribution<T extends NamedEntity>(
 	sourceList: T[],
-	field: Extract<keyof TaskRow, "assignee" | "tags">,
+	keys: DistributionKey | DistributionKey[],
 	tasks: TaskRow[],
 ): { name: string; count: number }[] {
-	const counts = countBy(filter(flatMap(tasks, field), Boolean), "name")
+	const keyList = Array.isArray(keys) ? keys : [keys]
+	const counts = countBy(
+		flatMap(tasks, (task) =>
+			compact(flatMap(keyList, (key) => [get(task, key)].flat())),
+		),
+		"name",
+	)
 
 	return chain(sourceList)
 		.map((s) => ({ name: s.name, count: counts[s.name] ?? 0 }))
@@ -89,7 +99,7 @@ export default function SystemDistribution({
 	)
 
 	const tagDistribution = useMemo(
-		() => buildDistribution(tags, "tags", tasks),
+		() => buildDistribution(tags, ["tags", "source.tags"], tasks),
 		[tasks, tags],
 	)
 
