@@ -82,7 +82,7 @@ export function ErrorModal() {
 
 	return (
 		<Dialog open={!!content} onOpenChange={(open) => !open && handleClose()}>
-			<FullScreenPanel closable={false}>
+			<FullScreenPanel closable={false} showCloseButton={false}>
 				<ContentContainer>
 					<ErrorCodeDisplay>{errorCode}</ErrorCodeDisplay>
 					<ErrorText>

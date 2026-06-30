@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { useHotkeys } from "@mantine/hooks"
 import { X } from "lucide-react"
 import type { ComponentProps, ReactNode } from "react"
 import {
@@ -13,6 +14,7 @@ interface ModalContentProps
 	className?: string
 	headerActions?: ReactNode
 	closable?: boolean
+	showCloseButton?: boolean
 }
 
 export function ModalContent({
@@ -20,20 +22,37 @@ export function ModalContent({
 	className,
 	headerActions,
 	closable = true,
+	showCloseButton = true,
+	onPointerDownOutside,
 	...props
 }: ModalContentProps) {
+	useHotkeys(closable ? [] : [["Escape", (e) => e.stopPropagation()]])
+
+	function preventClose(e: Event) {
+		e.preventDefault()
+	}
+
+	const hasHeader = headerActions != null || showCloseButton
+
 	return (
 		<DialogPortal>
 			<DialogOverlay />
-			<ModalRoot className={className} {...props}>
-				<ModalHeader>
-					{headerActions}
-					{closable && (
-						<CloseButton>
-							<X size={16} />
-						</CloseButton>
-					)}
-				</ModalHeader>
+			<ModalRoot
+				className={className}
+				onEscapeKeyDown={closable ? undefined : preventClose}
+				onPointerDownOutside={closable ? onPointerDownOutside : preventClose}
+				{...props}
+			>
+				{hasHeader && (
+					<ModalHeader>
+						{headerActions}
+						{showCloseButton && (
+							<CloseButton>
+								<X size={16} />
+							</CloseButton>
+						)}
+					</ModalHeader>
+				)}
 				{children}
 			</ModalRoot>
 		</DialogPortal>

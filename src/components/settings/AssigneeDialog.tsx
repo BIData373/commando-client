@@ -229,7 +229,7 @@ export function AssigneeDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
-			<AssigneeDialogContent>
+			<AssigneeDialogContent closable={false}>
 				<DialogHeader $shadow={scrollShadow.top}>
 					<DialogTitleLarge>
 						{isUpdate ? "עריכת אחראי" : "יצירת אחראי"}
