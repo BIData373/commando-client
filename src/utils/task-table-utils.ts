@@ -36,7 +36,7 @@ export const TASK_COLUMNS_META: TaskColumnMeta[] = [
 	{ id: "updatedAt", label: "עודכן ב" },
 ]
 
-export const TASK_COLUMN_DEFS: Partial<
+export const TASK_COLUMN_DEFINITIONS: Partial<
 	Record<keyof TaskRow, Partial<AccessorFnColumnDef<TaskRow>>>
 > = {
 	status: {
@@ -137,7 +137,8 @@ export function sortByTaskColumns(taskRows: TaskRow[], sorting: SortingState) {
 		const sorted = sorting
 			.map(({ id, desc }) => {
 				const configuredSort =
-					TASK_COLUMN_DEFS[id as keyof TaskRow]?.sortingFn || "alphanumeric"
+					TASK_COLUMN_DEFINITIONS[id as keyof TaskRow]?.sortingFn ||
+					"alphanumeric"
 
 				const sortFn =
 					typeof configuredSort === "string"

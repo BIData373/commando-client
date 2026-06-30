@@ -38,13 +38,15 @@ const MAX_NAME_LENGTH = 30
 interface AssigneeDialogProps {
 	open: boolean
 	assignee?: AssigneeDto
-	onOpenChange: (open: boolean) => void
+	onOpenChange(open: boolean): void
+	onCreate?(assignee: AssigneeDto): void
 }
 
 export function AssigneeDialog({
 	assignee,
 	open,
 	onOpenChange,
+	onCreate,
 }: AssigneeDialogProps) {
 	const isUpdate = !!assignee
 
@@ -60,6 +62,7 @@ export function AssigneeDialog({
 	const assigneesQueryKey = getListAssigneesQueryKey({ workspaceId })
 
 	const handleSubmitSuccess = (data: AssigneeDto) => {
+		onCreate?.(data)
 		queryClient.setQueryData(assigneesQueryKey, (prev?: AssigneesDto[]) => {
 			const updated = [...(prev ?? [])]
 			const foundIndex = updated.findIndex(({ id }) => id === data.id)

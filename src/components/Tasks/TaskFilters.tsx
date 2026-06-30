@@ -8,7 +8,7 @@ import { QuickFilter } from "src/utils/filter-utils"
 import {
 	multiSelectFilter,
 	sortByTaskColumns,
-	TASK_COLUMN_DEFS,
+	TASK_COLUMN_DEFINITIONS,
 	type TaskColumnMeta,
 	type TaskRow,
 } from "src/utils/task-table-utils"
@@ -59,12 +59,15 @@ function TaskFilters({
 	const allColumnFilters = [...urlColumnFilters, ...columnsFilters]
 
 	const filteredTaskRows = filter(taskRows, (task) =>
-		allColumnFilters.every(({ id, value }, index) =>
-			multiSelectFilter(
-				TASK_COLUMN_DEFS[id as keyof TaskRow]?.accessorFn?.(task, index),
-				value as string[],
-			),
-		),
+		allColumnFilters.every(({ id, value }, index) => {
+			const accessorFn =
+				TASK_COLUMN_DEFINITIONS[id as keyof TaskRow]?.accessorFn
+
+			return (
+				!accessorFn ||
+				multiSelectFilter(accessorFn?.(task, index), value as string[])
+			)
+		}),
 	)
 
 	filter
