@@ -1,14 +1,7 @@
 import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import { concat, uniqBy } from "lodash"
-import {
-	Calendar,
-	ChevronUp,
-	Loader2,
-	Paperclip,
-	Pencil,
-	X,
-} from "lucide-react"
+import { Calendar, ChevronUp, Loader2, Paperclip, Pencil } from "lucide-react"
 import { useRef, useState } from "react"
 import {
 	DeadlineType,
@@ -155,12 +148,18 @@ function TaskDetailPanel({
 
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
-			<Panel>
-				<TaskIdLabel>#{id}</TaskIdLabel>
-				<CloseBtn onClick={onClose} aria-label="סגור">
-					<X size={16} />
-				</CloseBtn>
-
+			<Panel
+				headerActions={
+					<>
+						<TaskIdLabel>#{id}</TaskIdLabel>
+						<RowActionsMenu
+							workspaceId={workspaceId}
+							onEdit={isManager ? handleEdit : undefined}
+							onDelete={isManager ? handleDelete : undefined}
+						/>
+					</>
+				}
+			>
 				<HeaderRow>
 					{showWorkspace && (
 						<WorkspaceCell workspace={workspace} iconSize={20} />
@@ -171,11 +170,6 @@ function TaskDetailPanel({
 							{flagged && <FlagIcon size={20} />}
 							<TitleText title={title}>{title}</TitleText>
 						</TextWrapper>
-						<RowActionsMenu
-							workspaceId={workspaceId}
-							onEdit={isManager ? handleEdit : undefined}
-							onDelete={isManager ? handleDelete : undefined}
-						/>
 					</TitleRow>
 				</HeaderRow>
 
@@ -331,7 +325,7 @@ export default TaskDetailPanel
 // ─── Layout ────────────────────────────────────────────────────────────────────
 
 const Panel = styled(ModalContent)`
-  width: 1094px;
+  width: 1100px;
   height: 850px;
   max-height: 85vh;
   overflow: hidden;
@@ -339,34 +333,11 @@ const Panel = styled(ModalContent)`
 `
 
 const TaskIdLabel = styled.span`
-  position: absolute;
-  inset-inline-start: 15px;
-  top: 15px;
+  margin-inline-end: auto;
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-400);
-`
-
-const CloseBtn = styled.button`
-  position: absolute;
-  inset-inline-end: 15px;
-  top: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 2px;
-  color: var(--sea-ink-soft);
-  cursor: pointer;
-  transition: background 0.15s;
-  z-index: 2;
-
-  &:hover {
-    background: var(--link-bg-hover);
-    color: var(--sea-ink);
-  }
 `
 
 const ScrollContent = styled.div<{ $noScroll: boolean }>`
@@ -412,7 +383,7 @@ const SectionLabel = styled.p`
 const HeaderRow = styled.div`
 	display: flex;
 	flex-direction: column;
-	padding: 36px 48px 20px;
+	padding: 16px 16px 20px;
 `
 
 const TitleRow = styled.div<{ $shadow: boolean }>`
