@@ -7,7 +7,12 @@ import {
 	useCreateAssignee,
 	useUpdateAssignee,
 } from "src/api/assignee/assignee"
-import type { AssigneeDto, AssigneesDto, MirageUserDto } from "src/api/model"
+import type {
+	AssigneeDto,
+	AssigneesDto,
+	MirageUserDto,
+	UserDto,
+} from "src/api/model"
 import {
 	getListPersonalTasksQueryKey,
 	getListTasksQueryKey,
@@ -15,7 +20,6 @@ import {
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries, queryClient } from "src/queryClient"
-import { concatName } from "src/utils/user-utils"
 import { CancelButton } from "../shared/CancelButton"
 import { FormField } from "../shared/FormField"
 import { ModalContent } from "../shared/ModalContent"
@@ -152,7 +156,9 @@ export function AssigneeDialog({
 	function handleSearchSelect(user: MirageUserDto) {
 		if (user) {
 			form.setFieldValue("users", (prev) =>
-				prev.some(({ upn }) => upn === user.upn) ? prev : [...prev, user],
+				prev.some(({ upn }) => upn === user.upn)
+					? prev
+					: [...prev, user as UserDto],
 			)
 			setSearchValue("")
 		}
