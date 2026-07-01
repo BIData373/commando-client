@@ -46,6 +46,8 @@ const Button = styled.button<{ $height?: number; $width?: number }>`
   cursor: pointer;
   white-space: nowrap;
   position: relative;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05) inset;
+  outline: none;
 
   &::after {
     content: '';

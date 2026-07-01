@@ -1,16 +1,15 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
-import { Check, Paperclip, X } from "lucide-react"
-import { Dialog as DialogPrimitive } from "radix-ui"
+import { Check, Paperclip } from "lucide-react"
 import { useState } from "react"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import type { CreateSourceDto } from "../../api/model"
 import { useCreateSource } from "../../api/source/source"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
-import ModalCloseButton from "../shared/ModalCloseButton"
-import { DialogOverlay } from "../ui/dialog"
+import { ModalContent } from "../shared/ModalContent"
+import { Dialog } from "../ui/dialog"
 import CreateTasksTable from "./CreateTasksTable"
 import DiscussionForm from "./DiscussionForm"
 import type { NewTaskRow } from "./TasksColumns"
@@ -128,95 +127,88 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 	// ─── Render ───────────────────────────────────────────────────────────────
 
 	return (
-		<DialogPrimitive.Root open onOpenChange={handleOpenChange}>
-			<DialogPrimitive.Portal>
-				<DialogOverlay />
-				<ModalCard $step={currentStep}>
-					<ModalCloseButton onClose={onClose} />
+		<Dialog open onOpenChange={handleOpenChange}>
+			<ModalCard $step={currentStep} closable={false}>
+				<ModalBody>
+					<HeaderSection>
+						<ModalTitle>יצירת הנחיות מתוך דיון</ModalTitle>
 
-					<ModalBody>
-						<HeaderSection>
-							<ModalTitle>יצירת הנחיות מתוך דיון</ModalTitle>
+						<StepsRow>
+							<StepItem>
+								<StepLabel $active>פרטי הדיון</StepLabel>
+								{isCurrentStepTasks ? (
+									<StepCircleCompleted>
+										<Check size={12} />
+									</StepCircleCompleted>
+								) : (
+									<StepCircleActive>1</StepCircleActive>
+								)}
+							</StepItem>
 
-							<StepsRow>
-								<StepItem>
-									<StepLabel $active>פרטי הדיון</StepLabel>
-									{isCurrentStepTasks ? (
-										<StepCircleCompleted>
-											<Check size={12} />
-										</StepCircleCompleted>
-									) : (
-										<StepCircleActive>1</StepCircleActive>
-									)}
-								</StepItem>
+							<StepTail $completed={isCurrentStepTasks} />
 
-								<StepTail $completed={isCurrentStepTasks} />
+							<StepItem>
+								<StepLabel $active={isCurrentStepTasks}>יצירת הנחיות</StepLabel>
+								<StepCircle $active={isCurrentStepTasks}>2</StepCircle>
+							</StepItem>
+						</StepsRow>
 
-								<StepItem>
-									<StepLabel $active={isCurrentStepTasks}>
-										יצירת הנחיות
-									</StepLabel>
-									<StepCircle $active={isCurrentStepTasks}>2</StepCircle>
-								</StepItem>
-							</StepsRow>
-
-							{isCurrentStepTasks && (
-								<DiscussionInfoRow>
-									<DiscussionInfoText>
-										<DiscussionDate>
-											{values.date ? formatDate(values.date) : ""}
-										</DiscussionDate>
-										<DiscussionName>{values.name}</DiscussionName>
-									</DiscussionInfoText>
-									{values.attachment && <Paperclip size={20} />}
-								</DiscussionInfoRow>
-							)}
-						</HeaderSection>
-
-						{currentStep === Steps.Discussion ? (
-							<>
-								<form.Field name="name" validators={{ onSubmit: validateName }}>
-									{(nameField) => (
-										<form.Field
-											name="date"
-											validators={{ onSubmit: validateDate }}
-										>
-											{(dateField) => (
-												<DiscussionForm
-													workspaceId={workspaceId}
-													form={values}
-													onNameChange={handleNameChange}
-													onDateChange={handleDateChange}
-													onTagSelect={handleTagSelect}
-													onTagRemove={handleTagRemove}
-													onFileChange={handleFileChange}
-													fields={{ name: nameField, date: dateField }}
-												/>
-											)}
-										</form.Field>
-									)}
-								</form.Field>
-
-								<ModalFooter>
-									<ContinueButton
-										onClick={handleContinue}
-										disabled={!values.name.trim() && !values.date}
-									>
-										המשך
-									</ContinueButton>
-								</ModalFooter>
-							</>
-						) : (
-							<CreateTasksTable
-								onSave={handleSave}
-								onBack={handleBack}
-								isLoading={isPending}
-							/>
+						{isCurrentStepTasks && (
+							<DiscussionInfoRow>
+								<DiscussionInfoText>
+									<DiscussionDate>
+										{values.date ? formatDate(values.date) : ""}
+									</DiscussionDate>
+									<DiscussionName>{values.name}</DiscussionName>
+								</DiscussionInfoText>
+								{values.attachment && <Paperclip size={20} />}
+							</DiscussionInfoRow>
 						)}
-					</ModalBody>
-				</ModalCard>
-			</DialogPrimitive.Portal>
-		</DialogPrimitive.Root>
+					</HeaderSection>
+
+					{currentStep === Steps.Discussion ? (
+						<>
+							<form.Field name="name" validators={{ onSubmit: validateName }}>
+								{(nameField) => (
+									<form.Field
+										name="date"
+										validators={{ onSubmit: validateDate }}
+									>
+										{(dateField) => (
+											<DiscussionForm
+												workspaceId={workspaceId}
+												form={values}
+												onNameChange={handleNameChange}
+												onDateChange={handleDateChange}
+												onTagSelect={handleTagSelect}
+												onTagRemove={handleTagRemove}
+												onFileChange={handleFileChange}
+												fields={{ name: nameField, date: dateField }}
+											/>
+										)}
+									</form.Field>
+								)}
+							</form.Field>
+
+							<ModalFooter>
+								<ContinueButton
+									onClick={handleContinue}
+									disabled={!values.name.trim() && !values.date}
+								>
+									המשך
+								</ContinueButton>
+							</ModalFooter>
+						</>
+					) : (
+						<CreateTasksTable
+							onSave={handleSave}
+							onBack={handleBack}
+							isLoading={isPending}
+						/>
+					)}
+				</ModalBody>
+			</ModalCard>
+		</Dialog>
 	)
 }
 
@@ -224,28 +216,15 @@ export default CreateDiscussionModal
 
 // ─── Modal Shell ────────────────────────────────────────────────────────────
 
-const ModalCard = styled(DialogPrimitive.Content)<{ $step: Steps }>`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+const ModalCard = styled(ModalContent)<{ $step: Steps }>`
   width: 100%;
   max-width: ${({ $step }) =>
 		$step === Steps.Discussion ? "753px" : "min(1550px, 95vw)"};
-  transition: width 300ms ease;
+  transition: max-width 300ms ease;
   height: min(796px, calc(100vh - 48px));
-  overflow-y: auto;
   overflow: hidden;
-  background: var(--background);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
+  border-color: var(--card-border);
   box-shadow: var(--card-shadow);
-  z-index: var(--z-dropdown);
-  display: flex;
-  flex-direction: column;
-  padding-block: 36px;
-  padding-inline: 48px;
-  outline: none;
 `
 
 const ModalBody = styled.div`
@@ -255,6 +234,8 @@ const ModalBody = styled.div`
   gap: 24px;
   min-height: 0;
   flex: 1;
+  padding-inline: 48px;
+  padding-block-end: 36px;
 `
 
 const HeaderSection = styled.div`

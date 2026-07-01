@@ -8,6 +8,7 @@ import {
 } from "src/api/task/task"
 import { invalidateQueries } from "src/queryClient"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
+import { AssigneeDetailPopover } from "../shared/AssigneeDetailPopover"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
 
 interface AssigneeContainerProps {
@@ -52,7 +53,9 @@ export const AssigneeContainer = ({
 	return (
 		<AssigneeRowContainer $enabled={editable && !isAdmin}>
 			<AssigneeInfoBlock>
-				<AssigneeAvatar assignee={assignee} />
+				<AssigneeDetailPopover assignee={assignee}>
+					<AssigneeAvatar assignee={assignee} cursor />
+				</AssigneeDetailPopover>
 				<AssigneeRoleText title={assignee.name}>
 					{assignee.name}
 				</AssigneeRoleText>
@@ -119,7 +122,8 @@ const DescriptionText = styled.span`
   color: var(--text-color-2);
   flex: 1;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  max-height: 3lh;
+  overflow-y: auto;
+  direction: rtl;
+  word-break: break-word;
 `

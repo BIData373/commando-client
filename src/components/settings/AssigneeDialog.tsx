@@ -18,7 +18,6 @@ import { invalidateQueries, queryClient } from "src/queryClient"
 import { concatName } from "src/utils/user-utils"
 import { CancelButton } from "../shared/CancelButton"
 import { FormField } from "../shared/FormField"
-import ModalCloseButton from "../shared/ModalCloseButton"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import {
@@ -204,14 +203,9 @@ export function AssigneeDialog({
 		onOpenChange(open)
 	}
 
-	function handleClose() {
-		handleOpenChange(false)
-	}
-
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
-			<AssigneeDialogContent>
-				<ModalCloseButton onClose={handleClose} />
+			<AssigneeDialogContent closable={false}>
 				<DialogHeader $shadow={scrollShadow.top}>
 					<DialogTitleLarge>
 						{isUpdate ? "עריכת אחראי" : "יצירת אחראי"}
@@ -316,7 +310,6 @@ const AssigneeDialogContent = styled(ModalContent)`
   width: 700px;
   max-width: calc(100vw - 2rem);
   max-height: 70vh;
-  padding: 26px 38px;
   overflow: hidden;
   direction: rtl;
 `
@@ -341,7 +334,7 @@ const StyledDialogDescription = styled(DialogDescription)`
 const ScrollableContent = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 0 38px 16px;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -415,6 +408,7 @@ const SearchRow = styled.div`
 
 const DialogHeader = styled.div<{ $shadow: boolean }>`
   flex-shrink: 0;
+  padding-inline: 38px;
   position: relative;
   z-index: 1;
   clip-path: inset(0 0 -20px 0);
@@ -426,9 +420,8 @@ const DialogActions = styled.div<{ $shadow: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-block-start: 4px;
-  padding-inline-end: 4px;
-  justify-self: stretch;
+  padding: 16px;
+  flex-shrink: 0;
   position: relative;
   z-index: 1;
   clip-path: inset(-20px 0 0 0);
