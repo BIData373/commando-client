@@ -36,7 +36,7 @@ body,
   --popover: oklch(1.00 0 0);
   --popover-foreground: oklch(0.14 0 0);
   --primary: oklch(59.95% 0.22 277.99);
-  --primary-foreground: oklch(97.58% 0.01 264.67);
+  --primary-foreground: oklch(98.221% 0.00423 271.371);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.20 0 0);
   --muted: oklch(0.97 0 0);
@@ -68,6 +68,7 @@ body,
   --Components-Dropdown-Global-controlItemBgHover: rgba(0, 0, 0, 0.04);
   --Components-Button-Component-defaultBg: #141414;
   --Text-color-text-placeholder: rgba(0, 0, 0, 0.25);
+  --Tabs-border-color: rgb(245, 245, 245);
 
   /* Typography scale */
   --fs-heading-h1: 42px;
@@ -88,15 +89,15 @@ body,
   --card-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
   --card-shadow-default: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
   --card-shadow-hover: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
-
+  
   --card-border: #d9d9d9;
   --background-area: #fafafa;
   --background-assignee: #fcfcfc;
   --selected-item: rgba(230, 244, 255, 1);
   --button-hover: rgba(0, 0, 0, 0.06);
-  --button-active: rgba(0, 0, 0, 0.2);
+  --button-active: rgba(0, 0, 0, 0.1);
 
-  --default-linear: linear-gradient(135deg, #6866FF 0%, #7604C8 100%);
+  --default-linear: linear-gradient(135deg, #615FFF 0%, #9810FA 100%);
   --Components-Upload-Global-colorPrimary: #1677FF;
   --colors-base-neutral-3: oklch(97.02% 0 271.15);
   --Colors-Base-Volcano-1: oklch(96.86% 0.02 60.01);
@@ -123,6 +124,7 @@ body,
   --button-color-hover: #4096FF;
   --text-subtitle-color: #8C8C8C;
   --active-color: #1677ff;
+  --active-color-button: rgba(9, 88, 217, 1);
 
   --font-sans: 'Rubik Variable', ui-sans-serif, sans-serif;
   --font-serif: 'Rubik Variable', ui-sans-serif, sans-serif;
@@ -174,6 +176,7 @@ body,
   --shadow-2xl: 0 1px 3px 0px oklch(0.00 0 0 / 0.25);
   --shadow-inset: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
   --shadow-popover: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-button: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
 }
 
 .dark {

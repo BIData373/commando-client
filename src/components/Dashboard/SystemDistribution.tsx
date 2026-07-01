@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { countBy, orderBy } from "lodash"
+import { chain, compact, countBy, flatMap, get } from "lodash"
 import { Users } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
@@ -10,6 +10,12 @@ import addAssignee from "../../assets/icons/add-person.svg"
 import subject from "../../assets/icons/subjects.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { Button } from "../ui/button"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "../ui/tooltip"
 
 enum DistributionTab {
 	LOAD = "load",
@@ -49,6 +55,30 @@ const HEADER_LABELS = {
 	[DistributionTab.ATTENTION]: { name: "נושא", count: "כמות הנחיות" },
 }
 
+type NamedEntity = { name: string }
+
+type DistributionKey = "assignee" | "tags" | "source.tags"
+
+function buildDistribution<T extends NamedEntity>(
+	sourceList: T[],
+	keys: DistributionKey | DistributionKey[],
+	tasks: TaskRow[],
+): { name: string; count: number }[] {
+	const keyList = Array.isArray(keys) ? keys : [keys]
+	const counts = countBy(
+		flatMap(tasks, (task) =>
+			compact(flatMap(keyList, (key) => [get(task, key)].flat())),
+		),
+		"name",
+	)
+
+	return chain(sourceList)
+		.map((s) => ({ name: s.name, count: counts[s.name] ?? 0 }))
+		.filter(({ count }) => count > 0)
+		.orderBy("count", "desc")
+		.value()
+}
+
 export default function SystemDistribution({
 	onSetAssignees,
 	tasks,
@@ -63,34 +93,15 @@ export default function SystemDistribution({
 	const { data: assignees = [] } = useListAssignees({ workspaceId })
 	const { data: tags = [] } = useListTags({ workspaceId })
 
-	const assigneeDistribution = useMemo(() => {
-		const assigneeCounts = countBy(
-			tasks.filter((t) => t.assignee),
-			(t) => t.assignee?.name,
-		)
+	const assigneeDistribution = useMemo(
+		() => buildDistribution(assignees, "assignee", tasks),
+		[tasks, assignees],
+	)
 
-		return orderBy(
-			assignees.map((a) => ({
-				name: a.name,
-				count: assigneeCounts[a.name] ?? 0,
-			})),
-			"count",
-			"desc",
-		)
-	}, [tasks, assignees])
-
-	const tagDistribution = useMemo(() => {
-		const tagCounts = countBy(
-			tasks.flatMap((t) => t.tags),
-			(tag) => tag.name,
-		)
-
-		return orderBy(
-			tags.map((t) => ({ name: t.name, count: tagCounts[t.name] ?? 0 })),
-			"count",
-			"desc",
-		)
-	}, [tasks, tags])
+	const tagDistribution = useMemo(
+		() => buildDistribution(tags, ["tags", "source.tags"], tasks),
+		[tasks, tags],
+	)
 
 	const activeData =
 		activeTab === DistributionTab.LOAD ? assigneeDistribution : tagDistribution
@@ -106,7 +117,6 @@ export default function SystemDistribution({
 
 	return (
 		<Section>
-			<SectionTitle>התפלגות במערכת</SectionTitle>
 			<TabsWrapper>
 				<TabsHeader>
 					{TABS.map((tab) => (
@@ -129,7 +139,14 @@ export default function SystemDistribution({
 							<BarList>
 								{activeData?.map((item) => (
 									<BarRow key={item.name}>
-										<AssigneeName>{item.name}</AssigneeName>
+										<TooltipProvider>
+											<Tooltip>
+												<TooltipTrigger asChild>
+													<AssigneeName>{item.name}</AssigneeName>
+												</TooltipTrigger>
+												<TooltipContent>{item.name}</TooltipContent>
+											</Tooltip>
+										</TooltipProvider>
 										<BarTrack>
 											<BarFill $pct={(item.count / maxCount) * 100} />
 										</BarTrack>
@@ -175,14 +192,6 @@ const Section = styled.div`
 }
 `
 
-const SectionTitle = styled.h2`
-  margin: 0;
-  font-size: var(--fs-heading-2);
-  font-weight: 400;
-  color: var(--sea-ink);
-  text-align: start;
-`
-
 const TabsWrapper = styled.div`
   flex: 1;
   display: flex;
@@ -197,7 +206,7 @@ const TabsHeader = styled.div`
 `
 
 const TabItem = styled.button<{ $active: boolean }>`
-  height: 40px;
+  height: 46px;
   padding: 8px 16px;
   display: flex;
   align-items: center;
@@ -221,16 +230,16 @@ const TabTitle = styled.span<{ $active: boolean }>`
 const ContentPanel = styled.div<{ $hasData?: boolean }>`
   flex: 1;
   background: var(--background);
-  border: 1px solid var(--border);
   border-radius: 8px;
   border-start-start-radius: 0;
-  min-height: 390px;
-  max-height: 390px;
+  max-height: 352px;
   display: flex;
   align-items: ${({ $hasData }) => ($hasData ? "flex-start" : "center")};
   justify-content: center;
   position: relative;
   z-index: 1;
+  overflow-y: auto;
+  direction: ltr;
 `
 
 const ChartWrapper = styled.div`
@@ -239,6 +248,7 @@ const ChartWrapper = styled.div`
   gap: 16px;
   padding: 16px 20px 20px;
   width: 100%;
+  direction: rtl;
 `
 
 const ChartHeader = styled.div`
@@ -270,6 +280,9 @@ const AssigneeName = styled.span`
   font-size: var(--fs-base);
   color: var(--sea-ink);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 120px;
   flex-shrink: 0;
 `
 
@@ -284,14 +297,16 @@ const CountLabel = styled.span`
 const BarTrack = styled.div`
   flex: 1;
   height: 8px;
-  background: var(--line);
+  background: rgba(0, 0, 0, 0.04);
   border-radius: 4px;
   overflow: hidden;
+  position: relative;
 `
 
 const BarFill = styled.div<{ $pct: number }>`
+  position: absolute;
+  inset-inline-end: 0;
   height: 100%;
   width: ${({ $pct }) => $pct}%;
   background: #bae0ff;
-  border-radius: 4px;
 `

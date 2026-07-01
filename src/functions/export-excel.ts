@@ -76,7 +76,10 @@ const COLUMN_DEFS: Partial<Record<keyof TaskRow, ExportColumn<TaskRow>>> = {
 			bgColor: t.status?.color,
 		}),
 	},
-	assignee: { header: "אחראי", accessor: (t) => t.assignee?.name ?? "" },
+	assigneeStatuses: {
+		header: "אחראי",
+		accessor: (t) => t.assignee?.name ?? "",
+	},
 	deadlineType: {
 		header: 'תג"ב',
 		accessor: (t) => {

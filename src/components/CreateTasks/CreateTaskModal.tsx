@@ -324,7 +324,7 @@ function CreateTaskModal({
 
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
-			<ModalCard>
+			<ModalCard closable={false}>
 				<ModalBody>
 					<ModalHeader $shadow={scrollShadow.top}>
 						<ModalTitle>
