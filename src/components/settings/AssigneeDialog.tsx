@@ -150,11 +150,12 @@ export function AssigneeDialog({
 	}
 
 	function handleSearchSelect(user: MirageUserDto) {
-		if (!user) return
-		form.setFieldValue("users", (prev) =>
-			prev.some(({ upn }) => upn === user.upn) ? prev : [...prev, user],
-		)
-		setSearchValue("")
+		if (user) {
+			form.setFieldValue("users", (prev) =>
+				prev.some(({ upn }) => upn === user.upn) ? prev : [...prev, user],
+			)
+			setSearchValue("")
+		}
 	}
 
 	function handleSearchClear() {
