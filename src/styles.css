@@ -125,6 +125,7 @@ body,
   --text-subtitle-color: #8C8C8C;
   --active-color: #1677ff;
   --active-color-button: rgba(9, 88, 217, 1);
+  --color-danger: #e53e3e;
 
   --font-sans: 'Rubik Variable', ui-sans-serif, sans-serif;
   --font-serif: 'Rubik Variable', ui-sans-serif, sans-serif;
