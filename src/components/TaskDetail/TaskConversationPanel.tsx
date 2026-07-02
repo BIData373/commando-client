@@ -208,7 +208,7 @@ const ConversationHeader = styled.div`
   cursor: pointer;
 
   &:hover {
-    background: #f5f5f5;
+    background: var(--Bar-hover);
   }
 `
 

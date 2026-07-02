@@ -370,7 +370,7 @@ const BottomBar = styled.div<{ $hidden?: boolean; $shadow: boolean }>`
   box-shadow: ${({ $shadow }) => ($shadow ? "0px -10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
 
   &:hover {
-    background: #f5f5f5;
+    background: var(--Bar-hover);
   }
 `
 
