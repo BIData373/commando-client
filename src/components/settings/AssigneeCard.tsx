@@ -61,7 +61,8 @@ export function AssigneeCard({
 			</StyledCardHeader>
 
 			<CardContent>
-				<StyledSeparator />
+				{users.length > 0 && <StyledSeparator />}
+
 				<OverflowRow
 					items={users.map(({ id, info, upn }) => (
 						<StyledBadge key={id} variant="secondary">

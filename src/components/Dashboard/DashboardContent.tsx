@@ -1,6 +1,5 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
-import { WorkspaceStatusType } from "src/api/model"
 import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
