@@ -132,7 +132,7 @@ export function SettingsForm() {
 					/>
 					<CharCounter
 						$atLimit={(values.title ?? "").length >= NAME_MAX_LENGTH}
-						data-char-counter=""
+						className="data-char-counter"
 					>
 						{(values.title ?? "").length}/{NAME_MAX_LENGTH}
 					</CharCounter>
@@ -196,10 +196,12 @@ const InputWrapper = styled.div`
   gap: 4px;
   width: 100%;
 
-  &:hover [data-char-counter],
-  &:focus-within [data-char-counter] {
-    opacity: 1;
+  &:hover .data-char-counter,
+  &:focus-within .data-char-counter {
+	opacity: 1;
   }
+
+
 `
 
 const StyledInput = styled(Input)`
