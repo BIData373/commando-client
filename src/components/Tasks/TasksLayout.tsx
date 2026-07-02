@@ -6,6 +6,7 @@ import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTasks } from "src/api/task/task"
+import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
 import {
@@ -55,14 +56,19 @@ function TasksLayout({
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
-	const taskRows = useMemo(() => toTaskRows(tasks), [tasks])
-
 	const urlColumnFilters: ColumnFiltersState = [
 		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
 		...(deadlineTypeFilter.length
 			? [{ id: "deadlineType", value: deadlineTypeFilter }]
 			: []),
 	]
+
+	const filteredTasks = useFilteredTasks(tasks)
+
+	const filteredTaskRows = useMemo(
+		() => toTaskRows(filteredTasks),
+		[filteredTasks],
+	)
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -140,7 +146,8 @@ function TasksLayout({
 		<TooltipProvider>
 			<TasksRoot>
 				<TaskFilters
-					taskRows={taskRows}
+					allTaskRows={tasks}
+					filteredTaskRows={filteredTaskRows}
 					onClearColumnFilters={handleClearColumnFilters}
 					onClearQuickFilters={handleClearQuickFilters}
 					tabFilter={tabFilter}
@@ -161,7 +168,7 @@ function TasksLayout({
 					{view === TasksView.TABLE ? (
 						<TaskTable
 							onChangeSuccess={handleChangeSuccess}
-							tasks={taskRows}
+							tasks={filteredTaskRows}
 							statuses={Object.values(statuses)}
 							onEdit={handleEdit}
 							statusFilter={statusFilter}
@@ -172,7 +179,7 @@ function TasksLayout({
 							isManager={isManager}
 						/>
 					) : (
-						<TaskCardGrid tasks={tasks} />
+						<TaskCardGrid tasks={filteredTasks} />
 					)}
 				</ContentArea>
 			</TasksRoot>
