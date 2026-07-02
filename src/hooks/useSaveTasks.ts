@@ -1,6 +1,10 @@
 import { type CreateTaskDto, DeadlineType, type TaskDto } from "src/api/model"
 import { queryClient } from "src/queryClient"
-import { getListTasksQueryKey, useCreateTask } from "../api/task/task"
+import {
+	getListPersonalTasksQueryKey,
+	getListTasksQueryKey,
+	useCreateTask,
+} from "../api/task/task"
 
 interface TaskInput extends CreateTaskDto {
 	groupKey?: string
@@ -14,6 +18,10 @@ export function useSaveTasks(workspaceId: number, onDone?: () => void) {
 					getListTasksQueryKey({ workspaceId }),
 					(prev) => (prev ? [...prev, task] : [task]),
 				)
+				queryClient.invalidateQueries({ queryKey: ["/tag"] })
+				queryClient.invalidateQueries({
+					queryKey: getListPersonalTasksQueryKey(),
+				})
 				onDone?.()
 			},
 		},
