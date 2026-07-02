@@ -19,7 +19,7 @@ import { FilterBar, FilterPill } from "../shared/FilterBar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface TaskFiltersProps {
-	allTasks: TaskDto[]
+	allTaskRows: TaskDto[]
 	filteredTaskRows: TaskRow[]
 	onClearColumnFilters?: () => void
 	onClearQuickFilters?: () => void
@@ -33,7 +33,7 @@ interface TaskFiltersProps {
 }
 
 function TaskFilters({
-	allTasks,
+	allTaskRows,
 	filteredTaskRows,
 	onClearColumnFilters,
 	onClearQuickFilters,
@@ -75,9 +75,9 @@ function TaskFilters({
 
 	const allColumnFilters = [...urlColumnFilters, ...columnsFilters]
 
-	const filteredTaskColumns =
+	const taskRowsForCounts =
 		columnsFilters.length === 0
-			? toTaskRows(allTasks)
+			? toTaskRows(allTaskRows)
 			: filter(filteredTaskRows, (task) =>
 					allColumnFilters.every(({ id, value }, index) => {
 						const accessorFn =
@@ -92,22 +92,22 @@ function TaskFilters({
 
 	filter
 
-	const overdueCount = filteredTaskColumns.filter((t) =>
+	const overdueCount = taskRowsForCounts.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.OVERDUE),
 	).length
-	const approachingCount = filteredTaskColumns.filter((t) =>
+	const approachingCount = taskRowsForCounts.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.APPROACHING),
 	).length
-	const flaggedCount = filteredTaskColumns.filter((t) =>
+	const flaggedCount = taskRowsForCounts.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.FLAGGED),
 	).length
 
 	const handleExport = useCallback(() => {
-		exportTasksToExcel(sortByTaskColumns(filteredTaskColumns, sorting), {
+		exportTasksToExcel(sortByTaskColumns(taskRowsForCounts, sorting), {
 			columnOrder,
 			hiddenColumns,
 		})
-	}, [filteredTaskColumns, columnOrder, hiddenColumns, sorting])
+	}, [taskRowsForCounts, columnOrder, hiddenColumns, sorting])
 
 	return (
 		<FilterBar
@@ -150,7 +150,7 @@ function TaskFilters({
 				$active={activeFilters.size === 0}
 				onClick={handleClearAllQuickFilters}
 			>
-				הכל ({filteredTaskColumns.length})
+				הכל ({taskRowsForCounts.length})
 			</FilterPill>
 			{extraButtons}
 		</FilterBar>

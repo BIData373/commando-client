@@ -118,7 +118,7 @@ function PersonalTasksLayout() {
 				/>
 
 				<TaskFilters
-					allTasks={allTaskRows}
+					allTaskRows={allTaskRows}
 					filteredTaskRows={filteredTaskRows}
 					extraColumnsMeta={[{ id: "workspace", label: "מפקד מנחה" }]}
 					startSlot={<TasksDatePicker />}

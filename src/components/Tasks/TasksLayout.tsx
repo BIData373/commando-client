@@ -146,7 +146,7 @@ function TasksLayout({
 		<TooltipProvider>
 			<TasksRoot>
 				<TaskFilters
-					allTasks={tasks}
+					allTaskRows={tasks}
 					filteredTaskRows={filteredTaskRows}
 					onClearColumnFilters={handleClearColumnFilters}
 					onClearQuickFilters={handleClearQuickFilters}
