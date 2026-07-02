@@ -21,6 +21,7 @@ import { IconDropdown } from "./IconDropdown"
 import { SelectCommand } from "./SelectCommand"
 
 const titleExistsError = "title-exists"
+const DATA_COUNTER_CLASS = "data-char-counter"
 
 const NAME_MAX_LENGTH = 50
 const DEBOUNCE_MS = 300
@@ -132,6 +133,7 @@ export function SettingsForm() {
 					/>
 					<CharCounter
 						$atLimit={(values.title ?? "").length >= NAME_MAX_LENGTH}
+						className={DATA_COUNTER_CLASS}
 					>
 						{(values.title ?? "").length}/{NAME_MAX_LENGTH}
 					</CharCounter>
@@ -181,21 +183,30 @@ const FormRoot = styled.div`
   direction: rtl;
 `
 
+const CharCounter = styled.span<{ $atLimit: boolean }>`
+  font-size: var(--fs-sm);
+  color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger)" : "var(--sea-ink-soft)")};
+  text-align: end;
+  opacity: 0;
+  transition: opacity 0.15s;
+`
+
 const InputWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
   width: 100%;
+
+  &:hover .${DATA_COUNTER_CLASS},
+  &:focus-within .${DATA_COUNTER_CLASS} {
+	opacity: 1;
+  }
+
+
 `
 
 const StyledInput = styled(Input)`
   background: var(--background);
-`
-
-const CharCounter = styled.span<{ $atLimit: boolean }>`
-  font-size: var(--fs-sm);
-  color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger, #e53e3e)" : "var(--sea-ink-soft)")};
-  text-align: end;
 `
 
 const IconPreview = styled.div`

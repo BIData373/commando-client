@@ -20,7 +20,6 @@ import {
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries, queryClient } from "src/queryClient"
-import { concatName } from "src/utils/user-utils"
 import { CancelButton } from "../shared/CancelButton"
 import { FormField } from "../shared/FormField"
 import { ModalContent } from "../shared/ModalContent"
@@ -58,7 +57,6 @@ export function AssigneeDialog({
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-	const [selectedUser, setSelectedUser] = useState<MirageUserDto | null>(null)
 	const [searchValue, setSearchValue] = useState<string>("")
 
 	const [iconSearch, setIconSearch] = useState("")
@@ -140,23 +138,6 @@ export function AssigneeDialog({
 		},
 	})
 
-	function handleAddUserList() {
-		if (!selectedUser) {
-			return
-		}
-
-		form.setFieldValue("users", (prev) =>
-			prev.some((user) => user.upn === selectedUser.upn)
-				? prev
-				: // TODO - maybe have the API return MirageUser, cause technically,
-					// users dont actually have ids, they are based on UPN anyway...
-					[...prev, selectedUser as UserDto],
-		)
-
-		setSearchValue("")
-		setSelectedUser(null)
-	}
-
 	function handleKeyChange(e: React.KeyboardEvent<HTMLInputElement>) {
 		if (
 			e.code !== "Backspace" &&
@@ -174,15 +155,17 @@ export function AssigneeDialog({
 
 	function handleSearchSelect(user: MirageUserDto) {
 		if (user) {
-			setSearchValue(concatName(user))
+			form.setFieldValue("users", (prev) =>
+				prev.some(({ upn }) => upn === user.upn)
+					? prev
+					: [...prev, user as UserDto],
+			)
+			setSearchValue("")
 		}
-
-		setSelectedUser(user)
 	}
 
 	function handleSearchClear() {
 		setSearchValue("")
-		setSelectedUser(null)
 	}
 
 	function handleColorChange(color: string) {
@@ -302,9 +285,7 @@ export function AssigneeDialog({
 											onChange={setSearchValue}
 											onSelect={handleSearchSelect}
 											onClear={handleSearchClear}
-											onAdd={handleAddUserList}
-											selectedUser={selectedUser}
-											showAddButton={searchValue.length > 0}
+											showAddButton={false}
 											placeholder="חפש שם/ תפקיד/ מספר אישי"
 										/>
 									</SearchRow>
