@@ -208,7 +208,7 @@ const ConversationHeader = styled.div`
   cursor: pointer;
 
   &:hover {
-    background: #f5f5f5;
+    background: var(--Bar-hover);
   }
 `
 
@@ -409,7 +409,7 @@ const StyledInput = styled.input`
   outline: none;
 
   &::placeholder {
-    color: var(--text-color-200);
+    color: var(--Text-color-text-placeholder);
   }
 
   &:focus {
