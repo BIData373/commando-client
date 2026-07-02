@@ -21,6 +21,7 @@ import { IconDropdown } from "./IconDropdown"
 import { SelectCommand } from "./SelectCommand"
 
 const titleExistsError = "title-exists"
+const DATA_COUNTER_CLASS = "data-char-counter"
 
 const NAME_MAX_LENGTH = 50
 const DEBOUNCE_MS = 300
@@ -132,7 +133,7 @@ export function SettingsForm() {
 					/>
 					<CharCounter
 						$atLimit={(values.title ?? "").length >= NAME_MAX_LENGTH}
-						className="data-char-counter"
+						className={DATA_COUNTER_CLASS}
 					>
 						{(values.title ?? "").length}/{NAME_MAX_LENGTH}
 					</CharCounter>
