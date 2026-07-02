@@ -55,10 +55,16 @@ interface FormState extends Omit<CreateTaskDto, "workspaceId" | "assignees"> {
 interface CreateTaskModalProps {
 	workspaceId: number
 	onClose: () => void
+	onSave: () => void
 	task?: TaskWithWorkspaceDto
 }
 
-function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
+function CreateTaskModal({
+	workspaceId,
+	onClose,
+	onSave,
+	task,
+}: CreateTaskModalProps) {
 	const isEditMode = !!task
 
 	const { data: workspaceStatuses = [] } = useListWorkspaceStatuses({
@@ -69,7 +75,11 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 	const { saveTasks, isPending } = useSaveTasks(workspaceId, onClose)
 
 	const { mutateAsync: createSource } = useCreateSource()
-	const { mutateAsync: updateTask } = useUpdateTask()
+	const { mutateAsync: updateTask } = useUpdateTask({
+		mutation: {
+			onSuccess: handleUpdateSuccess,
+		},
+	})
 
 	const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
 
@@ -80,7 +90,7 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 			getListPersonalTasksQueryKey(),
 		])
 
-		onClose()
+		onSave()
 	}
 
 	const form = useForm({
@@ -124,10 +134,7 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 					changedFields.sourceId = newSource.id
 				}
 
-				await updateTask(
-					{ pathParams: { id: task.id }, data: changedFields },
-					{ onSuccess: handleUpdateSuccess },
-				)
+				await updateTask({ pathParams: { id: task.id }, data: changedFields })
 			} else {
 				if (source.trim() && !linkedSource) {
 					const newSource = await createSource({
@@ -136,9 +143,8 @@ function CreateTaskModal({ workspaceId, onClose, task }: CreateTaskModalProps) {
 					rest.sourceId = newSource.id
 				}
 				saveTasks([{ workspaceId, ...rest }])
+				onClose()
 			}
-
-			onClose()
 		},
 	})
 
@@ -543,7 +549,7 @@ const DirectiveTextarea = styled.textarea`
   overflow-y: auto;
 
   &::placeholder {
-    color: rgba(0, 0, 0, 0.25);
+    color: var(--Text-color-text-placeholder);
   }
 
   &:focus {

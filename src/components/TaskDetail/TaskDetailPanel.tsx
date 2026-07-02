@@ -366,9 +366,12 @@ const BottomBar = styled.div<{ $hidden?: boolean; $shadow: boolean }>`
   cursor: pointer;
   position: relative;
   z-index: 1;
-  clip-path: inset(-20px 0 0 0);
   transition: box-shadow 200ms ease;
   box-shadow: ${({ $shadow }) => ($shadow ? "0px -10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
+
+  &:hover {
+    background: var(--Bar-hover);
+  }
 `
 
 const SectionLabel = styled.p`
