@@ -1,5 +1,4 @@
 import styled from "@emotion/styled"
-import { chain, map, values } from "lodash"
 import { useMemo } from "react"
 import { Cell, Pie, PieChart } from "recharts"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -7,6 +6,13 @@ import type { TaskRow } from "src/utils/task-table-utils"
 
 interface StatusCardProps {
 	tasks: TaskRow[]
+}
+
+interface StatusCount {
+	id: number | string
+	name: string
+	color: string
+	count: number
 }
 
 const CHART_EMPTY_COLOR = "var(--chip-bg)"
@@ -22,31 +28,36 @@ export default function StatusCard({ tasks }: StatusCardProps) {
 	const { statuses } = useWorkspace()
 
 	const statusCounts = useMemo(() => {
-		return chain(tasks)
-			.groupBy((t) => t.status?.id ?? EMPTY_STATUS.type)
-			.mapValues((tasks) => ({
-				...(tasks[0].status ?? EMPTY_STATUS),
-				count: tasks.length,
-			}))
-			.value()
+		const result: Record<string, StatusCount> = {}
+
+		for (const status of Object.values(statuses)) {
+			result[status.id] = {
+				...status,
+				count: tasks.filter((t) => t.status?.id === status.id).length,
+			}
+		}
+
+		const unassignedCount = tasks.filter((t) => t.status == null).length
+		if (unassignedCount > 0) {
+			result[EMPTY_STATUS.type] = { ...EMPTY_STATUS, count: unassignedCount }
+		}
+
+		return result
 	}, [tasks, statuses])
 
 	const total = tasks.length
+	const statusList = Object.values(statusCounts)
 
 	const chartData =
 		total === 0
-			? [{ key: "all", value: 1 }]
-			: map(values(statusCounts), ({ id, count }) => ({
-					key: id,
-					value: count,
-				}))
+			? [{ key: "empty", value: 1 }]
+			: statusList.map(({ id, count }) => ({ key: id, value: count }))
 
 	const cellFills =
-		total === 0 ? [CHART_EMPTY_COLOR] : map(values(statusCounts), "color")
+		total === 0 ? [CHART_EMPTY_COLOR] : statusList.map(({ color }) => color)
 
 	return (
 		<Section>
-			<SectionTitle>סטטוס הנחיות</SectionTitle>
 			<Card>
 				<ChartWrapper>
 					<StyledPieChart width={250} height={300}>
@@ -70,7 +81,7 @@ export default function StatusCard({ tasks }: StatusCardProps) {
 					</ChartCenter>
 				</ChartWrapper>
 				<StatusRow>
-					{Object.values(statusCounts).map((status) => (
+					{statusList.map((status) => (
 						<StatusItem key={status.id}>
 							<StatusCount>{status.count}</StatusCount>
 							<StatusBadge $color={status.color}>{status.name}</StatusBadge>
@@ -100,18 +111,9 @@ const Section = styled.div`
   }
 `
 
-const SectionTitle = styled.h2`
-  margin: 0;
-  font-size: var(--fs-heading-2);
-  font-weight: 400;
-  color: var(--sea-ink);
-  text-align: start;
-`
-
 const Card = styled.div`
   flex: 1;
   background: var(--background);
-  border: 0.5px solid var(--border);
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -1,4 +1,3 @@
-import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import { useMemo } from "react"
 import { WorkspaceStatusType } from "src/api/model"
@@ -8,17 +7,18 @@ import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { DashboardSection } from "./DashboardSection"
-import { DashboardTableCard } from "./DashboardTableCard"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface RecentlyCompletedProps {
 	tasks: TaskRow[]
 	onUpdateStatusSuccess?(): void
+	onDoubleClick?(taskId: number): void
 }
 
 export default function RecentlyCompleted({
 	tasks,
 	onUpdateStatusSuccess,
+	onDoubleClick,
 }: RecentlyCompletedProps) {
 	const completedTasks = useMemo(
 		() => tasks.filter((t) => t.status?.type === WorkspaceStatusType.COMPLETED),
@@ -28,46 +28,43 @@ export default function RecentlyCompleted({
 	const { columns } = useTaskColumns({
 		onUpdateStatusSuccess,
 		visibleColumns: ["title", "status", "assigneeStatuses"],
+		showMenuColumn: false,
+		actions: {
+			onDoubleClick,
+		},
 	})
 
 	return (
 		<DashboardSection
-			title="הנחיות שבוצעו לאחרונה"
-			viewMore={
-				<ViewMoreInstructions statusFilter={WorkspaceStatusType.COMPLETED} />
+			gap={20}
+			tabButtons={
+				<TabsButtons>
+					<SectionTitle>הנחיות שבוצעו לאחרונה</SectionTitle>
+					<ViewMoreInstructions statusFilter={WorkspaceStatusType.COMPLETED} />
+				</TabsButtons>
 			}
 		>
-			<Card $hasContent={completedTasks.length > 0}>
-				<DataTable
-					columns={columns}
-					data={completedTasks}
-					showHeader={false}
-					emptyState={<EmptyCardState {...DASHBOARD_EMPTY_STATES.completed} />}
-					containerClassName="overflow-hidden"
-				/>
-			</Card>
+			<DataTable
+				columns={columns}
+				data={completedTasks}
+				showHeader={false}
+				emptyState={<EmptyCardState {...DASHBOARD_EMPTY_STATES.completed} />}
+			/>
 		</DashboardSection>
 	)
 }
 
-const Card = styled(DashboardTableCard)<{ $hasContent: boolean }>`
-  flex: none;
-  background: var(--background);
-  border-radius: 8px;
-  height: 308px;
-  overflow: hidden;
-  box-shadow: 0 1px 2px oklch(0 0 0 / 0.03), 0 1px 6px -1px oklch(0 0 0 / 0.02), 0 2px 4px oklch(0 0 0 / 0.02);
-  ${({ $hasContent }) =>
-		$hasContent
-			? css`
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      justify-content: flex-start;
-    `
-			: css`
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    `}
+const TabsButtons = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+`
+
+const SectionTitle = styled.h2`
+  margin: 0;
+  line-height: 1;
+  font-size: var(--fs-xl);
+  font-weight: 400;
+  color: var(--sea-ink);
+  text-align: start;
 `

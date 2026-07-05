@@ -60,6 +60,7 @@ interface UseTaskColumnsOptions {
 	actions?: ActionsConfig
 	showMenuColumn?: boolean
 	onUpdateStatusSuccess?(): void
+	onTitleDoubleClick?: (taskId: number) => void
 }
 
 function useTaskColumns({
@@ -460,9 +461,9 @@ function useTaskColumns({
 						}) => (
 							<RowActionsMenu
 								workspaceId={workspaceId}
-								onEdit={() => actions.onEdit(id)}
-								onEnterSelect={() => actions.onEnterSelectMode(rowKey)}
-								onDelete={() => actions.onDelete([id])}
+								onEdit={() => actions.onEdit?.(id)}
+								onEnterSelect={() => actions.onEnterSelectMode?.(rowKey)}
+								onDelete={() => actions.onDelete?.([id])}
 							/>
 						),
 					} as ColumnDef<TaskRow>,
@@ -499,7 +500,7 @@ const IdCell = styled.span`
   cursor: pointer;
 `
 
-const TitleCell = styled.div`
+const TitleCell = styled.div<{ $clickable?: boolean }>`
   display: flex;
   align-items: center;
   gap: 6px;

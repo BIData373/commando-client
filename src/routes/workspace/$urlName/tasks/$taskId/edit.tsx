@@ -23,6 +23,14 @@ function TaskEdit() {
 		})
 	}
 
+	function handleSave() {
+		navigate({
+			to: "/workspace/$urlName/tasks/$taskId",
+			params: { urlName, taskId },
+			search: { view },
+		})
+	}
+
 	if (!task) {
 		return null
 	}
@@ -33,6 +41,7 @@ function TaskEdit() {
 				workspaceId={task.workspace.id}
 				task={task}
 				onClose={handleClose}
+				onSave={handleSave}
 			/>
 		</AuthorizationWrapper>
 	)

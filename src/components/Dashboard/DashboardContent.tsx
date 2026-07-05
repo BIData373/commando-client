@@ -5,6 +5,7 @@ import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
 import { toTaskRows } from "src/utils/task-table-utils"
+import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import FocusedInstructions from "./FocusedInstructions"
 import RecentlyCompleted from "./RecentlyCompleted"
@@ -40,18 +41,30 @@ export function DashboardContent() {
 		invalidateQueries([tasksQueryKey])
 	}
 
+	function handleOpenTask(taskId: number) {
+		navigate({
+			to: "/workspace/$urlName/dashboard/task/$taskId",
+			params: { urlName, taskId: String(taskId) },
+		})
+	}
+
 	return (
 		<ContentArea>
-			<TasksDatePicker showPlaceholder />
+			<ButtonGroup>
+				<CreateTaskButton context="dashboard" />
+				<TasksDatePicker showPlaceholder />
+			</ButtonGroup>
 
 			<GridLayout>
 				<FocusedInstructions
 					onUpdateStatusSuccess={handleUpdateSuccess}
+					onDoubleClick={handleOpenTask}
 					tasks={tasks}
 				/>
 				<StatusCard tasks={tasks} />
 				<RecentlyCompleted
 					onUpdateStatusSuccess={handleUpdateSuccess}
+					onDoubleClick={handleOpenTask}
 					tasks={tasks}
 				/>
 				<SystemDistribution onSetAssignees={handleSetAssignees} tasks={tasks} />
@@ -72,14 +85,20 @@ const ContentArea = styled.div`
   }
 
   & > *:nth-of-type(2) {
-    margin-block-start: 72px;
+    margin-block-start: 28px;
   }
+`
+
+const ButtonGroup = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `
 
 const GridLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr 450px;
-  gap: 72px;
+  gap: 62px;
 
   @media (max-width: 1300px) {
     grid-template-columns: 1fr 1fr;
