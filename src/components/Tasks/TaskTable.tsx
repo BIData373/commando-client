@@ -325,7 +325,7 @@ const TableWrapper = styled.div`
 
   table {
     direction: rtl;
-    min-width: 100%;
+    width: 100%;
     table-layout: fixed;
   }
 

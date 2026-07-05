@@ -29,7 +29,7 @@ export const TASK_COLUMNS_META: TaskColumnMeta[] = [
 	{ id: "status", label: "סטטוס" },
 	{ id: "assigneeStatuses", label: "אחראי" },
 	{ id: "deadlineType", label: 'תג"ב' },
-	{ id: "source", label: "מקור" },
+	{ id: "source", label: "מקור הנחיה" },
 	{ id: "tags", label: "נושא" },
 	{ id: "notes", label: "הערות" },
 	{ id: "createdAt", label: "תאריך יצירה" },

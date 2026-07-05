@@ -14,7 +14,7 @@ import {
   type SortingState,
   type TableMeta,
 } from '@tanstack/react-table'
-import { Fragment, type ReactNode } from 'react'
+import { Fragment, type ReactNode, useRef, useState, useLayoutEffect } from 'react'
 import { LoadingSpinner } from '../shared/LoadingSpinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
 
@@ -90,24 +90,61 @@ export function DataTable<TData>({
     meta,
   })
 
-const allColumns = table.getAllColumns()
-  const totalSize = allColumns.reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [containerWidth, setContainerWidth] = useState(0)
+
+  useLayoutEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    setContainerWidth(el.getBoundingClientRect().width)
+    const observer = new ResizeObserver(([entry]) => {
+      setContainerWidth(entry.contentRect.width)
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  const visibleColumns = table.getVisibleLeafColumns()
+
+  const fixedTotal = visibleColumns
+    .filter((col) => !col.columnDef.meta?.grow)
+    .reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
+
+  const growTotal = visibleColumns
+    .filter((col) => col.columnDef.meta?.grow)
+    .reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
+
+  const borderTotal = visibleColumns.length * 0.5
+  const growSpace = containerWidth > 0 ? containerWidth - fixedTotal - borderTotal : 0
+
+  const growColumns = visibleColumns.filter((col) => col.columnDef.meta?.grow)
+  const growWidths = new Map<string, number>()
+  if (growSpace > 0 && growTotal > 0) {
+    const floored = growColumns.map((col) => ({
+      id: col.id,
+      width: Math.floor(growSpace * ((col.columnDef.size ?? 0) / growTotal)),
+    }))
+    const flooredTotal = floored.reduce((sum, col) => sum + col.width, 0)
+    floored.forEach(({ id, width }, i) => {
+      growWidths.set(id, i === floored.length - 1 ? width + (growSpace - flooredTotal) : width)
+    })
+  }
 
   const colgroup = (
     <colgroup>
-      {allColumns.map((column) => {
-        const size = column.columnDef.size
+      {visibleColumns.map((column) => {
+        const width = growWidths.get(column.id) ?? column.columnDef.size
         return (
           <col
             key={column.id}
-            style={size !== undefined && totalSize > 0
-              ? { width: `${((size / totalSize) * 100).toFixed(3)}%` }
-              : undefined}
+            style={width !== undefined ? { width: `${width}px` } : undefined}
           />
         )
       })}
     </colgroup>
   )
+
+  const totalSize = fixedTotal + growTotal
 
   const rows = table.getRowModel().rows.map((row) => ({
     row,
@@ -117,7 +154,7 @@ const allColumns = table.getAllColumns()
   const tableMinWidth = totalSize > 0 ? totalSize : undefined
 
   return (
-    <Table containerClassName={containerClassName} style={{ minWidth: tableMinWidth }}>
+    <Table containerRef={containerRef} containerClassName={containerClassName} style={{ minWidth: tableMinWidth }}>
       {colgroup}
       {showHeader && (
         <TableHeader>
