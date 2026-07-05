@@ -17,7 +17,7 @@ import {
 	getListPersonalTasksQueryKey,
 	getListTasksQueryKey,
 } from "src/api/task/task"
-import { type IMesibaIcon, useSearchMesibaIcons } from "src/hooks/useMesiba"
+import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries, queryClient } from "src/queryClient"
 import { CancelButton } from "../shared/CancelButton"
