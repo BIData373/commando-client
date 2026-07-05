@@ -5,7 +5,7 @@ import { useMemo } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
-import { useListTasks } from "src/api/task/task"
+import { getListPersonalTasksQueryKey, useListTasks } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
@@ -119,7 +119,7 @@ function TasksLayout({
 	}
 
 	function handleChangeSuccess() {
-		invalidateQueries([queryKey])
+		invalidateQueries([queryKey, getListPersonalTasksQueryKey()])
 	}
 
 	// function handleViewChange(newView: TasksView) {
