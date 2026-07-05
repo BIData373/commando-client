@@ -13,5 +13,7 @@ export interface CreateAssigneeDto {
 	color: string
 	/** @nullable */
 	icon?: string | null
+	/** @nullable */
+	iconName?: string | null
 	users: CreateUserDto[]
 }

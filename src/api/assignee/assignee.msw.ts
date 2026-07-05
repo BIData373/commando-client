@@ -42,6 +42,13 @@ export const getCreateAssigneeResponseMock = (
 		]),
 		null,
 	]),
+	iconName: faker.helpers.arrayElement([
+		faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
+			null,
+		]),
+		null,
+	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	users: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
@@ -100,6 +107,13 @@ export const getListAssigneesResponseMock = (): AssigneesDto[] =>
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		icon: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				null,
+			]),
+			null,
+		]),
+		iconName: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
 				faker.string.alpha({ length: { min: 10, max: 20 } }),
 				null,
@@ -168,6 +182,13 @@ export const getGetAssigneeResponseMock = (
 		]),
 		null,
 	]),
+	iconName: faker.helpers.arrayElement([
+		faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
+			null,
+		]),
+		null,
+	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	users: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
@@ -230,6 +251,13 @@ export const getUpdateAssigneeResponseMock = (
 		]),
 		null,
 	]),
+	iconName: faker.helpers.arrayElement([
+		faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
+			null,
+		]),
+		null,
+	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	users: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
@@ -286,6 +314,13 @@ export const getDeleteAssigneeResponseMock = (
 	name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	icon: faker.helpers.arrayElement([
+		faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
+			null,
+		]),
+		null,
+	]),
+	iconName: faker.helpers.arrayElement([
 		faker.helpers.arrayElement([
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,

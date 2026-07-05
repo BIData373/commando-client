@@ -17,7 +17,7 @@ import {
 	getListPersonalTasksQueryKey,
 	getListTasksQueryKey,
 } from "src/api/task/task"
-import type { IMesibaIcon } from "src/hooks/useMesiba"
+import { type IMesibaIcon, useSearchMesibaIcons } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries, queryClient } from "src/queryClient"
 import { CancelButton } from "../shared/CancelButton"
@@ -60,7 +60,15 @@ export function AssigneeDialog({
 	const [searchValue, setSearchValue] = useState<string>("")
 
 	const [iconSearch, setIconSearch] = useState("")
-	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
+	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(
+		assignee?.iconName
+			? {
+					heb_name: assignee?.iconName ?? "",
+					iconName: assignee?.icon ?? "",
+					id: 1,
+				}
+			: null,
+	)
 
 	const assigneesQueryKey = getListAssigneesQueryKey({ workspaceId })
 
@@ -120,6 +128,7 @@ export function AssigneeDialog({
 				name: value.name.trim(),
 				color: value.color,
 				icon: value.icon || null,
+				iconName: selectedIcon?.heb_name ?? "",
 				users: value.users,
 			}
 
