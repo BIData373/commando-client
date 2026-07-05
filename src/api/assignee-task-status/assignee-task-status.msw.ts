@@ -175,6 +175,13 @@ export const getListAssigneeTaskStatusesResponseMock =
 							]),
 							null,
 						]),
+						iconName: faker.helpers.arrayElement([
+							faker.helpers.arrayElement([
+								faker.string.alpha({ length: { min: 10, max: 20 } }),
+								null,
+							]),
+							null,
+						]),
 						workspaceId: faker.number.float({ fractionDigits: 2 }),
 						users: Array.from(
 							{ length: faker.number.int({ min: 1, max: 10 }) },
@@ -240,6 +247,13 @@ export const getListAssigneeTaskStatusesResponseMock =
 				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				icon: faker.helpers.arrayElement([
+					faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						null,
+					]),
+					null,
+				]),
+				iconName: faker.helpers.arrayElement([
 					faker.helpers.arrayElement([
 						faker.string.alpha({ length: { min: 10, max: 20 } }),
 						null,
@@ -436,6 +450,13 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 					]),
 					null,
 				]),
+				iconName: faker.helpers.arrayElement([
+					faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						null,
+					]),
+					null,
+				]),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 				users: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
@@ -499,6 +520,13 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		icon: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				null,
+			]),
+			null,
+		]),
+		iconName: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
 				faker.string.alpha({ length: { min: 10, max: 20 } }),
 				null,
@@ -696,6 +724,13 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					]),
 					null,
 				]),
+				iconName: faker.helpers.arrayElement([
+					faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						null,
+					]),
+					null,
+				]),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 				users: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
@@ -759,6 +794,13 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		icon: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				null,
+			]),
+			null,
+		]),
+		iconName: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
 				faker.string.alpha({ length: { min: 10, max: 20 } }),
 				null,
