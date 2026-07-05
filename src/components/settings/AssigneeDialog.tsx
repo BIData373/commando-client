@@ -67,7 +67,7 @@ export function AssigneeDialog({
 
 	const [iconSearch, setIconSearch] = useState("")
 	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(
-		mesibaIcon,
+		assignee?.iconName ? mesibaIcon : null,
 	)
 
 	const assigneesQueryKey = getListAssigneesQueryKey({ workspaceId })
