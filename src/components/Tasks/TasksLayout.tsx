@@ -174,7 +174,7 @@ function TasksLayout({
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
 							onFiltersChange={handleColumnFiltersChange}
-							onDoubleClick={handleOpenTask}
+							onClick={handleOpenTask}
 							isLoading={isLoading}
 							isManager={isManager}
 						/>

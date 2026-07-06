@@ -89,18 +89,22 @@ const SortIconButton = styled.button<{ $active: boolean }>`
 `
 
 const ActionsArea = styled.div<{ $show: boolean }>`
+  position: absolute;
+  inset-inline-end: 0;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
-  gap: 2px;
-  flex-shrink: 0;
   opacity: ${({ $show }) => ($show ? 1 : 0)};
   transition: opacity 0.15s;
 `
 
 const HeaderWrapper = styled.div<{ $alwaysShow: boolean }>`
+  position: relative;
   display: flex;
   align-items: center;
   height: 100%;
+  width: 100%;
 
   &:hover [data-slot="actions-area"] {
     opacity: 1;

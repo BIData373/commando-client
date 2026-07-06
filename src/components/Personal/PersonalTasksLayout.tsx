@@ -152,7 +152,7 @@ function PersonalTasksLayout() {
 					tasks={filteredTaskRows}
 					isLoading={isLoading}
 					onEdit={handleEdit}
-					onDoubleClick={handleOpenTask}
+					onClick={handleOpenTask}
 					hideStatusAction
 					showActionsColumn={false}
 				/>

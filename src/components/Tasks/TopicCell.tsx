@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { useCallback, useLayoutEffect, useRef, useState } from "react"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card"
 
 interface TopicCellProps {
 	tags: string[]
@@ -84,19 +84,20 @@ export function TopicCell({ tags }: TopicCellProps) {
 				<Tag key={tag}>{tag}</Tag>
 			))}
 
+			{/* Overflow tags shown via Radix HoverCard (replaces manual onMouseEnter/onMouseLeave + Popover) */}
 			{hiddenTags.length > 0 && (
-				<Popover>
-					<PopoverTrigger asChild>
+				<HoverCard openDelay={200} closeDelay={100}>
+					<HoverCardTrigger asChild>
 						<OverflowTag>{hiddenTags.length}+</OverflowTag>
-					</PopoverTrigger>
-					<StyledPopoverContent side="top" sideOffset={6}>
+					</HoverCardTrigger>
+					<StyledHoverCardContent side="top" sideOffset={6}>
 						<OverflowList>
 							{hiddenTags.map((tag) => (
 								<Tag key={tag}>{tag}</Tag>
 							))}
 						</OverflowList>
-					</StyledPopoverContent>
-				</Popover>
+					</StyledHoverCardContent>
+				</HoverCard>
 			)}
 		</CellRoot>
 	)
@@ -153,7 +154,7 @@ const OverflowTag = styled.button`
   cursor: pointer;
 `
 
-const StyledPopoverContent = styled(PopoverContent)`
+const StyledHoverCardContent = styled(HoverCardContent)`
   width: auto;
   min-width: unset;
   padding: 8px;
