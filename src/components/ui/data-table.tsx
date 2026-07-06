@@ -88,6 +88,7 @@ export function DataTable<TData>({
     meta,
   })
 
+  // Track container width to distribute remaining space among growable columns
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(0)
 
@@ -104,6 +105,7 @@ export function DataTable<TData>({
 
   const visibleColumns = table.getVisibleLeafColumns()
 
+  // Single pass: partition columns into fixed-width and growable, summing sizes for each group
   const { fixedTotal, growTotal, growColumns } = visibleColumns.reduce(
     (acc, col) => {
       const size = col.columnDef.size ?? 0
@@ -125,6 +127,8 @@ export function DataTable<TData>({
   const borderTotal = visibleColumns.length * 0.5
   const growSpace = containerWidth > 0 ? containerWidth - fixedTotal - borderTotal : 0
 
+  // Distribute remaining horizontal space proportionally among grow columns.
+  // Uses Math.floor per column and assigns the rounding remainder to the last column.
   const growWidths = useMemo(() => {
     const map = new Map<string, number>()
     if (growSpace <= 0 || growTotal <= 0) return map

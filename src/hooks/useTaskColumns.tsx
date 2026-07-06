@@ -46,7 +46,6 @@ interface SelectModeConfig {
 
 interface ActionsConfig {
 	onEdit: (taskId: number) => void
-	onClick?(taskId: number): void
 	onArchive(taskIds: number[]): void
 	onDelete(taskIds: number[]): void
 	onEnterSelectMode(rowKey?: string): void

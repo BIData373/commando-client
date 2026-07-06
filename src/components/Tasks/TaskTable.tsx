@@ -23,6 +23,7 @@ import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 
+// Columns that should not trigger row navigation when clicked (they have their own interactions)
 const DISABLED_CLICK_COLUMNS = new Set([
 	"assigneeStatuses",
 	"status",
@@ -229,7 +230,6 @@ function TaskTable({
 		showMenuColumn: showActionsColumn,
 		actions: {
 			onEdit,
-			onClick,
 			onArchive: removeTasks,
 			onDelete: removeTasks,
 			onEnterSelectMode: handleEnterSelectMode,
@@ -257,6 +257,8 @@ function TaskTable({
 		return result
 	}, [baseColumns, extraColumns, columnOrder, hiddenColumns])
 
+	// Cell-level click handler — skips interactive columns (status, select, etc.)
+	// and delegates to the parent onClick for navigation on all other columns.
 	function handleCellClick(row: { original: TaskRow }, columnId: string) {
 		if (DISABLED_CLICK_COLUMNS.has(columnId)) return
 		onClick?.(row.original.id)
@@ -381,6 +383,7 @@ const TableWrapper = styled.div`
       border-left: none;
     }
 
+    /* Status cell is interactive (opens dropdown), so it gets pointer cursor + hover bg */
     &[data-column-id="status"] {
       cursor: pointer;
 

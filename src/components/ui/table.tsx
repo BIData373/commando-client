@@ -4,6 +4,7 @@ import { cn } from "src/lib/utils"
 
 interface TableProps extends React.ComponentProps<"table"> {
   containerClassName?: string;
+  // Ref forwarded to the scroll container, used by DataTable for ResizeObserver width tracking
   containerRef?: React.Ref<HTMLDivElement>;
 }
 

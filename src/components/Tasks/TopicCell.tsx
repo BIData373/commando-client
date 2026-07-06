@@ -84,6 +84,7 @@ export function TopicCell({ tags }: TopicCellProps) {
 				<Tag key={tag}>{tag}</Tag>
 			))}
 
+			{/* Overflow tags shown via Radix HoverCard (replaces manual onMouseEnter/onMouseLeave + Popover) */}
 			{hiddenTags.length > 0 && (
 				<HoverCard openDelay={200} closeDelay={100}>
 					<HoverCardTrigger asChild>
