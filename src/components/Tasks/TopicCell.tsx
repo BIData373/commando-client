@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { useCallback, useLayoutEffect, useRef, useState } from "react"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card"
 
 interface TopicCellProps {
 	tags: string[]
@@ -69,20 +69,7 @@ export function TopicCell({ tags }: TopicCellProps) {
 		calculateVisibleTags()
 	}, [tags, calculateVisibleTags])
 
-	const [overflowOpen, setOverflowOpen] = useState(false)
 	const hiddenTags = tags.slice(visibleCount)
-
-	function handleOpenOverflow() {
-		setOverflowOpen(true)
-	}
-
-	function handleCloseOverflow() {
-		setOverflowOpen(false)
-	}
-
-	function handlePreventAutoFocus(e: Event) {
-		e.preventDefault()
-	}
 
 	return (
 		<CellRoot ref={containerRef}>
@@ -98,29 +85,18 @@ export function TopicCell({ tags }: TopicCellProps) {
 			))}
 
 			{hiddenTags.length > 0 && (
-				<Popover open={overflowOpen} onOpenChange={setOverflowOpen}>
-					<PopoverTrigger asChild>
-						<OverflowTag
-							onMouseEnter={handleOpenOverflow}
-							onMouseLeave={handleCloseOverflow}
-						>
-							{hiddenTags.length}+
-						</OverflowTag>
-					</PopoverTrigger>
-					<StyledPopoverContent
-						side="top"
-						sideOffset={6}
-						onMouseEnter={handleOpenOverflow}
-						onMouseLeave={handleCloseOverflow}
-						onOpenAutoFocus={handlePreventAutoFocus}
-					>
+				<HoverCard openDelay={200} closeDelay={100}>
+					<HoverCardTrigger asChild>
+						<OverflowTag>{hiddenTags.length}+</OverflowTag>
+					</HoverCardTrigger>
+					<StyledHoverCardContent side="top" sideOffset={6}>
 						<OverflowList>
 							{hiddenTags.map((tag) => (
 								<Tag key={tag}>{tag}</Tag>
 							))}
 						</OverflowList>
-					</StyledPopoverContent>
-				</Popover>
+					</StyledHoverCardContent>
+				</HoverCard>
 			)}
 		</CellRoot>
 	)
@@ -177,7 +153,7 @@ const OverflowTag = styled.button`
   cursor: pointer;
 `
 
-const StyledPopoverContent = styled(PopoverContent)`
+const StyledHoverCardContent = styled(HoverCardContent)`
   width: auto;
   min-width: unset;
   padding: 8px;

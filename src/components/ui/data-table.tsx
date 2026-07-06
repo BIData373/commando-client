@@ -14,7 +14,7 @@ import {
   type SortingState,
   type TableMeta,
 } from '@tanstack/react-table'
-import { Fragment, type ReactNode, useRef, useState, useLayoutEffect } from 'react'
+import { Fragment, type ReactNode, useRef, useState, useLayoutEffect, useMemo } from 'react'
 import { LoadingSpinner } from '../shared/LoadingSpinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
 
@@ -27,9 +27,8 @@ declare module '@tanstack/react-table' {
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
   data: TData[]
-  onRowClick?: (row: Row<TData>) => void
+  onCellClick?: (row: Row<TData>, columnId: string) => void
   onRowDoubleClick?: (row: Row<TData>) => void
-  disabledClickColumns?: string[]
   rowSelection?: RowSelectionState
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
   columnFilters?: ColumnFiltersState
@@ -51,10 +50,9 @@ interface DataTableProps<TData> {
 export function DataTable<TData>({
   columns,
   data,
-  onRowClick,
+  onCellClick,
   // TODO - maybe implement?
   // onRowDoubleClick,
-  disabledClickColumns,
   rowSelection,
   onRowSelectionChange,
   columnFilters,
@@ -106,29 +104,41 @@ export function DataTable<TData>({
 
   const visibleColumns = table.getVisibleLeafColumns()
 
-  const fixedTotal = visibleColumns
-    .filter((col) => !col.columnDef.meta?.grow)
-    .reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
-
-  const growTotal = visibleColumns
-    .filter((col) => col.columnDef.meta?.grow)
-    .reduce((sum, col) => sum + (col.columnDef.size ?? 0), 0)
+  const { fixedTotal, growTotal, growColumns } = visibleColumns.reduce(
+    (acc, col) => {
+      const size = col.columnDef.size ?? 0
+      if (col.columnDef.meta?.grow) {
+        acc.growTotal += size
+        acc.growColumns.push(col)
+      } else {
+        acc.fixedTotal += size
+      }
+      return acc
+    },
+    { fixedTotal: 0, growTotal: 0, growColumns: [] } as {
+      fixedTotal: number
+      growTotal: number
+      growColumns: typeof visibleColumns
+    },
+  )
 
   const borderTotal = visibleColumns.length * 0.5
   const growSpace = containerWidth > 0 ? containerWidth - fixedTotal - borderTotal : 0
 
-  const growColumns = visibleColumns.filter((col) => col.columnDef.meta?.grow)
-  const growWidths = new Map<string, number>()
-  if (growSpace > 0 && growTotal > 0) {
+  const growWidths = useMemo(() => {
+    const map = new Map<string, number>()
+    if (growSpace <= 0 || growTotal <= 0) return map
+
     const floored = growColumns.map((col) => ({
       id: col.id,
       width: Math.floor(growSpace * ((col.columnDef.size ?? 0) / growTotal)),
     }))
     const flooredTotal = floored.reduce((sum, col) => sum + col.width, 0)
     floored.forEach(({ id, width }, i) => {
-      growWidths.set(id, i === floored.length - 1 ? width + (growSpace - flooredTotal) : width)
+      map.set(id, i === floored.length - 1 ? width + (growSpace - flooredTotal) : width)
     })
-  }
+    return map
+  }, [growSpace, growTotal, growColumns])
 
   const colgroup = (
     <colgroup>
@@ -178,17 +188,13 @@ export function DataTable<TData>({
               <TableRow
                 data-state={row.getIsSelected() ? 'selected' : undefined}
                 data-highlighted={highlightedRowIds?.has(row.id) ? '' : undefined}
-                onClick={onRowClick ? (e) => {
-                  if (disabledClickColumns?.length) {
-                    const td = (e.target as HTMLElement).closest('td')
-                    const columnId = td?.getAttribute('data-column-id')
-                    if (columnId && disabledClickColumns.includes(columnId)) return
-                  }
-                  onRowClick(row)
-                } : undefined}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} data-column-id={cell.column.id}>
+                  <TableCell
+                    key={cell.id}
+                    data-column-id={cell.column.id}
+                    onClick={onCellClick ? () => onCellClick(row, cell.column.id) : undefined}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

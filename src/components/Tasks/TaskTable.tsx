@@ -23,12 +23,12 @@ import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 
-const DISABLED_CLICK_COLUMNS = [
+const DISABLED_CLICK_COLUMNS = new Set([
 	"assigneeStatuses",
 	"status",
 	"actions",
 	"select",
-]
+])
 
 interface TaskTableProps {
 	tasks: TaskRow[]
@@ -257,6 +257,11 @@ function TaskTable({
 		return result
 	}, [baseColumns, extraColumns, columnOrder, hiddenColumns])
 
+	function handleCellClick(row: { original: TaskRow }, columnId: string) {
+		if (DISABLED_CLICK_COLUMNS.has(columnId)) return
+		onClick?.(row.original.id)
+	}
+
 	return (
 		<>
 			<TableWrapper>
@@ -270,8 +275,7 @@ function TaskTable({
 					sorting={sorting}
 					onSortingChange={setSorting}
 					getRowId={(row) => row.rowKey}
-					onRowClick={(row) => onClick?.(row.original.id)}
-					disabledClickColumns={DISABLED_CLICK_COLUMNS}
+					onCellClick={handleCellClick}
 					showHeader={showHeader}
 					isLoading={isLoading}
 					emptyState={
@@ -381,9 +385,7 @@ const TableWrapper = styled.div`
       cursor: pointer;
 
       &:hover {
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.06) 100%),
-          linear-gradient(0deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.04) 100%),
-          var(--Background-color-bg-container, #FFF);
+        background: var(--status-cell-bg-hover);
       }
     }
   }
