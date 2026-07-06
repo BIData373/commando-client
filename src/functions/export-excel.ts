@@ -1,8 +1,7 @@
 import { differenceInDays, startOfToday } from "date-fns"
 import ExcelJS from "exceljs"
-import { DeadlineType, type TaskDto } from "src/api/model"
+import { DeadlineType, type TaskRowDto } from "src/api/model"
 import { DEADLINE_LABELS } from "src/components/shared/DeadlineTag"
-import type { TaskRow } from "../utils/task-table-utils"
 import { formatDate } from "./date-utils"
 
 interface CellValue {
@@ -50,7 +49,7 @@ function lighten(hex: string, alpha: number): string {
 	)
 }
 
-function getDeadlineDateStyle(task: TaskDto): Pick<CellValue, "fontColor"> {
+function getDeadlineDateStyle(task: TaskRowDto): Pick<CellValue, "fontColor"> {
 	if (!task.dueDate || task.deadlineType === DeadlineType.IMMEDIATE) {
 		return {}
 	}
@@ -61,70 +60,71 @@ function getDeadlineDateStyle(task: TaskDto): Pick<CellValue, "fontColor"> {
 	return {}
 }
 
-const COLUMN_DEFS: Partial<Record<keyof TaskRow, ExportColumn<TaskRow>>> = {
-	title: {
-		header: "ההנחיה",
-		maxWidth: 60,
-		accessor: (t) =>
-			t.description ? `${t.title} – ${t.description}` : t.title,
-	},
-	status: {
-		header: "סטטוס",
-		accessor: (t) => ({
-			value: t.status?.name ?? "",
-			fontColor: t.status?.color,
-			bgColor: t.status?.color,
-		}),
-	},
-	assigneeStatuses: {
-		header: "אחראי",
-		accessor: (t) => t.assignee?.name ?? "",
-	},
-	deadlineType: {
-		header: 'תג"ב',
-		accessor: (t) => {
-			const typeStr = DEADLINE_LABELS[t.deadlineType] ?? ""
-			const dateStr = t.dueDate ? formatDate(t.dueDate) : ""
-			const value =
-				typeStr && dateStr ? `${typeStr} | ${dateStr}` : typeStr || dateStr
-			return { value, ...getDeadlineDateStyle(t) }
+const COLUMN_DEFS: Partial<Record<keyof TaskRowDto, ExportColumn<TaskRowDto>>> =
+	{
+		title: {
+			header: "ההנחיה",
+			maxWidth: 60,
+			accessor: (t) =>
+				t.description ? `${t.title} – ${t.description}` : t.title,
 		},
-	},
-	source: {
-		header: "מקור",
-		accessor: (t) => {
-			if (!t.source) {
-				return ""
-			}
+		status: {
+			header: "סטטוס",
+			accessor: (t) => ({
+				value: t.status?.name ?? "",
+				fontColor: t.status?.color,
+				bgColor: t.status?.color,
+			}),
+		},
+		assignee: {
+			header: "אחראי",
+			accessor: (t) => t.assignee?.name ?? "",
+		},
+		deadlineType: {
+			header: 'תג"ב',
+			accessor: (t) => {
+				const typeStr = DEADLINE_LABELS[t.deadlineType] ?? ""
+				const dateStr = t.dueDate ? formatDate(t.dueDate) : ""
+				const value =
+					typeStr && dateStr ? `${typeStr} | ${dateStr}` : typeStr || dateStr
+				return { value, ...getDeadlineDateStyle(t) }
+			},
+		},
+		source: {
+			header: "מקור",
+			accessor: (t) => {
+				if (!t.source) {
+					return ""
+				}
 
-			const source = `${t.source.name} | ${formatDate(t.source.date)}`
-			return t.source.attachmentKey
-				? { value: source, link: t.source.attachmentKey }
-				: source
+				const source = `${t.source.name} | ${formatDate(t.source.date)}`
+				return t.source.attachmentKey
+					? { value: source, link: t.source.attachmentKey }
+					: source
+			},
 		},
-	},
-	tags: {
-		header: "נושא",
-		accessor: (t) => t.tags.map(({ name }) => name).join(", "),
-	},
-	notes: { header: "הערות", maxWidth: 50, accessor: (t) => t.notes ?? "" },
-	createdAt: {
-		header: "תאריך יצירה",
-		accessor: (t) => formatDate(t.createdAt),
-	},
-	updatedAt: {
-		header: "עודכן ב",
-		accessor: (t) => formatDate(t.updatedAt),
-	},
-}
+		tags: {
+			header: "נושא",
+			accessor: (t) => t.tags.map(({ name }) => name).join(", "),
+		},
+		notes: { header: "הערות", maxWidth: 50, accessor: (t) => t.notes ?? "" },
+		createdAt: {
+			header: "תאריך יצירה",
+			accessor: (t) => formatDate(t.createdAt),
+		},
+		updatedAt: {
+			header: "עודכן ב",
+			accessor: (t) => formatDate(t.updatedAt),
+		},
+	}
 
 interface ExportOptions {
-	columnOrder: (keyof TaskRow)[]
-	hiddenColumns: Set<keyof TaskRow>
+	columnOrder: (keyof TaskRowDto)[]
+	hiddenColumns: Set<keyof TaskRowDto>
 }
 
 export async function exportTasksToExcel(
-	tasks: TaskRow[],
+	tasks: TaskRowDto[],
 	{ columnOrder, hiddenColumns }: ExportOptions,
 ) {
 	await exportToExcel(
@@ -136,7 +136,7 @@ export async function exportTasksToExcel(
 			},
 			...columnOrder
 				.filter((id) => !hiddenColumns.has(id) && id in COLUMN_DEFS)
-				.map((id) => COLUMN_DEFS[id as keyof TaskRow])
+				.map((id) => COLUMN_DEFS[id as keyof TaskRowDto])
 				.filter((row) => !!row),
 		],
 		"הנחיות",

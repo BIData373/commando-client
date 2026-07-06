@@ -47,7 +47,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 				]),
 				flagged: faker.datatype.boolean(),
 				deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
-				issuedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				dueDate: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				notes: faker.helpers.arrayElement([
 					faker.helpers.arrayElement([
@@ -318,7 +317,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 		]),
 		flagged: faker.datatype.boolean(),
 		deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
-		issuedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		dueDate: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		notes: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
@@ -578,7 +576,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 		]),
 		flagged: faker.datatype.boolean(),
 		deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
-		issuedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		dueDate: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		notes: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([

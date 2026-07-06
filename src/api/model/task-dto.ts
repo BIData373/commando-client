@@ -25,7 +25,6 @@ export interface TaskDto {
 	description: string | null
 	flagged: boolean
 	deadlineType: DeadlineType
-	issuedAt: Date
 	dueDate: Date
 	/** @nullable */
 	notes: string | null

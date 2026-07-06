@@ -2,22 +2,13 @@ import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
-import { useMemo, useState } from "react"
-import {
-	type CreateUserDto,
-	type TaskWithWorkspaceDto,
-	WorkspaceStatusType,
-} from "src/api/model"
-import {
-	getListPersonalTasksQueryKey,
-	useListPersonalTasks,
-} from "src/api/task/task"
-import { useCurrentUser } from "src/hooks/useCurrentUser"
+import { useState } from "react"
+import { WorkspaceStatusType } from "src/api/model"
+import { useListPersonalTaskRows } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { invalidateQueries } from "src/queryClient"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { formatMesibaIcon } from "src/utils/icon-utils"
-import { type TaskRow, toTaskRows } from "src/utils/task-table-utils"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import { TaskFilters } from "../Tasks/TaskFilters"
@@ -25,33 +16,20 @@ import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
 
-function toPersonalTaskRows(
-	tasks: TaskWithWorkspaceDto[],
-	currentUser: CreateUserDto,
-): TaskRow[] {
-	return toTaskRows(tasks).filter(({ assignee }) =>
-		assignee?.users.some(({ upn }) => upn === currentUser.upn),
-	)
-}
-
 function PersonalTasksLayout() {
 	const navigate = useNavigate()
 
-	const currentUser = useCurrentUser()
-
-	const queryKey = getListPersonalTasksQueryKey()
-	const { data: rawTasks = [], isLoading } = useListPersonalTasks()
+	const {
+		data: allTaskRows = [],
+		isLoading,
+		queryKey,
+	} = useListPersonalTaskRows()
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
 	>(new Set())
 
-	const allTaskRows = useMemo(
-		() => toPersonalTaskRows(rawTasks, currentUser),
-		[rawTasks, currentUser],
-	)
-
-	const workspaces = uniqBy(rawTasks, "workspace.id").map(
+	const workspaces = uniqBy(allTaskRows, "workspace.id").map(
 		({ workspace }) => workspace,
 	)
 
@@ -69,19 +47,14 @@ function PersonalTasksLayout() {
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
 	).length
 
-	const baseFilteredTasks = useFilteredTasks(rawTasks)
+	const baseFilteredTaskRows = useFilteredTasks(allTaskRows)
 
-	const filteredTasks =
+	const filteredTaskRows =
 		activeWorkspaceFilters.size > 0
-			? baseFilteredTasks.filter((row) =>
+			? baseFilteredTaskRows.filter((row) =>
 					activeWorkspaceFilters.has(row.workspace.id),
 				)
-			: baseFilteredTasks
-
-	const filteredTaskRows = useMemo(
-		() => toPersonalTaskRows(filteredTasks, currentUser),
-		[filteredTasks, currentUser],
-	)
+			: baseFilteredTaskRows
 
 	function handleOpenTask(taskId: number) {
 		navigate({

@@ -1,18 +1,14 @@
 import { endOfDay, isWithinInterval, startOfDay } from "date-fns"
 import { some } from "lodash"
 import { useMemo } from "react"
-import type { TaskDto, WorkspaceWithPermissionDto } from "src/api/model"
+import type { TaskRowDto } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { DATE_TYPE } from "src/utils/date-utils"
 import { useFuse } from "./useFuse"
 
-interface TaskWithOptionalWorkspaceDto extends TaskDto {
-	workspace?: WorkspaceWithPermissionDto
-}
-
-function getTaskDate(
-	task: TaskWithOptionalWorkspaceDto,
+function getTaskDate<T extends TaskRowDto>(
+	task: T,
 	type: DATE_TYPE,
 ): Date | null {
 	switch (type) {
@@ -29,7 +25,7 @@ function getTaskDate(
 	}
 }
 
-export function useFilteredTasks<T extends TaskDto>(
+export function useFilteredTasks<T extends TaskRowDto>(
 	tasks: T[],
 	additionalFilter?: (task: T) => boolean,
 ): T[] {

@@ -1,11 +1,11 @@
 import styled from "@emotion/styled"
 import { useMemo } from "react"
 import { Cell, Pie, PieChart } from "recharts"
+import type { TaskRowDto } from "src/api/model"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import type { TaskRow } from "src/utils/task-table-utils"
 
 interface StatusCardProps {
-	tasks: TaskRow[]
+	tasks: TaskRowDto[]
 }
 
 interface StatusCount {

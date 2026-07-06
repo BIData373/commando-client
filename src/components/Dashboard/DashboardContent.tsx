@@ -1,6 +1,10 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
-import { getListTasksQueryKey, useListTasks } from "src/api/task/task"
+import {
+	getListTasksQueryKey,
+	useListTaskRows,
+	useListTasks,
+} from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
@@ -19,15 +23,12 @@ export function DashboardContent() {
 
 	const navigate = useNavigate()
 
-	const tasksQueryKey = getListTasksQueryKey({ workspaceId: id })
-	const { data: rawTasks = [] } = useListTasks({ workspaceId: id })
+	const { data: taskRows = [], queryKey } = useListTaskRows({ workspaceId: id })
 
-	const filteredTasks = useFilteredTasks(rawTasks)
+	const filteredTasks = useFilteredTasks(taskRows)
 
-	const tasks = toTaskRows(
-		[...filteredTasks].sort(
-			(a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
-		),
+	const tasks = [...filteredTasks].sort(
+		(a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
 	)
 
 	function handleSetAssignees() {
@@ -38,7 +39,7 @@ export function DashboardContent() {
 	}
 
 	function handleUpdateSuccess() {
-		invalidateQueries([tasksQueryKey])
+		invalidateQueries([queryKey])
 	}
 
 	function handleOpenTask(taskId: number) {
@@ -59,7 +60,7 @@ export function DashboardContent() {
 				<FocusedInstructions
 					onUpdateStatusSuccess={handleUpdateSuccess}
 					onDoubleClick={handleOpenTask}
-					tasks={tasks}
+					taskRows={tasks}
 				/>
 				<StatusCard tasks={tasks} />
 				<RecentlyCompleted

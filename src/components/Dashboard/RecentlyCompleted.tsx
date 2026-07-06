@@ -1,8 +1,7 @@
 import styled from "@emotion/styled"
 import { useMemo } from "react"
-import { WorkspaceStatusType } from "src/api/model"
+import { type TaskRowDto, WorkspaceStatusType } from "src/api/model"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
-import type { TaskRow } from "src/utils/task-table-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
@@ -10,7 +9,7 @@ import { DashboardSection } from "./DashboardSection"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
 interface RecentlyCompletedProps {
-	tasks: TaskRow[]
+	tasks: TaskRowDto[]
 	onUpdateStatusSuccess?(): void
 	onDoubleClick?(taskId: number): void
 }
@@ -27,7 +26,7 @@ export default function RecentlyCompleted({
 
 	const { columns } = useTaskColumns({
 		onUpdateStatusSuccess,
-		visibleColumns: ["title", "status", "assigneeStatuses"],
+		visibleColumns: ["title", "status", "assignee"],
 		showMenuColumn: false,
 		actions: {
 			onDoubleClick,

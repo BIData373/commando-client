@@ -1,11 +1,13 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
 import type { ColumnFiltersState } from "@tanstack/react-table"
-import { useMemo } from "react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
-import { getListPersonalTasksQueryKey, useListTasks } from "src/api/task/task"
+import {
+	getListPersonalTasksQueryKey,
+	useListTaskRows,
+} from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
@@ -14,7 +16,6 @@ import {
 	TasksView,
 } from "src/routes/workspace/$urlName/tasks"
 import type { QuickFilter } from "src/utils/filter-utils"
-import { toTaskRows } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { FilterSeparator } from "../shared/FilterBar"
@@ -52,7 +53,7 @@ function TasksLayout({
 		data: tasks = [],
 		queryKey,
 		isLoading,
-	} = useListTasks({ workspaceId })
+	} = useListTaskRows({ workspaceId })
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
@@ -63,12 +64,7 @@ function TasksLayout({
 			: []),
 	]
 
-	const filteredTasks = useFilteredTasks(tasks)
-
-	const filteredTaskRows = useMemo(
-		() => toTaskRows(filteredTasks),
-		[filteredTasks],
-	)
+	const filteredTaskRows = useFilteredTasks(tasks)
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -179,7 +175,7 @@ function TasksLayout({
 							isManager={isManager}
 						/>
 					) : (
-						<TaskCardGrid tasks={filteredTasks} />
+						<TaskCardGrid taskRows={filteredTaskRows} />
 					)}
 				</ContentArea>
 			</TasksRoot>

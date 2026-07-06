@@ -9,13 +9,14 @@ import {
 	useState,
 } from "react"
 import type { DateRange } from "react-day-picker"
+import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { DATE_TYPE } from "src/utils/date-utils"
 import {
 	dashboardFilterDataTypeKey,
 	dashboardFilterRangeKey,
 	type QuickFilter,
 } from "src/utils/filter-utils"
-import { DEFAULT_COLUMN_ORDER, type TaskRow } from "src/utils/task-table-utils"
+import { DEFAULT_COLUMN_ORDER } from "src/utils/task-table-utils"
 
 interface TasksFiltersContextValue {
 	searchQuery: string
@@ -25,10 +26,10 @@ interface TasksFiltersContextValue {
 	toggleQuickFilter: (filter: QuickFilter) => void
 	clearQuickFilters: () => void
 
-	columnOrder: (keyof TaskRow)[]
-	hiddenColumns: Set<keyof TaskRow>
-	setColumnOrder: (order: (keyof TaskRow)[]) => void
-	toggleColumn: (columnId: keyof TaskRow) => void
+	columnOrder: (keyof TaskRowWithWorkspaceDto)[]
+	hiddenColumns: Set<keyof TaskRowWithWorkspaceDto>
+	setColumnOrder: (order: (keyof TaskRowWithWorkspaceDto)[]) => void
+	toggleColumn: (columnId: keyof TaskRowWithWorkspaceDto) => void
 
 	dateType: DATE_TYPE
 	setDateType: (type: DATE_TYPE) => void
@@ -42,24 +43,24 @@ interface TasksFiltersContextValue {
 	setSorting: Dispatch<SetStateAction<SortingState>>
 }
 
-const WORKSPACE_DEFAULT_HIDDEN = new Set<keyof TaskRow>([
+const WORKSPACE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 	"notes",
 	"updatedAt",
-] as (keyof TaskRow)[])
+] as (keyof TaskRowWithWorkspaceDto)[])
 
 const TasksFiltersContext = createContext<TasksFiltersContextValue | null>(null)
 
 type ColumnsStorageKey = "personal" | "tasks" | "dashboard"
 
 interface ColumnsVisibilityStorage {
-	columnOrder: (keyof TaskRow)[]
-	hiddenColumns: (keyof TaskRow)[]
+	columnOrder: (keyof TaskRowWithWorkspaceDto)[]
+	hiddenColumns: (keyof TaskRowWithWorkspaceDto)[]
 }
 
 interface TasksFiltersProviderProps extends PropsWithChildren {
 	storageKey: ColumnsStorageKey
-	defaultColumnOrder?: (keyof TaskRow)[]
-	defaultHiddenColumns?: Set<keyof TaskRow>
+	defaultColumnOrder?: (keyof TaskRowWithWorkspaceDto)[]
+	defaultHiddenColumns?: Set<keyof TaskRowWithWorkspaceDto>
 	activeQuickFilters?: Set<QuickFilter>
 }
 
@@ -81,16 +82,21 @@ export function TasksFiltersProvider({
 		useLocalStorage<ColumnsVisibilityStorage>({
 			key: `${storageKey}:columnsVisibility`,
 			defaultValue: {
-				columnOrder: ["id" as keyof TaskRow, ...defaultColumnOrder],
+				columnOrder: [
+					"id" as keyof TaskRowWithWorkspaceDto,
+					...defaultColumnOrder,
+				],
 				hiddenColumns: [...defaultHiddenColumns],
 			},
 		})
 
 	const columnOrder = columnsVisibility.columnOrder
 
-	const hiddenColumns = new Set<keyof TaskRow>(columnsVisibility.hiddenColumns)
+	const hiddenColumns = new Set<keyof TaskRowWithWorkspaceDto>(
+		columnsVisibility.hiddenColumns,
+	)
 
-	function setColumnOrder(order: (keyof TaskRow)[]) {
+	function setColumnOrder(order: (keyof TaskRowWithWorkspaceDto)[]) {
 		setColumnsVisibility((prev) => ({ ...prev, columnOrder: order }))
 	}
 
@@ -117,7 +123,7 @@ export function TasksFiltersProvider({
 		},
 	})
 
-	function toggleColumn(columnId: keyof TaskRow) {
+	function toggleColumn(columnId: keyof TaskRowWithWorkspaceDto) {
 		setColumnsVisibility((prev) => {
 			const set = new Set(prev.hiddenColumns)
 			if (set.has(columnId)) {

@@ -3,9 +3,9 @@ import { chain, compact, countBy, flatMap, get } from "lodash"
 import { Users } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
+import type { TaskRowDto } from "src/api/model"
 import { useListTags } from "src/api/tag/tag"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import type { TaskRow } from "src/utils/task-table-utils"
 import addAssignee from "../../assets/icons/add-person.svg"
 import subject from "../../assets/icons/subjects.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -29,7 +29,7 @@ interface DistributionTabConfig {
 
 interface SystemDistributionProps {
 	onSetAssignees?: () => void
-	tasks: TaskRow[]
+	tasks: TaskRowDto[]
 }
 
 const TABS: DistributionTabConfig[] = [
@@ -62,7 +62,7 @@ type DistributionKey = "assignee" | "tags" | "source.tags"
 function buildDistribution<T extends NamedEntity>(
 	sourceList: T[],
 	keys: DistributionKey | DistributionKey[],
-	tasks: TaskRow[],
+	tasks: TaskRowDto[],
 ): { name: string; count: number }[] {
 	const keyList = Array.isArray(keys) ? keys : [keys]
 	const counts = countBy(

@@ -9,6 +9,8 @@ import { useMemo, useState } from "react"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import type {
 	DeadlineType,
+	TaskRowDto,
+	TaskRowWithWorkspaceDto,
 	WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
@@ -16,19 +18,19 @@ import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { getEmptyState } from "src/utils/empty-state-utils"
-import { TASK_ROW_ID_SEPARATOR, type TaskRow } from "src/utils/task-table-utils"
+import { TASK_ROW_ID_SEPARATOR } from "src/utils/task-table-utils"
 import { buildFilterOptionsMap } from "../../functions/filter-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 
-interface TaskTableProps {
-	tasks: TaskRow[]
+interface TaskTableProps<TTask extends TaskRowDto> {
+	tasks: TTask[]
 	statuses?: WorkspaceStatusDto[]
 	onEdit?: (taskId: number) => void
 	onDoubleClick?: (taskId: number) => void
-	extraColumns?: Record<string, ColumnDef<TaskRow>>
+	extraColumns?: Record<string, ColumnDef<TTask>>
 	showHeader?: boolean
 	statusFilter?: WorkspaceStatusType[]
 	deadlineTypeFilter?: DeadlineType[]
@@ -43,7 +45,7 @@ interface TaskTableProps {
 	onChangeSuccess?(): void
 }
 
-function TaskTable({
+function TaskTable<TTask extends TaskRowDto>({
 	tasks,
 	statuses,
 	onEdit = () => {},
@@ -58,7 +60,7 @@ function TaskTable({
 	isManager,
 	hideStatusAction = false,
 	showActionsColumn = true,
-}: TaskTableProps) {
+}: TaskTableProps<TTask>) {
 	const {
 		searchQuery,
 		columnOrder,
@@ -122,6 +124,7 @@ function TaskTable({
 		(key) => rowSelection[key],
 	)
 
+	// FIX Seperate state?
 	const selectedTaskIds = selectedRowKeys.map((key) =>
 		Number(key.split(TASK_ROW_ID_SEPARATOR)[0]),
 	)
@@ -234,7 +237,7 @@ function TaskTable({
 
 		if (extraColumns) {
 			for (const [id, colDef] of Object.entries(extraColumns)) {
-				const colId = id as keyof TaskRow
+				const colId = id as keyof TaskRowWithWorkspaceDto
 				const isVisible = !hiddenColumns.has(colId)
 				const orderIndex = columnOrder.indexOf(colId)
 				if (!isVisible || orderIndex === -1) continue

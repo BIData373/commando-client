@@ -5,7 +5,11 @@ import { concat, map, uniq } from "lodash"
 import { AlertTriangle } from "lucide-react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
-import { DeadlineType, type TaskDto, WorkspaceStatusType } from "src/api/model"
+import {
+	DeadlineType,
+	type TaskRowWithWorkspaceDto,
+	WorkspaceStatusType,
+} from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
 import WorkspaceCell from "src/components/shared/WorkspaceCell"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
@@ -14,7 +18,6 @@ import {
 	multiSelectFilter,
 	TASK_COLUMN_DEFINITIONS,
 	TASK_COLUMNS_META,
-	type TaskRow,
 } from "src/utils/task-table-utils"
 import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 import FlagIcon from "../components/shared/FlagIcon"
@@ -35,11 +38,11 @@ import { formatDateShort } from "../functions/date-utils"
 
 const COLUMN_LABELS = Object.fromEntries(
 	TASK_COLUMNS_META.map(({ id, label }) => [id, label]),
-) as Record<keyof TaskRow, string>
+) as Record<keyof TaskRowWithWorkspaceDto, string>
 
 interface SelectModeConfig {
 	enabled: boolean
-	tasks: TaskDto[]
+	tasks: TaskRowWithWorkspaceDto[]
 	selectedTaskIds: number[]
 	onSelectAll: (checked: boolean) => void
 }
@@ -53,7 +56,7 @@ interface ActionsConfig {
 }
 
 interface UseTaskColumnsOptions {
-	visibleColumns: (keyof TaskRow)[]
+	visibleColumns: (keyof TaskRowWithWorkspaceDto)[]
 	searchQuery?: string
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
 	selectMode?: SelectModeConfig
@@ -63,7 +66,7 @@ interface UseTaskColumnsOptions {
 	onTitleDoubleClick?: (taskId: number) => void
 }
 
-function useTaskColumns({
+export function useTaskColumns({
 	visibleColumns,
 	searchQuery,
 	filterOptionsMap,
@@ -81,7 +84,7 @@ function useTaskColumns({
 		},
 	})
 
-	const multiSelectColumnFilter: FilterFn<TaskRow> = (
+	const multiSelectColumnFilter: FilterFn<TaskRowWithWorkspaceDto> = (
 		row,
 		columnId,
 		filterValue: string[],
@@ -130,7 +133,7 @@ function useTaskColumns({
 								/>
 							</CheckboxCenter>
 						),
-					} as ColumnDef<TaskRow>,
+					} as ColumnDef<TaskRowWithWorkspaceDto>,
 				]
 			: [
 					{
@@ -153,7 +156,7 @@ function useTaskColumns({
 								{id}
 							</IdCell>
 						),
-					} as ColumnDef<TaskRow>,
+					} as ColumnDef<TaskRowWithWorkspaceDto>,
 				]),
 		{
 			id: "title",
@@ -245,17 +248,17 @@ function useTaskColumns({
 				),
 		},
 		{
-			id: "assigneeStatuses",
+			id: "assignee",
 			header: ({ column }) => (
 				<ColumnHeaderWithActions
-					label={COLUMN_LABELS.assigneeStatuses}
+					label={COLUMN_LABELS.assignee}
 					column={column}
-					filterOptions={filterOptionsMap?.assigneeStatuses}
+					filterOptions={filterOptionsMap?.assignee}
 				/>
 			),
 			size: 60,
 			filterFn: multiSelectColumnFilter,
-			...TASK_COLUMN_DEFINITIONS.assigneeStatuses,
+			...TASK_COLUMN_DEFINITIONS.assignee,
 			cell: ({
 				row: {
 					original: { assignee, otherAssignees },
@@ -473,10 +476,10 @@ function useTaskColumns({
 								onDelete={() => actions.onDelete?.([id])}
 							/>
 						),
-					} as ColumnDef<TaskRow>,
+					} as ColumnDef<TaskRowWithWorkspaceDto>,
 				]
 			: []),
-	] as ColumnDef<TaskRow>[]
+	] as ColumnDef<TaskRowWithWorkspaceDto>[]
 
 	return {
 		columns: allColumns.filter((column) =>
@@ -484,9 +487,6 @@ function useTaskColumns({
 		),
 	}
 }
-
-export { useTaskColumns }
-// ─── Styled Components ───────────────────────────────────────────────────────
 
 const CheckboxCenter = styled.div`
   display: flex;
