@@ -45,11 +45,10 @@ interface SelectModeConfig {
 }
 
 interface ActionsConfig {
-	onEdit?: (taskId: number) => void
-	onDoubleClick?(taskId: number): void
-	onArchive?(taskIds: number[]): void
-	onDelete?(taskIds: number[]): void
-	onEnterSelectMode?(rowKey?: string): void
+	onEdit: (taskId: number) => void
+	onArchive(taskIds: number[]): void
+	onDelete(taskIds: number[]): void
+	onEnterSelectMode(rowKey?: string): void
 }
 
 interface UseTaskColumnsOptions {
@@ -105,7 +104,7 @@ function useTaskColumns({
 			? [
 					{
 						id: "select",
-						size: 35,
+						size: 61,
 						enableSorting: false,
 						enableColumnFilter: false,
 						header: () => (
@@ -142,17 +141,13 @@ function useTaskColumns({
 								column={column}
 							/>
 						),
-						size: 35,
+						size: 70,
 						enableColumnFilter: false,
 						cell: ({
 							row: {
 								original: { id },
 							},
-						}) => (
-							<IdCell onDoubleClick={() => actions?.onDoubleClick?.(id)}>
-								{id}
-							</IdCell>
-						),
+						}) => <IdCell>{id}</IdCell>,
 					} as ColumnDef<TaskRow>,
 				]),
 		{
@@ -165,13 +160,10 @@ function useTaskColumns({
 			enableColumnFilter: false,
 			cell: ({
 				row: {
-					original: { id, title, description, flagged },
+					original: { title, description, flagged },
 				},
 			}) => (
-				<TitleCell
-					$clickable={!!actions?.onDoubleClick}
-					onDoubleClick={() => actions?.onDoubleClick?.(id)}
-				>
+				<TitleCell>
 					{flagged && <FlagIcon />}
 					{description ? (
 						<>
@@ -224,7 +216,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap?.status}
 				/>
 			),
-			size: 50,
+			size: 100,
 			filterFn: multiSelectColumnFilter,
 			...TASK_COLUMN_DEFINITIONS.status,
 			cell: ({
@@ -253,7 +245,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap?.assigneeStatuses}
 				/>
 			),
-			size: 60,
+			size: 100,
 			filterFn: multiSelectColumnFilter,
 			...TASK_COLUMN_DEFINITIONS.assigneeStatuses,
 			cell: ({
@@ -281,7 +273,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap?.deadlineType}
 				/>
 			),
-			size: 90,
+			size: 140,
 			filterFn: multiSelectColumnFilter,
 			...TASK_COLUMN_DEFINITIONS.deadlineType,
 			cell: ({
@@ -350,7 +342,7 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap?.source}
 				/>
 			),
-			size: 120,
+			size: 240,
 			filterFn: multiSelectColumnFilter,
 			...TASK_COLUMN_DEFINITIONS.deadlineType,
 			cell: ({
@@ -358,9 +350,7 @@ function useTaskColumns({
 					original: { source },
 				},
 			}) => {
-				if (!source) {
-					return
-				}
+				if (!source) return null
 				const parts = [source.name, formatDateShort(source.date)].filter(
 					Boolean,
 				)
@@ -381,10 +371,11 @@ function useTaskColumns({
 					filterOptions={filterOptionsMap?.tags}
 				/>
 			),
-			size: 90,
+			size: 100,
 			enableSorting: false,
 			filterFn: multiSelectColumnFilter,
 			...TASK_COLUMN_DEFINITIONS.tags,
+			meta: { grow: true },
 			cell: ({
 				row: {
 					original: { tags, source },
@@ -398,9 +389,10 @@ function useTaskColumns({
 			id: "notes",
 			accessorKey: "notes",
 			header: COLUMN_LABELS.notes,
-			size: 110,
+			size: 100,
 			enableSorting: false,
 			enableColumnFilter: false,
+			meta: { grow: true },
 			cell: ({ getValue }) => {
 				const notes = getValue<string>()
 				return notes ? (
@@ -431,7 +423,7 @@ function useTaskColumns({
 					column={column}
 				/>
 			),
-			size: 70,
+			size: 120,
 			enableColumnFilter: false,
 			...TASK_COLUMN_DEFINITIONS.createdAt,
 			cell: ({ getValue }) => (
@@ -447,7 +439,7 @@ function useTaskColumns({
 					column={column}
 				/>
 			),
-			size: 70,
+			size: 100,
 			enableColumnFilter: false,
 			...TASK_COLUMN_DEFINITIONS.updatedAt,
 			cell: ({ getValue }) => (
@@ -458,7 +450,7 @@ function useTaskColumns({
 			? [
 					{
 						id: "actions",
-						size: 25,
+						size: 45,
 						enableSorting: false,
 						enableColumnFilter: false,
 						cell: ({
@@ -498,10 +490,13 @@ const IdCell = styled.span`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: var(--fs-base);
+  font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 24px;
   color:rgba(0, 0, 0, 0.65);
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 `
 
 const TitleCell = styled.div<{ $clickable?: boolean }>`
@@ -513,7 +508,9 @@ const TitleCell = styled.div<{ $clickable?: boolean }>`
   font-weight: 400;
   line-height: 20px;
   overflow: hidden;
-  cursor: ${({ $clickable }) => ($clickable ? "pointer" : "default")};
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 `
 
 const TitlePart = styled.span`
