@@ -25,11 +25,19 @@ import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 
+// Columns that should not trigger row navigation when clicked (they have their own interactions)
+const DISABLED_CLICK_COLUMNS = new Set([
+	"assigneeStatuses",
+	"status",
+	"actions",
+	"select",
+])
+
 interface TaskTableProps<TTask extends TaskRowDto> {
 	tasks: TTask[]
 	statuses?: WorkspaceStatusDto[]
 	onEdit?: (taskId: number) => void
-	onDoubleClick?: (taskId: number) => void
+	onClick?: (taskId: number) => void
 	extraColumns?: Record<string, ColumnDef<TTask>>
 	showHeader?: boolean
 	statusFilter?: WorkspaceStatusType[]
@@ -49,7 +57,7 @@ function TaskTable<TTask extends TaskRowDto>({
 	tasks,
 	statuses,
 	onEdit = () => {},
-	onDoubleClick,
+	onClick,
 	extraColumns,
 	showHeader = true,
 	statusFilter = [],
@@ -225,7 +233,6 @@ function TaskTable<TTask extends TaskRowDto>({
 		showMenuColumn: showActionsColumn,
 		actions: {
 			onEdit,
-			onDoubleClick,
 			onArchive: removeTasks,
 			onDelete: removeTasks,
 			onEnterSelectMode: handleEnterSelectMode,
@@ -253,6 +260,13 @@ function TaskTable<TTask extends TaskRowDto>({
 		return result
 	}, [baseColumns, extraColumns, columnOrder, hiddenColumns])
 
+	// Cell-level click handler — skips interactive columns (status, select, etc.)
+	// and delegates to the parent onClick for navigation on all other columns.
+	function handleCellClick(row: { original: TaskRow }, columnId: string) {
+		if (DISABLED_CLICK_COLUMNS.has(columnId)) return
+		onClick?.(row.original.id)
+	}
+
 	return (
 		<>
 			<TableWrapper>
@@ -266,6 +280,7 @@ function TaskTable<TTask extends TaskRowDto>({
 					sorting={sorting}
 					onSortingChange={setSorting}
 					getRowId={(row) => row.rowKey}
+					onCellClick={handleCellClick}
 					showHeader={showHeader}
 					isLoading={isLoading}
 					emptyState={
@@ -319,13 +334,13 @@ const TableWrapper = styled.div`
 
   table {
     direction: rtl;
-    min-width: 100%;
+    width: 100%;
     table-layout: fixed;
   }
 
   tr {
     &:hover {
-      background: var(--link-bg-hover);
+      background: var(--table-rows-bg-hover);
     }
 
     &:last-of-type td {
@@ -346,6 +361,7 @@ const TableWrapper = styled.div`
     background: var(--background);
     border-right: 0.5px solid var(--Background-color-bg-text-active);
     box-shadow: inset 0 -0.5px 0 0 var(--Background-color-bg-text-active);
+	cursor: default;
 
     &:first-of-type {
       border-right: none;
@@ -360,13 +376,23 @@ const TableWrapper = styled.div`
     vertical-align: middle;
     overflow: hidden;
     border: 0.5px solid var(--Background-color-bg-text-active);
-
+	cursor: default;
+	
     &:first-of-type {
       border-right: none;
     }
 
     &:last-of-type {
       border-left: none;
+    }
+
+    /* Status cell is interactive (opens dropdown), so it gets pointer cursor + hover bg */
+    &[data-column-id="status"] {
+      cursor: pointer;
+
+      &:hover {
+        background: var(--status-cell-bg-hover);
+      }
     }
   }
 `

@@ -21,6 +21,8 @@ export interface AssigneesDto {
 	color: string
 	/** @nullable */
 	icon: string | null
+	/** @nullable */
+	iconName: string | null
 	workspaceId: number
 	users: UserDto[]
 	tasksCount: number

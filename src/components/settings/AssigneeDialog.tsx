@@ -53,6 +53,12 @@ export function AssigneeDialog({
 }: AssigneeDialogProps) {
 	const isUpdate = !!assignee
 
+	const mesibaIcon = {
+		heb_name: assignee?.iconName ?? "",
+		iconName: assignee?.icon ?? "",
+		id: 1,
+	}
+
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
@@ -60,7 +66,9 @@ export function AssigneeDialog({
 	const [searchValue, setSearchValue] = useState<string>("")
 
 	const [iconSearch, setIconSearch] = useState("")
-	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(null)
+	const [selectedIcon, setSelectedIcon] = useState<IMesibaIcon | null>(
+		assignee?.iconName ? mesibaIcon : null,
+	)
 
 	const assigneesQueryKey = getListAssigneesQueryKey({ workspaceId })
 
@@ -120,6 +128,7 @@ export function AssigneeDialog({
 				name: value.name.trim(),
 				color: value.color,
 				icon: value.icon || null,
+				iconName: selectedIcon?.heb_name ?? "",
 				users: value.users,
 			}
 

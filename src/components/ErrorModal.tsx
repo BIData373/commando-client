@@ -1,10 +1,14 @@
 import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import { useNavigate, useParams } from "@tanstack/react-router"
-import { MessageCircle } from "lucide-react"
 import { PermissionType } from "src/api/model"
 import { useListPermissions } from "src/api/permission/permission"
 import { useListWorkspaces } from "src/api/workspace/workspace"
+import biData from "src/assets/bidata.svg"
+import error403 from "src/assets/error_403.svg"
+import error404 from "src/assets/error_404.svg"
+import error500 from "src/assets/error_500.svg"
+import logoSvg from "src/assets/logo-with-text.svg"
 import { ModalContent } from "src/components/shared/ModalContent"
 import { Dialog } from "src/components/ui/dialog"
 import { useErrorModal } from "src/providers/ErrorModalProvider"
@@ -15,6 +19,7 @@ import { navigateToUserChat } from "src/utils/user-utils"
 interface ErrorContent {
 	title: string
 	description: string
+	errorImage: string
 }
 
 const ERROR_CONTENT: Record<ErrorCode, ErrorContent> = {
@@ -22,19 +27,23 @@ const ERROR_CONTENT: Record<ErrorCode, ErrorContent> = {
 		title: "משהו השתבש בתקשורת",
 		description:
 			"כדאי לנסות שוב בעוד מספר רגעים אם הבעיה נמשכת, פנו אלינו לעזרה",
+		errorImage: error500,
 	},
 	[ErrorCode.UNAUTHORIZED]: {
 		title: "נראה שאין לך הרשאות לפה",
-		description: "לקבלת הרשאות פנה למנהל הסביבה ובמידת הצורך ניתן לפנות אלינו",
+		description: "לקבלת הרשאות פנה למנהל הסביבה",
+		errorImage: error403,
 	},
 	[ErrorCode.NOT_FOUND]: {
-		title: "אופס, נראה שהעמוד שחיפשת לא נמצא",
+		title: "נראה שהעמוד שחיפשת לא נמצא",
 		description: "ייתכן שהוא הוסר, הועבר או שהקישור שגוי",
+		errorImage: error404,
 	},
 	[ErrorCode.SERVER_ERROR]: {
 		title: "משהו השתבש בתקשורת",
 		description:
 			"כדאי לנסות שוב בעוד מספר רגעים אם הבעיה נמשכת, פנו אלינו לעזרה",
+		errorImage: error500,
 	},
 }
 
@@ -83,53 +92,49 @@ export function ErrorModal() {
 	return (
 		<Dialog open={!!content} onOpenChange={(open) => !open && handleClose()}>
 			<FullScreenPanel closable={false} showCloseButton={false}>
-				<ContentContainer>
-					<ErrorCodeDisplay>{errorCode}</ErrorCodeDisplay>
-					<ErrorText>
-						<ErrorTitle>{content?.title}</ErrorTitle>
-						<ErrorDescription>{content?.description}</ErrorDescription>
-					</ErrorText>
-					{errorCode === ErrorCode.UNAUTHORIZED && admins.length > 0 && (
-						<AdminContactsBox>
+				<PageHeader>
+					<Logo src={logoSvg} />
+					<Logo src={biData} />
+				</PageHeader>
+				<MainContent>
+					<TextColumn>
+						<TextBlock>
+							<ErrorTitle>{content?.title}</ErrorTitle>
+							<ErrorDescription>{content?.description}</ErrorDescription>
+						</TextBlock>
+						{errorCode === ErrorCode.UNAUTHORIZED && admins.length > 0 && (
 							<AdminContactsContent>
 								<AdminContactsTitle>
 									פנו בצ'אט המבצעי לקבלת הרשאות
 								</AdminContactsTitle>
 								<AdminContactsList>
-									{admins.map(({ user }) => (
+									{admins.map(({ user }, index) => (
 										<AdminContactRow key={user.id}>
-											<AdminContainer>
-												<AdminDot />
-												<AdminContactLink
-													onClick={() => navigateToUserChat(user)}
-												>
-													{user.info?.name}
-													{user.info?.name || user.info?.upn ? " - " : ""}
-													{user.info?.upn}
-												</AdminContactLink>
-											</AdminContainer>
-											<ChatMessageContainer>
-												<MessageCircle size={16} />
-												<IconText>צ</IconText>
-											</ChatMessageContainer>
+											<AdminContactLink
+												onClick={() => navigateToUserChat(user)}
+											>
+												{user.info?.name} {user.info?.upn}{" "}
+												{index + 1 < admins.length && "|"}
+											</AdminContactLink>
 										</AdminContactRow>
 									))}
 								</AdminContactsList>
 							</AdminContactsContent>
-						</AdminContactsBox>
-					)}
-					<Actions>
-						<ButtonRow>
+						)}
+						<ButtonsRow>
 							<SecondaryButton onClick={navigateToChat}>
 								לערוץ תמיכה
 							</SecondaryButton>
 							<PrimaryButton onClick={navigateToHomePage}>
 								חזרה למסך הבית
 							</PrimaryButton>
-						</ButtonRow>
-						<SupportNote>צוות התמיכה זמין עבורך 24/7</SupportNote>
-					</Actions>
-				</ContentContainer>
+						</ButtonsRow>
+					</TextColumn>
+					<ImageColumn>
+						<ErrorImage src={content?.errorImage} />
+						<ErrorCodeDisplay>{errorCode}</ErrorCodeDisplay>
+					</ImageColumn>
+				</MainContent>
 			</FullScreenPanel>
 		</Dialog>
 	)
@@ -142,28 +147,49 @@ const slideUp = keyframes`
 
 const FullScreenPanel = styled(ModalContent)`
   background: var(--background-area);
-  width: 1890px;
-  height: 990px;
-  text-align: center;
+  width: 100vw;
+  height: 100vh;
   border-radius: 0;
   border: none;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   animation: ${slideUp} 0.2s ease;
   direction: rtl;
 `
 
-const ContentContainer = styled.div`
+const PageHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 49px 92px 0;
+`
+
+const Logo = styled.img`
+  height: 64px;
+`
+
+const MainContent = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 160px;
+`
+
+const ImageColumn = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 48px;
+  justify-content: space-between;
+`
+
+const ErrorImage = styled.img`
+  width: 236px;
+  height: auto;
 `
 
 const ErrorCodeDisplay = styled.div`
-  font-size: 300px;
+  font-size: 180px;
   font-weight: 700;
   line-height: 1;
   background: linear-gradient(180deg, var(--Colors-Base-Blue-10, #001D66) -95.14%, var(--Colors-Base-Neutral-1, #FFF) 201.73%);
@@ -172,43 +198,57 @@ const ErrorCodeDisplay = styled.div`
   background-clip: text;
 `
 
-const ErrorText = styled.div`
-  font-size: var(--fs-heading-2);
-  font-weight: 400;
-  line-height: 38px;
+const TextColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 48px;
+  width: 672px;
+`
+
+const TextBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
 `
 
 const ErrorTitle = styled.p`
+  font-size: var(--fs-heading-1);
   font-weight: 500;
+  line-height: 46px;
   color: var(--sea-ink);
+  width: 100%;
+  margin: 0;
 `
 
 const ErrorDescription = styled.p`
-  color: var(--text-color-2);
+  font-size: var(--fs-heading-2);
+  font-weight: 400;
+  line-height: 38px;
+  color: var(--sea-ink-soft);
+  width: 100%;
+  margin: 0;
 `
 
-const Actions = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-`
-
-const ButtonRow = styled.div`
+const ButtonsRow = styled.div`
   display: flex;
   gap: 16px;
-  justify-content: center;
+  align-items: center;
+  align-self: flex-start;
 `
 
 const PrimaryButton = styled.button`
-  padding: 7px 20px;
-  border-radius: 8px;
+  padding: 5px 20px;
+  border-radius: 10px;
   border: none;
   background: var(--foreground);
   color: var(--background);
-  font-size: 19px;
+  font-size: var(--fs-xl);
   font-weight: 400;
   cursor: pointer;
+  white-space: nowrap;
 
   &:hover {
     opacity: 0.9;
@@ -216,48 +256,31 @@ const PrimaryButton = styled.button`
 `
 
 const SecondaryButton = styled.button`
-  padding: 7px 20px;
-  border-radius: 8px;
+  padding: 5px 20px;
+  border-radius: 10px;
   border: none;
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--Components-Dropdown-Global-controlItemBgHover);
   color: var(--sea-ink);
-  font-size: 19px;
+  font-size: var(--fs-xl);
   font-weight: 400;
   cursor: pointer;
+  white-space: nowrap;
 
   &:hover {
     background: var(--button-hover);
   }
-
-  &:active {
-    background: var(--button-active);
-  }
-`
-
-const SupportNote = styled.p`
-  font-size: var(--fs-base);
-  color: var(--text-color-400);
-  margin: 0;
-`
-
-const AdminContactsBox = styled.div`
-  display: flex;
-  gap: 4px;
-  background: rgba(0, 0, 0, 0.04);
-  padding: 4px;
-  border-radius: 4px;
-  align-items: flex-start;
 `
 
 const AdminContactsContent = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   flex: 1;
   gap: 4px;
 `
 
 const AdminContactsTitle = styled.p`
-  font-size: var(--fs-btn);
+  font-size: var(--fs-xl);
   font-weight: 400;
   line-height: 22px;
   color: var(--text-color-2);
@@ -265,45 +288,20 @@ const AdminContactsTitle = styled.p`
   margin: 0;
 `
 
-const ChatMessageContainer = styled.div`
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 0 3px var(--active-color);
-  border-radius: 50%;
-
-  &:hover {
-    cursor: pointer;
-  }
-`
-
-const IconText = styled.span`
-  position: absolute;
-`
-
 const AdminContactsList = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 325px;
-  max-height: 90px;
+  align-self: flex-start;
+  flex-direction: row-reverse;
+  flex-wrap: wrap ;
+  gap: 12px;
+  max-width: 400px;
+  max-height: 135px;
   padding: 4px;
   align-items: flex-start;
+  justify-content: end;
   min-width: 0;
   overflow-y: auto;
   direction: ltr;
-`
-
-const AdminContainer = styled.div`
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
 `
 
 const AdminContactRow = styled.div`
@@ -314,20 +312,11 @@ const AdminContactRow = styled.div`
   min-width: 0;
   align-self: stretch;
   direction: rtl;
-  `
-
-const AdminDot = styled.span`
-  display: inline-block;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--card-border);
-  flex-shrink: 0;
-  `
+`
 
 const AdminContactLink = styled.button`
   color: var(--active-color);
-  font-size: var(--fs-btn);
+  font-size: var(--fs-xl);
   line-height: 22px;
   overflow: hidden;
   text-overflow: ellipsis;
