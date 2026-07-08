@@ -118,14 +118,10 @@ const COLUMN_DEFS: Partial<Record<keyof TaskRowDto, ExportColumn<TaskRowDto>>> =
 		},
 	}
 
-interface ExportOptions {
-	columnOrder: (keyof TaskRowDto)[]
-	hiddenColumns: Set<keyof TaskRowDto>
-}
-
-export async function exportTasksToExcel(
-	tasks: TaskRowDto[],
-	{ columnOrder, hiddenColumns }: ExportOptions,
+export async function exportTasksToExcel<TTask extends TaskRowDto>(
+	tasks: TTask[],
+	columnOrder: (keyof TTask)[],
+	hiddenColumns: Set<keyof TTask>,
 ) {
 	await exportToExcel(
 		tasks,

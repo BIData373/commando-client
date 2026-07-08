@@ -7,17 +7,17 @@ import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import {
 	DeadlineType,
-	type TaskRowWithWorkspaceDto,
+	type TaskRowDto,
 	WorkspaceStatusType,
 } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
-import WorkspaceCell from "src/components/shared/WorkspaceCell"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { invalidateQueries } from "src/queryClient"
 import {
+	COLUMN_LABELS,
+	DEFAULT_COLUMN_ORDER,
 	multiSelectFilter,
 	TASK_COLUMN_DEFINITIONS,
-	TASK_COLUMNS_META,
 } from "src/utils/task-table-utils"
 import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 import FlagIcon from "../components/shared/FlagIcon"
@@ -36,13 +36,9 @@ import {
 } from "../components/ui/tooltip"
 import { formatDateShort } from "../functions/date-utils"
 
-const COLUMN_LABELS = Object.fromEntries(
-	TASK_COLUMNS_META.map(({ id, label }) => [id, label]),
-) as Record<keyof TaskRowWithWorkspaceDto, string>
-
-interface SelectModeConfig {
+interface SelectModeConfig<TTask extends TaskRowDto> {
 	enabled: boolean
-	tasks: TaskRowWithWorkspaceDto[]
+	tasks: TTask[]
 	selectedTaskIds: number[]
 	onSelectAll: (checked: boolean) => void
 }
@@ -54,26 +50,30 @@ interface ActionsConfig {
 	onEnterSelectMode(rowKey?: string): void
 }
 
-interface UseTaskColumnsOptions {
-	visibleColumns: (keyof TaskRowWithWorkspaceDto)[]
+interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
+	columnOrder?: (keyof TTask)[]
+	hiddenColumns?: Set<keyof TTask>
+	extraColumns?: ColumnDef<TTask>[]
 	searchQuery?: string
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
-	selectMode?: SelectModeConfig
+	selectMode?: SelectModeConfig<TTask>
 	actions?: ActionsConfig
 	showMenuColumn?: boolean
 	onUpdateStatusSuccess?(): void
 	onTitleDoubleClick?: (taskId: number) => void
 }
 
-export function useTaskColumns({
-	visibleColumns,
+export function useTaskColumns<TTask extends TaskRowDto>({
+	columnOrder = DEFAULT_COLUMN_ORDER as (keyof TTask)[],
+	hiddenColumns = new Set<keyof TTask>(),
+	extraColumns = [],
 	searchQuery,
 	filterOptionsMap,
 	selectMode,
 	actions,
 	showMenuColumn = true,
 	onUpdateStatusSuccess,
-}: UseTaskColumnsOptions) {
+}: UseTaskColumnsOptions<TTask>) {
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
 			onSuccess: ({ task: { id } }) => {
@@ -83,7 +83,7 @@ export function useTaskColumns({
 		},
 	})
 
-	const multiSelectColumnFilter: FilterFn<TaskRowWithWorkspaceDto> = (
+	const multiSelectColumnFilter: FilterFn<TTask> = (
 		row,
 		columnId,
 		filterValue: string[],
@@ -99,60 +99,71 @@ export function useTaskColumns({
 		upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } })
 	}
 
-	const allVisibleColumns = [...visibleColumns, "select", "actions"]
-
 	// TODO Move all constant fields to task-table-utils
-	const allColumns = [
-		...(selectMode?.enabled
-			? [
-					{
-						id: "select",
-						size: 61,
-						enableSorting: false,
-						enableColumnFilter: false,
-						header: () => (
-							<CheckboxCenter>
-								<Checkbox
-									checked={
-										selectMode.tasks.length > 0 &&
-										selectMode.selectedTaskIds.length ===
-											selectMode.tasks.length
-									}
-									onCheckedChange={(checked) =>
-										selectMode.onSelectAll(!!checked)
-									}
-								/>
-							</CheckboxCenter>
-						),
-						cell: ({ row }) => (
-							<CheckboxCenter>
-								<Checkbox
-									checked={row.getIsSelected()}
-									onCheckedChange={(checked) => row.toggleSelected(!!checked)}
-								/>
-							</CheckboxCenter>
-						),
-					} as ColumnDef<TaskRowWithWorkspaceDto>,
-				]
-			: [
-					{
-						id: "id",
-						accessorKey: "id",
-						header: ({ column }) => (
-							<ColumnHeaderWithActions
-								label={COLUMN_LABELS.id}
-								column={column}
-							/>
-						),
-						size: 70,
-						enableColumnFilter: false,
-						cell: ({
-							row: {
-								original: { id },
-							},
-						}) => <IdCell>{id}</IdCell>,
-					} as ColumnDef<TaskRowWithWorkspaceDto>,
-				]),
+	const pinnedStartColumn: ColumnDef<TTask> = selectMode?.enabled
+		? {
+				id: "select",
+				size: 61,
+				enableSorting: false,
+				enableColumnFilter: false,
+				header: () => (
+					<CheckboxCenter>
+						<Checkbox
+							checked={
+								selectMode.tasks.length > 0 &&
+								selectMode.selectedTaskIds.length === selectMode.tasks.length
+							}
+							onCheckedChange={(checked) => selectMode.onSelectAll(!!checked)}
+						/>
+					</CheckboxCenter>
+				),
+				cell: ({ row }) => (
+					<CheckboxCenter>
+						<Checkbox
+							checked={row.getIsSelected()}
+							onCheckedChange={(checked) => row.toggleSelected(!!checked)}
+						/>
+					</CheckboxCenter>
+				),
+			}
+		: {
+				id: "id",
+				accessorKey: "id",
+				header: ({ column }) => (
+					<ColumnHeaderWithActions label={COLUMN_LABELS.id} column={column} />
+				),
+				size: 70,
+				enableColumnFilter: false,
+				cell: ({
+					row: {
+						original: { id },
+					},
+				}) => <IdCell>{id}</IdCell>,
+			}
+
+	const pinnedEndColumn: ColumnDef<TTask> | undefined =
+		showMenuColumn && actions
+			? {
+					id: "actions",
+					size: 45,
+					enableSorting: false,
+					enableColumnFilter: false,
+					cell: ({
+						row: {
+							original: { id, workspaceId, rowKey },
+						},
+					}) => (
+						<RowActionsMenu
+							workspaceId={workspaceId}
+							onEdit={() => actions.onEdit?.(id)}
+							onEnterSelect={() => actions.onEnterSelectMode?.(rowKey)}
+							onDelete={() => actions.onDelete?.([id])}
+						/>
+					),
+				}
+			: undefined
+
+	const middleColumns = [
 		{
 			id: "title",
 			accessorKey: "title",
@@ -404,20 +415,6 @@ export function useTaskColumns({
 			},
 		},
 		{
-			id: "workspace",
-			header: ({ column }) => (
-				<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
-			),
-			size: 170,
-			enableColumnFilter: false,
-			...TASK_COLUMN_DEFINITIONS.workspace,
-			cell: ({
-				row: {
-					original: { workspace },
-				},
-			}) => <WorkspaceCell workspace={workspace} />,
-		},
-		{
 			id: "createdAt",
 			accessorKey: "createdAt",
 			header: ({ column }) => (
@@ -449,35 +446,28 @@ export function useTaskColumns({
 				<DateText>{formatDateShort(getValue<Date>())}</DateText>
 			),
 		},
-		...(showMenuColumn && actions
-			? [
-					{
-						id: "actions",
-						size: 45,
-						enableSorting: false,
-						enableColumnFilter: false,
-						cell: ({
-							row: {
-								original: { id, workspaceId, rowKey },
-							},
-						}) => (
-							<RowActionsMenu
-								workspaceId={workspaceId}
-								onEdit={() => actions.onEdit?.(id)}
-								onEnterSelect={() => actions.onEnterSelectMode?.(rowKey)}
-								onDelete={() => actions.onDelete?.([id])}
-							/>
-						),
-					} as ColumnDef<TaskRowWithWorkspaceDto>,
-				]
-			: []),
-	] as ColumnDef<TaskRowWithWorkspaceDto>[]
+	] as ColumnDef<TTask>[]
 
-	return {
-		columns: allColumns.filter((column) =>
-			allVisibleColumns.some((id) => column.id === id),
-		),
-	}
+	const orderableColumns = [...middleColumns, ...extraColumns]
+	const columnsById = new Map(
+		orderableColumns.map((column) => [column.id as string, column]),
+	)
+
+	const orderedColumns = columnOrder
+		.map((id) => columnsById.get(id as string))
+		.filter((column): column is ColumnDef<TTask> => !!column)
+
+	const filteredColumns = orderedColumns.filter(
+		({ id }) => !hiddenColumns.has(id as keyof TTask),
+	)
+
+	const columns = [
+		pinnedStartColumn,
+		...filteredColumns,
+		...(pinnedEndColumn ? [pinnedEndColumn] : []),
+	]
+
+	return { columns }
 }
 
 const CheckboxCenter = styled.div`

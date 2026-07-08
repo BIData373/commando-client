@@ -19,6 +19,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 interface TaskFiltersProps<TTask extends TaskRowDto> {
 	allTaskRows: TTask[]
 	filteredTaskRows: TTask[]
+	columnOrder: (keyof TTask)[]
+	hiddenColumns: Set<keyof TTask>
 	onClearColumnFilters?: () => void
 	onClearQuickFilters?: () => void
 	extraFilters?: ReactNode
@@ -33,6 +35,8 @@ interface TaskFiltersProps<TTask extends TaskRowDto> {
 function TaskFilters<TTask extends TaskRowDto>({
 	allTaskRows,
 	filteredTaskRows,
+	columnOrder,
+	hiddenColumns,
 	onClearColumnFilters,
 	onClearQuickFilters,
 	extraFilters,
@@ -47,8 +51,6 @@ function TaskFilters<TTask extends TaskRowDto>({
 		activeQuickFilters,
 		toggleQuickFilter,
 		clearQuickFilters,
-		columnOrder,
-		hiddenColumns,
 		columnsFilters,
 		setColumnsFilters,
 		sorting,
@@ -99,10 +101,11 @@ function TaskFilters<TTask extends TaskRowDto>({
 	).length
 
 	const handleExport = useCallback(() => {
-		exportTasksToExcel(sortByTaskColumns(taskRowsForCounts, sorting), {
+		exportTasksToExcel(
+			sortByTaskColumns(taskRowsForCounts, sorting),
 			columnOrder,
 			hiddenColumns,
-		})
+		)
 	}, [taskRowsForCounts, columnOrder, hiddenColumns, sorting])
 
 	return (

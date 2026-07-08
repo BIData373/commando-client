@@ -61,17 +61,22 @@ export function buildFilterOptionsMap(
 	for (const t of tasks) {
 		deadlineTypeSet.add(t.deadlineType)
 
-		assigneeSet.add(t.assignee.name)
+		if (t.assignee) {
+			assigneeSet.add(t.assignee.name)
+		}
+
 		for (const { assignee } of t.otherAssignees) {
 			assigneeSet.add(assignee.name)
 		}
 
-		if (t.source?.name) {
+		if (t.source) {
 			sourceSet.add(t.source.name)
 		}
+
 		t.tags.forEach((tag) => {
 			tagsSet.add(tag.name)
 		})
+
 		t.source?.tags?.forEach((tag) => {
 			tagsSet.add(tag.name)
 		})

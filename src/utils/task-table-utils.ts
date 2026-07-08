@@ -21,6 +21,10 @@ export const TASK_COLUMNS_META: TaskColumnMeta[] = [
 	{ id: "updatedAt", label: "עודכן ב" },
 ]
 
+export const COLUMN_LABELS = Object.fromEntries(
+	TASK_COLUMNS_META.map(({ id, label }) => [id, label]),
+) as Record<keyof TaskRowWithWorkspaceDto, string>
+
 export const TASK_COLUMN_DEFINITIONS: Partial<
 	Record<
 		keyof Partial<TaskRowWithWorkspaceDto>,
@@ -72,6 +76,22 @@ export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter(
 
 export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id)
 
+export function toHiddenColumns<TId extends string>(
+	visibleColumns: TId[],
+): Set<TId> {
+	const visible = new Set(visibleColumns)
+	return new Set(
+		DEFAULT_COLUMN_ORDER.filter((id) => !visible.has(id as TId)) as TId[],
+	)
+}
+
+export const DISABLED_CLICK_COLUMNS = new Set([
+	"assignee",
+	"status",
+	"actions",
+	"select",
+])
+
 // FIX Remove?
 export const TASK_ROW_ID_SEPARATOR = "_"
 
@@ -83,11 +103,11 @@ export const multiSelectFilter = <T>(value: T, filterValue: T[]) => {
 		: true
 }
 
-function formatSortFnRow<T>(row: T) {
+function formatSortFnRow(row: Partial<TaskRowWithWorkspaceDto>) {
 	return {
-		getValue: (id: string) => row[id as keyof T],
+		getValue: (id: string) => row[id as keyof TaskRowWithWorkspaceDto],
 		original: row,
-	} as Row<T>
+	} as Row<Partial<TaskRowWithWorkspaceDto>>
 }
 
 export function sortByTaskColumns<TTask extends TaskRowDto>(
@@ -97,7 +117,7 @@ export function sortByTaskColumns<TTask extends TaskRowDto>(
 	return [...taskRows].sort((a, b) => {
 		const sorted = sorting
 			.map(({ id, desc }) => {
-				const defId = id as keyof TaskRowWithWorkspaceDto
+				const defId = id as keyof TTask
 
 				const configuredSort =
 					TASK_COLUMN_DEFINITIONS[defId]?.sortingFn || "alphanumeric"

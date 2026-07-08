@@ -1,16 +1,24 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
+import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
 import { useState } from "react"
-import { WorkspaceStatusType } from "src/api/model"
+import {
+	type TaskRowWithWorkspaceDto,
+	WorkspaceStatusType,
+} from "src/api/model"
 import { useListPersonalTaskRows } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { formatMesibaIcon } from "src/utils/icon-utils"
+import { TASK_COLUMN_DEFINITIONS } from "src/utils/task-table-utils"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
+import WorkspaceCell from "../shared/WorkspaceCell"
+import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
@@ -18,6 +26,8 @@ import { MetricsBar } from "./MetricsBar"
 
 function PersonalTasksLayout() {
 	const navigate = useNavigate()
+
+	const { columnOrder, hiddenColumns } = useTasksFilters()
 
 	const {
 		data: allTaskRows = [],
@@ -93,6 +103,8 @@ function PersonalTasksLayout() {
 				<TaskFilters
 					allTaskRows={allTaskRows}
 					filteredTaskRows={filteredTaskRows}
+					columnOrder={columnOrder}
+					hiddenColumns={hiddenColumns}
 					extraColumnsMeta={[{ id: "workspace", label: "מפקד מנחה" }]}
 					startSlot={<TasksDatePicker />}
 					extraFilters={
@@ -120,14 +132,33 @@ function PersonalTasksLayout() {
 						/>
 					}
 				/>
-				<TaskTable
-					onChangeSuccess={handleChangeSuccess}
+				<TaskTable<TaskRowWithWorkspaceDto>
 					tasks={filteredTaskRows}
 					isLoading={isLoading}
-					onEdit={handleEdit}
-					onClick={handleOpenTask}
 					hideStatusAction
 					showActionsColumn={false}
+					columnOrder={columnOrder}
+					hiddenColumns={hiddenColumns}
+					onChangeSuccess={handleChangeSuccess}
+					onEdit={handleEdit}
+					onClick={handleOpenTask}
+					getPermissionType={(task) => task?.workspace?.permissionType}
+					extraColumns={[
+						{
+							id: "workspace",
+							header: ({ column }) => (
+								<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
+							),
+							size: 170,
+							enableColumnFilter: false,
+							...TASK_COLUMN_DEFINITIONS.workspace,
+							cell: ({
+								row: {
+									original: { workspace },
+								},
+							}) => <WorkspaceCell workspace={workspace} />,
+						} as ColumnDef<TaskRowWithWorkspaceDto>,
+					]}
 				/>
 			</PageRoot>
 			<Outlet />
