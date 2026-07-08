@@ -159,6 +159,7 @@ const TabItem = styled.button<{ $active: boolean }>`
 const TabTitle = styled.span<{ $active: boolean }>`
   font-size: var(--fs-xl);
   font-weight: 400;
+  white-space: nowrap;
   ${({ $active }) =>
 		$active
 			? css`
