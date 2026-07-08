@@ -27,7 +27,8 @@ export interface TaskRowDto {
 	description: string | null
 	flagged: boolean
 	deadlineType: DeadlineType
-	dueDate: Date
+	/** @nullable */
+	dueDate: Date | null
 	/** @nullable */
 	notes: string | null
 	workspaceId: number
@@ -35,7 +36,7 @@ export interface TaskRowDto {
 	source: SourceDto | null
 	tags: TagDto[]
 	rowKey: string
-	assignee: AssigneeDto
+	assignee?: AssigneeDto
 	status: WorkspaceStatusDto
 	editable: boolean
 	otherAssignees: AssigneeStatusDto[]

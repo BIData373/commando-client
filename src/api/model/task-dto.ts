@@ -25,7 +25,8 @@ export interface TaskDto {
 	description: string | null
 	flagged: boolean
 	deadlineType: DeadlineType
-	dueDate: Date
+	/** @nullable */
+	dueDate: Date | null
 	/** @nullable */
 	notes: string | null
 	workspaceId: number
