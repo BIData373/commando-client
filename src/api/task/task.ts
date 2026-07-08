@@ -28,8 +28,11 @@ import type {
 	CreateTaskDto,
 	DeleteTaskPathParameters,
 	GetTaskPathParameters,
+	ListTaskRowsParams,
 	ListTasksParams,
 	TaskDto,
+	TaskRowDto,
+	TaskRowWithWorkspaceDto,
 	TaskWithWorkspaceDto,
 	UpdateTaskDto,
 	UpdateTaskPathParameters,
@@ -231,6 +234,136 @@ export function useListTasks<
 	return { ...query, queryKey: queryOptions.queryKey }
 }
 
+export const listTaskRows = (
+	params: ListTaskRowsParams,
+	signal?: AbortSignal,
+) => {
+	return sendRequest<TaskRowDto[]>({
+		url: `/task/rows`,
+		method: "GET",
+		params,
+		signal,
+	})
+}
+
+export const getListTaskRowsQueryKey = (params?: ListTaskRowsParams) => {
+	return [`/task/rows`, ...(params ? [params] : [])] as const
+}
+
+export const getListTaskRowsQueryOptions = <
+	TData = Awaited<ReturnType<typeof listTaskRows>>,
+	TError = ErrorType<unknown>,
+>(
+	params: ListTaskRowsParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof listTaskRows>>, TError, TData>
+		>
+	},
+) => {
+	const { query: queryOptions } = options ?? {}
+
+	const queryKey = queryOptions?.queryKey ?? getListTaskRowsQueryKey(params)
+
+	const queryFn: QueryFunction<Awaited<ReturnType<typeof listTaskRows>>> = ({
+		signal,
+	}) => listTaskRows(params, signal)
+
+	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+		Awaited<ReturnType<typeof listTaskRows>>,
+		TError,
+		TData
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListTaskRowsQueryResult = NonNullable<
+	Awaited<ReturnType<typeof listTaskRows>>
+>
+export type ListTaskRowsQueryError = ErrorType<unknown>
+
+export function useListTaskRows<
+	TData = Awaited<ReturnType<typeof listTaskRows>>,
+	TError = ErrorType<unknown>,
+>(
+	params: ListTaskRowsParams,
+	options: {
+		query: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof listTaskRows>>, TError, TData>
+		> &
+			Pick<
+				DefinedInitialDataOptions<
+					Awaited<ReturnType<typeof listTaskRows>>,
+					TError,
+					Awaited<ReturnType<typeof listTaskRows>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useListTaskRows<
+	TData = Awaited<ReturnType<typeof listTaskRows>>,
+	TError = ErrorType<unknown>,
+>(
+	params: ListTaskRowsParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof listTaskRows>>, TError, TData>
+		> &
+			Pick<
+				UndefinedInitialDataOptions<
+					Awaited<ReturnType<typeof listTaskRows>>,
+					TError,
+					Awaited<ReturnType<typeof listTaskRows>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useListTaskRows<
+	TData = Awaited<ReturnType<typeof listTaskRows>>,
+	TError = ErrorType<unknown>,
+>(
+	params: ListTaskRowsParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof listTaskRows>>, TError, TData>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+
+export function useListTaskRows<
+	TData = Awaited<ReturnType<typeof listTaskRows>>,
+	TError = ErrorType<unknown>,
+>(
+	params: ListTaskRowsParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof listTaskRows>>, TError, TData>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+} {
+	const queryOptions = getListTaskRowsQueryOptions(params, options)
+
+	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+		TData,
+		TError
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+	return { ...query, queryKey: queryOptions.queryKey }
+}
+
 export const listPersonalTasks = (signal?: AbortSignal) => {
 	return sendRequest<TaskWithWorkspaceDto[]>({
 		url: `/task/personal`,
@@ -361,6 +494,145 @@ export function useListPersonalTasks<
 	queryKey: DataTag<QueryKey, TData, TError>
 } {
 	const queryOptions = getListPersonalTasksQueryOptions(options)
+
+	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+		TData,
+		TError
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+	return { ...query, queryKey: queryOptions.queryKey }
+}
+
+export const listPersonalTaskRows = (signal?: AbortSignal) => {
+	return sendRequest<TaskRowWithWorkspaceDto[]>({
+		url: `/task/personal/rows`,
+		method: "GET",
+		signal,
+	})
+}
+
+export const getListPersonalTaskRowsQueryKey = () => {
+	return [`/task/personal/rows`] as const
+}
+
+export const getListPersonalTaskRowsQueryOptions = <
+	TData = Awaited<ReturnType<typeof listPersonalTaskRows>>,
+	TError = ErrorType<unknown>,
+>(options?: {
+	query?: Partial<
+		UseQueryOptions<
+			Awaited<ReturnType<typeof listPersonalTaskRows>>,
+			TError,
+			TData
+		>
+	>
+}) => {
+	const { query: queryOptions } = options ?? {}
+
+	const queryKey = queryOptions?.queryKey ?? getListPersonalTaskRowsQueryKey()
+
+	const queryFn: QueryFunction<
+		Awaited<ReturnType<typeof listPersonalTaskRows>>
+	> = ({ signal }) => listPersonalTaskRows(signal)
+
+	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+		Awaited<ReturnType<typeof listPersonalTaskRows>>,
+		TError,
+		TData
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListPersonalTaskRowsQueryResult = NonNullable<
+	Awaited<ReturnType<typeof listPersonalTaskRows>>
+>
+export type ListPersonalTaskRowsQueryError = ErrorType<unknown>
+
+export function useListPersonalTaskRows<
+	TData = Awaited<ReturnType<typeof listPersonalTaskRows>>,
+	TError = ErrorType<unknown>,
+>(
+	options: {
+		query: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listPersonalTaskRows>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				DefinedInitialDataOptions<
+					Awaited<ReturnType<typeof listPersonalTaskRows>>,
+					TError,
+					Awaited<ReturnType<typeof listPersonalTaskRows>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useListPersonalTaskRows<
+	TData = Awaited<ReturnType<typeof listPersonalTaskRows>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listPersonalTaskRows>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				UndefinedInitialDataOptions<
+					Awaited<ReturnType<typeof listPersonalTaskRows>>,
+					TError,
+					Awaited<ReturnType<typeof listPersonalTaskRows>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useListPersonalTaskRows<
+	TData = Awaited<ReturnType<typeof listPersonalTaskRows>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listPersonalTaskRows>>,
+				TError,
+				TData
+			>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+
+export function useListPersonalTaskRows<
+	TData = Awaited<ReturnType<typeof listPersonalTaskRows>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof listPersonalTaskRows>>,
+				TError,
+				TData
+			>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+} {
+	const queryOptions = getListPersonalTaskRowsQueryOptions(options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,

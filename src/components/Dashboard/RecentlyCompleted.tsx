@@ -1,38 +1,29 @@
 import styled from "@emotion/styled"
 import { useMemo } from "react"
-import { WorkspaceStatusType } from "src/api/model"
+import { type TaskRowDto, WorkspaceStatusType } from "src/api/model"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
-import type { TaskRow } from "src/utils/task-table-utils"
-import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
-import { DataTable } from "../ui/data-table"
 import { DashboardSection } from "./DashboardSection"
+import { TaskPreviewTable } from "./TaskPreviewTable"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
+const VISIBLE_COLUMNS: (keyof TaskRowDto)[] = ["title", "status", "assignee"]
+
 interface RecentlyCompletedProps {
-	tasks: TaskRow[]
+	tasks: TaskRowDto[]
 	onUpdateStatusSuccess?(): void
-	onDoubleClick?(taskId: number): void
+	onClick?(taskId: number): void
 }
 
 export default function RecentlyCompleted({
 	tasks,
 	onUpdateStatusSuccess,
-	onDoubleClick,
+	onClick,
 }: RecentlyCompletedProps) {
 	const completedTasks = useMemo(
 		() => tasks.filter((t) => t.status?.type === WorkspaceStatusType.COMPLETED),
 		[tasks],
 	)
-
-	const { columns } = useTaskColumns({
-		onUpdateStatusSuccess,
-		visibleColumns: ["title", "status", "assigneeStatuses"],
-		showMenuColumn: false,
-		actions: {
-			onDoubleClick,
-		},
-	})
 
 	return (
 		<DashboardSection
@@ -44,10 +35,11 @@ export default function RecentlyCompleted({
 				</TabsButtons>
 			}
 		>
-			<DataTable
-				columns={columns}
-				data={completedTasks}
-				showHeader={false}
+			<TaskPreviewTable
+				tasks={completedTasks}
+				visibleColumns={VISIBLE_COLUMNS}
+				onUpdateStatusSuccess={onUpdateStatusSuccess}
+				onClick={onClick}
 				emptyState={<EmptyCardState {...DASHBOARD_EMPTY_STATES.completed} />}
 			/>
 		</DashboardSection>

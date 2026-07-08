@@ -26,8 +26,8 @@ export interface TaskWithWorkspaceDto {
 	description: string | null
 	flagged: boolean
 	deadlineType: DeadlineType
-	issuedAt: Date
-	dueDate: Date
+	/** @nullable */
+	dueDate: Date | null
 	/** @nullable */
 	notes: string | null
 	workspaceId: number

@@ -1,11 +1,18 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
 import type { ColumnFiltersState } from "@tanstack/react-table"
-import { useMemo } from "react"
-import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
+import { without } from "lodash"
+import type {
+	DeadlineType,
+	TaskRowDto,
+	WorkspaceStatusType,
+} from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
-import { getListPersonalTasksQueryKey, useListTasks } from "src/api/task/task"
+import {
+	getListPersonalTasksQueryKey,
+	useListTaskRows,
+} from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
@@ -14,7 +21,6 @@ import {
 	TasksView,
 } from "src/routes/workspace/$urlName/tasks"
 import type { QuickFilter } from "src/utils/filter-utils"
-import { toTaskRows } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { FilterSeparator } from "../shared/FilterBar"
@@ -41,7 +47,7 @@ function TasksLayout({
 }: TasksLayoutProps) {
 	const navigate = useNavigate({ from: "/workspace/$urlName/tasks" })
 
-	const { toggleQuickFilter } = useTasksFilters()
+	const { columnOrder, hiddenColumns, toggleQuickFilter } = useTasksFilters()
 
 	const {
 		workspace: { id: workspaceId },
@@ -52,9 +58,18 @@ function TasksLayout({
 		data: tasks = [],
 		queryKey,
 		isLoading,
-	} = useListTasks({ workspaceId })
+	} = useListTaskRows({ workspaceId })
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
+
+	const noWorkspaceColumnOrder = without(
+		columnOrder,
+		"workspace",
+	) as (keyof TaskRowDto)[]
+
+	const noWorkspaceHiddenColumns = new Set(
+		[...hiddenColumns].filter((item) => item !== "workspace"),
+	)
 
 	const urlColumnFilters: ColumnFiltersState = [
 		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
@@ -63,12 +78,7 @@ function TasksLayout({
 			: []),
 	]
 
-	const filteredTasks = useFilteredTasks(tasks)
-
-	const filteredTaskRows = useMemo(
-		() => toTaskRows(filteredTasks),
-		[filteredTasks],
-	)
+	const filteredTaskRows = useFilteredTasks(tasks)
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -140,14 +150,14 @@ function TasksLayout({
 		navigate({ search: (prev) => ({ ...prev, tabFilter: [] }) })
 	}
 
-	const isManager = myPermission?.type === PermissionType.MANAGER
-
 	return (
 		<TooltipProvider>
 			<TasksRoot>
 				<TaskFilters
 					allTaskRows={tasks}
 					filteredTaskRows={filteredTaskRows}
+					columnOrder={noWorkspaceColumnOrder}
+					hiddenColumns={noWorkspaceHiddenColumns}
 					onClearColumnFilters={handleClearColumnFilters}
 					onClearQuickFilters={handleClearQuickFilters}
 					tabFilter={tabFilter}
@@ -155,7 +165,7 @@ function TasksLayout({
 					urlColumnFilters={urlColumnFilters}
 					startSlot={<TasksDatePicker />}
 					extraButtons={
-						isManager && (
+						myPermission?.type === PermissionType.MANAGER && (
 							<ButtonGroup>
 								<FilterSeparator />
 								<CreateTaskButton view={view} />
@@ -176,10 +186,12 @@ function TasksLayout({
 							onFiltersChange={handleColumnFiltersChange}
 							onClick={handleOpenTask}
 							isLoading={isLoading}
-							isManager={isManager}
+							getPermissionType={() => myPermission?.type}
+							columnOrder={noWorkspaceColumnOrder}
+							hiddenColumns={noWorkspaceHiddenColumns}
 						/>
 					) : (
-						<TaskCardGrid tasks={filteredTasks} />
+						<TaskCardGrid taskRows={filteredTaskRows} />
 					)}
 				</ContentArea>
 			</TasksRoot>

@@ -47,6 +47,7 @@ const ContentPanel = styled.div`
 
   table {
     direction: rtl;
+    width: 100%;
   }
 
   [data-slot="table-row"] {

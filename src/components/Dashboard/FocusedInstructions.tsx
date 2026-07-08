@@ -1,16 +1,25 @@
 import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import { useMemo, useState } from "react"
-import { DeadlineType, WorkspaceStatusType } from "src/api/model"
+import {
+	DeadlineType,
+	type TaskRowDto,
+	WorkspaceStatusType,
+} from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
 import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filter-utils"
-import type { TaskRow } from "src/utils/task-table-utils"
-import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
-import { DataTable } from "../ui/data-table"
 import { DashboardSection } from "./DashboardSection"
+import { TaskPreviewTable } from "./TaskPreviewTable"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
+
+const VISIBLE_COLUMNS: (keyof TaskRowDto)[] = [
+	"title",
+	"status",
+	"assignee",
+	"deadlineType",
+]
 
 interface TabConfig {
 	id: FocusedTab
@@ -25,7 +34,7 @@ const TAB_LABELS: Pick<TabConfig, "id" | "label" | "weekDelta">[] = [
 	{ id: FocusedTab.OVERDUE, label: 'חריגות מתג"ב', weekDelta: 0 },
 ]
 
-const TAB_FILTERS: Record<FocusedTab, (task: TaskRow) => boolean> = {
+const TAB_FILTERS: Record<FocusedTab, (task: TaskRowDto) => boolean> = {
 	[FocusedTab.FLAGGED]: (task) => matchesQuickFilter(task, QuickFilter.FLAGGED),
 	[FocusedTab.APPROACHING]: (task) =>
 		task.deadlineType === DeadlineType.IMMEDIATE,
@@ -33,15 +42,15 @@ const TAB_FILTERS: Record<FocusedTab, (task: TaskRow) => boolean> = {
 }
 
 interface FocusedInstructionProps {
-	tasks: TaskRow[]
+	taskRows: TaskRowDto[]
 	onUpdateStatusSuccess?(): void
-	onDoubleClick?(taskId: number): void
+	onClick?(taskId: number): void
 }
 
 export default function FocusedInstructions({
-	tasks,
+	taskRows,
 	onUpdateStatusSuccess,
-	onDoubleClick,
+	onClick,
 }: FocusedInstructionProps) {
 	const [activeTab, setActiveTab] = useState<FocusedTab>(FocusedTab.FLAGGED)
 
@@ -49,7 +58,7 @@ export default function FocusedInstructions({
 		setActiveTab(tabId)
 	}
 
-	const notCompletedTasks = tasks.filter(
+	const notCompletedTasks = taskRows.filter(
 		({ status }) => status?.type !== WorkspaceStatusType.COMPLETED,
 	)
 
@@ -66,15 +75,6 @@ export default function FocusedInstructions({
 			})),
 		[notCompletedTasks],
 	)
-
-	const { columns } = useTaskColumns({
-		onUpdateStatusSuccess,
-		visibleColumns: ["title", "status", "assigneeStatuses", "deadlineType"],
-		showMenuColumn: false,
-		actions: {
-			onDoubleClick,
-		},
-	})
 
 	return (
 		<DashboardSection
@@ -106,10 +106,11 @@ export default function FocusedInstructions({
 				</TabsButtons>
 			}
 		>
-			<DataTable
-				columns={columns}
-				data={filteredTasks}
-				showHeader={false}
+			<TaskPreviewTable
+				tasks={filteredTasks}
+				visibleColumns={VISIBLE_COLUMNS}
+				onUpdateStatusSuccess={onUpdateStatusSuccess}
+				onClick={onClick}
 				emptyState={<EmptyCardState {...DASHBOARD_EMPTY_STATES[activeTab]} />}
 			/>
 		</DashboardSection>

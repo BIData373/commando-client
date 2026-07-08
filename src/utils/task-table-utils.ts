@@ -1,25 +1,10 @@
 import type { AccessorFnColumnDef, Row } from "@tanstack/react-table"
 import { type SortingState, sortingFns } from "@tanstack/react-table"
 import { concat, map, uniq } from "lodash"
-import type {
-	AssigneeDto,
-	AssigneeStatusDto,
-	TaskDto,
-	WorkspaceStatusDto,
-	WorkspaceWithPermissionDto,
-} from "src/api/model"
-
-export type TaskRow = TaskDto & {
-	rowKey: string
-	assignee?: AssigneeDto
-	status?: WorkspaceStatusDto
-	otherAssignees?: AssigneeStatusDto[]
-	workspace?: WorkspaceWithPermissionDto
-	editable?: boolean
-}
+import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
 
 export interface TaskColumnMeta {
-	id: keyof TaskRow
+	id: keyof TaskRowWithWorkspaceDto
 	label: string
 }
 
@@ -27,7 +12,7 @@ export const TASK_COLUMNS_META: TaskColumnMeta[] = [
 	{ id: "id", label: 'מס"ד' },
 	{ id: "title", label: "ההנחיה" },
 	{ id: "status", label: "סטטוס" },
-	{ id: "assigneeStatuses", label: "אחראי" },
+	{ id: "assignee", label: "אחראי" },
 	{ id: "deadlineType", label: 'תג"ב' },
 	{ id: "source", label: "מקור הנחיה" },
 	{ id: "tags", label: "נושא" },
@@ -36,15 +21,22 @@ export const TASK_COLUMNS_META: TaskColumnMeta[] = [
 	{ id: "updatedAt", label: "עודכן ב" },
 ]
 
+export const COLUMN_LABELS = Object.fromEntries(
+	TASK_COLUMNS_META.map(({ id, label }) => [id, label]),
+) as Record<keyof TaskRowWithWorkspaceDto, string>
+
 export const TASK_COLUMN_DEFINITIONS: Partial<
-	Record<keyof TaskRow, Partial<AccessorFnColumnDef<TaskRow>>>
+	Record<
+		keyof Partial<TaskRowWithWorkspaceDto>,
+		Partial<AccessorFnColumnDef<Partial<TaskRowWithWorkspaceDto>>>
+	>
 > = {
 	status: {
 		accessorFn: (row) => row.status?.type,
 		sortingFn: (rowA, rowB) =>
 			(rowA.original.status?.id ?? 0) - (rowB.original.status?.id ?? 0),
 	},
-	assigneeStatuses: {
+	assignee: {
 		sortingFn: "text",
 		accessorFn: (row) => row.assignee?.name,
 	},
@@ -84,38 +76,24 @@ export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter(
 
 export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id)
 
-export const TASK_ROW_ID_SEPARATOR = "_"
-
-export function formatTaskRowId(taskId: number, assigneeId?: number) {
-	return `${taskId}${TASK_ROW_ID_SEPARATOR}${assigneeId}`
-}
-
-function formatTaskRow(
-	task: TaskDto,
-	assigneeStatus?: AssigneeStatusDto,
-): TaskRow {
-	const { id, assigneeStatuses } = task
-	return {
-		...task,
-		rowKey: formatTaskRowId(id, assigneeStatus?.assignee?.id),
-		...assigneeStatus,
-		...(assigneeStatus?.assignee && {
-			otherAssignees: assigneeStatuses.filter(
-				(as) => as.assignee.id !== assigneeStatus.assignee.id,
-			),
-		}),
-	}
-}
-
-export function toTaskRows(tasks: TaskDto[]): TaskRow[] {
-	return tasks.flatMap((task) =>
-		task.assigneeStatuses.length > 0
-			? task.assigneeStatuses.map((assigneeStatus) =>
-					formatTaskRow(task, assigneeStatus),
-				)
-			: [formatTaskRow(task)],
+export function toHiddenColumns<TId extends string>(
+	visibleColumns: TId[],
+): Set<TId> {
+	const visible = new Set(visibleColumns)
+	return new Set(
+		DEFAULT_COLUMN_ORDER.filter((id) => !visible.has(id as TId)) as TId[],
 	)
 }
+
+export const DISABLED_CLICK_COLUMNS = new Set([
+	"assignee",
+	"status",
+	"actions",
+	"select",
+])
+
+// FIX Remove?
+export const TASK_ROW_ID_SEPARATOR = "_"
 
 export const multiSelectFilter = <T>(value: T, filterValue: T[]) => {
 	return filterValue && filterValue?.length > 0
@@ -125,20 +103,24 @@ export const multiSelectFilter = <T>(value: T, filterValue: T[]) => {
 		: true
 }
 
-function formatSortFnRow<T>(row: T) {
+function formatSortFnRow(row: Partial<TaskRowWithWorkspaceDto>) {
 	return {
-		getValue: (id: string) => row[id as keyof T],
+		getValue: (id: string) => row[id as keyof TaskRowWithWorkspaceDto],
 		original: row,
-	} as Row<T>
+	} as Row<Partial<TaskRowWithWorkspaceDto>>
 }
 
-export function sortByTaskColumns(taskRows: TaskRow[], sorting: SortingState) {
+export function sortByTaskColumns<TTask extends TaskRowDto>(
+	taskRows: TTask[],
+	sorting: SortingState,
+) {
 	return [...taskRows].sort((a, b) => {
 		const sorted = sorting
 			.map(({ id, desc }) => {
+				const defId = id as keyof TTask
+
 				const configuredSort =
-					TASK_COLUMN_DEFINITIONS[id as keyof TaskRow]?.sortingFn ||
-					"alphanumeric"
+					TASK_COLUMN_DEFINITIONS[defId]?.sortingFn || "alphanumeric"
 
 				const sortFn =
 					typeof configuredSort === "string"

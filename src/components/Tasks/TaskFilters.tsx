@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import type { ColumnFiltersState } from "@tanstack/react-table"
 import { filter } from "lodash"
 import { type ReactNode, useCallback } from "react"
-import type { TaskDto } from "src/api/model"
+import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
 import { exportTasksToExcel } from "src/functions/export-excel"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { QuickFilter } from "src/utils/filter-utils"
@@ -11,16 +11,16 @@ import {
 	sortByTaskColumns,
 	TASK_COLUMN_DEFINITIONS,
 	type TaskColumnMeta,
-	type TaskRow,
-	toTaskRows,
 } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { FilterBar, FilterPill } from "../shared/FilterBar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
-interface TaskFiltersProps {
-	allTaskRows: TaskDto[]
-	filteredTaskRows: TaskRow[]
+interface TaskFiltersProps<TTask extends TaskRowDto> {
+	allTaskRows: TTask[]
+	filteredTaskRows: TTask[]
+	columnOrder: (keyof TTask)[]
+	hiddenColumns: Set<keyof TTask>
 	onClearColumnFilters?: () => void
 	onClearQuickFilters?: () => void
 	extraFilters?: ReactNode
@@ -32,9 +32,11 @@ interface TaskFiltersProps {
 	urlColumnFilters?: ColumnFiltersState
 }
 
-function TaskFilters({
+function TaskFilters<TTask extends TaskRowDto>({
 	allTaskRows,
 	filteredTaskRows,
+	columnOrder,
+	hiddenColumns,
 	onClearColumnFilters,
 	onClearQuickFilters,
 	extraFilters,
@@ -44,13 +46,11 @@ function TaskFilters({
 	startSlot,
 	urlColumnFilters = [],
 	extraButtons,
-}: TaskFiltersProps) {
+}: TaskFiltersProps<TTask>) {
 	const {
 		activeQuickFilters,
 		toggleQuickFilter,
 		clearQuickFilters,
-		columnOrder,
-		hiddenColumns,
 		columnsFilters,
 		setColumnsFilters,
 		sorting,
@@ -77,11 +77,11 @@ function TaskFilters({
 
 	const taskRowsForCounts =
 		columnsFilters.length === 0
-			? toTaskRows(allTaskRows)
+			? allTaskRows
 			: filter(filteredTaskRows, (task) =>
 					allColumnFilters.every(({ id, value }, index) => {
-						const accessorFn =
-							TASK_COLUMN_DEFINITIONS[id as keyof TaskRow]?.accessorFn
+						const defId = id as keyof TaskRowWithWorkspaceDto
+						const accessorFn = TASK_COLUMN_DEFINITIONS[defId]?.accessorFn
 
 						return (
 							!accessorFn ||
@@ -89,8 +89,6 @@ function TaskFilters({
 						)
 					}),
 				)
-
-	filter
 
 	const overdueCount = taskRowsForCounts.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.OVERDUE),
@@ -103,10 +101,11 @@ function TaskFilters({
 	).length
 
 	const handleExport = useCallback(() => {
-		exportTasksToExcel(sortByTaskColumns(taskRowsForCounts, sorting), {
+		exportTasksToExcel(
+			sortByTaskColumns(taskRowsForCounts, sorting),
 			columnOrder,
 			hiddenColumns,
-		})
+		)
 	}, [taskRowsForCounts, columnOrder, hiddenColumns, sorting])
 
 	return (

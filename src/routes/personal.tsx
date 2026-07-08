@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import type { TaskRow } from "src/utils/task-table-utils"
+import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import PersonalTasksLayout from "../components/Personal/PersonalTasksLayout"
 import { TasksFiltersProvider } from "../providers/TasksFiltersProvider"
 import { TasksView } from "./workspace/$urlName/tasks"
@@ -17,10 +17,10 @@ export const Route = createFileRoute("/personal")({
 	},
 })
 
-const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRow)[] = [
+const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
 	"title",
 	"status",
-	"assigneeStatuses",
+	"assignee",
 	"deadlineType",
 	"source",
 	"tags",
@@ -30,7 +30,7 @@ const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRow)[] = [
 	"updatedAt",
 ]
 
-const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRow>([
+const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 	"tags",
 	"notes",
 	"updatedAt",

@@ -5,12 +5,14 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
+import type { AssigneeDto } from "./assignee-dto"
 import type { AssigneeStatusDto } from "./assignee-status-dto"
 import type { DeadlineType } from "./deadline-type"
 import type { SourceDto } from "./source-dto"
 import type { TagDto } from "./tag-dto"
+import type { WorkspaceStatusDto } from "./workspace-status-dto"
 
-export interface TaskDto {
+export interface TaskRowDto {
 	createdAt: Date
 	createdBy: number
 	updatedAt: Date
@@ -33,5 +35,9 @@ export interface TaskDto {
 	/** @nullable */
 	source: SourceDto | null
 	tags: TagDto[]
-	assigneeStatuses: AssigneeStatusDto[]
+	rowKey: string
+	assignee?: AssigneeDto
+	status: WorkspaceStatusDto
+	editable: boolean
+	otherAssignees: AssigneeStatusDto[]
 }

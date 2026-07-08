@@ -9,6 +9,7 @@ import { useMemo, useState } from "react"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import type {
 	DeadlineType,
+	TaskRowDto,
 	WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
@@ -16,27 +17,25 @@ import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { getEmptyState } from "src/utils/empty-state-utils"
-import { TASK_ROW_ID_SEPARATOR, type TaskRow } from "src/utils/task-table-utils"
+import {
+	DISABLED_CLICK_COLUMNS,
+	TASK_ROW_ID_SEPARATOR,
+} from "src/utils/task-table-utils"
 import { buildFilterOptionsMap } from "../../functions/filter-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 
-// Columns that should not trigger row navigation when clicked (they have their own interactions)
-const DISABLED_CLICK_COLUMNS = new Set([
-	"assigneeStatuses",
-	"status",
-	"actions",
-	"select",
-])
-
-interface TaskTableProps {
-	tasks: TaskRow[]
+interface TaskTableProps<TTask extends TaskRowDto> {
+	tasks: TTask[]
+	getPermissionType(task?: TTask): PermissionType | null | undefined
+	columnOrder: (keyof TTask)[]
+	hiddenColumns: Set<keyof TTask>
 	statuses?: WorkspaceStatusDto[]
 	onEdit?: (taskId: number) => void
 	onClick?: (taskId: number) => void
-	extraColumns?: Record<string, ColumnDef<TaskRow>>
+	extraColumns?: ColumnDef<TTask>[]
 	showHeader?: boolean
 	statusFilter?: WorkspaceStatusType[]
 	deadlineTypeFilter?: DeadlineType[]
@@ -45,32 +44,31 @@ interface TaskTableProps {
 		deadlineTypeFilter: DeadlineType[],
 	) => void
 	isLoading?: boolean
-	isManager?: boolean
 	hideStatusAction?: boolean
 	showActionsColumn?: boolean
 	onChangeSuccess?(): void
 }
 
-function TaskTable({
+function TaskTable<TTask extends TaskRowDto>({
 	tasks,
+	getPermissionType,
+	columnOrder,
+	hiddenColumns,
 	statuses,
 	onEdit = () => {},
 	onClick,
-	extraColumns,
+	extraColumns = [],
 	showHeader = true,
 	statusFilter = [],
 	deadlineTypeFilter = [],
 	onFiltersChange,
 	onChangeSuccess,
 	isLoading,
-	isManager,
 	hideStatusAction = false,
 	showActionsColumn = true,
-}: TaskTableProps) {
+}: TaskTableProps<TTask>) {
 	const {
 		searchQuery,
-		columnOrder,
-		hiddenColumns,
 		activeQuickFilters,
 		dateRange,
 		sorting,
@@ -130,19 +128,16 @@ function TaskTable({
 		(key) => rowSelection[key],
 	)
 
+	// FIX Seperate state?
 	const selectedTaskIds = selectedRowKeys.map((key) =>
 		Number(key.split(TASK_ROW_ID_SEPARATOR)[0]),
 	)
 
-	const bulkDeleteDisabled =
-		selectedTaskIds.length === 0 ||
-		(isManager != null
-			? !isManager
-			: selectedTaskIds.some(
-					(id) =>
-						tasks.find((t) => t.id === id)?.workspace?.permissionType !==
-						PermissionType.MANAGER,
-				))
+	const bulkDeleteDisabled = selectedTaskIds.some(
+		(id) =>
+			getPermissionType(tasks.find((t) => t.id === id)) !==
+			PermissionType.MANAGER,
+	)
 
 	const bulkStatusDisabled =
 		selectedTaskIds.length === 0 ||
@@ -208,17 +203,11 @@ function TaskTable({
 
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
 
-	const extraColumnIds = extraColumns
-		? new Set(Object.keys(extraColumns))
-		: new Set<string>()
-
-	const visibleColumns = columnOrder.filter(
-		(id) => !hiddenColumns.has(id) && !extraColumnIds.has(id),
-	)
-
-	const { columns: baseColumns } = useTaskColumns({
+	const { columns } = useTaskColumns({
+		columnOrder,
+		hiddenColumns,
+		extraColumns,
 		onUpdateStatusSuccess: onChangeSuccess,
-		visibleColumns,
 		searchQuery,
 		filterOptionsMap,
 		selectMode: {
@@ -236,32 +225,10 @@ function TaskTable({
 		},
 	})
 
-	const columns = useMemo(() => {
-		const result = [...baseColumns]
-
-		if (extraColumns) {
-			for (const [id, colDef] of Object.entries(extraColumns)) {
-				const colId = id as keyof TaskRow
-				const isVisible = !hiddenColumns.has(colId)
-				const orderIndex = columnOrder.indexOf(colId)
-				if (!isVisible || orderIndex === -1) continue
-
-				const visibleBeforeCount = columnOrder
-					.slice(0, orderIndex)
-					.filter((colId) => !hiddenColumns.has(colId)).length
-
-				result.splice(visibleBeforeCount, 0, colDef)
-			}
+	function handleCellClick(row: { original: TTask }, columnId: string) {
+		if (!DISABLED_CLICK_COLUMNS.has(columnId)) {
+			onClick?.(row.original.id)
 		}
-
-		return result
-	}, [baseColumns, extraColumns, columnOrder, hiddenColumns])
-
-	// Cell-level click handler — skips interactive columns (status, select, etc.)
-	// and delegates to the parent onClick for navigation on all other columns.
-	function handleCellClick(row: { original: TaskRow }, columnId: string) {
-		if (DISABLED_CLICK_COLUMNS.has(columnId)) return
-		onClick?.(row.original.id)
 	}
 
 	return (
