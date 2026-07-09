@@ -14,8 +14,8 @@ import type {
 	UserDto,
 } from "src/api/model"
 import {
-	getListPersonalTasksQueryKey,
-	getListTasksQueryKey,
+	getListPersonalTaskRowsQueryKey,
+	getListTaskRowsQueryKey,
 } from "src/api/task/task"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -89,8 +89,8 @@ export function AssigneeDialog({
 
 		// TODO - maybe somehow invalidate all tasks in this workspace that are connected?
 		invalidateQueries([
-			getListPersonalTasksQueryKey(),
-			getListTasksQueryKey({ workspaceId }),
+			getListPersonalTaskRowsQueryKey(),
+			getListTaskRowsQueryKey({ workspaceId }),
 			...(assignee ? [getGetAssigneeQueryKey({ id: assignee.id })] : []),
 		])
 	}

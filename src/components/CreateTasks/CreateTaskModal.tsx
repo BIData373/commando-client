@@ -15,8 +15,8 @@ import {
 import { useCreateSource } from "src/api/source/source"
 import {
 	getGetTaskQueryKey,
-	getListPersonalTasksQueryKey,
-	getListTasksQueryKey,
+	getListPersonalTaskRowsQueryKey,
+	getListTaskRowsQueryKey,
 	useUpdateTask,
 } from "src/api/task/task"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
@@ -85,9 +85,9 @@ function CreateTaskModal({
 
 	function handleUpdateSuccess() {
 		invalidateQueries([
-			getListTasksQueryKey({ workspaceId }),
+			getListTaskRowsQueryKey({ workspaceId }),
 			...(task ? [getGetTaskQueryKey({ id: task.id })] : []),
-			getListPersonalTasksQueryKey(),
+			getListPersonalTaskRowsQueryKey(),
 		])
 
 		onSave()

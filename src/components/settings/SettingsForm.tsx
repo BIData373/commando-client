@@ -13,7 +13,7 @@ import {
 import type { ErrorType } from "src/axios"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { queryClient } from "src/queryClient"
+import { invalidateQueries } from "src/queryClient"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import { FormField } from "../shared/FormField"
 import { Input } from "../ui/input"
@@ -37,7 +37,7 @@ export function SettingsForm() {
 	const { mutateAsync: updateSettings } = useUpdateWorkspace({
 		mutation: {
 			onSuccess(data) {
-				queryClient.invalidateQueries({ queryKey: getListWorkspacesQueryKey() })
+				invalidateQueries([getListWorkspacesQueryKey()])
 				setWorkspace(data)
 			},
 		},

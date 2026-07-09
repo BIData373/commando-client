@@ -10,7 +10,7 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import {
-	getListPersonalTasksQueryKey,
+	getListPersonalTaskRowsQueryKey,
 	useListTaskRows,
 } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
@@ -129,7 +129,7 @@ function TasksLayout({
 	}
 
 	function handleChangeSuccess() {
-		invalidateQueries([queryKey, getListPersonalTasksQueryKey()])
+		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
 	}
 
 	// function handleViewChange(newView: TasksView) {

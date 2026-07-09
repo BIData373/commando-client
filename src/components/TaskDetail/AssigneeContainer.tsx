@@ -3,8 +3,8 @@ import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assign
 import type { AssigneeStatusDto } from "src/api/model"
 import {
 	getGetTaskQueryKey,
-	getListPersonalTasksQueryKey,
-	getListTasksQueryKey,
+	getListPersonalTaskRowsQueryKey,
+	getListTaskRowsQueryKey,
 } from "src/api/task/task"
 import { invalidateQueries } from "src/queryClient"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
@@ -32,8 +32,8 @@ export const AssigneeContainer = ({
 				onSuccess: () => {
 					invalidateQueries([
 						getGetTaskQueryKey({ id: taskId }),
-						getListTasksQueryKey({ workspaceId }),
-						getListPersonalTasksQueryKey(),
+						getListTaskRowsQueryKey({ workspaceId }),
+						getListPersonalTaskRowsQueryKey(),
 					])
 				},
 			},

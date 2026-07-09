@@ -12,7 +12,8 @@ import { useGetMyPermission } from "src/api/permission/permission"
 import { getAttachmentSignedUrl } from "src/api/s3/s3"
 import {
 	getGetTaskQueryKey,
-	getListPersonalTasksQueryKey,
+	getListPersonalTaskRowsQueryKey,
+	getListTaskRowsQueryKey,
 	getListTasksQueryKey,
 	useDeleteTask,
 } from "src/api/task/task"
@@ -74,8 +75,8 @@ function TaskDetailPanel({
 
 	function handleSuccess() {
 		invalidateQueries([
-			getListTasksQueryKey({ workspaceId }),
-			getListPersonalTasksQueryKey(),
+			getListTaskRowsQueryKey({ workspaceId }),
+			getListPersonalTaskRowsQueryKey(),
 		])
 	}
 

@@ -4,7 +4,7 @@ import {
 	useDeleteAssignee,
 } from "src/api/assignee/assignee"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { queryClient } from "src/queryClient"
+import { invalidateQueries } from "src/queryClient"
 import { ConfirmPopover } from "../shared/ConfirmPopover"
 import { TrashButton } from "../shared/TrashButton"
 
@@ -23,9 +23,7 @@ export function DeleteAssigneePopconfirm({
 	const { isPending, mutate: deleteAssignee } = useDeleteAssignee({
 		mutation: {
 			onSuccess: () => {
-				queryClient.invalidateQueries({
-					queryKey: getListAssigneesQueryKey({ workspaceId }),
-				})
+				invalidateQueries([getListAssigneesQueryKey({ workspaceId })])
 			},
 		},
 	})
