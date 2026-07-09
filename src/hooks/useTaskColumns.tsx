@@ -287,7 +287,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					filterOptions={filterOptionsMap?.deadlineType}
 				/>
 			),
-			size: 140,
+			size: 150,
 			filterFn: multiSelectColumnFilter,
 			...TASK_COLUMN_DEFINITIONS.deadlineType,
 			cell: ({
