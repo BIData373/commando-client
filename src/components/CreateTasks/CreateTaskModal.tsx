@@ -55,7 +55,7 @@ interface FormState extends Omit<CreateTaskDto, "workspaceId" | "assignees"> {
 interface CreateTaskModalProps {
 	workspaceId: number
 	onClose: () => void
-	onSave: () => void
+	onSave?: () => void
 	task?: TaskWithWorkspaceDto
 }
 
@@ -90,7 +90,7 @@ function CreateTaskModal({
 			getListPersonalTaskRowsQueryKey(),
 		])
 
-		onSave()
+		onSave?.()
 	}
 
 	const form = useForm({

@@ -14,7 +14,6 @@ import {
 	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
-	getListTasksQueryKey,
 	useDeleteTask,
 } from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
@@ -142,7 +141,7 @@ function TaskDetailPanel({
 
 	function handleEditDiscussionSuccess() {
 		invalidateQueries([
-			getListTasksQueryKey({ workspaceId }),
+			getListTaskRowsQueryKey({ workspaceId }),
 			getGetTaskQueryKey({ id }),
 		])
 	}
