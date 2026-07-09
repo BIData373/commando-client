@@ -40,7 +40,7 @@ export function WorkspaceTabs() {
 				{links.map((link) => (
 					<NavigationMenuItem key={link.to}>
 						<NavMenuLink asChild>
-							<Link to={link.to}>{link.children}</Link>
+							<StyledLink to={link.to}>{link.children}</StyledLink>
 						</NavMenuLink>
 					</NavigationMenuItem>
 				))}
@@ -71,4 +71,8 @@ const NavMenuLink = styled(NavigationMenuLink)`
       background: rgba(255, 255, 255, 0.15);
     }
   }
+`
+
+const StyledLink = styled(Link)`
+	white-space: nowrap;
 `
