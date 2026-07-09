@@ -1,7 +1,7 @@
 import { differenceInDays, startOfToday } from "date-fns"
 import { uniqBy } from "lodash"
 import type { TaskRowDto } from "src/api/model"
-import { DeadlineType } from "src/api/model"
+import { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { QuickFilter } from "src/utils/filter-utils"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
 
@@ -21,19 +21,21 @@ export function matchesQuickFilter(
 ): boolean {
 	const today = startOfToday()
 	const daysUntil = task.dueDate ? differenceInDays(task.dueDate, today) : null
+	const isNotCompleted = task.status.type !== WorkspaceStatusType.COMPLETED
+	const isNotImmediate = task.deadlineType !== DeadlineType.IMMEDIATE
+
 	switch (filter) {
 		case QuickFilter.OVERDUE:
 			return (
-				daysUntil !== null &&
-				daysUntil < 0 &&
-				task.deadlineType !== DeadlineType.IMMEDIATE
+				daysUntil !== null && daysUntil < 0 && isNotImmediate && isNotCompleted
 			)
 		case QuickFilter.APPROACHING:
 			return (
 				daysUntil !== null &&
 				daysUntil >= 0 &&
 				daysUntil <= 2 &&
-				!(daysUntil < 0 && task.deadlineType !== DeadlineType.IMMEDIATE)
+				!(daysUntil < 0 && isNotImmediate) &&
+				isNotCompleted
 			)
 		case QuickFilter.FLAGGED:
 			return !!task.flagged
