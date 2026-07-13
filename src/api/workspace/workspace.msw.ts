@@ -43,6 +43,8 @@ export const getCreateWorkspaceResponseMock = (
 		null,
 	]),
 	assigneeStatusEditable: faker.datatype.boolean(),
+	chatNotification: faker.datatype.boolean(),
+	mailNotification: faker.datatype.boolean(),
 	pikudId: faker.number.float({ fractionDigits: 2 }),
 	...overrideResponse,
 })
@@ -81,6 +83,8 @@ export const getListWorkspacesResponseMock = (): WorkspaceDto[] =>
 			null,
 		]),
 		assigneeStatusEditable: faker.datatype.boolean(),
+		chatNotification: faker.datatype.boolean(),
+		mailNotification: faker.datatype.boolean(),
 		pikudId: faker.number.float({ fractionDigits: 2 }),
 	}))
 
@@ -116,6 +120,8 @@ export const getGetWorkspaceResponseMock = (
 		null,
 	]),
 	assigneeStatusEditable: faker.datatype.boolean(),
+	chatNotification: faker.datatype.boolean(),
+	mailNotification: faker.datatype.boolean(),
 	pikudId: faker.number.float({ fractionDigits: 2 }),
 	...overrideResponse,
 })
@@ -152,6 +158,8 @@ export const getUpdateWorkspaceResponseMock = (
 		null,
 	]),
 	assigneeStatusEditable: faker.datatype.boolean(),
+	chatNotification: faker.datatype.boolean(),
+	mailNotification: faker.datatype.boolean(),
 	pikudId: faker.number.float({ fractionDigits: 2 }),
 	...overrideResponse,
 })
@@ -188,6 +196,8 @@ export const getDeleteWorkspaceResponseMock = (
 		null,
 	]),
 	assigneeStatusEditable: faker.datatype.boolean(),
+	chatNotification: faker.datatype.boolean(),
+	mailNotification: faker.datatype.boolean(),
 	pikudId: faker.number.float({ fractionDigits: 2 }),
 	...overrideResponse,
 })
