@@ -12,7 +12,7 @@ import {
 	type TaskWithWorkspaceDto,
 	WorkspaceStatusType,
 } from "src/api/model"
-import { useCreateSource } from "src/api/source/source"
+import { getListSourcesQueryKey, useCreateSource } from "src/api/source/source"
 import {
 	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
@@ -74,7 +74,13 @@ function CreateTaskModal({
 
 	const { saveTasks, isPending } = useSaveTasks(workspaceId, onClose)
 
-	const { mutateAsync: createSource } = useCreateSource()
+	const { mutateAsync: createSource } = useCreateSource({
+		mutation: {
+			onSuccess: () => {
+				invalidateQueries([getListSourcesQueryKey({ workspaceId })])
+			},
+		},
+	})
 	const { mutateAsync: updateTask } = useUpdateTask({
 		mutation: {
 			onSuccess: handleUpdateSuccess,
