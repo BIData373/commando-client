@@ -95,6 +95,8 @@ export const DISABLED_CLICK_COLUMNS = new Set([
 // FIX Remove?
 export const TASK_ROW_ID_SEPARATOR = "_"
 
+export const HAS_ASSIGNEE_DATA_ATTR = "data-has-assignee"
+
 export const multiSelectFilter = <T>(value: T, filterValue: T[]) => {
 	return filterValue && filterValue?.length > 0
 		? Array.isArray(value)

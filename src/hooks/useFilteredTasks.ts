@@ -37,7 +37,12 @@ export function useFilteredTasks<T extends TaskRowDto>(
 
 	const searchedTasks = useFuse(tasks, searchQuery, {
 		threshold: 0.5,
-		keys: ["title", "assigneeStatuses.description", "notes"],
+		keys: [
+			"title",
+			"assignee.description",
+			"otherAssignees.description",
+			"notes",
+		],
 	})
 
 	return useMemo(
