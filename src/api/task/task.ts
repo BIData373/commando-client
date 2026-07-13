@@ -30,6 +30,7 @@ import type {
 	GetTaskPathParameters,
 	ListTaskRowsParams,
 	ListTasksParams,
+	TaskDetailsDto,
 	TaskDto,
 	TaskRowDto,
 	TaskRowWithWorkspaceDto,
@@ -646,7 +647,7 @@ export const getTask = (
 	{ id }: GetTaskPathParameters,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskWithWorkspaceDto>({
+	return sendRequest<TaskDetailsDto>({
 		url: `/task/${id}`,
 		method: "GET",
 		signal,
