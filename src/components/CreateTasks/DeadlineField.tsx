@@ -81,6 +81,7 @@ function DeadlineField({
 								mode={CalendarMode.Single}
 								selected={dueDate ?? undefined}
 								onSelect={handleDateSelect}
+								showWeekNumber={false}
 							/>
 						</DatePopoverContent>
 					</Popover>
