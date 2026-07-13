@@ -9,6 +9,7 @@ import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 import type {
+	TaskDetailsDto,
 	TaskDto,
 	TaskRowDto,
 	TaskRowWithWorkspaceDto,
@@ -1301,8 +1302,8 @@ export const getListPersonalTaskRowsResponseMock =
 		}))
 
 export const getGetTaskResponseMock = (
-	overrideResponse: Partial<Extract<TaskWithWorkspaceDto, object>> = {},
-): TaskWithWorkspaceDto => ({
+	overrideResponse: Partial<Extract<TaskDetailsDto, object>> = {},
+): TaskDetailsDto => ({
 	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1530,6 +1531,16 @@ export const getGetTaskResponseMock = (
 		pikudId: faker.number.float({ fractionDigits: 2 }),
 		permissionType: faker.helpers.arrayElement(Object.values(PermissionType)),
 	},
+	status: faker.helpers.arrayElement([
+		{
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
+		undefined,
+	]),
 	...overrideResponse,
 })
 
@@ -2121,10 +2132,10 @@ export const getListPersonalTaskRowsMockHandler = (
 
 export const getGetTaskMockHandler = (
 	overrideResponse?:
-		| TaskWithWorkspaceDto
+		| TaskDetailsDto
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0],
-		  ) => Promise<TaskWithWorkspaceDto> | TaskWithWorkspaceDto),
+		  ) => Promise<TaskDetailsDto> | TaskDetailsDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
