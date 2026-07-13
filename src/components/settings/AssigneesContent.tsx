@@ -24,7 +24,12 @@ export const assigneeStatusEditableId = "allow-status-update"
 
 export function AssigneesContent() {
 	const {
-		workspace: { id: workspaceId, assigneeStatusEditable },
+		workspace: {
+			id: workspaceId,
+			assigneeStatusEditable,
+			chatNotification,
+			mailNotification,
+		},
 		setWorkspace,
 	} = useWorkspace()
 
@@ -39,8 +44,6 @@ export function AssigneesContent() {
 	const { urlName } = useParams({ strict: false })
 	const navigate = useNavigate()
 	const [searchQuery, setSearchQuery] = useState("")
-	const [chatNotifications, setChatNotifications] = useState(false)
-	const [emailNotifications, setEmailNotifications] = useState(false)
 
 	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
 
@@ -53,6 +56,20 @@ export function AssigneesContent() {
 		updateSettings({
 			pathParams: { id: workspaceId },
 			data: { assigneeStatusEditable: checked },
+		})
+	}
+
+	function handleChatNotificationsChange(checked: boolean) {
+		updateSettings({
+			pathParams: { id: workspaceId },
+			data: { chatNotification: checked },
+		})
+	}
+
+	function handleMailNotificationsChange(checked: boolean) {
+		updateSettings({
+			pathParams: { id: workspaceId },
+			data: { mailNotification: checked },
 		})
 	}
 
@@ -85,16 +102,16 @@ export function AssigneesContent() {
 						label="שלח התראות בצ'אט למכותבים"
 						tooltip="שליחת התראות בצ'אט למכותבים בעת עדכון הנחיות"
 						icon={<img src={chatIcon} alt="" width={18} height={18} />}
-						checked={chatNotifications}
-						onCheckedChange={setChatNotifications}
+						checked={chatNotification}
+						onCheckedChange={handleChatNotificationsChange}
 					/>
 
 					<SettingToggleRow
 						label="שלח התראות במייל למכותבים"
 						tooltip="שליחת התראות במייל למכותבים בעת עדכון הנחיות"
 						icon={<Mail size={18} />}
-						checked={emailNotifications}
-						onCheckedChange={setEmailNotifications}
+						checked={mailNotification}
+						onCheckedChange={handleMailNotificationsChange}
 					/>
 				</SettingsSection>
 				<ToolbarRow>

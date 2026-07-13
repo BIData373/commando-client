@@ -22,6 +22,8 @@ export interface WorkspaceWithPermissionDto {
 	/** @nullable */
 	icon: string | null
 	assigneeStatusEditable: boolean
+	chatNotification: boolean
+	mailNotification: boolean
 	pikudId: number
 	permissionType: PermissionType | null
 }
