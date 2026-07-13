@@ -12,5 +12,7 @@ export interface CreateWorkspaceDto {
 	/** @nullable */
 	icon?: string | null
 	assigneeStatusEditable?: boolean
+	chatNotification?: boolean
+	mailNotification?: boolean
 	pikudId: number
 }
