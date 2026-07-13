@@ -1,4 +1,6 @@
 import styled from "@emotion/styled"
+import { debounce } from "lodash"
+import { type ChangeEvent, useEffect, useMemo, useState } from "react"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 export const PRESET_COLORS = [
@@ -34,8 +36,27 @@ interface ColorPickerProps {
 }
 
 export function ColorPicker({ selectedColor, onChange }: ColorPickerProps) {
+	const [open, setOpen] = useState(false)
+	const [localColor, setLocalColor] = useState(selectedColor)
+
+	const onChangeDebounced = useMemo(() => debounce(onChange, 300), [onChange])
+
+	useEffect(() => {
+		setLocalColor(selectedColor)
+	}, [selectedColor])
+
+	function handlePresetClick(color: string) {
+		onChange(color)
+		setOpen(false)
+	}
+
+	function handleCustomColorChange(e: ChangeEvent<HTMLInputElement>) {
+		setLocalColor(e.target.value)
+		onChangeDebounced(e.target.value)
+	}
+
 	return (
-		<Popover>
+		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
 				<ColorSwatchContainer>
 					<ColorSwatch $color={selectedColor} />
@@ -49,15 +70,15 @@ export function ColorPicker({ selectedColor, onChange }: ColorPickerProps) {
 								key={color}
 								$color={color}
 								$selected={selectedColor === color}
-								onClick={() => onChange(color)}
+								onClick={() => handlePresetClick(color)}
 							/>
 						))}
 					</ColorGrid>
 					<OtherColorLabel>
 						<HiddenColorInput
 							type="color"
-							value={selectedColor}
-							onChange={(e) => onChange(e.target.value)}
+							value={localColor}
+							onChange={handleCustomColorChange}
 						/>
 						אחר
 					</OtherColorLabel>
