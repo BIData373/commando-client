@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { useState } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
+import { HAS_ASSIGNEE_DATA_ATTR } from "src/utils/task-table-utils"
 import { StatusTag } from "../shared/StatusTag"
 import {
 	DropdownMenu,
@@ -14,7 +15,7 @@ interface StatusDropdownProps {
 	status: WorkspaceStatusDto
 	taskId: number
 	workspaceId: number
-	assigneeId: number
+	assigneeId?: number
 	editable: boolean
 	onUpdate: (taskId: number, assigneeId: number, statusId: number) => void
 	withArrow?: boolean
@@ -36,17 +37,20 @@ export function StatusDropdown({
 	})
 
 	function handleSelectStatus(newStatusId: number) {
-		if (newStatusId === status.id) return
-		onUpdate(taskId, assigneeId, newStatusId)
+		if (newStatusId !== status.id && assigneeId) {
+			onUpdate(taskId, assigneeId, newStatusId)
+		}
 	}
 
 	return (
 		!isLoading && (
-			<CellCenter>
+			<CellCenter
+				{...{ [HAS_ASSIGNEE_DATA_ATTR]: assigneeId ? "" : undefined }}
+			>
 				{editable ? (
 					<DropdownMenu onOpenChange={setIsOpen}>
 						<DropdownMenuTrigger asChild>
-							<TriggerWrapper tabIndex={0}>
+							<TriggerWrapper tabIndex={0} $hasAssignee={!!assigneeId}>
 								<StatusTag
 									open={isOpen}
 									status={status}
@@ -61,6 +65,7 @@ export function StatusDropdown({
 								<StatusDropdownItem
 									key={s.id}
 									$selected={s.id === status.id}
+									$hasAssignee={!!assigneeId}
 									onSelect={() => handleSelectStatus(s.id)}
 								>
 									<StatusTag status={s} />
@@ -82,8 +87,8 @@ const CellCenter = styled.div`
   align-items: center;
 `
 
-const TriggerWrapper = styled.span`
-  cursor: pointer;
+const TriggerWrapper = styled.span<{ $hasAssignee: boolean }>`
+  cursor: ${({ $hasAssignee }) => ($hasAssignee ? "pointer" : "default")};
 
   &:focus-visible {
     outline: none;
@@ -104,7 +109,10 @@ const StatusDropdownContent = styled(DropdownMenuContent)`
     0px 9px 28px rgba(0, 0, 0, 0.05);
 `
 
-const StatusDropdownItem = styled(DropdownMenuItem)<{ $selected: boolean }>`
+const StatusDropdownItem = styled(DropdownMenuItem)<{
+	$selected: boolean
+	$hasAssignee: boolean
+}>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -112,7 +120,7 @@ const StatusDropdownItem = styled(DropdownMenuItem)<{ $selected: boolean }>`
   padding: 4px;
   border-radius: 4px;
   background: ${({ $selected }) => ($selected ? "rgba(230, 244, 255, 1)" : "transparent")};
-  cursor: pointer;
+  cursor: ${({ $hasAssignee }) => ($hasAssignee ? "pointer" : "default")};
   outline: none;
 
   &[data-highlighted],
