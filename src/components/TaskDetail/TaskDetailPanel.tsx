@@ -6,7 +6,7 @@ import { useRef, useState } from "react"
 import {
 	DeadlineType,
 	PermissionType,
-	type TaskWithWorkspaceDto,
+	type TaskDetailsDto,
 } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { getAttachmentSignedUrl } from "src/api/s3/s3"
@@ -24,6 +24,7 @@ import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModa
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import FlagIcon from "../shared/FlagIcon"
 import { ModalContent } from "../shared/ModalContent"
+import { StatusTag } from "../shared/StatusTag"
 import WorkspaceCell from "../shared/WorkspaceCell"
 import { RowActionsMenu } from "../Tasks/RowActionsMenu"
 import { Dialog } from "../ui/dialog"
@@ -32,7 +33,7 @@ import TaskConversationPanel from "./TaskConversationPanel"
 import TaskHistoryPanel from "./TaskHistoryPanel"
 
 interface TaskDetailPanelProps {
-	task: TaskWithWorkspaceDto
+	task: TaskDetailsDto
 	onClose: () => void
 	onEdit: () => void
 	showWorkspace?: boolean
@@ -50,6 +51,7 @@ function TaskDetailPanel({
 		source,
 		tags,
 		assigneeStatuses,
+		status,
 		workspace,
 		workspace: { id: workspaceId, permissionType },
 	},
@@ -207,12 +209,19 @@ function TaskDetailPanel({
 						</MetaRow>
 					</DeadlineSection>
 
-					<AssigneeSection
-						taskId={id}
-						workspaceId={workspaceId}
-						assigneeStatuses={assigneeStatuses}
-					/>
-
+					{assigneeStatuses.length > 0 ? (
+						<AssigneeSection
+							taskId={id}
+							workspaceId={workspaceId}
+							assigneeStatuses={assigneeStatuses}
+						/>
+					) : (
+						status && (
+							<StatusTagContainer>
+								<StatusTag status={status} />
+							</StatusTagContainer>
+						)
+					)}
 					{showExtraInfo && (
 						<>
 							<DividerRow>
@@ -481,6 +490,10 @@ const MetaText = styled.span`
   line-height: 20px;
   color: var(--sea-ink);
   white-space: nowrap;
+`
+
+const StatusTagContainer = styled.div`
+	width: 100%;
 `
 
 // ─── Divider ───────────────────────────────────────────────────────────────────

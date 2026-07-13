@@ -19,6 +19,7 @@ import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { getEmptyState } from "src/utils/empty-state-utils"
 import {
 	DISABLED_CLICK_COLUMNS,
+	HAS_ASSIGNEE_DATA_ATTR,
 	TASK_ROW_ID_SEPARATOR,
 } from "src/utils/task-table-utils"
 import { buildFilterOptionsMap } from "../../functions/filter-utils"
@@ -350,8 +351,8 @@ const TableWrapper = styled.div`
       border-left: none;
     }
 
-    /* Status cell is interactive (opens dropdown), so it gets pointer cursor + hover bg */
-    &[data-column-id="status"] {
+    /* Status cell is interactive (opens dropdown) only when the row has an assignee */
+    &[data-column-id="status"]:has([${HAS_ASSIGNEE_DATA_ATTR}]) {
       cursor: pointer;
 
       &:hover {

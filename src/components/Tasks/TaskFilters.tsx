@@ -76,7 +76,7 @@ function TaskFilters<TTask extends TaskRowDto>({
 	const allColumnFilters = [...urlColumnFilters, ...columnsFilters]
 
 	const taskRowsForCounts =
-		columnsFilters.length === 0
+		allColumnFilters.length === 0
 			? allTaskRows
 			: filter(filteredTaskRows, (task) =>
 					allColumnFilters.every(({ id, value }, index) => {
