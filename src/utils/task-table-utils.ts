@@ -1,4 +1,8 @@
-import type { AccessorFnColumnDef, Row } from "@tanstack/react-table"
+import type {
+	AccessorFnColumnDef,
+	ColumnFilter,
+	Row,
+} from "@tanstack/react-table"
 import { type SortingState, sortingFns } from "@tanstack/react-table"
 import { concat, map, uniq } from "lodash"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
@@ -139,4 +143,21 @@ export function sortByTaskColumns<TTask extends TaskRowDto>(
 
 		return sorted ? (sorted.desc ? -sorted.result : sorted.result) : 0
 	})
+}
+
+export function filterByTaskColumns<TTask extends TaskRowDto>(
+	taskRows: TTask[],
+	filters: ColumnFilter[],
+) {
+	return taskRows.filter((task) =>
+		filters.every(({ id, value }, index) => {
+			const defId = id as keyof TaskRowWithWorkspaceDto
+			const accessorFn = TASK_COLUMN_DEFINITIONS[defId]?.accessorFn
+
+			return (
+				!accessorFn ||
+				multiSelectFilter(accessorFn?.(task, index), value as string[])
+			)
+		}),
+	)
 }

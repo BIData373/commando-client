@@ -53,7 +53,7 @@ export function useFilteredTasks<T extends TaskRowDto>(
 						...(additionalFilter ? [additionalFilter(task)] : []),
 						...(activeQuickFilters.size > 0
 							? [
-									some(Array.from(activeQuickFilters), (filter) =>
+									Array.from(activeQuickFilters).some((filter) =>
 										matchesQuickFilter(task, filter),
 									),
 								]

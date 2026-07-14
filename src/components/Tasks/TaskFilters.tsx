@@ -1,15 +1,13 @@
 import styled from "@emotion/styled"
 import type { ColumnFiltersState } from "@tanstack/react-table"
-import { filter } from "lodash"
-import { type ReactNode, useCallback } from "react"
-import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
+import { type ReactNode, useCallback, useMemo } from "react"
+import type { TaskRowDto } from "src/api/model"
 import { exportTasksToExcel } from "src/functions/export-excel"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { QuickFilter } from "src/utils/filter-utils"
 import {
-	multiSelectFilter,
+	filterByTaskColumns,
 	sortByTaskColumns,
-	TASK_COLUMN_DEFINITIONS,
 	type TaskColumnMeta,
 } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
@@ -73,22 +71,12 @@ function TaskFilters<TTask extends TaskRowDto>({
 		onClearQuickFilters?.()
 	}
 
-	const allColumnFilters = [...urlColumnFilters, ...columnsFilters]
+	const allColumnFilters = useMemo(
+		() => [...urlColumnFilters, ...columnsFilters],
+		[urlColumnFilters, columnsFilters],
+	)
 
-	const taskRowsForCounts =
-		allColumnFilters.length === 0
-			? allTaskRows
-			: filter(filteredTaskRows, (task) =>
-					allColumnFilters.every(({ id, value }, index) => {
-						const defId = id as keyof TaskRowWithWorkspaceDto
-						const accessorFn = TASK_COLUMN_DEFINITIONS[defId]?.accessorFn
-
-						return (
-							!accessorFn ||
-							multiSelectFilter(accessorFn?.(task, index), value as string[])
-						)
-					}),
-				)
+	const taskRowsForCounts = filterByTaskColumns(allTaskRows, allColumnFilters)
 
 	const overdueCount = taskRowsForCounts.filter((t) =>
 		matchesQuickFilter(t, QuickFilter.OVERDUE),
@@ -102,11 +90,14 @@ function TaskFilters<TTask extends TaskRowDto>({
 
 	const handleExport = useCallback(() => {
 		exportTasksToExcel(
-			sortByTaskColumns(taskRowsForCounts, sorting),
+			sortByTaskColumns(
+				filterByTaskColumns(filteredTaskRows, allColumnFilters),
+				sorting,
+			),
 			columnOrder,
 			hiddenColumns,
 		)
-	}, [taskRowsForCounts, columnOrder, hiddenColumns, sorting])
+	}, [filteredTaskRows, columnOrder, hiddenColumns, sorting, allColumnFilters])
 
 	return (
 		<FilterBar
