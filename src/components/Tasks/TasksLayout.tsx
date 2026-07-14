@@ -23,11 +23,10 @@ import {
 import type { QuickFilter } from "src/utils/filter-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
-import { FilterSeparator } from "../shared/FilterBar"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import { TooltipProvider } from "../ui/tooltip"
 import { TaskCardGrid } from "./TaskCardGrid"
-import { TaskFilters } from "./TaskFilters"
+import { FilterSeparator, TaskFilters } from "./TaskFilters"
 import { TaskTable } from "./TaskTable"
 
 export interface TasksLayoutProps {
@@ -50,7 +49,7 @@ function TasksLayout({
 	const { columnOrder, hiddenColumns, toggleQuickFilter } = useTasksFilters()
 
 	const {
-		workspace: { id: workspaceId },
+		workspace: { id: workspaceId, title: workspaceTitle },
 		statuses,
 	} = useWorkspace()
 
@@ -164,10 +163,12 @@ function TasksLayout({
 					onToggleTabFilter={handleToggleTabFilter}
 					urlColumnFilters={urlColumnFilters}
 					startSlot={<TasksDatePicker />}
+					exportFilePrefix={workspaceTitle}
 					extraButtons={
 						myPermission?.type === PermissionType.MANAGER && (
 							<ButtonGroup>
 								<FilterSeparator />
+
 								<CreateTaskButton view={view} />
 							</ButtonGroup>
 						)
