@@ -5,6 +5,8 @@ import { Plus, Search } from "lucide-react"
 import { useMemo, useState } from "react"
 import { getGetMyPermissionQueryOptions } from "src/api/permission/permission"
 import { useListWorkspaces } from "src/api/workspace/workspace"
+import emptyWorkspacesImage from "src/assets/empty-states/empty-workspace.svg"
+import { EmptyCardState } from "src/components/shared/EmptyCardState"
 import WorkspaceCard from "./WorkspaceCard"
 
 export default function SpacesContainer() {
@@ -28,6 +30,11 @@ export default function SpacesContainer() {
 		}
 		return ids
 	}, [permissionQueries])
+
+	const allQueriesLoaded =
+		permissionQueries.length > 0 && permissionQueries.every((q) => !q.isLoading)
+
+	const hasNoPermissions = allQueriesLoaded && myWorkspaceIds.size === 0
 
 	function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
 		setSearchQuery(e.target.value)
@@ -87,11 +94,19 @@ export default function SpacesContainer() {
 				</TabsRow>
 			</TopSection>
 
-			<WorkspacesContainer>
-				{filtered.map((ws) => (
-					<WorkspaceCard key={ws.urlName} workspace={ws} />
-				))}
-			</WorkspacesContainer>
+			{hasNoPermissions ? (
+				<EmptyCardState
+					imgSrc={emptyWorkspacesImage}
+					title="לא נמצאו הרשאות לסביבות"
+					description="ניתן לפנות למנהל סביבה כדי לקבל הרשאות"
+				/>
+			) : (
+				<WorkspacesContainer>
+					{filtered.map((ws) => (
+						<WorkspaceCard key={ws.urlName} workspace={ws} />
+					))}
+				</WorkspacesContainer>
+			)}
 		</SpaceContainerCard>
 	)
 }
