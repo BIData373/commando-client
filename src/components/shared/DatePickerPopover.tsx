@@ -26,6 +26,7 @@ interface DatePickerPopoverProps {
 	align?: "start" | "center" | "end"
 	side?: "top" | "right" | "bottom" | "left"
 	sideOffset?: number
+	showWeekNumber?: boolean
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -42,6 +43,7 @@ function DatePickerPopover({
 	align = "end",
 	side,
 	sideOffset = 8,
+	showWeekNumber,
 }: DatePickerPopoverProps) {
 	const [uncontrolledOpen, setUncontrolledOpen] = useState(false)
 	const [value, setValue] = useState<DatePickerValue | undefined>(initialValue)
@@ -87,7 +89,13 @@ function DatePickerPopover({
 					sideOffset={sideOffset}
 				>
 					{header?.(slotProps)}
-					<DatePicker mode={mode} selected={value} onSelect={handleSelect} />
+
+					<DatePicker
+						mode={mode}
+						selected={value}
+						showWeekNumber={showWeekNumber}
+						onSelect={handleSelect}
+					/>
 					{footer?.(slotProps)}
 				</PopoverContent>
 			</Popover.Portal>
