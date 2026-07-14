@@ -16,8 +16,8 @@ import {
 	DropdownMenuSeparator,
 } from "./ui/dropdown-menu"
 
-const PERMISSION_LABEL: Record<PermissionType, string> = {
-	VIEWER: "צופה",
+export const PERMISSION_LABEL: Record<PermissionType, string> = {
+	VIEWER: "צפייה",
 	MANAGER: "ניהול",
 }
 

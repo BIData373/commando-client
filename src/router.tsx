@@ -17,6 +17,7 @@ export interface HeaderConfig {
 	pageTitle?: ReactNode
 	headerTitle?: ReactNode
 	user?: boolean
+	hidden?: boolean
 }
 
 declare module "@tanstack/react-router" {

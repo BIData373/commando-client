@@ -26,6 +26,8 @@ export default function Header() {
 		elementPlacements: { right, center, titleBar, user },
 	} = useHeader()
 
+	if (headerConfig?.hidden) return null
+
 	const showTitleBar = pageTitle || titleBar
 
 	const title = headerTitle ?? center
