@@ -139,7 +139,7 @@ function EditDiscussionModal({
 
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
-			<ModalCard closable={false}>
+			<ModalCard closable={!hasChanges}>
 				<ModalBody>
 					<HeaderSection>
 						<ModalTitle>עריכת פרטי דיון</ModalTitle>

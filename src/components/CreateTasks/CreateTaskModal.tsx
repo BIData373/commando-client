@@ -332,7 +332,7 @@ function CreateTaskModal({
 
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
-			<ModalCard closable={false}>
+			<ModalCard closable={!isEditMode || !hasChanges}>
 				<ModalBody>
 					<ModalHeader $shadow={scrollShadow.top}>
 						<ModalTitle>
