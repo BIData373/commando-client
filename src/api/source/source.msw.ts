@@ -50,6 +50,7 @@ export const getCreateSourceResponseMock = (
 		]),
 		null,
 	]),
+	draft: faker.datatype.boolean(),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -106,6 +107,7 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 			]),
 			null,
 		]),
+		draft: faker.datatype.boolean(),
 		tags: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
@@ -159,6 +161,7 @@ export const getGetSourceResponseMock = (
 		]),
 		null,
 	]),
+	draft: faker.datatype.boolean(),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -213,6 +216,7 @@ export const getUpdateSourceResponseMock = (
 		]),
 		null,
 	]),
+	draft: faker.datatype.boolean(),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -267,6 +271,7 @@ export const getDeleteSourceResponseMock = (
 		]),
 		null,
 	]),
+	draft: faker.datatype.boolean(),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -401,10 +406,32 @@ export const getDeleteSourceMockHandler = (
 		options,
 	)
 }
+
+export const getAiExtractionCallbackMockHandler = (
+	overrideResponse?:
+		| void
+		| ((
+				info: Parameters<Parameters<typeof http.post>[1]>[0],
+		  ) => Promise<void> | void),
+	options?: RequestHandlerOptions,
+) => {
+	return http.post(
+		"*/source/:id/ai-result",
+		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+			if (typeof overrideResponse === "function") {
+				await overrideResponse(info)
+			}
+
+			return new HttpResponse(null, { status: 201 })
+		},
+		options,
+	)
+}
 export const getSourceMock = () => [
 	getCreateSourceMockHandler(),
 	getListSourcesMockHandler(),
 	getGetSourceMockHandler(),
 	getUpdateSourceMockHandler(),
 	getDeleteSourceMockHandler(),
+	getAiExtractionCallbackMockHandler(),
 ]

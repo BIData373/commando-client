@@ -24,5 +24,6 @@ export interface SourceDto {
 	attachmentKey: string | null
 	/** @nullable */
 	attachmentName: string | null
+	draft: boolean
 	tags: TagDto[]
 }
