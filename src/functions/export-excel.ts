@@ -1,4 +1,4 @@
-import { differenceInDays, startOfToday } from "date-fns"
+import { differenceInDays, format, startOfToday } from "date-fns"
 import ExcelJS from "exceljs"
 import { DeadlineType, type TaskRowDto } from "src/api/model"
 import { DEADLINE_LABELS } from "src/components/shared/DeadlineTag"
@@ -122,6 +122,7 @@ export async function exportTasksToExcel<TTask extends TaskRowDto>(
 	tasks: TTask[],
 	columnOrder: (keyof TTask)[],
 	hiddenColumns: Set<keyof TTask>,
+	fileNamePrefix?: string,
 ) {
 	await exportToExcel(
 		tasks,
@@ -135,7 +136,7 @@ export async function exportTasksToExcel<TTask extends TaskRowDto>(
 				.map((id) => COLUMN_DEFS[id as keyof TaskRowDto])
 				.filter((row) => !!row),
 		],
-		"הנחיות",
+		`${fileNamePrefix ? `${fileNamePrefix} - ` : ""} הנחיות ${format(new Date(), "yyyy-MM-dd HH-mm-ss")}`,
 	)
 }
 

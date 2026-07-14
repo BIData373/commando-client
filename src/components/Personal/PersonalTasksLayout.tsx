@@ -107,6 +107,7 @@ function PersonalTasksLayout() {
 					hiddenColumns={hiddenColumns}
 					extraColumnsMeta={[{ id: "workspace", label: "מפקד מנחה" }]}
 					startSlot={<TasksDatePicker />}
+					exportFilePrefix="אזור אישי"
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label={
