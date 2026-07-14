@@ -108,6 +108,7 @@ function DeadlineCell({
 							sideOffset={12}
 							align="start"
 							onChange={handleSetDate}
+							showWeekNumber={false}
 							triggerButton={() => <HiddenAnchor />}
 							header={() => (
 								<PopoverHeaderText>
