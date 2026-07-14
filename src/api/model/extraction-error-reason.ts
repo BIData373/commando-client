@@ -10,6 +10,6 @@ export type ExtractionErrorReason =
 	(typeof ExtractionErrorReason)[keyof typeof ExtractionErrorReason]
 
 export const ExtractionErrorReason = {
-	EXTRACTION: "EXTRACTION",
-	AI_SERVICE: "AI_SERVICE",
+	BACKEND_ERROR: "BACKEND_ERROR",
+	AI_SERVICE_ERROR: "AI_SERVICE_ERROR",
 } as const
