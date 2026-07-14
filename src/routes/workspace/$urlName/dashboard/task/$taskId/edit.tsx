@@ -18,7 +18,7 @@ function DashboardTaskEdit() {
 		navigate({ to: "/workspace/$urlName/dashboard", params: { urlName } })
 	}
 
-	function handleSave() {
+	function navigateView() {
 		navigate({
 			to: "/workspace/$urlName/dashboard/task/$taskId",
 			params: { urlName, taskId },
@@ -32,7 +32,8 @@ function DashboardTaskEdit() {
 			workspaceId={task.workspace.id}
 			task={task}
 			onClose={handleClose}
-			onSave={handleSave}
+			onSave={navigateView}
+			onCancel={navigateView}
 		/>
 	)
 }

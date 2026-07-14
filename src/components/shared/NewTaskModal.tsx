@@ -31,7 +31,11 @@ export function NewTaskModal({ mode, onClose }: NewTaskModalProps) {
 			{mode === NewTaskMode.DISCUSSION ? (
 				<CreateDiscussionModal onClose={onClose} />
 			) : (
-				<CreateTaskModal workspaceId={workspaceId} onClose={onClose} />
+				<CreateTaskModal
+					workspaceId={workspaceId}
+					onClose={onClose}
+					onCancel={onClose}
+				/>
 			)}
 		</AuthorizationWrapper>
 	)

@@ -17,7 +17,7 @@ function PersonalTaskEdit() {
 		navigate({ to: "/personal", search: { view: TasksView.TABLE } })
 	}
 
-	function handleSave() {
+	function navigateView() {
 		navigate({
 			to: "/personal/task/$taskId",
 			params: { taskId },
@@ -34,7 +34,8 @@ function PersonalTaskEdit() {
 			workspaceId={task.workspace.id}
 			task={task}
 			onClose={handleClose}
-			onSave={handleSave}
+			onSave={navigateView}
+			onCancel={navigateView}
 		/>
 	)
 }
