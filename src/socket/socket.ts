@@ -1,20 +1,15 @@
 import { io } from "socket.io-client"
 import {
 	IS_BI_HEADER,
-	isBIKey,
 	REQUEST_USERNAME_HEADER,
-	requestUsernameKey,
 	STATIC_TOKEN_HEADER,
 } from "../axios"
 import { getStoredToken } from "../utils/auth-utils"
 import { API_BASE_URL, STATIC_TOKEN } from "../utils/env-utils"
+import { getRequestIdentity } from "../utils/request-utils"
 
 export function createSocket(urlName: string) {
-	const rawUsername = localStorage.getItem(requestUsernameKey)
-	const username =
-		rawUsername !== null ? (JSON.parse(rawUsername) as string | null) : null
-	const rawIsBI = localStorage.getItem(isBIKey)
-	const isBI = rawIsBI !== null ? rawIsBI === "true" : null
+	const { username, isBI } = getRequestIdentity()
 
 	return io(API_BASE_URL, {
 		transports: ["websocket"],
