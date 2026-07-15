@@ -26,6 +26,8 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import { serializeFormData } from "../../form-data"
 import type {
+	AIExtractionCallbackDto,
+	AiExtractionCallbackPathParameters,
 	CreateSourceDto,
 	DeleteSourcePathParameters,
 	GetSourcePathParameters,
@@ -524,4 +526,100 @@ export const useDeleteSource = <
 	TContext
 > => {
 	return useMutation(getDeleteSourceMutationOptions(options), queryClient)
+}
+export const aiExtractionCallback = (
+	{ id }: AiExtractionCallbackPathParameters,
+	aIExtractionCallbackDto: AIExtractionCallbackDto,
+	signal?: AbortSignal,
+) => {
+	return sendRequest<void>({
+		url: `/source/${id}/ai-result`,
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		data: aIExtractionCallbackDto,
+		signal,
+	})
+}
+
+export const getAiExtractionCallbackMutationOptions = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(options?: {
+	mutation?: UseMutationOptions<
+		Awaited<ReturnType<typeof aiExtractionCallback>>,
+		TError,
+		{
+			pathParams: AiExtractionCallbackPathParameters
+			data: AIExtractionCallbackDto
+		},
+		TContext
+	>
+}): UseMutationOptions<
+	Awaited<ReturnType<typeof aiExtractionCallback>>,
+	TError,
+	{
+		pathParams: AiExtractionCallbackPathParameters
+		data: AIExtractionCallbackDto
+	},
+	TContext
+> => {
+	const mutationKey = ["aiExtractionCallback"]
+	const { mutation: mutationOptions } = options
+		? options.mutation &&
+			"mutationKey" in options.mutation &&
+			options.mutation.mutationKey
+			? options
+			: { ...options, mutation: { ...options.mutation, mutationKey } }
+		: { mutation: { mutationKey } }
+
+	const mutationFn: MutationFunction<
+		Awaited<ReturnType<typeof aiExtractionCallback>>,
+		{
+			pathParams: AiExtractionCallbackPathParameters
+			data: AIExtractionCallbackDto
+		}
+	> = (props) => {
+		const { pathParams, data } = props ?? {}
+
+		return aiExtractionCallback(pathParams, data)
+	}
+
+	return { mutationFn, ...mutationOptions }
+}
+
+export type AiExtractionCallbackMutationResult = NonNullable<
+	Awaited<ReturnType<typeof aiExtractionCallback>>
+>
+export type AiExtractionCallbackMutationBody = AIExtractionCallbackDto
+export type AiExtractionCallbackMutationError = ErrorType<unknown>
+
+export const useAiExtractionCallback = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
+	options?: {
+		mutation?: UseMutationOptions<
+			Awaited<ReturnType<typeof aiExtractionCallback>>,
+			TError,
+			{
+				pathParams: AiExtractionCallbackPathParameters
+				data: AIExtractionCallbackDto
+			},
+			TContext
+		>
+	},
+	queryClient?: QueryClient,
+): UseMutationResult<
+	Awaited<ReturnType<typeof aiExtractionCallback>>,
+	TError,
+	{
+		pathParams: AiExtractionCallbackPathParameters
+		data: AIExtractionCallbackDto
+	},
+	TContext
+> => {
+	return useMutation(
+		getAiExtractionCallbackMutationOptions(options),
+		queryClient,
+	)
 }

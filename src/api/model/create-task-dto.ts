@@ -7,6 +7,7 @@
  */
 import type { DeadlineType } from "./deadline-type"
 import type { GetTaskAssigneeDto } from "./get-task-assignee-dto"
+import type { TaskCreationType } from "./task-creation-type"
 
 export interface CreateTaskDto {
 	title: string
@@ -17,6 +18,7 @@ export interface CreateTaskDto {
 	dueDate?: Date | null
 	notes?: string
 	tags?: string[]
+	creationType?: TaskCreationType
 	workspaceId: number
 	/** @nullable */
 	sourceId?: number | null
