@@ -5,14 +5,14 @@ import { WorkspaceStatusType } from "src/api/model"
 import { useListPersonalTaskRows } from "src/api/task/task"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
 import { STATUS_DEFAULTS } from "src/functions/status-defaults"
+import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
-interface PersonalAreaCardProps {
-	userName: string
-}
-
-export default function PersonalAreaCard({ userName }: PersonalAreaCardProps) {
+export default function PersonalAreaCard() {
 	const navigate = useNavigate()
+	const user = useCurrentUser()
+	const userName = user.info?.name || user.upn
+
 	const { data: allTaskRows = [] } = useListPersonalTaskRows()
 
 	const totalCount = allTaskRows.length
@@ -37,7 +37,7 @@ export default function PersonalAreaCard({ userName }: PersonalAreaCardProps) {
 		<CardRoot onClick={handleNavigateToPersonal}>
 			<Header>
 				<TitleRow>
-					<NewTaskCount>({totalCount} הנחיות חדשות)</NewTaskCount>
+					{/* <NewTaskCount>({totalCount} הנחיות חדשות)</NewTaskCount> */}
 					<Title>אזור אישי</Title>
 				</TitleRow>
 				<Greeting>
@@ -97,21 +97,19 @@ export default function PersonalAreaCard({ userName }: PersonalAreaCardProps) {
 const CardRoot = styled.button`
   direction: ltr;
   display: flex;
-  height: 229px;
-  padding: 24px 48px 32px 48px;
+  height: clamp(140px, 21.2vh, 229px);
+  padding: clamp(12px, 2.2vh, 24px) clamp(24px, 2.5vw, 48px) clamp(16px, 3vh, 32px);
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-end;
   align-self: stretch;
   border-radius: 8px;
   background: var(--background);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03),
-    0 1px 6px -1px rgba(0, 0, 0, 0.02),
-    0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  box-shadow: var(--card-shadow-default);
   cursor: pointer;
 
   :hover {
-    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--card-shadow-hover);
   }
 `
 
@@ -131,19 +129,19 @@ const TitleRow = styled.div`
 `
 
 const Title = styled.span`
-  color: #1d293d;
-  font-size: 34px;
+  color: var(--Color-Subtitle);
+  font-size: clamp(22px, 1.8vw, 34px);
   font-weight: 400;
-  line-height: 46px;
+  line-height: clamp(30px, 4.3vh, 46px);
 `
 
-const NewTaskCount = styled.span`
-  direction: rtl;
-  color: rgba(0, 0, 0, 0.45);
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 38px;
-`
+// const NewTaskCount = styled.span`
+//   direction: rtl;
+//   color: rgba(0, 0, 0, 0.45);
+//   font-size: clamp(14px, 1vw, 20px);
+//   font-weight: 400;
+//   line-height: clamp(24px, 3.5vh, 38px);
+// `
 
 const Greeting = styled.div`
   display: flex;
@@ -151,17 +149,17 @@ const Greeting = styled.div`
 `
 
 const GreetingBold = styled.span`
-  color: rgba(0, 0, 0, 0.65);
-  font-size: 20px;
+  color: var(--text-color);
+  font-size: clamp(14px, 1vw, 20px);
   font-weight: 500;
-  line-height: 28px;
+  line-height: clamp(20px, 2.6vh, 28px);
 `
 
 const GreetingText = styled.span`
-  color: rgba(0, 0, 0, 0.65);
-  font-size: 20px;
+  color: var(--text-color);
+  font-size: clamp(14px, 1vw, 20px);
   font-weight: 400;
-  line-height: 28px;
+  line-height: clamp(20px, 2.6vh, 28px);
 `
 
 const Footer = styled.div`
@@ -188,7 +186,7 @@ const StatNumber = styled.span`
   font-size: 24px;
   font-weight: 400;
   line-height: 32px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   white-space: nowrap;
 `
 
@@ -196,7 +194,7 @@ const EmptyText = styled.span`
   font-size: 20px;
   font-weight: 400;
   line-height: 28px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   direction: rtl;
   white-space: nowrap;
 `

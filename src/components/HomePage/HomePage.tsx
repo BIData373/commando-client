@@ -6,8 +6,6 @@ import HomeFooter from "./HomeFooter"
 import PersonalAreaCard from "./PersonalAreaCard"
 
 export default function HomePage() {
-	const userName = "יובל" // TODO: fetch the user's name from the auth context or API
-
 	return (
 		<PageRoot>
 			<TopBar>
@@ -17,13 +15,10 @@ export default function HomePage() {
 				</TitleGroup>
 				<Logo src={logoWithText} alt="Vector" />
 			</TopBar>
-
 			<ContentWrapper>
-				<PersonalAreaCard userName={userName} />
-
+				<PersonalAreaCard />
 				<SpacesContainer />
 			</ContentWrapper>
-
 			<HomeFooter />
 		</PageRoot>
 	)
@@ -33,7 +28,7 @@ const PageRoot = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 100px 150px;
+  padding: clamp(32px, 9.3vh, 100px) clamp(32px, 7.8vw, 150px);
   width: 100%;
   height: 100%;
   background: url(${backgroundImage}) no-repeat bottom left;
@@ -46,7 +41,8 @@ const TopBar = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding-bottom: 64px;
+  padding-bottom: clamp(24px, 5.9vh, 64px);
+  flex-shrink: 0;
 `
 
 const Logo = styled.img`
@@ -57,31 +53,34 @@ const TitleGroup = styled.div`
   display: flex;
   align-items: flex-end;
   gap: 16px;
-  color: #030852;
+  color: var(--Colors-Base-Geekblue-10);
   text-align: end;
 `
 
 const MainTitle = styled.span`
-  font-size: 64px;
+  font-size: clamp(32px, 3.3vw, 64px);
   font-weight: 500;
-  line-height: 46px;
+  line-height: clamp(24px, 4.3vh, 46px);
   white-space: nowrap;
 `
 
 const Subtitle = styled.span`
-  font-size: 38px;
+  font-size: clamp(20px, 2vw, 38px);
   font-weight: 400;
-  line-height: 46px;
+  line-height: clamp(24px, 4.3vh, 46px);
   white-space: nowrap;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  height: 26px;
 `
 
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 48px;
+  gap: clamp(16px, 4.4vh, 48px);
   align-self: stretch;
+  flex: 1;
+  min-height: 0;
 `

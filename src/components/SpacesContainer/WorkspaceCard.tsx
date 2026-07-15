@@ -64,19 +64,18 @@ export default function WorkspaceCard({
 const CardRoot = styled.div`
   display: flex;
   width: 205px;
+  height: 219px;
   padding: 16px;
   flex-direction: column;
   align-items: center;
   gap: 12px;
   border-radius: 8px;
-  background: white;
+  background: var(--background);
   cursor: pointer;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03),
-    0 1px 6px -1px rgba(0, 0, 0, 0.02),
-    0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  box-shadow: var(--card-shadow-default);
 
   &:hover {
-	box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+	box-shadow: var(--card-shadow-hover);
   }
 `
 
@@ -97,7 +96,7 @@ const PermissionBadge = styled.div`
 const PermissionText = styled.span`
   font-size: 14px;
   font-weight: 400;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   white-space: nowrap;
 `
 
@@ -105,7 +104,7 @@ const PermissionDot = styled.div`
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #95DE64;
+  background: var(--Success-color-success-border-hover);
 `
 
 const AvatarWrapper = styled(MesibaAvatarRoot)`
@@ -125,7 +124,7 @@ const TitleText = styled.span`
   font-size: var(--fs-xl);
   font-weight: 400;
   line-height: 28px;
-  color: #1d293d;
+  color: var(--Color-Subtitle);
   text-align: center;
   overflow: hidden;
   white-space: nowrap;

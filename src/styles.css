@@ -35,6 +35,7 @@ body,
   --card-foreground: oklch(0.14 0 0);
   --popover: oklch(1.00 0 0);
   --popover-foreground: oklch(0.14 0 0);
+  --hover-primary: #9a99ff;
   --primary: oklch(59.95% 0.22 277.99);
   --primary-foreground: oklch(98.221% 0.00423 271.371);
   --secondary: oklch(0.97 0 0);
@@ -90,7 +91,7 @@ body,
   --card-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
   --card-shadow-default: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
   --card-shadow-hover: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
-  
+
   --card-border: #d9d9d9;
   --background-area: #fafafa;
   --background-assignee: #fcfcfc;
@@ -107,15 +108,17 @@ body,
   --Colors-Base-Geekblue-6: oklch(52.19% 0.23 266.86);
   --Colors-Base-Green-1: oklch(98.84% 0.03 128.91);
   --Colors-Base-Green-6: oklch(72.56% 0.22 138.51);
-
   --Colors-Base-Red-1: oklch(96.89% 0.02 22.01);
   --Colors-Base-Red-3: oklch(80.61% 0.11 23.14);
   --Colors-Base-Red-6: oklch(62.1% 0.24 26.06);
-
+  
   --Colors-Base-Blue-1: oklch(96% 0.02 241.5);
   --Colors-Base-Blue-3: oklch(80.61% 0.11 241.5);
   --Colors-Base-Blue-6: oklch(52.19% 0.23 241.5);
-
+  
+  --Success-color-success-border-hover: #95DE64;
+  --Color-Subtitle: #1d293d;
+  --Colors-Base-Geekblue-10: #030852;
   --Colors-Brand-Warning-colorWarningText: oklch(80.16% 0.17 76);
   --Border-color-border-secondary: #303030;
   --Error-color-error: #DC4446;
@@ -182,6 +185,7 @@ body,
   --shadow-inset: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
   --shadow-popover: 0 8px 32px rgba(0, 0, 0, 0.12);
   --shadow-button: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
+  --shadow-button-hover: 0 2px 0 rgba(5, 145, 255, 0.1);
 }
 
 .dark {

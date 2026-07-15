@@ -8,8 +8,16 @@ import {
 } from "src/utils/env-utils"
 
 export default function HomeFooter() {
-	function handleOpenLink(url: string) {
-		window.open(url, "_blank")
+	function handleOpenUserGuide() {
+		window.open(USER_GUIDE_URL, "_blank")
+	}
+
+	function handleOpenPortalCatalog() {
+		window.open(PORTAL_CATALOG_URL, "_blank")
+	}
+
+	function handleOpenChatChannel() {
+		window.open(CHAT_CHANNEL_URL, "_blank")
 	}
 
 	return (
@@ -21,16 +29,16 @@ export default function HomeFooter() {
 			</FooterLeft>
 
 			<FooterRight>
-				<OutlineGradientButton onClick={() => handleOpenLink(USER_GUIDE_URL)}>
+				<OutlineGradientButton onClick={handleOpenUserGuide}>
 					<GradientText>מארז הדרכה</GradientText>
 					<GradientBookIcon size={18} />
 				</OutlineGradientButton>
 
-				<IconButton onClick={() => handleOpenLink(PORTAL_CATALOG_URL)}>
+				<IconButton onClick={handleOpenPortalCatalog}>
 					<TbGridDots size={18} />
 				</IconButton>
 
-				<IconButton onClick={() => handleOpenLink(CHAT_CHANNEL_URL)}>
+				<IconButton onClick={handleOpenChatChannel}>
 					<TbMessage size={18} />
 				</IconButton>
 			</FooterRight>
@@ -44,7 +52,8 @@ const FooterRoot = styled.footer`
   align-items: flex-end;
   justify-content: space-between;
   width: 100%;
-  padding-top: 24px;
+  padding-top: clamp(8px, 2.2vh, 24px);
+  flex-shrink: 0;
 `
 
 const FooterLeft = styled.div`
@@ -61,10 +70,10 @@ const FooterIcon = styled.img`
 
 const FooterText = styled.span`
   direction: rtl;
-  font-size: 20px;
+  font-size: clamp(14px, 1vw, 20px);
   font-weight: 400;
-  line-height: 27px;
-  color: rgba(0, 0, 0, 0.88);
+  line-height: clamp(20px, 2.5vh, 27px);
+  color: var(--text-color-2);
   white-space: nowrap;
 `
 
@@ -81,16 +90,16 @@ const OutlineGradientButton = styled.button`
   gap: 8px;
   height: 40px;
   padding-inline: 16px;
-  background: white;
-  border: 1px solid #6866ff;
+  background: var(--background);
+  border: 1px solid var(--primary);
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 2px 0 rgba(5, 145, 255, 0.1);
-  color: #6866ff;
+  box-shadow: var(--shadow-button-hover);
+  color: var(--primary);
 
   &:hover {
-    border-color: #9a99ff;
-    color: #9a99ff;
+    border-color: var(--hover-primary);
+    color: var(--hover-primary);
   }
 `
 
@@ -112,12 +121,12 @@ const IconButton = styled.button`
   justify-content: center;
   width: 40px;
   height: 40px;
-  background: white;
-  border: 1px solid #d9d9d9;
+  background: var(--background);
+  border: 1px solid var(--card-border);
   border-radius: 8px;
   cursor: pointer;
-  color: rgba(0, 0, 0, 0.88);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
+  color: var(--text-color-2);
+  box-shadow: var(--shadow-button);
 
   :hover{
     background: var(--link-bg-hover);

@@ -94,12 +94,14 @@ export default function SpacesContainer() {
 				</TabsRow>
 			</TopSection>
 
-			{hasNoPermissions ? (
-				<EmptyCardState
-					imgSrc={emptyWorkspacesImage}
-					title="לא נמצאו הרשאות לסביבות"
-					description="ניתן לפנות למנהל סביבה כדי לקבל הרשאות"
-				/>
+			{hasNoPermissions && activeTab === "mine" ? (
+				<EmptySpace>
+					<EmptyCardState
+						imgSrc={emptyWorkspacesImage}
+						title="לא נמצאו הרשאות לסביבות"
+						description="ניתן לפנות למנהל סביבה כדי לקבל הרשאות"
+					/>
+				</EmptySpace>
 			) : (
 				<WorkspacesContainer>
 					{filtered.map((ws) => (
@@ -113,16 +115,14 @@ export default function SpacesContainer() {
 
 const SpaceContainerCard = styled.div`
   display: flex;
-  height: 412px;
-  padding: 20px 48px 0 48px;
+  padding: clamp(12px, 1.9vh, 20px) clamp(24px, 2.5vw, 48px) 0;
   flex-direction: column;
   align-items: flex-start;
-  gap: 24px;
+  gap: clamp(12px, 2.2vh, 24px);
   align-self: stretch;
+  flex: 1;
+  min-height: 0;
   border-radius: 8px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03),
-    0 1px 6px -1px rgba(0, 0, 0, 0.02),
-    0 2px 4px 0 rgba(0, 0, 0, 0.02);
 `
 
 const HeaderRow = styled.div`
@@ -135,10 +135,10 @@ const HeaderRow = styled.div`
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: 34px;
+  font-size: clamp(22px, 1.8vw, 34px);
   font-weight: 400;
-  line-height: 46px;
-  color: #1d293d;
+  line-height: clamp(30px, 4.3vh, 46px);
+  color: var(--Color-Subtitle);
   white-space: nowrap;
 `
 
@@ -155,16 +155,16 @@ const NewWorkspaceButton = styled.button`
   gap: 8px;
   height: 40px;
   padding: 0 15px;
-  background: white;
-  border: 1px solid #6866ff;
+  background: var(--background);
+  border: 1px solid var(--primary);
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
-  color: #6866ff;
+  box-shadow: var(--shadow-button);
+  color: var(--primary);
 
   &:hover {
-    border-color: #9a99ff;
-    color: #9a99ff;
+    border-color: var(--hover-primary);
+    color: var(--hover-primary);
   }
 `
 
@@ -193,20 +193,20 @@ const SearchInput = styled.input`
   height: 40px;
   padding: 8px;
   padding-inline-start: 40px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--card-border);
   border-radius: 8px;
-  background: white;
+  background: var(--background);
   font-size: var(--fs-lg);
   color: var(--sea-ink);
   outline: none;
   text-align: start;
 
   &::placeholder {
-    color: rgba(0, 0, 0, 0.25);
+    color: var(--Text-color-text-placeholder);
   }
 
   &:focus {
-    border-color: #6866ff;
+    border-color: var(--primary);
   }
 `
 
@@ -214,7 +214,7 @@ const SearchIconWrapper = styled.span`
   position: absolute;
   inset-inline-end: 8px;
   display: flex;
-  color: rgba(0, 0, 0, 0.25);
+  color: var(--Text-color-text-placeholder);
   pointer-events: none;
 `
 
@@ -232,18 +232,18 @@ const TabsRow = styled.div`
   justify-content: flex-end;
   padding-inline: 8px;
   width: auto;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--line);
 `
 
 const Tab = styled.button<{ $active: boolean }>`
   padding-bottom: 4px;
   border: none;
-  border-bottom: 2px solid ${({ $active }) => ($active ? "#6866ff" : "transparent")};
+  border-bottom: 2px solid ${({ $active }) => ($active ? "var(--primary)" : "transparent")};
   background: none;
   cursor: pointer;
   font-size: 14px;
   font-weight: ${({ $active }) => ($active ? 500 : 400)};
-  color: ${({ $active }) => ($active ? "#6866ff" : "rgba(0, 0, 0, 0.25)")};
+  color: ${({ $active }) => ($active ? "var(--primary)" : "var(--Text-color-text-placeholder)")};
   line-height: 22px;
   white-space: nowrap;
 `
@@ -259,4 +259,10 @@ const WorkspacesContainer = styled.div`
   padding-bottom: 16px;
   justify-content: flex-end;
   padding-right: 4px;
+`
+
+const EmptySpace = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
 `
