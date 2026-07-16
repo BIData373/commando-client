@@ -14,14 +14,16 @@ export enum NewTaskMode {
 export const newTaskSearchSchema = z.object({
 	mode: z.nativeEnum(NewTaskMode).default(NewTaskMode.SINGLE),
 	view: z.nativeEnum(TasksView).default(TasksView.TABLE),
+	sourceId: z.number().optional(),
 })
 
 interface NewTaskModalProps {
 	mode: NewTaskMode
 	onClose: () => void
+	sourceId?: number
 }
 
-export function NewTaskModal({ mode, onClose }: NewTaskModalProps) {
+export function NewTaskModal({ mode, onClose, sourceId }: NewTaskModalProps) {
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
@@ -29,7 +31,7 @@ export function NewTaskModal({ mode, onClose }: NewTaskModalProps) {
 	return (
 		<AuthorizationWrapper type={PermissionType.MANAGER}>
 			{mode === NewTaskMode.DISCUSSION ? (
-				<CreateDiscussionModal onClose={onClose} />
+				<CreateDiscussionModal onClose={onClose} sourceId={sourceId} />
 			) : (
 				<CreateTaskModal
 					workspaceId={workspaceId}

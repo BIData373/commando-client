@@ -7,7 +7,7 @@
  */
 import type { DeadlineType } from "./deadline-type"
 
-export interface AIExtractedTaskDto {
+export interface GetAIExtractedTaskDto {
 	title: string
 	deadlineType?: DeadlineType | null
 	/** @nullable */

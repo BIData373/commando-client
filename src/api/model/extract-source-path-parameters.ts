@@ -5,9 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { TaskDto } from "./task-dto"
 
-export interface SourceExtractionSuccessDto {
-	sourceId: number
-	tasks: TaskDto[]
+export type ExtractSourcePathParameters = {
+	id: number
 }

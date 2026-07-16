@@ -170,6 +170,7 @@ body,
   /* Purple accent */
   --purple-start: oklch(0.60 0.23 272);
   --purple-end: oklch(0.46 0.32 305);
+  --purple-accent-rgb: 104, 102, 255;
 
   --shadow-2xs: 0 1px 3px 0px oklch(0.00 0 0 / 0.05);
   --shadow-xs: 0 1px 3px 0px oklch(0.00 0 0 / 0.05);
