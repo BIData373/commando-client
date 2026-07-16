@@ -96,7 +96,7 @@ const COLUMN_DEFS: Partial<
 		},
 	},
 	source: {
-		header: "מקור",
+		header: "מקור הנחיה",
 		accessor: (t) => {
 			if (!t.source) {
 				return ""

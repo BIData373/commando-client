@@ -31,7 +31,7 @@ interface SourceFieldProps {
 	linkedSource: SourceDto | null
 	onSourceSelect: (name: string, discussion?: SourceDto | null) => void
 	onDateSelect: (date: Date | undefined) => void
-	label?: string
+	label: string
 	uniqueNames?: boolean
 	fields?: SourceFieldValidation
 	required?: boolean
@@ -46,7 +46,7 @@ function SourceField({
 	linkedSource,
 	onSourceSelect,
 	onDateSelect,
-	label = "מקור",
+	label,
 	uniqueNames = false,
 	fields,
 	required = false,

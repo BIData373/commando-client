@@ -434,6 +434,7 @@ function CreateTaskModal({
 										{(field) => (
 											<SourceField
 												workspaceId={workspaceId}
+												label="מקור הנחיה"
 												source={values.source}
 												sourceDate={values.sourceDate}
 												linkedSource={values.linkedSource}
