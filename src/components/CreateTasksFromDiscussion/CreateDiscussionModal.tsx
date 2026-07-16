@@ -3,7 +3,7 @@ import { useForm } from "@tanstack/react-form"
 import { useNavigate } from "@tanstack/react-router"
 import { useStore } from "@tanstack/react-store"
 import { Check, Paperclip, Sparkles } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import {
 	type CreateSourceDto,
@@ -92,11 +92,8 @@ function CreateDiscussionModal({
 
 	const values = useStore(form.store, (state) => state.values)
 
-	const hasHydratedForm = useRef(false)
-
 	useEffect(() => {
-		if (!source || hasHydratedForm.current) return
-		hasHydratedForm.current = true
+		if (!source) return
 		form.setFieldValue("name", source.name)
 		form.setFieldValue("date", source.date)
 		form.setFieldValue(
@@ -104,7 +101,7 @@ function CreateDiscussionModal({
 			source.tags.map((tag) => tag.name),
 		)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [source])
+	}, [source?.id])
 
 	const isCurrentStepTasks = step === Steps.Tasks
 	const isDiscussionIncomplete = !values.name.trim() || !values.date
@@ -177,6 +174,14 @@ function CreateDiscussionModal({
 		}
 	}
 
+	function resolveCreationType(
+		taskId: number | undefined,
+		touched: boolean | undefined,
+	): TaskCreationType {
+		if (taskId === undefined) return TaskCreationType.HUMAN
+		return touched ? TaskCreationType.AI_HUMAN : TaskCreationType.AI
+	}
+
 	async function handleSave(taskRows: NewTaskRow[]) {
 		const inputs = taskRows.map(
 			({
@@ -184,7 +189,7 @@ function CreateDiscussionModal({
 				rowKey,
 				assigneeIds,
 				assigneeDetails,
-				creationType,
+				touched,
 				taskId,
 				...rest
 			}) => ({
@@ -193,10 +198,7 @@ function CreateDiscussionModal({
 				workspaceId,
 				sourceId: sourceId!,
 				groupKey: String(id),
-				creationType:
-					taskId !== undefined && creationType === TaskCreationType.AI
-						? TaskCreationType.AI_HUMAN
-						: creationType,
+				creationType: resolveCreationType(taskId, touched),
 				assignees: assigneeIds.map((assigneeId) => ({
 					id: assigneeId,
 					description: assigneeDetails[assigneeId] || undefined,

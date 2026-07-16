@@ -64,12 +64,13 @@ function CreateTasksTable({
 		useExtractSource()
 
 	// A source is pending extraction until the query or a socket push resolves
-	// it: no local terminal status yet, and either the source hasn't loaded or
-	// it has a non-null extractionStatus (i.e. extraction was requested).
+	// it: no local terminal status yet, and we haven't confirmed (via the
+	// loaded source) that extraction was never requested.
+	const hasConfirmedNoExtraction = source?.extractionStatus === null
 	const isExtracting =
 		sourceId !== undefined &&
 		extractionStatus === null &&
-		(!source || source.extractionStatus !== null)
+		!hasConfirmedNoExtraction
 
 	async function handleRetry() {
 		if (sourceId === undefined) return
@@ -152,7 +153,9 @@ function CreateTasksTable({
 
 	function updateRow(id: number, updates: Partial<NewTaskRow>) {
 		setRows((prev) => {
-			const next = prev.map((r) => (r.id === id ? { ...r, ...updates } : r))
+			const next = prev.map((r) =>
+				r.id === id ? { ...r, ...updates, touched: true } : r,
+			)
 			const last = next[next.length - 1]
 			if (last.title.trim()) {
 				next.push(createEmptyRow())
