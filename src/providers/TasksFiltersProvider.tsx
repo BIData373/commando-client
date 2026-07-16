@@ -6,6 +6,7 @@ import {
 	type PropsWithChildren,
 	type SetStateAction,
 	useContext,
+	useMemo,
 	useState,
 } from "react"
 import type { DateRange } from "react-day-picker"
@@ -92,8 +93,10 @@ export function TasksFiltersProvider({
 
 	const columnOrder = columnsVisibility.columnOrder
 
-	const hiddenColumns = new Set<keyof TaskRowWithWorkspaceDto>(
-		columnsVisibility.hiddenColumns,
+	const hiddenColumns = useMemo(
+		() =>
+			new Set<keyof TaskRowWithWorkspaceDto>(columnsVisibility.hiddenColumns),
+		[columnsVisibility.hiddenColumns],
 	)
 
 	function setColumnOrder(order: (keyof TaskRowWithWorkspaceDto)[]) {

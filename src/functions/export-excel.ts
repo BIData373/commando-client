@@ -1,6 +1,10 @@
 import { differenceInDays, format, startOfToday } from "date-fns"
 import ExcelJS from "exceljs"
-import { DeadlineType, type TaskRowDto } from "src/api/model"
+import {
+	DeadlineType,
+	type TaskRowDto,
+	type TaskRowWithWorkspaceDto,
+} from "src/api/model"
 import { DEADLINE_LABELS } from "src/components/shared/DeadlineTag"
 import { formatDate } from "./date-utils"
 
@@ -60,63 +64,69 @@ function getDeadlineDateStyle(task: TaskRowDto): Pick<CellValue, "fontColor"> {
 	return {}
 }
 
-const COLUMN_DEFS: Partial<Record<keyof TaskRowDto, ExportColumn<TaskRowDto>>> =
-	{
-		title: {
-			header: "ההנחיה",
-			maxWidth: 60,
-			accessor: (t) =>
-				t.description ? `${t.title} – ${t.description}` : t.title,
+const COLUMN_DEFS: Partial<
+	Partial<Record<keyof TaskRowWithWorkspaceDto, ExportColumn<TaskRowDto>>>
+> = {
+	title: {
+		header: "ההנחיה",
+		maxWidth: 60,
+		accessor: (t) =>
+			t.description ? `${t.title} – ${t.description}` : t.title,
+	},
+	status: {
+		header: "סטטוס",
+		accessor: (t) => ({
+			value: t.status?.name ?? "",
+			fontColor: t.status?.color,
+			bgColor: t.status?.color,
+		}),
+	},
+	assignee: {
+		header: "אחראי",
+		accessor: (t) => t.assignee?.name ?? "",
+	},
+	deadlineType: {
+		header: 'תג"ב',
+		accessor: (t) => {
+			const typeStr = DEADLINE_LABELS[t.deadlineType] ?? ""
+			const dateStr = t.dueDate ? formatDate(t.dueDate) : ""
+			const value =
+				typeStr && dateStr ? `${typeStr} | ${dateStr}` : typeStr || dateStr
+			return { value, ...getDeadlineDateStyle(t) }
 		},
-		status: {
-			header: "סטטוס",
-			accessor: (t) => ({
-				value: t.status?.name ?? "",
-				fontColor: t.status?.color,
-				bgColor: t.status?.color,
-			}),
-		},
-		assignee: {
-			header: "אחראי",
-			accessor: (t) => t.assignee?.name ?? "",
-		},
-		deadlineType: {
-			header: 'תג"ב',
-			accessor: (t) => {
-				const typeStr = DEADLINE_LABELS[t.deadlineType] ?? ""
-				const dateStr = t.dueDate ? formatDate(t.dueDate) : ""
-				const value =
-					typeStr && dateStr ? `${typeStr} | ${dateStr}` : typeStr || dateStr
-				return { value, ...getDeadlineDateStyle(t) }
-			},
-		},
-		source: {
-			header: "מקור",
-			accessor: (t) => {
-				if (!t.source) {
-					return ""
-				}
+	},
+	source: {
+		header: "מקור",
+		accessor: (t) => {
+			if (!t.source) {
+				return ""
+			}
 
-				const source = `${t.source.name} | ${formatDate(t.source.date)}`
-				return t.source.attachmentKey
-					? { value: source, link: t.source.attachmentKey }
-					: source
-			},
+			const source = `${t.source.name} | ${formatDate(t.source.date)}`
+			return t.source.attachmentKey
+				? { value: source, link: t.source.attachmentKey }
+				: source
 		},
-		tags: {
-			header: "נושא",
-			accessor: (t) => t.tags.map(({ name }) => name).join(", "),
-		},
-		notes: { header: "הערות", maxWidth: 50, accessor: (t) => t.notes ?? "" },
-		createdAt: {
-			header: "תאריך יצירה",
-			accessor: (t) => formatDate(t.createdAt),
-		},
-		updatedAt: {
-			header: "עודכן ב",
-			accessor: (t) => formatDate(t.updatedAt),
-		},
-	}
+	},
+	tags: {
+		header: "נושא",
+		accessor: (t) => t.tags.map(({ name }) => name).join(", "),
+	},
+	notes: { header: "הערות", maxWidth: 50, accessor: (t) => t.notes ?? "" },
+	createdAt: {
+		header: "תאריך יצירה",
+		accessor: (t) => formatDate(t.createdAt),
+	},
+	updatedAt: {
+		header: "עודכן ב",
+		accessor: (t) => formatDate(t.updatedAt),
+	},
+	workspace: {
+		header: "מפקד מנחה",
+		accessor: (t) =>
+			(t as Partial<TaskRowWithWorkspaceDto>).workspace?.title ?? "",
+	},
+}
 
 export async function exportTasksToExcel<TTask extends TaskRowDto>(
 	tasks: TTask[],
@@ -133,7 +143,7 @@ export async function exportTasksToExcel<TTask extends TaskRowDto>(
 			},
 			...columnOrder
 				.filter((id) => !hiddenColumns.has(id) && id in COLUMN_DEFS)
-				.map((id) => COLUMN_DEFS[id as keyof TaskRowDto])
+				.map((id) => COLUMN_DEFS[id as keyof TaskRowWithWorkspaceDto])
 				.filter((row) => !!row),
 		],
 		`${fileNamePrefix ? `${fileNamePrefix} - ` : ""} הנחיות ${format(new Date(), "yyyy-MM-dd HH-mm-ss")}`,

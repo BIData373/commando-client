@@ -1,29 +1,31 @@
 import styled from "@emotion/styled"
-import type { ColumnFiltersState } from "@tanstack/react-table"
-import { Download, FilterX, Search, X } from "lucide-react"
-import { type ReactNode, useCallback, useMemo } from "react"
+import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
+import { FilterX } from "lucide-react"
+import { type ReactNode, useMemo } from "react"
 import type { TaskRowDto } from "src/api/model"
-import { exportTasksToExcel } from "src/functions/export-excel"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { QuickFilter } from "src/utils/filter-utils"
 import {
-	filterByTaskColumns,
-	sortByTaskColumns,
+	buildCountingColumns,
 	type TaskColumnMeta,
 } from "src/utils/task-table-utils"
+import { useHeadlessTable } from "../../hooks/useHeadlessTable"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { ColumnVisibilityDropdown } from "../Tasks/ColumnVisibilityDropdown"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
+import { ExportButton } from "./ExportButton"
+import { TaskSearchInput } from "./TaskSearchInput"
 
 interface TaskFiltersProps<TTask extends TaskRowDto> {
 	allTaskRows: TTask[]
-	filteredTaskRows: TTask[]
+	filteredTasks: TTask[]
 	columnOrder: (keyof TTask)[]
 	hiddenColumns: Set<keyof TTask>
 	onClearColumnFilters?: () => void
 	onClearQuickFilters?: () => void
 	extraFilters?: ReactNode
 	extraButtons?: ReactNode
+	extraColumns?: ColumnDef<TTask>[]
 	extraColumnsMeta?: TaskColumnMeta[]
 	tabFilter?: QuickFilter[]
 	onToggleTabFilter?: (filter: QuickFilter) => void
@@ -34,12 +36,13 @@ interface TaskFiltersProps<TTask extends TaskRowDto> {
 
 export function TaskFilters<TTask extends TaskRowDto>({
 	allTaskRows,
-	filteredTaskRows,
+	filteredTasks,
 	columnOrder,
 	hiddenColumns,
 	onClearColumnFilters,
 	onClearQuickFilters,
 	extraFilters,
+	extraColumns = [],
 	extraColumnsMeta,
 	tabFilter,
 	onToggleTabFilter,
@@ -54,9 +57,6 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		clearQuickFilters,
 		columnsFilters,
 		setColumnsFilters,
-		sorting,
-		searchQuery,
-		setSearchQuery,
 	} = useTasksFilters()
 
 	const activeFilters =
@@ -82,38 +82,47 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		[urlColumnFilters, columnsFilters],
 	)
 
-	const taskRowsForCounts = filterByTaskColumns(allTaskRows, allColumnFilters)
+	const countingColumns = useMemo(
+		() => buildCountingColumns(extraColumns),
+		[extraColumns],
+	)
 
-	const overdueCount = taskRowsForCounts.filter((t) =>
-		matchesQuickFilter(t, QuickFilter.OVERDUE),
-	).length
+	const countingTable = useHeadlessTable({
+		data: allTaskRows,
+		columns: countingColumns,
+		columnFilters: allColumnFilters,
+	})
 
-	const approachingCount = taskRowsForCounts.filter((t) =>
-		matchesQuickFilter(t, QuickFilter.APPROACHING),
-	).length
+	const filteredRowsForCounts = countingTable.getFilteredRowModel().rows
 
-	const flaggedCount = taskRowsForCounts.filter((t) =>
-		matchesQuickFilter(t, QuickFilter.FLAGGED),
-	).length
+	const taskRowsForCounts = useMemo(
+		() => filteredRowsForCounts.map((row) => row.original),
+		[filteredRowsForCounts],
+	)
 
-	const handleExport = useCallback(() => {
-		exportTasksToExcel(
-			sortByTaskColumns(
-				filterByTaskColumns(filteredTaskRows, allColumnFilters),
-				sorting,
-			),
-			columnOrder,
-			hiddenColumns,
-			exportFilePrefix,
-		)
-	}, [
-		filteredTaskRows,
-		columnOrder,
-		hiddenColumns,
-		sorting,
-		allColumnFilters,
-		exportFilePrefix,
-	])
+	const overdueCount = useMemo(
+		() =>
+			taskRowsForCounts.filter((t) =>
+				matchesQuickFilter(t, QuickFilter.OVERDUE),
+			).length,
+		[taskRowsForCounts],
+	)
+
+	const approachingCount = useMemo(
+		() =>
+			taskRowsForCounts.filter((t) =>
+				matchesQuickFilter(t, QuickFilter.APPROACHING),
+			).length,
+		[taskRowsForCounts],
+	)
+
+	const flaggedCount = useMemo(
+		() =>
+			taskRowsForCounts.filter((t) =>
+				matchesQuickFilter(t, QuickFilter.FLAGGED),
+			).length,
+		[taskRowsForCounts],
+	)
 
 	return (
 		<BarRoot>
@@ -124,25 +133,16 @@ export function TaskFilters<TTask extends TaskRowDto>({
 
 				<ColumnVisibilityDropdown extraColumnsMeta={extraColumnsMeta} />
 
-				<ActionButton onClick={handleExport}>
-					<Download size={18} />
-				</ActionButton>
+				<ExportButton
+					tasks={filteredTasks}
+					allColumnFilters={allColumnFilters}
+					columnOrder={columnOrder}
+					hiddenColumns={hiddenColumns}
+					extraColumns={extraColumns}
+					exportFilePrefix={exportFilePrefix}
+				/>
 
-				<SearchInputWrapper>
-					<SearchField
-						placeholder="חפש הנחייה"
-						value={searchQuery}
-						onChange={(e) => setSearchQuery(e.target.value)}
-					/>
-
-					<SearchIconBox>
-						{searchQuery ? (
-							<ClearIcon size={14} onClick={() => setSearchQuery("")} />
-						) : (
-							<SearchIcon size={16} />
-						)}
-					</SearchIconBox>
-				</SearchInputWrapper>
+				<TaskSearchInput />
 			</BarStart>
 
 			<BarEnd>
@@ -236,88 +236,6 @@ const ClearButton = styled.button`
 
   &:hover {
 	background: var(--link-bg-hover);
-  }
-`
-
-const ActionButton = styled.button`
-  display: flex;
-  padding: 0 15px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  height: 40px;
-  border-radius: 8px;
-  border: 1px solid var(--card-border);
-  background: var(--background);
-  box-shadow: var(--shadow-button);
-  cursor: pointer;
-  white-space: nowrap;
-
-  &:hover {
-	background: var(--link-bg-hover);
-  }
-`
-
-const SearchInputWrapper = styled.div`
-  direction: rtl;
-  display: flex;
-  align-items: center;
-  height: 40px;
-  width: 222px;
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
-  background: white;
-  overflow: hidden;
-  box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
-
-  &:focus-within {
-	border-color: rgba(9, 88, 217, 0.6);
-  }
-`
-
-const SearchIconBox = styled.div`
-  display: flex;
-  width: 32px;
-  height: 32px;
-  justify-content: center;
-  align-items: center;
-`
-
-const SearchIcon = styled(Search)`
-  color: rgba(0, 0, 0, 0.25);
-  animation: scale-in 0.15s ease;
-`
-
-const ClearIcon = styled(X)`
-  color: white;
-  cursor: pointer;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 50%;
-  padding: 2px;
-  animation: scale-in 0.15s ease;
-
-  &:hover {
-	background: rgba(0, 0, 0, 0.35);
-  }
-`
-
-const SearchField = styled.input`
-  flex: 1;
-  height: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color-2);
-  padding: 0 11px 0 0;
-  text-align: right;
-  direction: rtl;
-
-  &::placeholder {
-	color: var(--Text-color-text-placeholder);
   }
 `
 

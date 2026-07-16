@@ -20,6 +20,11 @@ import chatIcon from "../../assets/icons/chat.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { Spinner } from "../ui/spinner"
 
+const fuseOptions = {
+	threshold: 0.3,
+	keys: ["name", "users.upn", "users.info.name", "users.info.displayName"],
+}
+
 export const assigneeStatusEditableId = "allow-status-update"
 
 export function AssigneesContent() {
@@ -47,10 +52,7 @@ export function AssigneesContent() {
 
 	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
 
-	const filteredAssignees = useFuse(assignees, searchQuery, {
-		threshold: 0.3,
-		keys: ["name", "users.upn", "users.info.name", "users.info.displayName"],
-	})
+	const filteredAssignees = useFuse(assignees, searchQuery, fuseOptions)
 
 	function handleStatusEditableChange(checked: boolean) {
 		updateSettings({

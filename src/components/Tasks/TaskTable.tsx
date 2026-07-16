@@ -88,16 +88,21 @@ function TaskTable<TTask extends TaskRowDto>({
 
 	const [selectMode, setSelectMode] = useState(false)
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-	const urlColumnFilters: ColumnFiltersState = [
-		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
-		...(deadlineTypeFilter.length
-			? [{ id: "deadlineType", value: deadlineTypeFilter }]
-			: []),
-	]
-	const columnFilters: ColumnFiltersState = [
-		...urlColumnFilters,
-		...columnsFilters,
-	]
+
+	const urlColumnFilters: ColumnFiltersState = useMemo(
+		() => [
+			...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
+			...(deadlineTypeFilter.length
+				? [{ id: "deadlineType", value: deadlineTypeFilter }]
+				: []),
+		],
+		[statusFilter, deadlineTypeFilter],
+	)
+
+	const columnFilters: ColumnFiltersState = useMemo(
+		() => [...urlColumnFilters, ...columnsFilters],
+		[urlColumnFilters, columnsFilters],
+	)
 
 	function getColumnFilter(columnFilters: ColumnFiltersState, id: string) {
 		return columnFilters.find((column) => column.id === id)?.value ?? []

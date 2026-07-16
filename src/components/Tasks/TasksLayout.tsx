@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
 import type { ColumnFiltersState } from "@tanstack/react-table"
 import { without } from "lodash"
+import { useMemo } from "react"
 import type {
 	DeadlineType,
 	TaskRowDto,
@@ -61,13 +62,14 @@ function TasksLayout({
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
-	const noWorkspaceColumnOrder = without(
-		columnOrder,
-		"workspace",
-	) as (keyof TaskRowDto)[]
+	const noWorkspaceColumnOrder = useMemo(
+		() => without(columnOrder, "workspace") as (keyof TaskRowDto)[],
+		[columnOrder],
+	)
 
-	const noWorkspaceHiddenColumns = new Set(
-		[...hiddenColumns].filter((item) => item !== "workspace"),
+	const noWorkspaceHiddenColumns = useMemo(
+		() => new Set([...hiddenColumns].filter((item) => item !== "workspace")),
+		[hiddenColumns],
 	)
 
 	const urlColumnFilters: ColumnFiltersState = [
@@ -154,7 +156,7 @@ function TasksLayout({
 			<TasksRoot>
 				<TaskFilters
 					allTaskRows={tasks}
-					filteredTaskRows={filteredTaskRows}
+					filteredTasks={filteredTaskRows}
 					columnOrder={noWorkspaceColumnOrder}
 					hiddenColumns={noWorkspaceHiddenColumns}
 					onClearColumnFilters={handleClearColumnFilters}
