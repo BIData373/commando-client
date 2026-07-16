@@ -16,7 +16,11 @@ import {
 	useGetSource,
 	useUpdateSource,
 } from "../../api/source/source"
-import { useDeleteTask } from "../../api/task/task"
+import {
+	getListPersonalTaskRowsQueryKey,
+	getListTaskRowsQueryKey,
+	useDeleteTask,
+} from "../../api/task/task"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { invalidateQueries } from "../../queryClient"
@@ -51,7 +55,17 @@ function CreateDiscussionModal({
 	sourceId,
 }: CreateDiscussionModalProps) {
 	const navigate = useNavigate({ from: "/workspace/$urlName/tasks/new" })
-	const { mutateAsync: createSource } = useCreateSource()
+	const { mutateAsync: createSource } = useCreateSource({
+		mutation: {
+			onSuccess: () => {
+				invalidateQueries([
+					getListTaskRowsQueryKey({ workspaceId }),
+					getListPersonalTaskRowsQueryKey(),
+					getListSourcesQueryKey({ workspaceId }),
+				])
+			},
+		},
+	})
 	const { mutateAsync: updateSource } = useUpdateSource({
 		mutation: {
 			onSuccess: () => {
@@ -100,7 +114,6 @@ function CreateDiscussionModal({
 			"tags",
 			source.tags.map((tag) => tag.name),
 		)
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [source?.id])
 
 	const isCurrentStepTasks = step === Steps.Tasks
@@ -166,7 +179,8 @@ function CreateDiscussionModal({
 						pathParams: { id: sourceId },
 						data: { ...values, aiExtraction },
 					})
-				: await createSource({ data: { ...values, aiExtraction } })
+				: // FIX Should it create when not aiExtraction?
+					await createSource({ data: { ...values, aiExtraction } })
 			navigate({ search: (prev) => ({ ...prev, sourceId: source.id }) })
 			setStep(Steps.Tasks)
 		} catch (error) {
@@ -482,7 +496,7 @@ const AiExtractButton = styled.button`
   }
 
   &:hover:not(:disabled) {
-    background: rgba(104, 102, 255, 0.06);
+    background: rgba(var(--purple-accent-rgb), 0.06);
   }
 `
 

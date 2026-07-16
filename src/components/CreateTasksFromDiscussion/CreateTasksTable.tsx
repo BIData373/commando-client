@@ -1,7 +1,7 @@
 import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import { map } from "lodash"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
 	DeadlineType,
 	ExtractionStatus,
@@ -27,6 +27,11 @@ const TERMINAL_EXTRACTION_STATUSES = new Set<ExtractionStatus>([
 	ExtractionStatus.FINISHED_WITHOUT_TASKS,
 	ExtractionStatus.BACKEND_ERROR,
 	ExtractionStatus.AI_SERVICE_ERROR,
+])
+
+const ACTIVE_EXTRACTION_STATUSES = new Set<ExtractionStatus>([
+	ExtractionStatus.PENDING,
+	ExtractionStatus.IN_PROGRESS,
 ])
 
 interface CreateTasksTableProps {
@@ -63,20 +68,55 @@ function CreateTasksTable({
 	const { mutateAsync: extractSource, isPending: isRetrying } =
 		useExtractSource()
 
-	// A source is pending extraction until the query or a socket push resolves
-	// it: no local terminal status yet, and we haven't confirmed (via the
-	// loaded source) that extraction was never requested.
-	const hasConfirmedNoExtraction = source?.extractionStatus === null
 	const isExtracting =
 		sourceId !== undefined &&
 		extractionStatus === null &&
-		!hasConfirmedNoExtraction
+		source?.draft &&
+		source?.extractionStatus !== null &&
+		ACTIVE_EXTRACTION_STATUSES.has(source?.extractionStatus)
 
 	async function handleRetry() {
-		if (sourceId === undefined) return
-		setExtractionStatus(null)
-		await extractSource({ pathParams: { id: sourceId } })
+		if (sourceId !== undefined) {
+			setExtractionStatus(null)
+			await extractSource({ pathParams: { id: sourceId } })
+		}
 	}
+
+	const createEmptyRow = useCallback((): NewTaskRow => {
+		const id = nextRowId.current++
+		return {
+			workspaceId,
+			id,
+			rowKey: String(id),
+			title: "",
+			deadlineType: DeadlineType.IMMEDIATE,
+			dueDate: null,
+			assigneeIds: [],
+			assigneeDetails: {},
+			notes: "",
+			flagged: false,
+		}
+	}, [workspaceId])
+
+	const mapTaskDtoToRow = useCallback((task: TaskDto): NewTaskRow => {
+		const id = nextRowId.current++
+		return {
+			workspaceId: task.workspaceId,
+			id,
+			rowKey: String(id),
+			taskId: task.id,
+			creationType: task.creationType,
+			title: task.title,
+			deadlineType: task.deadlineType,
+			dueDate: task.dueDate,
+			assigneeIds: task.assigneeStatuses.map((s) => s.assignee.id),
+			assigneeDetails: Object.fromEntries(
+				task.assigneeStatuses.map((s) => [s.assignee.id, s.description]),
+			),
+			notes: task.notes ?? "",
+			flagged: task.flagged,
+		}
+	}, [])
 
 	useSocketHandler({
 		[SocketEvent.TASK_EXTRACTION_FINISHED]: (dto: SourceWithTasksDto) => {
@@ -101,44 +141,7 @@ function CreateTasksTable({
 		if (TERMINAL_EXTRACTION_STATUSES.has(source.extractionStatus)) {
 			setExtractionStatus(source.extractionStatus)
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [source])
-
-	function mapTaskDtoToRow(task: TaskDto): NewTaskRow {
-		const id = nextRowId.current++
-		return {
-			workspaceId: task.workspaceId,
-			id,
-			rowKey: String(id),
-			taskId: task.id,
-			creationType: task.creationType,
-			title: task.title,
-			deadlineType: task.deadlineType,
-			dueDate: task.dueDate,
-			assigneeIds: task.assigneeStatuses.map((s) => s.assignee.id),
-			assigneeDetails: Object.fromEntries(
-				task.assigneeStatuses.map((s) => [s.assignee.id, s.description]),
-			),
-			notes: task.notes ?? "",
-			flagged: task.flagged,
-		}
-	}
-
-	function createEmptyRow(): NewTaskRow {
-		const id = nextRowId.current++
-		return {
-			workspaceId,
-			id,
-			rowKey: String(id),
-			title: "",
-			deadlineType: DeadlineType.IMMEDIATE,
-			dueDate: null,
-			assigneeIds: [],
-			assigneeDetails: {},
-			notes: "",
-			flagged: false,
-		}
-	}
+	}, [source, createEmptyRow, mapTaskDtoToRow])
 
 	const [rows, setRows] = useState<NewTaskRow[]>([createEmptyRow()])
 	const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set())
@@ -214,33 +217,29 @@ function CreateTasksTable({
 		isLastRow: (index: number) => index === rows.length - 1,
 	}
 
-	if (isExtracting) {
-		return (
-			<ExtractionWrapper>
-				<LoaderContainer>
-					<img src={aiLoadingSvg} width={88} height={100} alt="" />
-					<SpinnerRing />
-					<LoaderTitle>אנחנו מחלצים את ההנחיות</LoaderTitle>
-					<LoaderSubtext>
-						התהליך עשוי לקחת כמה דקות,
-						<br />
-						נא לא לסגור את החלונית
-					</LoaderSubtext>
-				</LoaderContainer>
+	return isExtracting ? (
+		<ExtractionWrapper>
+			<LoaderContainer>
+				<LoaderImage src={aiLoadingSvg} alt="" />
+				<SpinnerRing />
+				<LoaderTitle>אנחנו מחלצים את ההנחיות</LoaderTitle>
+				<LoaderSubtext>
+					התהליך עשוי לקחת כמה דקות,
+					<br />
+					נא לא לסגור את החלונית
+				</LoaderSubtext>
+			</LoaderContainer>
 
-				<FooterRow>
-					<PrimaryButton
-						onClick={handleSave}
-						disabled={!hasAnyTask}
-						title="שמור"
-						width={123}
-					/>
-				</FooterRow>
-			</ExtractionWrapper>
-		)
-	}
-
-	return (
+			<FooterRow>
+				<PrimaryButton
+					onClick={handleSave}
+					disabled={!hasAnyTask}
+					title="שמור"
+					width={123}
+				/>
+			</FooterRow>
+		</ExtractionWrapper>
+	) : (
 		<TableWrapper>
 			{extractionStatus !== null && (
 				<AIExtractionAlert
@@ -315,14 +314,19 @@ const LoaderContainer = styled.div`
   gap: 16px;
 `
 
+const LoaderImage = styled.img`
+  width: 88px;
+  height: 100px;
+`
+
 const SpinnerRing = styled.div`
   width: 52px;
   height: 52px;
   border-radius: 50%;
   background: conic-gradient(
     from 0deg,
-    rgba(104, 102, 255, 0) 0deg,
-    rgba(104, 102, 255, 0.15) 60deg,
+    rgba(var(--purple-accent-rgb), 0) 0deg,
+    rgba(var(--purple-accent-rgb), 0.15) 60deg,
     #6866ff 200deg,
     #7604c8 310deg,
     rgba(118, 4, 200, 0) 360deg
