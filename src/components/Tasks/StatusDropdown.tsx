@@ -16,9 +16,8 @@ interface StatusDropdownProps {
 	taskId: number
 	workspaceId: number
 	assigneeId?: number
-	editable: boolean
+	editable?: boolean
 	onUpdate: (taskId: number, assigneeId: number, statusId: number) => void
-	withArrow?: boolean
 }
 
 export function StatusDropdown({
@@ -26,9 +25,8 @@ export function StatusDropdown({
 	taskId,
 	assigneeId,
 	workspaceId,
-	editable,
+	editable = false,
 	onUpdate,
-	withArrow = false,
 }: StatusDropdownProps) {
 	const [isOpen, setIsOpen] = useState(false)
 
@@ -56,7 +54,7 @@ export function StatusDropdown({
 									status={status}
 									interactive
 									editable
-									withArrow={withArrow}
+									withArrow={editable}
 								/>
 							</TriggerWrapper>
 						</DropdownMenuTrigger>
@@ -68,7 +66,7 @@ export function StatusDropdown({
 									$hasAssignee={!!assigneeId}
 									onSelect={() => handleSelectStatus(s.id)}
 								>
-									<StatusTag status={s} />
+									<StatusTag status={s} interactive editable={editable} />
 								</StatusDropdownItem>
 							))}
 						</StatusDropdownContent>

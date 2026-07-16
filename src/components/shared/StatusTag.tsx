@@ -1,5 +1,6 @@
+import { css } from "@emotion/react"
 import styled from "@emotion/styled"
-import { ChevronDown } from "lucide-react"
+import { TbChevronDown } from "react-icons/tb"
 import type { WorkspaceStatusDto } from "src/api/model"
 
 interface StatusTagProps {
@@ -23,7 +24,6 @@ export function StatusTag({
 			$backgroundColor={color}
 			$interactive={interactive}
 			$editable={editable}
-			$withArrow={withArrow}
 		>
 			{name}
 			{withArrow && <Arrow size={12} $open={open} />}
@@ -31,9 +31,9 @@ export function StatusTag({
 	)
 }
 
-const Arrow = styled(ChevronDown)<{ $open: boolean }>`
+const Arrow = styled(TbChevronDown)<{ $open: boolean }>`
   flex-shrink: 0;
-  color: #00000073;
+  color: var(--text-color-2);
   transition: transform 0.2s ease;
   transform: ${({ $open }) => ($open ? "rotate(180deg)" : "rotate(0deg)")};
 `
@@ -43,13 +43,12 @@ const Tag = styled.span<{
 	$backgroundColor: string
 	$interactive?: boolean
 	$editable?: boolean
-	$withArrow?: boolean
 }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  width: ${({ $withArrow }) => ($withArrow ? "88px" : "72px")};
+  gap: 4px;
+  width: 76px;
   padding: 1px 8px;
   border-radius: 999px;
   font-size: var(--fs-sm);
@@ -57,10 +56,18 @@ const Tag = styled.span<{
   white-space: nowrap;
   cursor: ${({ $interactive, $editable }) =>
 		$interactive ? ($editable ? "pointer" : "not-allowed") : "default"};
-  ${({ $fontColor }) => `color: ${$fontColor};`}
-  ${({ $backgroundColor }) => `background:  rgb(from ${$backgroundColor} r g b / 0.1);`}
+  ${({ $fontColor }) => css`color: ${$fontColor};`}
+  ${({ $backgroundColor }) => css`background:  rgb(from ${$backgroundColor} r g b / 0.1);`}
 
   :focus-visible {
     outline: none;
   }
+
+  ${({ $editable, $backgroundColor }) =>
+		$editable &&
+		css`
+  :hover {
+    background: rgb(from ${$backgroundColor} r g b / 0.2);
+  }
+  `}
 `

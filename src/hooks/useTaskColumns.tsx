@@ -233,7 +233,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						<StatusDropdown
 							status={status}
 							assigneeId={assignee?.id}
-							editable={editable ?? false}
+							editable={editable}
 							taskId={id}
 							workspaceId={workspaceId}
 							onUpdate={handleUpdateStatus}
