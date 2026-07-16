@@ -15,5 +15,4 @@ export interface CreateSourceDto {
 	/** @nullable */
 	attachment?: Blob | null
 	aiExtraction?: boolean
-	draft?: boolean
 }

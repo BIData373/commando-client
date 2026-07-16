@@ -26,6 +26,7 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import { serializeFormData } from "../../form-data"
 import type {
+	AIExtractionCallbackDto,
 	AiExtractionCallbackPathParameters,
 	CreateSourceDto,
 	DeleteSourcePathParameters,
@@ -533,91 +534,16 @@ export const useDeleteSource = <
 > => {
 	return useMutation(getDeleteSourceMutationOptions(options), queryClient)
 }
-export const extractSource = (
-	{ id }: ExtractSourcePathParameters,
-	signal?: AbortSignal,
-) => {
-	return sendRequest<SourceDto>({
-		url: `/source/${id}/extract`,
-		method: "POST",
-		signal,
-	})
-}
-
-export const getExtractSourceMutationOptions = <
-	TError = ErrorType<unknown>,
-	TContext = unknown,
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof extractSource>>,
-		TError,
-		{ pathParams: ExtractSourcePathParameters },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof extractSource>>,
-	TError,
-	{ pathParams: ExtractSourcePathParameters },
-	TContext
-> => {
-	const mutationKey = ["extractSource"]
-	const { mutation: mutationOptions } = options
-		? options.mutation &&
-			"mutationKey" in options.mutation &&
-			options.mutation.mutationKey
-			? options
-			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof extractSource>>,
-		{ pathParams: ExtractSourcePathParameters }
-	> = (props) => {
-		const { pathParams } = props ?? {}
-
-		return extractSource(pathParams)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type ExtractSourceMutationResult = NonNullable<
-	Awaited<ReturnType<typeof extractSource>>
->
-
-export type ExtractSourceMutationError = ErrorType<unknown>
-
-export const useExtractSource = <
-	TError = ErrorType<unknown>,
-	TContext = unknown,
->(
-	options?: {
-		mutation?: UseMutationOptions<
-			Awaited<ReturnType<typeof extractSource>>,
-			TError,
-			{ pathParams: ExtractSourcePathParameters },
-			TContext
-		>
-	},
-	queryClient?: QueryClient,
-): UseMutationResult<
-	Awaited<ReturnType<typeof extractSource>>,
-	TError,
-	{ pathParams: ExtractSourcePathParameters },
-	TContext
-> => {
-	return useMutation(getExtractSourceMutationOptions(options), queryClient)
-}
 export const aiExtractionCallback = (
 	{ id }: AiExtractionCallbackPathParameters,
-	getAIExtractionCallbackDto: GetAIExtractionCallbackDto,
+	aIExtractionCallbackDto: AIExtractionCallbackDto,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<SourceWithTasksDto>({
+	return sendRequest<void>({
 		url: `/source/${id}/ai-result`,
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
-		data: getAIExtractionCallbackDto,
+		data: aIExtractionCallbackDto,
 		signal,
 	})
 }
@@ -631,7 +557,7 @@ export const getAiExtractionCallbackMutationOptions = <
 		TError,
 		{
 			pathParams: AiExtractionCallbackPathParameters
-			data: GetAIExtractionCallbackDto
+			data: AIExtractionCallbackDto
 		},
 		TContext
 	>
@@ -640,7 +566,7 @@ export const getAiExtractionCallbackMutationOptions = <
 	TError,
 	{
 		pathParams: AiExtractionCallbackPathParameters
-		data: GetAIExtractionCallbackDto
+		data: AIExtractionCallbackDto
 	},
 	TContext
 > => {
@@ -657,7 +583,7 @@ export const getAiExtractionCallbackMutationOptions = <
 		Awaited<ReturnType<typeof aiExtractionCallback>>,
 		{
 			pathParams: AiExtractionCallbackPathParameters
-			data: GetAIExtractionCallbackDto
+			data: AIExtractionCallbackDto
 		}
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
@@ -671,7 +597,7 @@ export const getAiExtractionCallbackMutationOptions = <
 export type AiExtractionCallbackMutationResult = NonNullable<
 	Awaited<ReturnType<typeof aiExtractionCallback>>
 >
-export type AiExtractionCallbackMutationBody = GetAIExtractionCallbackDto
+export type AiExtractionCallbackMutationBody = AIExtractionCallbackDto
 export type AiExtractionCallbackMutationError = ErrorType<unknown>
 
 export const useAiExtractionCallback = <
@@ -684,7 +610,7 @@ export const useAiExtractionCallback = <
 			TError,
 			{
 				pathParams: AiExtractionCallbackPathParameters
-				data: GetAIExtractionCallbackDto
+				data: AIExtractionCallbackDto
 			},
 			TContext
 		>
@@ -695,7 +621,7 @@ export const useAiExtractionCallback = <
 	TError,
 	{
 		pathParams: AiExtractionCallbackPathParameters
-		data: GetAIExtractionCallbackDto
+		data: AIExtractionCallbackDto
 	},
 	TContext
 > => {

@@ -17,7 +17,6 @@ import type {
 } from "../model"
 import {
 	DeadlineType,
-	ExtractionStatus,
 	PermissionType,
 	TaskCreationType,
 	WorkspaceStatusType,
@@ -117,9 +116,6 @@ export const getCreateTaskResponseMock = (
 					null,
 				]),
 				draft: faker.datatype.boolean(),
-				extractionStatus: faker.helpers.arrayElement(
-					Object.values(ExtractionStatus),
-				),
 				tags: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
 					(_, i) => i + 1,
@@ -369,9 +365,6 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 						null,
 					]),
 					draft: faker.datatype.boolean(),
-					extractionStatus: faker.helpers.arrayElement(
-						Object.values(ExtractionStatus),
-					),
 					tags: Array.from(
 						{ length: faker.number.int({ min: 1, max: 10 }) },
 						(_, i) => i + 1,
@@ -585,9 +578,6 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 						null,
 					]),
 					draft: faker.datatype.boolean(),
-					extractionStatus: faker.helpers.arrayElement(
-						Object.values(ExtractionStatus),
-					),
 					tags: Array.from(
 						{ length: faker.number.int({ min: 1, max: 10 }) },
 						(_, i) => i + 1,
@@ -878,9 +868,6 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 						null,
 					]),
 					draft: faker.datatype.boolean(),
-					extractionStatus: faker.helpers.arrayElement(
-						Object.values(ExtractionStatus),
-					),
 					tags: Array.from(
 						{ length: faker.number.int({ min: 1, max: 10 }) },
 						(_, i) => i + 1,
@@ -1130,9 +1117,6 @@ export const getListPersonalTaskRowsResponseMock =
 							null,
 						]),
 						draft: faker.datatype.boolean(),
-						extractionStatus: faker.helpers.arrayElement(
-							Object.values(ExtractionStatus),
-						),
 						tags: Array.from(
 							{ length: faker.number.int({ min: 1, max: 10 }) },
 							(_, i) => i + 1,
@@ -1462,9 +1446,6 @@ export const getGetTaskResponseMock = (
 					null,
 				]),
 				draft: faker.datatype.boolean(),
-				extractionStatus: faker.helpers.arrayElement(
-					Object.values(ExtractionStatus),
-				),
 				tags: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
 					(_, i) => i + 1,
@@ -1718,9 +1699,6 @@ export const getUpdateTaskResponseMock = (
 					null,
 				]),
 				draft: faker.datatype.boolean(),
-				extractionStatus: faker.helpers.arrayElement(
-					Object.values(ExtractionStatus),
-				),
 				tags: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
 					(_, i) => i + 1,
@@ -1964,9 +1942,6 @@ export const getDeleteTaskResponseMock = (
 					null,
 				]),
 				draft: faker.datatype.boolean(),
-				extractionStatus: faker.helpers.arrayElement(
-					Object.values(ExtractionStatus),
-				),
 				tags: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
 					(_, i) => i + 1,
