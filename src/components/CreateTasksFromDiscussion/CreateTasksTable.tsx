@@ -1,55 +1,88 @@
+import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
-import { useRef, useState } from "react"
+import { map } from "lodash"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
 	DeadlineType,
+	ExtractionStatus,
 	SocketEvent,
-	type SourceExtractionFailureDto,
-	type SourceExtractionSuccessDto,
+	type SourceWithTasksDto,
 	type TaskDto,
 } from "src/api/model"
+import { useExtractSource, useGetSource } from "src/api/source/source"
+import aiLoadingSvg from "src/assets/icons/ai-loading.svg"
 import { useSocketHandler } from "src/hooks/useSocketHandler"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { DataTable } from "../ui/data-table"
+import AIExtractionAlert from "./AIExtractionAlert"
 import { DATA_CELL_ACTIVE_KEY } from "./DeadlineCell"
 import TaskAssigneeExpansion from "./TaskAssigneeExpansion"
 import columns, { type NewTaskRow, type TaskTableMeta } from "./TasksColumns"
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
+const TERMINAL_EXTRACTION_STATUSES = new Set<ExtractionStatus>([
+	ExtractionStatus.FINISHED_WITH_TASKS,
+	ExtractionStatus.FINISHED_WITHOUT_TASKS,
+	ExtractionStatus.BACKEND_ERROR,
+	ExtractionStatus.AI_SERVICE_ERROR,
+])
+
+const ACTIVE_EXTRACTION_STATUSES = new Set<ExtractionStatus>([
+	ExtractionStatus.PENDING,
+	ExtractionStatus.IN_PROGRESS,
+])
+
 interface CreateTasksTableProps {
 	onSave: (tasks: NewTaskRow[]) => void
+	onDeleteRow?: (row: NewTaskRow) => void
 	onBack: () => void
 	isLoading?: boolean
+	sourceId?: number
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateTasksTable({
 	onSave,
+	onDeleteRow,
 	onBack,
 	isLoading,
+	sourceId,
 }: CreateTasksTableProps) {
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 	const nextRowId = useRef(1)
 
-	useSocketHandler({
-		[SocketEvent.TASK_EXTRACTION_FAILURE]: (
-			dto: SourceExtractionFailureDto,
-		) => {
-			console.log(dto.reason)
-		},
-		[SocketEvent.TASK_EXTRACTION_SUCCESS]: (
-			dto: SourceExtractionSuccessDto,
-		) => {
-			console.log(dto.sourceId)
-			console.log(JSON.stringify(dto.tasks))
-		},
-	})
+	const [extractionStatus, setExtractionStatus] =
+		useState<ExtractionStatus | null>(null)
+	const [extractedCount, setExtractedCount] = useState(0)
 
-	function createEmptyRow(): NewTaskRow {
+	const { data: source } = useGetSource(
+		{ id: sourceId ?? 0 },
+		{ query: { enabled: sourceId !== undefined } },
+	)
+
+	const { mutateAsync: extractSource, isPending: isRetrying } =
+		useExtractSource()
+
+	const isExtracting =
+		sourceId !== undefined &&
+		extractionStatus === null &&
+		source?.draft &&
+		source?.extractionStatus !== null &&
+		ACTIVE_EXTRACTION_STATUSES.has(source?.extractionStatus)
+
+	async function handleRetry() {
+		if (sourceId !== undefined) {
+			setExtractionStatus(null)
+			await extractSource({ pathParams: { id: sourceId } })
+		}
+	}
+
+	const createEmptyRow = useCallback((): NewTaskRow => {
 		const id = nextRowId.current++
 		return {
 			workspaceId,
@@ -63,7 +96,52 @@ function CreateTasksTable({
 			notes: "",
 			flagged: false,
 		}
-	}
+	}, [workspaceId])
+
+	const mapTaskDtoToRow = useCallback((task: TaskDto): NewTaskRow => {
+		const id = nextRowId.current++
+		return {
+			workspaceId: task.workspaceId,
+			id,
+			rowKey: String(id),
+			taskId: task.id,
+			creationType: task.creationType,
+			title: task.title,
+			deadlineType: task.deadlineType,
+			dueDate: task.dueDate,
+			assigneeIds: task.assigneeStatuses.map((s) => s.assignee.id),
+			assigneeDetails: Object.fromEntries(
+				task.assigneeStatuses.map((s) => [s.assignee.id, s.description]),
+			),
+			notes: task.notes ?? "",
+			flagged: task.flagged,
+		}
+	}, [])
+
+	useSocketHandler({
+		[SocketEvent.TASK_EXTRACTION_FINISHED]: (dto: SourceWithTasksDto) => {
+			if (sourceId !== undefined && dto.id !== sourceId) return
+			setExtractionStatus(dto.extractionStatus)
+			if (dto.extractionStatus === ExtractionStatus.FINISHED_WITH_TASKS) {
+				setExtractedCount(dto.tasks.length)
+				setRows([...map(dto.tasks, mapTaskDtoToRow), createEmptyRow()])
+			}
+		},
+	})
+
+	useEffect(() => {
+		if (!source?.extractionStatus) return
+
+		if (source.tasks.length > 0) {
+			const mapped = source.tasks.map(mapTaskDtoToRow)
+			setExtractedCount(mapped.length)
+			setRows([...mapped, createEmptyRow()])
+		}
+
+		if (TERMINAL_EXTRACTION_STATUSES.has(source.extractionStatus)) {
+			setExtractionStatus(source.extractionStatus)
+		}
+	}, [source, createEmptyRow, mapTaskDtoToRow])
 
 	const [rows, setRows] = useState<NewTaskRow[]>([createEmptyRow()])
 	const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set())
@@ -78,7 +156,9 @@ function CreateTasksTable({
 
 	function updateRow(id: number, updates: Partial<NewTaskRow>) {
 		setRows((prev) => {
-			const next = prev.map((r) => (r.id === id ? { ...r, ...updates } : r))
+			const next = prev.map((r) =>
+				r.id === id ? { ...r, ...updates, touched: true } : r,
+			)
 			const last = next[next.length - 1]
 			if (last.title.trim()) {
 				next.push(createEmptyRow())
@@ -106,6 +186,9 @@ function CreateTasksTable({
 	}
 
 	function deleteRow(id: number) {
+		const row = rows.find((r) => r.id === id)
+		if (row) onDeleteRow?.(row)
+
 		setRows((prev) => {
 			const next = prev.filter((r) => r.id !== id)
 			if (next.length === 0) return [createEmptyRow()]
@@ -119,6 +202,10 @@ function CreateTasksTable({
 		onSave(filled)
 	}
 
+	function dismissAlert() {
+		setExtractionStatus(null)
+	}
+
 	const filledCount = rows.filter((r) => r.title.trim()).length
 	const hasAnyTask = filledCount > 0
 
@@ -130,8 +217,40 @@ function CreateTasksTable({
 		isLastRow: (index: number) => index === rows.length - 1,
 	}
 
-	return (
+	return isExtracting ? (
+		<ExtractionWrapper>
+			<LoaderContainer>
+				<LoaderImage src={aiLoadingSvg} alt="" />
+				<SpinnerRing />
+				<LoaderTitle>אנחנו מחלצים את ההנחיות</LoaderTitle>
+				<LoaderSubtext>
+					התהליך עשוי לקחת כמה דקות,
+					<br />
+					נא לא לסגור את החלונית
+				</LoaderSubtext>
+			</LoaderContainer>
+
+			<FooterRow>
+				<PrimaryButton
+					onClick={handleSave}
+					disabled={!hasAnyTask}
+					title="שמור"
+					width={123}
+				/>
+			</FooterRow>
+		</ExtractionWrapper>
+	) : (
 		<TableWrapper>
+			{extractionStatus !== null && (
+				<AIExtractionAlert
+					status={extractionStatus}
+					count={extractedCount}
+					onRetry={handleRetry}
+					isRetrying={isRetrying}
+					onDismiss={dismissAlert}
+				/>
+			)}
+
 			<TableOuterContainer>
 				<DataTable
 					columns={columns}
@@ -170,6 +289,77 @@ function CreateTasksTable({
 
 export default CreateTasksTable
 
+// ─── Loader Styled Components ────────────────────────────────────────────────
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`
+
+const ExtractionWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  justify-content: space-between;
+`
+
+const LoaderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 16px;
+`
+
+const LoaderImage = styled.img`
+  width: 88px;
+  height: 100px;
+`
+
+const SpinnerRing = styled.div`
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(var(--purple-accent-rgb), 0) 0deg,
+    rgba(var(--purple-accent-rgb), 0.15) 60deg,
+    #6866ff 200deg,
+    #7604c8 310deg,
+    rgba(118, 4, 200, 0) 360deg
+  );
+  animation: ${spin} 1.1s linear infinite;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--background);
+  }
+`
+
+const LoaderTitle = styled.p`
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  color: var(--foreground);
+  margin: 0;
+  text-align: center;
+`
+
+const LoaderSubtext = styled.p`
+  font-size: var(--fs-base);
+  font-weight: 400;
+  color: var(--text-color-2);
+  margin: 0;
+  text-align: center;
+  line-height: 24px;
+`
+
 // ─── Table Styled Components ────────────────────────────────────────────────
 
 const TableWrapper = styled.div`
@@ -178,12 +368,14 @@ const TableWrapper = styled.div`
   width: 100%;
   flex: 1;
   min-height: 0;
-  justify-content: space-between;
+  gap: 16px;
   overflow-x: auto;
   `
 
 const TableOuterContainer = styled.div`
   direction: ltr;
+  flex: 1;
+  min-height: 0;
   overflow-x: auto;
   overflow-y: auto;
 

@@ -7,8 +7,9 @@
  */
 import type { ExtractionStatus } from "./extraction-status"
 import type { TagDto } from "./tag-dto"
+import type { TaskDto } from "./task-dto"
 
-export interface SourceDto {
+export interface SourceWithTasksDto {
 	createdAt: Date
 	createdBy: number
 	updatedAt: Date
@@ -29,4 +30,5 @@ export interface SourceDto {
 	draft: boolean
 	extractionStatus: ExtractionStatus | null
 	tags: TagDto[]
+	tasks: TaskDto[]
 }

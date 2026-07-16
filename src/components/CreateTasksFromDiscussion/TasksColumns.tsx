@@ -13,6 +13,8 @@ import DeadlineCell from "./DeadlineCell"
 export interface NewTaskRow extends CreateTaskDto {
 	id: number
 	rowKey: string
+	taskId?: number
+	touched?: boolean
 	assigneeIds: number[]
 	assigneeDetails: Record<number, string>
 }

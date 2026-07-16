@@ -9,6 +9,5 @@
 export type SocketEvent = (typeof SocketEvent)[keyof typeof SocketEvent]
 
 export const SocketEvent = {
-	TASK_EXTRACTION_SUCCESS: "TASK_EXTRACTION_SUCCESS",
-	TASK_EXTRACTION_FAILURE: "TASK_EXTRACTION_FAILURE",
+	TASK_EXTRACTION_FINISHED: "TASK_EXTRACTION_FINISHED",
 } as const
