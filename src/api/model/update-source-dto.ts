@@ -14,5 +14,7 @@ export interface UpdateSourceDto {
 	tags?: string[]
 	/** @nullable */
 	attachment?: Blob | null
+	aiExtraction?: boolean
+	draft?: boolean
 	deleteAttachment?: boolean
 }

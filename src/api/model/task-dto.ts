@@ -9,6 +9,7 @@ import type { AssigneeStatusDto } from "./assignee-status-dto"
 import type { DeadlineType } from "./deadline-type"
 import type { SourceDto } from "./source-dto"
 import type { TagDto } from "./tag-dto"
+import type { TaskCreationType } from "./task-creation-type"
 
 export interface TaskDto {
 	createdAt: Date
@@ -25,6 +26,7 @@ export interface TaskDto {
 	description: string | null
 	flagged: boolean
 	deadlineType: DeadlineType
+	creationType: TaskCreationType
 	/** @nullable */
 	dueDate: Date | null
 	/** @nullable */

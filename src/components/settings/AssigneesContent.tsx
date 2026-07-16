@@ -1,35 +1,40 @@
 import styled from "@emotion/styled"
 import { useNavigate, useParams } from "@tanstack/react-router"
-import { CircleQuestionMarkIcon, Plus, Search } from "lucide-react"
+import { Mail, Pencil, Plus, Search } from "lucide-react"
 import { type ChangeEvent, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { useUpdateWorkspace } from "src/api/workspace/workspace"
 import { AssigneeCard } from "src/components/settings/AssigneeCard"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
-import { Checkbox } from "src/components/ui/checkbox"
+import { SettingToggleRow } from "src/components/shared/SettingToggleRow"
 import {
 	InputGroup,
 	InputGroupAddon,
 	InputGroupInput,
 } from "src/components/ui/input-group"
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "src/components/ui/tooltip"
 import { useFuse } from "src/hooks/useFuse"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import noResultsFound from "../../assets/empty-states/no-results-found.svg"
 import addPerson from "../../assets/icons/add-person.svg"
+import chatIcon from "../../assets/icons/chat.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { Spinner } from "../ui/spinner"
+
+const fuseOptions = {
+	threshold: 0.3,
+	keys: ["name", "users.upn", "users.info.name", "users.info.displayName"],
+}
 
 export const assigneeStatusEditableId = "allow-status-update"
 
 export function AssigneesContent() {
 	const {
-		workspace: { id: workspaceId, assigneeStatusEditable },
+		workspace: {
+			id: workspaceId,
+			assigneeStatusEditable,
+			chatNotification,
+			mailNotification,
+		},
 		setWorkspace,
 	} = useWorkspace()
 
@@ -47,15 +52,26 @@ export function AssigneesContent() {
 
 	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
 
-	const filteredAssignees = useFuse(assignees, searchQuery, {
-		threshold: 0.3,
-		keys: ["name", "users.upn", "users.info.name", "users.info.displayName"],
-	})
+	const filteredAssignees = useFuse(assignees, searchQuery, fuseOptions)
 
-	function handleCheckboxChange(checked: boolean) {
+	function handleStatusEditableChange(checked: boolean) {
 		updateSettings({
 			pathParams: { id: workspaceId },
 			data: { assigneeStatusEditable: checked },
+		})
+	}
+
+	function handleChatNotificationsChange(checked: boolean) {
+		updateSettings({
+			pathParams: { id: workspaceId },
+			data: { chatNotification: checked },
+		})
+	}
+
+	function handleMailNotificationsChange(checked: boolean) {
+		updateSettings({
+			pathParams: { id: workspaceId },
+			data: { mailNotification: checked },
 		})
 	}
 
@@ -73,29 +89,33 @@ export function AssigneesContent() {
 	return (
 		<ContentRoot>
 			<StyledContent>
-				<CheckboxRow>
-					<StyledCheckbox
-						id={assigneeStatusEditableId}
+				<SettingsSection>
+					<SettingToggleRow
+						label="אפשר לאחראים לעדכן סטטוס"
+						tooltip="מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות כבויה – עדכון הסטטוס יתאפשר רק למנהלי הלשכה."
+						icon={<Pencil size={18} />}
 						checked={assigneeStatusEditable}
-						onCheckedChange={handleCheckboxChange}
+						onCheckedChange={handleStatusEditableChange}
 					/>
-					<CheckboxLabel htmlFor="allow-status-update">
-						אפשר לאחראיים לעדכן סטטוס הנחיות
-					</CheckboxLabel>
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<QuestionIcon>
-									<CircleQuestionMarkIcon size={16} />
-								</QuestionIcon>
-							</TooltipTrigger>
-							<StyledTooltipContent>
-								מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות
-								כבויה – עדכון הסטטוס יתאפשר רק למנהלי הלשכה.
-							</StyledTooltipContent>
-						</Tooltip>
-					</TooltipProvider>
-				</CheckboxRow>
+
+					<Divider />
+
+					<SettingToggleRow
+						label="שלח התראות בצ'אט למכותבים"
+						tooltip="שליחת התראות בצ'אט למכותבים בעת עדכון הנחיות"
+						icon={<img src={chatIcon} alt="" width={18} height={18} />}
+						checked={chatNotification}
+						onCheckedChange={handleChatNotificationsChange}
+					/>
+
+					<SettingToggleRow
+						label="שלח התראות במייל למכותבים"
+						tooltip="שליחת התראות במייל למכותבים בעת עדכון הנחיות"
+						icon={<Mail size={18} />}
+						checked={mailNotification}
+						onCheckedChange={handleMailNotificationsChange}
+					/>
+				</SettingsSection>
 				<ToolbarRow>
 					<SearchWrapper>
 						<StyledInputGroup>
@@ -154,13 +174,6 @@ export function AssigneesContent() {
 	)
 }
 
-const StyledCheckbox = styled(Checkbox)`
-  &:not([data-state="checked"]) {
-    background: var(--background);
-    border-color: var(--card-border);
-  }
-`
-
 const SearchWrapper = styled.div`
   max-width: 300px;
   flex: 1;
@@ -175,47 +188,31 @@ const ToolbarRow = styled.div`
   gap: 12px;
 `
 
-const StyledTooltipContent = styled(TooltipContent)`
-  background: var(--background);
-  color: var(--text-color-2);
-
-  svg {
-    opacity: 0;
-  }
-`
-
 const StyledContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 32px;
 `
 
-const CheckboxRow = styled.div`
+const SettingsSection = styled.div`
   display: flex;
-  align-items: center;
-  margin-right: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 360px;
   gap: 8px;
+  padding: 8px;
+  background: var(--background);
+  border-radius: 8px;
 `
 
-const CheckboxLabel = styled.label`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  color: var(--sea-ink);
-  cursor: pointer;
+const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+  background: var(--button-hover);
 `
 
 const StyledInputGroup = styled(InputGroup)`
   background: var(--background);
-`
-
-const QuestionIcon = styled.button`
-  display: flex;
-  align-items: center;
-  background: none;
-  border: none;
-  padding: 0;
-  color: rgba(0, 0, 0, 0.25);
-  cursor: pointer;
 `
 
 const ContentRoot = styled.div`

@@ -1,15 +1,37 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
+import { useNavigate } from "@tanstack/react-router"
 import { useStore } from "@tanstack/react-store"
-import { Check, Paperclip } from "lucide-react"
-import { useState } from "react"
+import { Check, Paperclip, Sparkles } from "lucide-react"
+import { useEffect, useState } from "react"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import type { CreateSourceDto } from "../../api/model"
-import { useCreateSource } from "../../api/source/source"
+import {
+	type CreateSourceDto,
+	TaskCreationType,
+	type UpdateSourceDto,
+} from "../../api/model"
+import {
+	getListSourcesQueryKey,
+	useCreateSource,
+	useGetSource,
+	useUpdateSource,
+} from "../../api/source/source"
+import {
+	getListPersonalTaskRowsQueryKey,
+	getListTaskRowsQueryKey,
+	useDeleteTask,
+} from "../../api/task/task"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
+import { invalidateQueries } from "../../queryClient"
 import { ModalContent } from "../shared/ModalContent"
 import { Dialog } from "../ui/dialog"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "../ui/tooltip"
 import CreateTasksTable from "./CreateTasksTable"
 import DiscussionForm from "./DiscussionForm"
 import type { NewTaskRow } from "./TasksColumns"
@@ -23,36 +45,86 @@ enum Steps {
 
 interface CreateDiscussionModalProps {
 	onClose: () => void
+	sourceId?: number
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
-	const { mutateAsync: createSource } = useCreateSource()
+function CreateDiscussionModal({
+	onClose,
+	sourceId,
+}: CreateDiscussionModalProps) {
+	const navigate = useNavigate({ from: "/workspace/$urlName/tasks/new" })
+	const { mutateAsync: createSource } = useCreateSource({
+		mutation: {
+			onSuccess: () => {
+				invalidateQueries([
+					getListTaskRowsQueryKey({ workspaceId }),
+					getListPersonalTaskRowsQueryKey(),
+					getListSourcesQueryKey({ workspaceId }),
+				])
+			},
+		},
+	})
+	const { mutateAsync: updateSource } = useUpdateSource({
+		mutation: {
+			onSuccess: () => {
+				invalidateQueries([getListSourcesQueryKey({ workspaceId })])
+			},
+		},
+	})
+	const { mutate: deleteTask } = useDeleteTask()
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 	const { saveTasks, isPending } = useSaveTasks(workspaceId, onClose)
+
+	const { data: source } = useGetSource(
+		{ id: sourceId ?? 0 },
+		{ query: { enabled: sourceId !== undefined } },
+	)
+
+	const [step, setStep] = useState<Steps>(
+		sourceId ? Steps.Tasks : Steps.Discussion,
+	)
 
 	const defaultValues: CreateSourceDto = {
 		workspaceId,
 		name: "",
 		date: null,
 		tags: [],
-		attachment: null,
+		attachment: sourceId ? undefined : null,
 	}
 
 	const form = useForm({
 		defaultValues,
-		onSubmit: () => {
-			setCurrentStep(Steps.Tasks)
+		onSubmitMeta: { aiExtraction: false } as Partial<UpdateSourceDto>,
+		onSubmit: async ({ meta }) => {
+			await createAndAdvance(!!meta.aiExtraction)
 		},
 	})
 
 	const values = useStore(form.store, (state) => state.values)
-	const [currentStep, setCurrentStep] = useState<Steps>(Steps.Discussion)
 
-	const isCurrentStepTasks = currentStep === Steps.Tasks
+	useEffect(() => {
+		if (!source) return
+		form.setFieldValue("name", source.name)
+		form.setFieldValue("date", source.date)
+		form.setFieldValue(
+			"tags",
+			source.tags.map((tag) => tag.name),
+		)
+	}, [source?.id])
+
+	const isCurrentStepTasks = step === Steps.Tasks
+	const isDiscussionIncomplete = !values.name.trim() || !values.date
+	const hasAttachment =
+		values.attachment === undefined
+			? !!source?.attachmentKey
+			: !!values.attachment
+	const alreadyExtracted = source?.extractionStatus != null
+	const isAiExtractDisabled =
+		isDiscussionIncomplete || !hasAttachment || alreadyExtracted
 
 	// ─── Handlers ─────────────────────────────────────────────────────────────
 
@@ -89,33 +161,80 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 	}
 
 	function handleContinue() {
-		form.handleSubmit()
+		form.handleSubmit({ aiExtraction: false })
+	}
+
+	function handleAiExtract() {
+		form.handleSubmit({ aiExtraction: true })
 	}
 
 	function handleBack() {
-		setCurrentStep(Steps.Discussion)
+		setStep(Steps.Discussion)
 	}
 
-	async function handleSave(taskRows: NewTaskRow[]) {
+	async function createAndAdvance(aiExtraction: boolean) {
 		try {
-			const source = await createSource({ data: values })
-			const inputs = taskRows.map(
-				({ id, rowKey, assigneeIds, assigneeDetails, ...rest }) => ({
-					...rest,
-					workspaceId,
-					sourceId: source.id,
-					groupKey: String(id),
-					assignees: assigneeIds.map((assigneeId) => ({
-						id: assigneeId,
-						description: assigneeDetails[assigneeId] || undefined,
-					})),
-				}),
-			)
-			saveTasks(inputs)
+			const source = sourceId
+				? await updateSource({
+						pathParams: { id: sourceId },
+						data: { ...values, aiExtraction },
+					})
+				: // FIX Should it create when not aiExtraction?
+					await createSource({ data: { ...values, aiExtraction } })
+			navigate({ search: (prev) => ({ ...prev, sourceId: source.id }) })
+			setStep(Steps.Tasks)
 		} catch (error) {
 			console.error("createSource failed:", error)
 		}
 	}
+
+	function resolveCreationType(
+		taskId: number | undefined,
+		touched: boolean | undefined,
+	): TaskCreationType {
+		if (taskId === undefined) return TaskCreationType.HUMAN
+		return touched ? TaskCreationType.AI_HUMAN : TaskCreationType.AI
+	}
+
+	async function handleSave(taskRows: NewTaskRow[]) {
+		const inputs = taskRows.map(
+			({
+				id,
+				rowKey,
+				assigneeIds,
+				assigneeDetails,
+				touched,
+				taskId,
+				...rest
+			}) => ({
+				...rest,
+				taskId,
+				workspaceId,
+				sourceId: sourceId!,
+				groupKey: String(id),
+				creationType: resolveCreationType(taskId, touched),
+				assignees: assigneeIds.map((assigneeId) => ({
+					id: assigneeId,
+					description: assigneeDetails[assigneeId] || undefined,
+				})),
+			}),
+		)
+
+		if (sourceId !== undefined) {
+			await updateSource({
+				pathParams: { id: sourceId },
+				data: { draft: false },
+			})
+		}
+
+		saveTasks(inputs)
+	}
+
+	function handleDeleteRow(row: NewTaskRow) {
+		if (row.taskId === undefined) return
+		deleteTask({ pathParams: { id: row.taskId } })
+	}
+
 	function validateName({ value }: { value: string }) {
 		return !value.trim() ? "יש להזין שם דיון" : undefined
 	}
@@ -128,7 +247,7 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
-			<ModalCard $step={currentStep} closable={false}>
+			<ModalCard $step={step} closable={false}>
 				<ModalBody>
 					<HeaderSection>
 						<ModalTitle>יצירת הנחיות מתוך דיון</ModalTitle>
@@ -166,46 +285,66 @@ function CreateDiscussionModal({ onClose }: CreateDiscussionModalProps) {
 						)}
 					</HeaderSection>
 
-					{currentStep === Steps.Discussion ? (
-						<>
-							<form.Field name="name" validators={{ onSubmit: validateName }}>
-								{(nameField) => (
-									<form.Field
-										name="date"
-										validators={{ onSubmit: validateDate }}
-									>
-										{(dateField) => (
-											<DiscussionForm
-												workspaceId={workspaceId}
-												form={values}
-												onNameChange={handleNameChange}
-												onDateChange={handleDateChange}
-												onTagSelect={handleTagSelect}
-												onTagRemove={handleTagRemove}
-												onFileChange={handleFileChange}
-												fields={{ name: nameField, date: dateField }}
-											/>
-										)}
-									</form.Field>
-								)}
-							</form.Field>
+					<StepPane $active={!isCurrentStepTasks}>
+						<form.Field name="name" validators={{ onSubmit: validateName }}>
+							{(nameField) => (
+								<form.Field name="date" validators={{ onSubmit: validateDate }}>
+									{(dateField) => (
+										<DiscussionForm
+											workspaceId={workspaceId}
+											form={values}
+											onNameChange={handleNameChange}
+											onDateChange={handleDateChange}
+											onTagSelect={handleTagSelect}
+											onTagRemove={handleTagRemove}
+											onFileChange={handleFileChange}
+											existingAttachmentKey={source?.attachmentKey}
+											existingAttachmentName={source?.attachmentName}
+											fields={{ name: nameField, date: dateField }}
+										/>
+									)}
+								</form.Field>
+							)}
+						</form.Field>
 
-							<ModalFooter>
-								<ContinueButton
-									onClick={handleContinue}
-									disabled={!values.name.trim() && !values.date}
-								>
-									המשך
-								</ContinueButton>
-							</ModalFooter>
-						</>
-					) : (
+						<ModalFooter>
+							<ContinueButton
+								onClick={handleContinue}
+								disabled={isDiscussionIncomplete}
+							>
+								המשך
+							</ContinueButton>
+
+							<TooltipProvider>
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<AiExtractButton
+											onClick={handleAiExtract}
+											disabled={isAiExtractDisabled}
+										>
+											חילוץ הנחיות אוטמטי
+											<Sparkles size={16} />
+										</AiExtractButton>
+									</TooltipTrigger>
+									<TooltipContent>
+										{alreadyExtracted
+											? "המסמך הזה כבר חולץ"
+											: "בהעלאת סיכום דיון ניתן לחלץ הנחיות באמצעות AI. עובד בקובץ DOCX"}
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
+						</ModalFooter>
+					</StepPane>
+
+					<StepPane $active={isCurrentStepTasks}>
 						<CreateTasksTable
 							onSave={handleSave}
+							onDeleteRow={handleDeleteRow}
 							onBack={handleBack}
 							isLoading={isPending}
+							sourceId={sourceId}
 						/>
-					)}
+					</StepPane>
 				</ModalBody>
 			</ModalCard>
 		</Dialog>
@@ -236,6 +375,10 @@ const ModalBody = styled.div`
   flex: 1;
   padding-inline: 48px;
   padding-block-end: 36px;
+`
+
+const StepPane = styled.div<{ $active: boolean }>`
+  display: ${({ $active }) => ($active ? "contents" : "none")};
 `
 
 const HeaderSection = styled.div`
@@ -291,6 +434,7 @@ const ModalFooter = styled.div`
   direction: ltr;
   display: flex;
   align-items: center;
+  gap: 12px;
   flex-shrink: 0;
 `
 
@@ -327,6 +471,32 @@ const ContinueButton = styled.button`
 
   &:hover:not(:disabled) {
     opacity: 0.9;
+  }
+`
+
+const AiExtractButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding-inline: 16px;
+  border-radius: 8px;
+  border: 1px solid #6866ff;
+  background: transparent;
+  color: #6866ff;
+  font-size: var(--fs-base);
+  font-weight: 400;
+  line-height: 24px;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(var(--purple-accent-rgb), 0.06);
   }
 `
 

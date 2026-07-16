@@ -54,8 +54,9 @@ interface FormState extends Omit<CreateTaskDto, "workspaceId" | "assignees"> {
 // ─── Component ───────────────────────────────────────────────────────────────
 interface CreateTaskModalProps {
 	workspaceId: number
-	onClose: () => void
-	onSave?: () => void
+	onClose(): void
+	onCancel(): void
+	onSave?(): void
 	task?: TaskWithWorkspaceDto
 }
 
@@ -63,6 +64,7 @@ function CreateTaskModal({
 	workspaceId,
 	onClose,
 	onSave,
+	onCancel,
 	task,
 }: CreateTaskModalProps) {
 	const isEditMode = !!task
@@ -330,7 +332,7 @@ function CreateTaskModal({
 
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
-			<ModalCard closable={false}>
+			<ModalCard closable={!isEditMode || !hasChanges}>
 				<ModalBody>
 					<ModalHeader $shadow={scrollShadow.top}>
 						<ModalTitle>
@@ -432,6 +434,7 @@ function CreateTaskModal({
 										{(field) => (
 											<SourceField
 												workspaceId={workspaceId}
+												label="מקור הנחיה"
 												source={values.source}
 												sourceDate={values.sourceDate}
 												linkedSource={values.linkedSource}
@@ -470,7 +473,7 @@ function CreateTaskModal({
 							loading={isPending}
 							width={133}
 						/>
-						<CancelButton title="ביטול" onClick={onClose} />
+						<CancelButton title="ביטול" onClick={onCancel} />
 					</ActionRow>
 				</ModalBody>
 			</ModalCard>

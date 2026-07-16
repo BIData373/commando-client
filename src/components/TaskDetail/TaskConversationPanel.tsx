@@ -285,7 +285,7 @@ const MessageOuter = styled.div<{ $isOwn: boolean }>`
   flex-direction: column;
   align-self: ${({ $isOwn }) => ($isOwn ? "flex-end" : "flex-start")};
 background: ${({ $isOwn }) =>
-	$isOwn ? "rgba(104, 102, 255, 0.1)" : "var(--background)"};
+	$isOwn ? "rgba(var(--purple-accent-rgb), 0.1)" : "var(--background)"};
   width: 686px;
 `
 

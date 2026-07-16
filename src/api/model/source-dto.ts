@@ -5,6 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
+import type { ExtractionStatus } from "./extraction-status"
 import type { TagDto } from "./tag-dto"
 
 export interface SourceDto {
@@ -18,11 +19,14 @@ export interface SourceDto {
 	deletedBy: number | null
 	id: number
 	name: string
-	date: Date
+	/** @nullable */
+	date: Date | null
 	workspaceId: number
 	/** @nullable */
 	attachmentKey: string | null
 	/** @nullable */
 	attachmentName: string | null
+	draft: boolean
+	extractionStatus: ExtractionStatus | null
 	tags: TagDto[]
 }

@@ -8,6 +8,7 @@ import type { WorkspaceDto } from "../api/model/workspace-dto"
 import { useListWorkspaces } from "../api/workspace/workspace"
 import { Spinner } from "../components/ui/spinner"
 import { useErrorHandler } from "./ErrorModalProvider"
+import { SocketProvider } from "./SocketProvider"
 
 export interface WorkspaceContext {
 	workspace: WorkspaceDto
@@ -71,7 +72,7 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 					setWorkspace,
 				}}
 			>
-				{children}
+				<SocketProvider urlName={urlName}>{children}</SocketProvider>
 			</WorkspaceContext.Provider>
 		)
 	)

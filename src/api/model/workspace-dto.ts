@@ -21,5 +21,7 @@ export interface WorkspaceDto {
 	/** @nullable */
 	icon: string | null
 	assigneeStatusEditable: boolean
+	chatNotification: boolean
+	mailNotification: boolean
 	pikudId: number
 }

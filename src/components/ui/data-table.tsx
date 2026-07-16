@@ -14,7 +14,7 @@ import {
   type SortingState,
   type TableMeta,
 } from '@tanstack/react-table'
-import { Fragment, type ReactNode, useRef, useState, useLayoutEffect, useMemo } from 'react'
+import { Fragment, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { LoadingSpinner } from '../shared/LoadingSpinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
 
@@ -68,7 +68,7 @@ export function DataTable<TData>({
   containerClassName,
   showHeader = true,
   emptyState,
-  isLoading
+  isLoading,
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -88,16 +88,21 @@ export function DataTable<TData>({
     meta,
   })
 
-  // Track container width to distribute remaining space among growable columns
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(0)
 
   useLayoutEffect(() => {
     const el = containerRef.current
     if (!el) return
-    setContainerWidth(el.getBoundingClientRect().width)
+
+    function updateWidth(width: number) {
+      const rounded = Math.round(width)
+      setContainerWidth((prev) => (prev === rounded ? prev : rounded))
+    }
+
+    updateWidth(el.getBoundingClientRect().width)
     const observer = new ResizeObserver(([entry]) => {
-      setContainerWidth(entry.contentRect.width)
+      updateWidth(entry.contentRect.width)
     })
     observer.observe(el)
     return () => observer.disconnect()

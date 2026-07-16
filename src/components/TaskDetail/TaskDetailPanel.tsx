@@ -233,7 +233,7 @@ function TaskDetailPanel({
 							<InfoGrid>
 								{!!source && (
 									<InfoBlock>
-										<SectionLabel>מקור</SectionLabel>
+										<SectionLabel>מקור הנחיה</SectionLabel>
 										<SourceRow>
 											{permissionType === PermissionType.MANAGER && (
 												<PencilButton

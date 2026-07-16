@@ -10,6 +10,8 @@ export interface UpdateWorkspaceDto {
 	/** @nullable */
 	icon?: string | null
 	assigneeStatusEditable?: boolean
+	chatNotification?: boolean
+	mailNotification?: boolean
 	pikudId?: number
 	urlName?: string
 	title?: string

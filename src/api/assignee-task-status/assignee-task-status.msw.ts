@@ -9,7 +9,12 @@ import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 import type { AssigneeTaskStatusDto } from "../model"
-import { DeadlineType, WorkspaceStatusType } from "../model"
+import {
+	DeadlineType,
+	ExtractionStatus,
+	TaskCreationType,
+	WorkspaceStatusType,
+} from "../model"
 
 export const getListAssigneeTaskStatusesResponseMock =
 	(): AssigneeTaskStatusDto[] =>
@@ -47,6 +52,9 @@ export const getListAssigneeTaskStatusesResponseMock =
 				]),
 				flagged: faker.datatype.boolean(),
 				deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
+				creationType: faker.helpers.arrayElement(
+					Object.values(TaskCreationType),
+				),
 				dueDate: faker.helpers.arrayElement([
 					faker.helpers.arrayElement([
 						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -89,9 +97,13 @@ export const getListAssigneeTaskStatusesResponseMock =
 							]),
 							id: faker.number.float({ fractionDigits: 2 }),
 							name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-							date: new Date(
-								faker.date.past().toISOString().slice(0, 19) + "Z",
-							),
+							date: faker.helpers.arrayElement([
+								faker.helpers.arrayElement([
+									new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+									null,
+								]),
+								null,
+							]),
 							workspaceId: faker.number.float({ fractionDigits: 2 }),
 							attachmentKey: faker.helpers.arrayElement([
 								faker.helpers.arrayElement([
@@ -107,6 +119,10 @@ export const getListAssigneeTaskStatusesResponseMock =
 								]),
 								null,
 							]),
+							draft: faker.datatype.boolean(),
+							extractionStatus: faker.helpers.arrayElement(
+								Object.values(ExtractionStatus),
+							),
 							tags: Array.from(
 								{ length: faker.number.int({ min: 1, max: 10 }) },
 								(_, i) => i + 1,
@@ -337,6 +353,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 		]),
 		flagged: faker.datatype.boolean(),
 		deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
+		creationType: faker.helpers.arrayElement(Object.values(TaskCreationType)),
 		dueDate: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -379,7 +396,13 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 					]),
 					id: faker.number.float({ fractionDigits: 2 }),
 					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					date: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+					date: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+							null,
+						]),
+						null,
+					]),
 					workspaceId: faker.number.float({ fractionDigits: 2 }),
 					attachmentKey: faker.helpers.arrayElement([
 						faker.helpers.arrayElement([
@@ -395,6 +418,10 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						]),
 						null,
 					]),
+					draft: faker.datatype.boolean(),
+					extractionStatus: faker.helpers.arrayElement(
+						Object.values(ExtractionStatus),
+					),
 					tags: Array.from(
 						{ length: faker.number.int({ min: 1, max: 10 }) },
 						(_, i) => i + 1,
@@ -616,6 +643,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 		]),
 		flagged: faker.datatype.boolean(),
 		deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
+		creationType: faker.helpers.arrayElement(Object.values(TaskCreationType)),
 		dueDate: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -658,7 +686,13 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					]),
 					id: faker.number.float({ fractionDigits: 2 }),
 					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					date: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+					date: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+							null,
+						]),
+						null,
+					]),
 					workspaceId: faker.number.float({ fractionDigits: 2 }),
 					attachmentKey: faker.helpers.arrayElement([
 						faker.helpers.arrayElement([
@@ -674,6 +708,10 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						]),
 						null,
 					]),
+					draft: faker.datatype.boolean(),
+					extractionStatus: faker.helpers.arrayElement(
+						Object.values(ExtractionStatus),
+					),
 					tags: Array.from(
 						{ length: faker.number.int({ min: 1, max: 10 }) },
 						(_, i) => i + 1,

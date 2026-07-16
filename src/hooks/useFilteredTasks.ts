@@ -7,6 +7,16 @@ import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { DATE_TYPE } from "src/utils/date-utils"
 import { useFuse } from "./useFuse"
 
+const FUSE_OPTIONS = {
+	threshold: 0.5,
+	keys: [
+		"title",
+		"assignee.description",
+		"otherAssignees.description",
+		"notes",
+	],
+}
+
 function getTaskDate<T extends TaskRowDto>(
 	task: T,
 	type: DATE_TYPE,
@@ -35,15 +45,7 @@ export function useFilteredTasks<T extends TaskRowDto>(
 	const from = dateRange?.from
 	const to = dateRange?.to
 
-	const searchedTasks = useFuse(tasks, searchQuery, {
-		threshold: 0.5,
-		keys: [
-			"title",
-			"assignee.description",
-			"otherAssignees.description",
-			"notes",
-		],
-	})
+	const searchedTasks = useFuse(tasks, searchQuery, FUSE_OPTIONS)
 
 	return useMemo(
 		() =>
@@ -53,7 +55,7 @@ export function useFilteredTasks<T extends TaskRowDto>(
 						...(additionalFilter ? [additionalFilter(task)] : []),
 						...(activeQuickFilters.size > 0
 							? [
-									some(Array.from(activeQuickFilters), (filter) =>
+									Array.from(activeQuickFilters).some((filter) =>
 										matchesQuickFilter(task, filter),
 									),
 								]

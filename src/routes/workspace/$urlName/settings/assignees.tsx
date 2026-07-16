@@ -30,7 +30,7 @@ const AssigneesRoot = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 32px;
 `
 
 const CardScrollArea = styled.div`

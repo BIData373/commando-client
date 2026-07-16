@@ -11,7 +11,7 @@ export const Route = createFileRoute("/workspace/$urlName/tasks/new")({
 
 function NewTask() {
 	const { urlName } = Route.useParams()
-	const { view, mode } = Route.useSearch()
+	const { view, mode, sourceId } = Route.useSearch()
 	const navigate = useNavigate()
 
 	function handleClose() {
@@ -22,5 +22,5 @@ function NewTask() {
 		})
 	}
 
-	return <NewTaskModal mode={mode} onClose={handleClose} />
+	return <NewTaskModal mode={mode} onClose={handleClose} sourceId={sourceId} />
 }

@@ -1,51 +1,55 @@
 import styled from "@emotion/styled"
-import type { ColumnFiltersState } from "@tanstack/react-table"
-import { filter } from "lodash"
-import { type ReactNode, useCallback } from "react"
-import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
-import { exportTasksToExcel } from "src/functions/export-excel"
+import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
+import { FilterX } from "lucide-react"
+import { type ReactNode, useMemo } from "react"
+import type { TaskRowDto } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { QuickFilter } from "src/utils/filter-utils"
 import {
-	multiSelectFilter,
-	sortByTaskColumns,
-	TASK_COLUMN_DEFINITIONS,
+	buildCountingColumns,
 	type TaskColumnMeta,
 } from "src/utils/task-table-utils"
+import { useHeadlessTable } from "../../hooks/useHeadlessTable"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
-import { FilterBar, FilterPill } from "../shared/FilterBar"
+import { ColumnVisibilityDropdown } from "../Tasks/ColumnVisibilityDropdown"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
+import { ExportButton } from "./ExportButton"
+import { TaskSearchInput } from "./TaskSearchInput"
 
 interface TaskFiltersProps<TTask extends TaskRowDto> {
 	allTaskRows: TTask[]
-	filteredTaskRows: TTask[]
+	filteredTasks: TTask[]
 	columnOrder: (keyof TTask)[]
 	hiddenColumns: Set<keyof TTask>
 	onClearColumnFilters?: () => void
 	onClearQuickFilters?: () => void
 	extraFilters?: ReactNode
 	extraButtons?: ReactNode
+	extraColumns?: ColumnDef<TTask>[]
 	extraColumnsMeta?: TaskColumnMeta[]
 	tabFilter?: QuickFilter[]
 	onToggleTabFilter?: (filter: QuickFilter) => void
 	startSlot?: ReactNode
 	urlColumnFilters?: ColumnFiltersState
+	exportFilePrefix?: string
 }
 
-function TaskFilters<TTask extends TaskRowDto>({
+export function TaskFilters<TTask extends TaskRowDto>({
 	allTaskRows,
-	filteredTaskRows,
+	filteredTasks,
 	columnOrder,
 	hiddenColumns,
 	onClearColumnFilters,
 	onClearQuickFilters,
 	extraFilters,
+	extraColumns = [],
 	extraColumnsMeta,
 	tabFilter,
 	onToggleTabFilter,
 	startSlot,
 	urlColumnFilters = [],
 	extraButtons,
+	exportFilePrefix,
 }: TaskFiltersProps<TTask>) {
 	const {
 		activeQuickFilters,
@@ -53,11 +57,11 @@ function TaskFilters<TTask extends TaskRowDto>({
 		clearQuickFilters,
 		columnsFilters,
 		setColumnsFilters,
-		sorting,
 	} = useTasksFilters()
 
 	const activeFilters =
 		tabFilter !== undefined ? new Set(tabFilter) : activeQuickFilters
+
 	const handleToggle = onToggleTabFilter ?? toggleQuickFilter
 
 	const hasActiveColumnFilters =
@@ -73,90 +77,199 @@ function TaskFilters<TTask extends TaskRowDto>({
 		onClearQuickFilters?.()
 	}
 
-	const allColumnFilters = [...urlColumnFilters, ...columnsFilters]
+	const allColumnFilters = useMemo(
+		() => [...urlColumnFilters, ...columnsFilters],
+		[urlColumnFilters, columnsFilters],
+	)
 
-	const taskRowsForCounts =
-		allColumnFilters.length === 0
-			? allTaskRows
-			: filter(filteredTaskRows, (task) =>
-					allColumnFilters.every(({ id, value }, index) => {
-						const defId = id as keyof TaskRowWithWorkspaceDto
-						const accessorFn = TASK_COLUMN_DEFINITIONS[defId]?.accessorFn
+	const countingColumns = useMemo(
+		() => buildCountingColumns(extraColumns),
+		[extraColumns],
+	)
 
-						return (
-							!accessorFn ||
-							multiSelectFilter(accessorFn?.(task, index), value as string[])
-						)
-					}),
-				)
+	const countingTable = useHeadlessTable({
+		data: allTaskRows,
+		columns: countingColumns,
+		columnFilters: allColumnFilters,
+	})
 
-	const overdueCount = taskRowsForCounts.filter((t) =>
-		matchesQuickFilter(t, QuickFilter.OVERDUE),
-	).length
-	const approachingCount = taskRowsForCounts.filter((t) =>
-		matchesQuickFilter(t, QuickFilter.APPROACHING),
-	).length
-	const flaggedCount = taskRowsForCounts.filter((t) =>
-		matchesQuickFilter(t, QuickFilter.FLAGGED),
-	).length
+	const filteredRowsForCounts = countingTable.getFilteredRowModel().rows
 
-	const handleExport = useCallback(() => {
-		exportTasksToExcel(
-			sortByTaskColumns(taskRowsForCounts, sorting),
-			columnOrder,
-			hiddenColumns,
-		)
-	}, [taskRowsForCounts, columnOrder, hiddenColumns, sorting])
+	const taskRowsForCounts = useMemo(
+		() => filteredRowsForCounts.map((row) => row.original),
+		[filteredRowsForCounts],
+	)
+
+	const overdueCount = useMemo(
+		() =>
+			taskRowsForCounts.filter((t) =>
+				matchesQuickFilter(t, QuickFilter.OVERDUE),
+			).length,
+		[taskRowsForCounts],
+	)
+
+	const approachingCount = useMemo(
+		() =>
+			taskRowsForCounts.filter((t) =>
+				matchesQuickFilter(t, QuickFilter.APPROACHING),
+			).length,
+		[taskRowsForCounts],
+	)
+
+	const flaggedCount = useMemo(
+		() =>
+			taskRowsForCounts.filter((t) =>
+				matchesQuickFilter(t, QuickFilter.FLAGGED),
+			).length,
+		[taskRowsForCounts],
+	)
 
 	return (
-		<FilterBar
-			hasActiveFilters={hasActiveColumnFilters}
-			onClearAll={clearAllColumnFilters}
-			onExport={handleExport}
-			extraColumnsMeta={extraColumnsMeta}
-			startSlot={startSlot}
-		>
-			{extraFilters}
+		<BarRoot>
+			<BarStart>
+				{startSlot}
 
-			<FilterPill
-				$active={activeFilters.has(QuickFilter.FLAGGED)}
-				onClick={() => handleToggle(QuickFilter.FLAGGED)}
-			>
-				חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
-			</FilterPill>
+				<FilterDivider />
 
-			<Tooltip>
-				<WarningTrigger>
-					<FilterPill
-						$active={activeFilters.has(QuickFilter.APPROACHING)}
-						onClick={() => handleToggle(QuickFilter.APPROACHING)}
-					>
-						תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
-					</FilterPill>
-				</WarningTrigger>
+				<ColumnVisibilityDropdown extraColumnsMeta={extraColumnsMeta} />
 
-				<TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
-			</Tooltip>
+				<ExportButton
+					tasks={filteredTasks}
+					allColumnFilters={allColumnFilters}
+					columnOrder={columnOrder}
+					hiddenColumns={hiddenColumns}
+					extraColumns={extraColumns}
+					exportFilePrefix={exportFilePrefix}
+				/>
 
-			<FilterPill
-				$active={activeFilters.has(QuickFilter.OVERDUE)}
-				onClick={() => handleToggle(QuickFilter.OVERDUE)}
-			>
-				חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
-			</FilterPill>
+				<TaskSearchInput />
+			</BarStart>
 
-			<FilterPill
-				$active={activeFilters.size === 0}
-				onClick={handleClearAllQuickFilters}
-			>
-				הכל ({taskRowsForCounts.length})
-			</FilterPill>
-			{extraButtons}
-		</FilterBar>
+			<BarEnd>
+				{hasActiveColumnFilters && (
+					<>
+						<ClearButton onClick={clearAllColumnFilters}>
+							<FilterX size={18} />
+							נקה סננים
+						</ClearButton>
+
+						<FilterSeparator />
+					</>
+				)}
+
+				{extraFilters}
+
+				<FilterPill
+					$active={activeFilters.has(QuickFilter.FLAGGED)}
+					onClick={() => handleToggle(QuickFilter.FLAGGED)}
+				>
+					חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
+				</FilterPill>
+
+				<Tooltip>
+					<WarningTrigger>
+						<FilterPill
+							$active={activeFilters.has(QuickFilter.APPROACHING)}
+							onClick={() => handleToggle(QuickFilter.APPROACHING)}
+						>
+							תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
+						</FilterPill>
+					</WarningTrigger>
+
+					<TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
+				</Tooltip>
+
+				<FilterPill
+					$active={activeFilters.has(QuickFilter.OVERDUE)}
+					onClick={() => handleToggle(QuickFilter.OVERDUE)}
+				>
+					חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
+				</FilterPill>
+
+				<FilterPill
+					$active={activeFilters.size === 0}
+					onClick={handleClearAllQuickFilters}
+				>
+					הכל ({taskRowsForCounts.length})
+				</FilterPill>
+
+				{extraButtons}
+			</BarEnd>
+		</BarRoot>
 	)
 }
 
-export { TaskFilters }
+const BarRoot = styled.div`
+  direction: ltr;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+`
+
+const BarStart = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`
+
+const BarEnd = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`
+
+const ClearButton = styled.button`
+  direction: rtl;
+  display: flex;
+  padding: 0 15px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  border-radius: 8px;
+  font-size: var(--fs-base);
+  color: var(--text-color-2);
+  cursor: pointer;
+  background: var(--Components-Dropdown-Global-controlItemBgHover);
+  white-space: nowrap;
+
+  &:hover {
+	background: var(--link-bg-hover);
+  }
+`
+
+export const FilterPill = styled.div<{ $active: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-inline: 12px;
+  height: 32px;
+  border-radius: 999px;
+  font-size: var(--fs-btn);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+  border: 1px solid ${({ $active }) => ($active ? "rgba(9, 88, 217, 0.6)" : "#D9D9D9")};
+  background: #FFF;
+  color: ${({ $active }) => ($active ? "rgba(9, 88, 217, 1)" : "var(--sea-ink)")};
+
+  &:hover {
+	background: var(--link-bg-hover);
+  }
+`
+
+const FilterDivider = styled.div`
+  width: 1px;
+  height: 39px;
+  background: var(--card-border);
+`
+
+export const FilterSeparator = styled.div`
+  width: 1px;
+  height: 25px;
+  background: var(--Text-color-text-placeholder);
+`
 
 const WarningTrigger = styled(TooltipTrigger)`
   display: inline-flex;

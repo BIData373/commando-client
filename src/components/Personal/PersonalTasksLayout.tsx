@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import {
 	type TaskRowWithWorkspaceDto,
 	WorkspaceStatusType,
@@ -14,7 +14,6 @@ import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { formatMesibaIcon } from "src/utils/icon-utils"
-import { TASK_COLUMN_DEFINITIONS } from "src/utils/task-table-utils"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import WorkspaceCell from "../shared/WorkspaceCell"
@@ -23,6 +22,28 @@ import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
+
+const EXTRA_COLUMNS: ColumnDef<TaskRowWithWorkspaceDto>[] = [
+	{
+		id: "workspace",
+		header: ({ column }) => (
+			<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
+		),
+		size: 170,
+		enableColumnFilter: false,
+		sortingFn: (rowA, rowB) => {
+			const a = rowA.original.workspace?.title ?? ""
+			const b = rowB.original.workspace?.title ?? ""
+			return a.localeCompare(b, "he")
+		},
+		accessorFn: (row) => row.workspace?.title,
+		cell: ({
+			row: {
+				original: { workspace },
+			},
+		}) => <WorkspaceCell workspace={workspace} />,
+	},
+]
 
 function PersonalTasksLayout() {
 	const navigate = useNavigate()
@@ -59,12 +80,15 @@ function PersonalTasksLayout() {
 
 	const baseFilteredTaskRows = useFilteredTasks(allTaskRows)
 
-	const filteredTaskRows =
-		activeWorkspaceFilters.size > 0
-			? baseFilteredTaskRows.filter((row) =>
-					activeWorkspaceFilters.has(row.workspace.id),
-				)
-			: baseFilteredTaskRows
+	const filteredTaskRows = useMemo(
+		() =>
+			activeWorkspaceFilters.size > 0
+				? baseFilteredTaskRows.filter((row) =>
+						activeWorkspaceFilters.has(row.workspace.id),
+					)
+				: baseFilteredTaskRows,
+		[baseFilteredTaskRows, activeWorkspaceFilters],
+	)
 
 	function handleOpenTask(taskId: number) {
 		navigate({
@@ -102,11 +126,13 @@ function PersonalTasksLayout() {
 
 				<TaskFilters
 					allTaskRows={allTaskRows}
-					filteredTaskRows={filteredTaskRows}
+					filteredTasks={filteredTaskRows}
 					columnOrder={columnOrder}
 					hiddenColumns={hiddenColumns}
+					extraColumns={EXTRA_COLUMNS}
 					extraColumnsMeta={[{ id: "workspace", label: "מפקד מנחה" }]}
 					startSlot={<TasksDatePicker />}
+					exportFilePrefix="אזור אישי"
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label={
@@ -143,22 +169,7 @@ function PersonalTasksLayout() {
 					onEdit={handleEdit}
 					onClick={handleOpenTask}
 					getPermissionType={(task) => task?.workspace?.permissionType}
-					extraColumns={[
-						{
-							id: "workspace",
-							header: ({ column }) => (
-								<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
-							),
-							size: 170,
-							enableColumnFilter: false,
-							...TASK_COLUMN_DEFINITIONS.workspace,
-							cell: ({
-								row: {
-									original: { workspace },
-								},
-							}) => <WorkspaceCell workspace={workspace} />,
-						} as ColumnDef<TaskRowWithWorkspaceDto>,
-					]}
+					extraColumns={EXTRA_COLUMNS}
 				/>
 			</PageRoot>
 			<Outlet />

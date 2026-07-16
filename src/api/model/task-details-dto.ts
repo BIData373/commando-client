@@ -9,6 +9,7 @@ import type { AssigneeStatusDto } from "./assignee-status-dto"
 import type { DeadlineType } from "./deadline-type"
 import type { SourceDto } from "./source-dto"
 import type { TagDto } from "./tag-dto"
+import type { TaskCreationType } from "./task-creation-type"
 import type { WorkspaceStatusDto } from "./workspace-status-dto"
 import type { WorkspaceWithPermissionDto } from "./workspace-with-permission-dto"
 
@@ -27,6 +28,7 @@ export interface TaskDetailsDto {
 	description: string | null
 	flagged: boolean
 	deadlineType: DeadlineType
+	creationType: TaskCreationType
 	/** @nullable */
 	dueDate: Date | null
 	/** @nullable */
