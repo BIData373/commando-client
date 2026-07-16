@@ -1,53 +1,127 @@
+import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
-import { useRef, useState } from "react"
+import { map } from "lodash"
+import { useEffect, useRef, useState } from "react"
 import {
 	DeadlineType,
+	ExtractionStatus,
 	SocketEvent,
-	type SourceExtractionFailureDto,
-	type SourceExtractionSuccessDto,
+	type SourceWithTasksDto,
 	type TaskDto,
 } from "src/api/model"
+import { useExtractSource, useGetSource } from "src/api/source/source"
+import aiLoadingSvg from "src/assets/icons/ai-loading.svg"
 import { useSocketHandler } from "src/hooks/useSocketHandler"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { DataTable } from "../ui/data-table"
+import AIExtractionAlert from "./AIExtractionAlert"
 import { DATA_CELL_ACTIVE_KEY } from "./DeadlineCell"
 import TaskAssigneeExpansion from "./TaskAssigneeExpansion"
 import columns, { type NewTaskRow, type TaskTableMeta } from "./TasksColumns"
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
+const TERMINAL_EXTRACTION_STATUSES = new Set<ExtractionStatus>([
+	ExtractionStatus.FINISHED_WITH_TASKS,
+	ExtractionStatus.FINISHED_WITHOUT_TASKS,
+	ExtractionStatus.BACKEND_ERROR,
+	ExtractionStatus.AI_SERVICE_ERROR,
+])
+
 interface CreateTasksTableProps {
 	onSave: (tasks: NewTaskRow[]) => void
+	onDeleteRow?: (row: NewTaskRow) => void
 	onBack: () => void
 	isLoading?: boolean
+	sourceId?: number
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 function CreateTasksTable({
 	onSave,
+	onDeleteRow,
 	onBack,
 	isLoading,
+	sourceId,
 }: CreateTasksTableProps) {
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 	const nextRowId = useRef(1)
 
+	const [extractionStatus, setExtractionStatus] =
+		useState<ExtractionStatus | null>(null)
+	const [extractedCount, setExtractedCount] = useState(0)
+
+	const { data: source } = useGetSource(
+		{ id: sourceId ?? 0 },
+		{ query: { enabled: sourceId !== undefined } },
+	)
+
+	const { mutateAsync: extractSource, isPending: isRetrying } =
+		useExtractSource()
+
+	// A source is pending extraction until the query or a socket push resolves
+	// it: no local terminal status yet, and either the source hasn't loaded or
+	// it has a non-null extractionStatus (i.e. extraction was requested).
+	const isExtracting =
+		sourceId !== undefined &&
+		extractionStatus === null &&
+		(!source || source.extractionStatus !== null)
+
+	async function handleRetry() {
+		if (sourceId === undefined) return
+		setExtractionStatus(null)
+		await extractSource({ pathParams: { id: sourceId } })
+	}
+
 	useSocketHandler({
-		[SocketEvent.TASK_EXTRACTION_FAILURE]: (
-			dto: SourceExtractionFailureDto,
-		) => {
-			console.log(dto.reason)
-		},
-		[SocketEvent.TASK_EXTRACTION_SUCCESS]: (
-			dto: SourceExtractionSuccessDto,
-		) => {
-			console.log(dto.sourceId)
-			console.log(JSON.stringify(dto.tasks))
+		[SocketEvent.TASK_EXTRACTION_FINISHED]: (dto: SourceWithTasksDto) => {
+			if (sourceId !== undefined && dto.id !== sourceId) return
+			setExtractionStatus(dto.extractionStatus)
+			if (dto.extractionStatus === ExtractionStatus.FINISHED_WITH_TASKS) {
+				setExtractedCount(dto.tasks.length)
+				setRows([...map(dto.tasks, mapTaskDtoToRow), createEmptyRow()])
+			}
 		},
 	})
+
+	useEffect(() => {
+		if (!source?.extractionStatus) return
+
+		if (source.tasks.length > 0) {
+			const mapped = source.tasks.map(mapTaskDtoToRow)
+			setExtractedCount(mapped.length)
+			setRows([...mapped, createEmptyRow()])
+		}
+
+		if (TERMINAL_EXTRACTION_STATUSES.has(source.extractionStatus)) {
+			setExtractionStatus(source.extractionStatus)
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [source])
+
+	function mapTaskDtoToRow(task: TaskDto): NewTaskRow {
+		const id = nextRowId.current++
+		return {
+			workspaceId: task.workspaceId,
+			id,
+			rowKey: String(id),
+			taskId: task.id,
+			creationType: task.creationType,
+			title: task.title,
+			deadlineType: task.deadlineType,
+			dueDate: task.dueDate,
+			assigneeIds: task.assigneeStatuses.map((s) => s.assignee.id),
+			assigneeDetails: Object.fromEntries(
+				task.assigneeStatuses.map((s) => [s.assignee.id, s.description]),
+			),
+			notes: task.notes ?? "",
+			flagged: task.flagged,
+		}
+	}
 
 	function createEmptyRow(): NewTaskRow {
 		const id = nextRowId.current++
@@ -106,6 +180,9 @@ function CreateTasksTable({
 	}
 
 	function deleteRow(id: number) {
+		const row = rows.find((r) => r.id === id)
+		if (row) onDeleteRow?.(row)
+
 		setRows((prev) => {
 			const next = prev.filter((r) => r.id !== id)
 			if (next.length === 0) return [createEmptyRow()]
@@ -119,6 +196,10 @@ function CreateTasksTable({
 		onSave(filled)
 	}
 
+	function dismissAlert() {
+		setExtractionStatus(null)
+	}
+
 	const filledCount = rows.filter((r) => r.title.trim()).length
 	const hasAnyTask = filledCount > 0
 
@@ -130,8 +211,44 @@ function CreateTasksTable({
 		isLastRow: (index: number) => index === rows.length - 1,
 	}
 
+	if (isExtracting) {
+		return (
+			<ExtractionWrapper>
+				<LoaderContainer>
+					<img src={aiLoadingSvg} width={88} height={100} alt="" />
+					<SpinnerRing />
+					<LoaderTitle>אנחנו מחלצים את ההנחיות</LoaderTitle>
+					<LoaderSubtext>
+						התהליך עשוי לקחת כמה דקות,
+						<br />
+						נא לא לסגור את החלונית
+					</LoaderSubtext>
+				</LoaderContainer>
+
+				<FooterRow>
+					<PrimaryButton
+						onClick={handleSave}
+						disabled={!hasAnyTask}
+						title="שמור"
+						width={123}
+					/>
+				</FooterRow>
+			</ExtractionWrapper>
+		)
+	}
+
 	return (
 		<TableWrapper>
+			{extractionStatus !== null && (
+				<AIExtractionAlert
+					status={extractionStatus}
+					count={extractedCount}
+					onRetry={handleRetry}
+					isRetrying={isRetrying}
+					onDismiss={dismissAlert}
+				/>
+			)}
+
 			<TableOuterContainer>
 				<DataTable
 					columns={columns}
@@ -170,6 +287,72 @@ function CreateTasksTable({
 
 export default CreateTasksTable
 
+// ─── Loader Styled Components ────────────────────────────────────────────────
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`
+
+const ExtractionWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  justify-content: space-between;
+`
+
+const LoaderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 16px;
+`
+
+const SpinnerRing = styled.div`
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(104, 102, 255, 0) 0deg,
+    rgba(104, 102, 255, 0.15) 60deg,
+    #6866ff 200deg,
+    #7604c8 310deg,
+    rgba(118, 4, 200, 0) 360deg
+  );
+  animation: ${spin} 1.1s linear infinite;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--background);
+  }
+`
+
+const LoaderTitle = styled.p`
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  color: var(--foreground);
+  margin: 0;
+  text-align: center;
+`
+
+const LoaderSubtext = styled.p`
+  font-size: var(--fs-base);
+  font-weight: 400;
+  color: var(--text-color-2);
+  margin: 0;
+  text-align: center;
+  line-height: 24px;
+`
+
 // ─── Table Styled Components ────────────────────────────────────────────────
 
 const TableWrapper = styled.div`
@@ -178,12 +361,14 @@ const TableWrapper = styled.div`
   width: 100%;
   flex: 1;
   min-height: 0;
-  justify-content: space-between;
+  gap: 16px;
   overflow-x: auto;
   `
 
 const TableOuterContainer = styled.div`
   direction: ltr;
+  flex: 1;
+  min-height: 0;
   overflow-x: auto;
   overflow-y: auto;
 

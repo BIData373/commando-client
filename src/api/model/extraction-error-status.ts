@@ -6,10 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
-export type ExtractionErrorReason =
-	(typeof ExtractionErrorReason)[keyof typeof ExtractionErrorReason]
+export type ExtractionErrorStatus =
+	(typeof ExtractionErrorStatus)[keyof typeof ExtractionErrorStatus]
 
-export const ExtractionErrorReason = {
-	BACKEND_ERROR: "BACKEND_ERROR",
+export const ExtractionErrorStatus = {
 	AI_SERVICE_ERROR: "AI_SERVICE_ERROR",
+	BACKEND_ERROR: "BACKEND_ERROR",
 } as const
