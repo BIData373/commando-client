@@ -3,7 +3,7 @@ import { useForm } from "@tanstack/react-form"
 import { useNavigate } from "@tanstack/react-router"
 import { useStore } from "@tanstack/react-store"
 import { Check, Paperclip, Sparkles } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import {
 	type CreateSourceDto,
@@ -13,6 +13,7 @@ import {
 import {
 	getListSourcesQueryKey,
 	useCreateSource,
+	useGetSource,
 	useUpdateSource,
 } from "../../api/source/source"
 import { useDeleteTask } from "../../api/task/task"
@@ -64,6 +65,11 @@ function CreateDiscussionModal({
 	} = useWorkspace()
 	const { saveTasks, isPending } = useSaveTasks(workspaceId, onClose)
 
+	const { data: source } = useGetSource(
+		{ id: sourceId ?? 0 },
+		{ query: { enabled: sourceId !== undefined } },
+	)
+
 	const [step, setStep] = useState<Steps>(
 		sourceId ? Steps.Tasks : Steps.Discussion,
 	)
@@ -73,7 +79,7 @@ function CreateDiscussionModal({
 		name: "",
 		date: null,
 		tags: [],
-		attachment: null,
+		attachment: sourceId ? undefined : null,
 	}
 
 	const form = useForm({
@@ -86,9 +92,29 @@ function CreateDiscussionModal({
 
 	const values = useStore(form.store, (state) => state.values)
 
+	const hasHydratedForm = useRef(false)
+
+	useEffect(() => {
+		if (!source || hasHydratedForm.current) return
+		hasHydratedForm.current = true
+		form.setFieldValue("name", source.name)
+		form.setFieldValue("date", source.date)
+		form.setFieldValue(
+			"tags",
+			source.tags.map((tag) => tag.name),
+		)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [source])
+
 	const isCurrentStepTasks = step === Steps.Tasks
 	const isDiscussionIncomplete = !values.name.trim() || !values.date
-	const isAiExtractDisabled = isDiscussionIncomplete || !values.attachment
+	const hasAttachment =
+		values.attachment === undefined
+			? !!source?.attachmentKey
+			: !!values.attachment
+	const alreadyExtracted = source?.extractionStatus != null
+	const isAiExtractDisabled =
+		isDiscussionIncomplete || !hasAttachment || alreadyExtracted
 
 	// ─── Handlers ─────────────────────────────────────────────────────────────
 
@@ -256,6 +282,8 @@ function CreateDiscussionModal({
 											onTagSelect={handleTagSelect}
 											onTagRemove={handleTagRemove}
 											onFileChange={handleFileChange}
+											existingAttachmentKey={source?.attachmentKey}
+											existingAttachmentName={source?.attachmentName}
 											fields={{ name: nameField, date: dateField }}
 										/>
 									)}
@@ -283,8 +311,9 @@ function CreateDiscussionModal({
 										</AiExtractButton>
 									</TooltipTrigger>
 									<TooltipContent>
-										בהעלאת סיכום דיון ניתן לחלץ הנחיות באמצעות AI. עובד בקובץ
-										DOCX
+										{alreadyExtracted
+											? "המסמך הזה כבר חולץ"
+											: "בהעלאת סיכום דיון ניתן לחלץ הנחיות באמצעות AI. עובד בקובץ DOCX"}
 									</TooltipContent>
 								</Tooltip>
 							</TooltipProvider>
