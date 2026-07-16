@@ -62,6 +62,7 @@ export const getCreateSourceResponseMock = (
 		null,
 	]),
 	draft: faker.datatype.boolean(),
+	extractionStatus: faker.helpers.arrayElement(Object.values(ExtractionStatus)),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -125,6 +126,9 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 			null,
 		]),
 		draft: faker.datatype.boolean(),
+		extractionStatus: faker.helpers.arrayElement(
+			Object.values(ExtractionStatus),
+		),
 		tags: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
@@ -185,6 +189,7 @@ export const getGetSourceResponseMock = (
 		null,
 	]),
 	draft: faker.datatype.boolean(),
+	extractionStatus: faker.helpers.arrayElement(Object.values(ExtractionStatus)),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -460,6 +465,7 @@ export const getUpdateSourceResponseMock = (
 		null,
 	]),
 	draft: faker.datatype.boolean(),
+	extractionStatus: faker.helpers.arrayElement(Object.values(ExtractionStatus)),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -521,6 +527,7 @@ export const getDeleteSourceResponseMock = (
 		null,
 	]),
 	draft: faker.datatype.boolean(),
+	extractionStatus: faker.helpers.arrayElement(Object.values(ExtractionStatus)),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -994,22 +1001,49 @@ export const getDeleteSourceMockHandler = (
 	)
 }
 
-export const getAiExtractionCallbackMockHandler = (
+export const getExtractSourceMockHandler = (
 	overrideResponse?:
-		| void
+		| SourceDto
 		| ((
 				info: Parameters<Parameters<typeof http.post>[1]>[0],
-		  ) => Promise<void> | void),
+		  ) => Promise<SourceDto> | SourceDto),
+	options?: RequestHandlerOptions,
+) => {
+	return http.post(
+		"*/source/:id/extract",
+		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+			return HttpResponse.json(
+				overrideResponse !== undefined
+					? typeof overrideResponse === "function"
+						? await overrideResponse(info)
+						: overrideResponse
+					: getExtractSourceResponseMock(),
+				{ status: 200 },
+			)
+		},
+		options,
+	)
+}
+
+export const getAiExtractionCallbackMockHandler = (
+	overrideResponse?:
+		| SourceWithTasksDto
+		| ((
+				info: Parameters<Parameters<typeof http.post>[1]>[0],
+		  ) => Promise<SourceWithTasksDto> | SourceWithTasksDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.post(
 		"*/source/:id/ai-result",
 		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
-			if (typeof overrideResponse === "function") {
-				await overrideResponse(info)
-			}
-
-			return new HttpResponse(null, { status: 201 })
+			return HttpResponse.json(
+				overrideResponse !== undefined
+					? typeof overrideResponse === "function"
+						? await overrideResponse(info)
+						: overrideResponse
+					: getAiExtractionCallbackResponseMock(),
+				{ status: 200 },
+			)
 		},
 		options,
 	)
@@ -1020,5 +1054,6 @@ export const getSourceMock = () => [
 	getGetSourceMockHandler(),
 	getUpdateSourceMockHandler(),
 	getDeleteSourceMockHandler(),
+	getExtractSourceMockHandler(),
 	getAiExtractionCallbackMockHandler(),
 ]

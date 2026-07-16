@@ -9,7 +9,12 @@ import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 import type { AssigneeTaskStatusDto } from "../model"
-import { DeadlineType, TaskCreationType, WorkspaceStatusType } from "../model"
+import {
+	DeadlineType,
+	ExtractionStatus,
+	TaskCreationType,
+	WorkspaceStatusType,
+} from "../model"
 
 export const getListAssigneeTaskStatusesResponseMock =
 	(): AssigneeTaskStatusDto[] =>
@@ -115,6 +120,9 @@ export const getListAssigneeTaskStatusesResponseMock =
 								null,
 							]),
 							draft: faker.datatype.boolean(),
+							extractionStatus: faker.helpers.arrayElement(
+								Object.values(ExtractionStatus),
+							),
 							tags: Array.from(
 								{ length: faker.number.int({ min: 1, max: 10 }) },
 								(_, i) => i + 1,
@@ -411,6 +419,9 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						null,
 					]),
 					draft: faker.datatype.boolean(),
+					extractionStatus: faker.helpers.arrayElement(
+						Object.values(ExtractionStatus),
+					),
 					tags: Array.from(
 						{ length: faker.number.int({ min: 1, max: 10 }) },
 						(_, i) => i + 1,
@@ -698,6 +709,9 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						null,
 					]),
 					draft: faker.datatype.boolean(),
+					extractionStatus: faker.helpers.arrayElement(
+						Object.values(ExtractionStatus),
+					),
 					tags: Array.from(
 						{ length: faker.number.int({ min: 1, max: 10 }) },
 						(_, i) => i + 1,

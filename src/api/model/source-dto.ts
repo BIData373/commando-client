@@ -27,5 +27,6 @@ export interface SourceDto {
 	/** @nullable */
 	attachmentName: string | null
 	draft: boolean
+	extractionStatus: ExtractionStatus | null
 	tags: TagDto[]
 }
