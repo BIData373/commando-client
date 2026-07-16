@@ -13,8 +13,9 @@ export const STATIC_TOKEN_HEADER = "static-token"
 export const REQUEST_USERNAME_HEADER = "requestusername"
 export const IS_BI_HEADER = "is-bi"
 
-export const requestUsernameKey = "request_username"
-export const isBIKey = "is_bi"
+export { isBIKey, requestUsernameKey } from "./utils/request-utils"
+
+import { getRequestIdentity } from "./utils/request-utils"
 
 export const axiosInstance = axios.create({
 	baseURL: new URL(API_PREFIX, API_BASE_URL).toString(),
@@ -31,12 +32,7 @@ if (STATIC_TOKEN) {
 			return config
 		}
 
-		const rawUsername = localStorage.getItem(requestUsernameKey)
-		const username =
-			rawUsername !== null ? (JSON.parse(rawUsername) as string | null) : null
-
-		const rawIsBI = localStorage.getItem(isBIKey)
-		const isBI = rawIsBI !== null ? rawIsBI === "true" : null
+		const { username, isBI } = getRequestIdentity()
 
 		if (username && username.length > 0) {
 			config.headers[REQUEST_USERNAME_HEADER] = username

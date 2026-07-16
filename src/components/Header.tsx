@@ -61,9 +61,10 @@ export default function Header() {
 
 						<EndSectionSeparator orientation="vertical" />
 
-						<Link to="/">
+						<StyledLink to="/">
+							<BiData>by BI DATA</BiData>
 							<img src={logoWithText} alt="Logo" />
-						</Link>
+						</StyledLink>
 					</EndSection>
 				</HeaderInner>
 			</HeaderRoot>
@@ -180,4 +181,18 @@ const PageTitle = styled.h1`
   font-size: var(--fs-heading-1);
   font-weight: 500;
   color: var(--sea-ink);
+`
+
+const StyledLink = styled(Link)`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+`
+
+const BiData = styled.span`
+  color: #D2E0FA;
+  font-size: var(--fs-btn);
+  align-self: flex-start;
+  line-height: 40px;
 `

@@ -1,6 +1,13 @@
 import styled from "@emotion/styled"
 import { useRef, useState } from "react"
-import { DeadlineType } from "src/api/model"
+import {
+	DeadlineType,
+	SocketEvent,
+	type SourceExtractionFailureDto,
+	type SourceExtractionSuccessDto,
+	type TaskDto,
+} from "src/api/model"
+import { useSocketHandler } from "src/hooks/useSocketHandler"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { DataTable } from "../ui/data-table"
@@ -27,6 +34,20 @@ function CreateTasksTable({
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 	const nextRowId = useRef(1)
+
+	useSocketHandler({
+		[SocketEvent.TASK_EXTRACTION_FAILURE]: (
+			dto: SourceExtractionFailureDto,
+		) => {
+			console.log(dto.reason)
+		},
+		[SocketEvent.TASK_EXTRACTION_SUCCESS]: (
+			dto: SourceExtractionSuccessDto,
+		) => {
+			console.log(dto.sourceId)
+			console.log(JSON.stringify(dto.tasks))
+		},
+	})
 
 	function createEmptyRow(): NewTaskRow {
 		const id = nextRowId.current++

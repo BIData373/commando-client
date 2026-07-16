@@ -14,4 +14,5 @@ export interface CreateSourceDto {
 	tags?: string[]
 	/** @nullable */
 	attachment?: Blob | null
+	aiExtraction?: boolean
 }

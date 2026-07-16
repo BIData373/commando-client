@@ -15,7 +15,12 @@ import type {
 	TaskRowWithWorkspaceDto,
 	TaskWithWorkspaceDto,
 } from "../model"
-import { DeadlineType, PermissionType, WorkspaceStatusType } from "../model"
+import {
+	DeadlineType,
+	PermissionType,
+	TaskCreationType,
+	WorkspaceStatusType,
+} from "../model"
 
 export const getCreateTaskResponseMock = (
 	overrideResponse: Partial<Extract<TaskWithWorkspaceDto, object>> = {},
@@ -49,6 +54,7 @@ export const getCreateTaskResponseMock = (
 	]),
 	flagged: faker.datatype.boolean(),
 	deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
+	creationType: faker.helpers.arrayElement(Object.values(TaskCreationType)),
 	dueDate: faker.helpers.arrayElement([
 		faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -103,6 +109,7 @@ export const getCreateTaskResponseMock = (
 					]),
 					null,
 				]),
+				draft: faker.datatype.boolean(),
 				tags: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
 					(_, i) => i + 1,
@@ -286,6 +293,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 		]),
 		flagged: faker.datatype.boolean(),
 		deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
+		creationType: faker.helpers.arrayElement(Object.values(TaskCreationType)),
 		dueDate: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -344,6 +352,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 						]),
 						null,
 					]),
+					draft: faker.datatype.boolean(),
 					tags: Array.from(
 						{ length: faker.number.int({ min: 1, max: 10 }) },
 						(_, i) => i + 1,
@@ -491,6 +500,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 		]),
 		flagged: faker.datatype.boolean(),
 		deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
+		creationType: faker.helpers.arrayElement(Object.values(TaskCreationType)),
 		dueDate: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -549,6 +559,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 						]),
 						null,
 					]),
+					draft: faker.datatype.boolean(),
 					tags: Array.from(
 						{ length: faker.number.int({ min: 1, max: 10 }) },
 						(_, i) => i + 1,
@@ -773,6 +784,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 		]),
 		flagged: faker.datatype.boolean(),
 		deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
+		creationType: faker.helpers.arrayElement(Object.values(TaskCreationType)),
 		dueDate: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -831,6 +843,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 						]),
 						null,
 					]),
+					draft: faker.datatype.boolean(),
 					tags: Array.from(
 						{ length: faker.number.int({ min: 1, max: 10 }) },
 						(_, i) => i + 1,
@@ -1014,6 +1027,7 @@ export const getListPersonalTaskRowsResponseMock =
 			]),
 			flagged: faker.datatype.boolean(),
 			deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
+			creationType: faker.helpers.arrayElement(Object.values(TaskCreationType)),
 			dueDate: faker.helpers.arrayElement([
 				faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1072,6 +1086,7 @@ export const getListPersonalTaskRowsResponseMock =
 							]),
 							null,
 						]),
+						draft: faker.datatype.boolean(),
 						tags: Array.from(
 							{ length: faker.number.int({ min: 1, max: 10 }) },
 							(_, i) => i + 1,
@@ -1339,6 +1354,7 @@ export const getGetTaskResponseMock = (
 	]),
 	flagged: faker.datatype.boolean(),
 	deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
+	creationType: faker.helpers.arrayElement(Object.values(TaskCreationType)),
 	dueDate: faker.helpers.arrayElement([
 		faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1393,6 +1409,7 @@ export const getGetTaskResponseMock = (
 					]),
 					null,
 				]),
+				draft: faker.datatype.boolean(),
 				tags: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
 					(_, i) => i + 1,
@@ -1584,6 +1601,7 @@ export const getUpdateTaskResponseMock = (
 	]),
 	flagged: faker.datatype.boolean(),
 	deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
+	creationType: faker.helpers.arrayElement(Object.values(TaskCreationType)),
 	dueDate: faker.helpers.arrayElement([
 		faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1638,6 +1656,7 @@ export const getUpdateTaskResponseMock = (
 					]),
 					null,
 				]),
+				draft: faker.datatype.boolean(),
 				tags: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
 					(_, i) => i + 1,
@@ -1819,6 +1838,7 @@ export const getDeleteTaskResponseMock = (
 	]),
 	flagged: faker.datatype.boolean(),
 	deadlineType: faker.helpers.arrayElement(Object.values(DeadlineType)),
+	creationType: faker.helpers.arrayElement(Object.values(TaskCreationType)),
 	dueDate: faker.helpers.arrayElement([
 		faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1873,6 +1893,7 @@ export const getDeleteTaskResponseMock = (
 					]),
 					null,
 				]),
+				draft: faker.datatype.boolean(),
 				tags: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
 					(_, i) => i + 1,
