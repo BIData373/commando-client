@@ -6,7 +6,6 @@ import {
 	MesibaAvatarImage,
 	MesibaAvatarRoot,
 } from "src/components/shared/MesibaAvatar"
-import { PERMISSION_LABEL } from "src/components/UserDropdown"
 import {
 	Tooltip,
 	TooltipContent,
@@ -14,6 +13,7 @@ import {
 } from "src/components/ui/tooltip"
 import { getInitials } from "src/utils/avatar-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
+import { PERMISSION_LABEL } from "src/utils/permissions-utils"
 
 interface WorkspaceCardProps {
 	workspace: WorkspaceDto

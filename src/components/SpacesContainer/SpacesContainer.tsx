@@ -7,6 +7,11 @@ import {
 } from "src/api/workspace/workspace"
 import emptyWorkspacesImage from "src/assets/empty-states/empty-workspace.svg"
 import { EmptyCardState } from "src/components/shared/EmptyCardState"
+import {
+	NO_PERMISSION_ORDER,
+	PERMISSION_ORDER,
+} from "src/utils/permissions-utils"
+// import NewWorkspaceButton from "./NewWorkspaceButton"
 import WorkspaceCard from "./WorkspaceCard"
 
 export default function SpacesContainer() {
@@ -29,12 +34,6 @@ export default function SpacesContainer() {
 		ws.title.toLowerCase().includes(searchLower),
 	)
 
-	const PERMISSION_ORDER: Record<string, number> = {
-		MANAGER: 0,
-		VIEWER: 1,
-	}
-	const NO_PERMISSION_ORDER = 2
-
 	const filteredAll = allWorkspaces
 		.filter((ws) => ws.title.toLowerCase().includes(searchLower))
 		.sort((a, b) => {
@@ -54,10 +53,7 @@ export default function SpacesContainer() {
 			<TopSection>
 				<HeaderRow>
 					<ActionsRow>
-						{/* <NewWorkspaceButton onClick={handleNewWorkspace}>
-							<GradientText>בקשה לסביבה חדשה</GradientText>
-							<GradientIcon size={18} />
-						</NewWorkspaceButton> */}
+						{/* <NewWorkspaceButton /> */}
 
 						<SearchWrapper>
 							<SearchInput
@@ -157,38 +153,6 @@ const ActionsRow = styled.div`
   align-items: center;
   gap: 16px;
 `
-
-// const NewWorkspaceButton = styled.button`
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   gap: 8px;
-//   height: 40px;
-//   padding: 0 15px;
-//   background: var(--background);
-//   border: 1px solid var(--primary);
-//   border-radius: 8px;
-//   cursor: pointer;
-//   box-shadow: var(--shadow-button);
-//   color: var(--primary);
-
-//   &:hover {
-//     border-color: var(--hover-primary);
-//     color: var(--hover-primary);
-//   }
-// `
-
-// const GradientText = styled.span`
-//   font-size: var(--fs-base);
-//   font-weight: 400;
-//   line-height: 24px;
-//   color: inherit;
-//   white-space: nowrap;
-// `
-
-// const GradientIcon = styled(Plus)`
-//   color: inherit;
-// `
 
 const SearchWrapper = styled.div`
   position: relative;
