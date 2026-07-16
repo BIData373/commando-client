@@ -1,55 +1,53 @@
 import styled from "@emotion/styled"
-import { useQueries } from "@tanstack/react-query"
-import { Plus, Search } from "lucide-react"
-import { useMemo, useState } from "react"
-import { getGetMyPermissionQueryOptions } from "src/api/permission/permission"
-import { useListWorkspaces } from "src/api/workspace/workspace"
+import { Search } from "lucide-react"
+import { useState } from "react"
+import {
+	useGetUserWorkspaces,
+	useListWorkspaces,
+} from "src/api/workspace/workspace"
 import emptyWorkspacesImage from "src/assets/empty-states/empty-workspace.svg"
 import { EmptyCardState } from "src/components/shared/EmptyCardState"
 import WorkspaceCard from "./WorkspaceCard"
 
 export default function SpacesContainer() {
-	const { data: workspaces = [] } = useListWorkspaces()
+	const { data: allWorkspaces = [] } = useListWorkspaces()
+	const { data: myWorkspaces = [] } = useGetUserWorkspaces()
 	const [searchQuery, setSearchQuery] = useState("")
 	const [activeTab, setActiveTab] = useState<"mine" | "all">("mine")
-
-	const permissionQueries = useQueries({
-		queries: workspaces.map((ws) =>
-			getGetMyPermissionQueryOptions({ workspaceId: ws.id }),
-		),
-	})
-
-	const myWorkspaceIds = useMemo(() => {
-		const ids = new Set<number>()
-		for (const query of permissionQueries) {
-			if (query.data) {
-				ids.add(query.data.workspaceId)
-			}
-		}
-		return ids
-	}, [permissionQueries])
-
-	const allQueriesLoaded =
-		permissionQueries.length > 0 && permissionQueries.every((q) => !q.isLoading)
-
-	const hasNoPermissions = allQueriesLoaded && myWorkspaceIds.size === 0
 
 	function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
 		setSearchQuery(e.target.value)
 	}
 
-	// function handleNewWorkspace() {
-	// 	navigate({ to: "/new-workspace" })
-	// }
+	const searchLower = searchQuery.toLowerCase()
 
-	const searchFiltered = workspaces.filter((ws) =>
-		ws.title.toLowerCase().includes(searchQuery.toLowerCase()),
+	const permissionByWorkspaceId = new Map(
+		myWorkspaces.map((ws) => [ws.id, ws.permissionType]),
 	)
 
-	const filtered =
-		activeTab === "mine"
-			? searchFiltered.filter((ws) => myWorkspaceIds.has(ws.id))
-			: searchFiltered
+	const filteredMine = myWorkspaces.filter((ws) =>
+		ws.title.toLowerCase().includes(searchLower),
+	)
+
+	const PERMISSION_ORDER: Record<string, number> = {
+		MANAGER: 0,
+		VIEWER: 1,
+	}
+	const NO_PERMISSION_ORDER = 2
+
+	const filteredAll = allWorkspaces
+		.filter((ws) => ws.title.toLowerCase().includes(searchLower))
+		.sort((a, b) => {
+			const permA = permissionByWorkspaceId.get(a.id)
+			const permB = permissionByWorkspaceId.get(b.id)
+			const orderA = permA
+				? (PERMISSION_ORDER[permA] ?? NO_PERMISSION_ORDER)
+				: NO_PERMISSION_ORDER
+			const orderB = permB
+				? (PERMISSION_ORDER[permB] ?? NO_PERMISSION_ORDER)
+				: NO_PERMISSION_ORDER
+			return orderB - orderA
+		})
 
 	return (
 		<SpaceContainerCard>
@@ -92,7 +90,7 @@ export default function SpacesContainer() {
 				</TabsRow>
 			</TopSection>
 
-			{hasNoPermissions && activeTab === "mine" ? (
+			{activeTab === "mine" && filteredMine.length === 0 ? (
 				<EmptySpace>
 					<EmptyCardState
 						imgSrc={emptyWorkspacesImage}
@@ -100,10 +98,24 @@ export default function SpacesContainer() {
 						description="ניתן לפנות למנהל סביבה כדי לקבל הרשאות"
 					/>
 				</EmptySpace>
+			) : activeTab === "mine" ? (
+				<WorkspacesContainer>
+					{filteredMine.map((ws) => (
+						<WorkspaceCard
+							key={ws.urlName}
+							workspace={ws}
+							permissionType={ws.permissionType}
+						/>
+					))}
+				</WorkspacesContainer>
 			) : (
 				<WorkspacesContainer>
-					{filtered.map((ws) => (
-						<WorkspaceCard key={ws.urlName} workspace={ws} />
+					{filteredAll.map((ws) => (
+						<WorkspaceCard
+							key={ws.urlName}
+							workspace={ws}
+							permissionType={permissionByWorkspaceId.get(ws.id)}
+						/>
 					))}
 				</WorkspacesContainer>
 			)}

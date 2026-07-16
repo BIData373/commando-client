@@ -1,7 +1,6 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
-import type { WorkspaceDto } from "src/api/model"
-import { useGetMyPermission } from "src/api/permission/permission"
+import type { PermissionType, WorkspaceDto } from "src/api/model"
 import {
 	MesibaAvatarFallback,
 	MesibaAvatarImage,
@@ -18,13 +17,14 @@ import { formatMesibaIcon } from "src/utils/icon-utils"
 
 interface WorkspaceCardProps {
 	workspace: WorkspaceDto
+	permissionType?: PermissionType | null
 }
 
 export default function WorkspaceCard({
-	workspace: { id, title, urlName, icon },
+	workspace: { title, urlName, icon },
+	permissionType,
 }: WorkspaceCardProps) {
 	const navigate = useNavigate()
-	const { data: myPermission } = useGetMyPermission({ workspaceId: id })
 
 	function handleWorkspaceClick() {
 		navigate({
@@ -36,10 +36,10 @@ export default function WorkspaceCard({
 	return (
 		<CardRoot onClick={handleWorkspaceClick}>
 			<PermissionRow>
-				{myPermission && (
+				{permissionType && (
 					<PermissionBadge>
 						<PermissionText>
-							מורשה {PERMISSION_LABEL[myPermission.type]}
+							מורשה {PERMISSION_LABEL[permissionType]}
 						</PermissionText>
 						<PermissionDot />
 					</PermissionBadge>

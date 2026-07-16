@@ -32,6 +32,7 @@ import type {
 	UpdateWorkspaceDto,
 	UpdateWorkspacePathParameters,
 	WorkspaceDto,
+	WorkspaceWithPermissionDto,
 } from "../model"
 
 export const createWorkspace = (
@@ -232,6 +233,145 @@ export function useListWorkspaces<
 	queryKey: DataTag<QueryKey, TData, TError>
 } {
 	const queryOptions = getListWorkspacesQueryOptions(params, options)
+
+	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+		TData,
+		TError
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+	return { ...query, queryKey: queryOptions.queryKey }
+}
+
+export const getUserWorkspaces = (signal?: AbortSignal) => {
+	return sendRequest<WorkspaceWithPermissionDto[]>({
+		url: `/workspace/mine`,
+		method: "GET",
+		signal,
+	})
+}
+
+export const getGetUserWorkspacesQueryKey = () => {
+	return [`/workspace/mine`] as const
+}
+
+export const getGetUserWorkspacesQueryOptions = <
+	TData = Awaited<ReturnType<typeof getUserWorkspaces>>,
+	TError = ErrorType<unknown>,
+>(options?: {
+	query?: Partial<
+		UseQueryOptions<
+			Awaited<ReturnType<typeof getUserWorkspaces>>,
+			TError,
+			TData
+		>
+	>
+}) => {
+	const { query: queryOptions } = options ?? {}
+
+	const queryKey = queryOptions?.queryKey ?? getGetUserWorkspacesQueryKey()
+
+	const queryFn: QueryFunction<
+		Awaited<ReturnType<typeof getUserWorkspaces>>
+	> = ({ signal }) => getUserWorkspaces(signal)
+
+	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+		Awaited<ReturnType<typeof getUserWorkspaces>>,
+		TError,
+		TData
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetUserWorkspacesQueryResult = NonNullable<
+	Awaited<ReturnType<typeof getUserWorkspaces>>
+>
+export type GetUserWorkspacesQueryError = ErrorType<unknown>
+
+export function useGetUserWorkspaces<
+	TData = Awaited<ReturnType<typeof getUserWorkspaces>>,
+	TError = ErrorType<unknown>,
+>(
+	options: {
+		query: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getUserWorkspaces>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				DefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getUserWorkspaces>>,
+					TError,
+					Awaited<ReturnType<typeof getUserWorkspaces>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetUserWorkspaces<
+	TData = Awaited<ReturnType<typeof getUserWorkspaces>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getUserWorkspaces>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				UndefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getUserWorkspaces>>,
+					TError,
+					Awaited<ReturnType<typeof getUserWorkspaces>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetUserWorkspaces<
+	TData = Awaited<ReturnType<typeof getUserWorkspaces>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getUserWorkspaces>>,
+				TError,
+				TData
+			>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+
+export function useGetUserWorkspaces<
+	TData = Awaited<ReturnType<typeof getUserWorkspaces>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getUserWorkspaces>>,
+				TError,
+				TData
+			>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+} {
+	const queryOptions = getGetUserWorkspacesQueryOptions(options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
