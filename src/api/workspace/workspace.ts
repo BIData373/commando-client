@@ -242,25 +242,25 @@ export function useListWorkspaces<
 	return { ...query, queryKey: queryOptions.queryKey }
 }
 
-export const getUserWorkspaces = (signal?: AbortSignal) => {
+export const getPermittedWorkspaces = (signal?: AbortSignal) => {
 	return sendRequest<WorkspaceWithPermissionDto[]>({
-		url: `/workspace/mine`,
+		url: `/workspace/permitted`,
 		method: "GET",
 		signal,
 	})
 }
 
-export const getGetUserWorkspacesQueryKey = () => {
-	return [`/workspace/mine`] as const
+export const getGetPermittedWorkspacesQueryKey = () => {
+	return [`/workspace/permitted`] as const
 }
 
-export const getGetUserWorkspacesQueryOptions = <
-	TData = Awaited<ReturnType<typeof getUserWorkspaces>>,
+export const getGetPermittedWorkspacesQueryOptions = <
+	TData = Awaited<ReturnType<typeof getPermittedWorkspaces>>,
 	TError = ErrorType<unknown>,
 >(options?: {
 	query?: Partial<
 		UseQueryOptions<
-			Awaited<ReturnType<typeof getUserWorkspaces>>,
+			Awaited<ReturnType<typeof getPermittedWorkspaces>>,
 			TError,
 			TData
 		>
@@ -268,41 +268,41 @@ export const getGetUserWorkspacesQueryOptions = <
 }) => {
 	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getGetUserWorkspacesQueryKey()
+	const queryKey = queryOptions?.queryKey ?? getGetPermittedWorkspacesQueryKey()
 
 	const queryFn: QueryFunction<
-		Awaited<ReturnType<typeof getUserWorkspaces>>
-	> = ({ signal }) => getUserWorkspaces(signal)
+		Awaited<ReturnType<typeof getPermittedWorkspaces>>
+	> = ({ signal }) => getPermittedWorkspaces(signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-		Awaited<ReturnType<typeof getUserWorkspaces>>,
+		Awaited<ReturnType<typeof getPermittedWorkspaces>>,
 		TError,
 		TData
 	> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetUserWorkspacesQueryResult = NonNullable<
-	Awaited<ReturnType<typeof getUserWorkspaces>>
+export type GetPermittedWorkspacesQueryResult = NonNullable<
+	Awaited<ReturnType<typeof getPermittedWorkspaces>>
 >
-export type GetUserWorkspacesQueryError = ErrorType<unknown>
+export type GetPermittedWorkspacesQueryError = ErrorType<unknown>
 
-export function useGetUserWorkspaces<
-	TData = Awaited<ReturnType<typeof getUserWorkspaces>>,
+export function useGetPermittedWorkspaces<
+	TData = Awaited<ReturnType<typeof getPermittedWorkspaces>>,
 	TError = ErrorType<unknown>,
 >(
 	options: {
 		query: Partial<
 			UseQueryOptions<
-				Awaited<ReturnType<typeof getUserWorkspaces>>,
+				Awaited<ReturnType<typeof getPermittedWorkspaces>>,
 				TError,
 				TData
 			>
 		> &
 			Pick<
 				DefinedInitialDataOptions<
-					Awaited<ReturnType<typeof getUserWorkspaces>>,
+					Awaited<ReturnType<typeof getPermittedWorkspaces>>,
 					TError,
-					Awaited<ReturnType<typeof getUserWorkspaces>>
+					Awaited<ReturnType<typeof getPermittedWorkspaces>>
 				>,
 				"initialData"
 			>
@@ -311,23 +311,23 @@ export function useGetUserWorkspaces<
 ): DefinedUseQueryResult<TData, TError> & {
 	queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useGetUserWorkspaces<
-	TData = Awaited<ReturnType<typeof getUserWorkspaces>>,
+export function useGetPermittedWorkspaces<
+	TData = Awaited<ReturnType<typeof getPermittedWorkspaces>>,
 	TError = ErrorType<unknown>,
 >(
 	options?: {
 		query?: Partial<
 			UseQueryOptions<
-				Awaited<ReturnType<typeof getUserWorkspaces>>,
+				Awaited<ReturnType<typeof getPermittedWorkspaces>>,
 				TError,
 				TData
 			>
 		> &
 			Pick<
 				UndefinedInitialDataOptions<
-					Awaited<ReturnType<typeof getUserWorkspaces>>,
+					Awaited<ReturnType<typeof getPermittedWorkspaces>>,
 					TError,
-					Awaited<ReturnType<typeof getUserWorkspaces>>
+					Awaited<ReturnType<typeof getPermittedWorkspaces>>
 				>,
 				"initialData"
 			>
@@ -336,14 +336,14 @@ export function useGetUserWorkspaces<
 ): UseQueryResult<TData, TError> & {
 	queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useGetUserWorkspaces<
-	TData = Awaited<ReturnType<typeof getUserWorkspaces>>,
+export function useGetPermittedWorkspaces<
+	TData = Awaited<ReturnType<typeof getPermittedWorkspaces>>,
 	TError = ErrorType<unknown>,
 >(
 	options?: {
 		query?: Partial<
 			UseQueryOptions<
-				Awaited<ReturnType<typeof getUserWorkspaces>>,
+				Awaited<ReturnType<typeof getPermittedWorkspaces>>,
 				TError,
 				TData
 			>
@@ -354,14 +354,14 @@ export function useGetUserWorkspaces<
 	queryKey: DataTag<QueryKey, TData, TError>
 }
 
-export function useGetUserWorkspaces<
-	TData = Awaited<ReturnType<typeof getUserWorkspaces>>,
+export function useGetPermittedWorkspaces<
+	TData = Awaited<ReturnType<typeof getPermittedWorkspaces>>,
 	TError = ErrorType<unknown>,
 >(
 	options?: {
 		query?: Partial<
 			UseQueryOptions<
-				Awaited<ReturnType<typeof getUserWorkspaces>>,
+				Awaited<ReturnType<typeof getPermittedWorkspaces>>,
 				TError,
 				TData
 			>
@@ -371,7 +371,7 @@ export function useGetUserWorkspaces<
 ): UseQueryResult<TData, TError> & {
 	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getGetUserWorkspacesQueryOptions(options)
+	const queryOptions = getGetPermittedWorkspacesQueryOptions(options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,

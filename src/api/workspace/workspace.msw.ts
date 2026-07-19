@@ -89,7 +89,7 @@ export const getListWorkspacesResponseMock = (): WorkspaceWithPermissionDto[] =>
 		permissionType: faker.helpers.arrayElement(Object.values(PermissionType)),
 	}))
 
-export const getGetUserWorkspacesResponseMock =
+export const getGetPermittedWorkspacesResponseMock =
 	(): WorkspaceWithPermissionDto[] =>
 		Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
@@ -294,7 +294,7 @@ export const getListWorkspacesMockHandler = (
 	)
 }
 
-export const getGetUserWorkspacesMockHandler = (
+export const getGetPermittedWorkspacesMockHandler = (
 	overrideResponse?:
 		| WorkspaceWithPermissionDto[]
 		| ((
@@ -305,14 +305,14 @@ export const getGetUserWorkspacesMockHandler = (
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
-		"*/workspace/mine",
+		"*/workspace/permitted",
 		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
 						? await overrideResponse(info)
 						: overrideResponse
-					: getGetUserWorkspacesResponseMock(),
+					: getGetPermittedWorkspacesResponseMock(),
 				{ status: 200 },
 			)
 		},
@@ -394,7 +394,7 @@ export const getDeleteWorkspaceMockHandler = (
 export const getWorkspaceMock = () => [
 	getCreateWorkspaceMockHandler(),
 	getListWorkspacesMockHandler(),
-	getGetUserWorkspacesMockHandler(),
+	getGetPermittedWorkspacesMockHandler(),
 	getGetWorkspaceMockHandler(),
 	getUpdateWorkspaceMockHandler(),
 	getDeleteWorkspaceMockHandler(),

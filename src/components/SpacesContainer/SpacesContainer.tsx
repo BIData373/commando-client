@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { Search } from "lucide-react"
 import { useState } from "react"
 import {
-	useGetUserWorkspaces,
+	useGetPermittedWorkspaces,
 	useListWorkspaces,
 } from "src/api/workspace/workspace"
 import emptyWorkspacesImage from "src/assets/empty-states/empty-workspace.svg"
@@ -12,7 +12,7 @@ import WorkspaceCard from "./WorkspaceCard"
 
 export default function SpacesContainer() {
 	const { data: allWorkspaces = [] } = useListWorkspaces()
-	const { data: myWorkspaces = [] } = useGetUserWorkspaces()
+	const { data: myWorkspaces = [] } = useGetPermittedWorkspaces()
 	const [searchQuery, setSearchQuery] = useState("")
 	const [activeTab, setActiveTab] = useState<"mine" | "all">("mine")
 
