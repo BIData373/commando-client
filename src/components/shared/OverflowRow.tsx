@@ -62,16 +62,14 @@ export function OverflowRow({
 	renderOverflow,
 	gap = 8,
 }: OverflowRowProps) {
-	const [layout, setLayout] = useState<RowLayout>(() => identityLayout(items))
+	const [measured, setMeasured] = useState<RowLayout | null>(null)
+
+	const layout =
+		measured?.itemCount === items.length ? measured : identityLayout(items)
 
 	const containerRef = useRef<HTMLDivElement>(null)
 	const itemRefs = useRef<(HTMLElement | null)[]>([])
 	const overflowEl = useRef<HTMLElement | null>(null)
-
-	// Derived state: reset so all items render for measurement when item count changes
-	if (layout.itemCount !== items.length) {
-		setLayout(identityLayout(items))
-	}
 
 	useLayoutEffect(() => {
 		const container = containerRef.current
@@ -91,7 +89,7 @@ export function OverflowRow({
 				.slice(0, items.length)
 				.map((el) => el?.offsetWidth)
 
-			setLayout({
+			setMeasured({
 				itemCount: items.length,
 				...packByWidth(widths, containerWidth, overflowWidth, gap),
 			})
@@ -103,7 +101,7 @@ export function OverflowRow({
 		ro.observe(container)
 
 		return () => ro.disconnect()
-	}, [items.length, gap])
+	}, [items, gap])
 
 	const remaining = items.length - layout.visibleCount
 
