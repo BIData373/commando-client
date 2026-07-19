@@ -10,25 +10,30 @@ import { EmptyCardState } from "src/components/shared/EmptyCardState"
 // import NewWorkspaceButton from "./NewWorkspaceButton"
 import WorkspaceCard from "./WorkspaceCard"
 
+function filterByTitle<T extends { title: string }>(items: T[], query: string) {
+	const lower = query.toLowerCase()
+	return items.filter((item) => item.title.toLowerCase().includes(lower))
+}
+
 export default function SpacesContainer() {
 	const { data: allWorkspaces = [] } = useListWorkspaces()
 	const { data: myWorkspaces = [] } = useGetPermittedWorkspaces()
 	const [searchQuery, setSearchQuery] = useState("")
 	const [activeTab, setActiveTab] = useState<"mine" | "all">("mine")
 
+	const tabs: { key: "mine" | "all"; label: string }[] = [
+		{ key: "mine", label: "הסביבות שלי" },
+		{ key: "all", label: "כל הסביבות" },
+	]
+
 	function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
 		setSearchQuery(e.target.value)
 	}
 
-	const searchLower = searchQuery.toLowerCase()
+	const filteredMine = filterByTitle(myWorkspaces, searchQuery)
+	const filteredAll = filterByTitle(allWorkspaces, searchQuery)
 
-	const filteredMine = myWorkspaces.filter((ws) =>
-		ws.title.toLowerCase().includes(searchLower),
-	)
-
-	const filteredAll = allWorkspaces.filter((ws) =>
-		ws.title.toLowerCase().includes(searchLower),
-	)
+	const displayedWorkspaces = activeTab === "mine" ? filteredMine : filteredAll
 
 	return (
 		<SpaceContainerCard>
@@ -53,22 +58,19 @@ export default function SpacesContainer() {
 				</HeaderRow>
 
 				<TabsRow>
-					<Tab
-						$active={activeTab === "mine"}
-						onClick={() => setActiveTab("mine")}
-					>
-						הסביבות שלי
-					</Tab>
-					<Tab
-						$active={activeTab === "all"}
-						onClick={() => setActiveTab("all")}
-					>
-						כל הסביבות
-					</Tab>
+					{tabs.map(({ key, label }) => (
+						<Tab
+							key={key}
+							$active={activeTab === key}
+							onClick={() => setActiveTab(key)}
+						>
+							{label}
+						</Tab>
+					))}
 				</TabsRow>
 			</TopSection>
 
-			{activeTab === "mine" && filteredMine.length === 0 ? (
+			{activeTab === "mine" && displayedWorkspaces.length === 0 ? (
 				<EmptySpace>
 					<EmptyCardState
 						imgSrc={emptyWorkspacesImage}
@@ -76,15 +78,9 @@ export default function SpacesContainer() {
 						description="ניתן לפנות למנהל סביבה כדי לקבל הרשאות"
 					/>
 				</EmptySpace>
-			) : activeTab === "mine" ? (
-				<WorkspacesContainer>
-					{filteredMine.map((ws) => (
-						<WorkspaceCard key={ws.urlName} workspace={ws} />
-					))}
-				</WorkspacesContainer>
 			) : (
 				<WorkspacesContainer>
-					{filteredAll.map((ws) => (
+					{displayedWorkspaces.map((ws) => (
 						<WorkspaceCard key={ws.urlName} workspace={ws} />
 					))}
 				</WorkspacesContainer>
