@@ -7,10 +7,6 @@ import {
 } from "src/api/workspace/workspace"
 import emptyWorkspacesImage from "src/assets/empty-states/empty-workspace.svg"
 import { EmptyCardState } from "src/components/shared/EmptyCardState"
-import {
-	NO_PERMISSION_ORDER,
-	PERMISSION_ORDER,
-} from "src/utils/permissions-utils"
 // import NewWorkspaceButton from "./NewWorkspaceButton"
 import WorkspaceCard from "./WorkspaceCard"
 
@@ -26,27 +22,13 @@ export default function SpacesContainer() {
 
 	const searchLower = searchQuery.toLowerCase()
 
-	const permissionByWorkspaceId = new Map(
-		myWorkspaces.map((ws) => [ws.id, ws.permissionType]),
-	)
-
 	const filteredMine = myWorkspaces.filter((ws) =>
 		ws.title.toLowerCase().includes(searchLower),
 	)
 
-	const filteredAll = allWorkspaces
-		.filter((ws) => ws.title.toLowerCase().includes(searchLower))
-		.sort((a, b) => {
-			const permA = permissionByWorkspaceId.get(a.id)
-			const permB = permissionByWorkspaceId.get(b.id)
-			const orderA = permA
-				? (PERMISSION_ORDER[permA] ?? NO_PERMISSION_ORDER)
-				: NO_PERMISSION_ORDER
-			const orderB = permB
-				? (PERMISSION_ORDER[permB] ?? NO_PERMISSION_ORDER)
-				: NO_PERMISSION_ORDER
-			return orderB - orderA
-		})
+	const filteredAll = allWorkspaces.filter((ws) =>
+		ws.title.toLowerCase().includes(searchLower),
+	)
 
 	return (
 		<SpaceContainerCard>
@@ -97,21 +79,13 @@ export default function SpacesContainer() {
 			) : activeTab === "mine" ? (
 				<WorkspacesContainer>
 					{filteredMine.map((ws) => (
-						<WorkspaceCard
-							key={ws.urlName}
-							workspace={ws}
-							permissionType={ws.permissionType}
-						/>
+						<WorkspaceCard key={ws.urlName} workspace={ws} />
 					))}
 				</WorkspacesContainer>
 			) : (
 				<WorkspacesContainer>
 					{filteredAll.map((ws) => (
-						<WorkspaceCard
-							key={ws.urlName}
-							workspace={ws}
-							permissionType={permissionByWorkspaceId.get(ws.id)}
-						/>
+						<WorkspaceCard key={ws.urlName} workspace={ws} />
 					))}
 				</WorkspacesContainer>
 			)}

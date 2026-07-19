@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
-import type { PermissionType, WorkspaceDto } from "src/api/model"
+import type { WorkspaceWithPermissionDto } from "src/api/model"
 import {
 	MesibaAvatarFallback,
 	MesibaAvatarImage,
@@ -16,13 +16,11 @@ import { formatMesibaIcon } from "src/utils/icon-utils"
 import { PERMISSION_LABEL } from "src/utils/permissions-utils"
 
 interface WorkspaceCardProps {
-	workspace: WorkspaceDto
-	permissionType?: PermissionType | null
+	workspace: WorkspaceWithPermissionDto
 }
 
 export default function WorkspaceCard({
-	workspace: { title, urlName, icon },
-	permissionType,
+	workspace: { title, urlName, icon, permissionType },
 }: WorkspaceCardProps) {
 	const navigate = useNavigate()
 

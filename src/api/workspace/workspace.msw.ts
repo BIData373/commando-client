@@ -49,7 +49,7 @@ export const getCreateWorkspaceResponseMock = (
 	...overrideResponse,
 })
 
-export const getListWorkspacesResponseMock = (): WorkspaceDto[] =>
+export const getListWorkspacesResponseMock = (): WorkspaceWithPermissionDto[] =>
 	Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -86,6 +86,7 @@ export const getListWorkspacesResponseMock = (): WorkspaceDto[] =>
 		chatNotification: faker.datatype.boolean(),
 		mailNotification: faker.datatype.boolean(),
 		pikudId: faker.number.float({ fractionDigits: 2 }),
+		permissionType: faker.helpers.arrayElement(Object.values(PermissionType)),
 	}))
 
 export const getGetUserWorkspacesResponseMock =
@@ -269,10 +270,12 @@ export const getCreateWorkspaceMockHandler = (
 
 export const getListWorkspacesMockHandler = (
 	overrideResponse?:
-		| WorkspaceDto[]
+		| WorkspaceWithPermissionDto[]
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0],
-		  ) => Promise<WorkspaceDto[]> | WorkspaceDto[]),
+		  ) =>
+				| Promise<WorkspaceWithPermissionDto[]>
+				| WorkspaceWithPermissionDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(

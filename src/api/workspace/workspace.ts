@@ -116,7 +116,7 @@ export const listWorkspaces = (
 	params?: ListWorkspacesParams,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<WorkspaceDto[]>({
+	return sendRequest<WorkspaceWithPermissionDto[]>({
 		url: `/workspace`,
 		method: "GET",
 		params,
