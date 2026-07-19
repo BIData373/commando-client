@@ -64,7 +64,7 @@ function AssigneeRowList({
 		detailRefs.current[id] = el
 
 		if (el && assigneeExtras?.[id]?.description && !el.textContent) {
-			el.textContent = assigneeExtras[id].description!
+			el.textContent = assigneeExtras[id].description
 		}
 	}
 
@@ -103,10 +103,9 @@ function AssigneeRowList({
 									status={assigneeExtras[assignee.id].status!}
 									taskId={taskId}
 									assigneeId={assignee.id}
-									editable={assigneeExtras[assignee.id].editable ?? false}
+									editable={assigneeExtras[assignee.id].editable}
 									workspaceId={workspaceId}
 									onUpdate={onStatusChange}
-									withArrow={true}
 								/>
 							)}
 

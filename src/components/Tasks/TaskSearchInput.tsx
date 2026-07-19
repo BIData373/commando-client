@@ -8,7 +8,7 @@ function TaskSearchInput() {
 	return (
 		<SearchInputWrapper>
 			<SearchField
-				placeholder="חפש הנחייה"
+				placeholder="חפש הנחיה"
 				value={searchQuery}
 				onChange={(e) => setSearchQuery(e.target.value)}
 			/>

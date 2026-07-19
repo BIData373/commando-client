@@ -70,7 +70,6 @@ export const AssigneeContainer = ({
 						editable={editable}
 						workspaceId={workspaceId}
 						onUpdate={handleUpdateAssigneeStatus}
-						withArrow
 					/>
 				)}
 			</StatusBlock>
