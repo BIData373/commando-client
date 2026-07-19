@@ -3,7 +3,7 @@ import type {
 	ColumnDef,
 	FilterFn,
 } from "@tanstack/react-table"
-import { concat, map, uniq } from "lodash"
+import { concat, intersection, map, uniq } from "lodash"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
 
 export interface TaskColumnMeta {
@@ -96,6 +96,24 @@ export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter(
 )
 
 export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id)
+
+export function reconcileColumnOrder(
+	storedOrder: (keyof TaskRowWithWorkspaceDto)[],
+	knownIds: (keyof TaskRowWithWorkspaceDto)[],
+): (keyof TaskRowWithWorkspaceDto)[] {
+	return knownIds.reduce(
+		(result, id, index) => {
+			if (!result.includes(id)) {
+				const cursor = index === 0 ? 0 : result.indexOf(knownIds[index - 1]) + 1
+
+				result.splice(cursor, 0, id)
+			}
+
+			return result
+		},
+		intersection(storedOrder, knownIds),
+	)
+}
 
 export function toHiddenColumns<TId extends string>(
 	visibleColumns: TId[],
