@@ -17,7 +17,10 @@ import {
 	dashboardFilterRangeKey,
 	type QuickFilter,
 } from "src/utils/filter-utils"
-import { DEFAULT_COLUMN_ORDER } from "src/utils/task-table-utils"
+import {
+	DEFAULT_COLUMN_ORDER,
+	reconcileColumnOrder,
+} from "src/utils/task-table-utils"
 
 interface TasksFiltersContextValue {
 	searchQuery: string
@@ -79,19 +82,23 @@ export function TasksFiltersProvider({
 	const [columnsFilters, setColumnsFilters] = useState<ColumnFiltersState>([])
 	const [sorting, setSorting] = useState<SortingState>([])
 
+	const knownColumnIds = useMemo(
+		() => ["id" as keyof TaskRowWithWorkspaceDto, ...defaultColumnOrder],
+		[defaultColumnOrder],
+	)
 	const [columnsVisibility, setColumnsVisibility] =
 		useLocalStorage<ColumnsVisibilityStorage>({
 			key: `${storageKey}:columnsVisibility`,
 			defaultValue: {
-				columnOrder: [
-					"id" as keyof TaskRowWithWorkspaceDto,
-					...defaultColumnOrder,
-				],
+				columnOrder: knownColumnIds,
 				hiddenColumns: [...defaultHiddenColumns],
 			},
 		})
 
-	const columnOrder = columnsVisibility.columnOrder
+	const columnOrder = useMemo(
+		() => reconcileColumnOrder(columnsVisibility.columnOrder, knownColumnIds),
+		[columnsVisibility.columnOrder, knownColumnIds],
+	)
 
 	const hiddenColumns = useMemo(
 		() =>
