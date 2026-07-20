@@ -55,29 +55,34 @@ function CreateDiscussionModal({
 	sourceId,
 }: CreateDiscussionModalProps) {
 	const navigate = useNavigate({ from: "/workspace/$urlName/tasks/new" })
-	const { mutateAsync: createSource } = useCreateSource({
-		mutation: {
-			onSuccess: () => {
-				invalidateQueries([
-					getListTaskRowsQueryKey({ workspaceId }),
-					getListPersonalTaskRowsQueryKey(),
-					getListSourcesQueryKey({ workspaceId }),
-				])
+	const { mutateAsync: createSource, isPending: isCreateSource } =
+		useCreateSource({
+			mutation: {
+				onSuccess: () => {
+					invalidateQueries([
+						getListTaskRowsQueryKey({ workspaceId }),
+						getListPersonalTaskRowsQueryKey(),
+						getListSourcesQueryKey({ workspaceId }),
+					])
+				},
 			},
-		},
-	})
-	const { mutateAsync: updateSource } = useUpdateSource({
-		mutation: {
-			onSuccess: () => {
-				invalidateQueries([getListSourcesQueryKey({ workspaceId })])
+		})
+	const { mutateAsync: updateSource, isPending: isUpdateSource } =
+		useUpdateSource({
+			mutation: {
+				onSuccess: () => {
+					invalidateQueries([getListSourcesQueryKey({ workspaceId })])
+				},
 			},
-		},
-	})
+		})
 	const { mutate: deleteTask } = useDeleteTask()
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
-	const { saveTasks, isPending } = useSaveTasks(workspaceId, onClose)
+	const { saveTasks, isPending: isCreateTasks } = useSaveTasks(
+		workspaceId,
+		onClose,
+	)
 
 	const { data: source } = useGetSource(
 		{ id: sourceId ?? 0 },
@@ -341,7 +346,7 @@ function CreateDiscussionModal({
 							onSave={handleSave}
 							onDeleteRow={handleDeleteRow}
 							onBack={handleBack}
-							isLoading={isPending}
+							isLoading={isCreateTasks || isCreateSource || isUpdateSource}
 							sourceId={sourceId}
 						/>
 					</StepPane>
