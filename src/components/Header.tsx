@@ -20,13 +20,11 @@ export default function Header() {
 	const headerConfig = [...matches].reverse().find((m) => m.staticData.header)
 		?.staticData.header as HeaderConfig | undefined
 
-	const { pageTitle = "", headerTitle } = headerConfig ?? {}
+	const { headerTitle } = headerConfig ?? {}
 
 	const {
 		elementPlacements: { right, center, titleBar, user },
 	} = useHeader()
-
-	const showTitleBar = pageTitle || titleBar
 
 	const title = headerTitle ?? center
 
@@ -69,13 +67,7 @@ export default function Header() {
 				</HeaderInner>
 			</HeaderRoot>
 
-			{showTitleBar && (
-				<TitleBar>
-					{pageTitle && <PageTitle>{pageTitle}</PageTitle>}
-
-					{titleBar}
-				</TitleBar>
-			)}
+			{titleBar && <TitleBar>{titleBar}</TitleBar>}
 		</HeaderContainer>
 	)
 }

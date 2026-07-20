@@ -14,7 +14,6 @@ const router = createRouter({
 })
 
 export interface HeaderConfig {
-	pageTitle?: ReactNode
 	headerTitle?: ReactNode
 	user?: boolean
 }
