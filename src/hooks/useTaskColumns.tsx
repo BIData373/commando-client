@@ -359,9 +359,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 
 					return (
 						<SourceCell>
-							{(source.attachmentKey || true) && (
-								<SourceAttachmentIcon size={18} />
-							)}
+							{source.attachmentKey && <SourceAttachmentIcon size={18} />}
 							{parts.length > 0 && <SourceText>{parts.join(" | ")}</SourceText>}
 						</SourceCell>
 					)
