@@ -5,6 +5,7 @@ import { useStore } from "@tanstack/react-store"
 import { Check, Paperclip, Sparkles } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { AI_ENABLED } from "src/utils/env-utils"
 import {
 	type CreateSourceDto,
 	TaskCreationType,
@@ -320,24 +321,27 @@ function CreateDiscussionModal({
 								המשך
 							</ContinueButton>
 
-							<TooltipProvider>
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<AiExtractButton
-											onClick={handleAiExtract}
-											disabled={isAiExtractDisabled}
-										>
-											חילוץ הנחיות אוטמטי
-											<Sparkles size={16} />
-										</AiExtractButton>
-									</TooltipTrigger>
-									<TooltipContent>
-										{alreadyExtracted
-											? "המסמך הזה כבר חולץ"
-											: "בהעלאת סיכום דיון ניתן לחלץ הנחיות באמצעות AI. עובד בקובץ DOCX"}
-									</TooltipContent>
-								</Tooltip>
-							</TooltipProvider>
+							{AI_ENABLED && (
+								<TooltipProvider>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<AiExtractButton
+												onClick={handleAiExtract}
+												disabled={isAiExtractDisabled}
+											>
+												חילוץ הנחיות אוטומטי
+												<Sparkles size={16} />
+											</AiExtractButton>
+										</TooltipTrigger>
+
+										<TooltipContent>
+											{alreadyExtracted
+												? "המסמך הזה כבר חולץ"
+												: "בהעלאת סיכום דיון ניתן לחלץ הנחיות באמצעות AI. עובד בקובץ DOCX"}
+										</TooltipContent>
+									</Tooltip>
+								</TooltipProvider>
+							)}
 						</ModalFooter>
 					</StepPane>
 

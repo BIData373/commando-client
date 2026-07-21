@@ -22,3 +22,5 @@ export const AUTH_SERVER_URL = import.meta.env.VITE_SSO_URL ?? ""
 
 export const MATOMO_ENABLED = import.meta.env.VITE_MATOMO_ENABLED === "true"
 export const MATOMO_SITE_ID = import.meta.env.VITE_MATOMO_SITE_ID
+
+export const AI_ENABLED = import.meta.env.VITE_AI_ENABLED === "true"
