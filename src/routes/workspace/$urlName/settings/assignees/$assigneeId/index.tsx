@@ -13,8 +13,11 @@ function EditAssignee() {
 	const { urlName, assigneeId } = Route.useParams()
 	const navigate = useNavigate()
 
-	const { data: assignee } = useGetAssignee({ id: Number(assigneeId) })
-	useWorkspaceMismatchError(assignee)
+	const { data: assignee, isFetched } = useGetAssignee({
+		id: Number(assigneeId),
+	})
+
+	useWorkspaceMismatchError(isFetched, assignee)
 
 	function handleClose() {
 		navigate({

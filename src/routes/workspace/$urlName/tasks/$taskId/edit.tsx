@@ -1,8 +1,8 @@
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router"
+import { createFileRoute, useSearch } from "@tanstack/react-router"
 import { PermissionType } from "src/api/model"
-import { useGetTask } from "src/api/task/task"
+import { useTaskDetail } from "src/hooks/useTaskDetail"
 import { AuthorizationWrapper } from "src/wrappers/AuthorizationWrapper"
-import CreateTaskModal from "../../../../../components/CreateTasks/CreateTaskModal"
+import TaskEditModal from "../../../../../components/CreateTasks/TaskEditModal"
 
 export const Route = createFileRoute("/workspace/$urlName/tasks/$taskId/edit")({
 	component: TaskEdit,
@@ -11,38 +11,23 @@ export const Route = createFileRoute("/workspace/$urlName/tasks/$taskId/edit")({
 function TaskEdit() {
 	const { urlName, taskId } = Route.useParams()
 	const { view } = useSearch({ from: "/workspace/$urlName/tasks" })
-	const navigate = useNavigate()
 
-	const { data: task } = useGetTask({ id: Number(taskId) })
-
-	function handleClose() {
-		navigate({
-			to: "/workspace/$urlName/tasks",
-			params: { urlName },
-			search: { view },
-		})
-	}
-
-	function navigateView() {
-		navigate({
-			to: "/workspace/$urlName/tasks/$taskId",
-			params: { urlName, taskId },
-			search: { view },
-		})
-	}
-
-	if (!task) {
-		return null
-	}
+	const { task } = useTaskDetail(taskId)
 
 	return (
 		<AuthorizationWrapper type={PermissionType.MANAGER}>
-			<CreateTaskModal
-				workspaceId={task.workspace.id}
+			<TaskEditModal
 				task={task}
-				onClose={handleClose}
-				onSave={navigateView}
-				onCancel={navigateView}
+				closeTo={{
+					to: "/workspace/$urlName/tasks",
+					params: { urlName },
+					search: { view },
+				}}
+				viewTo={{
+					to: "/workspace/$urlName/tasks/$taskId",
+					params: { urlName, taskId },
+					search: { view },
+				}}
 			/>
 		</AuthorizationWrapper>
 	)
