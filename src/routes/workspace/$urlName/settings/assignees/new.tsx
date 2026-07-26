@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { AssigneeDialog } from "src/components/settings/AssigneeDialog"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 
 export const Route = createFileRoute(
 	"/workspace/$urlName/settings/assignees/new",
@@ -8,7 +9,10 @@ export const Route = createFileRoute(
 })
 
 function NewAssignee() {
-	const { urlName } = Route.useParams()
+	const {
+		workspace: { id: workspaceId, urlName },
+	} = useWorkspace()
+
 	const navigate = useNavigate()
 
 	function handleClose() {
@@ -18,5 +22,7 @@ function NewAssignee() {
 		})
 	}
 
-	return <AssigneeDialog open onOpenChange={handleClose} />
+	return (
+		<AssigneeDialog workspaceId={workspaceId} open onOpenChange={handleClose} />
+	)
 }
