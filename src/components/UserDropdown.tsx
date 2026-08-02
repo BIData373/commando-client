@@ -9,17 +9,13 @@ import {
 	PORTAL_CATALOG_URL,
 	USER_GUIDE_URL,
 } from "src/utils/env-utils"
+import { PERMISSION_LABEL } from "src/utils/permissions-utils"
 import { BIHeaderBypass } from "./BIHeaderBypass"
 import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuSeparator,
 } from "./ui/dropdown-menu"
-
-const PERMISSION_LABEL: Record<PermissionType, string> = {
-	VIEWER: "צופה",
-	MANAGER: "ניהול",
-}
 
 interface UserDropdownProps {
 	permissionType?: PermissionType

@@ -1,7 +1,6 @@
 import styled from "@emotion/styled"
-import { Link, useRouterState } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 import { User } from "lucide-react"
-import type { HeaderConfig } from "src/router"
 import logoWithText from "../assets/logo-with-text.svg"
 import { useHeader } from "../providers/HeaderProvider"
 import { UserDropdown } from "./UserDropdown"
@@ -15,18 +14,9 @@ import {
 } from "./ui/tooltip"
 
 export default function Header() {
-	const { matches } = useRouterState()
-
-	const headerConfig = [...matches].reverse().find((m) => m.staticData.header)
-		?.staticData.header as HeaderConfig | undefined
-
-	const { headerTitle } = headerConfig ?? {}
-
 	const {
-		elementPlacements: { right, center, titleBar, user },
+		elementPlacements: { right, center, user },
 	} = useHeader()
-
-	const title = headerTitle ?? center
 
 	return (
 		<HeaderContainer>
@@ -39,9 +29,9 @@ export default function Header() {
 							<Tooltip>
 								<TooltipTrigger>
 									<TooltipTrigger asChild>
-										<CenterTitle>{title}</CenterTitle>
+										<CenterTitle>{center}</CenterTitle>
 									</TooltipTrigger>
-									<TooltipContent>{title}</TooltipContent>
+									<TooltipContent>{center}</TooltipContent>
 								</TooltipTrigger>
 							</Tooltip>
 						</TooltipProvider>
@@ -66,8 +56,6 @@ export default function Header() {
 					</EndSection>
 				</HeaderInner>
 			</HeaderRoot>
-
-			{titleBar && <TitleBar>{titleBar}</TitleBar>}
 		</HeaderContainer>
 	)
 }
@@ -158,21 +146,6 @@ const UserMenuButton = styled.button`
 const UserMenuIcon = styled(User)`
   width: 16px;
   cursor: pointer;
-`
-
-const TitleBar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-block: 28px 8px;
-`
-
-const PageTitle = styled.h1`
-  flex: 1;
-  margin: 0;
-  font-size: var(--fs-heading-1);
-  font-weight: 500;
-  color: var(--sea-ink);
 `
 
 const StyledLink = styled(Link)`

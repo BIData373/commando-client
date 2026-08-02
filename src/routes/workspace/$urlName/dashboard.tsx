@@ -5,11 +5,6 @@ import { TasksFiltersProvider } from "src/providers/TasksFiltersProvider"
 
 export const Route = createFileRoute("/workspace/$urlName/dashboard")({
 	component: Dashboard,
-	staticData: {
-		header: {
-			user: true,
-		},
-	},
 })
 
 function Dashboard() {
