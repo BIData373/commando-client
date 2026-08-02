@@ -157,7 +157,7 @@ function CreateTaskModal({
 	})
 
 	const values = useStore(form.store, (state) => state.values)
-	const hasChanges = isEditMode ? !form.state.isDefaultValue : true
+	const hasChanges = !form.state.isDefaultValue
 
 	// ─── Handlers ──────────────────────────────────────────────────────────────
 
@@ -332,7 +332,7 @@ function CreateTaskModal({
 
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
-			<ModalCard closable={!isEditMode || !hasChanges}>
+			<ModalCard closable={!hasChanges}>
 				<ModalBody>
 					<ModalHeader $shadow={scrollShadow.top}>
 						<ModalTitle>

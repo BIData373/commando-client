@@ -7,17 +7,20 @@ interface IWorkspaceId {
 	workspaceId: number
 }
 
-export function useWorkspaceMismatchError<T extends IWorkspaceId>(entity?: T) {
+export function useWorkspaceMismatchError<T extends IWorkspaceId>(
+	isFetched: boolean,
+	entity?: T,
+) {
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
 
 	const workspaceMismatchError = useMemo(
 		() =>
-			entity?.workspaceId && entity.workspaceId !== workspaceId
+			isFetched && (!entity || entity.workspaceId !== workspaceId)
 				? ErrorCode.NOT_FOUND
 				: null,
-		[entity?.workspaceId, workspaceId],
+		[isFetched, entity, workspaceId],
 	)
 
 	useErrorHandler(workspaceMismatchError)

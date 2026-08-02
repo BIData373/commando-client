@@ -1,7 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { useGetTask } from "src/api/task/task"
+import { createFileRoute } from "@tanstack/react-router"
+import { useTaskDetail } from "src/hooks/useTaskDetail"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import CreateTaskModal from "../../../../components/CreateTasks/CreateTaskModal"
+import TaskEditModal from "../../../../components/CreateTasks/TaskEditModal"
 
 export const Route = createFileRoute("/personal/task/$taskId/edit")({
 	component: PersonalTaskEdit,
@@ -9,33 +9,18 @@ export const Route = createFileRoute("/personal/task/$taskId/edit")({
 
 function PersonalTaskEdit() {
 	const { taskId } = Route.useParams()
-	const navigate = useNavigate()
 
-	const { data: task } = useGetTask({ id: Number(taskId) })
-
-	function handleClose() {
-		navigate({ to: "/personal", search: { view: TasksView.TABLE } })
-	}
-
-	function navigateView() {
-		navigate({
-			to: "/personal/task/$taskId",
-			params: { taskId },
-			search: { view: TasksView.TABLE },
-		})
-	}
-
-	if (!task) {
-		return null
-	}
+	const { task } = useTaskDetail(taskId)
 
 	return (
-		<CreateTaskModal
-			workspaceId={task.workspace.id}
+		<TaskEditModal
 			task={task}
-			onClose={handleClose}
-			onSave={navigateView}
-			onCancel={navigateView}
+			closeTo={{ to: "/personal", search: { view: TasksView.TABLE } }}
+			viewTo={{
+				to: "/personal/task/$taskId",
+				params: { taskId },
+				search: { view: TasksView.TABLE },
+			}}
 		/>
 	)
 }

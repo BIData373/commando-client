@@ -1,6 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { useGetTask } from "src/api/task/task"
-import CreateTaskModal from "../../../../../../components/CreateTasks/CreateTaskModal"
+import { createFileRoute } from "@tanstack/react-router"
+import { useTaskDetail } from "src/hooks/useTaskDetail"
+import TaskEditModal from "../../../../../../components/CreateTasks/TaskEditModal"
 
 export const Route = createFileRoute(
 	"/workspace/$urlName/dashboard/task/$taskId/edit",
@@ -10,30 +10,17 @@ export const Route = createFileRoute(
 
 function DashboardTaskEdit() {
 	const { urlName, taskId } = Route.useParams()
-	const navigate = useNavigate()
 
-	const { data: task } = useGetTask({ id: Number(taskId) })
-
-	function handleClose() {
-		navigate({ to: "/workspace/$urlName/dashboard", params: { urlName } })
-	}
-
-	function navigateView() {
-		navigate({
-			to: "/workspace/$urlName/dashboard/task/$taskId",
-			params: { urlName, taskId },
-		})
-	}
-
-	if (!task) return null
+	const { task } = useTaskDetail(taskId)
 
 	return (
-		<CreateTaskModal
-			workspaceId={task.workspace.id}
+		<TaskEditModal
 			task={task}
-			onClose={handleClose}
-			onSave={navigateView}
-			onCancel={navigateView}
+			closeTo={{ to: "/workspace/$urlName/dashboard", params: { urlName } }}
+			viewTo={{
+				to: "/workspace/$urlName/dashboard/task/$taskId",
+				params: { urlName, taskId },
+			}}
 		/>
 	)
 }

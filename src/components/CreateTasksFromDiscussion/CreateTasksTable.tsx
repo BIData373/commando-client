@@ -207,7 +207,7 @@ function CreateTasksTable({
 	}
 
 	const filledCount = rows.filter((r) => r.title.trim()).length
-	const hasAnyTask = filledCount > 0
+	const hasAnyTask = filledCount > 0 || isLoading
 
 	const meta: TaskTableMeta = {
 		updateRow,

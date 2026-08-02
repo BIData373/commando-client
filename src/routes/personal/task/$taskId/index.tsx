@@ -1,7 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { useGetTask } from "src/api/task/task"
+import { createFileRoute } from "@tanstack/react-router"
+import { useTaskDetail } from "src/hooks/useTaskDetail"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import TaskDetailPanel from "../../../../components/TaskDetail/TaskDetailPanel"
+import TaskDetailView from "../../../../components/TaskDetail/TaskDetailView"
 
 export const Route = createFileRoute("/personal/task/$taskId/")({
 	component: PersonalTaskDetail,
@@ -9,30 +9,19 @@ export const Route = createFileRoute("/personal/task/$taskId/")({
 
 function PersonalTaskDetail() {
 	const { taskId } = Route.useParams()
-	const navigate = useNavigate()
 
-	const { data: task } = useGetTask({ id: Number(taskId) })
-
-	function handleClose() {
-		navigate({ to: "/personal", search: { view: TasksView.TABLE } })
-	}
-
-	function handleEdit() {
-		navigate({
-			to: "/personal/task/$taskId/edit",
-			params: { taskId },
-			search: { view: TasksView.TABLE },
-		})
-	}
+	const { task } = useTaskDetail(taskId)
 
 	return (
-		task && (
-			<TaskDetailPanel
-				task={task}
-				showWorkspace={true}
-				onClose={handleClose}
-				onEdit={handleEdit}
-			/>
-		)
+		<TaskDetailView
+			task={task}
+			showWorkspace={true}
+			closeTo={{ to: "/personal", search: { view: TasksView.TABLE } }}
+			editTo={{
+				to: "/personal/task/$taskId/edit",
+				params: { taskId },
+				search: { view: TasksView.TABLE },
+			}}
+		/>
 	)
 }

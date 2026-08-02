@@ -1,8 +1,8 @@
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router"
-import { useGetTask } from "src/api/task/task"
+import { createFileRoute, useSearch } from "@tanstack/react-router"
+import { useTaskDetail } from "src/hooks/useTaskDetail"
 import { useWorkspaceMismatchError } from "src/hooks/useWorkspaceMismatchError"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import TaskDetailPanel from "../../../../../components/TaskDetail/TaskDetailPanel"
+import TaskDetailView from "../../../../../components/TaskDetail/TaskDetailView"
 
 export const Route = createFileRoute("/workspace/$urlName/tasks/$taskId/")({
 	component: TaskDetail,
@@ -16,31 +16,23 @@ function TaskDetail() {
 		workspace: { urlName },
 	} = useWorkspace()
 
-	const navigate = useNavigate()
+	const { task, isFetched } = useTaskDetail(taskId)
 
-	const { data: task } = useGetTask({ id: Number(taskId) })
-
-	useWorkspaceMismatchError(task)
-
-	function handleClose() {
-		navigate({
-			to: "/workspace/$urlName/tasks",
-			params: { urlName },
-			search: { view },
-		})
-	}
-
-	function handleEdit() {
-		navigate({
-			to: "/workspace/$urlName/tasks/$taskId/edit",
-			params: { urlName, taskId },
-			search: { view },
-		})
-	}
+	useWorkspaceMismatchError(isFetched, task)
 
 	return (
-		task && (
-			<TaskDetailPanel task={task} onClose={handleClose} onEdit={handleEdit} />
-		)
+		<TaskDetailView
+			task={task}
+			closeTo={{
+				to: "/workspace/$urlName/tasks",
+				params: { urlName },
+				search: { view },
+			}}
+			editTo={{
+				to: "/workspace/$urlName/tasks/$taskId/edit",
+				params: { urlName, taskId },
+				search: { view },
+			}}
+		/>
 	)
 }

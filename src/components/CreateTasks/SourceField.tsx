@@ -17,8 +17,6 @@ import {
 	TooltipTrigger,
 } from "../ui/tooltip"
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
 export interface SourceFieldValidation {
 	name?: AnyFieldApi
 	date?: AnyFieldApi
@@ -37,9 +35,7 @@ interface SourceFieldProps {
 	required?: boolean
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
-
-function SourceField({
+export default function SourceField({
 	workspaceId,
 	source,
 	sourceDate,
@@ -141,7 +137,7 @@ function SourceField({
 													key={uniqueNames ? d.name : d.id}
 													onMouseDown={(e) => handleOptionMouseDown(e, d)}
 												>
-													{!uniqueNames && (
+													{!uniqueNames && d.date && (
 														<SourceOptionDate>
 															{formatDateShort(d.date)}
 														</SourceOptionDate>
@@ -217,10 +213,6 @@ function SourceField({
 		</SourceDateRow>
 	)
 }
-
-export default SourceField
-
-// ─── Styled ─────────────────────────────────────────────────────────────────
 
 const SourceDateRow = styled.div`
   direction: rtl;
