@@ -351,7 +351,10 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						original: { source },
 					},
 				}) => {
-					if (!source) return null
+					if (!source) {
+						return null
+					}
+
 					const parts = [
 						source.name,
 						...(source.date ? [formatDateShort(source.date)] : []),
@@ -384,6 +387,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					},
 				}) => {
 					const allNames = uniq(map(concat(tags, source?.tags ?? []), "name"))
+
 					return <TopicCell tags={allNames} />
 				},
 			},

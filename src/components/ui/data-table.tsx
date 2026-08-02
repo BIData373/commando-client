@@ -14,7 +14,15 @@ import {
   type SortingState,
   type TableMeta,
 } from '@tanstack/react-table'
-import { Fragment, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import {
+  Fragment,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent,
+  type ReactNode,
+} from 'react'
 import { LoadingSpinner } from '../shared/LoadingSpinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
 
@@ -29,6 +37,7 @@ interface DataTableProps<TData> {
   data: TData[]
   onCellClick?: (row: Row<TData>, columnId: string) => void
   onRowDoubleClick?: (row: Row<TData>) => void
+  onRowContextMenu?: (row: Row<TData>, event: MouseEvent) => void
   rowSelection?: RowSelectionState
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
   columnFilters?: ColumnFiltersState
@@ -53,6 +62,7 @@ export function DataTable<TData>({
   onCellClick,
   // TODO - maybe implement?
   // onRowDoubleClick,
+  onRowContextMenu,
   rowSelection,
   onRowSelectionChange,
   columnFilters,
@@ -197,6 +207,9 @@ export function DataTable<TData>({
               <TableRow
                 data-state={row.getIsSelected() ? 'selected' : undefined}
                 data-highlighted={highlightedRowIds?.has(row.id) ? '' : undefined}
+                onContextMenu={
+                  onRowContextMenu ? (event) => onRowContextMenu(row, event) : undefined
+                }
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
