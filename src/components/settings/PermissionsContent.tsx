@@ -117,14 +117,9 @@ export function PermissionsContent() {
 	}
 
 	function handleDeletePermissionUser({ id }: UserDto) {
-		deletePermission(
-			{
-				params: { userId: id, workspaceId },
-			},
-			{
-				onSuccess: handleSuccess,
-			},
-		)
+		deletePermission({
+			params: { userId: id, workspaceId },
+		})
 	}
 
 	function handleTypeChangePermissionUser(
