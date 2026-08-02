@@ -3,10 +3,4 @@ import HomePage from "src/components/HomePage/HomePage"
 
 export const Route = createFileRoute("/")({
 	component: HomePage,
-	staticData: {
-		header: {
-			hidden: true,
-			user: false,
-		},
-	},
 })

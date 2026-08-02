@@ -1,12 +1,5 @@
 import styled from "@emotion/styled"
-import {
-	cloneElement,
-	type ReactElement,
-	type Ref,
-	useLayoutEffect,
-	useRef,
-	useState,
-} from "react"
+import { type ReactElement, useLayoutEffect, useRef, useState } from "react"
 
 interface OverflowRowProps {
 	items: ReactElement[]
@@ -14,23 +7,69 @@ interface OverflowRowProps {
 	gap?: number
 }
 
+interface RowLayout {
+	itemCount: number
+	order: number[]
+	visibleCount: number
+}
+
+function identityLayout(items: ReactElement[]): RowLayout {
+	return {
+		itemCount: items.length,
+		order: items.map((_, i) => i),
+		visibleCount: items.length,
+	}
+}
+
+// Narrowest-first so the greedy pack fits as many full items as possible
+function packByWidth(
+	widths: (number | undefined)[],
+	containerWidth: number,
+	overflowWidth: number,
+	gap: number,
+): { order: number[]; visibleCount: number } {
+	const order = widths
+		.map((_, i) => i)
+		.sort((a, b) => (widths[a] ?? Infinity) - (widths[b] ?? Infinity))
+
+	// Running total width (incl. gaps) after including each rank, in order
+	const cumulativeWidths = order.reduce<number[]>((totals, itemIndex, rank) => {
+		const width = widths[itemIndex]
+		const previousTotal = totals[rank - 1] ?? 0
+		const gapWidth = rank > 0 ? gap : 0
+
+		totals.push(
+			width === undefined ? Infinity : previousTotal + width + gapWidth,
+		)
+
+		return totals
+	}, [])
+
+	const overflowIndex = cumulativeWidths.findIndex((total, rank) => {
+		const isLast = rank === cumulativeWidths.length - 1
+		return total + (isLast ? 0 : overflowWidth) > containerWidth
+	})
+
+	return {
+		order,
+		visibleCount:
+			overflowIndex === -1 ? cumulativeWidths.length : overflowIndex,
+	}
+}
+
 export function OverflowRow({
 	items,
 	renderOverflow,
 	gap = 8,
 }: OverflowRowProps) {
-	const [visibleCount, setVisibleCount] = useState(items.length)
-	const [prevCount, setPrevCount] = useState(items.length)
+	const [measured, setMeasured] = useState<RowLayout | null>(null)
+
+	const layout =
+		measured?.itemCount === items.length ? measured : identityLayout(items)
 
 	const containerRef = useRef<HTMLDivElement>(null)
 	const itemRefs = useRef<(HTMLElement | null)[]>([])
 	const overflowEl = useRef<HTMLElement | null>(null)
-
-	// Derived state: reset so all items render for measurement when count changes
-	if (prevCount !== items.length) {
-		setPrevCount(items.length)
-		setVisibleCount(items.length)
-	}
 
 	useLayoutEffect(() => {
 		const container = containerRef.current
@@ -42,35 +81,18 @@ export function OverflowRow({
 			}
 
 			const containerWidth = container.offsetWidth
-			const overflowW = overflowEl.current
+			const overflowWidth = overflowEl.current
 				? overflowEl.current.offsetWidth + gap
 				: 0
 
-			let used = 0
-			let count = 0
+			const widths = itemRefs.current
+				.slice(0, items.length)
+				.map((el) => el?.offsetWidth)
 
-			const currentItems = (
-				itemRefs.current.slice(0, items.length) as (HTMLElement | null)[]
-			).entries()
-
-			for (const [i, el] of currentItems) {
-				if (!el) {
-					break
-				}
-
-				const currentWidth = el.offsetWidth + (i > 0 ? gap : 0)
-				const currentTotalWidth =
-					used + currentWidth + (i < items.length - 1 ? overflowW : 0)
-
-				if (currentTotalWidth > containerWidth) {
-					break
-				}
-
-				used += currentWidth
-				count++
-			}
-
-			setVisibleCount(count)
+			setMeasured({
+				itemCount: items.length,
+				...packByWidth(widths, containerWidth, overflowWidth, gap),
+			})
 		}
 
 		recalculate()
@@ -79,19 +101,27 @@ export function OverflowRow({
 		ro.observe(container)
 
 		return () => ro.disconnect()
-	}, [items.length, gap])
+	}, [items, gap])
 
-	const remaining = items.length - visibleCount
+	const remaining = items.length - layout.visibleCount
 
 	return (
 		<Row ref={containerRef} $gap={gap}>
-			{items.slice(0, visibleCount).map((item, i) =>
-				cloneElement(item as ReactElement<{ ref?: Ref<HTMLElement> }>, {
-					ref: (el: HTMLElement | null) => {
-						itemRefs.current[i] = el
-					},
-				}),
-			)}
+			{layout.order.map((itemIndex, rank) => {
+				const item = items[itemIndex]
+
+				return (
+					<ItemWrap
+						key={item.key ?? itemIndex}
+						$hidden={rank >= layout.visibleCount}
+						ref={(el: HTMLSpanElement | null) => {
+							itemRefs.current[itemIndex] = el
+						}}
+					>
+						{item}
+					</ItemWrap>
+				)
+			})}
 
 			<OverflowIndicator
 				ref={(el: HTMLElement | null) => {
@@ -113,6 +143,20 @@ const Row = styled.div<{ $gap: number }>`
   overflow: hidden;
   width: 100%;
   gap: ${({ $gap }) => $gap}px;
+`
+
+const ItemWrap = styled.span<{ $hidden: boolean }>`
+  display: inline-flex;
+  flex-shrink: 0;
+  min-width: 0;
+
+  ${({ $hidden }) =>
+		$hidden &&
+		`
+    position: absolute;
+    visibility: hidden;
+    pointer-events: none;
+  `}
 `
 
 const OverflowIndicator = styled.span<{ $hidden: boolean }>`

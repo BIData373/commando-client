@@ -40,6 +40,7 @@ const MAX_NAME_LENGTH = 30
 
 interface AssigneeDialogProps {
 	open: boolean
+	workspaceId: number
 	assignee?: AssigneeDto
 	onOpenChange(open: boolean): void
 	onCreate?(assignee: AssigneeDto): void
@@ -47,15 +48,12 @@ interface AssigneeDialogProps {
 
 export function AssigneeDialog({
 	assignee,
+	workspaceId,
 	open,
 	onOpenChange,
 	onCreate,
 }: AssigneeDialogProps) {
 	const isUpdate = !!assignee
-
-	const {
-		workspace: { id: workspaceId },
-	} = useWorkspace()
 
 	const [searchValue, setSearchValue] = useState<string>("")
 	const [iconSearch, setIconSearch] = useState("")

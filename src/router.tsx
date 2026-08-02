@@ -13,20 +13,9 @@ const router = createRouter({
 	defaultViewTransition: true,
 })
 
-export interface HeaderConfig {
-	pageTitle?: ReactNode
-	headerTitle?: ReactNode
-	user?: boolean
-	hidden?: boolean
-}
-
 declare module "@tanstack/react-router" {
 	interface Register {
 		router: typeof router
-	}
-
-	interface StaticDataRouteOption {
-		header?: HeaderConfig
 	}
 }
 

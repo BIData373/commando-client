@@ -94,7 +94,7 @@ export default function PersonalAreaCard() {
 	)
 }
 
-const CardRoot = styled.button`
+const CardRoot = styled.div`
   direction: ltr;
   display: flex;
   height: clamp(140px, 21.2vh, 229px);

@@ -117,6 +117,7 @@ function AssigneePicker({
 
 			{dialogOpen && (
 				<AssigneeDialog
+					workspaceId={workspaceId}
 					open={dialogOpen}
 					onOpenChange={setDialogOpen}
 					onCreate={handleCreateAssignee}

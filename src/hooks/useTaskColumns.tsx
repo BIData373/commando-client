@@ -352,12 +352,14 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					},
 				}) => {
 					if (!source) return null
-					const parts = [source.name, formatDateShort(source.date)].filter(
-						Boolean,
-					)
+					const parts = [
+						source.name,
+						...(source.date ? [formatDateShort(source.date)] : []),
+					].filter(Boolean)
+
 					return (
 						<SourceCell>
-							{source.attachmentKey && <SourceIcon size={18} />}
+							{source.attachmentKey && <SourceAttachmentIcon size={18} />}
 							{parts.length > 0 && <SourceText>{parts.join(" | ")}</SourceText>}
 						</SourceCell>
 					)
@@ -577,8 +579,9 @@ const SourceCell = styled.div`
   color: var(--sea-ink-soft);
 `
 
-const SourceIcon = styled(Paperclip)`
-  color: rgba(0, 0, 0, 0.45);
+const SourceAttachmentIcon = styled(Paperclip)`
+	flex-shrink: 0;
+  	color: rgba(0, 0, 0, 0.45);
 `
 
 const SourceText = styled.span`

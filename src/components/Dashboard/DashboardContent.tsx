@@ -74,27 +74,20 @@ const ContentArea = styled.div`
   flex-direction: column;
   padding-block-end: 32px;
   color: var(--sea-ink-soft);
-  margin-top: 16px;
-
-  & > *:nth-of-type(1) {
-    margin-block-start: 14px;
-  }
-
-  & > *:nth-of-type(2) {
-    margin-block-start: 28px;
-  }
+  padding-top: 24px;
 `
 
 const ButtonGroup = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`
+  `
 
 const GridLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr 450px;
   gap: 62px;
+  margin-top: 28px;
 
   @media (max-width: 1300px) {
     grid-template-columns: 1fr 1fr;

@@ -12,12 +12,6 @@ import { AuthorizationWrapper } from "../../../wrappers/AuthorizationWrapper"
 
 export const Route = createFileRoute("/workspace/$urlName/settings")({
 	component: SettingsLayout,
-	staticData: {
-		header: {
-			pageTitle: "הגדרות סביבת המפקד",
-			user: true,
-		},
-	},
 })
 
 const SETTINGS_ROUTES: Record<SettingTabPath, string> = {

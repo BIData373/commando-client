@@ -1,16 +1,16 @@
 import styled from "@emotion/styled"
 import { useEffect, useMemo, useState } from "react"
+import { type MirageUserDto, PermissionType, type UserDto } from "src/api/model"
 import {
-	type MirageUserDto,
-	type PermissionDto,
-	PermissionType,
-	type UserDto,
-} from "src/api/model"
-import {
+	getListPermissionsQueryKey,
 	useDeletePermission,
 	useListPermissions,
 	useUpsertPermission,
 } from "src/api/permission/permission"
+import {
+	getGetPermittedWorkspacesQueryKey,
+	getListWorkspacesQueryKey,
+} from "src/api/workspace/workspace"
 import { DropdownPermission } from "src/components/settings/DropdownPermission"
 import { DropdownUsers } from "src/components/settings/DropdownUsers"
 import { UserPermissionList } from "src/components/settings/UserPermissionList"
@@ -23,7 +23,7 @@ import {
 } from "src/components/ui/tabs"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { queryClient } from "src/queryClient"
+import { invalidateQueries } from "src/queryClient"
 import { concatName } from "src/utils/user-utils"
 
 enum PermissionsTab {
@@ -50,15 +50,29 @@ export function PermissionsContent() {
 	const [selectedUser, setSelectedUser] = useState<MirageUserDto | null>(null)
 	const [type, setType] = useState<PermissionType>(PermissionType.VIEWER)
 
-	const {
-		data: permissions = [],
-		isLoading,
-		queryKey,
-	} = useListPermissions({
+	function handleSuccess() {
+		invalidateQueries([
+			getListPermissionsQueryKey({ workspaceId }),
+			getGetPermittedWorkspacesQueryKey(),
+			getListWorkspacesQueryKey(),
+		])
+	}
+
+	const { data: permissions = [], isLoading } = useListPermissions({
 		workspaceId,
 	})
-	const { mutate: upsertPermission } = useUpsertPermission()
-	const { mutate: deletePermission } = useDeletePermission()
+
+	const { mutate: upsertPermission } = useUpsertPermission({
+		mutation: {
+			onSuccess: handleSuccess,
+		},
+	})
+
+	const { mutate: deletePermission } = useDeletePermission({
+		mutation: {
+			onSuccess: handleSuccess,
+		},
+	})
 
 	const userPermissionExist = useMemo(
 		() => permissions.find(({ user }) => user.upn === selectedUser?.upn),
@@ -85,30 +99,6 @@ export function PermissionsContent() {
 	const isSelectedUserMe =
 		selectedUser?.upn === currentUser.upn && !currentUser?.info?.isBI
 
-	function handleSuccess(
-		data: PermissionDto,
-		mutate: (arr: PermissionDto[], index: number) => void,
-	) {
-		queryClient.setQueryData(queryKey, (prev) => {
-			if (!prev) {
-				return
-			}
-
-			const updated = [...prev]
-			const index = updated.findIndex(({ user: { id } }) => id === data.user.id)
-
-			mutate(updated, index)
-
-			return updated
-		})
-	}
-
-	function handleSuccessUpsert(data: PermissionDto) {
-		handleSuccess(data, (arr, index) =>
-			arr.splice(index === -1 ? arr.length : index, index === -1 ? 0 : 1, data),
-		)
-	}
-
 	function clearSearch() {
 		setSearch("")
 		setSelectedUser(null)
@@ -119,14 +109,9 @@ export function PermissionsContent() {
 			return
 		}
 
-		upsertPermission(
-			{
-				data: { ...selectedUser, workspaceId, type },
-			},
-			{
-				onSuccess: handleSuccessUpsert,
-			},
-		)
+		upsertPermission({
+			data: { ...selectedUser, workspaceId, type },
+		})
 
 		clearSearch()
 	}
@@ -137,10 +122,7 @@ export function PermissionsContent() {
 				params: { userId: id, workspaceId },
 			},
 			{
-				onSuccess: (data) =>
-					handleSuccess(data, (arr, index) =>
-						index >= 0 ? arr.splice(index, 1) : arr,
-					),
+				onSuccess: handleSuccess,
 			},
 		)
 	}
@@ -149,14 +131,9 @@ export function PermissionsContent() {
 		{ id, ...dto }: UserDto,
 		type: PermissionType,
 	) {
-		upsertPermission(
-			{
-				data: { ...dto, workspaceId, type },
-			},
-			{
-				onSuccess: handleSuccessUpsert,
-			},
-		)
+		upsertPermission({
+			data: { ...dto, workspaceId, type },
+		})
 
 		clearSearch()
 	}
