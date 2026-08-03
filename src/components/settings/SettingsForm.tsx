@@ -8,7 +8,6 @@ import { toast } from "sonner"
 import type { UpdateWorkspaceDto } from "src/api/model"
 import {
 	getGetPermittedWorkspacesQueryKey,
-	getGetWorkspaceQueryKey,
 	getListWorkspacesQueryKey,
 	useUpdateWorkspace,
 } from "src/api/workspace/workspace"
