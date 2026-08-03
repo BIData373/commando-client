@@ -27,6 +27,7 @@ import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
+import { RowContextMenu } from "./RowContextMenu"
 
 interface TaskTableProps<TTask extends TaskRowDto> {
 	tasks: TTask[]
@@ -92,6 +93,11 @@ function TaskTable<TTask extends TaskRowDto>({
 
 	const [selectMode, setSelectMode] = useState(false)
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+	const [contextMenu, setContextMenu] = useState<{
+		task: TTask
+		x: number
+		y: number
+	} | null>(null)
 
 	const urlColumnFilters: ColumnFiltersState = useMemo(
 		() => [
@@ -157,7 +163,9 @@ function TaskTable<TTask extends TaskRowDto>({
 
 	function handleEnterSelectMode(rowKey: string) {
 		setSelectMode(true)
-		setRowSelection({ [rowKey]: true })
+		setRowSelection((prev) =>
+			selectMode ? { ...prev, [rowKey]: true } : { [rowKey]: true },
+		)
 	}
 
 	function handleExitSelectMode() {
@@ -246,6 +254,22 @@ function TaskTable<TTask extends TaskRowDto>({
 		}
 	}
 
+	function handleRowContextMenu(
+		row: { original: TTask },
+		event: React.MouseEvent,
+	) {
+		event.preventDefault()
+		setContextMenu({
+			task: row.original,
+			x: event.clientX,
+			y: event.clientY,
+		})
+	}
+
+	function handleContextMenuOpenChange(open: boolean) {
+		if (!open) setContextMenu(null)
+	}
+
 	return (
 		<>
 			<TableWrapper>
@@ -259,7 +283,13 @@ function TaskTable<TTask extends TaskRowDto>({
 					sorting={sorting}
 					onSortingChange={setSorting}
 					getRowId={(row) => row.rowKey}
+					highlightedRowIds={
+						contextMenu ? new Set([contextMenu.task.rowKey]) : undefined
+					}
 					onCellClick={handleCellClick}
+					onRowContextMenu={
+						showActionsColumn ? handleRowContextMenu : undefined
+					}
 					showHeader={showHeader}
 					isLoading={isLoading}
 					emptyState={
@@ -274,6 +304,14 @@ function TaskTable<TTask extends TaskRowDto>({
 					}
 				/>
 			</TableWrapper>
+			<RowContextMenu
+				task={contextMenu?.task ?? null}
+				position={contextMenu ? { x: contextMenu.x, y: contextMenu.y } : null}
+				onOpenChange={handleContextMenuOpenChange}
+				onEdit={onEdit}
+				onEnterSelect={handleEnterSelectMode}
+				onDelete={(id) => removeTasks([id])}
+			/>
 			<BulkActionsBar
 				isVisible={selectMode}
 				selectedCount={selectedTaskIds.length}
@@ -318,7 +356,9 @@ const TableWrapper = styled.div`
   }
 
   tr {
-    &:hover {
+    &:hover,
+    &[data-highlighted],
+    &:has([data-slot="dropdown-menu-trigger"][data-state="open"]) {
       background: var(--table-rows-bg-hover);
     }
 

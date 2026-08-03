@@ -9,7 +9,7 @@ import {
 	useState,
 } from "react"
 
-type ElementPlacements = "titleBar" | "center" | "right" | "user"
+type ElementPlacements = "center" | "right" | "user"
 
 type ElementPlacementsMap = Partial<Record<ElementPlacements, ReactNode>>
 

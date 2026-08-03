@@ -131,6 +131,11 @@ const MenuContent = styled(DropdownMenuContent)`
   box-shadow: var(--card-shadow-hover);
 `
 
+const MenuSeparator = styled(DropdownMenuSeparator)`
+  margin-block: 4px;
+  background: var(--button-hover);
+`
+
 const MenuItem = styled(DropdownMenuItem)`
   display: flex;
   align-items: center;
@@ -144,7 +149,6 @@ const MenuItem = styled(DropdownMenuItem)`
   line-height: 22px;
   color: var(--text-color-2);
   cursor: pointer;
-
   &[data-highlighted],
   &:hover {
     background: var(--secondary);
@@ -155,17 +159,11 @@ const MenuItem = styled(DropdownMenuItem)`
 
 const DestructiveMenuItem = styled(MenuItem)`
   color: var(--Components-Form-Component-labelRequiredMarkColor);
-
   &[data-highlighted],
   &:hover {
     background: var(--secondary);
     color: var(--Components-Form-Component-labelRequiredMarkColor);
   }
-`
-
-const MenuSeparator = styled(DropdownMenuSeparator)`
-  margin-block: 4px;
-  background: var(--button-hover);
 `
 
 const DefaultTrigger = styled.button`

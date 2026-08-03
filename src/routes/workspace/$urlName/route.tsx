@@ -5,20 +5,18 @@ import { WorkspaceTitle } from "src/components/WorkspaceTitle"
 import { WorkspaceUserDropdown } from "src/components/WorkspaceUserDropdown"
 import { WorkspaceProvider } from "src/providers/WorkspaceProvider"
 import { AuthorizationWrapper } from "src/wrappers/AuthorizationWrapper"
+import Header from "../../../components/Header"
 
 export const Route = createFileRoute("/workspace/$urlName")({
 	component: RouteComponent,
-	staticData: {
-		header: {
-			user: true,
-		},
-	},
 })
 
 function RouteComponent() {
 	return (
 		<WorkspaceProvider>
 			<AuthorizationWrapper type={PermissionType.VIEWER}>
+				<Header />
+
 				<WorkspaceUserDropdown />
 				<WorkspaceTabs />
 				<WorkspaceTitle />

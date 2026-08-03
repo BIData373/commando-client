@@ -29,11 +29,6 @@ export type TasksSearchSchemaType = z.infer<typeof TasksSearchSchema>
 export const Route = createFileRoute("/workspace/$urlName/tasks")({
 	component: TasksPage,
 	validateSearch: TasksSearchSchema,
-	staticData: {
-		header: {
-			user: true,
-		},
-	},
 })
 
 function TasksPage() {
