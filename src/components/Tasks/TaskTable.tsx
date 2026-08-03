@@ -159,7 +159,9 @@ function TaskTable<TTask extends TaskRowDto>({
 
 	function handleEnterSelectMode(rowKey: string) {
 		setSelectMode(true)
-		setRowSelection({ [rowKey]: true })
+		setRowSelection((prev) =>
+			selectMode ? { ...prev, [rowKey]: true } : { [rowKey]: true },
+		)
 	}
 
 	function handleExitSelectMode() {
