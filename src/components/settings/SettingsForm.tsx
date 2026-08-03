@@ -7,6 +7,8 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import type { UpdateWorkspaceDto } from "src/api/model"
 import {
+	getGetPermittedWorkspacesQueryKey,
+	getGetWorkspaceQueryKey,
 	getListWorkspacesQueryKey,
 	useUpdateWorkspace,
 } from "src/api/workspace/workspace"
@@ -37,7 +39,10 @@ export function SettingsForm() {
 	const { mutateAsync: updateSettings } = useUpdateWorkspace({
 		mutation: {
 			onSuccess(data) {
-				invalidateQueries([getListWorkspacesQueryKey()])
+				invalidateQueries([
+					getListWorkspacesQueryKey(),
+					getGetPermittedWorkspacesQueryKey(),
+				])
 				setWorkspace(data)
 			},
 		},
