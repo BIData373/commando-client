@@ -1,14 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router"
-import type { TaskRowWithWorkspaceDto } from "src/api/model"
-import PersonalTasksLayout from "../components/Personal/PersonalTasksLayout"
-import { TasksFiltersProvider } from "../providers/TasksFiltersProvider"
-import { TasksView } from "./workspace/$urlName/tasks"
+import { createFileRoute, Outlet } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/personal")({
-	component: PersonalPage,
-	validateSearch: (search: Record<string, unknown>): { view: TasksView } => ({
-		view: search.view === TasksView.CARDS ? TasksView.CARDS : TasksView.TABLE,
-	}),
+	component: () => <Outlet />,
 	staticData: {
 		header: {
 			headerTitle: "אזור אישי",
@@ -16,36 +9,3 @@ export const Route = createFileRoute("/personal")({
 		},
 	},
 })
-
-const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
-	"title",
-	"status",
-	"assignee",
-	"deadlineType",
-	"source",
-	"tags",
-	"notes",
-	"workspace",
-	"createdAt",
-	"updatedAt",
-]
-
-const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
-	"tags",
-	"notes",
-	"updatedAt",
-])
-
-function PersonalPage() {
-	// const { view } = Route.useSearch()
-
-	return (
-		<TasksFiltersProvider
-			storageKey="personal"
-			defaultColumnOrder={PERSONAL_DEFAULT_COLUMN_ORDER}
-			defaultHiddenColumns={PERSONAL_DEFAULT_HIDDEN}
-		>
-			<PersonalTasksLayout />
-		</TasksFiltersProvider>
-	)
-}

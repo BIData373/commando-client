@@ -1,5 +1,12 @@
 import styled from "@emotion/styled"
-import { CheckCircle2, MoreVertical, Pencil, Trash2 } from "lucide-react"
+import {
+	Archive,
+	ArchiveX,
+	CheckCircle2,
+	MoreVertical,
+	Pencil,
+	Trash2,
+} from "lucide-react"
 import { type ReactNode, useState } from "react"
 import {
 	DropdownMenu,
@@ -14,6 +21,8 @@ interface RowActionsMenuProps {
 	trigger?: ReactNode
 	workspaceId: number
 	onEdit?: () => void
+	onArchive?: () => void
+	onUnarchive?: () => void
 	onEnterSelect?: () => void
 	onDelete?: () => void
 }
@@ -21,13 +30,21 @@ interface RowActionsMenuProps {
 export function RowActionsMenu({
 	trigger,
 	onEdit,
+	onArchive,
+	onUnarchive,
 	onEnterSelect,
 	onDelete,
 }: RowActionsMenuProps) {
 	const [dropdownOpen, setDropdownOpen] = useState(false)
 	const [popoverOpen, setPopoverOpen] = useState(false)
 
-	const itemCount = [onEdit, onEnterSelect, onDelete].filter(Boolean).length
+	const itemCount = [
+		onEdit,
+		onArchive,
+		onUnarchive,
+		onEnterSelect,
+		onDelete,
+	].filter(Boolean).length
 	const hasMoreThanTwo = itemCount >= 2
 
 	function handleDropdownOpenChange(open: boolean) {
@@ -62,6 +79,18 @@ export function RowActionsMenu({
 						<MenuItem onSelect={onEdit}>
 							<Pencil size={16} />
 							עריכה
+						</MenuItem>
+					)}
+					{onArchive && (
+						<MenuItem onSelect={onArchive}>
+							<Archive size={16} />
+							ארכיון
+						</MenuItem>
+					)}
+					{onUnarchive && (
+						<MenuItem onSelect={onUnarchive}>
+							<ArchiveX size={16} />
+							הסר מארכיון
 						</MenuItem>
 					)}
 					{onEnterSelect && (

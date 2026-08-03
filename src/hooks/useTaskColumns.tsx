@@ -44,8 +44,9 @@ interface SelectModeConfig<TTask extends TaskRowDto> {
 }
 
 interface ActionsConfig {
-	onEdit: (taskId: number) => void
-	onArchive(taskIds: number[]): void
+	onEdit?: (taskId: number) => void
+	onArchive?(taskIds: number[]): void
+	onUnarchive?(taskIds: number[]): void
 	onDelete(taskIds: number[]): void
 	onEnterSelectMode(rowKey?: string): void
 }
@@ -147,7 +148,17 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						}) => (
 							<RowActionsMenu
 								workspaceId={workspaceId}
-								onEdit={() => actions.onEdit?.(id)}
+								onEdit={actions.onEdit ? () => actions.onEdit?.(id) : undefined}
+								onArchive={
+									actions.onArchive
+										? () => actions.onArchive?.([id])
+										: undefined
+								}
+								onUnarchive={
+									actions.onUnarchive
+										? () => actions.onUnarchive?.([id])
+										: undefined
+								}
 								onEnterSelect={() => actions.onEnterSelectMode?.(rowKey)}
 								onDelete={() => actions.onDelete?.([id])}
 							/>

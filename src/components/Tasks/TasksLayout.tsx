@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from "@tanstack/react-router"
 import type { ColumnFiltersState } from "@tanstack/react-table"
 import { without } from "lodash"
 import { useMemo } from "react"
+import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assignee/archived-workspace-assignee"
 import type {
 	DeadlineType,
 	TaskRowDto,
@@ -61,6 +62,10 @@ function TasksLayout({
 	} = useListTaskRows({ workspaceId })
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
+
+	const { mutate: toggleArchive } = useToggleWorkspaceTaskArchive({
+		mutation: { onSuccess: handleChangeSuccess },
+	})
 
 	const noWorkspaceColumnOrder = useMemo(
 		() => without(columnOrder, "workspace") as (keyof TaskRowDto)[],
@@ -133,6 +138,12 @@ function TasksLayout({
 		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
 	}
 
+	function handleArchive(ids: number[]) {
+		ids.forEach((id) => {
+			toggleArchive({ pathParams: { id } })
+		})
+	}
+
 	// function handleViewChange(newView: TasksView) {
 	// 	navigateToTasks({ view: newView })
 	// }
@@ -192,6 +203,7 @@ function TasksLayout({
 							getPermissionType={() => myPermission?.type}
 							columnOrder={noWorkspaceColumnOrder}
 							hiddenColumns={noWorkspaceHiddenColumns}
+							onArchive={handleArchive}
 						/>
 					) : (
 						<TaskCardGrid taskRows={filteredTaskRows} />

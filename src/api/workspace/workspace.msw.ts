@@ -8,8 +8,8 @@
 import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
-
-import type { WorkspaceDto } from "../model"
+import type { WorkspaceDto, WorkspaceWithPermissionDto } from "../model"
+import { PermissionType } from "../model"
 
 export const getCreateWorkspaceResponseMock = (
 	overrideResponse: Partial<Extract<WorkspaceDto, object>> = {},
@@ -49,7 +49,7 @@ export const getCreateWorkspaceResponseMock = (
 	...overrideResponse,
 })
 
-export const getListWorkspacesResponseMock = (): WorkspaceDto[] =>
+export const getListWorkspacesResponseMock = (): WorkspaceWithPermissionDto[] =>
 	Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -86,7 +86,49 @@ export const getListWorkspacesResponseMock = (): WorkspaceDto[] =>
 		chatNotification: faker.datatype.boolean(),
 		mailNotification: faker.datatype.boolean(),
 		pikudId: faker.number.float({ fractionDigits: 2 }),
+		permissionType: faker.helpers.arrayElement(Object.values(PermissionType)),
 	}))
+
+export const getGetPermittedWorkspacesResponseMock =
+	(): WorkspaceWithPermissionDto[] =>
+		Array.from(
+			{ length: faker.number.int({ min: 1, max: 10 }) },
+			(_, i) => i + 1,
+		).map(() => ({
+			createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			createdBy: faker.number.float({ fractionDigits: 2 }),
+			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			updatedBy: faker.number.float({ fractionDigits: 2 }),
+			deletedAt: faker.helpers.arrayElement([
+				faker.helpers.arrayElement([
+					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+					null,
+				]),
+				null,
+			]),
+			deletedBy: faker.helpers.arrayElement([
+				faker.helpers.arrayElement([
+					faker.number.float({ fractionDigits: 2 }),
+					null,
+				]),
+				null,
+			]),
+			id: faker.number.float({ fractionDigits: 2 }),
+			title: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			urlName: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			icon: faker.helpers.arrayElement([
+				faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					null,
+				]),
+				null,
+			]),
+			assigneeStatusEditable: faker.datatype.boolean(),
+			chatNotification: faker.datatype.boolean(),
+			mailNotification: faker.datatype.boolean(),
+			pikudId: faker.number.float({ fractionDigits: 2 }),
+			permissionType: faker.helpers.arrayElement(Object.values(PermissionType)),
+		}))
 
 export const getGetWorkspaceResponseMock = (
 	overrideResponse: Partial<Extract<WorkspaceDto, object>> = {},
@@ -228,10 +270,12 @@ export const getCreateWorkspaceMockHandler = (
 
 export const getListWorkspacesMockHandler = (
 	overrideResponse?:
-		| WorkspaceDto[]
+		| WorkspaceWithPermissionDto[]
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0],
-		  ) => Promise<WorkspaceDto[]> | WorkspaceDto[]),
+		  ) =>
+				| Promise<WorkspaceWithPermissionDto[]>
+				| WorkspaceWithPermissionDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
@@ -243,6 +287,32 @@ export const getListWorkspacesMockHandler = (
 						? await overrideResponse(info)
 						: overrideResponse
 					: getListWorkspacesResponseMock(),
+				{ status: 200 },
+			)
+		},
+		options,
+	)
+}
+
+export const getGetPermittedWorkspacesMockHandler = (
+	overrideResponse?:
+		| WorkspaceWithPermissionDto[]
+		| ((
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
+		  ) =>
+				| Promise<WorkspaceWithPermissionDto[]>
+				| WorkspaceWithPermissionDto[]),
+	options?: RequestHandlerOptions,
+) => {
+	return http.get(
+		"*/workspace/permitted",
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+			return HttpResponse.json(
+				overrideResponse !== undefined
+					? typeof overrideResponse === "function"
+						? await overrideResponse(info)
+						: overrideResponse
+					: getGetPermittedWorkspacesResponseMock(),
 				{ status: 200 },
 			)
 		},
@@ -324,6 +394,7 @@ export const getDeleteWorkspaceMockHandler = (
 export const getWorkspaceMock = () => [
 	getCreateWorkspaceMockHandler(),
 	getListWorkspacesMockHandler(),
+	getGetPermittedWorkspacesMockHandler(),
 	getGetWorkspaceMockHandler(),
 	getUpdateWorkspaceMockHandler(),
 	getDeleteWorkspaceMockHandler(),

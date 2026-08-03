@@ -1366,6 +1366,7 @@ export const getListPersonalTaskRowsResponseMock =
 					Object.values(PermissionType),
 				),
 			},
+			archivedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		}))
 
 export const getGetTaskResponseMock = (

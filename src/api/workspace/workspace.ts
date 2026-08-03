@@ -32,6 +32,7 @@ import type {
 	UpdateWorkspaceDto,
 	UpdateWorkspacePathParameters,
 	WorkspaceDto,
+	WorkspaceWithPermissionDto,
 } from "../model"
 
 export const createWorkspace = (
@@ -115,7 +116,7 @@ export const listWorkspaces = (
 	params?: ListWorkspacesParams,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<WorkspaceDto[]>({
+	return sendRequest<WorkspaceWithPermissionDto[]>({
 		url: `/workspace`,
 		method: "GET",
 		params,
@@ -232,6 +233,145 @@ export function useListWorkspaces<
 	queryKey: DataTag<QueryKey, TData, TError>
 } {
 	const queryOptions = getListWorkspacesQueryOptions(params, options)
+
+	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+		TData,
+		TError
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+	return { ...query, queryKey: queryOptions.queryKey }
+}
+
+export const getPermittedWorkspaces = (signal?: AbortSignal) => {
+	return sendRequest<WorkspaceWithPermissionDto[]>({
+		url: `/workspace/permitted`,
+		method: "GET",
+		signal,
+	})
+}
+
+export const getGetPermittedWorkspacesQueryKey = () => {
+	return [`/workspace/permitted`] as const
+}
+
+export const getGetPermittedWorkspacesQueryOptions = <
+	TData = Awaited<ReturnType<typeof getPermittedWorkspaces>>,
+	TError = ErrorType<unknown>,
+>(options?: {
+	query?: Partial<
+		UseQueryOptions<
+			Awaited<ReturnType<typeof getPermittedWorkspaces>>,
+			TError,
+			TData
+		>
+	>
+}) => {
+	const { query: queryOptions } = options ?? {}
+
+	const queryKey = queryOptions?.queryKey ?? getGetPermittedWorkspacesQueryKey()
+
+	const queryFn: QueryFunction<
+		Awaited<ReturnType<typeof getPermittedWorkspaces>>
+	> = ({ signal }) => getPermittedWorkspaces(signal)
+
+	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+		Awaited<ReturnType<typeof getPermittedWorkspaces>>,
+		TError,
+		TData
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetPermittedWorkspacesQueryResult = NonNullable<
+	Awaited<ReturnType<typeof getPermittedWorkspaces>>
+>
+export type GetPermittedWorkspacesQueryError = ErrorType<unknown>
+
+export function useGetPermittedWorkspaces<
+	TData = Awaited<ReturnType<typeof getPermittedWorkspaces>>,
+	TError = ErrorType<unknown>,
+>(
+	options: {
+		query: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getPermittedWorkspaces>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				DefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getPermittedWorkspaces>>,
+					TError,
+					Awaited<ReturnType<typeof getPermittedWorkspaces>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetPermittedWorkspaces<
+	TData = Awaited<ReturnType<typeof getPermittedWorkspaces>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getPermittedWorkspaces>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				UndefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getPermittedWorkspaces>>,
+					TError,
+					Awaited<ReturnType<typeof getPermittedWorkspaces>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetPermittedWorkspaces<
+	TData = Awaited<ReturnType<typeof getPermittedWorkspaces>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getPermittedWorkspaces>>,
+				TError,
+				TData
+			>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+
+export function useGetPermittedWorkspaces<
+	TData = Awaited<ReturnType<typeof getPermittedWorkspaces>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getPermittedWorkspaces>>,
+				TError,
+				TData
+			>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+} {
+	const queryOptions = getGetPermittedWorkspacesQueryOptions(options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,

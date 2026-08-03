@@ -47,6 +47,8 @@ interface TaskTableProps<TTask extends TaskRowDto> {
 	isLoading?: boolean
 	hideStatusAction?: boolean
 	showActionsColumn?: boolean
+	onArchive?: (ids: number[]) => void
+	onUnarchive?: (ids: number[]) => void
 	onChangeSuccess?(): void
 }
 
@@ -56,7 +58,7 @@ function TaskTable<TTask extends TaskRowDto>({
 	columnOrder,
 	hiddenColumns,
 	statuses,
-	onEdit = () => {},
+	onEdit,
 	onClick,
 	extraColumns = [],
 	showHeader = true,
@@ -67,6 +69,8 @@ function TaskTable<TTask extends TaskRowDto>({
 	isLoading,
 	hideStatusAction = false,
 	showActionsColumn = true,
+	onArchive,
+	onUnarchive,
 }: TaskTableProps<TTask>) {
 	const {
 		searchQuery,
@@ -181,7 +185,11 @@ function TaskTable<TTask extends TaskRowDto>({
 	}
 
 	function handleBulkArchive() {
-		removeTasks(selectedTaskIds)
+		if (onArchive) {
+			onArchive(selectedTaskIds)
+		} else {
+			removeTasks(selectedTaskIds)
+		}
 		handleExitSelectMode()
 	}
 
@@ -225,7 +233,8 @@ function TaskTable<TTask extends TaskRowDto>({
 		showMenuColumn: showActionsColumn,
 		actions: {
 			onEdit,
-			onArchive: removeTasks,
+			onArchive,
+			onUnarchive,
 			onDelete: removeTasks,
 			onEnterSelectMode: handleEnterSelectMode,
 		},

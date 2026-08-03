@@ -4,6 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
+import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
 import {
 	type TaskRowWithWorkspaceDto,
 	WorkspaceStatusType,
@@ -22,6 +23,7 @@ import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
+import { PersonalSectionDropdown } from "./PersonalSectionDropdown"
 
 const EXTRA_COLUMNS: ColumnDef<TaskRowWithWorkspaceDto>[] = [
 	{
@@ -55,6 +57,10 @@ function PersonalTasksLayout() {
 		isLoading,
 		queryKey,
 	} = useListPersonalTaskRows()
+
+	const { mutate: toggleArchive } = useToggleUserTaskArchive({
+		mutation: { onSuccess: handleChangeSuccess },
+	})
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
@@ -92,7 +98,7 @@ function PersonalTasksLayout() {
 
 	function handleOpenTask(taskId: number) {
 		navigate({
-			to: "/personal/task/$taskId",
+			to: "/personal/tasks/task/$taskId",
 			params: { taskId: String(taskId) },
 			search: { view: TasksView.TABLE },
 		})
@@ -100,7 +106,7 @@ function PersonalTasksLayout() {
 
 	function handleEdit(taskId: number) {
 		navigate({
-			to: "/personal/task/$taskId/edit",
+			to: "/personal/tasks/task/$taskId/edit",
 			params: { taskId: String(taskId) },
 			search: { view: TasksView.TABLE },
 		})
@@ -110,12 +116,17 @@ function PersonalTasksLayout() {
 		invalidateQueries([queryKey])
 	}
 
-	// function handleViewChange(newView: TasksView) {
-	// 	navigate({ to: "/personal", search: { view: newView } })
-	// }
+	function handleArchive(ids: number[]) {
+		ids.forEach((id) => {
+			toggleArchive({
+				pathParams: { id },
+			})
+		})
+	}
 
 	return (
 		<TooltipProvider>
+			<PersonalSectionDropdown current="tasks" />
 			<PageRoot>
 				<MetricsBar
 					totalCount={totalCount}
@@ -162,7 +173,7 @@ function PersonalTasksLayout() {
 					tasks={filteredTaskRows}
 					isLoading={isLoading}
 					hideStatusAction
-					showActionsColumn={false}
+					showActionsColumn={true}
 					columnOrder={columnOrder}
 					hiddenColumns={hiddenColumns}
 					onChangeSuccess={handleChangeSuccess}
@@ -170,6 +181,7 @@ function PersonalTasksLayout() {
 					onClick={handleOpenTask}
 					getPermissionType={(task) => task?.workspace?.permissionType}
 					extraColumns={EXTRA_COLUMNS}
+					onArchive={handleArchive}
 				/>
 			</PageRoot>
 			<Outlet />
