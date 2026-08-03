@@ -272,6 +272,9 @@ function TaskTable<TTask extends TaskRowDto>({
 					sorting={sorting}
 					onSortingChange={setSorting}
 					getRowId={(row) => row.rowKey}
+					highlightedRowIds={
+						contextMenu ? new Set([contextMenu.task.rowKey]) : undefined
+					}
 					onCellClick={handleCellClick}
 					onRowContextMenu={
 						showActionsColumn ? handleRowContextMenu : undefined
@@ -342,7 +345,9 @@ const TableWrapper = styled.div`
   }
 
   tr {
-    &:hover {
+    &:hover,
+    &[data-highlighted],
+    &:has([data-slot="dropdown-menu-trigger"][data-state="open"]) {
       background: var(--table-rows-bg-hover);
     }
 
