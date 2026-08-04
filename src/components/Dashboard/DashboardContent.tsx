@@ -52,6 +52,9 @@ export function DashboardContent() {
 			</ButtonGroup>
 
 			<GridLayout>
+				<PrimarySpacer />
+				<SecondarySpacer />
+
 				<FocusedInstructions
 					onUpdateStatusSuccess={handleUpdateSuccess}
 					onClick={handleOpenTask}
@@ -72,6 +75,8 @@ export function DashboardContent() {
 const ContentArea = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
   padding-block-end: 32px;
   color: var(--sea-ink-soft);
   padding-top: 12px;
@@ -86,12 +91,30 @@ const ButtonGroup = styled.div`
 const GridLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr 450px;
-  gap: 62px;
+  grid-template-rows: auto minmax(31px, 62px) auto;
+  column-gap: 62px;
   margin-top: 28px;
+  flex: 1;
+  min-height: 0;
 
   @media (max-width: 1300px) {
     grid-template-columns: 1fr 1fr;
-    grid-auto-flow: dense;
-    gap: 48px 24px;
+    grid-template-rows: auto minmax(24px, 48px) auto minmax(24px, 48px) auto;
+    column-gap: 24px;
+  }
+`
+
+const PrimarySpacer = styled.div`
+  grid-row: 2;
+  grid-column: 1 / -1;
+`
+
+const SecondarySpacer = styled.div`
+  display: none;
+
+  @media (max-width: 1300px) {
+    display: block;
+    grid-row: 4;
+    grid-column: 1 / -1;
   }
 `

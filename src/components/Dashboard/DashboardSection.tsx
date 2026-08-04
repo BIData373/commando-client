@@ -33,15 +33,16 @@ const Section = styled.div<{ $gap: number }>`
 `
 
 const ContentPanel = styled.div`
+  flex: 1;
   min-height: 352px;
-  max-height: 352px;
+  max-height: 100%;
   background: var(--background);
   border-radius: 8px;
   overflow: hidden;
 
   [data-slot="table-container"] {
     overflow-y: auto;
-    max-height: 352px;
+    height: 100%;
     direction: ltr;
   }
 

@@ -107,7 +107,7 @@ const Section = styled.div`
 
   @media (max-width: 1300px) {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 3;
   }
 `
 

@@ -186,7 +186,7 @@ const Section = styled.div`
 
   @media (max-width: 1300px) {
     grid-column: 2;
-    grid-row: 2;
+    grid-row: 3;
     width: 100%;
     flex-shrink: 1;
 }
@@ -232,7 +232,8 @@ const ContentPanel = styled.div<{ $hasData?: boolean }>`
   background: var(--background);
   border-radius: 8px;
   border-start-start-radius: 0;
-  max-height: 352px;
+  min-height: 352px;
+  max-height: 100%;
   display: flex;
   align-items: ${({ $hasData }) => ($hasData ? "flex-start" : "center")};
   justify-content: center;
