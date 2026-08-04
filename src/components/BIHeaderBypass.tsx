@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { debounce } from "lodash"
-import type { ChangeEvent } from "react"
+import { type ChangeEvent, useMemo } from "react"
 import { useBIBypass } from "src/hooks/useBIBypass"
 import { adminUserUpn } from "src/hooks/useCurrentUser"
 import { queryClient } from "src/queryClient"
@@ -26,12 +26,14 @@ export function BIHeaderBypass() {
 		queryClient.invalidateQueries()
 	}
 
-	const handleChangeIsBIDebounced = debounce(handleChangeIsBI, 300)
+	const handleChangeIsBIDebounced = useMemo(
+		() => debounce(handleChangeIsBI, 300),
+		[setIsBI],
+	)
 
 	return (
 		STATIC_TOKEN && (
 			<>
-				<DropdownMenuSeparator />
 				<DropdownMenuItem
 					onSelect={(e) => e.preventDefault()}
 					onPointerMove={(e) => e.preventDefault()}
