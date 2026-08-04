@@ -166,7 +166,6 @@ export function TasksFiltersProvider({
 	}
 
 	function setColumnsFilters(columnsFilters: ColumnFiltersState) {
-		console.log("columnsFilters", columnsFilters)
 		updateTableView({
 			columnFilters: columnsFilters as ColumnFilterDto[],
 		})
