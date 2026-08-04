@@ -74,7 +74,7 @@ const ContentArea = styled.div`
   flex-direction: column;
   padding-block-end: 32px;
   color: var(--sea-ink-soft);
-  padding-top: 24px;
+  padding-top: 12px;
 `
 
 const ButtonGroup = styled.div`

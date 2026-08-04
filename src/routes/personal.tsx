@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import Header from "src/components/Header"
+import { ContentScrollArea } from "src/components/shared/ContentScrollArea"
+import { PageShell } from "src/components/shared/PageShell"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import PersonalTasksLayout from "../components/Personal/PersonalTasksLayout"
 import { TasksFiltersProvider } from "../providers/TasksFiltersProvider"
@@ -41,8 +43,12 @@ function PersonalPage() {
 			defaultColumnOrder={PERSONAL_DEFAULT_COLUMN_ORDER}
 			defaultHiddenColumns={PERSONAL_DEFAULT_HIDDEN}
 		>
-			<Header />
-			<PersonalTasksLayout />
+			<PageShell>
+				<Header />
+				<ContentScrollArea>
+					<PersonalTasksLayout />
+				</ContentScrollArea>
+			</PageShell>
 		</TasksFiltersProvider>
 	)
 }
