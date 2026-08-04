@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 import Header from "src/components/Header"
+import { ContentScrollArea } from "src/components/shared/ContentScrollArea"
+import { PageShell } from "src/components/shared/PageShell"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { UserViewProvider } from "src/providers/UserViewProvider"
 import PersonalTasksLayout from "../components/Personal/PersonalTasksLayout"
@@ -19,8 +21,12 @@ function PersonalPage() {
 	return (
 		<UserViewProvider>
 			<TasksFiltersProvider>
-				<Header />
-				<PersonalTasksLayout />
+				<PageShell>
+					<Header />
+					<ContentScrollArea>
+						<PersonalTasksLayout />
+					</ContentScrollArea>
+				</PageShell>
 			</TasksFiltersProvider>
 		</UserViewProvider>
 	)
