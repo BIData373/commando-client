@@ -105,10 +105,11 @@ function TaskTable<TTask extends TaskRowDto>({
 		[statusFilter, deadlineTypeFilter],
 	)
 
-	const columnFilters: ColumnFiltersState = useMemo(
-		() => [...urlColumnFilters, ...columnsFilters],
-		[urlColumnFilters, columnsFilters],
-	)
+	const columnFilters: ColumnFiltersState = useMemo(() => {
+		const map = new Map(columnsFilters.map((f) => [f.id, f]))
+		for (const f of urlColumnFilters) map.set(f.id, f)
+		return [...map.values()]
+	}, [urlColumnFilters, columnsFilters])
 
 	function getColumnFilter(columnFilters: ColumnFiltersState, id: string) {
 		return columnFilters.find((column) => column.id === id)?.value ?? []
@@ -130,9 +131,7 @@ function TaskTable<TTask extends TaskRowDto>({
 			"deadlineType",
 		) as DeadlineType[]
 
-		const urlFilterIds = new Set(urlColumnFilters.map((f) => f.id))
-		setColumnsFilters(newFilters.filter((f) => !urlFilterIds.has(f.id)))
-
+		setColumnsFilters(newFilters)
 		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
 	}
 
