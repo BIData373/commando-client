@@ -9,10 +9,15 @@ import {
 	type SourceWithTasksDto,
 	type TaskDto,
 } from "src/api/model"
-import { useExtractSource, useGetSource } from "src/api/source/source"
+import {
+	getGetSourceQueryKey,
+	useExtractSource,
+	useGetSource,
+} from "src/api/source/source"
 import aiLoadingSvg from "src/assets/icons/ai-loading.svg"
 import { useSocketHandler } from "src/hooks/useSocketHandler"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { invalidateQueries } from "src/queryClient"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { DataTable } from "../ui/data-table"
 import AIExtractionAlert from "./AIExtractionAlert"
@@ -56,8 +61,8 @@ function CreateTasksTable({
 	} = useWorkspace()
 	const nextRowId = useRef(1)
 
-	const [extractionStatus, setExtractionStatus] =
-		useState<ExtractionStatus | null>(null)
+	const [finalStatus, setFinalStatus] = useState<ExtractionStatus | null>(null)
+	const [alertDismissed, setAlertDismissed] = useState(false)
 	const [extractedCount, setExtractedCount] = useState(0)
 
 	const { data: source } = useGetSource(
@@ -70,14 +75,15 @@ function CreateTasksTable({
 
 	const isExtracting =
 		sourceId !== undefined &&
-		extractionStatus === null &&
+		finalStatus === null &&
 		source?.draft &&
 		source?.extractionStatus !== null &&
 		ACTIVE_EXTRACTION_STATUSES.has(source?.extractionStatus)
 
 	async function handleRetry() {
 		if (sourceId !== undefined) {
-			setExtractionStatus(null)
+			setFinalStatus(null)
+			setAlertDismissed(false)
 			await extractSource({ pathParams: { id: sourceId } })
 		}
 	}
@@ -120,26 +126,38 @@ function CreateTasksTable({
 
 	useSocketHandler({
 		[SocketEvent.TASK_EXTRACTION_FINISHED]: (dto: SourceWithTasksDto) => {
-			if (sourceId !== undefined && dto.id !== sourceId) return
-			setExtractionStatus(dto.extractionStatus)
-			if (dto.extractionStatus === ExtractionStatus.FINISHED_WITH_TASKS) {
-				setExtractedCount(dto.tasks.length)
-				setRows([...map(dto.tasks, mapTaskDtoToRow), createEmptyRow()])
+			if (sourceId !== undefined) {
+				if (dto.id !== sourceId) {
+					return
+				}
+
+				invalidateQueries([getGetSourceQueryKey({ id: sourceId })])
+
+				setFinalStatus(dto.extractionStatus)
+				setAlertDismissed(false)
+
+				if (dto.extractionStatus === ExtractionStatus.FINISHED_WITH_TASKS) {
+					setExtractedCount(dto.tasks.length)
+					setRows([...map(dto.tasks, mapTaskDtoToRow), createEmptyRow()])
+				}
 			}
 		},
 	})
 
 	useEffect(() => {
-		if (!source?.extractionStatus) return
+		if (!source?.extractionStatus) {
+			return
+		}
 
 		if (source.tasks.length > 0) {
 			const mapped = source.tasks.map(mapTaskDtoToRow)
+
 			setExtractedCount(mapped.length)
 			setRows([...mapped, createEmptyRow()])
 		}
 
 		if (TERMINAL_EXTRACTION_STATUSES.has(source.extractionStatus)) {
-			setExtractionStatus(source.extractionStatus)
+			setFinalStatus(source.extractionStatus)
 		}
 	}, [source, createEmptyRow, mapTaskDtoToRow])
 
@@ -203,7 +221,7 @@ function CreateTasksTable({
 	}
 
 	function dismissAlert() {
-		setExtractionStatus(null)
+		setAlertDismissed(true)
 	}
 
 	const filledCount = rows.filter((r) => r.title.trim()).length
@@ -241,9 +259,9 @@ function CreateTasksTable({
 		</ExtractionWrapper>
 	) : (
 		<TableWrapper>
-			{extractionStatus !== null && (
+			{finalStatus !== null && !alertDismissed && (
 				<AIExtractionAlert
-					status={extractionStatus}
+					status={finalStatus}
 					count={extractedCount}
 					onRetry={handleRetry}
 					isRetrying={isRetrying}

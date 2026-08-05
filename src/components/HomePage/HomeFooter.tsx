@@ -1,11 +1,15 @@
 import styled from "@emotion/styled"
+import { User } from "lucide-react"
 import { TbBook, TbGridDots, TbMessage } from "react-icons/tb"
 import BIDataIcon from "src/assets/biData.png"
 import {
 	CHAT_CHANNEL_URL,
 	PORTAL_CATALOG_URL,
+	STATIC_TOKEN,
 	USER_GUIDE_URL,
 } from "src/utils/env-utils"
+import { UserDropdown } from "../UserDropdown"
+import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu"
 
 export default function HomeFooter() {
 	function handleOpenUserGuide() {
@@ -41,6 +45,17 @@ export default function HomeFooter() {
 				<IconButton onClick={handleOpenChatChannel}>
 					<TbMessage size={18} />
 				</IconButton>
+
+				{STATIC_TOKEN && (
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<IconButton>
+								<User size={18} />
+							</IconButton>
+						</DropdownMenuTrigger>
+						<UserDropdown />
+					</DropdownMenu>
+				)}
 			</FooterRight>
 		</FooterRoot>
 	)

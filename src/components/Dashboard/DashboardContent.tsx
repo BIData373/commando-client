@@ -1,5 +1,7 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
+import { PermissionType } from "src/api/model"
+import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTaskRows } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -19,6 +21,8 @@ export function DashboardContent() {
 	const navigate = useNavigate()
 
 	const { data: taskRows = [], queryKey } = useListTaskRows({ workspaceId: id })
+
+	const { data: myPermission } = useGetMyPermission({ workspaceId: id })
 
 	const filteredTasks = useFilteredTasks(taskRows, { skipQuickFilters: true })
 
@@ -47,8 +51,12 @@ export function DashboardContent() {
 	return (
 		<ContentArea>
 			<ButtonGroup>
-				<CreateTaskButton context="dashboard" />
-				<TasksDatePicker showPlaceholder />
+				{myPermission?.type === PermissionType.MANAGER && (
+					<CreateTaskButton context="dashboard" />
+				)}
+				<DatePickerSlot>
+					<TasksDatePicker showPlaceholder />
+				</DatePickerSlot>
 			</ButtonGroup>
 
 			<GridLayout>
@@ -80,7 +88,10 @@ const ContentArea = styled.div`
 const ButtonGroup = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  `
+
+const DatePickerSlot = styled.div`
+  margin-inline-start: auto;
   `
 
 const GridLayout = styled.div`
