@@ -63,10 +63,15 @@ export function TasksFiltersProvider({
 	children,
 }: TasksFiltersProviderProps) {
 	const { view, updateView } = useUserView()
-
-	const [quickFilterOverride, setQuickFilterOverride] = useState<
+	const [localQuickFilters, setLocalQuickFilters] = useState<
 		Set<QuickFilter> | undefined
 	>(initialQuickFilters)
+	const { columnVisibility, quickFilter, columnFilters, sorting } = view.table
+	const { columnOrder: columnOrderRaw, hiddenColumns: hiddenColumnsRaw } =
+		columnVisibility as {
+			columnOrder: (keyof TaskRowWithWorkspaceDto)[]
+			hiddenColumns: (keyof TaskRowWithWorkspaceDto)[]
+		}
 
 	const [searchQuery, setSearchQuery] = useState("")
 
@@ -93,43 +98,24 @@ export function TasksFiltersProvider({
 		},
 	})
 
-	const tableView = view.table
-
-	const knownColumnIds = useMemo(
-		() =>
-			[
-				"id" as keyof TaskRowWithWorkspaceDto,
-				...new Set([
-					...DEFAULT_COLUMN_ORDER,
-					...(tableView.columnVisibility
-						.columnOrder as (keyof TaskRowWithWorkspaceDto)[]),
-				]),
-			] as (keyof TaskRowWithWorkspaceDto)[],
-		[tableView.columnVisibility.columnOrder],
+	const knownColumnIds: (keyof TaskRowWithWorkspaceDto)[] = useMemo(
+		() => ["id", ...new Set([...DEFAULT_COLUMN_ORDER, ...columnOrderRaw])],
+		[columnOrderRaw],
 	)
 
 	const activeQuickFilters = useMemo(
-		() => quickFilterOverride ?? new Set<QuickFilter>(tableView.quickFilter),
-		[quickFilterOverride, tableView.quickFilter],
+		() => localQuickFilters ?? new Set<QuickFilter>(quickFilter),
+		[localQuickFilters, quickFilter],
 	)
 
 	const columnOrder = useMemo(
-		() =>
-			reconcileColumnOrder(
-				tableView.columnVisibility
-					.columnOrder as (keyof TaskRowWithWorkspaceDto)[],
-				knownColumnIds,
-			),
-		[tableView.columnVisibility.columnOrder, knownColumnIds],
+		() => reconcileColumnOrder(columnOrderRaw, knownColumnIds),
+		[columnOrderRaw, knownColumnIds],
 	)
 
 	const hiddenColumns = useMemo(
-		() =>
-			new Set<keyof TaskRowWithWorkspaceDto>(
-				tableView.columnVisibility
-					.hiddenColumns as (keyof TaskRowWithWorkspaceDto)[],
-			),
-		[tableView.columnVisibility.hiddenColumns],
+		() => new Set(hiddenColumnsRaw),
+		[hiddenColumnsRaw],
 	)
 
 	const updateTableView = (update: Partial<UserViewDto["table"]>) => {
@@ -152,14 +138,14 @@ export function TasksFiltersProvider({
 			nextQuickFilters.add(filter)
 		}
 
-		setQuickFilterOverride(undefined)
+		setLocalQuickFilters(undefined)
 		updateTableView({
 			quickFilter: [...nextQuickFilters],
 		})
 	}
 
 	function clearQuickFilters() {
-		setQuickFilterOverride(undefined)
+		setLocalQuickFilters(undefined)
 		updateTableView({
 			quickFilter: [],
 		})
@@ -172,8 +158,7 @@ export function TasksFiltersProvider({
 	}
 
 	const setSorting: Dispatch<SetStateAction<SortingState>> = (value) => {
-		const nextSorting =
-			typeof value === "function" ? value(tableView.sorting) : value
+		const nextSorting = typeof value === "function" ? value(sorting) : value
 
 		updateTableView({
 			sorting: nextSorting,
@@ -183,7 +168,7 @@ export function TasksFiltersProvider({
 	function setColumnOrder(order: (keyof TaskRowWithWorkspaceDto)[]) {
 		updateTableView({
 			columnVisibility: {
-				...tableView.columnVisibility,
+				...columnVisibility,
 				columnOrder: order,
 			},
 		})
@@ -200,7 +185,7 @@ export function TasksFiltersProvider({
 
 		updateTableView({
 			columnVisibility: {
-				...tableView.columnVisibility,
+				...columnVisibility,
 				hiddenColumns: [...nextHiddenColumns],
 			},
 		})
@@ -221,9 +206,9 @@ export function TasksFiltersProvider({
 				setDateType,
 				dateRange,
 				setDateRange,
-				columnsFilters: tableView.columnFilters,
+				columnsFilters: columnFilters,
 				setColumnsFilters,
-				sorting: tableView.sorting,
+				sorting: sorting,
 				setSorting,
 			}}
 		>

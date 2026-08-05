@@ -4,6 +4,7 @@ import type {
 	ColumnFiltersState,
 	RowSelectionState,
 } from "@tanstack/react-table"
+import { uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
@@ -106,9 +107,7 @@ function TaskTable<TTask extends TaskRowDto>({
 	)
 
 	const columnFilters: ColumnFiltersState = useMemo(() => {
-		const map = new Map(columnsFilters.map((f) => [f.id, f]))
-		for (const f of urlColumnFilters) map.set(f.id, f)
-		return [...map.values()]
+		return uniqBy([...urlColumnFilters, ...columnsFilters], "id")
 	}, [urlColumnFilters, columnsFilters])
 
 	function getColumnFilter(columnFilters: ColumnFiltersState, id: string) {
