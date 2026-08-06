@@ -1,14 +1,13 @@
-import {
-	createContext,
-	type PropsWithChildren,
-	useContext,
-	useEffect,
-	useState,
-} from "react"
+import { useQueryClient } from "@tanstack/react-query"
+import { createContext, type PropsWithChildren, useContext } from "react"
 import type { UserViewDto } from "src/api/model"
 import { DistributionTab } from "src/api/model/distribution-tab"
 import { QuickFilter } from "src/api/model/quick-filter"
-import { upsertUserView, useGetUserView } from "src/api/user-view/user-view"
+import {
+	getGetUserViewQueryKey,
+	upsertUserView,
+	useGetUserView,
+} from "src/api/user-view/user-view"
 
 import { Spinner } from "src/components/ui/spinner"
 import { DEFAULT_COLUMN_ORDER } from "src/utils/task-table-utils"
@@ -67,29 +66,32 @@ export function UserViewProvider({
 	children,
 	workspaceId,
 }: UserViewProviderProps) {
+	const queryClient = useQueryClient()
 	const defaultView = getDefaultView(workspaceId ?? null)
 
-	const [view, setView] = useState<UserViewDto>(defaultView)
+	const { data, isLoading } = useGetUserView(
+		{ workspaceId },
+		{
+			query: {
+				select: (data) => ({
+					table: { ...defaultView.table, ...data.table },
+					dashboard: { ...defaultView.dashboard, ...data.dashboard },
+				}),
+			},
+		},
+	)
 
-	const { data, isLoading } = useGetUserView({
-		workspaceId,
-	})
-
-	useEffect(() => {
-		if (data) {
-			const dv = getDefaultView(workspaceId ?? null)
-			setView({
-				table: { ...dv.table, ...data.table },
-				dashboard: { ...dv.dashboard, ...data.dashboard },
-			})
-		}
-	}, [data, workspaceId])
+	const view = data ?? defaultView
 
 	const updateView = async (nextView: UserViewDto) => {
-		setView(nextView)
+		queryClient.setQueryData(getGetUserViewQueryKey({ workspaceId }), nextView)
 		upsertUserView({
 			workspaceId,
 			view: nextView,
+		}).then(() => {
+			queryClient.invalidateQueries({
+				queryKey: getGetUserViewQueryKey({ workspaceId }),
+			})
 		})
 	}
 
