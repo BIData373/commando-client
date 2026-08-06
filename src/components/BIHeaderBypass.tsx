@@ -1,16 +1,21 @@
 import styled from "@emotion/styled"
 import { debounce } from "lodash"
-import type { ChangeEvent } from "react"
+import { type ChangeEvent, useMemo } from "react"
 import { useBIBypass } from "src/hooks/useBIBypass"
 import { adminUserUpn } from "src/hooks/useCurrentUser"
 import { queryClient } from "src/queryClient"
 import { STATIC_TOKEN } from "../utils/env-utils"
-import { DropdownMenuItem, DropdownMenuSeparator } from "./ui/dropdown-menu"
+import { DropdownMenuItem } from "./ui/dropdown-menu"
 import { Input } from "./ui/input"
 import { Switch } from "./ui/switch"
 
 export function BIHeaderBypass() {
 	const { username, setUsername, isBI, setIsBI } = useBIBypass()
+
+	const invalidateQueriesDebounced = useMemo(
+		() => debounce(() => queryClient.invalidateQueries(), 300),
+		[],
+	)
 
 	function handleChangeUsername({
 		target: { value },
@@ -18,20 +23,17 @@ export function BIHeaderBypass() {
 		const cleanValue = value.replace(" ", "")
 
 		setUsername(cleanValue.length > 0 ? cleanValue : null)
+		invalidateQueriesDebounced()
 	}
 
 	function handleChangeIsBI(checked: boolean) {
 		setIsBI(checked)
-
-		queryClient.invalidateQueries()
+		invalidateQueriesDebounced()
 	}
-
-	const handleChangeIsBIDebounced = debounce(handleChangeIsBI, 300)
 
 	return (
 		STATIC_TOKEN && (
 			<>
-				<DropdownMenuSeparator />
 				<DropdownMenuItem
 					onSelect={(e) => e.preventDefault()}
 					onPointerMove={(e) => e.preventDefault()}
@@ -58,7 +60,7 @@ export function BIHeaderBypass() {
 
 						<Switch
 							checked={isBI ?? true}
-							onCheckedChange={handleChangeIsBIDebounced}
+							onCheckedChange={handleChangeIsBI}
 							size="sm"
 							dir="rtl"
 						/>

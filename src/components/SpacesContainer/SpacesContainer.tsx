@@ -1,11 +1,12 @@
 import styled from "@emotion/styled"
-import { Search } from "lucide-react"
+import { Search, X } from "lucide-react"
 import { useState } from "react"
 import {
 	useGetPermittedWorkspaces,
 	useListWorkspaces,
 } from "src/api/workspace/workspace"
 import emptyWorkspacesImage from "src/assets/empty-states/empty-workspace.svg"
+import noResultsFound from "src/assets/empty-states/no-results-found.svg"
 import { EmptyCardState } from "src/components/shared/EmptyCardState"
 // import NewWorkspaceButton from "./NewWorkspaceButton"
 import WorkspaceCard from "./WorkspaceCard"
@@ -51,6 +52,11 @@ export default function SpacesContainer() {
 							<SearchIconWrapper>
 								<Search size={24} />
 							</SearchIconWrapper>
+							{searchQuery && (
+								<ClearIconWrapper>
+									<ClearIcon size={14} onClick={() => setSearchQuery("")} />
+								</ClearIconWrapper>
+							)}
 						</SearchWrapper>
 					</ActionsRow>
 
@@ -70,13 +76,23 @@ export default function SpacesContainer() {
 				</TabsRow>
 			</TopSection>
 
-			{activeTab === "mine" && displayedWorkspaces.length === 0 ? (
+			{displayedWorkspaces.length === 0 ? (
 				<EmptySpace>
-					<EmptyCardState
-						imgSrc={emptyWorkspacesImage}
-						title="לא נמצאו הרשאות לסביבות"
-						description="ניתן לפנות למנהל סביבה כדי לקבל הרשאות"
-					/>
+					{searchQuery ? (
+						<EmptyCardState
+							imgSrc={noResultsFound}
+							title="לא נמצאו סביבות"
+							description={`לא נמצאו סביבות התואמות ל-"${searchQuery}"`}
+						/>
+					) : (
+						activeTab === "mine" && (
+							<EmptyCardState
+								imgSrc={emptyWorkspacesImage}
+								title="לא נמצאו הרשאות לסביבות"
+								description="ניתן לפנות למנהל סביבה כדי לקבל הרשאות"
+							/>
+						)
+					)}
 				</EmptySpace>
 			) : (
 				<WorkspacesContainer>
@@ -137,6 +153,7 @@ const SearchInput = styled.input`
   height: 40px;
   padding: 8px;
   padding-inline-start: 40px;
+  padding-inline-end: 28px;
   border: 1px solid var(--card-border);
   border-radius: 8px;
   background: var(--background);
@@ -160,6 +177,24 @@ const SearchIconWrapper = styled.span`
   display: flex;
   color: var(--Text-color-text-placeholder);
   pointer-events: none;
+`
+
+const ClearIconWrapper = styled.span`
+  position: absolute;
+  inset-inline-start: 8px;
+  display: flex;
+`
+
+const ClearIcon = styled(X)`
+  color: var(--background);
+  cursor: pointer;
+  background: var(--icon-background);
+  border-radius: 50%;
+  padding: 2px;
+
+  &:hover {
+    background: var(--text-color);
+  }
 `
 
 const TopSection = styled.div`

@@ -37,6 +37,10 @@ function DeadlineCell({
 }: DeadlineCellProps) {
 	const [isOpen, setIsOpen] = useState(false)
 
+	const isRollingType = deadlineType === DeadlineType.ROLLING
+	const isDateType = deadlineType === DeadlineType.DATE
+	const canHaveDate = isDateType || isRollingType
+
 	function handleOptionClick(type: DeadlineType) {
 		onDeadlineTypeChange(type)
 		if (!TYPES_WITH_CALENDAR.includes(type)) {
@@ -60,24 +64,19 @@ function DeadlineCell({
 			<Popover open={isOpen} onOpenChange={setIsOpen}>
 				<PopoverTrigger asChild>
 					<DeadlineTrigger>
-						{!deadlineType ? (
-							<PlaceholderText>{`תג"ב`}</PlaceholderText>
-						) : deadlineType === DeadlineType.IMMEDIATE ? (
-							<DeadlineTag $type={DeadlineType.IMMEDIATE}>
-								{DEADLINE_LABELS[DeadlineType.IMMEDIATE]}
-							</DeadlineTag>
-						) : deadlineType === DeadlineType.ROLLING ? (
-							<DisplayRow>
-								<DeadlineTag $type={DeadlineType.ROLLING}>
-									{DEADLINE_LABELS[DeadlineType.ROLLING]}
-								</DeadlineTag>
-								{dueDate && <DateText>{formatDateShort(dueDate)}</DateText>}
-							</DisplayRow>
-						) : dueDate ? (
-							<DateText>{formatDateShort(dueDate)}</DateText>
-						) : (
-							<PlaceholderText>{`תג"ב`}</PlaceholderText>
-						)}
+						<DisplayRow>
+							{!deadlineType || (isDateType && !dueDate) ? (
+								<PlaceholderText>{`תג"ב`}</PlaceholderText>
+							) : (
+								!isDateType && (
+									<DeadlineTag $type={deadlineType}>
+										{DEADLINE_LABELS[deadlineType]}
+									</DeadlineTag>
+								)
+							)}
+
+							{dueDate && <DateText>{formatDateShort(dueDate)}</DateText>}
+						</DisplayRow>
 					</DeadlineTrigger>
 				</PopoverTrigger>
 				<DeadlineDropdownContent sideOffset={4}>
@@ -99,10 +98,7 @@ function DeadlineCell({
 						<DatePickerPopover
 							mode={CalendarMode.Single}
 							hasConfirm
-							open={
-								deadlineType === DeadlineType.DATE ||
-								deadlineType === DeadlineType.ROLLING
-							}
+							open={canHaveDate}
 							value={dueDate ?? undefined}
 							side="left"
 							sideOffset={12}
@@ -112,15 +108,13 @@ function DeadlineCell({
 							triggerButton={() => <HiddenAnchor />}
 							header={() => (
 								<PopoverHeaderText>
-									{deadlineType === DeadlineType.ROLLING
-										? "עד (אופציונלי)"
-										: "בחר תאריך להנחיה"}
+									{isRollingType ? "עד (אופציונלי)" : "בחר תאריך להנחיה"}
 								</PopoverHeaderText>
 							)}
 							footer={({ onConfirm }) => (
 								<PopoverFooter>
 									<SetButton onClick={onConfirm}>הגדר</SetButton>
-									{deadlineType === DeadlineType.ROLLING && (
+									{canHaveDate && (
 										<SetWithoutDateButton onClick={handleSetWithoutDate}>
 											הגדר ללא תאריך
 										</SetWithoutDateButton>

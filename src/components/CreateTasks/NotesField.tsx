@@ -177,6 +177,7 @@ const StyledEditorContent = styled(EditorContent)`
     outline: none;
     box-sizing: border-box;
     overflow-y: auto;
+    overflow-wrap: anywhere;
 
     &:focus {
       border-color: #4096ff;

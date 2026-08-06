@@ -130,7 +130,11 @@ function CreateDiscussionModal({
 			: !!values.attachment
 	const alreadyExtracted = source?.extractionStatus != null
 	const isAiExtractDisabled =
-		isDiscussionIncomplete || !hasAttachment || alreadyExtracted
+		isDiscussionIncomplete ||
+		!hasAttachment ||
+		alreadyExtracted ||
+		isCreateSource ||
+		isUpdateSource
 
 	// ─── Handlers ─────────────────────────────────────────────────────────────
 

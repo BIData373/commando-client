@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Link, type LinkProps } from "@tanstack/react-router"
+import { createLink, Link, type LinkProps } from "@tanstack/react-router"
 import { ChevronDown } from "lucide-react"
 import {
 	DropdownMenu,
@@ -27,9 +27,9 @@ export const ArchiveDropdown = ({
 	return (
 		<NavigationMenuItem>
 			<SectionButton $active={isActive}>
-				<SectionLinkBase>
-					<Link {...currentRoute}>{isArchive ? "ארכיון" : "הנחיות"}</Link>
-				</SectionLinkBase>
+				<SectionLink {...currentRoute}>
+					{isArchive ? "ארכיון" : "הנחיות"}
+				</SectionLink>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<ChevronButton>
@@ -63,7 +63,7 @@ const SectionButton = styled.div<{ $active: boolean }>`
   }
 `
 
-const SectionLinkBase = styled(Link)`
+const SectionLinkBase = styled.a`
   && {
     display: flex;
     align-items: center;
@@ -82,6 +82,8 @@ const SectionLinkBase = styled(Link)`
     }
   }
 `
+
+const SectionLink = createLink(SectionLinkBase)
 
 const ChevronButton = styled.button`
   display: flex;

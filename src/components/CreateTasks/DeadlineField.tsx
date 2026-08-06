@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Calendar as CalendarIcon } from "lucide-react"
+import { Calendar as CalendarIcon, X as ClearIcon } from "lucide-react"
 import { useState } from "react"
 import { DeadlineType } from "src/api/model"
 import { formatDate } from "src/functions/date-utils"
@@ -30,6 +30,11 @@ function DeadlineField({
 		const date = value instanceof Date ? value : undefined
 		onDateChange(date ?? null)
 		setIsDateOpen(false)
+	}
+
+	function handleClearDate(e: React.MouseEvent) {
+		e.stopPropagation()
+		onDateChange(null)
 	}
 
 	const showDatePicker = deadlineType !== DeadlineType.IMMEDIATE
@@ -73,7 +78,13 @@ function DeadlineField({
 								<DatePickerText $hasValue={!!dueDate}>
 									{dueDate ? formatDate(dueDate) : "בחר תאריך"}
 								</DatePickerText>
-								<CalendarIcon size={18} />
+								{dueDate ? (
+									<ClearButton onClick={handleClearDate}>
+										<ClearIcon size={14} />
+									</ClearButton>
+								) : (
+									<CalendarIcon size={18} />
+								)}
 							</DatePickerButton>
 						</PopoverTrigger>
 						<DatePopoverContent align="start" sideOffset={4}>
@@ -190,6 +201,18 @@ const DatePickerButton = styled.button`
 
   &:hover {
     border-color: #4096ff;
+  }
+`
+
+const ClearButton = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color-400);
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--text-color-2);
   }
 `
 

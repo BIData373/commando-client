@@ -47,7 +47,7 @@ function TaskDetailPanel({
 		flagged,
 		deadlineType,
 		dueDate,
-		createdAt,
+		updatedAt,
 		notes,
 		source,
 		tags,
@@ -205,8 +205,8 @@ function TaskDetailPanel({
 										<History size={16} />
 									</HistoryButton> */}
 								<MetaText>
-									{formatMinutesHours(createdAt)} -{" "}
-									{formatDateMonthYear(createdAt)}
+									{formatMinutesHours(updatedAt)} -{" "}
+									{formatDateMonthYear(updatedAt)}
 								</MetaText>
 							</CreatedGroup>
 						</MetaRow>
@@ -247,9 +247,11 @@ function TaskDetailPanel({
 												</PencilButton>
 											)}
 											<SourceName>{source.name}</SourceName>
-											<SourceDate>
-												{formatDateMonthYear(source.date)}
-											</SourceDate>
+											{source.date && (
+												<SourceDate>
+													{formatDateMonthYear(source.date)}
+												</SourceDate>
+											)}
 										</SourceRow>
 										<InfoAttachment>
 											{source.attachmentKey && (
@@ -528,10 +530,9 @@ const DividerText = styled.span`
 
 const InfoGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 24px;
   width: 100%;
-  justify-items: start;
 `
 
 const InfoBlock = styled.div`
@@ -539,6 +540,7 @@ const InfoBlock = styled.div`
   flex-direction: column;
   gap: 8px;
   align-items: flex-start;
+  min-width: 0;
 `
 
 const TagsRow = styled.div`
@@ -562,9 +564,10 @@ const TagChip = styled.span`
 
 const SourceRow = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   min-width: 0;
+  width: 100%;
 `
 
 const InfoAttachment = styled.div`
@@ -609,9 +612,9 @@ const SourceName = styled.span`
   font-weight: 400;
   line-height: 22px;
   color: var(--sea-ink);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: break-word;
+  flex: 1;
   min-width: 0;
 `
 
@@ -668,6 +671,8 @@ const ChatLabel = styled.span`
 `
 
 const NotesText = styled.div`
+  width: 100%;
+  overflow-wrap: break-word;
   font-size: var(--fs-btn);
   line-height: 20px;
   color: var(--sea-ink-soft);
