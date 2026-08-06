@@ -46,7 +46,7 @@ function TaskDetailPanel({
 		flagged,
 		deadlineType,
 		dueDate,
-		createdAt,
+		updatedAt,
 		notes,
 		source,
 		tags,
@@ -202,8 +202,8 @@ function TaskDetailPanel({
 										<History size={16} />
 									</HistoryButton> */}
 								<MetaText>
-									{formatMinutesHours(createdAt)} -{" "}
-									{formatDateMonthYear(createdAt)}
+									{formatMinutesHours(updatedAt)} -{" "}
+									{formatDateMonthYear(updatedAt)}
 								</MetaText>
 							</CreatedGroup>
 						</MetaRow>
