@@ -8,4 +8,8 @@
 
 export type ListTagsParams = {
 	workspaceId: number
+	/**
+	 * @nullable
+	 */
+	isArchived?: boolean | null
 }

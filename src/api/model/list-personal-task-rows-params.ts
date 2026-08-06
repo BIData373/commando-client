@@ -6,8 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export type ListAssigneesParams = {
-	workspaceId: number
+export type ListPersonalTaskRowsParams = {
 	/**
 	 * @nullable
 	 */

@@ -10,6 +10,8 @@ import type { PermissionType } from "./permission-type"
 
 export interface UpsertPermissionDto {
 	workspaceId: number
+	/** @nullable */
+	isArchived?: boolean | null
 	upn: string
 	/** @nullable */
 	info?: GetUserInfoDto | null

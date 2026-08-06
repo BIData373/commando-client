@@ -7,168 +7,19 @@
  */
 
 import type {
-	DataTag,
-	DefinedInitialDataOptions,
-	DefinedUseQueryResult,
 	MutationFunction,
 	QueryClient,
-	QueryFunction,
-	QueryKey,
-	UndefinedInitialDataOptions,
 	UseMutationOptions,
 	UseMutationResult,
-	UseQueryOptions,
-	UseQueryResult,
 } from "@tanstack/react-query"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import type { ErrorType } from "../../axios"
 
 import { sendRequest } from "../../axios"
 import type {
-	TaskRowWithWorkspaceDto,
 	ToggleWorkspaceTaskArchiveParams,
 	ToggleWorkspaceTaskArchivePathParameters,
 } from "../model"
-
-export const listWorkspaceArchivedTasks = (signal?: AbortSignal) => {
-	return sendRequest<TaskRowWithWorkspaceDto[]>({
-		url: `/archived-workspace-assignee-task`,
-		method: "GET",
-		signal,
-	})
-}
-
-export const getListWorkspaceArchivedTasksQueryKey = () => {
-	return [`/archived-workspace-assignee-task`] as const
-}
-
-export const getListWorkspaceArchivedTasksQueryOptions = <
-	TData = Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>,
-	TError = ErrorType<unknown>,
->(options?: {
-	query?: Partial<
-		UseQueryOptions<
-			Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>,
-			TError,
-			TData
-		>
-	>
-}) => {
-	const { query: queryOptions } = options ?? {}
-
-	const queryKey =
-		queryOptions?.queryKey ?? getListWorkspaceArchivedTasksQueryKey()
-
-	const queryFn: QueryFunction<
-		Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>
-	> = ({ signal }) => listWorkspaceArchivedTasks(signal)
-
-	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-		Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>,
-		TError,
-		TData
-	> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListWorkspaceArchivedTasksQueryResult = NonNullable<
-	Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>
->
-export type ListWorkspaceArchivedTasksQueryError = ErrorType<unknown>
-
-export function useListWorkspaceArchivedTasks<
-	TData = Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>,
-	TError = ErrorType<unknown>,
->(
-	options: {
-		query: Partial<
-			UseQueryOptions<
-				Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>,
-				TError,
-				TData
-			>
-		> &
-			Pick<
-				DefinedInitialDataOptions<
-					Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>,
-					TError,
-					Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>
-				>,
-				"initialData"
-			>
-	},
-	queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>
-}
-export function useListWorkspaceArchivedTasks<
-	TData = Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>,
-	TError = ErrorType<unknown>,
->(
-	options?: {
-		query?: Partial<
-			UseQueryOptions<
-				Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>,
-				TError,
-				TData
-			>
-		> &
-			Pick<
-				UndefinedInitialDataOptions<
-					Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>,
-					TError,
-					Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>
-				>,
-				"initialData"
-			>
-	},
-	queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>
-}
-export function useListWorkspaceArchivedTasks<
-	TData = Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>,
-	TError = ErrorType<unknown>,
->(
-	options?: {
-		query?: Partial<
-			UseQueryOptions<
-				Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>,
-				TError,
-				TData
-			>
-		>
-	},
-	queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>
-}
-
-export function useListWorkspaceArchivedTasks<
-	TData = Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>,
-	TError = ErrorType<unknown>,
->(
-	options?: {
-		query?: Partial<
-			UseQueryOptions<
-				Awaited<ReturnType<typeof listWorkspaceArchivedTasks>>,
-				TError,
-				TData
-			>
-		>
-	},
-	queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>
-} {
-	const queryOptions = getListWorkspaceArchivedTasksQueryOptions(options)
-
-	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-		TData,
-		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> }
-
-	return { ...query, queryKey: queryOptions.queryKey }
-}
 
 export const toggleWorkspaceTaskArchive = (
 	{ id }: ToggleWorkspaceTaskArchivePathParameters,

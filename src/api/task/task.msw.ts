@@ -776,6 +776,10 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			editable: faker.datatype.boolean(),
 		})),
+		archivedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			undefined,
+		]),
 	}))
 
 export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
@@ -1329,6 +1333,10 @@ export const getListPersonalTaskRowsResponseMock =
 				description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				editable: faker.datatype.boolean(),
 			})),
+			archivedAt: faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				undefined,
+			]),
 			workspace: {
 				createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				createdBy: faker.number.float({ fractionDigits: 2 }),
@@ -1366,7 +1374,6 @@ export const getListPersonalTaskRowsResponseMock =
 					Object.values(PermissionType),
 				),
 			},
-			archivedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		}))
 
 export const getGetTaskResponseMock = (

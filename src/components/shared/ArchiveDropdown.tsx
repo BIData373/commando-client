@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { createLink, Link, type NavigateOptions } from "@tanstack/react-router"
-import { Archive, ChevronDown } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import {
 	DropdownMenu,
 	DropdownMenuContent,

@@ -8,4 +8,8 @@
 
 export type ListSourcesParams = {
 	workspaceId: number
+	/**
+	 * @nullable
+	 */
+	isArchived?: boolean | null
 }

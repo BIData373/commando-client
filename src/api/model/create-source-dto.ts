@@ -8,6 +8,8 @@
 
 export interface CreateSourceDto {
 	workspaceId: number
+	/** @nullable */
+	isArchived?: boolean | null
 	name: string
 	/** @nullable */
 	date?: Date | null

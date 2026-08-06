@@ -15,6 +15,8 @@ import type {
 } from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
+import { buildFilterOptionsMap } from "src/functions/filter-utils"
+import { type TaskArchiveEntry, useTaskColumns } from "src/hooks/useTaskColumns"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { getEmptyState } from "src/utils/empty-state-utils"
 import {
@@ -22,8 +24,6 @@ import {
 	HAS_ASSIGNEE_DATA_ATTR,
 	TASK_ROW_ID_SEPARATOR,
 } from "src/utils/task-table-utils"
-import { buildFilterOptionsMap } from "../../functions/filter-utils"
-import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
@@ -48,8 +48,8 @@ interface TaskTableProps<TTask extends TaskRowDto> {
 	isLoading?: boolean
 	hideStatusAction?: boolean
 	showActionsColumn?: boolean
-	onArchive?: (ids: number[]) => void
-	onUnarchive?: (ids: number[]) => void
+	onArchive?: (tasks: TaskArchiveEntry[]) => void
+	onUnarchive?: (tasks: TaskArchiveEntry[]) => void
 	onChangeSuccess?(): void
 }
 
@@ -194,7 +194,12 @@ function TaskTable<TTask extends TaskRowDto>({
 
 	function handleBulkArchive() {
 		if (onArchive) {
-			onArchive(selectedTaskIds)
+			onArchive(
+				selectedTaskIds.map((id) => ({
+					id,
+					assigneeId: tasks.find((t) => t.id === id)?.assignee?.id,
+				})),
+			)
 		} else {
 			removeTasks(selectedTaskIds)
 		}

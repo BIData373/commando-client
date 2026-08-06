@@ -9,6 +9,8 @@ import type { CreateUserDto } from "./create-user-dto"
 
 export interface CreateAssigneeDto {
 	workspaceId: number
+	/** @nullable */
+	isArchived?: boolean | null
 	name: string
 	color: string
 	/** @nullable */

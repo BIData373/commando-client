@@ -8,5 +8,7 @@
 
 export interface UpdateTagDto {
 	workspaceId?: number
+	/** @nullable */
+	isArchived?: boolean | null
 	name?: string
 }

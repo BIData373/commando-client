@@ -16,6 +16,7 @@ import {
 	useListTaskRows,
 } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
 import {
@@ -138,9 +139,9 @@ function TasksLayout({
 		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
 	}
 
-	function handleArchive(ids: number[]) {
-		ids.forEach((id) => {
-			toggleArchive({ pathParams: { id } })
+	function handleArchive(entries: TaskArchiveEntry[]) {
+		entries.forEach(({ id, assigneeId }) => {
+			toggleArchive({ pathParams: { id }, params: { assigneeId } })
 		})
 	}
 

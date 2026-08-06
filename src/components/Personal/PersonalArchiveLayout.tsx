@@ -1,12 +1,11 @@
 import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
-import {
-	useListArchivedTasks,
-	useToggleUserTaskArchive,
-} from "src/api/archived-user-assignee-task/archived-user-assignee-task"
+import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
+import { useListPersonalTaskRows } from "src/api/task/task"
 import { formatDateShort } from "src/functions/date-utils"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
 import WorkspaceCell from "../shared/WorkspaceCell"
@@ -48,20 +47,22 @@ const ARCHIVE_EXTRA_COLUMNS: ColumnDef<TaskRowWithWorkspaceDto>[] = [
 			row: {
 				original: { archivedAt },
 			},
-		}) => <DateCell>{formatDateShort(new Date(archivedAt))}</DateCell>,
+		}) => <DateCell>{archivedAt && formatDateShort(archivedAt)}</DateCell>,
 	},
 ]
 
 function PersonalArchiveLayout() {
 	const { columnOrder, hiddenColumns } = useTasksFilters()
 
-	const { data: archives = [], isLoading, queryKey } = useListArchivedTasks()
+	const {
+		data: tasks = [],
+		isLoading,
+		queryKey,
+	} = useListPersonalTaskRows({ isArchived: true })
 
 	const { mutate: toggleArchive } = useToggleUserTaskArchive({
 		mutation: { onSuccess: handleChangeSuccess },
 	})
-
-	const tasks = archives
 
 	const filteredTasks = useFilteredTasks(tasks)
 
@@ -69,11 +70,9 @@ function PersonalArchiveLayout() {
 		invalidateQueries([queryKey])
 	}
 
-	function handleUnarchive(ids: number[]) {
-		ids.forEach((id) => {
-			toggleArchive({
-				pathParams: { id },
-			})
+	function handleUnarchive(entries: TaskArchiveEntry[]) {
+		entries.forEach(({ id, assigneeId }) => {
+			toggleArchive({ pathParams: { id }, params: { assigneeId } })
 		})
 	}
 

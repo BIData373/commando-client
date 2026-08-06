@@ -1,14 +1,14 @@
 import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
-import {
-	getListWorkspaceArchivedTasksQueryKey,
-	useListWorkspaceArchivedTasks,
-	useToggleWorkspaceTaskArchive,
-} from "src/api/archived-workspace-assignee/archived-workspace-assignee"
-import type { TaskRowWithWorkspaceDto } from "src/api/model"
-import { sendRequest } from "src/axios"
+import { without } from "lodash"
+import { useMemo } from "react"
+import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assignee/archived-workspace-assignee"
+import type { TaskRowDto } from "src/api/model"
+import { useGetMyPermission } from "src/api/permission/permission"
+import { useListTaskRows } from "src/api/task/task"
 import { formatDateShort } from "src/functions/date-utils"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
@@ -17,7 +17,7 @@ import { ColumnHeaderWithActions } from "./ColumnHeaderWithActions"
 import { TaskFilters } from "./TaskFilters"
 import { TaskTable } from "./TaskTable"
 
-const ARCHIVE_EXTRA_COLUMNS: ColumnDef<TaskRowWithWorkspaceDto>[] = [
+const ARCHIVE_EXTRA_COLUMNS: ColumnDef<TaskRowDto>[] = [
 	{
 		id: "archivedAt",
 		header: ({ column }) => (
@@ -30,7 +30,9 @@ const ARCHIVE_EXTRA_COLUMNS: ColumnDef<TaskRowWithWorkspaceDto>[] = [
 			row: {
 				original: { archivedAt },
 			},
-		}) => <DateCell>{formatDateShort(new Date(archivedAt))}</DateCell>,
+		}) => (
+			<DateCell>{archivedAt && formatDateShort(new Date(archivedAt))}</DateCell>
+		),
 	},
 ]
 
@@ -45,63 +47,56 @@ function WorkspaceArchiveLayout() {
 		data: tasks = [],
 		isLoading,
 		queryKey,
-	} = useListWorkspaceArchivedTasks({
-		query: {
-			queryKey: [...getListWorkspaceArchivedTasksQueryKey(), { workspaceId }],
-			queryFn: ({ signal }) =>
-				sendRequest<TaskRowWithWorkspaceDto[]>({
-					url: "/archived-workspace-assignee-task",
-					method: "GET",
-					params: { workspaceId },
-					signal,
-				}),
-		},
-	})
+	} = useListTaskRows({ workspaceId, isArchived: true })
+
+	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
 	const { mutate: toggleArchive } = useToggleWorkspaceTaskArchive({
-		mutation: {
-			onSuccess: handleChangeSuccess,
-			mutationFn: ({ pathParams }) =>
-				sendRequest<void>({
-					url: `/archived-workspace-assignee-task/${pathParams.id}`,
-					method: "PATCH",
-					params: { workspaceId },
-				}),
-		},
+		mutation: { onSuccess: handleChangeSuccess },
 	})
 
 	const filteredTasks = useFilteredTasks(tasks)
+
+	const noWorkspaceColumnOrder = useMemo(
+		() => without(columnOrder, "workspace") as (keyof TaskRowDto)[],
+		[columnOrder],
+	)
+
+	const noWorkspaceHiddenColumns = useMemo(
+		() => new Set([...hiddenColumns].filter((item) => item !== "workspace")),
+		[hiddenColumns],
+	)
 
 	function handleChangeSuccess() {
 		invalidateQueries([queryKey])
 	}
 
-	function handleUnarchive(ids: number[]) {
-		ids.forEach((id) => {
-			toggleArchive({ pathParams: { id } })
+	function handleUnarchive(entries: TaskArchiveEntry[]) {
+		entries.forEach(({ id, assigneeId }) => {
+			toggleArchive({ pathParams: { id }, params: { assigneeId } })
 		})
 	}
 
 	return (
 		<TooltipProvider>
 			<PageRoot>
-				<TaskFilters
+				<TaskFilters<TaskRowDto>
 					allTaskRows={tasks}
 					filteredTasks={filteredTasks}
-					columnOrder={columnOrder}
-					hiddenColumns={hiddenColumns}
+					columnOrder={noWorkspaceColumnOrder}
+					hiddenColumns={noWorkspaceHiddenColumns}
 					extraColumns={ARCHIVE_EXTRA_COLUMNS}
 					extraColumnsMeta={[{ id: "archivedAt", label: "הועבר לארכיון" }]}
 					exportFilePrefix="ארכיון סביבה"
 				/>
-				<TaskTable<TaskRowWithWorkspaceDto>
+				<TaskTable<TaskRowDto>
 					tasks={filteredTasks}
 					isLoading={isLoading}
 					hideStatusAction
 					showActionsColumn={true}
-					columnOrder={columnOrder}
-					hiddenColumns={hiddenColumns}
-					getPermissionType={(task) => task?.workspace?.permissionType}
+					columnOrder={noWorkspaceColumnOrder}
+					hiddenColumns={noWorkspaceHiddenColumns}
+					getPermissionType={() => myPermission?.type}
 					onChangeSuccess={handleChangeSuccess}
 					extraColumns={ARCHIVE_EXTRA_COLUMNS}
 					onUnarchive={handleUnarchive}

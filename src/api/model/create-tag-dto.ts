@@ -8,5 +8,7 @@
 
 export interface CreateTagDto {
 	workspaceId: number
+	/** @nullable */
+	isArchived?: boolean | null
 	name: string
 }

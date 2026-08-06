@@ -7,167 +7,19 @@
  */
 
 import type {
-	DataTag,
-	DefinedInitialDataOptions,
-	DefinedUseQueryResult,
 	MutationFunction,
 	QueryClient,
-	QueryFunction,
-	QueryKey,
-	UndefinedInitialDataOptions,
 	UseMutationOptions,
 	UseMutationResult,
-	UseQueryOptions,
-	UseQueryResult,
 } from "@tanstack/react-query"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import type { ErrorType } from "../../axios"
 
 import { sendRequest } from "../../axios"
 import type {
-	TaskRowWithWorkspaceDto,
 	ToggleUserTaskArchiveParams,
 	ToggleUserTaskArchivePathParameters,
 } from "../model"
-
-export const listArchivedTasks = (signal?: AbortSignal) => {
-	return sendRequest<TaskRowWithWorkspaceDto[]>({
-		url: `/archived-user-assignee-task`,
-		method: "GET",
-		signal,
-	})
-}
-
-export const getListArchivedTasksQueryKey = () => {
-	return [`/archived-user-assignee-task`] as const
-}
-
-export const getListArchivedTasksQueryOptions = <
-	TData = Awaited<ReturnType<typeof listArchivedTasks>>,
-	TError = ErrorType<unknown>,
->(options?: {
-	query?: Partial<
-		UseQueryOptions<
-			Awaited<ReturnType<typeof listArchivedTasks>>,
-			TError,
-			TData
-		>
-	>
-}) => {
-	const { query: queryOptions } = options ?? {}
-
-	const queryKey = queryOptions?.queryKey ?? getListArchivedTasksQueryKey()
-
-	const queryFn: QueryFunction<
-		Awaited<ReturnType<typeof listArchivedTasks>>
-	> = ({ signal }) => listArchivedTasks(signal)
-
-	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-		Awaited<ReturnType<typeof listArchivedTasks>>,
-		TError,
-		TData
-	> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListArchivedTasksQueryResult = NonNullable<
-	Awaited<ReturnType<typeof listArchivedTasks>>
->
-export type ListArchivedTasksQueryError = ErrorType<unknown>
-
-export function useListArchivedTasks<
-	TData = Awaited<ReturnType<typeof listArchivedTasks>>,
-	TError = ErrorType<unknown>,
->(
-	options: {
-		query: Partial<
-			UseQueryOptions<
-				Awaited<ReturnType<typeof listArchivedTasks>>,
-				TError,
-				TData
-			>
-		> &
-			Pick<
-				DefinedInitialDataOptions<
-					Awaited<ReturnType<typeof listArchivedTasks>>,
-					TError,
-					Awaited<ReturnType<typeof listArchivedTasks>>
-				>,
-				"initialData"
-			>
-	},
-	queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>
-}
-export function useListArchivedTasks<
-	TData = Awaited<ReturnType<typeof listArchivedTasks>>,
-	TError = ErrorType<unknown>,
->(
-	options?: {
-		query?: Partial<
-			UseQueryOptions<
-				Awaited<ReturnType<typeof listArchivedTasks>>,
-				TError,
-				TData
-			>
-		> &
-			Pick<
-				UndefinedInitialDataOptions<
-					Awaited<ReturnType<typeof listArchivedTasks>>,
-					TError,
-					Awaited<ReturnType<typeof listArchivedTasks>>
-				>,
-				"initialData"
-			>
-	},
-	queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>
-}
-export function useListArchivedTasks<
-	TData = Awaited<ReturnType<typeof listArchivedTasks>>,
-	TError = ErrorType<unknown>,
->(
-	options?: {
-		query?: Partial<
-			UseQueryOptions<
-				Awaited<ReturnType<typeof listArchivedTasks>>,
-				TError,
-				TData
-			>
-		>
-	},
-	queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>
-}
-
-export function useListArchivedTasks<
-	TData = Awaited<ReturnType<typeof listArchivedTasks>>,
-	TError = ErrorType<unknown>,
->(
-	options?: {
-		query?: Partial<
-			UseQueryOptions<
-				Awaited<ReturnType<typeof listArchivedTasks>>,
-				TError,
-				TData
-			>
-		>
-	},
-	queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-	queryKey: DataTag<QueryKey, TData, TError>
-} {
-	const queryOptions = getListArchivedTasksQueryOptions(options)
-
-	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-		TData,
-		TError
-	> & { queryKey: DataTag<QueryKey, TData, TError> }
-
-	return { ...query, queryKey: queryOptions.queryKey }
-}
 
 export const toggleUserTaskArchive = (
 	{ id }: ToggleUserTaskArchivePathParameters,
