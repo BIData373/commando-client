@@ -51,7 +51,7 @@ export default function WorkspaceCard({
 
 			<Tooltip>
 				<TooltipTrigger asChild>
-					<TitleText>{title}</TitleText>
+					<TitleText dir="auto">{title}</TitleText>
 				</TooltipTrigger>
 				<TooltipContent>{title}</TooltipContent>
 			</Tooltip>
@@ -118,7 +118,7 @@ const WorkspaceInitials = styled(MesibaAvatarFallback)`
   font-size: var(--fs-heading-1);
 `
 
-const TitleText = styled.span.attrs({ dir: "auto" })`
+const TitleText = styled.span`
   font-size: var(--fs-xl);
   font-weight: 400;
   line-height: 28px;
