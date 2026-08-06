@@ -118,7 +118,7 @@ const WorkspaceInitials = styled(MesibaAvatarFallback)`
   font-size: var(--fs-heading-1);
 `
 
-const TitleText = styled.span`
+const TitleText = styled.span.attrs({ dir: "auto" })`
   font-size: var(--fs-xl);
   font-weight: 400;
   line-height: 28px;
