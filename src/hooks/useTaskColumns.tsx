@@ -19,7 +19,7 @@ import {
 	DEFAULT_COLUMN_ORDER,
 	TASK_COLUMN_DEFINITIONS,
 } from "src/utils/task-table-utils"
-import DeadlineTag, { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
+import { DeadlineTypeTag } from "../components/shared/DeadlineTypeTag"
 import FlagIcon from "../components/shared/FlagIcon"
 import HighlightMatch from "../components/shared/HighlightMatch"
 import { AssigneeCell } from "../components/Tasks/AssigneeCell"
@@ -35,6 +35,7 @@ import {
 	TooltipTrigger,
 } from "../components/ui/tooltip"
 import { formatDateShort } from "../functions/date-utils"
+import { getDeadlineDisplayDate } from "../utils/deadline-utils"
 
 interface SelectModeConfig<TTask extends TaskRowDto> {
 	enabled: boolean
@@ -280,7 +281,13 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				...TASK_COLUMN_DEFINITIONS.deadlineType,
 				cell: ({
 					row: {
-						original: { deadlineType: rawDeadlineType, dueDate, status },
+						original: {
+							deadlineType: rawDeadlineType,
+							dueDate,
+							status,
+							source,
+							createdAt,
+						},
 					},
 				}) => {
 					const deadlineType = rawDeadlineType
@@ -296,16 +303,19 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					const isApproaching =
 						!isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
 
+					const displayDate = getDeadlineDisplayDate(
+						deadlineType,
+						dueDate,
+						source,
+						createdAt,
+					)
+
 					return (
 						<DeadlineCell>
-							{deadlineType !== DeadlineType.DATE && (
-								<DeadlineTag $type={deadlineType}>
-									{DEADLINE_LABELS[deadlineType]}
-								</DeadlineTag>
-							)}
-							{dueDate && (
+							<DeadlineTypeTag type={deadlineType} />
+							{displayDate && (
 								<DeadlineDateText>
-									{formatDateShort(new Date(dueDate))}
+									{formatDateShort(new Date(displayDate))}
 								</DeadlineDateText>
 							)}
 							{status?.type !== WorkspaceStatusType.COMPLETED &&
