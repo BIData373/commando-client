@@ -7,6 +7,10 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import type { UpdateWorkspaceDto } from "src/api/model"
 import {
+	getListPersonalTaskRowsQueryKey,
+	getListTaskRowsQueryKey,
+} from "src/api/task/task"
+import {
 	getGetPermittedWorkspacesQueryKey,
 	getListWorkspacesQueryKey,
 	useUpdateWorkspace,
@@ -35,12 +39,16 @@ export function SettingsForm() {
 		setWorkspace,
 	} = useWorkspace()
 
+	const workspaceId = id
+
 	const { mutateAsync: updateSettings } = useUpdateWorkspace({
 		mutation: {
 			onSuccess(data) {
 				invalidateQueries([
 					getListWorkspacesQueryKey(),
 					getGetPermittedWorkspacesQueryKey(),
+					getListPersonalTaskRowsQueryKey(),
+					getListTaskRowsQueryKey({ workspaceId }),
 				])
 				setWorkspace(data)
 			},

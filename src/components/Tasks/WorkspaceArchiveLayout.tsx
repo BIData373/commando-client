@@ -1,11 +1,12 @@
 import styled from "@emotion/styled"
+import { Outlet, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { without } from "lodash"
 import { useMemo } from "react"
 import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assignee/archived-workspace-assignee"
 import type { TaskRowDto } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
-import { useListTaskRows } from "src/api/task/task"
+import { getListTaskRowsQueryKey, useListTaskRows } from "src/api/task/task"
 import { formatDateShort } from "src/functions/date-utils"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
@@ -37,10 +38,11 @@ const ARCHIVE_EXTRA_COLUMNS: ColumnDef<TaskRowDto>[] = [
 ]
 
 function WorkspaceArchiveLayout() {
+	const navigate = useNavigate()
 	const { columnOrder, hiddenColumns } = useTasksFilters()
 
 	const {
-		workspace: { id: workspaceId },
+		workspace: { id: workspaceId, urlName },
 	} = useWorkspace()
 
 	const {
@@ -68,12 +70,19 @@ function WorkspaceArchiveLayout() {
 	)
 
 	function handleChangeSuccess() {
-		invalidateQueries([queryKey])
+		invalidateQueries([queryKey, getListTaskRowsQueryKey({ workspaceId })])
 	}
 
 	function handleUnarchive(entries: TaskArchiveEntry[]) {
 		entries.forEach(({ id, assigneeId }) => {
 			toggleArchive({ pathParams: { id }, params: { assigneeId } })
+		})
+	}
+
+	function handleOpenTask(taskId: number) {
+		navigate({
+			to: "/workspace/$urlName/archive/task/$taskId",
+			params: { urlName, taskId: String(taskId) },
 		})
 	}
 
@@ -100,8 +109,10 @@ function WorkspaceArchiveLayout() {
 					onChangeSuccess={handleChangeSuccess}
 					extraColumns={ARCHIVE_EXTRA_COLUMNS}
 					onUnarchive={handleUnarchive}
+					onClick={handleOpenTask}
 				/>
 			</PageRoot>
+			<Outlet />
 		</TooltipProvider>
 	)
 }

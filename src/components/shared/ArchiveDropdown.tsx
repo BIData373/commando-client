@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { createLink, Link, type NavigateOptions } from "@tanstack/react-router"
+import { Link, type LinkProps } from "@tanstack/react-router"
 import { ChevronDown } from "lucide-react"
 import {
 	DropdownMenu,
@@ -10,8 +10,8 @@ import {
 import { NavigationMenuItem } from "../ui/navigation-menu"
 
 interface ArchiveDropdownProps {
-	tasksRoute: NavigateOptions
-	archiveRoute: NavigateOptions
+	tasksRoute: LinkProps
+	archiveRoute: LinkProps
 	isArchive: boolean
 	isActive: boolean
 }
@@ -26,13 +26,13 @@ export const ArchiveDropdown = ({
 
 	return (
 		<NavigationMenuItem>
-			<SectionButton>
-				<SectionLink {...currentRoute} $active={isActive}>
-					{isArchive ? "ארכיון" : "הנחיות"}
-				</SectionLink>
+			<SectionButton $active={isActive}>
+				<SectionLinkBase>
+					<Link {...currentRoute}>{isArchive ? "ארכיון" : "הנחיות"}</Link>
+				</SectionLinkBase>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<ChevronButton $active={isActive}>
+						<ChevronButton>
 							<ChevronDown size={14} />
 						</ChevronButton>
 					</DropdownMenuTrigger>
@@ -50,52 +50,54 @@ export const ArchiveDropdown = ({
 	)
 }
 
-const SectionButton = styled.div`
+const SectionButton = styled.div<{ $active: boolean }>`
   display: flex;
   align-items: center;
   direction: rtl;
+  background: ${({ $active }) => ($active ? "rgba(255,255,255,0.15)" : "transparent")};
+  border-radius: 6px;
+
+  &:hover {
+    background: rgba(255,255,255,0.1);
+    color: #C7C9CB;
+  }
 `
 
-const SectionLinkBase = styled.a<{ $active: boolean }>`
+const SectionLinkBase = styled(Link)`
   && {
     display: flex;
     align-items: center;
-    height: 32px;
-    padding-inline: 8px;
+    padding: 8px 8px;
     color: #C7C9CB;
     font-size: var(--fs-btn);
     font-weight: 400;
-    background: ${({ $active }) => ($active ? "rgba(255,255,255,0.15)" : "transparent")};
     border-start-start-radius: 6px;
     border-end-start-radius: 6px;
     white-space: nowrap;
     text-decoration: none;
+    cursor: pointer;
 
     &:hover {
       background: rgba(255,255,255,0.1);
-      color: #C7C9CB;
     }
   }
 `
 
-const SectionLink = createLink(SectionLinkBase)
-
-const ChevronButton = styled.button<{ $active: boolean }>`
+const ChevronButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 32px;
-  background: ${({ $active }) => ($active ? "rgba(255,255,255,0.15)" : "transparent")};
+  align-self: stretch;
+  padding-inline: 8px;
   border: none;
   border-start-end-radius: 6px;
   border-end-end-radius: 6px;
+  background: transparent;
   color: #C7C9CB;
   cursor: pointer;
-  padding: 0;
 
   &:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
   }
 `
 
