@@ -8,6 +8,7 @@ import {
 import emptyWorkspacesImage from "src/assets/empty-states/empty-workspace.svg"
 import noResultsFound from "src/assets/empty-states/no-results-found.svg"
 import { EmptyCardState } from "src/components/shared/EmptyCardState"
+import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
 // import NewWorkspaceButton from "./NewWorkspaceButton"
 import WorkspaceCard from "./WorkspaceCard"
 
@@ -17,8 +18,10 @@ function filterByTitle<T extends { title: string }>(items: T[], query: string) {
 }
 
 export default function SpacesContainer() {
-	const { data: allWorkspaces = [] } = useListWorkspaces()
-	const { data: myWorkspaces = [] } = useGetPermittedWorkspaces()
+	const { data: allWorkspaces = [], isLoading: isAllWorkspacesLoading } =
+		useListWorkspaces()
+	const { data: myWorkspaces = [], isLoading: isMyWorkspacesLoading } =
+		useGetPermittedWorkspaces()
 	const [searchQuery, setSearchQuery] = useState("")
 	const [activeTab, setActiveTab] = useState<"mine" | "all">("mine")
 
@@ -35,6 +38,8 @@ export default function SpacesContainer() {
 	const filteredAll = filterByTitle(allWorkspaces, searchQuery)
 
 	const displayedWorkspaces = activeTab === "mine" ? filteredMine : filteredAll
+	const isLoading =
+		activeTab === "mine" ? isMyWorkspacesLoading : isAllWorkspacesLoading
 
 	return (
 		<SpaceContainerCard>
@@ -76,7 +81,11 @@ export default function SpacesContainer() {
 				</TabsRow>
 			</TopSection>
 
-			{displayedWorkspaces.length === 0 ? (
+			{isLoading ? (
+				<LoadingSpace>
+					<LoadingSpinner />
+				</LoadingSpace>
+			) : displayedWorkspaces.length === 0 ? (
 				<EmptySpace>
 					{searchQuery ? (
 						<EmptyCardState
@@ -228,7 +237,7 @@ const Tab = styled.button<{ $active: boolean }>`
 `
 
 const WorkspacesContainer = styled.div`
-  direction: ltr;
+  direction: rtl;
   flex: 1;
   display: flex;
   flex-wrap: wrap;
@@ -236,12 +245,19 @@ const WorkspacesContainer = styled.div`
   overflow-y: auto;
   min-height: 0;
   padding-bottom: 16px;
-  justify-content: flex-end;
-  padding-right: 4px;
+  justify-content: flex-start;
+  padding-inline-end: 4px;
 `
 
 const EmptySpace = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-evenly;
+`
+
+const LoadingSpace = styled.div`
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
 `
