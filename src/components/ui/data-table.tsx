@@ -14,8 +14,10 @@ import {
   type SortingState,
   type TableMeta,
 } from '@tanstack/react-table'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import {
   Fragment,
+  memo,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -55,6 +57,69 @@ interface DataTableProps<TData> {
   emptyState?: ReactNode
   isLoading?: boolean
 }
+
+interface DataTableRowProps<TData> {
+  row: Row<TData>
+  index: number
+  isSelected: boolean
+  isHighlighted: boolean
+  rowRef?: (node: HTMLTableRowElement | null) => void
+  onCellClick?: (row: Row<TData>, columnId: string) => void
+  onRowContextMenu?: (row: Row<TData>, event: MouseEvent) => void
+  renderRowOverlay?: (row: Row<TData>) => ReactNode
+  renderRowExpansion?: (row: Row<TData>) => ReactNode
+  expansionColSpan: number
+}
+
+// Memoized so a scroll-driven re-render of DataTable (which touches every
+// currently mounted virtual row) doesn't re-run cell rendering for rows
+// whose own props haven't actually changed.
+function DataTableRowInner<TData>({
+  row,
+  index,
+  isSelected,
+  isHighlighted,
+  rowRef,
+  onCellClick,
+  onRowContextMenu,
+  renderRowOverlay,
+  renderRowExpansion,
+  expansionColSpan,
+}: DataTableRowProps<TData>) {
+  const expansionContent = renderRowExpansion?.(row)
+
+  return (
+    <Fragment>
+      <TableRow
+        ref={rowRef}
+        data-index={index}
+        data-state={isSelected ? 'selected' : undefined}
+        data-highlighted={isHighlighted ? '' : undefined}
+        onContextMenu={onRowContextMenu ? (event) => onRowContextMenu(row, event) : undefined}
+      >
+        {row.getVisibleCells().map((cell) => (
+          <TableCell
+            key={cell.id}
+            data-column-id={cell.column.id}
+            onClick={onCellClick ? () => onCellClick(row, cell.column.id) : undefined}
+          >
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </TableCell>
+        ))}
+        {renderRowOverlay?.(row)}
+      </TableRow>
+      {expansionContent != null && (
+        <tr data-expansion-row="">
+          <ExpansionCell colSpan={expansionColSpan}>
+            {expansionContent}
+          </ExpansionCell>
+        </tr>
+      )}
+    </Fragment>
+  )
+}
+
+const DataTableRow = memo(DataTableRowInner) as typeof DataTableRowInner
 
 export function DataTable<TData>({
   columns,
@@ -98,6 +163,7 @@ export function DataTable<TData>({
     meta,
   })
 
+
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(0)
 
@@ -120,23 +186,28 @@ export function DataTable<TData>({
 
   const visibleColumns = table.getVisibleLeafColumns()
 
-  // Single pass: partition columns into fixed-width and growable, summing sizes for each group
-  const { fixedTotal, growTotal, growColumns } = visibleColumns.reduce(
-    (acc, col) => {
-      const size = col.columnDef.size ?? 0
-      if (col.columnDef.meta?.grow) {
-        acc.growTotal += size
-        acc.growColumns.push(col)
-      } else {
-        acc.fixedTotal += size
-      }
-      return acc
-    },
-    { fixedTotal: 0, growTotal: 0, growColumns: [] } as {
-      fixedTotal: number
-      growTotal: number
-      growColumns: typeof visibleColumns
-    },
+  // Memoized on visibleColumns so this doesn't redo work on every
+  // scroll-driven re-render — column widths never change while scrolling.
+  const { fixedTotal, growTotal, growColumns } = useMemo(
+    () =>
+      visibleColumns.reduce(
+        (acc, col) => {
+          const size = col.columnDef.size ?? 0
+          if (col.columnDef.meta?.grow) {
+            acc.growTotal += size
+            acc.growColumns.push(col)
+          } else {
+            acc.fixedTotal += size
+          }
+          return acc
+        },
+        { fixedTotal: 0, growTotal: 0, growColumns: [] } as {
+          fixedTotal: number
+          growTotal: number
+          growColumns: typeof visibleColumns
+        },
+      ),
+    [visibleColumns],
   )
 
   const borderTotal = visibleColumns.length * 0.5
@@ -159,28 +230,55 @@ export function DataTable<TData>({
     return map
   }, [growSpace, growTotal, growColumns])
 
-  const colgroup = (
-    <colgroup>
-      {visibleColumns.map((column) => {
-        const width = growWidths.get(column.id) ?? column.columnDef.size
-        return (
-          <col
-            key={column.id}
-            style={width !== undefined ? { width: `${width}px` } : undefined}
-          />
-        )
-      })}
-    </colgroup>
+  const colgroup = useMemo(
+    () => (
+      <colgroup>
+        {visibleColumns.map((column) => {
+          const width = growWidths.get(column.id) ?? column.columnDef.size
+          return (
+            <col
+              key={column.id}
+              style={width !== undefined ? { width: `${width}px` } : undefined}
+            />
+          )
+        })}
+      </colgroup>
+    ),
+    [visibleColumns, growWidths],
   )
 
   const totalSize = fixedTotal + growTotal
 
-  const rows = table.getRowModel().rows.map((row) => ({
-    row,
-    expansionContent: renderRowExpansion?.(row),
-  }))
+  const hasExpansion = renderRowExpansion !== undefined
+
+  const tableRows = table.getRowModel().rows
+  const { getVirtualItems, getTotalSize, measureElement } = useVirtualizer({
+    count: tableRows.length,
+    getScrollElement: () => containerRef.current,
+    estimateSize: () => 44,
+    overscan: 16,
+    measureElement: (el) => {
+      let height = el.clientHeight
+      const next = el.nextElementSibling
+      if (next?.hasAttribute('data-expansion-row')) {
+        height += (next as HTMLElement).clientHeight
+      }
+      return height
+    }
+  })
+
+  // Rows render at a fixed, CSS-defined height everywhere except expandable
+  // tables. Only attach the measuring ref (ResizeObserver + live scroll
+  // correction) when row height can actually vary — otherwise it fights
+  // native momentum scrolling with pointless mid-scroll corrections.
+  const rowRef = hasExpansion ? measureElement : undefined
 
   const tableMinWidth = totalSize > 0 ? totalSize : undefined
+
+  const virtualRows = getVirtualItems()
+  const paddingTop = virtualRows.length > 0 ? virtualRows[0].start : 0
+  const paddingBottom =
+    virtualRows.length > 0 ? getTotalSize() - virtualRows[virtualRows.length - 1].end : 0
 
   return (
     <Table containerRef={containerRef} containerClassName={containerClassName} style={{ minWidth: tableMinWidth }}>
@@ -201,36 +299,31 @@ export function DataTable<TData>({
         </TableHeader>
       )}
       <TableBody>
-        {rows.length ? (
-          rows.map(({ row, expansionContent }) => (
-            <Fragment key={row.id}>
-              <TableRow
-                data-state={row.getIsSelected() ? 'selected' : undefined}
-                data-highlighted={highlightedRowIds?.has(row.id) ? '' : undefined}
-                onContextMenu={
-                  onRowContextMenu ? (event) => onRowContextMenu(row, event) : undefined
-                }
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    data-column-id={cell.column.id}
-                    onClick={onCellClick ? () => onCellClick(row, cell.column.id) : undefined}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-                {renderRowOverlay?.(row)}
-              </TableRow>
-              {expansionContent != null && (
-                <tr data-expansion-row="">
-                  <ExpansionCell colSpan={expansionColSpan ?? columns.length}>
-                    {expansionContent}
-                  </ExpansionCell>
-                </tr>
-              )}
-            </Fragment>
-          ))
+        {paddingTop > 0 && (
+          <tr>
+            <td colSpan={columns.length} style={{ height: `${paddingTop}px`, padding: 0, border: 'none' }} />
+          </tr>
+        )}
+        {virtualRows.length ? (
+          virtualRows.map((virtualRow) => {
+            const row = tableRows[virtualRow.index]
+
+            return (
+              <DataTableRow
+                key={row.id}
+                row={row}
+                index={virtualRow.index}
+                isSelected={row.getIsSelected()}
+                isHighlighted={highlightedRowIds?.has(row.id) ?? false}
+                rowRef={rowRef}
+                onCellClick={onCellClick}
+                onRowContextMenu={onRowContextMenu}
+                renderRowOverlay={renderRowOverlay}
+                renderRowExpansion={renderRowExpansion}
+                expansionColSpan={expansionColSpan ?? columns.length}
+              />
+            )
+          })
         ) : isLoading ? (
           <EmptyRow>
             <EmptyCell colSpan={columns.length}>
@@ -243,6 +336,11 @@ export function DataTable<TData>({
               {emptyState}
             </EmptyCell>
           </EmptyRow>
+        )}
+        {paddingBottom > 0 && (
+          <tr>
+            <td colSpan={columns.length} style={{ height: `${paddingBottom}px`, padding: 0, border: 'none' }} />
+          </tr>
         )}
       </TableBody>
     </Table>
