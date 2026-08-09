@@ -6,6 +6,7 @@ import { formatDate } from "src/functions/date-utils"
 import type { DatePickerValue } from "src/utils/date-utils"
 import DatePicker, { CalendarMode } from "../shared/DatePicker"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -14,6 +15,8 @@ interface DeadlineFieldProps {
 	dueDate: Date | null
 	onDeadlineTypeChange: (type: DeadlineType) => void
 	onDateChange: (date: Date | null) => void
+	isEditMode?: boolean
+	immediateDate?: Date | null
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -23,6 +26,8 @@ function DeadlineField({
 	dueDate,
 	onDeadlineTypeChange,
 	onDateChange,
+	isEditMode = false,
+	immediateDate = null,
 }: DeadlineFieldProps) {
 	const [isDateOpen, setIsDateOpen] = useState(false)
 
@@ -38,6 +43,8 @@ function DeadlineField({
 	}
 
 	const showDatePicker = deadlineType !== DeadlineType.IMMEDIATE
+	const showImmediateDate =
+		deadlineType === DeadlineType.IMMEDIATE && isEditMode
 
 	return (
 		<FormItem>
@@ -96,6 +103,16 @@ function DeadlineField({
 							/>
 						</DatePopoverContent>
 					</Popover>
+				)}
+				{showImmediateDate && immediateDate && (
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<ImmediateDateText>
+								({formatDate(immediateDate)})
+							</ImmediateDateText>
+						</TooltipTrigger>
+						<TooltipContent>תאריך מתן הנחיה</TooltipContent>
+					</Tooltip>
 				)}
 			</DeadlineRow>
 		</FormItem>
@@ -184,6 +201,15 @@ const HintText = styled.span`
   text-overflow: ellipsis;
 `
 
+const ImmediateDateText = styled.span`
+  font-size: var(--fs-base);
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--Text-color-text-placeholder);
+  white-space: nowrap;
+  cursor: default;
+`
+
 const DatePickerButton = styled.button`
   display: flex;
   align-items: center;
@@ -199,8 +225,14 @@ const DatePickerButton = styled.button`
   color: rgba(0, 0, 0, 0.45);
   flex-shrink: 0;
 
-  &:hover {
+  &:hover:not(:disabled) {
     border-color: #4096ff;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background: var(--background-area);
+    color: var(--Text-color-text-placeholder);
   }
 `
 
