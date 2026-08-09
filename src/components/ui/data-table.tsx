@@ -34,6 +34,8 @@ declare module '@tanstack/react-table' {
   }
 }
 
+const EXPANSION_ROW_ATTR = 'data-expansion-row'
+
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
   data: TData[]
@@ -109,7 +111,7 @@ function DataTableRowInner<TData>({
         {renderRowOverlay?.(row)}
       </TableRow>
       {expansionContent != null && (
-        <tr data-expansion-row="">
+        <tr {...{ [EXPANSION_ROW_ATTR]: '' }}>
           <ExpansionCell colSpan={expansionColSpan}>
             {expansionContent}
           </ExpansionCell>
@@ -228,15 +230,9 @@ export function DataTable<TData>({
   const colgroup = useMemo(
     () => (
       <colgroup>
-        {visibleColumns.map((column) => {
-          const width = growWidths.get(column.id) ?? column.columnDef.size
-          return (
-            <col
-              key={column.id}
-              style={width !== undefined ? { width: `${width}px` } : undefined}
-            />
-          )
-        })}
+        {visibleColumns.map((column) => (
+          <Col key={column.id} $width={growWidths.get(column.id) ?? column.columnDef.size} />
+        ))}
       </colgroup>
     ),
     [visibleColumns, growWidths],
@@ -256,7 +252,7 @@ export function DataTable<TData>({
     measureElement: (el) => {
       let height = el.clientHeight
       const next = el.nextElementSibling
-      if (next?.hasAttribute('data-expansion-row')) {
+      if (next?.hasAttribute(EXPANSION_ROW_ATTR)) {
         height += (next as HTMLElement).clientHeight
       }
       return height
@@ -273,7 +269,7 @@ export function DataTable<TData>({
     virtualRows.length > 0 ? getTotalSize() - virtualRows[virtualRows.length - 1].end : 0
 
   return (
-    <Table containerRef={containerRef} containerClassName={containerClassName} style={{ minWidth: tableMinWidth }}>
+    <StyledTable containerRef={containerRef} containerClassName={containerClassName} $minWidth={tableMinWidth}>
       {colgroup}
       {showHeader && (
         <TableHeader>
@@ -293,7 +289,7 @@ export function DataTable<TData>({
       <TableBody>
         {paddingTop > 0 && (
           <tr>
-            <td colSpan={columns.length} style={{ height: `${paddingTop}px`, padding: 0, border: 'none' }} />
+            <SpacerCell colSpan={columns.length} $height={paddingTop} />
           </tr>
         )}
         {virtualRows.length ? (
@@ -331,11 +327,11 @@ export function DataTable<TData>({
         )}
         {paddingBottom > 0 && (
           <tr>
-            <td colSpan={columns.length} style={{ height: `${paddingBottom}px`, padding: 0, border: 'none' }} />
+            <SpacerCell colSpan={columns.length} $height={paddingBottom} />
           </tr>
         )}
       </TableBody>
-    </Table>
+    </StyledTable>
   )
 }
 
@@ -346,10 +342,10 @@ const EmptyRow = styled.tr`
     background: none !important;
   }
 `
+
 const EmptyCell = styled.td`
   text-align: center;
   padding: 72px 0 !important;
-
 `
 
 const ExpansionCell = styled.td`
@@ -358,5 +354,19 @@ const ExpansionCell = styled.td`
   height: auto;
   background: var(--colors-base-neutral-3) !important;
   outline: none !important;
+`
+
+const StyledTable = styled(Table)<{ $minWidth?: number }>`
+  min-width: ${({ $minWidth }) => ($minWidth !== undefined ? `${$minWidth}px` : undefined)};
+`
+
+const Col = styled.col<{ $width?: number }>`
+  width: ${({ $width }) => ($width !== undefined ? `${$width}px` : undefined)};
+`
+
+const SpacerCell = styled.td<{ $height: number }>`
+  height: ${({ $height }) => `${$height}px`};
+  padding: 0;
+  border: none;
 `
 
