@@ -163,7 +163,6 @@ export function DataTable<TData>({
     meta,
   })
 
-
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(0)
 
@@ -186,8 +185,6 @@ export function DataTable<TData>({
 
   const visibleColumns = table.getVisibleLeafColumns()
 
-  // Memoized on visibleColumns so this doesn't redo work on every
-  // scroll-driven re-render — column widths never change while scrolling.
   const { fixedTotal, growTotal, growColumns } = useMemo(
     () =>
       visibleColumns.reduce(
@@ -213,8 +210,6 @@ export function DataTable<TData>({
   const borderTotal = visibleColumns.length * 0.5
   const growSpace = containerWidth > 0 ? containerWidth - fixedTotal - borderTotal : 0
 
-  // Distribute remaining horizontal space proportionally among grow columns.
-  // Uses Math.floor per column and assigns the rounding remainder to the last column.
   const growWidths = useMemo(() => {
     const map = new Map<string, number>()
     if (growSpace <= 0 || growTotal <= 0) return map
@@ -257,6 +252,7 @@ export function DataTable<TData>({
     getScrollElement: () => containerRef.current,
     estimateSize: () => 44,
     overscan: 16,
+    useFlushSync: false,
     measureElement: (el) => {
       let height = el.clientHeight
       const next = el.nextElementSibling
@@ -267,10 +263,6 @@ export function DataTable<TData>({
     }
   })
 
-  // Rows render at a fixed, CSS-defined height everywhere except expandable
-  // tables. Only attach the measuring ref (ResizeObserver + live scroll
-  // correction) when row height can actually vary — otherwise it fights
-  // native momentum scrolling with pointless mid-scroll corrections.
   const rowRef = hasExpansion ? measureElement : undefined
 
   const tableMinWidth = totalSize > 0 ? totalSize : undefined
