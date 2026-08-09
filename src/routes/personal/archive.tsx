@@ -1,6 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router"
+import styled from "@emotion/styled"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import type { ColumnDef } from "@tanstack/react-table"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
-import PersonalArchiveLayout from "../../components/Personal/PersonalArchiveLayout"
+import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
+import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
+import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithActions"
+import { formatDateShort } from "src/functions/date-utils"
+import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 
 export const Route = createFileRoute("/personal/archive")({
@@ -33,14 +39,56 @@ const ARCHIVE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 	"updatedAt",
 ])
 
+const ARCHIVE_EXTRA_COLUMNS: ColumnDef<TaskRowWithWorkspaceDto>[] = [
+	{
+		id: "archivedAt",
+		header: ({ column }) => (
+			<ColumnHeaderWithActions label="הועבר לארכיון" column={column} />
+		),
+		size: 140,
+		enableColumnFilter: false,
+		accessorFn: (row) => row.archivedAt,
+		cell: ({
+			row: {
+				original: { archivedAt },
+			},
+		}) => <DateCell>{archivedAt && formatDateShort(archivedAt)}</DateCell>,
+	},
+]
+
 function PersonalArchivePage() {
+	const navigate = useNavigate()
+
+	function handleOpenTask(taskId: number) {
+		navigate({
+			to: "/personal/archive/task/$taskId",
+			params: { taskId: String(taskId) },
+			search: { view: TasksView.TABLE },
+		})
+	}
+
 	return (
 		<TasksFiltersProvider
 			storageKey="personal-archive"
 			defaultColumnOrder={ARCHIVE_DEFAULT_COLUMN_ORDER}
 			defaultHiddenColumns={ARCHIVE_DEFAULT_HIDDEN}
 		>
-			<PersonalArchiveLayout />
+			<>
+				<PersonalSectionDropdown current={"archive"} />
+				<PersonalTaskTable
+					filePrefix="ארכיון אישי"
+					onOpenTask={handleOpenTask}
+					isArchived={true}
+					extraColumnsMeta={[{ id: "archivedAt", label: "הועבר לארכיון" }]}
+					extraColumns={ARCHIVE_EXTRA_COLUMNS}
+				/>
+			</>
 		</TasksFiltersProvider>
 	)
 }
+
+const DateCell = styled.span`
+  font-size: var(--fs-sm);
+  color: var(--sea-ink-soft);
+  padding-inline: 6px;
+`

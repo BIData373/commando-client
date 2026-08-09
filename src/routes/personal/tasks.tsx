@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
-import PersonalTasksLayout from "../../components/Personal/PersonalTasksLayout"
+import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
+import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { TasksView } from "../workspace/$urlName/tasks"
 
@@ -31,13 +32,38 @@ const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 ])
 
 function PersonalTasksPage() {
+	const navigate = useNavigate()
+
+	function handleOpenTask(taskId: number) {
+		navigate({
+			to: "/personal/tasks/task/$taskId",
+			params: { taskId: String(taskId) },
+			search: { view: TasksView.TABLE },
+		})
+	}
+
+	function handleEdit(taskId: number) {
+		navigate({
+			to: "/personal/tasks/task/$taskId/edit",
+			params: { taskId: String(taskId) },
+			search: { view: TasksView.TABLE },
+		})
+	}
+
 	return (
 		<TasksFiltersProvider
 			storageKey="personal"
 			defaultColumnOrder={PERSONAL_DEFAULT_COLUMN_ORDER}
 			defaultHiddenColumns={PERSONAL_DEFAULT_HIDDEN}
 		>
-			<PersonalTasksLayout />
+			<>
+				<PersonalSectionDropdown current="tasks" />
+				<PersonalTaskTable
+					filePrefix="אזור אישי"
+					onOpenTask={handleOpenTask}
+					onEdit={handleEdit}
+				/>
+			</>
 		</TasksFiltersProvider>
 	)
 }

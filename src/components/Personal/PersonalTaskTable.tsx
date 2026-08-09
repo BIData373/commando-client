@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Outlet, useNavigate } from "@tanstack/react-router"
+import { Outlet } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
@@ -14,7 +14,6 @@ import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import type { TaskColumnMeta } from "src/utils/task-table-utils"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
@@ -25,7 +24,6 @@ import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
-import { PersonalSectionDropdown } from "./PersonalSectionDropdown"
 
 export const WORKSPACE_COLUMN: ColumnDef<TaskRowWithWorkspaceDto> = {
 	id: "workspace",
@@ -47,39 +45,25 @@ export const WORKSPACE_COLUMN: ColumnDef<TaskRowWithWorkspaceDto> = {
 	}) => <WorkspaceCell workspace={workspace} />,
 }
 
-enum PersonalSection {
-	TASKS = "tasks",
-	ARCHIVE = "archive",
-}
-
-interface PersonalSectionConfig {
-	taskRoute: string
-	exportFilePrefix: string
-}
-
-const SECTION_CONFIG: Record<PersonalSection, PersonalSectionConfig> = {
-	[PersonalSection.TASKS]: {
-		taskRoute: "/personal/tasks/task/$taskId",
-		exportFilePrefix: "אזור אישי",
-	},
-	[PersonalSection.ARCHIVE]: {
-		taskRoute: "/personal/archive/task/$taskId",
-		exportFilePrefix: "ארכיון אישי",
-	},
-}
-
-interface PersonalTasksTableProps {
+interface PersonalTaskTableProps {
 	isArchived?: boolean
 	extraColumnsMeta?: TaskColumnMeta[]
 	extraColumns?: ColumnDef<TaskRowWithWorkspaceDto>[]
+	onEdit?(taskId: number): void
+	onOpenTask(taskId: number): void
+	showMetricsBar?: boolean
+	filePrefix: string
 }
 
-function PersonalTasksLayout({
+function PersonalTaskTable({
 	isArchived = false,
 	extraColumnsMeta,
 	extraColumns,
-}: PersonalTasksTableProps) {
-	const navigate = useNavigate()
+	onEdit,
+	onOpenTask,
+	showMetricsBar = false,
+	filePrefix,
+}: PersonalTaskTableProps) {
 	const { columnOrder, hiddenColumns } = useTasksFilters()
 
 	const {
@@ -87,6 +71,10 @@ function PersonalTasksLayout({
 		isLoading,
 		queryKey,
 	} = useListPersonalTaskRows({ isArchived })
+
+	const { mutate: toggleArchive } = useToggleUserTaskArchive({
+		mutation: { onSuccess: handleChangeSuccess },
+	})
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
@@ -108,13 +96,6 @@ function PersonalTasksLayout({
 		[baseFilteredTaskRows, activeWorkspaceFilters],
 	)
 
-	const { mutate: toggleArchive } = useToggleUserTaskArchive({
-		mutation: { onSuccess: handleChangeSuccess },
-	})
-
-	const section = isArchived ? PersonalSection.ARCHIVE : PersonalSection.TASKS
-	const config = SECTION_CONFIG[section]
-
 	const totalCount = tasks.length
 
 	const notStartedCount = tasks.filter(
@@ -133,41 +114,30 @@ function PersonalTasksLayout({
 		invalidateQueries([queryKey])
 	}
 
-	function handleOpenTask(taskId: number) {
-		navigate({
-			to: config.taskRoute,
-			params: { taskId: String(taskId) },
-			search: { view: TasksView.TABLE },
-		})
-	}
-
-	function handleEdit(taskId: number) {
-		navigate({
-			to: "/personal/tasks/task/$taskId/edit",
-			params: { taskId: String(taskId) },
-			search: { view: TasksView.TABLE },
+	function toggle(entries: TaskArchiveEntry[]) {
+		entries.forEach(({ id, assigneeId }) => {
+			toggleArchive({ pathParams: { id }, params: { assigneeId } })
 		})
 	}
 
 	function handleArchive(entries: TaskArchiveEntry[]) {
-		entries.forEach(({ id, assigneeId }) => {
-			toggleArchive({ pathParams: { id }, params: { assigneeId } })
-		})
+		if (!isArchived) {
+			toggle(entries)
+		}
 	}
 
 	function handleUnarchive(entries: TaskArchiveEntry[]) {
-		entries.forEach(({ id, assigneeId }) => {
-			toggleArchive({ pathParams: { id }, params: { assigneeId } })
-		})
+		if (isArchived) {
+			toggle(entries)
+		}
 	}
 
 	return (
 		<TooltipProvider>
-			<PersonalSectionDropdown current={section} />
 			<PageRoot>
 				{isArchived && <ArchiveHeader>ארכיון</ArchiveHeader>}
 
-				{!isArchived && (
+				{showMetricsBar && (
 					<MetricsBar
 						totalCount={totalCount}
 						notStartedCount={notStartedCount}
@@ -187,7 +157,7 @@ function PersonalTasksLayout({
 						...(extraColumnsMeta ?? []),
 					]}
 					startSlot={<TasksDatePicker />}
-					exportFilePrefix={config.exportFilePrefix}
+					exportFilePrefix={filePrefix}
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label={
@@ -221,12 +191,12 @@ function PersonalTasksLayout({
 					columnOrder={columnOrder}
 					hiddenColumns={hiddenColumns}
 					onChangeSuccess={handleChangeSuccess}
-					onEdit={handleEdit}
-					onClick={handleOpenTask}
+					onEdit={onEdit}
+					onClick={onOpenTask}
 					getPermissionType={(task) => task?.workspace?.permissionType}
 					extraColumns={[WORKSPACE_COLUMN, ...(extraColumns ?? [])]}
-					onArchive={!isArchived ? handleArchive : undefined}
-					onUnarchive={isArchived ? handleUnarchive : undefined}
+					onArchive={handleArchive}
+					onUnarchive={handleUnarchive}
 				/>
 			</PageRoot>
 			<Outlet />
@@ -234,7 +204,7 @@ function PersonalTasksLayout({
 	)
 }
 
-export default PersonalTasksLayout
+export default PersonalTaskTable
 
 const PageRoot = styled.div`
   display: flex;
