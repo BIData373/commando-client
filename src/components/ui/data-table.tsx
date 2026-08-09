@@ -73,9 +73,6 @@ interface DataTableRowProps<TData> {
   expansionColSpan: number
 }
 
-// Memoized so a scroll-driven re-render of DataTable (which touches every
-// currently mounted virtual row) doesn't re-run cell rendering for rows
-// whose own props haven't actually changed.
 function DataTableRowInner<TData>({
   row,
   index,
@@ -334,8 +331,6 @@ export function DataTable<TData>({
     </StyledTable>
   )
 }
-
-// ─── Styled Components ─────────────────────────────────────────────────────
 
 const EmptyRow = styled.tr`
   &:hover {
