@@ -150,28 +150,32 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							row: {
 								original: { id, workspaceId, rowKey, assignee },
 							},
-						}) => (
-							<RowActionsMenu
-								workspaceId={workspaceId}
-								onEdit={actions.onEdit ? () => actions.onEdit?.(id) : undefined}
-								onArchive={
-									actions.onArchive
-										? () =>
-												actions.onArchive?.([{ id, assigneeId: assignee?.id }])
-										: undefined
-								}
-								onUnarchive={
-									actions.onUnarchive
-										? () =>
-												actions.onUnarchive?.([
-													{ id, assigneeId: assignee?.id },
-												])
-										: undefined
-								}
-								onEnterSelect={() => actions.onEnterSelectMode?.(rowKey)}
-								onDelete={() => actions.onDelete?.([id])}
-							/>
-						),
+						}) => {
+							const handleEdit = actions.onEdit
+								? () => actions.onEdit?.(id)
+								: undefined
+							const handleArchive = actions.onArchive
+								? () => actions.onArchive?.([{ id, assigneeId: assignee?.id }])
+								: undefined
+							const handleUnarchive = actions.onUnarchive
+								? () =>
+										actions.onUnarchive?.([{ id, assigneeId: assignee?.id }])
+								: undefined
+							const handleEnterSelect = () =>
+								actions.onEnterSelectMode?.(rowKey)
+							const handleDelete = () => actions.onDelete?.([id])
+
+							return (
+								<RowActionsMenu
+									workspaceId={workspaceId}
+									onEdit={handleEdit}
+									onArchive={handleArchive}
+									onUnarchive={handleUnarchive}
+									onEnterSelect={handleEnterSelect}
+									onDelete={handleDelete}
+								/>
+							)
+						},
 					}
 				: undefined
 

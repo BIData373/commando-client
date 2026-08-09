@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Trash2, X } from "lucide-react"
+import { Archive, ArchiveX, Trash2, X } from "lucide-react"
 import { useState } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { StatusTag } from "../shared/StatusTag"
@@ -20,7 +20,8 @@ interface BulkActionsBarProps {
 	deleteDisabled?: boolean
 	statusDisabled?: boolean
 	onChangeStatus: (status: WorkspaceStatusDto) => void
-	onArchive: () => void
+	onArchive?: () => void
+	onUnarchive?: () => void
 	onDelete: () => void
 	onExitSelect: () => void
 }
@@ -32,7 +33,8 @@ export function BulkActionsBar({
 	deleteDisabled = false,
 	statusDisabled = false,
 	onChangeStatus,
-	// onArchive,
+	onArchive,
+	onUnarchive,
 	onDelete,
 	onExitSelect,
 }: BulkActionsBarProps) {
@@ -61,6 +63,23 @@ export function BulkActionsBar({
 						</GhostButton>
 					}
 				/>
+				{
+					<>
+						<BarDivider />
+						{onArchive && (
+							<GhostButton onClick={onArchive}>
+								העבר לארכיון
+								<Archive size={16} />
+							</GhostButton>
+						)}
+						{onUnarchive && (
+							<GhostButton onClick={onUnarchive}>
+								הסר מארכיון
+								<ArchiveX size={16} />
+							</GhostButton>
+						)}
+					</>
+				}
 				{statuses && (
 					<>
 						<BarDivider />
@@ -94,7 +113,6 @@ const Bar = styled.div<{ $visible: boolean }>`
   transform: translateX(-50%);
   z-index: var(--z-dropdown);
   direction: ltr;
-  width: 450px;
   display: flex;
   align-items: center;
   justify-content: space-between;

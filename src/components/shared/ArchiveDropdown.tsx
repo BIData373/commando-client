@@ -16,19 +16,31 @@ interface ArchiveDropdownProps {
 	isActive: boolean
 }
 
+const DROPDOWN_ITEMS = [
+	{ label: "הנחיות", key: "tasks" },
+	{ label: "ארכיון", key: "archive" },
+] as const
+
+type DropdownKey = (typeof DROPDOWN_ITEMS)[number]["key"]
+
 export const ArchiveDropdown = ({
 	tasksRoute,
 	archiveRoute,
 	isArchive,
 	isActive,
 }: ArchiveDropdownProps) => {
-	const currentRoute = isArchive ? archiveRoute : tasksRoute
+	const routeByKey: Record<DropdownKey, LinkProps> = {
+		tasks: tasksRoute,
+		archive: archiveRoute,
+	}
+
+	const activeKey: DropdownKey = isArchive ? "archive" : "tasks"
 
 	return (
 		<NavigationMenuItem>
 			<SectionButton $active={isActive}>
-				<SectionLink {...currentRoute}>
-					{isArchive ? "ארכיון" : "הנחיות"}
+				<SectionLink {...routeByKey[activeKey]}>
+					{DROPDOWN_ITEMS.find((item) => item.key === activeKey)?.label}
 				</SectionLink>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -37,12 +49,11 @@ export const ArchiveDropdown = ({
 						</ChevronButton>
 					</DropdownMenuTrigger>
 					<SectionDropdownContent side="bottom">
-						<SectionDropdownItem asChild>
-							<Link {...tasksRoute}>הנחיות</Link>
-						</SectionDropdownItem>
-						<SectionDropdownItem asChild>
-							<Link {...archiveRoute}>ארכיון</Link>
-						</SectionDropdownItem>
+						{DROPDOWN_ITEMS.map(({ label, key }) => (
+							<SectionDropdownItem key={key} asChild>
+								<Link {...routeByKey[key]}>{label}</Link>
+							</SectionDropdownItem>
+						))}
 					</SectionDropdownContent>
 				</DropdownMenu>
 			</SectionButton>
@@ -54,12 +65,12 @@ const SectionButton = styled.div<{ $active: boolean }>`
   display: flex;
   align-items: center;
   direction: rtl;
-  background: ${({ $active }) => ($active ? "rgba(255,255,255,0.15)" : "transparent")};
+  background: ${({ $active }) => ($active ? "var(--Menu-Tab-Active)" : "transparent")};
   border-radius: 6px;
 
   &:hover {
-    background: rgba(255,255,255,0.1);
-    color: #C7C9CB;
+    background: var(--Menu-Tab-Hover);
+    color: var(--Menu-Tab-Text);
   }
 `
 
@@ -68,7 +79,7 @@ const SectionLinkBase = styled.a`
     display: flex;
     align-items: center;
     padding: 8px 8px;
-    color: #C7C9CB;
+    color: var(--Menu-Tab-Text);
     font-size: var(--fs-btn);
     font-weight: 400;
     border-start-start-radius: 6px;
@@ -78,7 +89,7 @@ const SectionLinkBase = styled.a`
     cursor: pointer;
 
     &:hover {
-      background: rgba(255,255,255,0.1);
+      background: var(--Menu-Tab-Hover);
     }
   }
 `
@@ -95,11 +106,11 @@ const ChevronButton = styled.button`
   border-start-end-radius: 6px;
   border-end-end-radius: 6px;
   background: transparent;
-  color: #C7C9CB;
+  color: var(--Menu-Tab-Text);
   cursor: pointer;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--Menu-Tab-Hover);
   }
 `
 
@@ -110,7 +121,7 @@ const SectionDropdownContent = styled(DropdownMenuContent)`
     padding: 4px;
     border-radius: 8px;
     background: var(--header-bg);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--Menu-Tab-Hover);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   }
 `
@@ -125,13 +136,13 @@ const SectionDropdownItem = styled(DropdownMenuItem)`
   border-radius: 4px;
   font-size: var(--fs-btn);
   font-weight: 400;
-  color: #C7C9CB;
+  color: var(--Menu-Tab-Text);
   cursor: pointer;
 
   &[data-highlighted],
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: var(--Menu-Tab-Hover);
+    color: var(--background);
     outline: none;
   }
 `

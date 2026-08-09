@@ -5,6 +5,7 @@ import { debounce } from "lodash"
 import { X } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
+import { getListAssigneesQueryKey } from "src/api/assignee/assignee"
 import type { UpdateWorkspaceDto } from "src/api/model"
 import {
 	getListPersonalTaskRowsQueryKey,
@@ -39,8 +40,6 @@ export function SettingsForm() {
 		setWorkspace,
 	} = useWorkspace()
 
-	const workspaceId = id
-
 	const { mutateAsync: updateSettings } = useUpdateWorkspace({
 		mutation: {
 			onSuccess(data) {
@@ -48,7 +47,6 @@ export function SettingsForm() {
 					getListWorkspacesQueryKey(),
 					getGetPermittedWorkspacesQueryKey(),
 					getListPersonalTaskRowsQueryKey(),
-					getListTaskRowsQueryKey({ workspaceId }),
 				])
 				setWorkspace(data)
 			},

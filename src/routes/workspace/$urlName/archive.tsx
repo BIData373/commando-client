@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
-import WorkspaceArchiveLayout from "../../../components/Tasks/WorkspaceArchiveLayout"
+import WorkspaceTasksArchiveLayout from "../../../components/Tasks/WorkspaceTasksArchiveLayout"
 import { TasksFiltersProvider } from "../../../providers/TasksFiltersProvider"
 
 export const Route = createFileRoute("/workspace/$urlName/archive")({
@@ -33,13 +33,15 @@ const ARCHIVE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 ])
 
 function WorkspaceArchivePage() {
+	const { urlName } = Route.useParams()
+
 	return (
 		<TasksFiltersProvider
 			storageKey="workspace-archive"
 			defaultColumnOrder={ARCHIVE_DEFAULT_COLUMN_ORDER}
 			defaultHiddenColumns={ARCHIVE_DEFAULT_HIDDEN}
 		>
-			<WorkspaceArchiveLayout />
+			<WorkspaceTasksArchiveLayout urlName={urlName} />
 		</TasksFiltersProvider>
 	)
 }

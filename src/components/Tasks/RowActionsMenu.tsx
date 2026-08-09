@@ -62,63 +62,61 @@ export function RowActionsMenu({
 	}
 
 	return (
-		itemCount > 0 && (
-			<DropdownMenu
-				open={dropdownOpen || popoverOpen}
-				onOpenChange={handleDropdownOpenChange}
-			>
-				<DropdownMenuTrigger asChild>
-					{trigger ?? (
-						<DefaultTrigger>
-							<MoreVertical size={16} />
-						</DefaultTrigger>
-					)}
-				</DropdownMenuTrigger>
-				<MenuContent align="start" sideOffset={4}>
-					{onEdit && (
-						<MenuItem onSelect={onEdit}>
-							<Pencil size={16} />
-							עריכה
-						</MenuItem>
-					)}
-					{onArchive && (
-						<MenuItem onSelect={onArchive}>
-							<Archive size={16} />
-							ארכיון
-						</MenuItem>
-					)}
-					{onUnarchive && (
-						<MenuItem onSelect={onUnarchive}>
-							<ArchiveX size={16} />
-							הסר מארכיון
-						</MenuItem>
-					)}
-					{onEnterSelect && (
-						<MenuItem onSelect={onEnterSelect}>
-							<CheckCircle2 size={16} />
-							סמן
-						</MenuItem>
-					)}
-					{hasMoreThanTwo && <MenuSeparator />}
-					{onDelete && (
-						<DeletePopover
-							count={1}
-							side="right"
-							align="end"
-							onConfirm={onDelete}
-							open={popoverOpen}
-							onOpenChange={handlePopoverOpenChange}
-							trigger={
-								<DestructiveMenuItem onClick={handleDeleteClick}>
-									<Trash2 size={16} />
-									מחק
-								</DestructiveMenuItem>
-							}
-						/>
-					)}
-				</MenuContent>
-			</DropdownMenu>
-		)
+		<DropdownMenu
+			open={dropdownOpen || popoverOpen}
+			onOpenChange={handleDropdownOpenChange}
+		>
+			<DropdownMenuTrigger asChild>
+				{trigger ?? (
+					<DefaultTrigger>
+						<MoreVertical size={16} />
+					</DefaultTrigger>
+				)}
+			</DropdownMenuTrigger>
+			<MenuContent align="start" sideOffset={4}>
+				{onEdit && (
+					<MenuItem onSelect={onEdit}>
+						<Pencil size={16} />
+						עריכה
+					</MenuItem>
+				)}
+				{onArchive && (
+					<MenuItem onSelect={onArchive}>
+						<Archive size={16} />
+						ארכיון
+					</MenuItem>
+				)}
+				{onUnarchive && (
+					<MenuItem onSelect={onUnarchive}>
+						<ArchiveX size={16} />
+						הסר מארכיון
+					</MenuItem>
+				)}
+				{onEnterSelect && (
+					<MenuItem onSelect={onEnterSelect}>
+						<CheckCircle2 size={16} />
+						סמן
+					</MenuItem>
+				)}
+				{hasMoreThanTwo && <MenuSeparator />}
+				{onDelete && (
+					<DeletePopover
+						count={1}
+						side="right"
+						align="end"
+						onConfirm={onDelete}
+						open={popoverOpen}
+						onOpenChange={handlePopoverOpenChange}
+						trigger={
+							<DestructiveMenuItem onClick={handleDeleteClick}>
+								<Trash2 size={16} />
+								מחק
+							</DestructiveMenuItem>
+						}
+					/>
+				)}
+			</MenuContent>
+		</DropdownMenu>
 	)
 }
 

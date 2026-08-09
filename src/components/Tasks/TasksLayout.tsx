@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { Outlet, useNavigate } from "@tanstack/react-router"
-import type { ColumnFiltersState } from "@tanstack/react-table"
+import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
 import { without } from "lodash"
 import { useMemo } from "react"
 import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assignee/archived-workspace-assignee"
@@ -13,6 +13,7 @@ import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import {
 	getListPersonalTaskRowsQueryKey,
+	getListTaskRowsQueryKey,
 	useListTaskRows,
 } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
@@ -24,6 +25,7 @@ import {
 	TasksView,
 } from "src/routes/workspace/$urlName/tasks"
 import type { QuickFilter } from "src/utils/filter-utils"
+import type { TaskColumnMeta } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
@@ -32,22 +34,49 @@ import { TaskCardGrid } from "./TaskCardGrid"
 import { FilterSeparator, TaskFilters } from "./TaskFilters"
 import { TaskTable } from "./TaskTable"
 
+enum WorkspaceSection {
+	TASKS = "tasks",
+	ARCHIVE = "archive",
+}
+
+interface PersonalSectionConfig {
+	taskRoute: string
+	exportFilePrefix: string
+}
+
+const SECTION_CONFIG: Record<WorkspaceSection, PersonalSectionConfig> = {
+	[WorkspaceSection.TASKS]: {
+		taskRoute: "/workspace/$urlName/tasks/$taskId",
+		exportFilePrefix: "",
+	},
+	[WorkspaceSection.ARCHIVE]: {
+		taskRoute: "/workspace/$urlName/archive/task/$taskId",
+		exportFilePrefix: "ארכיון ",
+	},
+}
+
 export interface TasksLayoutProps {
-	view: TasksView
+	view?: TasksView
 	urlName: string
-	tabFilter: QuickFilter[]
-	statusFilter: WorkspaceStatusType[]
-	deadlineTypeFilter: DeadlineType[]
+	tabFilter?: QuickFilter[]
+	statusFilter?: WorkspaceStatusType[]
+	deadlineTypeFilter?: DeadlineType[]
+	isArchived?: boolean
+	extraColumns?: ColumnDef<TaskRowDto>[]
+	extraColumnsMeta?: TaskColumnMeta[]
 }
 
 function TasksLayout({
-	view,
+	view = TasksView.TABLE,
 	urlName,
 	tabFilter,
-	statusFilter,
-	deadlineTypeFilter,
+	statusFilter = [],
+	deadlineTypeFilter = [],
+	isArchived,
+	extraColumns,
+	extraColumnsMeta,
 }: TasksLayoutProps) {
-	const navigate = useNavigate({ from: "/workspace/$urlName/tasks" })
+	const navigate = useNavigate()
 
 	const { columnOrder, hiddenColumns, toggleQuickFilter } = useTasksFilters()
 
@@ -60,7 +89,7 @@ function TasksLayout({
 		data: tasks = [],
 		queryKey,
 		isLoading,
-	} = useListTaskRows({ workspaceId })
+	} = useListTaskRows({ workspaceId, isArchived })
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
@@ -87,6 +116,11 @@ function TasksLayout({
 
 	const filteredTaskRows = useFilteredTasks(tasks)
 
+	const section = isArchived ? WorkspaceSection.ARCHIVE : WorkspaceSection.TASKS
+	const config = SECTION_CONFIG[section]
+
+	const archiveLabel = isArchived ? "ארכיון " : ""
+
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
 			to: "/workspace/$urlName/tasks",
@@ -103,9 +137,9 @@ function TasksLayout({
 
 	function handleOpenTask(taskId: number) {
 		navigate({
-			to: "/workspace/$urlName/tasks/$taskId",
+			to: config.taskRoute,
 			params: { urlName, taskId: String(taskId) },
-			search: { view },
+			search: { view: TasksView.TABLE },
 		})
 	}
 
@@ -118,11 +152,13 @@ function TasksLayout({
 	}
 
 	function handleToggleTabFilter(filter: QuickFilter) {
-		toggleQuickFilter(filter)
-		const next = tabFilter.includes(filter)
-			? tabFilter.filter((f) => f !== filter)
-			: [...tabFilter, filter]
-		navigate({ search: (prev) => ({ ...prev, tabFilter: next }) })
+		if (tabFilter) {
+			toggleQuickFilter(filter)
+			const next = tabFilter.includes(filter)
+				? tabFilter.filter((f) => f !== filter)
+				: [...tabFilter, filter]
+			navigateToTasks({ tabFilter: next })
+		}
 	}
 
 	function handleColumnFiltersChange(
@@ -136,7 +172,11 @@ function TasksLayout({
 	}
 
 	function handleChangeSuccess() {
-		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
+		invalidateQueries([
+			queryKey,
+			getListPersonalTaskRowsQueryKey(),
+			getListTaskRowsQueryKey({ workspaceId }),
+		])
 	}
 
 	function handleArchive(entries: TaskArchiveEntry[]) {
@@ -145,22 +185,18 @@ function TasksLayout({
 		})
 	}
 
-	// function handleViewChange(newView: TasksView) {
-	// 	navigateToTasks({ view: newView })
-	// }
-
-	function handleClearColumnFilters() {
-		navigate({
-			search: (prev) => ({
-				...prev,
-				statusFilter: [],
-				deadlineTypeFilter: [],
-			}),
+	function handleUnarchive(entries: TaskArchiveEntry[]) {
+		entries.forEach(({ id, assigneeId }) => {
+			toggleArchive({ pathParams: { id }, params: { assigneeId } })
 		})
 	}
 
+	function handleClearColumnFilters() {
+		navigateToTasks({ statusFilter: [], deadlineTypeFilter: [] })
+	}
+
 	function handleClearQuickFilters() {
-		navigate({ search: (prev) => ({ ...prev, tabFilter: [] }) })
+		navigateToTasks({ tabFilter: [] })
 	}
 
 	return (
@@ -171,14 +207,21 @@ function TasksLayout({
 					filteredTasks={filteredTaskRows}
 					columnOrder={noWorkspaceColumnOrder}
 					hiddenColumns={noWorkspaceHiddenColumns}
-					onClearColumnFilters={handleClearColumnFilters}
-					onClearQuickFilters={handleClearQuickFilters}
+					onClearColumnFilters={
+						!isArchived ? handleClearColumnFilters : undefined
+					}
+					onClearQuickFilters={
+						!isArchived ? handleClearQuickFilters : undefined
+					}
 					tabFilter={tabFilter}
-					onToggleTabFilter={handleToggleTabFilter}
+					onToggleTabFilter={!isArchived ? handleToggleTabFilter : undefined}
 					urlColumnFilters={urlColumnFilters}
 					startSlot={<TasksDatePicker />}
-					exportFilePrefix={workspaceTitle}
+					exportFilePrefix={`${archiveLabel}${workspaceTitle}`}
+					extraColumns={extraColumns}
+					extraColumnsMeta={extraColumnsMeta}
 					extraButtons={
+						!isArchived &&
 						myPermission?.type === PermissionType.MANAGER && (
 							<ButtonGroup>
 								<FilterSeparator />
@@ -190,24 +233,30 @@ function TasksLayout({
 				/>
 
 				<ContentArea>
-					{view === TasksView.TABLE ? (
+					{!isArchived && view === TasksView.CARDS ? (
+						<TaskCardGrid taskRows={filteredTaskRows} />
+					) : (
 						<TaskTable
 							onChangeSuccess={handleChangeSuccess}
 							tasks={filteredTaskRows}
 							statuses={Object.values(statuses)}
-							onEdit={handleEdit}
+							onEdit={!isArchived ? handleEdit : undefined}
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
-							onFiltersChange={handleColumnFiltersChange}
+							onFiltersChange={
+								!isArchived ? handleColumnFiltersChange : undefined
+							}
 							onClick={handleOpenTask}
 							isLoading={isLoading}
 							getPermissionType={() => myPermission?.type}
 							columnOrder={noWorkspaceColumnOrder}
 							hiddenColumns={noWorkspaceHiddenColumns}
-							onArchive={handleArchive}
+							extraColumns={extraColumns}
+							hideStatusAction={isArchived}
+							showActionsColumn={isArchived}
+							onArchive={!isArchived ? handleArchive : undefined}
+							onUnarchive={isArchived ? handleUnarchive : undefined}
 						/>
-					) : (
-						<TaskCardGrid taskRows={filteredTaskRows} />
 					)}
 				</ContentArea>
 			</TasksRoot>

@@ -16,6 +16,7 @@ import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { formatMesibaIcon } from "src/utils/icon-utils"
+import type { TaskColumnMeta } from "src/utils/task-table-utils"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import WorkspaceCell from "../shared/WorkspaceCell"
@@ -26,66 +27,76 @@ import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
 import { PersonalSectionDropdown } from "./PersonalSectionDropdown"
 
-const EXTRA_COLUMNS: ColumnDef<TaskRowWithWorkspaceDto>[] = [
-	{
-		id: "workspace",
-		header: ({ column }) => (
-			<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
-		),
-		size: 170,
-		enableColumnFilter: false,
-		sortingFn: (rowA, rowB) => {
-			const a = rowA.original.workspace?.title ?? ""
-			const b = rowB.original.workspace?.title ?? ""
-			return a.localeCompare(b, "he")
-		},
-		accessorFn: (row) => row.workspace?.title,
-		cell: ({
-			row: {
-				original: { workspace },
-			},
-		}) => <WorkspaceCell workspace={workspace} />,
+export const WORKSPACE_COLUMN: ColumnDef<TaskRowWithWorkspaceDto> = {
+	id: "workspace",
+	header: ({ column }) => (
+		<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
+	),
+	size: 170,
+	enableColumnFilter: false,
+	sortingFn: (rowA, rowB) => {
+		const a = rowA.original.workspace?.title ?? ""
+		const b = rowB.original.workspace?.title ?? ""
+		return a.localeCompare(b, "he")
 	},
-]
+	accessorFn: (row) => row.workspace?.title,
+	cell: ({
+		row: {
+			original: { workspace },
+		},
+	}) => <WorkspaceCell workspace={workspace} />,
+}
 
-function PersonalTasksLayout() {
+enum PersonalSection {
+	TASKS = "tasks",
+	ARCHIVE = "archive",
+}
+
+interface PersonalSectionConfig {
+	taskRoute: string
+	exportFilePrefix: string
+}
+
+const SECTION_CONFIG: Record<PersonalSection, PersonalSectionConfig> = {
+	[PersonalSection.TASKS]: {
+		taskRoute: "/personal/tasks/task/$taskId",
+		exportFilePrefix: "אזור אישי",
+	},
+	[PersonalSection.ARCHIVE]: {
+		taskRoute: "/personal/archive/task/$taskId",
+		exportFilePrefix: "ארכיון אישי",
+	},
+}
+
+interface PersonalTasksTableProps {
+	isArchived?: boolean
+	extraColumnsMeta?: TaskColumnMeta[]
+	extraColumns?: ColumnDef<TaskRowWithWorkspaceDto>[]
+}
+
+function PersonalTasksLayout({
+	isArchived = false,
+	extraColumnsMeta,
+	extraColumns,
+}: PersonalTasksTableProps) {
 	const navigate = useNavigate()
-
 	const { columnOrder, hiddenColumns } = useTasksFilters()
 
 	const {
-		data: allTaskRows = [],
+		data: tasks = [],
 		isLoading,
 		queryKey,
-	} = useListPersonalTaskRows()
-
-	const { mutate: toggleArchive } = useToggleUserTaskArchive({
-		mutation: { onSuccess: handleChangeSuccess },
-	})
+	} = useListPersonalTaskRows({ isArchived })
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
 	>(new Set())
 
-	const workspaces = uniqBy(allTaskRows, "workspace.id").map(
+	const workspaces = uniqBy(tasks, "workspace.id").map(
 		({ workspace }) => workspace,
 	)
 
-	const totalCount = allTaskRows.length
-
-	const notStartedCount = allTaskRows.filter(
-		(t) => t.status?.type === WorkspaceStatusType.NOT_STARTED,
-	).length
-
-	const inProgressCount = allTaskRows.filter(
-		(t) => t.status?.type === WorkspaceStatusType.IN_PROGRESS,
-	).length
-
-	const weeklyNew = allTaskRows.filter((t) =>
-		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
-	).length
-
-	const baseFilteredTaskRows = useFilteredTasks(allTaskRows)
+	const baseFilteredTaskRows = useFilteredTasks(tasks)
 
 	const filteredTaskRows = useMemo(
 		() =>
@@ -97,9 +108,34 @@ function PersonalTasksLayout() {
 		[baseFilteredTaskRows, activeWorkspaceFilters],
 	)
 
+	const { mutate: toggleArchive } = useToggleUserTaskArchive({
+		mutation: { onSuccess: handleChangeSuccess },
+	})
+
+	const section = isArchived ? PersonalSection.ARCHIVE : PersonalSection.TASKS
+	const config = SECTION_CONFIG[section]
+
+	const totalCount = tasks.length
+
+	const notStartedCount = tasks.filter(
+		(t) => t.status?.type === WorkspaceStatusType.NOT_STARTED,
+	).length
+
+	const inProgressCount = tasks.filter(
+		(t) => t.status?.type === WorkspaceStatusType.IN_PROGRESS,
+	).length
+
+	const weeklyNew = tasks.filter((t) =>
+		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
+	).length
+
+	function handleChangeSuccess() {
+		invalidateQueries([queryKey])
+	}
+
 	function handleOpenTask(taskId: number) {
 		navigate({
-			to: "/personal/tasks/task/$taskId",
+			to: config.taskRoute,
 			params: { taskId: String(taskId) },
 			search: { view: TasksView.TABLE },
 		})
@@ -113,11 +149,13 @@ function PersonalTasksLayout() {
 		})
 	}
 
-	function handleChangeSuccess() {
-		invalidateQueries([queryKey])
+	function handleArchive(entries: TaskArchiveEntry[]) {
+		entries.forEach(({ id, assigneeId }) => {
+			toggleArchive({ pathParams: { id }, params: { assigneeId } })
+		})
 	}
 
-	function handleArchive(entries: TaskArchiveEntry[]) {
+	function handleUnarchive(entries: TaskArchiveEntry[]) {
 		entries.forEach(({ id, assigneeId }) => {
 			toggleArchive({ pathParams: { id }, params: { assigneeId } })
 		})
@@ -125,24 +163,31 @@ function PersonalTasksLayout() {
 
 	return (
 		<TooltipProvider>
-			<PersonalSectionDropdown current="tasks" />
+			<PersonalSectionDropdown current={section} />
 			<PageRoot>
-				<MetricsBar
-					totalCount={totalCount}
-					notStartedCount={notStartedCount}
-					inProgressCount={inProgressCount}
-					weeklyNew={weeklyNew}
-				/>
+				{isArchived && <ArchiveHeader>ארכיון</ArchiveHeader>}
+
+				{!isArchived && (
+					<MetricsBar
+						totalCount={totalCount}
+						notStartedCount={notStartedCount}
+						inProgressCount={inProgressCount}
+						weeklyNew={weeklyNew}
+					/>
+				)}
 
 				<TaskFilters
-					allTaskRows={allTaskRows}
+					allTaskRows={tasks}
 					filteredTasks={filteredTaskRows}
 					columnOrder={columnOrder}
 					hiddenColumns={hiddenColumns}
-					extraColumns={EXTRA_COLUMNS}
-					extraColumnsMeta={[{ id: "workspace", label: "מפקד מנחה" }]}
+					extraColumns={[WORKSPACE_COLUMN, ...(extraColumns ?? [])]}
+					extraColumnsMeta={[
+						{ id: "workspace", label: "מפקד מנחה" },
+						...(extraColumnsMeta ?? []),
+					]}
 					startSlot={<TasksDatePicker />}
-					exportFilePrefix="אזור אישי"
+					exportFilePrefix={config.exportFilePrefix}
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label={
@@ -179,8 +224,9 @@ function PersonalTasksLayout() {
 					onEdit={handleEdit}
 					onClick={handleOpenTask}
 					getPermissionType={(task) => task?.workspace?.permissionType}
-					extraColumns={EXTRA_COLUMNS}
-					onArchive={handleArchive}
+					extraColumns={[WORKSPACE_COLUMN, ...(extraColumns ?? [])]}
+					onArchive={!isArchived ? handleArchive : undefined}
+					onUnarchive={isArchived ? handleUnarchive : undefined}
 				/>
 			</PageRoot>
 			<Outlet />
@@ -193,8 +239,8 @@ export default PersonalTasksLayout
 const PageRoot = styled.div`
   display: flex;
   flex-direction: column;
-  padding-block-end: 24px;
   gap: 28px;
+  padding-block-end: 24px;
   height: 100%;
   overflow: hidden;
 `
@@ -204,4 +250,10 @@ const WorkspaceIcon = styled.img`
   height: 20px;
   border-radius: 50%;
   object-fit: cover;
+`
+
+const ArchiveHeader = styled.span`
+	color: var(--text-color-2);
+	font-size: var(--fs-heading-1);
+	font-weight: 500;
 `

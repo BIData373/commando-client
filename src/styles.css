@@ -131,6 +131,9 @@ body,
   --active-color: #1677ff;
   --active-color-button: rgba(9, 88, 217, 1);
   --color-danger: #e53e3e;
+  --Menu-Tab-Hover: rgba(255, 255, 255, 0.1);
+  --Menu-Tab-Active: rgba(255, 255, 255, 0.15);
+  --Menu-Tab-Text: #C7C9CB;
 
   --font-sans: 'Rubik Variable', ui-sans-serif, sans-serif;
   --font-serif: 'Rubik Variable', ui-sans-serif, sans-serif;

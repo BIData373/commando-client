@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Link, useRouterState } from "@tanstack/react-router"
+import { Link, useMatch } from "@tanstack/react-router"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
@@ -20,11 +20,16 @@ export function WorkspaceTabs() {
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const isManager = myPermission?.type === PermissionType.MANAGER
 
-	const pathname = useRouterState({ select: (s) => s.location.pathname })
-	const isTasksOrArchive =
-		pathname.includes(`/${urlName}/tasks`) ||
-		pathname.includes(`/${urlName}/archive`)
-	const isArchive = pathname.includes(`/${urlName}/archive`)
+	const archiveMatch = useMatch({
+		from: "/workspace/$urlName/archive",
+		shouldThrow: false,
+	})
+	const tasksMatch = useMatch({
+		from: "/workspace/$urlName/tasks",
+		shouldThrow: false,
+	})
+	const isArchive = !!archiveMatch
+	const isTasksOrArchive = !!tasksMatch || isArchive
 
 	useRenderInHeader(
 		"right",
@@ -67,20 +72,20 @@ const NavMenuLink = styled(NavigationMenuLink)`
   && {
     padding: 8px 8px;
     white-space: nowrap;
-    color: #C7C9CB;
+    color: var(--Menu-Tab-Text);
     font-weight: 400;
     font-size: var(--fs-btn);
     background: transparent;
     border-radius: 6px;
 
     &:hover {
-      color: #C7C9CB;
-      background: rgba(255, 255, 255, 0.1);
+      color: var(--Menu-Tab-Text);
+      background: var(--Menu-Tab-Hover);
     }
 
     &[data-status='active'] {
-      color: #C7C9CB;
-      background: rgba(255, 255, 255, 0.15);
+      color: var(--Menu-Tab-Text);
+      background: var(--Menu-Tab-Hover);
     }
   }
 `

@@ -192,17 +192,20 @@ function TaskTable<TTask extends TaskRowDto>({
 		})
 	}
 
+	function getSelectedArchiveEntries() {
+		return selectedRowKeys.flatMap((rowKey) => {
+			const task = tasks.find((t) => t.rowKey === rowKey)
+			return task ? [{ id: task.id, assigneeId: task.assignee?.id }] : []
+		})
+	}
+
 	function handleBulkArchive() {
-		if (onArchive) {
-			onArchive(
-				selectedTaskIds.map((id) => ({
-					id,
-					assigneeId: tasks.find((t) => t.id === id)?.assignee?.id,
-				})),
-			)
-		} else {
-			removeTasks(selectedTaskIds)
-		}
+		onArchive?.(getSelectedArchiveEntries())
+		handleExitSelectMode()
+	}
+
+	function handleBulkUnarchive() {
+		onUnarchive?.(getSelectedArchiveEntries())
 		handleExitSelectMode()
 	}
 
@@ -322,7 +325,8 @@ function TaskTable<TTask extends TaskRowDto>({
 				selectedCount={selectedTaskIds.length}
 				statuses={hideStatusAction ? undefined : statuses}
 				onChangeStatus={(status) => bulkUpdateStatus(selectedRowKeys, status)}
-				onArchive={handleBulkArchive}
+				onArchive={onArchive ? handleBulkArchive : undefined}
+				onUnarchive={onUnarchive ? handleBulkUnarchive : undefined}
 				onDelete={handleBulkDelete}
 				deleteDisabled={bulkDeleteDisabled}
 				statusDisabled={bulkStatusDisabled}
