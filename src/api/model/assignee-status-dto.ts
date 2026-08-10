@@ -5,8 +5,8 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { AssigneeDto } from "./assignee-dto.ts"
-import type { WorkspaceStatusDto } from "./workspace-status-dto.ts"
+import type { AssigneeDto } from "./assignee-dto"
+import type { WorkspaceStatusDto } from "./workspace-status-dto"
 
 export interface AssigneeStatusDto {
 	assignee: AssigneeDto

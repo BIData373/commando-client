@@ -5,13 +5,13 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { AssigneeStatusDto } from "./assignee-status-dto.ts"
-import type { DeadlineType } from "./deadline-type.ts"
-import type { SourceDto } from "./source-dto.ts"
-import type { TagDto } from "./tag-dto.ts"
-import type { TaskCreationType } from "./task-creation-type.ts"
-import type { WorkspaceStatusDto } from "./workspace-status-dto.ts"
-import type { WorkspaceWithPermissionDto } from "./workspace-with-permission-dto.ts"
+import type { AssigneeStatusDto } from "./assignee-status-dto"
+import type { DeadlineType } from "./deadline-type"
+import type { SourceDto } from "./source-dto"
+import type { TagDto } from "./tag-dto"
+import type { TaskCreationType } from "./task-creation-type"
+import type { WorkspaceStatusDto } from "./workspace-status-dto"
+import type { WorkspaceWithPermissionDto } from "./workspace-with-permission-dto"
 
 export interface TaskDetailsDto {
 	createdAt: Date

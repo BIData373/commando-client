@@ -5,7 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { SocketEvent } from "./socket-event.ts"
+import type { SocketEvent } from "./socket-event"
 
 export interface SocketEventDto {
 	type: SocketEvent

@@ -5,8 +5,8 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { ExtractionErrorStatus } from "./extraction-error-status.ts"
-import type { GetAIExtractedTaskDto } from "./get-ai-extracted-task-dto.ts"
+import type { ExtractionErrorStatus } from "./extraction-error-status"
+import type { GetAIExtractedTaskDto } from "./get-ai-extracted-task-dto"
 
 export interface GetAIExtractionCallbackDto {
 	error?: ExtractionErrorStatus

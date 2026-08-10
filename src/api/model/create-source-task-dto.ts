@@ -5,8 +5,8 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { DeadlineType } from "./deadline-type.ts"
-import type { GetTaskAssigneeDto } from "./get-task-assignee-dto.ts"
+import type { DeadlineType } from "./deadline-type"
+import type { GetTaskAssigneeDto } from "./get-task-assignee-dto"
 
 export interface CreateSourceTaskDto {
 	title: string

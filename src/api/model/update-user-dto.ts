@@ -5,7 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { GetUserInfoDto } from "./get-user-info-dto.ts"
+import type { GetUserInfoDto } from "./get-user-info-dto"
 
 export interface UpdateUserDto {
 	upn?: string

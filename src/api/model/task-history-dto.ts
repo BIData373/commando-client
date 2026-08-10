@@ -5,7 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { TaskHistoryAction } from "./task-history-action.ts"
+import type { TaskHistoryAction } from "./task-history-action"
 
 export interface TaskHistoryDto {
 	id: number

@@ -5,9 +5,9 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { ExtractionStatus } from "./extraction-status.ts"
-import type { TagDto } from "./tag-dto.ts"
-import type { TaskDto } from "./task-dto.ts"
+import type { ExtractionStatus } from "./extraction-status"
+import type { TagDto } from "./tag-dto"
+import type { TaskDto } from "./task-dto"
 
 export interface SourceWithTasksDto {
 	createdAt: Date

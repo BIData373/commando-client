@@ -18,9 +18,9 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useQuery } from "@tanstack/react-query"
-import type { ErrorType } from "../../axios.ts"
+import type { ErrorType } from "../../axios"
 
-import { sendRequest } from "../../axios.ts"
+import { sendRequest } from "../../axios"
 import type { ListTaskHistoryParams, TaskHistoryDto } from "../model"
 
 const withQueryKey = <T extends object, K>(

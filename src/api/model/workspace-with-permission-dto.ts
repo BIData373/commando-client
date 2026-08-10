@@ -5,7 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { PermissionType } from "./permission-type.ts"
+import type { PermissionType } from "./permission-type"
 
 export interface WorkspaceWithPermissionDto {
 	createdAt: Date

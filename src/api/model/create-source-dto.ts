@@ -5,7 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { CreateSourceTaskDto } from "./create-source-task-dto.ts"
+import type { CreateSourceTaskDto } from "./create-source-task-dto"
 
 export interface CreateSourceDto {
 	workspaceId: number

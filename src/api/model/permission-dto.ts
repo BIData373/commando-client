@@ -5,8 +5,8 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { PermissionType } from "./permission-type.ts"
-import type { UserDto } from "./user-dto.ts"
+import type { PermissionType } from "./permission-type"
+import type { UserDto } from "./user-dto"
 
 export interface PermissionDto {
 	user: UserDto

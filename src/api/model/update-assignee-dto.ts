@@ -5,7 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { CreateUserDto } from "./create-user-dto.ts"
+import type { CreateUserDto } from "./create-user-dto"
 
 export interface UpdateAssigneeDto {
 	name?: string

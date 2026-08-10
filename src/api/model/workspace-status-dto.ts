@@ -5,7 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { WorkspaceStatusType } from "./workspace-status-type.ts"
+import type { WorkspaceStatusType } from "./workspace-status-type"
 
 export interface WorkspaceStatusDto {
 	id: number

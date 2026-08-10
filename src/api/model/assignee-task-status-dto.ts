@@ -5,9 +5,9 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { AssigneeDto } from "./assignee-dto.ts"
-import type { TaskDto } from "./task-dto.ts"
-import type { WorkspaceStatusDto } from "./workspace-status-dto.ts"
+import type { AssigneeDto } from "./assignee-dto"
+import type { TaskDto } from "./task-dto"
+import type { WorkspaceStatusDto } from "./workspace-status-dto"
 
 export interface AssigneeTaskStatusDto {
 	task: TaskDto

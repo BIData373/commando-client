@@ -5,7 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { DeadlineType } from "./deadline-type.ts"
+import type { DeadlineType } from "./deadline-type"
 
 export interface GetAIExtractedTaskDto {
 	title: string

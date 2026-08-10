@@ -21,10 +21,10 @@ import type {
 	UseQueryResult,
 } from "@tanstack/react-query"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import type { ErrorType } from "../../axios.ts"
+import type { ErrorType } from "../../axios"
 
-import { sendRequest } from "../../axios.ts"
-import { serializeFormData } from "../../form-data.ts"
+import { sendRequest } from "../../axios"
+import { serializeFormData } from "../../form-data"
 import type {
 	AiExtractionCallbackPathParameters,
 	CreateSourceDto,

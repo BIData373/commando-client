@@ -5,11 +5,11 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { AssigneeStatusDto } from "./assignee-status-dto.ts"
-import type { DeadlineType } from "./deadline-type.ts"
-import type { SourceDto } from "./source-dto.ts"
-import type { TagDto } from "./tag-dto.ts"
-import type { TaskCreationType } from "./task-creation-type.ts"
+import type { AssigneeStatusDto } from "./assignee-status-dto"
+import type { DeadlineType } from "./deadline-type"
+import type { SourceDto } from "./source-dto"
+import type { TagDto } from "./tag-dto"
+import type { TaskCreationType } from "./task-creation-type"
 
 export interface TaskDto {
 	createdAt: Date
