@@ -1,15 +1,19 @@
 import { css } from "@emotion/react"
 import styled from "@emotion/styled"
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import {
 	DeadlineType,
 	type TaskRowDto,
 	WorkspaceStatusType,
 } from "src/api/model"
+import {
+	QuickFilter as FocusedTab,
+	QuickFilter,
+} from "src/api/model/quick-filter"
 import { matchesQuickFilter } from "src/functions/filter-utils"
+import { useUserView } from "src/providers/UserViewProvider"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
-import { QuickFilter as FocusedTab, QuickFilter } from "src/utils/filter-utils"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DashboardSection } from "./DashboardSection"
 import { TaskPreviewTable } from "./TaskPreviewTable"
@@ -30,17 +34,17 @@ interface TabConfig {
 }
 
 const TAB_LABELS: Pick<TabConfig, "id" | "label" | "weekDelta">[] = [
-	{ id: FocusedTab.FLAGGED, label: "הנחיות חשובות", weekDelta: 0 },
-	{ id: FocusedTab.APPROACHING, label: "הנחיות לביצוע מיידי", weekDelta: 0 },
-	{ id: FocusedTab.OVERDUE, label: 'חריגות מתג"ב', weekDelta: 0 },
+	{ id: FocusedTab.flagged, label: "הנחיות חשובות", weekDelta: 0 },
+	{ id: FocusedTab.approaching, label: "הנחיות לביצוע מיידי", weekDelta: 0 },
+	{ id: FocusedTab.overdue, label: 'חריגות מתג"ב', weekDelta: 0 },
 ]
 
 const TAB_FILTERS: Record<FocusedTab, (task: TaskRowDto) => boolean> = {
-	[FocusedTab.FLAGGED]: (task) => matchesQuickFilter(task, QuickFilter.FLAGGED),
-	[FocusedTab.APPROACHING]: (task) =>
+	[FocusedTab.flagged]: (task) => matchesQuickFilter(task, QuickFilter.flagged),
+	[FocusedTab.approaching]: (task) =>
 		task.deadlineType === DeadlineType.IMMEDIATE,
-	[FocusedTab.OVERDUE]: (task) =>
-		matchesQuickFilter(task, QuickFilter.OVERDUE) ||
+	[FocusedTab.overdue]: (task) =>
+		matchesQuickFilter(task, QuickFilter.overdue) ||
 		task.deadlineType === DeadlineType.IMMEDIATE,
 }
 
@@ -76,12 +80,19 @@ export default function FocusedInstructions({
 	onUpdateStatusSuccess,
 	onClick,
 }: FocusedInstructionProps) {
-	const [activeTab, setActiveTab] = useState<FocusedTab>(FocusedTab.FLAGGED)
+	const { view, updateView } = useUserView()
 
-	function handleTabClick(tabId: FocusedTab) {
-		setActiveTab(tabId)
+	const activeTab = view.dashboard.focusedInstructionsTab
+
+	async function handleTabClick(focusedInstructionsTab: FocusedTab) {
+		await updateView({
+			...view,
+			dashboard: {
+				...view.dashboard,
+				focusedInstructionsTab,
+			},
+		})
 	}
-
 	const notCompletedTasks = taskRows.filter(
 		({ status }) => status?.type !== WorkspaceStatusType.COMPLETED,
 	)
@@ -121,11 +132,11 @@ export default function FocusedInstructions({
 						))}
 					</TabsHeader>
 					<ViewMoreInstructions
-						tabFilter={
-							activeTab === FocusedTab.APPROACHING ? undefined : activeTab
+						quickFilter={
+							activeTab === FocusedTab.approaching ? undefined : activeTab
 						}
 						deadlineTypeFilter={
-							activeTab === FocusedTab.APPROACHING
+							activeTab === FocusedTab.approaching
 								? DeadlineType.IMMEDIATE
 								: undefined
 						}
