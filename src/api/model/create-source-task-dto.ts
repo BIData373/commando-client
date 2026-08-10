@@ -7,19 +7,13 @@
  */
 import type { DeadlineType } from "./deadline-type.ts"
 import type { GetTaskAssigneeDto } from "./get-task-assignee-dto.ts"
-import type { TaskCreationType } from "./task-creation-type.ts"
 
-export interface UpdateTaskDto {
-	title?: string
-	description?: string
-	flagged?: boolean
-	deadlineType?: DeadlineType
+export interface CreateSourceTaskDto {
+	title: string
+	deadlineType: DeadlineType
 	/** @nullable */
 	dueDate?: Date | null
 	notes?: string
-	tags?: string[]
-	creationType?: TaskCreationType
-	/** @nullable */
-	sourceId?: number | null
+	flagged?: boolean
 	assignees?: GetTaskAssigneeDto[]
 }
