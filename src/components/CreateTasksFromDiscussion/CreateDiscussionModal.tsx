@@ -239,39 +239,39 @@ function CreateDiscussionModal({
 					),
 				},
 			})
+
 			onClose()
-			return
+		} else {
+			const inputs = taskRows.map(
+				({
+					id,
+					rowKey,
+					assigneeIds,
+					assigneeDetails,
+					touched,
+					taskId,
+					...rest
+				}) => ({
+					...rest,
+					taskId,
+					workspaceId,
+					sourceId,
+					groupKey: String(id),
+					creationType: resolveCreationType(taskId, touched),
+					assignees: assigneeIds.map((assigneeId) => ({
+						id: assigneeId,
+						description: assigneeDetails[assigneeId] || undefined,
+					})),
+				}),
+			)
+
+			await updateSource({
+				pathParams: { id: sourceId },
+				data: { draft: false },
+			})
+
+			saveTasks(inputs)
 		}
-
-		const inputs = taskRows.map(
-			({
-				id,
-				rowKey,
-				assigneeIds,
-				assigneeDetails,
-				touched,
-				taskId,
-				...rest
-			}) => ({
-				...rest,
-				taskId,
-				workspaceId,
-				sourceId,
-				groupKey: String(id),
-				creationType: resolveCreationType(taskId, touched),
-				assignees: assigneeIds.map((assigneeId) => ({
-					id: assigneeId,
-					description: assigneeDetails[assigneeId] || undefined,
-				})),
-			}),
-		)
-
-		await updateSource({
-			pathParams: { id: sourceId },
-			data: { draft: false },
-		})
-
-		saveTasks(inputs)
 	}
 
 	function handleDeleteRow(row: NewTaskRow) {
