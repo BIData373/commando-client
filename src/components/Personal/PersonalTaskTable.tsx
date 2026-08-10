@@ -141,8 +141,6 @@ function PersonalTaskTable({
 	return (
 		<TooltipProvider>
 			<PageRoot>
-				{isArchived && <ArchiveHeader>ארכיון</ArchiveHeader>}
-
 				{showMetricsBar && (
 					<MetricsBar
 						totalCount={totalCount}
@@ -206,7 +204,7 @@ function PersonalTaskTable({
 					extraColumns={[WORKSPACE_COLUMN, ...(extraColumns ?? [])]}
 					onArchive={onArchive}
 					onUnarchive={onUnarchive}
-					isPersonal={true}
+					allowDelete={false}
 				/>
 			</PageRoot>
 			<Outlet />

@@ -115,18 +115,18 @@ function WorkspaceTaskTable({
 		])
 	}
 
-	function toggle(entries: TaskArchiveEntry[]) {
+	function handleToggleArchive(entries: TaskArchiveEntry[]) {
 		entries.forEach(({ id, assigneeId }) => {
 			toggleArchive({ pathParams: { id }, params: { assigneeId } })
 		})
 	}
 
 	function handleArchive(entries: TaskArchiveEntry[]) {
-		toggle(entries)
+		handleToggleArchive(entries)
 	}
 
 	function handleUnarchive(entries: TaskArchiveEntry[]) {
-		toggle(entries)
+		handleToggleArchive(entries)
 	}
 
 	const onArchive = !isArchived ? handleArchive : undefined
@@ -135,8 +135,6 @@ function WorkspaceTaskTable({
 	return (
 		<TooltipProvider>
 			<TasksRoot>
-				{isArchived && <ArchiveHeader>ארכיון</ArchiveHeader>}
-
 				<TaskFilters
 					allTaskRows={tasks}
 					filteredTasks={filteredTaskRows}

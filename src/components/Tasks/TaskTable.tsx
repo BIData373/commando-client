@@ -48,7 +48,7 @@ interface TaskTableProps<TTask extends TaskRowDto> {
 	isLoading?: boolean
 	hideStatusAction?: boolean
 	showActionsColumn?: boolean
-	isPersonal?: boolean
+	allowDelete?: boolean
 	onArchive?: (tasks: TaskArchiveEntry[]) => void
 	onUnarchive?: (tasks: TaskArchiveEntry[]) => void
 	onChangeSuccess?(): void
@@ -73,7 +73,7 @@ function TaskTable<TTask extends TaskRowDto>({
 	showActionsColumn = true,
 	onArchive,
 	onUnarchive,
-	isPersonal = false,
+	allowDelete = true,
 }: TaskTableProps<TTask>) {
 	const {
 		searchQuery,
@@ -253,7 +253,7 @@ function TaskTable<TTask extends TaskRowDto>({
 			onEdit,
 			onArchive,
 			onUnarchive,
-			onDelete: !isPersonal ? removeTasks : undefined,
+			onDelete: allowDelete ? removeTasks : undefined,
 			onEnterSelectMode: handleEnterSelectMode,
 		},
 	})
@@ -329,7 +329,7 @@ function TaskTable<TTask extends TaskRowDto>({
 				onChangeStatus={(status) => bulkUpdateStatus(selectedRowKeys, status)}
 				onArchive={onArchive ? handleBulkArchive : undefined}
 				onUnarchive={onUnarchive ? handleBulkUnarchive : undefined}
-				onDelete={!isPersonal ? handleBulkDelete : undefined}
+				onDelete={allowDelete ? handleBulkDelete : undefined}
 				deleteDisabled={bulkDeleteDisabled}
 				statusDisabled={bulkStatusDisabled}
 				onExitSelect={handleExitSelectMode}
