@@ -4,6 +4,12 @@ import { TbFilter } from "react-icons/tb"
 import type { FilterOption } from "../../functions/filter-utils"
 import { Checkbox } from "../ui/checkbox"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "../ui/tooltip"
 
 interface ColumnFilterDropdownProps {
 	options: FilterOption[]
@@ -70,7 +76,14 @@ function ColumnFilterDropdown({
 								$selected={selectedValues.has(option.value)}
 								onClick={() => toggleOption(option.value)}
 							>
-								<OptionLabel>{option.label}</OptionLabel>
+								<TooltipProvider>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<OptionLabel dir="auto">{option.label}</OptionLabel>
+										</TooltipTrigger>
+										<TooltipContent side="top">{option.label}</TooltipContent>
+									</Tooltip>
+								</TooltipProvider>
 								<Checkbox checked={selectedValues.has(option.value)} />
 							</DropdownItem>
 						))}
@@ -135,6 +148,7 @@ const DropdownPanel = styled.div`
     0px 9px 28px 0px rgba(0, 0, 0, 0.05);
   width: auto;
   min-width: 180px;
+  max-width: 280px;
 `
 
 const ItemList = styled.div`
@@ -162,11 +176,12 @@ const DropdownItem = styled.div<{ $selected: boolean }>`
 
 const OptionLabel = styled.span`
   flex: 1;
+  min-width: 0;
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.88);
-  text-align: end;
+  text-align: right;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
