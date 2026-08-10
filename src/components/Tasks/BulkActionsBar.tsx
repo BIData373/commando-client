@@ -19,6 +19,7 @@ interface BulkActionsBarProps {
 	statuses?: WorkspaceStatusDto[]
 	deleteDisabled?: boolean
 	statusDisabled?: boolean
+	isPersonal?: boolean
 	onChangeStatus: (status: WorkspaceStatusDto) => void
 	onArchive?: () => void
 	onUnarchive?: () => void
@@ -37,6 +38,7 @@ export function BulkActionsBar({
 	onUnarchive,
 	onDelete,
 	onExitSelect,
+	isPersonal,
 }: BulkActionsBarProps) {
 	const [popoverOpen, setPopoverOpen] = useState(false)
 
@@ -47,25 +49,29 @@ export function BulkActionsBar({
 	return (
 		<Bar $visible={isVisible}>
 			<ActionsSection>
-				<DeletePopover
-					count={selectedCount}
-					onConfirm={onDelete}
-					open={popoverOpen}
-					onOpenChange={setPopoverOpen}
-					trigger={
-						<GhostButton
-							$danger
-							$disabled={deleteDisabled}
-							onClick={handleDeleteClick}
-						>
-							מחק הנחיה
-							<Trash2 size={16} />
-						</GhostButton>
-					}
-				/>
+				{!isPersonal && (
+					<>
+						<DeletePopover
+							count={selectedCount}
+							onConfirm={onDelete}
+							open={popoverOpen}
+							onOpenChange={setPopoverOpen}
+							trigger={
+								<GhostButton
+									$danger
+									$disabled={deleteDisabled}
+									onClick={handleDeleteClick}
+								>
+									מחק הנחיה
+									<Trash2 size={16} />
+								</GhostButton>
+							}
+						/>
+						<BarDivider />
+					</>
+				)}
 				{
 					<>
-						<BarDivider />
 						{onArchive && (
 							<GhostButton onClick={onArchive}>
 								העבר לארכיון
@@ -80,7 +86,7 @@ export function BulkActionsBar({
 						)}
 					</>
 				}
-				{statuses && (
+				{!onUnarchive && statuses && (
 					<>
 						<BarDivider />
 						<DropdownMenu>
@@ -110,6 +116,7 @@ const Bar = styled.div<{ $visible: boolean }>`
   position: fixed;
   bottom: 32px;
   left: 50%;
+  min-width: 630px;
   transform: translateX(-50%);
   z-index: var(--z-dropdown);
   direction: ltr;

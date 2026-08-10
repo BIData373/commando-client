@@ -9,7 +9,10 @@ import {
 	type TaskRowWithWorkspaceDto,
 	WorkspaceStatusType,
 } from "src/api/model"
-import { useListPersonalTaskRows } from "src/api/task/task"
+import {
+	getListPersonalTaskRowsQueryKey,
+	useListPersonalTaskRows,
+} from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
@@ -111,7 +114,7 @@ function PersonalTaskTable({
 	).length
 
 	function handleChangeSuccess() {
-		invalidateQueries([queryKey])
+		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
 	}
 
 	function toggle(entries: TaskArchiveEntry[]) {
@@ -121,16 +124,15 @@ function PersonalTaskTable({
 	}
 
 	function handleArchive(entries: TaskArchiveEntry[]) {
-		if (!isArchived) {
-			toggle(entries)
-		}
+		toggle(entries)
 	}
 
 	function handleUnarchive(entries: TaskArchiveEntry[]) {
-		if (isArchived) {
-			toggle(entries)
-		}
+		toggle(entries)
 	}
+
+	const onArchive = !isArchived ? handleArchive : undefined
+	const onUnarchive = isArchived ? handleUnarchive : undefined
 
 	return (
 		<TooltipProvider>
@@ -195,8 +197,9 @@ function PersonalTaskTable({
 					onClick={onOpenTask}
 					getPermissionType={(task) => task?.workspace?.permissionType}
 					extraColumns={[WORKSPACE_COLUMN, ...(extraColumns ?? [])]}
-					onArchive={handleArchive}
-					onUnarchive={handleUnarchive}
+					onArchive={onArchive}
+					onUnarchive={onUnarchive}
+					isPersonal={true}
 				/>
 			</PageRoot>
 			<Outlet />

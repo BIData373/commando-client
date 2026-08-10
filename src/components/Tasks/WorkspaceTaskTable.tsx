@@ -118,16 +118,15 @@ function WorkspaceTaskTable({
 	}
 
 	function handleArchive(entries: TaskArchiveEntry[]) {
-		if (!isArchived) {
-			toggle(entries)
-		}
+		toggle(entries)
 	}
 
 	function handleUnarchive(entries: TaskArchiveEntry[]) {
-		if (isArchived) {
-			toggle(entries)
-		}
+		toggle(entries)
 	}
+
+	const onArchive = !isArchived ? handleArchive : undefined
+	const onUnarchive = isArchived ? handleUnarchive : undefined
 
 	return (
 		<TooltipProvider>
@@ -178,8 +177,8 @@ function WorkspaceTaskTable({
 							extraColumns={extraColumns}
 							// hideStatusAction={isArchived}
 							// showActionsColumn={isArchived}
-							onArchive={handleArchive}
-							onUnarchive={handleUnarchive}
+							onArchive={onArchive}
+							onUnarchive={onUnarchive}
 						/>
 					)}
 				</ContentArea>

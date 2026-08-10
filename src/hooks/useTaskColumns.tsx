@@ -68,6 +68,7 @@ interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	showMenuColumn?: boolean
 	onUpdateStatusSuccess?(): void
 	onTitleDoubleClick?: (taskId: number) => void
+	isPersonal?: boolean
 }
 
 export function useTaskColumns<TTask extends TaskRowDto>({
@@ -80,6 +81,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 	actions,
 	showMenuColumn = true,
 	onUpdateStatusSuccess,
+	isPersonal,
 }: UseTaskColumnsOptions<TTask>) {
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
@@ -164,7 +166,9 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 								: undefined
 							const handleEnterSelect = () =>
 								actions.onEnterSelectMode?.(rowKey)
-							const handleDelete = () => actions.onDelete?.([id])
+							const handleDelete = !isPersonal
+								? () => actions.onDelete?.([id])
+								: undefined
 
 							return (
 								<RowActionsMenu

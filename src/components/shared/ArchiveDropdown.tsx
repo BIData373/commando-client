@@ -16,12 +16,15 @@ interface ArchiveDropdownProps {
 	isActive: boolean
 }
 
-const DROPDOWN_ITEMS = [
-	{ label: "הנחיות", key: "tasks" },
-	{ label: "ארכיון", key: "archive" },
-] as const
+enum DropdownKey {
+	TASKS = "tasks",
+	ARCHIVE = "archive",
+}
 
-type DropdownKey = (typeof DROPDOWN_ITEMS)[number]["key"]
+const DROPDOWN_ITEMS: Record<DropdownKey, string> = {
+	[DropdownKey.TASKS]: "הנחיות",
+	[DropdownKey.ARCHIVE]: "ארכיון",
+}
 
 export const ArchiveDropdown = ({
 	tasksRoute,
@@ -34,13 +37,15 @@ export const ArchiveDropdown = ({
 		archive: archiveRoute,
 	}
 
-	const activeKey: DropdownKey = isArchive ? "archive" : "tasks"
+	const activeKey: DropdownKey = isArchive
+		? DropdownKey.ARCHIVE
+		: DropdownKey.TASKS
 
 	return (
 		<NavigationMenuItem>
 			<SectionButton $active={isActive}>
 				<SectionLink {...routeByKey[activeKey]}>
-					{DROPDOWN_ITEMS.find((item) => item.key === activeKey)?.label}
+					{DROPDOWN_ITEMS[activeKey]}
 				</SectionLink>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -49,9 +54,9 @@ export const ArchiveDropdown = ({
 						</ChevronButton>
 					</DropdownMenuTrigger>
 					<SectionDropdownContent side="bottom">
-						{DROPDOWN_ITEMS.map(({ label, key }) => (
+						{Object.values(DropdownKey).map((key) => (
 							<SectionDropdownItem key={key} asChild>
-								<Link {...routeByKey[key]}>{label}</Link>
+								<Link {...routeByKey[key]}>{DROPDOWN_ITEMS[key]}</Link>
 							</SectionDropdownItem>
 						))}
 					</SectionDropdownContent>
