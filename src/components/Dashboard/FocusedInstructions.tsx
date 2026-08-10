@@ -43,8 +43,8 @@ const TAB_FILTERS: Record<FocusedTab, (task: TaskRowDto) => boolean> = {
 	[FocusedTab.flagged]: (task) => matchesQuickFilter(task, QuickFilter.flagged),
 	[FocusedTab.approaching]: (task) =>
 		task.deadlineType === DeadlineType.IMMEDIATE,
-	[FocusedTab.OVERDUE]: (task) =>
-		matchesQuickFilter(task, QuickFilter.OVERDUE) ||
+	[FocusedTab.overdue]: (task) =>
+		matchesQuickFilter(task, QuickFilter.overdue) ||
 		task.deadlineType === DeadlineType.IMMEDIATE,
 }
 
