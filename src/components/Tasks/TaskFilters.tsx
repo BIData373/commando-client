@@ -4,7 +4,7 @@ import { FilterX } from "lucide-react"
 import { type ReactNode, useMemo } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
-import { QuickFilter } from "src/utils/filter-utils"
+import { ACTIVE_QUICK_FILTERS, QuickFilter } from "src/utils/filter-utils"
 import {
 	buildCountingColumns,
 	type TaskColumnMeta,
@@ -32,7 +32,7 @@ interface TaskFiltersProps<TTask extends TaskRowDto> {
 	startSlot?: ReactNode
 	urlColumnFilters?: ColumnFiltersState
 	exportFilePrefix?: string
-	archiveMode?: boolean
+	quickFilters: QuickFilter[]
 }
 
 export function TaskFilters<TTask extends TaskRowDto>({
@@ -51,7 +51,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 	urlColumnFilters = [],
 	extraButtons,
 	exportFilePrefix,
-	archiveMode = false,
+	quickFilters,
 }: TaskFiltersProps<TTask>) {
 	const {
 		activeQuickFilters,
@@ -60,6 +60,8 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		columnsFilters,
 		setColumnsFilters,
 	} = useTasksFilters()
+
+	const quickFiltersCount = quickFilters.filter(Boolean).length
 
 	const activeFilters =
 		tabFilter !== undefined ? new Set(tabFilter) : activeQuickFilters
@@ -176,7 +178,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
 				</FilterPill>
 
-				{archiveMode ? (
+				{quickFiltersCount < 3 ? (
 					<FilterPill
 						$active={activeFilters.has(QuickFilter.ROLLING)}
 						onClick={() => handleToggle(QuickFilter.ROLLING)}

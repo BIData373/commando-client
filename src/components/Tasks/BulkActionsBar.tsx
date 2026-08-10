@@ -19,11 +19,10 @@ interface BulkActionsBarProps {
 	statuses?: WorkspaceStatusDto[]
 	deleteDisabled?: boolean
 	statusDisabled?: boolean
-	isPersonal?: boolean
 	onChangeStatus: (status: WorkspaceStatusDto) => void
 	onArchive?: () => void
 	onUnarchive?: () => void
-	onDelete: () => void
+	onDelete?: () => void
 	onExitSelect: () => void
 }
 
@@ -38,7 +37,6 @@ export function BulkActionsBar({
 	onUnarchive,
 	onDelete,
 	onExitSelect,
-	isPersonal,
 }: BulkActionsBarProps) {
 	const [popoverOpen, setPopoverOpen] = useState(false)
 
@@ -49,7 +47,7 @@ export function BulkActionsBar({
 	return (
 		<Bar $visible={isVisible}>
 			<ActionsSection>
-				{!isPersonal && (
+				{onDelete && (
 					<>
 						<DeletePopover
 							count={selectedCount}

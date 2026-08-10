@@ -17,6 +17,10 @@ import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/queryClient"
+import {
+	ACTIVE_QUICK_FILTERS,
+	ARCHIVE_QUICK_FILTERS,
+} from "src/utils/filter-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import type { TaskColumnMeta } from "src/utils/task-table-utils"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
@@ -117,18 +121,18 @@ function PersonalTaskTable({
 		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
 	}
 
-	function toggle(entries: TaskArchiveEntry[]) {
+	function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
 		entries.forEach(({ id, assigneeId }) => {
 			toggleArchive({ pathParams: { id }, params: { assigneeId } })
 		})
 	}
 
 	function handleArchive(entries: TaskArchiveEntry[]) {
-		toggle(entries)
+		toggleArchiveEntries(entries)
 	}
 
 	function handleUnarchive(entries: TaskArchiveEntry[]) {
-		toggle(entries)
+		toggleArchiveEntries(entries)
 	}
 
 	const onArchive = !isArchived ? handleArchive : undefined
@@ -158,7 +162,9 @@ function PersonalTaskTable({
 						{ id: "workspace", label: "מפקד מנחה" },
 						...(extraColumnsMeta ?? []),
 					]}
-					archiveMode={isArchived}
+					quickFilters={
+						isArchived ? ARCHIVE_QUICK_FILTERS : ACTIVE_QUICK_FILTERS
+					}
 					startSlot={<TasksDatePicker />}
 					exportFilePrefix={filePrefix}
 					extraFilters={

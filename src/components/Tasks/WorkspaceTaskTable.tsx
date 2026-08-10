@@ -22,6 +22,10 @@ import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import type { QuickFilter } from "src/utils/filter-utils"
+import {
+	ACTIVE_QUICK_FILTERS,
+	ARCHIVE_QUICK_FILTERS,
+} from "src/utils/filter-utils"
 import type { TaskColumnMeta } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
@@ -131,6 +135,8 @@ function WorkspaceTaskTable({
 	return (
 		<TooltipProvider>
 			<TasksRoot>
+				{isArchived && <ArchiveHeader>ארכיון</ArchiveHeader>}
+
 				<TaskFilters
 					allTaskRows={tasks}
 					filteredTasks={filteredTaskRows}
@@ -140,7 +146,9 @@ function WorkspaceTaskTable({
 					onClearQuickFilters={clearQuickFilters}
 					tabFilter={tabFilter}
 					onToggleTabFilter={toggleTabFilter}
-					archiveMode={!!isArchived}
+					quickFilters={
+						isArchived ? ARCHIVE_QUICK_FILTERS : ACTIVE_QUICK_FILTERS
+					}
 					urlColumnFilters={urlColumnFilters ?? []}
 					startSlot={<TasksDatePicker />}
 					exportFilePrefix={`${isArchived ? "ארכיון " : ""}${workspaceTitle}`}
@@ -216,4 +224,10 @@ const ButtonGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+`
+
+const ArchiveHeader = styled.span`
+	color: var(--text-color-2);
+	font-size: var(--fs-heading-1);
+	font-weight: 500;
 `

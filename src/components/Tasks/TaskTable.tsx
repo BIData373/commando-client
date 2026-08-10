@@ -253,10 +253,9 @@ function TaskTable<TTask extends TaskRowDto>({
 			onEdit,
 			onArchive,
 			onUnarchive,
-			onDelete: removeTasks,
+			onDelete: !isPersonal ? removeTasks : undefined,
 			onEnterSelectMode: handleEnterSelectMode,
 		},
-		isPersonal,
 	})
 
 	function handleCellClick(row: { original: TTask }, columnId: string) {
@@ -330,11 +329,10 @@ function TaskTable<TTask extends TaskRowDto>({
 				onChangeStatus={(status) => bulkUpdateStatus(selectedRowKeys, status)}
 				onArchive={onArchive ? handleBulkArchive : undefined}
 				onUnarchive={onUnarchive ? handleBulkUnarchive : undefined}
-				onDelete={handleBulkDelete}
+				onDelete={!isPersonal ? handleBulkDelete : undefined}
 				deleteDisabled={bulkDeleteDisabled}
 				statusDisabled={bulkStatusDisabled}
 				onExitSelect={handleExitSelectMode}
-				isPersonal={isPersonal}
 			/>
 		</>
 	)

@@ -53,7 +53,7 @@ interface ActionsConfig {
 	onEdit?: (taskId: number) => void
 	onArchive?(tasks: TaskArchiveEntry[]): void
 	onUnarchive?(tasks: TaskArchiveEntry[]): void
-	onDelete(taskIds: number[]): void
+	onDelete?(taskIds: number[]): void
 	onEnterSelectMode(rowKey?: string): void
 }
 
@@ -68,7 +68,6 @@ interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	showMenuColumn?: boolean
 	onUpdateStatusSuccess?(): void
 	onTitleDoubleClick?: (taskId: number) => void
-	isPersonal?: boolean
 }
 
 export function useTaskColumns<TTask extends TaskRowDto>({
@@ -81,7 +80,6 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 	actions,
 	showMenuColumn = true,
 	onUpdateStatusSuccess,
-	isPersonal,
 }: UseTaskColumnsOptions<TTask>) {
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
@@ -166,7 +164,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 								: undefined
 							const handleEnterSelect = () =>
 								actions.onEnterSelectMode?.(rowKey)
-							const handleDelete = !isPersonal
+							const handleDelete = actions.onDelete
 								? () => actions.onDelete?.([id])
 								: undefined
 

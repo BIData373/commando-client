@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Link, useMatch } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
@@ -12,24 +12,21 @@ import {
 	NavigationMenuList,
 } from "./ui/navigation-menu"
 
-export function WorkspaceTabs() {
+interface WorkspaceTabsProps {
+	isTasksOrArchive: boolean
+	isArchive: boolean
+}
+
+export function WorkspaceTabs({
+	isTasksOrArchive,
+	isArchive,
+}: WorkspaceTabsProps) {
 	const {
 		workspace: { id: workspaceId, urlName },
 	} = useWorkspace()
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const isManager = myPermission?.type === PermissionType.MANAGER
-
-	const archiveMatch = useMatch({
-		from: "/workspace/$urlName/archive",
-		shouldThrow: false,
-	})
-	const tasksMatch = useMatch({
-		from: "/workspace/$urlName/tasks",
-		shouldThrow: false,
-	})
-	const isArchive = !!archiveMatch
-	const isTasksOrArchive = !!tasksMatch || isArchive
 
 	useRenderInHeader(
 		"right",

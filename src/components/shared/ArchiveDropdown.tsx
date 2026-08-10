@@ -127,7 +127,7 @@ const SectionDropdownContent = styled(DropdownMenuContent)`
     border-radius: 8px;
     background: var(--header-bg);
     border: 1px solid var(--Menu-Tab-Hover);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--dropdown-shadow);
   }
 `
 
