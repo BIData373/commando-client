@@ -4,7 +4,7 @@ import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { ArchiveDropdown } from "./shared/ArchiveDropdown"
+import { ArchiveDropdown, type DropdownSection } from "./shared/ArchiveDropdown"
 import {
 	NavigationMenu,
 	NavigationMenuItem,
@@ -13,13 +13,13 @@ import {
 } from "./ui/navigation-menu"
 
 interface WorkspaceTabsProps {
-	isTasksOrArchive: boolean
-	isArchive: boolean
+	section: DropdownSection
+	isActive?: boolean
 }
 
 export function WorkspaceTabs({
-	isTasksOrArchive,
-	isArchive,
+	section,
+	isActive = true,
 }: WorkspaceTabsProps) {
 	const {
 		workspace: { id: workspaceId, urlName },
@@ -47,8 +47,8 @@ export function WorkspaceTabs({
 						to: "/workspace/$urlName/archive",
 						params: { urlName },
 					}}
-					isActive={isTasksOrArchive}
-					isArchive={isArchive}
+					isActive={isActive}
+					section={section}
 				/>
 				<NavigationMenuItem>
 					<NavMenuLink asChild>
@@ -59,7 +59,7 @@ export function WorkspaceTabs({
 				</NavigationMenuItem>
 			</NavigationMenuList>
 		</NavigationMenu>,
-		[isManager, isTasksOrArchive, isArchive, urlName],
+		[isManager, section, urlName],
 	)
 
 	return null

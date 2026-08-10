@@ -1,5 +1,6 @@
-import { createFileRoute, Outlet, useMatch } from "@tanstack/react-router"
+import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { PermissionType } from "src/api/model"
+import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { ContentScrollArea } from "src/components/shared/ContentScrollArea"
 import { PageShell } from "src/components/shared/PageShell"
 import { WorkspaceTabs } from "src/components/WorkspaceTabs"
@@ -14,14 +15,6 @@ export const Route = createFileRoute("/workspace/$urlName")({
 })
 
 function RouteComponent() {
-	const isArchive = !!useMatch({
-		from: "/workspace/$urlName/archive",
-		shouldThrow: false,
-	})
-	const isTasksOrArchive =
-		!!useMatch({ from: "/workspace/$urlName/tasks", shouldThrow: false }) ||
-		isArchive
-
 	return (
 		<WorkspaceProvider>
 			<AuthorizationWrapper type={PermissionType.VIEWER}>
@@ -29,10 +22,7 @@ function RouteComponent() {
 					<Header />
 
 					<WorkspaceUserDropdown />
-					<WorkspaceTabs
-						isTasksOrArchive={isTasksOrArchive}
-						isArchive={isArchive}
-					/>
+					<WorkspaceTabs section={DropdownSection.TASKS} isActive={false} />
 					<WorkspaceTitle />
 
 					<ContentScrollArea>

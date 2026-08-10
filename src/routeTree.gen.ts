@@ -9,48 +9,48 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PersonalRouteImport } from './routes/personal'
-import { Route as NewWorkspaceRouteImport } from './routes/new-workspace'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as NewWorkspaceRouteImport } from './routes/new-workspace'
+import { Route as PersonalRouteImport } from './routes/personal'
 import { Route as PersonalIndexRouteImport } from './routes/personal/index'
-import { Route as PersonalTasksRouteImport } from './routes/personal/tasks'
 import { Route as PersonalArchiveRouteImport } from './routes/personal/archive'
+import { Route as PersonalTasksRouteImport } from './routes/personal/tasks'
 import { Route as WorkspaceUrlNameRouteRouteImport } from './routes/workspace/$urlName/route'
-import { Route as WorkspaceUrlNameIndexRouteImport } from './routes/workspace/$urlName/index'
-import { Route as WorkspaceUrlNameTasksRouteImport } from './routes/workspace/$urlName/tasks'
-import { Route as WorkspaceUrlNameSettingsRouteImport } from './routes/workspace/$urlName/settings'
-import { Route as WorkspaceUrlNameDashboardRouteImport } from './routes/workspace/$urlName/dashboard'
-import { Route as WorkspaceUrlNameArchiveRouteImport } from './routes/workspace/$urlName/archive'
 import { Route as PersonalTaskTaskIdRouteImport } from './routes/personal/task/$taskId'
-import { Route as WorkspaceUrlNameTasksIndexRouteImport } from './routes/workspace/$urlName/tasks/index'
-import { Route as WorkspaceUrlNameSettingsIndexRouteImport } from './routes/workspace/$urlName/settings/index'
-import { Route as PersonalTaskTaskIdIndexRouteImport } from './routes/personal/task/$taskId/index'
-import { Route as WorkspaceUrlNameTasksNewRouteImport } from './routes/workspace/$urlName/tasks/new'
-import { Route as WorkspaceUrlNameTasksTaskIdRouteImport } from './routes/workspace/$urlName/tasks/$taskId'
-import { Route as WorkspaceUrlNameSettingsPermissionsRouteImport } from './routes/workspace/$urlName/settings/permissions'
-import { Route as WorkspaceUrlNameSettingsGeneralRouteImport } from './routes/workspace/$urlName/settings/general'
-import { Route as WorkspaceUrlNameSettingsAssigneesRouteImport } from './routes/workspace/$urlName/settings/assignees'
-import { Route as WorkspaceUrlNameDashboardNewRouteImport } from './routes/workspace/$urlName/dashboard/new'
-import { Route as PersonalTasksTaskTaskIdRouteImport } from './routes/personal/tasks/task/$taskId'
-import { Route as PersonalTaskTaskIdEditRouteImport } from './routes/personal/task/$taskId/edit'
+import { Route as WorkspaceUrlNameIndexRouteImport } from './routes/workspace/$urlName/index'
+import { Route as WorkspaceUrlNameArchiveRouteImport } from './routes/workspace/$urlName/archive'
+import { Route as WorkspaceUrlNameDashboardRouteImport } from './routes/workspace/$urlName/dashboard'
+import { Route as WorkspaceUrlNameSettingsRouteImport } from './routes/workspace/$urlName/settings'
+import { Route as WorkspaceUrlNameTasksRouteImport } from './routes/workspace/$urlName/tasks'
 import { Route as PersonalArchiveTaskTaskIdRouteImport } from './routes/personal/archive/task/$taskId'
-import { Route as WorkspaceUrlNameTasksTaskIdIndexRouteImport } from './routes/workspace/$urlName/tasks/$taskId/index'
-import { Route as PersonalTasksTaskTaskIdIndexRouteImport } from './routes/personal/tasks/task/$taskId/index'
+import { Route as PersonalTaskTaskIdIndexRouteImport } from './routes/personal/task/$taskId/index'
+import { Route as PersonalTaskTaskIdEditRouteImport } from './routes/personal/task/$taskId/edit'
+import { Route as PersonalTasksTaskTaskIdRouteImport } from './routes/personal/tasks/task/$taskId'
+import { Route as WorkspaceUrlNameDashboardNewRouteImport } from './routes/workspace/$urlName/dashboard/new'
+import { Route as WorkspaceUrlNameSettingsIndexRouteImport } from './routes/workspace/$urlName/settings/index'
+import { Route as WorkspaceUrlNameSettingsAssigneesRouteImport } from './routes/workspace/$urlName/settings/assignees'
+import { Route as WorkspaceUrlNameSettingsGeneralRouteImport } from './routes/workspace/$urlName/settings/general'
+import { Route as WorkspaceUrlNameSettingsPermissionsRouteImport } from './routes/workspace/$urlName/settings/permissions'
+import { Route as WorkspaceUrlNameTasksIndexRouteImport } from './routes/workspace/$urlName/tasks/index'
+import { Route as WorkspaceUrlNameTasksTaskIdRouteImport } from './routes/workspace/$urlName/tasks/$taskId'
+import { Route as WorkspaceUrlNameTasksNewRouteImport } from './routes/workspace/$urlName/tasks/new'
 import { Route as PersonalArchiveTaskTaskIdIndexRouteImport } from './routes/personal/archive/task/$taskId/index'
-import { Route as WorkspaceUrlNameTasksTaskIdEditRouteImport } from './routes/workspace/$urlName/tasks/$taskId/edit'
-import { Route as WorkspaceUrlNameSettingsAssigneesNewRouteImport } from './routes/workspace/$urlName/settings/assignees/new'
-import { Route as WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteImport } from './routes/workspace/$urlName/settings/assignees/$assigneeId'
-import { Route as WorkspaceUrlNameDashboardTaskTaskIdRouteImport } from './routes/workspace/$urlName/dashboard/task/$taskId'
-import { Route as WorkspaceUrlNameArchiveTaskTaskIdRouteImport } from './routes/workspace/$urlName/archive/task/$taskId'
+import { Route as PersonalTasksTaskTaskIdIndexRouteImport } from './routes/personal/tasks/task/$taskId/index'
 import { Route as PersonalTasksTaskTaskIdEditRouteImport } from './routes/personal/tasks/task/$taskId/edit'
-import { Route as WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRouteImport } from './routes/workspace/$urlName/settings/assignees/$assigneeId/index'
-import { Route as WorkspaceUrlNameDashboardTaskTaskIdIndexRouteImport } from './routes/workspace/$urlName/dashboard/task/$taskId/index'
+import { Route as WorkspaceUrlNameArchiveTaskTaskIdRouteImport } from './routes/workspace/$urlName/archive/task/$taskId'
+import { Route as WorkspaceUrlNameDashboardTaskTaskIdRouteImport } from './routes/workspace/$urlName/dashboard/task/$taskId'
+import { Route as WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteImport } from './routes/workspace/$urlName/settings/assignees/$assigneeId'
+import { Route as WorkspaceUrlNameSettingsAssigneesNewRouteImport } from './routes/workspace/$urlName/settings/assignees/new'
+import { Route as WorkspaceUrlNameTasksTaskIdIndexRouteImport } from './routes/workspace/$urlName/tasks/$taskId/index'
+import { Route as WorkspaceUrlNameTasksTaskIdEditRouteImport } from './routes/workspace/$urlName/tasks/$taskId/edit'
 import { Route as WorkspaceUrlNameArchiveTaskTaskIdIndexRouteImport } from './routes/workspace/$urlName/archive/task/$taskId/index'
+import { Route as WorkspaceUrlNameDashboardTaskTaskIdIndexRouteImport } from './routes/workspace/$urlName/dashboard/task/$taskId/index'
 import { Route as WorkspaceUrlNameDashboardTaskTaskIdEditRouteImport } from './routes/workspace/$urlName/dashboard/task/$taskId/edit'
+import { Route as WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRouteImport } from './routes/workspace/$urlName/settings/assignees/$assigneeId/index'
 
-const PersonalRoute = PersonalRouteImport.update({
-  id: '/personal',
-  path: '/personal',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewWorkspaceRoute = NewWorkspaceRouteImport.update({
@@ -58,9 +58,9 @@ const NewWorkspaceRoute = NewWorkspaceRouteImport.update({
   path: '/new-workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const PersonalRoute = PersonalRouteImport.update({
+  id: '/personal',
+  path: '/personal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PersonalIndexRoute = PersonalIndexRouteImport.update({
@@ -68,14 +68,14 @@ const PersonalIndexRoute = PersonalIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PersonalRoute,
 } as any)
-const PersonalTasksRoute = PersonalTasksRouteImport.update({
-  id: '/tasks',
-  path: '/tasks',
-  getParentRoute: () => PersonalRoute,
-} as any)
 const PersonalArchiveRoute = PersonalArchiveRouteImport.update({
   id: '/archive',
   path: '/archive',
+  getParentRoute: () => PersonalRoute,
+} as any)
+const PersonalTasksRoute = PersonalTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
   getParentRoute: () => PersonalRoute,
 } as any)
 const WorkspaceUrlNameRouteRoute = WorkspaceUrlNameRouteRouteImport.update({
@@ -83,77 +83,69 @@ const WorkspaceUrlNameRouteRoute = WorkspaceUrlNameRouteRouteImport.update({
   path: '/workspace/$urlName',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PersonalTaskTaskIdRoute = PersonalTaskTaskIdRouteImport.update({
+  id: '/task/$taskId',
+  path: '/task/$taskId',
+  getParentRoute: () => PersonalRoute,
+} as any)
 const WorkspaceUrlNameIndexRoute = WorkspaceUrlNameIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => WorkspaceUrlNameRouteRoute,
 } as any)
-const WorkspaceUrlNameTasksRoute = WorkspaceUrlNameTasksRouteImport.update({
-  id: '/tasks',
-  path: '/tasks',
+const WorkspaceUrlNameArchiveRoute = WorkspaceUrlNameArchiveRouteImport.update({
+  id: '/archive',
+  path: '/archive',
   getParentRoute: () => WorkspaceUrlNameRouteRoute,
 } as any)
-const WorkspaceUrlNameSettingsRoute =
-  WorkspaceUrlNameSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => WorkspaceUrlNameRouteRoute,
-  } as any)
 const WorkspaceUrlNameDashboardRoute =
   WorkspaceUrlNameDashboardRouteImport.update({
     id: '/dashboard',
     path: '/dashboard',
     getParentRoute: () => WorkspaceUrlNameRouteRoute,
   } as any)
-const WorkspaceUrlNameArchiveRoute = WorkspaceUrlNameArchiveRouteImport.update({
-  id: '/archive',
-  path: '/archive',
+const WorkspaceUrlNameSettingsRoute =
+  WorkspaceUrlNameSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => WorkspaceUrlNameRouteRoute,
+  } as any)
+const WorkspaceUrlNameTasksRoute = WorkspaceUrlNameTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
   getParentRoute: () => WorkspaceUrlNameRouteRoute,
 } as any)
-const PersonalTaskTaskIdRoute = PersonalTaskTaskIdRouteImport.update({
-  id: '/task/$taskId',
-  path: '/task/$taskId',
-  getParentRoute: () => PersonalRoute,
-} as any)
-const WorkspaceUrlNameTasksIndexRoute =
-  WorkspaceUrlNameTasksIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => WorkspaceUrlNameTasksRoute,
-  } as any)
-const WorkspaceUrlNameSettingsIndexRoute =
-  WorkspaceUrlNameSettingsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => WorkspaceUrlNameSettingsRoute,
+const PersonalArchiveTaskTaskIdRoute =
+  PersonalArchiveTaskTaskIdRouteImport.update({
+    id: '/task/$taskId',
+    path: '/task/$taskId',
+    getParentRoute: () => PersonalArchiveRoute,
   } as any)
 const PersonalTaskTaskIdIndexRoute = PersonalTaskTaskIdIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PersonalTaskTaskIdRoute,
 } as any)
-const WorkspaceUrlNameTasksNewRoute =
-  WorkspaceUrlNameTasksNewRouteImport.update({
+const PersonalTaskTaskIdEditRoute = PersonalTaskTaskIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => PersonalTaskTaskIdRoute,
+} as any)
+const PersonalTasksTaskTaskIdRoute = PersonalTasksTaskTaskIdRouteImport.update({
+  id: '/task/$taskId',
+  path: '/task/$taskId',
+  getParentRoute: () => PersonalTasksRoute,
+} as any)
+const WorkspaceUrlNameDashboardNewRoute =
+  WorkspaceUrlNameDashboardNewRouteImport.update({
     id: '/new',
     path: '/new',
-    getParentRoute: () => WorkspaceUrlNameTasksRoute,
+    getParentRoute: () => WorkspaceUrlNameDashboardRoute,
   } as any)
-const WorkspaceUrlNameTasksTaskIdRoute =
-  WorkspaceUrlNameTasksTaskIdRouteImport.update({
-    id: '/$taskId',
-    path: '/$taskId',
-    getParentRoute: () => WorkspaceUrlNameTasksRoute,
-  } as any)
-const WorkspaceUrlNameSettingsPermissionsRoute =
-  WorkspaceUrlNameSettingsPermissionsRouteImport.update({
-    id: '/permissions',
-    path: '/permissions',
-    getParentRoute: () => WorkspaceUrlNameSettingsRoute,
-  } as any)
-const WorkspaceUrlNameSettingsGeneralRoute =
-  WorkspaceUrlNameSettingsGeneralRouteImport.update({
-    id: '/general',
-    path: '/general',
+const WorkspaceUrlNameSettingsIndexRoute =
+  WorkspaceUrlNameSettingsIndexRouteImport.update({
+    id: '/',
+    path: '/',
     getParentRoute: () => WorkspaceUrlNameSettingsRoute,
   } as any)
 const WorkspaceUrlNameSettingsAssigneesRoute =
@@ -162,39 +154,35 @@ const WorkspaceUrlNameSettingsAssigneesRoute =
     path: '/assignees',
     getParentRoute: () => WorkspaceUrlNameSettingsRoute,
   } as any)
-const WorkspaceUrlNameDashboardNewRoute =
-  WorkspaceUrlNameDashboardNewRouteImport.update({
+const WorkspaceUrlNameSettingsGeneralRoute =
+  WorkspaceUrlNameSettingsGeneralRouteImport.update({
+    id: '/general',
+    path: '/general',
+    getParentRoute: () => WorkspaceUrlNameSettingsRoute,
+  } as any)
+const WorkspaceUrlNameSettingsPermissionsRoute =
+  WorkspaceUrlNameSettingsPermissionsRouteImport.update({
+    id: '/permissions',
+    path: '/permissions',
+    getParentRoute: () => WorkspaceUrlNameSettingsRoute,
+  } as any)
+const WorkspaceUrlNameTasksIndexRoute =
+  WorkspaceUrlNameTasksIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => WorkspaceUrlNameTasksRoute,
+  } as any)
+const WorkspaceUrlNameTasksTaskIdRoute =
+  WorkspaceUrlNameTasksTaskIdRouteImport.update({
+    id: '/$taskId',
+    path: '/$taskId',
+    getParentRoute: () => WorkspaceUrlNameTasksRoute,
+  } as any)
+const WorkspaceUrlNameTasksNewRoute =
+  WorkspaceUrlNameTasksNewRouteImport.update({
     id: '/new',
     path: '/new',
-    getParentRoute: () => WorkspaceUrlNameDashboardRoute,
-  } as any)
-const PersonalTasksTaskTaskIdRoute = PersonalTasksTaskTaskIdRouteImport.update({
-  id: '/task/$taskId',
-  path: '/task/$taskId',
-  getParentRoute: () => PersonalTasksRoute,
-} as any)
-const PersonalTaskTaskIdEditRoute = PersonalTaskTaskIdEditRouteImport.update({
-  id: '/edit',
-  path: '/edit',
-  getParentRoute: () => PersonalTaskTaskIdRoute,
-} as any)
-const PersonalArchiveTaskTaskIdRoute =
-  PersonalArchiveTaskTaskIdRouteImport.update({
-    id: '/task/$taskId',
-    path: '/task/$taskId',
-    getParentRoute: () => PersonalArchiveRoute,
-  } as any)
-const WorkspaceUrlNameTasksTaskIdIndexRoute =
-  WorkspaceUrlNameTasksTaskIdIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => WorkspaceUrlNameTasksTaskIdRoute,
-  } as any)
-const PersonalTasksTaskTaskIdIndexRoute =
-  PersonalTasksTaskTaskIdIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => PersonalTasksTaskTaskIdRoute,
+    getParentRoute: () => WorkspaceUrlNameTasksRoute,
   } as any)
 const PersonalArchiveTaskTaskIdIndexRoute =
   PersonalArchiveTaskTaskIdIndexRouteImport.update({
@@ -202,35 +190,11 @@ const PersonalArchiveTaskTaskIdIndexRoute =
     path: '/',
     getParentRoute: () => PersonalArchiveTaskTaskIdRoute,
   } as any)
-const WorkspaceUrlNameTasksTaskIdEditRoute =
-  WorkspaceUrlNameTasksTaskIdEditRouteImport.update({
-    id: '/edit',
-    path: '/edit',
-    getParentRoute: () => WorkspaceUrlNameTasksTaskIdRoute,
-  } as any)
-const WorkspaceUrlNameSettingsAssigneesNewRoute =
-  WorkspaceUrlNameSettingsAssigneesNewRouteImport.update({
-    id: '/new',
-    path: '/new',
-    getParentRoute: () => WorkspaceUrlNameSettingsAssigneesRoute,
-  } as any)
-const WorkspaceUrlNameSettingsAssigneesAssigneeIdRoute =
-  WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteImport.update({
-    id: '/$assigneeId',
-    path: '/$assigneeId',
-    getParentRoute: () => WorkspaceUrlNameSettingsAssigneesRoute,
-  } as any)
-const WorkspaceUrlNameDashboardTaskTaskIdRoute =
-  WorkspaceUrlNameDashboardTaskTaskIdRouteImport.update({
-    id: '/task/$taskId',
-    path: '/task/$taskId',
-    getParentRoute: () => WorkspaceUrlNameDashboardRoute,
-  } as any)
-const WorkspaceUrlNameArchiveTaskTaskIdRoute =
-  WorkspaceUrlNameArchiveTaskTaskIdRouteImport.update({
-    id: '/task/$taskId',
-    path: '/task/$taskId',
-    getParentRoute: () => WorkspaceUrlNameArchiveRoute,
+const PersonalTasksTaskTaskIdIndexRoute =
+  PersonalTasksTaskTaskIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => PersonalTasksTaskTaskIdRoute,
   } as any)
 const PersonalTasksTaskTaskIdEditRoute =
   PersonalTasksTaskTaskIdEditRouteImport.update({
@@ -238,17 +202,41 @@ const PersonalTasksTaskTaskIdEditRoute =
     path: '/edit',
     getParentRoute: () => PersonalTasksTaskTaskIdRoute,
   } as any)
-const WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRoute =
-  WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => WorkspaceUrlNameSettingsAssigneesAssigneeIdRoute,
+const WorkspaceUrlNameArchiveTaskTaskIdRoute =
+  WorkspaceUrlNameArchiveTaskTaskIdRouteImport.update({
+    id: '/task/$taskId',
+    path: '/task/$taskId',
+    getParentRoute: () => WorkspaceUrlNameArchiveRoute,
   } as any)
-const WorkspaceUrlNameDashboardTaskTaskIdIndexRoute =
-  WorkspaceUrlNameDashboardTaskTaskIdIndexRouteImport.update({
+const WorkspaceUrlNameDashboardTaskTaskIdRoute =
+  WorkspaceUrlNameDashboardTaskTaskIdRouteImport.update({
+    id: '/task/$taskId',
+    path: '/task/$taskId',
+    getParentRoute: () => WorkspaceUrlNameDashboardRoute,
+  } as any)
+const WorkspaceUrlNameSettingsAssigneesAssigneeIdRoute =
+  WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteImport.update({
+    id: '/$assigneeId',
+    path: '/$assigneeId',
+    getParentRoute: () => WorkspaceUrlNameSettingsAssigneesRoute,
+  } as any)
+const WorkspaceUrlNameSettingsAssigneesNewRoute =
+  WorkspaceUrlNameSettingsAssigneesNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => WorkspaceUrlNameSettingsAssigneesRoute,
+  } as any)
+const WorkspaceUrlNameTasksTaskIdIndexRoute =
+  WorkspaceUrlNameTasksTaskIdIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => WorkspaceUrlNameDashboardTaskTaskIdRoute,
+    getParentRoute: () => WorkspaceUrlNameTasksTaskIdRoute,
+  } as any)
+const WorkspaceUrlNameTasksTaskIdEditRoute =
+  WorkspaceUrlNameTasksTaskIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => WorkspaceUrlNameTasksTaskIdRoute,
   } as any)
 const WorkspaceUrlNameArchiveTaskTaskIdIndexRoute =
   WorkspaceUrlNameArchiveTaskTaskIdIndexRouteImport.update({
@@ -256,11 +244,23 @@ const WorkspaceUrlNameArchiveTaskTaskIdIndexRoute =
     path: '/',
     getParentRoute: () => WorkspaceUrlNameArchiveTaskTaskIdRoute,
   } as any)
+const WorkspaceUrlNameDashboardTaskTaskIdIndexRoute =
+  WorkspaceUrlNameDashboardTaskTaskIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => WorkspaceUrlNameDashboardTaskTaskIdRoute,
+  } as any)
 const WorkspaceUrlNameDashboardTaskTaskIdEditRoute =
   WorkspaceUrlNameDashboardTaskTaskIdEditRouteImport.update({
     id: '/edit',
     path: '/edit',
     getParentRoute: () => WorkspaceUrlNameDashboardTaskTaskIdRoute,
+  } as any)
+const WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRoute =
+  WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => WorkspaceUrlNameSettingsAssigneesAssigneeIdRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -494,11 +494,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/personal': {
-      id: '/personal'
-      path: '/personal'
-      fullPath: '/personal'
-      preLoaderRoute: typeof PersonalRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/new-workspace': {
@@ -508,11 +508,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewWorkspaceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/personal': {
+      id: '/personal'
+      path: '/personal'
+      fullPath: '/personal'
+      preLoaderRoute: typeof PersonalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/personal/': {
@@ -522,18 +522,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PersonalIndexRouteImport
       parentRoute: typeof PersonalRoute
     }
-    '/personal/tasks': {
-      id: '/personal/tasks'
-      path: '/tasks'
-      fullPath: '/personal/tasks'
-      preLoaderRoute: typeof PersonalTasksRouteImport
-      parentRoute: typeof PersonalRoute
-    }
     '/personal/archive': {
       id: '/personal/archive'
       path: '/archive'
       fullPath: '/personal/archive'
       preLoaderRoute: typeof PersonalArchiveRouteImport
+      parentRoute: typeof PersonalRoute
+    }
+    '/personal/tasks': {
+      id: '/personal/tasks'
+      path: '/tasks'
+      fullPath: '/personal/tasks'
+      preLoaderRoute: typeof PersonalTasksRouteImport
       parentRoute: typeof PersonalRoute
     }
     '/workspace/$urlName': {
@@ -543,32 +543,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceUrlNameRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/personal/task/$taskId': {
+      id: '/personal/task/$taskId'
+      path: '/task/$taskId'
+      fullPath: '/personal/task/$taskId'
+      preLoaderRoute: typeof PersonalTaskTaskIdRouteImport
+      parentRoute: typeof PersonalRoute
+    }
     '/workspace/$urlName/': {
       id: '/workspace/$urlName/'
       path: '/'
       fullPath: '/workspace/$urlName/'
       preLoaderRoute: typeof WorkspaceUrlNameIndexRouteImport
-      parentRoute: typeof WorkspaceUrlNameRouteRoute
-    }
-    '/workspace/$urlName/tasks': {
-      id: '/workspace/$urlName/tasks'
-      path: '/tasks'
-      fullPath: '/workspace/$urlName/tasks'
-      preLoaderRoute: typeof WorkspaceUrlNameTasksRouteImport
-      parentRoute: typeof WorkspaceUrlNameRouteRoute
-    }
-    '/workspace/$urlName/settings': {
-      id: '/workspace/$urlName/settings'
-      path: '/settings'
-      fullPath: '/workspace/$urlName/settings'
-      preLoaderRoute: typeof WorkspaceUrlNameSettingsRouteImport
-      parentRoute: typeof WorkspaceUrlNameRouteRoute
-    }
-    '/workspace/$urlName/dashboard': {
-      id: '/workspace/$urlName/dashboard'
-      path: '/dashboard'
-      fullPath: '/workspace/$urlName/dashboard'
-      preLoaderRoute: typeof WorkspaceUrlNameDashboardRouteImport
       parentRoute: typeof WorkspaceUrlNameRouteRoute
     }
     '/workspace/$urlName/archive': {
@@ -578,26 +564,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceUrlNameArchiveRouteImport
       parentRoute: typeof WorkspaceUrlNameRouteRoute
     }
-    '/personal/task/$taskId': {
-      id: '/personal/task/$taskId'
+    '/workspace/$urlName/dashboard': {
+      id: '/workspace/$urlName/dashboard'
+      path: '/dashboard'
+      fullPath: '/workspace/$urlName/dashboard'
+      preLoaderRoute: typeof WorkspaceUrlNameDashboardRouteImport
+      parentRoute: typeof WorkspaceUrlNameRouteRoute
+    }
+    '/workspace/$urlName/settings': {
+      id: '/workspace/$urlName/settings'
+      path: '/settings'
+      fullPath: '/workspace/$urlName/settings'
+      preLoaderRoute: typeof WorkspaceUrlNameSettingsRouteImport
+      parentRoute: typeof WorkspaceUrlNameRouteRoute
+    }
+    '/workspace/$urlName/tasks': {
+      id: '/workspace/$urlName/tasks'
+      path: '/tasks'
+      fullPath: '/workspace/$urlName/tasks'
+      preLoaderRoute: typeof WorkspaceUrlNameTasksRouteImport
+      parentRoute: typeof WorkspaceUrlNameRouteRoute
+    }
+    '/personal/archive/task/$taskId': {
+      id: '/personal/archive/task/$taskId'
       path: '/task/$taskId'
-      fullPath: '/personal/task/$taskId'
-      preLoaderRoute: typeof PersonalTaskTaskIdRouteImport
-      parentRoute: typeof PersonalRoute
-    }
-    '/workspace/$urlName/tasks/': {
-      id: '/workspace/$urlName/tasks/'
-      path: '/'
-      fullPath: '/workspace/$urlName/tasks/'
-      preLoaderRoute: typeof WorkspaceUrlNameTasksIndexRouteImport
-      parentRoute: typeof WorkspaceUrlNameTasksRoute
-    }
-    '/workspace/$urlName/settings/': {
-      id: '/workspace/$urlName/settings/'
-      path: '/'
-      fullPath: '/workspace/$urlName/settings/'
-      preLoaderRoute: typeof WorkspaceUrlNameSettingsIndexRouteImport
-      parentRoute: typeof WorkspaceUrlNameSettingsRoute
+      fullPath: '/personal/archive/task/$taskId'
+      preLoaderRoute: typeof PersonalArchiveTaskTaskIdRouteImport
+      parentRoute: typeof PersonalArchiveRoute
     }
     '/personal/task/$taskId/': {
       id: '/personal/task/$taskId/'
@@ -606,32 +599,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PersonalTaskTaskIdIndexRouteImport
       parentRoute: typeof PersonalTaskTaskIdRoute
     }
-    '/workspace/$urlName/tasks/new': {
-      id: '/workspace/$urlName/tasks/new'
+    '/personal/task/$taskId/edit': {
+      id: '/personal/task/$taskId/edit'
+      path: '/edit'
+      fullPath: '/personal/task/$taskId/edit'
+      preLoaderRoute: typeof PersonalTaskTaskIdEditRouteImport
+      parentRoute: typeof PersonalTaskTaskIdRoute
+    }
+    '/personal/tasks/task/$taskId': {
+      id: '/personal/tasks/task/$taskId'
+      path: '/task/$taskId'
+      fullPath: '/personal/tasks/task/$taskId'
+      preLoaderRoute: typeof PersonalTasksTaskTaskIdRouteImport
+      parentRoute: typeof PersonalTasksRoute
+    }
+    '/workspace/$urlName/dashboard/new': {
+      id: '/workspace/$urlName/dashboard/new'
       path: '/new'
-      fullPath: '/workspace/$urlName/tasks/new'
-      preLoaderRoute: typeof WorkspaceUrlNameTasksNewRouteImport
-      parentRoute: typeof WorkspaceUrlNameTasksRoute
+      fullPath: '/workspace/$urlName/dashboard/new'
+      preLoaderRoute: typeof WorkspaceUrlNameDashboardNewRouteImport
+      parentRoute: typeof WorkspaceUrlNameDashboardRoute
     }
-    '/workspace/$urlName/tasks/$taskId': {
-      id: '/workspace/$urlName/tasks/$taskId'
-      path: '/$taskId'
-      fullPath: '/workspace/$urlName/tasks/$taskId'
-      preLoaderRoute: typeof WorkspaceUrlNameTasksTaskIdRouteImport
-      parentRoute: typeof WorkspaceUrlNameTasksRoute
-    }
-    '/workspace/$urlName/settings/permissions': {
-      id: '/workspace/$urlName/settings/permissions'
-      path: '/permissions'
-      fullPath: '/workspace/$urlName/settings/permissions'
-      preLoaderRoute: typeof WorkspaceUrlNameSettingsPermissionsRouteImport
-      parentRoute: typeof WorkspaceUrlNameSettingsRoute
-    }
-    '/workspace/$urlName/settings/general': {
-      id: '/workspace/$urlName/settings/general'
-      path: '/general'
-      fullPath: '/workspace/$urlName/settings/general'
-      preLoaderRoute: typeof WorkspaceUrlNameSettingsGeneralRouteImport
+    '/workspace/$urlName/settings/': {
+      id: '/workspace/$urlName/settings/'
+      path: '/'
+      fullPath: '/workspace/$urlName/settings/'
+      preLoaderRoute: typeof WorkspaceUrlNameSettingsIndexRouteImport
       parentRoute: typeof WorkspaceUrlNameSettingsRoute
     }
     '/workspace/$urlName/settings/assignees': {
@@ -641,47 +634,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceUrlNameSettingsAssigneesRouteImport
       parentRoute: typeof WorkspaceUrlNameSettingsRoute
     }
-    '/workspace/$urlName/dashboard/new': {
-      id: '/workspace/$urlName/dashboard/new'
+    '/workspace/$urlName/settings/general': {
+      id: '/workspace/$urlName/settings/general'
+      path: '/general'
+      fullPath: '/workspace/$urlName/settings/general'
+      preLoaderRoute: typeof WorkspaceUrlNameSettingsGeneralRouteImport
+      parentRoute: typeof WorkspaceUrlNameSettingsRoute
+    }
+    '/workspace/$urlName/settings/permissions': {
+      id: '/workspace/$urlName/settings/permissions'
+      path: '/permissions'
+      fullPath: '/workspace/$urlName/settings/permissions'
+      preLoaderRoute: typeof WorkspaceUrlNameSettingsPermissionsRouteImport
+      parentRoute: typeof WorkspaceUrlNameSettingsRoute
+    }
+    '/workspace/$urlName/tasks/': {
+      id: '/workspace/$urlName/tasks/'
+      path: '/'
+      fullPath: '/workspace/$urlName/tasks/'
+      preLoaderRoute: typeof WorkspaceUrlNameTasksIndexRouteImport
+      parentRoute: typeof WorkspaceUrlNameTasksRoute
+    }
+    '/workspace/$urlName/tasks/$taskId': {
+      id: '/workspace/$urlName/tasks/$taskId'
+      path: '/$taskId'
+      fullPath: '/workspace/$urlName/tasks/$taskId'
+      preLoaderRoute: typeof WorkspaceUrlNameTasksTaskIdRouteImport
+      parentRoute: typeof WorkspaceUrlNameTasksRoute
+    }
+    '/workspace/$urlName/tasks/new': {
+      id: '/workspace/$urlName/tasks/new'
       path: '/new'
-      fullPath: '/workspace/$urlName/dashboard/new'
-      preLoaderRoute: typeof WorkspaceUrlNameDashboardNewRouteImport
-      parentRoute: typeof WorkspaceUrlNameDashboardRoute
-    }
-    '/personal/tasks/task/$taskId': {
-      id: '/personal/tasks/task/$taskId'
-      path: '/task/$taskId'
-      fullPath: '/personal/tasks/task/$taskId'
-      preLoaderRoute: typeof PersonalTasksTaskTaskIdRouteImport
-      parentRoute: typeof PersonalTasksRoute
-    }
-    '/personal/task/$taskId/edit': {
-      id: '/personal/task/$taskId/edit'
-      path: '/edit'
-      fullPath: '/personal/task/$taskId/edit'
-      preLoaderRoute: typeof PersonalTaskTaskIdEditRouteImport
-      parentRoute: typeof PersonalTaskTaskIdRoute
-    }
-    '/personal/archive/task/$taskId': {
-      id: '/personal/archive/task/$taskId'
-      path: '/task/$taskId'
-      fullPath: '/personal/archive/task/$taskId'
-      preLoaderRoute: typeof PersonalArchiveTaskTaskIdRouteImport
-      parentRoute: typeof PersonalArchiveRoute
-    }
-    '/workspace/$urlName/tasks/$taskId/': {
-      id: '/workspace/$urlName/tasks/$taskId/'
-      path: '/'
-      fullPath: '/workspace/$urlName/tasks/$taskId/'
-      preLoaderRoute: typeof WorkspaceUrlNameTasksTaskIdIndexRouteImport
-      parentRoute: typeof WorkspaceUrlNameTasksTaskIdRoute
-    }
-    '/personal/tasks/task/$taskId/': {
-      id: '/personal/tasks/task/$taskId/'
-      path: '/'
-      fullPath: '/personal/tasks/task/$taskId/'
-      preLoaderRoute: typeof PersonalTasksTaskTaskIdIndexRouteImport
-      parentRoute: typeof PersonalTasksTaskTaskIdRoute
+      fullPath: '/workspace/$urlName/tasks/new'
+      preLoaderRoute: typeof WorkspaceUrlNameTasksNewRouteImport
+      parentRoute: typeof WorkspaceUrlNameTasksRoute
     }
     '/personal/archive/task/$taskId/': {
       id: '/personal/archive/task/$taskId/'
@@ -690,40 +676,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PersonalArchiveTaskTaskIdIndexRouteImport
       parentRoute: typeof PersonalArchiveTaskTaskIdRoute
     }
-    '/workspace/$urlName/tasks/$taskId/edit': {
-      id: '/workspace/$urlName/tasks/$taskId/edit'
-      path: '/edit'
-      fullPath: '/workspace/$urlName/tasks/$taskId/edit'
-      preLoaderRoute: typeof WorkspaceUrlNameTasksTaskIdEditRouteImport
-      parentRoute: typeof WorkspaceUrlNameTasksTaskIdRoute
-    }
-    '/workspace/$urlName/settings/assignees/new': {
-      id: '/workspace/$urlName/settings/assignees/new'
-      path: '/new'
-      fullPath: '/workspace/$urlName/settings/assignees/new'
-      preLoaderRoute: typeof WorkspaceUrlNameSettingsAssigneesNewRouteImport
-      parentRoute: typeof WorkspaceUrlNameSettingsAssigneesRoute
-    }
-    '/workspace/$urlName/settings/assignees/$assigneeId': {
-      id: '/workspace/$urlName/settings/assignees/$assigneeId'
-      path: '/$assigneeId'
-      fullPath: '/workspace/$urlName/settings/assignees/$assigneeId'
-      preLoaderRoute: typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteImport
-      parentRoute: typeof WorkspaceUrlNameSettingsAssigneesRoute
-    }
-    '/workspace/$urlName/dashboard/task/$taskId': {
-      id: '/workspace/$urlName/dashboard/task/$taskId'
-      path: '/task/$taskId'
-      fullPath: '/workspace/$urlName/dashboard/task/$taskId'
-      preLoaderRoute: typeof WorkspaceUrlNameDashboardTaskTaskIdRouteImport
-      parentRoute: typeof WorkspaceUrlNameDashboardRoute
-    }
-    '/workspace/$urlName/archive/task/$taskId': {
-      id: '/workspace/$urlName/archive/task/$taskId'
-      path: '/task/$taskId'
-      fullPath: '/workspace/$urlName/archive/task/$taskId'
-      preLoaderRoute: typeof WorkspaceUrlNameArchiveTaskTaskIdRouteImport
-      parentRoute: typeof WorkspaceUrlNameArchiveRoute
+    '/personal/tasks/task/$taskId/': {
+      id: '/personal/tasks/task/$taskId/'
+      path: '/'
+      fullPath: '/personal/tasks/task/$taskId/'
+      preLoaderRoute: typeof PersonalTasksTaskTaskIdIndexRouteImport
+      parentRoute: typeof PersonalTasksTaskTaskIdRoute
     }
     '/personal/tasks/task/$taskId/edit': {
       id: '/personal/tasks/task/$taskId/edit'
@@ -732,19 +690,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PersonalTasksTaskTaskIdEditRouteImport
       parentRoute: typeof PersonalTasksTaskTaskIdRoute
     }
-    '/workspace/$urlName/settings/assignees/$assigneeId/': {
-      id: '/workspace/$urlName/settings/assignees/$assigneeId/'
-      path: '/'
-      fullPath: '/workspace/$urlName/settings/assignees/$assigneeId/'
-      preLoaderRoute: typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRouteImport
-      parentRoute: typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdRoute
+    '/workspace/$urlName/archive/task/$taskId': {
+      id: '/workspace/$urlName/archive/task/$taskId'
+      path: '/task/$taskId'
+      fullPath: '/workspace/$urlName/archive/task/$taskId'
+      preLoaderRoute: typeof WorkspaceUrlNameArchiveTaskTaskIdRouteImport
+      parentRoute: typeof WorkspaceUrlNameArchiveRoute
     }
-    '/workspace/$urlName/dashboard/task/$taskId/': {
-      id: '/workspace/$urlName/dashboard/task/$taskId/'
+    '/workspace/$urlName/dashboard/task/$taskId': {
+      id: '/workspace/$urlName/dashboard/task/$taskId'
+      path: '/task/$taskId'
+      fullPath: '/workspace/$urlName/dashboard/task/$taskId'
+      preLoaderRoute: typeof WorkspaceUrlNameDashboardTaskTaskIdRouteImport
+      parentRoute: typeof WorkspaceUrlNameDashboardRoute
+    }
+    '/workspace/$urlName/settings/assignees/$assigneeId': {
+      id: '/workspace/$urlName/settings/assignees/$assigneeId'
+      path: '/$assigneeId'
+      fullPath: '/workspace/$urlName/settings/assignees/$assigneeId'
+      preLoaderRoute: typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteImport
+      parentRoute: typeof WorkspaceUrlNameSettingsAssigneesRoute
+    }
+    '/workspace/$urlName/settings/assignees/new': {
+      id: '/workspace/$urlName/settings/assignees/new'
+      path: '/new'
+      fullPath: '/workspace/$urlName/settings/assignees/new'
+      preLoaderRoute: typeof WorkspaceUrlNameSettingsAssigneesNewRouteImport
+      parentRoute: typeof WorkspaceUrlNameSettingsAssigneesRoute
+    }
+    '/workspace/$urlName/tasks/$taskId/': {
+      id: '/workspace/$urlName/tasks/$taskId/'
       path: '/'
-      fullPath: '/workspace/$urlName/dashboard/task/$taskId/'
-      preLoaderRoute: typeof WorkspaceUrlNameDashboardTaskTaskIdIndexRouteImport
-      parentRoute: typeof WorkspaceUrlNameDashboardTaskTaskIdRoute
+      fullPath: '/workspace/$urlName/tasks/$taskId/'
+      preLoaderRoute: typeof WorkspaceUrlNameTasksTaskIdIndexRouteImport
+      parentRoute: typeof WorkspaceUrlNameTasksTaskIdRoute
+    }
+    '/workspace/$urlName/tasks/$taskId/edit': {
+      id: '/workspace/$urlName/tasks/$taskId/edit'
+      path: '/edit'
+      fullPath: '/workspace/$urlName/tasks/$taskId/edit'
+      preLoaderRoute: typeof WorkspaceUrlNameTasksTaskIdEditRouteImport
+      parentRoute: typeof WorkspaceUrlNameTasksTaskIdRoute
     }
     '/workspace/$urlName/archive/task/$taskId/': {
       id: '/workspace/$urlName/archive/task/$taskId/'
@@ -753,12 +739,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceUrlNameArchiveTaskTaskIdIndexRouteImport
       parentRoute: typeof WorkspaceUrlNameArchiveTaskTaskIdRoute
     }
+    '/workspace/$urlName/dashboard/task/$taskId/': {
+      id: '/workspace/$urlName/dashboard/task/$taskId/'
+      path: '/'
+      fullPath: '/workspace/$urlName/dashboard/task/$taskId/'
+      preLoaderRoute: typeof WorkspaceUrlNameDashboardTaskTaskIdIndexRouteImport
+      parentRoute: typeof WorkspaceUrlNameDashboardTaskTaskIdRoute
+    }
     '/workspace/$urlName/dashboard/task/$taskId/edit': {
       id: '/workspace/$urlName/dashboard/task/$taskId/edit'
       path: '/edit'
       fullPath: '/workspace/$urlName/dashboard/task/$taskId/edit'
       preLoaderRoute: typeof WorkspaceUrlNameDashboardTaskTaskIdEditRouteImport
       parentRoute: typeof WorkspaceUrlNameDashboardTaskTaskIdRoute
+    }
+    '/workspace/$urlName/settings/assignees/$assigneeId/': {
+      id: '/workspace/$urlName/settings/assignees/$assigneeId/'
+      path: '/'
+      fullPath: '/workspace/$urlName/settings/assignees/$assigneeId/'
+      preLoaderRoute: typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRouteImport
+      parentRoute: typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdRoute
     }
   }
 }

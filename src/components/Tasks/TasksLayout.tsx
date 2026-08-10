@@ -7,6 +7,8 @@ import {
 } from "src/routes/workspace/$urlName/tasks"
 import type { QuickFilter } from "src/utils/filter-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
+import { DropdownSection } from "../shared/ArchiveDropdown"
+import { WorkspaceTabs } from "../WorkspaceTabs"
 import WorkspaceTaskTable from "./WorkspaceTaskTable"
 
 export interface TasksLayoutProps {
@@ -85,17 +87,20 @@ function TasksLayout({
 	}
 
 	return (
-		<WorkspaceTaskTable
-			onOpenTask={handleOpenTask}
-			onEdit={handleEdit}
-			clearColumnFilters={handleClearColumnFilters}
-			clearQuickFilters={handleClearQuickFilters}
-			onColumnFilterChange={handleColumnFiltersChange}
-			toggleTabFilter={handleToggleTabFilter}
-			deadlineTypeFilter={deadlineTypeFilter}
-			tabFilter={tabFilter}
-			statusFilter={statusFilter}
-		/>
+		<>
+			<WorkspaceTabs section={DropdownSection.TASKS} />
+			<WorkspaceTaskTable
+				onOpenTask={handleOpenTask}
+				onEdit={handleEdit}
+				clearColumnFilters={handleClearColumnFilters}
+				clearQuickFilters={handleClearQuickFilters}
+				onColumnFilterChange={handleColumnFiltersChange}
+				toggleTabFilter={handleToggleTabFilter}
+				deadlineTypeFilter={deadlineTypeFilter}
+				tabFilter={tabFilter}
+				statusFilter={statusFilter}
+			/>
+		</>
 	)
 }
 

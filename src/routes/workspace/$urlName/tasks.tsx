@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useMemo } from "react"
 import { DeadlineType, WorkspaceStatusType } from "src/api/model"
+import { DropdownSection } from "src/components/shared/ArchiveDropdown"
+import { WorkspaceTabs } from "src/components/WorkspaceTabs"
 import { QuickFilter } from "src/utils/filter-utils"
 import { z } from "zod"
 import TasksLayout from "../../../components/Tasks/TasksLayout"
@@ -47,13 +49,16 @@ function TasksPage() {
 			storageKey="tasks"
 			activeQuickFilters={activeQuickFiltersSet}
 		>
-			<TasksLayout
-				view={view}
-				urlName={urlName}
-				tabFilter={tabFilter}
-				statusFilter={statusFilter}
-				deadlineTypeFilter={deadlineTypeFilter}
-			/>
+			<>
+				<WorkspaceTabs section={DropdownSection.TASKS} />
+				<TasksLayout
+					view={view}
+					urlName={urlName}
+					tabFilter={tabFilter}
+					statusFilter={statusFilter}
+					deadlineTypeFilter={deadlineTypeFilter}
+				/>
+			</>
 		</TasksFiltersProvider>
 	)
 }

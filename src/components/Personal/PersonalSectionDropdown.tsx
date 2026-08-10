@@ -1,19 +1,18 @@
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import { ArchiveDropdown } from "../shared/ArchiveDropdown"
+import {
+	ArchiveDropdown,
+	type DropdownSection,
+} from "../shared/ArchiveDropdown"
 import { NavigationMenu, NavigationMenuList } from "../ui/navigation-menu"
 
-type PersonalSection = "tasks" | "archive"
-
 interface PersonalSectionDropdownProps {
-	current: PersonalSection
+	current: DropdownSection
 }
 
 export function PersonalSectionDropdown({
 	current,
 }: PersonalSectionDropdownProps) {
-	const isArchive = current === "archive"
-
 	useRenderInHeader(
 		"right",
 		<NavigationMenu viewport={false}>
@@ -24,8 +23,8 @@ export function PersonalSectionDropdown({
 						search: { view: TasksView.TABLE },
 					}}
 					archiveRoute={{ to: "/personal/archive" }}
+					section={current}
 					isActive={true}
-					isArchive={isArchive}
 				/>
 			</NavigationMenuList>
 		</NavigationMenu>,

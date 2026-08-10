@@ -4,7 +4,7 @@ import { FilterX } from "lucide-react"
 import { type ReactNode, useMemo } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { matchesQuickFilter } from "src/functions/filter-utils"
-import { ACTIVE_QUICK_FILTERS, QuickFilter } from "src/utils/filter-utils"
+import { QuickFilter } from "src/utils/filter-utils"
 import {
 	buildCountingColumns,
 	type TaskColumnMeta,
@@ -60,8 +60,6 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		columnsFilters,
 		setColumnsFilters,
 	} = useTasksFilters()
-
-	const quickFiltersCount = quickFilters.filter(Boolean).length
 
 	const activeFilters =
 		tabFilter !== undefined ? new Set(tabFilter) : activeQuickFilters
@@ -136,6 +134,52 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		[taskRowsForCounts],
 	)
 
+	const quickFilterButtons = useMemo<Record<QuickFilter, ReactNode>>(
+		() => ({
+			[QuickFilter.FLAGGED]: (
+				<FilterPill
+					key={QuickFilter.FLAGGED}
+					$active={activeFilters.has(QuickFilter.FLAGGED)}
+					onClick={() => handleToggle(QuickFilter.FLAGGED)}
+				>
+					חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
+				</FilterPill>
+			),
+			[QuickFilter.APPROACHING]: (
+				<Tooltip key={QuickFilter.APPROACHING}>
+					<WarningTrigger>
+						<FilterPill
+							$active={activeFilters.has(QuickFilter.APPROACHING)}
+							onClick={() => handleToggle(QuickFilter.APPROACHING)}
+						>
+							תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
+						</FilterPill>
+					</WarningTrigger>
+					<TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
+				</Tooltip>
+			),
+			[QuickFilter.OVERDUE]: (
+				<FilterPill
+					key={QuickFilter.OVERDUE}
+					$active={activeFilters.has(QuickFilter.OVERDUE)}
+					onClick={() => handleToggle(QuickFilter.OVERDUE)}
+				>
+					חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
+				</FilterPill>
+			),
+			[QuickFilter.ROLLING]: (
+				<FilterPill
+					key={QuickFilter.ROLLING}
+					$active={activeFilters.has(QuickFilter.ROLLING)}
+					onClick={() => handleToggle(QuickFilter.ROLLING)}
+				>
+					שוטפות{rollingCount > 0 && ` (${rollingCount})`}
+				</FilterPill>
+			),
+		}),
+		[activeFilters, flaggedCount, approachingCount, overdueCount, rollingCount],
+	)
+
 	return (
 		<BarRoot>
 			<BarStart>
@@ -171,43 +215,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 
 				{extraFilters}
 
-				<FilterPill
-					$active={activeFilters.has(QuickFilter.FLAGGED)}
-					onClick={() => handleToggle(QuickFilter.FLAGGED)}
-				>
-					חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
-				</FilterPill>
-
-				{quickFiltersCount < 3 ? (
-					<FilterPill
-						$active={activeFilters.has(QuickFilter.ROLLING)}
-						onClick={() => handleToggle(QuickFilter.ROLLING)}
-					>
-						שוטפות{rollingCount > 0 && ` (${rollingCount})`}
-					</FilterPill>
-				) : (
-					<>
-						<Tooltip>
-							<WarningTrigger>
-								<FilterPill
-									$active={activeFilters.has(QuickFilter.APPROACHING)}
-									onClick={() => handleToggle(QuickFilter.APPROACHING)}
-								>
-									תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
-								</FilterPill>
-							</WarningTrigger>
-
-							<TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
-						</Tooltip>
-
-						<FilterPill
-							$active={activeFilters.has(QuickFilter.OVERDUE)}
-							onClick={() => handleToggle(QuickFilter.OVERDUE)}
-						>
-							חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
-						</FilterPill>
-					</>
-				)}
+				{quickFilters.map((filter) => quickFilterButtons[filter])}
 
 				<FilterPill
 					$active={activeFilters.size === 0}

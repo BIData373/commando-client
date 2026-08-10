@@ -9,43 +9,39 @@ import {
 } from "../ui/dropdown-menu"
 import { NavigationMenuItem } from "../ui/navigation-menu"
 
-interface ArchiveDropdownProps {
-	tasksRoute: LinkProps
-	archiveRoute: LinkProps
-	isArchive: boolean
-	isActive: boolean
-}
-
-enum DropdownKey {
+export enum DropdownSection {
 	TASKS = "tasks",
 	ARCHIVE = "archive",
 }
 
-const DROPDOWN_ITEMS: Record<DropdownKey, string> = {
-	[DropdownKey.TASKS]: "הנחיות",
-	[DropdownKey.ARCHIVE]: "ארכיון",
+interface ArchiveDropdownProps {
+	tasksRoute: LinkProps
+	archiveRoute: LinkProps
+	section: DropdownSection
+	isActive: boolean
+}
+
+const DROPDOWN_ITEMS: Record<DropdownSection, string> = {
+	[DropdownSection.TASKS]: "הנחיות",
+	[DropdownSection.ARCHIVE]: "ארכיון",
 }
 
 export const ArchiveDropdown = ({
 	tasksRoute,
 	archiveRoute,
-	isArchive,
+	section,
 	isActive,
 }: ArchiveDropdownProps) => {
-	const routeByKey: Record<DropdownKey, LinkProps> = {
+	const routeByKey: Record<DropdownSection, LinkProps> = {
 		tasks: tasksRoute,
 		archive: archiveRoute,
 	}
 
-	const activeKey: DropdownKey = isArchive
-		? DropdownKey.ARCHIVE
-		: DropdownKey.TASKS
-
 	return (
 		<NavigationMenuItem>
 			<SectionButton $active={isActive}>
-				<SectionLink {...routeByKey[activeKey]}>
-					{DROPDOWN_ITEMS[activeKey]}
+				<SectionLink {...routeByKey[section]}>
+					{DROPDOWN_ITEMS[section]}
 				</SectionLink>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -54,7 +50,7 @@ export const ArchiveDropdown = ({
 						</ChevronButton>
 					</DropdownMenuTrigger>
 					<SectionDropdownContent side="bottom">
-						{Object.values(DropdownKey).map((key) => (
+						{Object.values(DropdownSection).map((key) => (
 							<SectionDropdownItem key={key} asChild>
 								<Link {...routeByKey[key]}>{DROPDOWN_ITEMS[key]}</Link>
 							</SectionDropdownItem>

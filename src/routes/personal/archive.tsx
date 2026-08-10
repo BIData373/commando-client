@@ -4,6 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
+import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithActions"
 import { formatDateShort } from "src/functions/date-utils"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
@@ -74,7 +75,7 @@ function PersonalArchivePage() {
 			defaultHiddenColumns={ARCHIVE_DEFAULT_HIDDEN}
 		>
 			<>
-				<PersonalSectionDropdown current={"archive"} />
+				<PersonalSectionDropdown current={DropdownSection.ARCHIVE} />
 				<PersonalTaskTable
 					filePrefix="ארכיון אישי"
 					onOpenTask={handleOpenTask}

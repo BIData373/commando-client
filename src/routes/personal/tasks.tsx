@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
+import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { TasksView } from "../workspace/$urlName/tasks"
 
@@ -57,7 +58,7 @@ function PersonalTasksPage() {
 			defaultHiddenColumns={PERSONAL_DEFAULT_HIDDEN}
 		>
 			<>
-				<PersonalSectionDropdown current="tasks" />
+				<PersonalSectionDropdown current={DropdownSection.TASKS} />
 				<PersonalTaskTable
 					filePrefix="אזור אישי"
 					onOpenTask={handleOpenTask}
