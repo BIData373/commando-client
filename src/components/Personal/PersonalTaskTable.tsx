@@ -158,6 +158,7 @@ function PersonalTaskTable({
 						{ id: "workspace", label: "מפקד מנחה" },
 						...(extraColumnsMeta ?? []),
 					]}
+					archiveMode={isArchived}
 					startSlot={<TasksDatePicker />}
 					exportFilePrefix={filePrefix}
 					extraFilters={

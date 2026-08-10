@@ -39,6 +39,8 @@ export function matchesQuickFilter(
 			)
 		case QuickFilter.FLAGGED:
 			return !!task.flagged
+		case QuickFilter.ROLLING:
+			return task.deadlineType === DeadlineType.ROLLING
 
 		default:
 			return false

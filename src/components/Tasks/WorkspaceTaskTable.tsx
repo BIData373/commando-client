@@ -140,6 +140,7 @@ function WorkspaceTaskTable({
 					onClearQuickFilters={clearQuickFilters}
 					tabFilter={tabFilter}
 					onToggleTabFilter={toggleTabFilter}
+					archiveMode={!!isArchived}
 					urlColumnFilters={urlColumnFilters ?? []}
 					startSlot={<TasksDatePicker />}
 					exportFilePrefix={`${isArchived ? "ארכיון " : ""}${workspaceTitle}`}

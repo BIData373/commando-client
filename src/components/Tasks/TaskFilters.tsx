@@ -32,6 +32,7 @@ interface TaskFiltersProps<TTask extends TaskRowDto> {
 	startSlot?: ReactNode
 	urlColumnFilters?: ColumnFiltersState
 	exportFilePrefix?: string
+	archiveMode?: boolean
 }
 
 export function TaskFilters<TTask extends TaskRowDto>({
@@ -50,6 +51,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 	urlColumnFilters = [],
 	extraButtons,
 	exportFilePrefix,
+	archiveMode = false,
 }: TaskFiltersProps<TTask>) {
 	const {
 		activeQuickFilters,
@@ -124,6 +126,14 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		[taskRowsForCounts],
 	)
 
+	const rollingCount = useMemo(
+		() =>
+			taskRowsForCounts.filter((t) =>
+				matchesQuickFilter(t, QuickFilter.ROLLING),
+			).length,
+		[taskRowsForCounts],
+	)
+
 	return (
 		<BarRoot>
 			<BarStart>
@@ -166,25 +176,36 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
 				</FilterPill>
 
-				<Tooltip>
-					<WarningTrigger>
+				{archiveMode ? (
+					<FilterPill
+						$active={activeFilters.has(QuickFilter.ROLLING)}
+						onClick={() => handleToggle(QuickFilter.ROLLING)}
+					>
+						שוטפות{rollingCount > 0 && ` (${rollingCount})`}
+					</FilterPill>
+				) : (
+					<>
+						<Tooltip>
+							<WarningTrigger>
+								<FilterPill
+									$active={activeFilters.has(QuickFilter.APPROACHING)}
+									onClick={() => handleToggle(QuickFilter.APPROACHING)}
+								>
+									תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
+								</FilterPill>
+							</WarningTrigger>
+
+							<TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
+						</Tooltip>
+
 						<FilterPill
-							$active={activeFilters.has(QuickFilter.APPROACHING)}
-							onClick={() => handleToggle(QuickFilter.APPROACHING)}
+							$active={activeFilters.has(QuickFilter.OVERDUE)}
+							onClick={() => handleToggle(QuickFilter.OVERDUE)}
 						>
-							תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
+							חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
 						</FilterPill>
-					</WarningTrigger>
-
-					<TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
-				</Tooltip>
-
-				<FilterPill
-					$active={activeFilters.has(QuickFilter.OVERDUE)}
-					onClick={() => handleToggle(QuickFilter.OVERDUE)}
-				>
-					חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
-				</FilterPill>
+					</>
+				)}
 
 				<FilterPill
 					$active={activeFilters.size === 0}
