@@ -59,6 +59,7 @@ function CreateTasksTable({
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
+
 	const nextRowId = useRef(1)
 
 	const [finalStatus, setFinalStatus] = useState<ExtractionStatus | null>(null)
@@ -95,7 +96,7 @@ function CreateTasksTable({
 			id,
 			rowKey: String(id),
 			title: "",
-			deadlineType: DeadlineType.IMMEDIATE,
+			deadlineType: DeadlineType.DATE,
 			dueDate: null,
 			assigneeIds: [],
 			assigneeDetails: {},

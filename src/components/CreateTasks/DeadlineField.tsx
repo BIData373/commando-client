@@ -1,11 +1,12 @@
 import styled from "@emotion/styled"
-import { Calendar as CalendarIcon } from "lucide-react"
+import { Calendar as CalendarIcon, X as ClearIcon } from "lucide-react"
 import { useState } from "react"
 import { DeadlineType } from "src/api/model"
 import { formatDate } from "src/functions/date-utils"
 import type { DatePickerValue } from "src/utils/date-utils"
 import DatePicker, { CalendarMode } from "../shared/DatePicker"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -14,6 +15,8 @@ interface DeadlineFieldProps {
 	dueDate: Date | null
 	onDeadlineTypeChange: (type: DeadlineType) => void
 	onDateChange: (date: Date | null) => void
+	isEditMode?: boolean
+	immediateDate?: Date | null
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -23,6 +26,8 @@ function DeadlineField({
 	dueDate,
 	onDeadlineTypeChange,
 	onDateChange,
+	isEditMode = false,
+	immediateDate = null,
 }: DeadlineFieldProps) {
 	const [isDateOpen, setIsDateOpen] = useState(false)
 
@@ -32,7 +37,14 @@ function DeadlineField({
 		setIsDateOpen(false)
 	}
 
+	function handleClearDate(e: React.MouseEvent) {
+		e.stopPropagation()
+		onDateChange(null)
+	}
+
 	const showDatePicker = deadlineType !== DeadlineType.IMMEDIATE
+	const showImmediateDate =
+		deadlineType === DeadlineType.IMMEDIATE && isEditMode
 
 	return (
 		<FormItem>
@@ -73,7 +85,13 @@ function DeadlineField({
 								<DatePickerText $hasValue={!!dueDate}>
 									{dueDate ? formatDate(dueDate) : "בחר תאריך"}
 								</DatePickerText>
-								<CalendarIcon size={18} />
+								{dueDate ? (
+									<ClearButton onClick={handleClearDate}>
+										<ClearIcon size={14} />
+									</ClearButton>
+								) : (
+									<CalendarIcon size={18} />
+								)}
 							</DatePickerButton>
 						</PopoverTrigger>
 						<DatePopoverContent align="start" sideOffset={4}>
@@ -85,6 +103,16 @@ function DeadlineField({
 							/>
 						</DatePopoverContent>
 					</Popover>
+				)}
+				{showImmediateDate && immediateDate && (
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<ImmediateDateText>
+								({formatDate(immediateDate)})
+							</ImmediateDateText>
+						</TooltipTrigger>
+						<TooltipContent>תאריך מתן הנחיה</TooltipContent>
+					</Tooltip>
 				)}
 			</DeadlineRow>
 		</FormItem>
@@ -173,6 +201,15 @@ const HintText = styled.span`
   text-overflow: ellipsis;
 `
 
+const ImmediateDateText = styled.span`
+  font-size: var(--fs-base);
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--Text-color-text-placeholder);
+  white-space: nowrap;
+  cursor: default;
+`
+
 const DatePickerButton = styled.button`
   display: flex;
   align-items: center;
@@ -188,8 +225,26 @@ const DatePickerButton = styled.button`
   color: rgba(0, 0, 0, 0.45);
   flex-shrink: 0;
 
-  &:hover {
+  &:hover:not(:disabled) {
     border-color: #4096ff;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background: var(--background-area);
+    color: var(--Text-color-text-placeholder);
+  }
+`
+
+const ClearButton = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color-400);
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--text-color-2);
   }
 `
 

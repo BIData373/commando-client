@@ -12,6 +12,7 @@ import {
 } from "src/api/model/quick-filter"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { useUserView } from "src/providers/UserViewProvider"
+import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DashboardSection } from "./DashboardSection"
@@ -42,7 +43,30 @@ const TAB_FILTERS: Record<FocusedTab, (task: TaskRowDto) => boolean> = {
 	[FocusedTab.flagged]: (task) => matchesQuickFilter(task, QuickFilter.flagged),
 	[FocusedTab.approaching]: (task) =>
 		task.deadlineType === DeadlineType.IMMEDIATE,
-	[FocusedTab.overdue]: (task) => matchesQuickFilter(task, QuickFilter.overdue),
+	[FocusedTab.OVERDUE]: (task) =>
+		matchesQuickFilter(task, QuickFilter.OVERDUE) ||
+		task.deadlineType === DeadlineType.IMMEDIATE,
+}
+
+function compareByDeadlineDate(a: TaskRowDto, b: TaskRowDto): number {
+	const dateA = getDeadlineDisplayDate(
+		a.deadlineType,
+		a.dueDate,
+		a.source,
+		a.createdAt,
+	)
+	const dateB = getDeadlineDisplayDate(
+		b.deadlineType,
+		b.dueDate,
+		b.source,
+		b.createdAt,
+	)
+
+	if (!dateA && !dateB) return 0
+	if (!dateA) return 1
+	if (!dateB) return -1
+
+	return dateA.getTime() - dateB.getTime()
 }
 
 interface FocusedInstructionProps {
@@ -74,7 +98,10 @@ export default function FocusedInstructions({
 	)
 
 	const filteredTasks = useMemo(
-		() => notCompletedTasks.filter(TAB_FILTERS[activeTab]),
+		() =>
+			notCompletedTasks
+				.filter(TAB_FILTERS[activeTab])
+				.sort(compareByDeadlineDate),
 		[activeTab, notCompletedTasks],
 	)
 

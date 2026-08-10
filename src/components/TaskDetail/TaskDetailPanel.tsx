@@ -19,9 +19,10 @@ import {
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { downloadFromUrl } from "src/functions/download-utils"
 import { invalidateQueries } from "src/queryClient"
+import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
-import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
+import { DeadlineTypeTag } from "../shared/DeadlineTypeTag"
 import FlagIcon from "../shared/FlagIcon"
 import { ModalContent } from "../shared/ModalContent"
 import { StatusTag } from "../shared/StatusTag"
@@ -46,6 +47,7 @@ function TaskDetailPanel({
 		flagged,
 		deadlineType,
 		dueDate,
+		updatedAt,
 		createdAt,
 		notes,
 		source,
@@ -84,6 +86,14 @@ function TaskDetailPanel({
 	const { mutate: deleteTaskMutate } = useDeleteTask({
 		mutation: { onSuccess: handleSuccess },
 	})
+
+	const displayDate = getDeadlineDisplayDate(
+		deadlineType,
+		dueDate,
+		source,
+		createdAt,
+	)
+	const showDueDateMeta = deadlineType !== DeadlineType.IMMEDIATE
 
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
 	const showExtraInfo =
@@ -184,16 +194,14 @@ function TaskDetailPanel({
 						<SectionLabel>תג"ב</SectionLabel>
 						<MetaRow>
 							<DueDateGroup>
-								{deadlineType !== DeadlineType.DATE && (
-									<DeadlineTag $type={deadlineType}>
-										{DEADLINE_LABELS[deadlineType]}
-									</DeadlineTag>
-								)}
-								{dueDate && (
+								<DeadlineTypeTag type={deadlineType} />
+								{displayDate && (
 									<DateContainer>
-										<MetaLabel>עד</MetaLabel>
-										<DueDateText>{formatDateMonthYear(dueDate)}</DueDateText>
-										<Calendar size={16} />
+										{showDueDateMeta && <MetaLabel>עד</MetaLabel>}
+										<DueDateText>
+											{formatDateMonthYear(displayDate)}
+										</DueDateText>
+										{showDueDateMeta && <Calendar size={16} />}
 									</DateContainer>
 								)}
 							</DueDateGroup>
@@ -202,8 +210,8 @@ function TaskDetailPanel({
 										<History size={16} />
 									</HistoryButton> */}
 								<MetaText>
-									{formatMinutesHours(createdAt)} -{" "}
-									{formatDateMonthYear(createdAt)}
+									{formatMinutesHours(updatedAt)} -{" "}
+									{formatDateMonthYear(updatedAt)}
 								</MetaText>
 							</CreatedGroup>
 						</MetaRow>

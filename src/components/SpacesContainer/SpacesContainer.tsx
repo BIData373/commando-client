@@ -1,12 +1,14 @@
 import styled from "@emotion/styled"
-import { Search } from "lucide-react"
+import { Search, X } from "lucide-react"
 import { useState } from "react"
 import {
 	useGetPermittedWorkspaces,
 	useListWorkspaces,
 } from "src/api/workspace/workspace"
 import emptyWorkspacesImage from "src/assets/empty-states/empty-workspace.svg"
+import noResultsFound from "src/assets/empty-states/no-results-found.svg"
 import { EmptyCardState } from "src/components/shared/EmptyCardState"
+import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
 // import NewWorkspaceButton from "./NewWorkspaceButton"
 import WorkspaceCard from "./WorkspaceCard"
 
@@ -16,8 +18,10 @@ function filterByTitle<T extends { title: string }>(items: T[], query: string) {
 }
 
 export default function SpacesContainer() {
-	const { data: allWorkspaces = [] } = useListWorkspaces()
-	const { data: myWorkspaces = [] } = useGetPermittedWorkspaces()
+	const { data: allWorkspaces = [], isLoading: isAllWorkspacesLoading } =
+		useListWorkspaces()
+	const { data: myWorkspaces = [], isLoading: isMyWorkspacesLoading } =
+		useGetPermittedWorkspaces()
 	const [searchQuery, setSearchQuery] = useState("")
 	const [activeTab, setActiveTab] = useState<"mine" | "all">("mine")
 
@@ -34,6 +38,8 @@ export default function SpacesContainer() {
 	const filteredAll = filterByTitle(allWorkspaces, searchQuery)
 
 	const displayedWorkspaces = activeTab === "mine" ? filteredMine : filteredAll
+	const isLoading =
+		activeTab === "mine" ? isMyWorkspacesLoading : isAllWorkspacesLoading
 
 	return (
 		<SpaceContainerCard>
@@ -51,6 +57,11 @@ export default function SpacesContainer() {
 							<SearchIconWrapper>
 								<Search size={24} />
 							</SearchIconWrapper>
+							{searchQuery && (
+								<ClearIconWrapper>
+									<ClearIcon size={14} onClick={() => setSearchQuery("")} />
+								</ClearIconWrapper>
+							)}
 						</SearchWrapper>
 					</ActionsRow>
 
@@ -70,13 +81,27 @@ export default function SpacesContainer() {
 				</TabsRow>
 			</TopSection>
 
-			{activeTab === "mine" && displayedWorkspaces.length === 0 ? (
+			{isLoading ? (
+				<LoadingSpace>
+					<LoadingSpinner />
+				</LoadingSpace>
+			) : displayedWorkspaces.length === 0 ? (
 				<EmptySpace>
-					<EmptyCardState
-						imgSrc={emptyWorkspacesImage}
-						title="לא נמצאו הרשאות לסביבות"
-						description="ניתן לפנות למנהל סביבה כדי לקבל הרשאות"
-					/>
+					{searchQuery ? (
+						<EmptyCardState
+							imgSrc={noResultsFound}
+							title="לא נמצאו סביבות"
+							description={`לא נמצאו סביבות התואמות ל-"${searchQuery}"`}
+						/>
+					) : (
+						activeTab === "mine" && (
+							<EmptyCardState
+								imgSrc={emptyWorkspacesImage}
+								title="לא נמצאו הרשאות לסביבות"
+								description="ניתן לפנות למנהל סביבה כדי לקבל הרשאות"
+							/>
+						)
+					)}
 				</EmptySpace>
 			) : (
 				<WorkspacesContainer>
@@ -137,6 +162,7 @@ const SearchInput = styled.input`
   height: 40px;
   padding: 8px;
   padding-inline-start: 40px;
+  padding-inline-end: 28px;
   border: 1px solid var(--card-border);
   border-radius: 8px;
   background: var(--background);
@@ -160,6 +186,24 @@ const SearchIconWrapper = styled.span`
   display: flex;
   color: var(--Text-color-text-placeholder);
   pointer-events: none;
+`
+
+const ClearIconWrapper = styled.span`
+  position: absolute;
+  inset-inline-start: 8px;
+  display: flex;
+`
+
+const ClearIcon = styled(X)`
+  color: var(--background);
+  cursor: pointer;
+  background: var(--icon-background);
+  border-radius: 50%;
+  padding: 2px;
+
+  &:hover {
+    background: var(--text-color);
+  }
 `
 
 const TopSection = styled.div`
@@ -193,7 +237,7 @@ const Tab = styled.button<{ $active: boolean }>`
 `
 
 const WorkspacesContainer = styled.div`
-  direction: ltr;
+  direction: rtl;
   flex: 1;
   display: flex;
   flex-wrap: wrap;
@@ -201,12 +245,19 @@ const WorkspacesContainer = styled.div`
   overflow-y: auto;
   min-height: 0;
   padding-bottom: 16px;
-  justify-content: flex-end;
-  padding-right: 4px;
+  justify-content: flex-start;
+  padding-inline-end: 4px;
 `
 
 const EmptySpace = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-evenly;
+`
+
+const LoadingSpace = styled.div`
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
 `

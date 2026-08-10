@@ -21,6 +21,7 @@ import {
 } from "src/api/task/task"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { invalidateQueries } from "src/queryClient"
+import { getImmediateReferenceDate } from "src/utils/deadline-utils"
 import { getChangedFields } from "src/utils/form-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { CancelButton } from "../shared/CancelButton"
@@ -368,6 +369,12 @@ function CreateTaskModal({
 								dueDate={values.dueDate ?? null}
 								onDeadlineTypeChange={handleDeadlineTypeChange}
 								onDateChange={handleDeadlineDateChange}
+								isEditMode={isEditMode}
+								immediateDate={
+									task
+										? getImmediateReferenceDate(task.source, task.createdAt)
+										: null
+								}
 							/>
 
 							{/* ─── Responsible ─────────────────────────────────────────── */}

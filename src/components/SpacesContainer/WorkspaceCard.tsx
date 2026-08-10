@@ -51,7 +51,7 @@ export default function WorkspaceCard({
 
 			<Tooltip>
 				<TooltipTrigger asChild>
-					<TitleText>{title}</TitleText>
+					<TitleText dir="auto">{title}</TitleText>
 				</TooltipTrigger>
 				<TooltipContent>{title}</TooltipContent>
 			</Tooltip>
