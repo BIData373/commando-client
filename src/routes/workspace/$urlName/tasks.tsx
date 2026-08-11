@@ -21,7 +21,7 @@ const queryArray = <T extends z.ZodTypeAny>(schema: T) =>
 
 const TasksSearchSchema = z.object({
 	view: z.nativeEnum(TasksView).default(TasksView.TABLE),
-	tabFilter: queryArray(z.nativeEnum(QuickFilter)).default([]),
+	quickFilter: queryArray(z.nativeEnum(QuickFilter)).optional(),
 	statusFilter: queryArray(z.nativeEnum(WorkspaceStatusType)).default([]),
 	deadlineTypeFilter: queryArray(z.nativeEnum(DeadlineType)).default([]),
 })
@@ -34,31 +34,25 @@ export const Route = createFileRoute("/workspace/$urlName/tasks")({
 })
 
 function TasksPage() {
-	const { view, tabFilter, statusFilter, deadlineTypeFilter } =
+	const { view, quickFilter, statusFilter, deadlineTypeFilter } =
 		Route.useSearch()
 
 	const { urlName } = Route.useParams()
 
-	const activeQuickFiltersSet = useMemo(
-		() => new Set<QuickFilter>(tabFilter),
-		[tabFilter],
+	const initialQuickFilters = useMemo(
+		() => (quickFilter ? new Set<QuickFilter>(quickFilter) : undefined),
+		[quickFilter],
 	)
 
 	return (
-		<TasksFiltersProvider
-			storageKey="tasks"
-			activeQuickFilters={activeQuickFiltersSet}
-		>
-			<>
-				<WorkspaceTabs section={DropdownSection.TASKS} />
-				<TasksLayout
-					view={view}
-					urlName={urlName}
-					tabFilter={tabFilter}
-					statusFilter={statusFilter}
-					deadlineTypeFilter={deadlineTypeFilter}
-				/>
-			</>
+		<TasksFiltersProvider initialQuickFilters={initialQuickFilters}>
+			<WorkspaceTabs section={DropdownSection.TASKS} />
+			<TasksLayout
+				view={view}
+				urlName={urlName}
+				statusFilter={statusFilter}
+				deadlineTypeFilter={deadlineTypeFilter}
+			/>
 		</TasksFiltersProvider>
 	)
 }

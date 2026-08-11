@@ -1,11 +1,13 @@
-import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
-import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
+import type {
+	DeadlineType,
+	QuickFilter,
+	WorkspaceStatusType,
+} from "src/api/model"
 import {
 	type TasksSearchSchemaType,
 	TasksView,
 } from "src/routes/workspace/$urlName/tasks"
-import type { QuickFilter } from "src/utils/filter-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { DropdownSection } from "../shared/ArchiveDropdown"
 import { WorkspaceTabs } from "../WorkspaceTabs"
@@ -14,7 +16,6 @@ import WorkspaceTaskTable from "./WorkspaceTaskTable"
 export interface TasksLayoutProps {
 	view: TasksView
 	urlName: string
-	tabFilter: QuickFilter[]
 	statusFilter: WorkspaceStatusType[]
 	deadlineTypeFilter: DeadlineType[]
 }
@@ -22,13 +23,13 @@ export interface TasksLayoutProps {
 function TasksLayout({
 	view = TasksView.TABLE,
 	urlName,
-	tabFilter,
 	statusFilter = [],
 	deadlineTypeFilter = [],
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
 
 	const { toggleQuickFilter } = useTasksFilters()
+	const { columnOrder, hiddenColumns } = useTasksFilters()
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -36,7 +37,6 @@ function TasksLayout({
 			params: { urlName },
 			search: {
 				view,
-				tabFilter,
 				statusFilter,
 				deadlineTypeFilter,
 				...taskFilter,

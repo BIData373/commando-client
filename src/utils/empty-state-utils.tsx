@@ -1,15 +1,15 @@
 import type { DateRange } from "react-day-picker"
+import { QuickFilter } from "src/api/model"
 import emptyState from "../assets/empty-states/empty-state.svg"
 import noResultsFound from "../assets/empty-states/no-results-found.svg"
 import type { EmptyCardStateProps } from "../components/shared/EmptyCardState"
-import { QuickFilter } from "./filter-utils"
 
 type EmptyStateKey = QuickFilter | "search" | "dateRange" | "noData" | "default"
 
 export type DashboardEmptyStateKey = QuickFilter | "completed"
 
 const EMPTY_STATES: Record<EmptyStateKey, EmptyCardStateProps> = {
-	[QuickFilter.OVERDUE]: {
+	[QuickFilter.overdue]: {
 		imgSrc: noResultsFound,
 		title: (
 			<>
@@ -19,7 +19,7 @@ const EMPTY_STATES: Record<EmptyStateKey, EmptyCardStateProps> = {
 		),
 		description: "יש לנסות סינון אחר",
 	},
-	[QuickFilter.APPROACHING]: {
+	[QuickFilter.approaching]: {
 		imgSrc: noResultsFound,
 		title: (
 			<>
@@ -29,7 +29,7 @@ const EMPTY_STATES: Record<EmptyStateKey, EmptyCardStateProps> = {
 		),
 		description: "יש לנסות סינון אחר",
 	},
-	[QuickFilter.FLAGGED]: {
+	[QuickFilter.flagged]: {
 		imgSrc: noResultsFound,
 		title: <>לא נמצאו הנחיות חשובות</>,
 		description: "יש לנסות סינון אחר",
@@ -87,17 +87,17 @@ export const DASHBOARD_EMPTY_STATES: Record<
 	DashboardEmptyStateKey,
 	EmptyCardStateProps
 > = {
-	[QuickFilter.FLAGGED]: {
+	[QuickFilter.flagged]: {
 		imgSrc: noResultsFound,
 		title: "לא נמצאו הנחיות חשובות",
 		description: "לאחר שהנחיות יוגדרו כחשובות,\nההנחיות האחרונות יופיעו כאן",
 	},
-	[QuickFilter.APPROACHING]: {
+	[QuickFilter.approaching]: {
 		imgSrc: noResultsFound,
 		title: "לא נמצאו הנחיות לביצוע מיידי",
 		description: "הנחיות לביצוע מידיות יופיעו כאן",
 	},
-	[QuickFilter.OVERDUE]: {
+	[QuickFilter.overdue]: {
 		imgSrc: noResultsFound,
 		title: 'לא נמצאו חריגות מתג"ב',
 		description: 'חריגות מתג"ב יופיעו כאן',

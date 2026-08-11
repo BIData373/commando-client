@@ -3,8 +3,8 @@ import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
 import { FilterX } from "lucide-react"
 import { type ReactNode, useMemo } from "react"
 import type { TaskRowDto } from "src/api/model"
+import { QuickFilter } from "src/api/model/quick-filter"
 import { matchesQuickFilter } from "src/functions/filter-utils"
-import { QuickFilter } from "src/utils/filter-utils"
 import {
 	buildCountingColumns,
 	type TaskColumnMeta,
@@ -22,13 +22,10 @@ interface TaskFiltersProps<TTask extends TaskRowDto> {
 	columnOrder: (keyof TTask)[]
 	hiddenColumns: Set<keyof TTask>
 	onClearColumnFilters?: () => void
-	onClearQuickFilters?: () => void
 	extraFilters?: ReactNode
 	extraButtons?: ReactNode
 	extraColumns?: ColumnDef<TTask>[]
 	extraColumnsMeta?: TaskColumnMeta[]
-	tabFilter?: QuickFilter[]
-	onToggleTabFilter?: (filter: QuickFilter) => void
 	startSlot?: ReactNode
 	urlColumnFilters?: ColumnFiltersState
 	exportFilePrefix?: string
@@ -41,12 +38,9 @@ export function TaskFilters<TTask extends TaskRowDto>({
 	columnOrder,
 	hiddenColumns,
 	onClearColumnFilters,
-	onClearQuickFilters,
 	extraFilters,
 	extraColumns = [],
 	extraColumnsMeta,
-	tabFilter,
-	onToggleTabFilter,
 	startSlot,
 	urlColumnFilters = [],
 	extraButtons,
@@ -61,22 +55,12 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		setColumnsFilters,
 	} = useTasksFilters()
 
-	const activeFilters =
-		tabFilter !== undefined ? new Set(tabFilter) : activeQuickFilters
-
-	const handleToggle = onToggleTabFilter ?? toggleQuickFilter
-
 	const hasActiveColumnFilters =
 		columnsFilters.length > 0 || urlColumnFilters.length > 0
 
 	function clearAllColumnFilters() {
 		setColumnsFilters([])
 		onClearColumnFilters?.()
-	}
-
-	function handleClearAllQuickFilters() {
-		clearQuickFilters()
-		onClearQuickFilters?.()
 	}
 
 	const allColumnFilters = useMemo(
@@ -105,7 +89,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 	const overdueCount = useMemo(
 		() =>
 			taskRowsForCounts.filter((t) =>
-				matchesQuickFilter(t, QuickFilter.OVERDUE),
+				matchesQuickFilter(t, QuickFilter.overdue),
 			).length,
 		[taskRowsForCounts],
 	)
@@ -113,7 +97,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 	const approachingCount = useMemo(
 		() =>
 			taskRowsForCounts.filter((t) =>
-				matchesQuickFilter(t, QuickFilter.APPROACHING),
+				matchesQuickFilter(t, QuickFilter.approaching),
 			).length,
 		[taskRowsForCounts],
 	)
@@ -121,7 +105,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 	const flaggedCount = useMemo(
 		() =>
 			taskRowsForCounts.filter((t) =>
-				matchesQuickFilter(t, QuickFilter.FLAGGED),
+				matchesQuickFilter(t, QuickFilter.flagged),
 			).length,
 		[taskRowsForCounts],
 	)
@@ -129,28 +113,28 @@ export function TaskFilters<TTask extends TaskRowDto>({
 	const rollingCount = useMemo(
 		() =>
 			taskRowsForCounts.filter((t) =>
-				matchesQuickFilter(t, QuickFilter.ROLLING),
+				matchesQuickFilter(t, QuickFilter.rolling),
 			).length,
 		[taskRowsForCounts],
 	)
 
 	const quickFilterButtons = useMemo<Record<QuickFilter, ReactNode>>(
 		() => ({
-			[QuickFilter.FLAGGED]: (
+			[QuickFilter.flagged]: (
 				<FilterPill
-					key={QuickFilter.FLAGGED}
-					$active={activeFilters.has(QuickFilter.FLAGGED)}
-					onClick={() => handleToggle(QuickFilter.FLAGGED)}
+					key={QuickFilter.flagged}
+					$active={activeQuickFilters.has(QuickFilter.flagged)}
+					onClick={() => handleToggle(QuickFilter.flagged)}
 				>
 					חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
 				</FilterPill>
 			),
-			[QuickFilter.APPROACHING]: (
-				<Tooltip key={QuickFilter.APPROACHING}>
+			[QuickFilter.approaching]: (
+				<Tooltip key={QuickFilter.approaching}>
 					<WarningTrigger>
 						<FilterPill
-							$active={activeFilters.has(QuickFilter.APPROACHING)}
-							onClick={() => handleToggle(QuickFilter.APPROACHING)}
+							$active={activeQuickFilters.has(QuickFilter.approaching)}
+							onClick={() => handleToggle(QuickFilter.approaching)}
 						>
 							תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
 						</FilterPill>
@@ -158,26 +142,32 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					<TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
 				</Tooltip>
 			),
-			[QuickFilter.OVERDUE]: (
+			[QuickFilter.overdue]: (
 				<FilterPill
-					key={QuickFilter.OVERDUE}
-					$active={activeFilters.has(QuickFilter.OVERDUE)}
-					onClick={() => handleToggle(QuickFilter.OVERDUE)}
+					key={QuickFilter.overdue}
+					$active={activeQuickFilters.has(QuickFilter.overdue)}
+					onClick={() => handleToggle(QuickFilter.overdue)}
 				>
 					חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
 				</FilterPill>
 			),
-			[QuickFilter.ROLLING]: (
+			[QuickFilter.rolling]: (
 				<FilterPill
-					key={QuickFilter.ROLLING}
-					$active={activeFilters.has(QuickFilter.ROLLING)}
-					onClick={() => handleToggle(QuickFilter.ROLLING)}
+					key={QuickFilter.rolling}
+					$active={activeQuickFilters.has(QuickFilter.rolling)}
+					onClick={() => handleToggle(QuickFilter.rolling)}
 				>
 					שוטפות{rollingCount > 0 && ` (${rollingCount})`}
 				</FilterPill>
 			),
 		}),
-		[activeFilters, flaggedCount, approachingCount, overdueCount, rollingCount],
+		[
+			activeQuickFilters,
+			flaggedCount,
+			approachingCount,
+			overdueCount,
+			rollingCount,
+		],
 	)
 
 	return (
@@ -218,8 +208,8 @@ export function TaskFilters<TTask extends TaskRowDto>({
 				{quickFilters.map((filter) => quickFilterButtons[filter])}
 
 				<FilterPill
-					$active={activeFilters.size === 0}
-					onClick={handleClearAllQuickFilters}
+					$active={activeQuickFilters.size === 0}
+					onClick={clearQuickFilters}
 				>
 					הכל ({taskRowsForCounts.length})
 				</FilterPill>

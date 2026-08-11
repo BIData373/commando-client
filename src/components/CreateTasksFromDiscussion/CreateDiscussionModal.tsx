@@ -8,6 +8,7 @@ import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AI_ENABLED } from "src/utils/env-utils"
 import {
 	type CreateSourceDto,
+	DeadlineType,
 	TaskCreationType,
 	type UpdateSourceDto,
 } from "../../api/model"
@@ -183,14 +184,18 @@ function CreateDiscussionModal({
 	}
 
 	async function createAndAdvance(aiExtraction: boolean) {
+		if (!aiExtraction && sourceId === undefined) {
+			setStep(Steps.Tasks)
+			return
+		}
+
 		try {
 			const source = sourceId
 				? await updateSource({
 						pathParams: { id: sourceId },
 						data: { ...values, aiExtraction },
 					})
-				: // FIX Should it create when not aiExtraction?
-					await createSource({ data: { ...values, aiExtraction } })
+				: await createSource({ data: { ...values, aiExtraction } })
 			navigate({ search: (prev) => ({ ...prev, sourceId: source.id }) })
 			setStep(Steps.Tasks)
 		} catch (error) {
@@ -207,37 +212,66 @@ function CreateDiscussionModal({
 	}
 
 	async function handleSave(taskRows: NewTaskRow[]) {
-		const inputs = taskRows.map(
-			({
-				id,
-				rowKey,
-				assigneeIds,
-				assigneeDetails,
-				touched,
-				taskId,
-				...rest
-			}) => ({
-				...rest,
-				taskId,
-				workspaceId,
-				sourceId: sourceId!,
-				groupKey: String(id),
-				creationType: resolveCreationType(taskId, touched),
-				assignees: assigneeIds.map((assigneeId) => ({
-					id: assigneeId,
-					description: assigneeDetails[assigneeId] || undefined,
-				})),
-			}),
-		)
+		if (sourceId === undefined) {
+			await createSource({
+				data: {
+					...values,
+					tasks: taskRows.map(
+						({
+							title,
+							deadlineType,
+							dueDate,
+							notes,
+							flagged,
+							assigneeIds,
+							assigneeDetails,
+						}) => ({
+							title: title.trim(),
+							deadlineType: deadlineType ?? DeadlineType.ROLLING,
+							dueDate: dueDate ?? null,
+							notes: notes || undefined,
+							flagged,
+							assignees: assigneeIds.map((assigneeId) => ({
+								id: assigneeId,
+								description: assigneeDetails[assigneeId] || undefined,
+							})),
+						}),
+					),
+				},
+			})
 
-		if (sourceId !== undefined) {
+			onClose()
+		} else {
+			const inputs = taskRows.map(
+				({
+					id,
+					rowKey,
+					assigneeIds,
+					assigneeDetails,
+					touched,
+					taskId,
+					...rest
+				}) => ({
+					...rest,
+					taskId,
+					workspaceId,
+					sourceId,
+					groupKey: String(id),
+					creationType: resolveCreationType(taskId, touched),
+					assignees: assigneeIds.map((assigneeId) => ({
+						id: assigneeId,
+						description: assigneeDetails[assigneeId] || undefined,
+					})),
+				}),
+			)
+
 			await updateSource({
 				pathParams: { id: sourceId },
 				data: { draft: false },
 			})
-		}
 
-		saveTasks(inputs)
+			saveTasks(inputs)
+		}
 	}
 
 	function handleDeleteRow(row: NewTaskRow) {

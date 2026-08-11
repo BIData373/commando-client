@@ -1,19 +1,14 @@
-export enum QuickFilter {
-	OVERDUE = "overdue",
-	APPROACHING = "approaching",
-	FLAGGED = "flagged",
-	ROLLING = "rolling",
-}
+import { QuickFilter } from "src/api/model"
 
 export const ACTIVE_QUICK_FILTERS: QuickFilter[] = [
-	QuickFilter.FLAGGED,
-	QuickFilter.APPROACHING,
-	QuickFilter.OVERDUE,
+	QuickFilter.flagged,
+	QuickFilter.approaching,
+	QuickFilter.overdue,
 ]
 
 export const ARCHIVE_QUICK_FILTERS: QuickFilter[] = [
-	QuickFilter.FLAGGED,
-	QuickFilter.ROLLING,
+	QuickFilter.flagged,
+	QuickFilter.rolling,
 ]
 
 const getDashboardFilterKey = "dashboard-filter"

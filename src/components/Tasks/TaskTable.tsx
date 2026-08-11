@@ -4,6 +4,7 @@ import type {
 	ColumnFiltersState,
 	RowSelectionState,
 } from "@tanstack/react-table"
+import { uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
@@ -111,10 +112,9 @@ function TaskTable<TTask extends TaskRowDto>({
 		[statusFilter, deadlineTypeFilter],
 	)
 
-	const columnFilters: ColumnFiltersState = useMemo(
-		() => [...urlColumnFilters, ...columnsFilters],
-		[urlColumnFilters, columnsFilters],
-	)
+	const columnFilters: ColumnFiltersState = useMemo(() => {
+		return uniqBy([...urlColumnFilters, ...columnsFilters], "id")
+	}, [urlColumnFilters, columnsFilters])
 
 	function getColumnFilter(columnFilters: ColumnFiltersState, id: string) {
 		return columnFilters.find((column) => column.id === id)?.value ?? []
@@ -136,9 +136,7 @@ function TaskTable<TTask extends TaskRowDto>({
 			"deadlineType",
 		) as DeadlineType[]
 
-		const urlFilterIds = new Set(urlColumnFilters.map((f) => f.id))
-		setColumnsFilters(newFilters.filter((f) => !urlFilterIds.has(f.id)))
-
+		setColumnsFilters(newFilters)
 		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
 	}
 
