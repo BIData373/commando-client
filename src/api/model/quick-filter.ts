@@ -12,4 +12,5 @@ export const QuickFilter = {
 	overdue: "overdue",
 	approaching: "approaching",
 	flagged: "flagged",
+	rolling: "rolling",
 } as const

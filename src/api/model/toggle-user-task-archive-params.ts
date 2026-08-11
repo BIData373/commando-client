@@ -6,9 +6,6 @@
  * OpenAPI spec version: 1.0
  */
 
-export type ListTaskRowsParams = {
-	/**
-	 * @nullable
-	 */
-	isArchived?: boolean | null
+export type ToggleUserTaskArchiveParams = {
+	assigneeId: number
 }

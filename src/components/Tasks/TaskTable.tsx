@@ -193,10 +193,11 @@ function TaskTable<TTask extends TaskRowDto>({
 	}
 
 	function getSelectedArchiveEntries() {
-		return selectedRowKeys.flatMap((rowKey) => {
-			const task = tasks.find((t) => t.rowKey === rowKey)
-			return task ? [{ id: task.id, assigneeId: task.assignee?.id }] : []
-		})
+		return tasks
+			.filter((task) =>
+				selectedRowKeys.some((rowKey) => task.rowKey === rowKey),
+			)
+			.map(({ id, assignee }) => ({ id, assigneeId: assignee?.id }))
 	}
 
 	function handleBulkArchive() {

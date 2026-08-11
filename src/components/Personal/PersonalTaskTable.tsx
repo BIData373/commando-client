@@ -123,20 +123,14 @@ function PersonalTaskTable({
 
 	function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
 		entries.forEach(({ id, assigneeId }) => {
-			toggleArchive({ pathParams: { id }, params: { assigneeId } })
+			if (assigneeId) {
+				toggleArchive({ pathParams: { id }, params: { assigneeId } })
+			}
 		})
 	}
 
-	function handleArchive(entries: TaskArchiveEntry[]) {
-		toggleArchiveEntries(entries)
-	}
-
-	function handleUnarchive(entries: TaskArchiveEntry[]) {
-		toggleArchiveEntries(entries)
-	}
-
-	const onArchive = !isArchived ? handleArchive : undefined
-	const onUnarchive = isArchived ? handleUnarchive : undefined
+	const onArchive = !isArchived ? toggleArchiveEntries : undefined
+	const onUnarchive = isArchived ? toggleArchiveEntries : undefined
 
 	return (
 		<TooltipProvider>
