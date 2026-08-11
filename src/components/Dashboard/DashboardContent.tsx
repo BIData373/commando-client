@@ -24,7 +24,7 @@ export function DashboardContent() {
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId: id })
 
-	const filteredTasks = useFilteredTasks(taskRows)
+	const filteredTasks = useFilteredTasks(taskRows, { skipQuickFilters: true })
 
 	const tasks = [...filteredTasks].sort(
 		(a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),

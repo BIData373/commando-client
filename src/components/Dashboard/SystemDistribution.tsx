@@ -1,10 +1,15 @@
 import styled from "@emotion/styled"
 import { chain, compact, countBy, flatMap, get } from "lodash"
 import { Users } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
-import type { TaskRowDto } from "src/api/model"
+import {
+	DistributionTab,
+	type TaskRowDto,
+	type UserViewDto,
+} from "src/api/model"
 import { useListTags } from "src/api/tag/tag"
+import { useUserView } from "src/providers/UserViewProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import addAssignee from "../../assets/icons/add-person.svg"
 import subject from "../../assets/icons/subjects.svg"
@@ -17,11 +22,6 @@ import {
 	TooltipTrigger,
 } from "../ui/tooltip"
 
-enum DistributionTab {
-	LOAD = "load",
-	ATTENTION = "attention",
-}
-
 interface DistributionTabConfig {
 	id: DistributionTab
 	label: string
@@ -33,17 +33,17 @@ interface SystemDistributionProps {
 }
 
 const TABS: DistributionTabConfig[] = [
-	{ id: DistributionTab.LOAD, label: "חלוקת עומסים" },
-	{ id: DistributionTab.ATTENTION, label: "חלוקת קשב" },
+	{ id: DistributionTab.load, label: "חלוקת עומסים" },
+	{ id: DistributionTab.attention, label: "חלוקת קשב" },
 ]
 
 const TabsDescription = {
-	[DistributionTab.LOAD]: {
+	[DistributionTab.load]: {
 		imgSrc: addAssignee,
 		title: "טרם הוגדרו אחראים",
 		description: "לא נמצאו אחראים כדי להציג נתונים",
 	},
-	[DistributionTab.ATTENTION]: {
+	[DistributionTab.attention]: {
 		imgSrc: subject,
 		title: "טרם הוגדרו נושאים",
 		description: "ביצירת הנחיות ניתן לחלק אותם לנושאים,\nקטגוריות או מאמצים",
@@ -51,8 +51,8 @@ const TabsDescription = {
 }
 
 const HEADER_LABELS = {
-	[DistributionTab.LOAD]: { name: "אחראי", count: "כמות הנחיות" },
-	[DistributionTab.ATTENTION]: { name: "נושא", count: "כמות הנחיות" },
+	[DistributionTab.load]: { name: "אחראי", count: "כמות הנחיות" },
+	[DistributionTab.attention]: { name: "נושא", count: "כמות הנחיות" },
 }
 
 type NamedEntity = { name: string }
@@ -83,9 +83,9 @@ export default function SystemDistribution({
 	onSetAssignees,
 	tasks,
 }: SystemDistributionProps) {
-	const [activeTab, setActiveTab] = useState<DistributionTab>(
-		DistributionTab.LOAD,
-	)
+	const { view, updateView } = useUserView()
+
+	const activeTab = view.dashboard.distributionTab
 
 	const {
 		workspace: { id: workspaceId },
@@ -104,7 +104,7 @@ export default function SystemDistribution({
 	)
 
 	const activeData =
-		activeTab === DistributionTab.LOAD ? assigneeDistribution : tagDistribution
+		activeTab === DistributionTab.load ? assigneeDistribution : tagDistribution
 
 	const tabDescription = TabsDescription[activeTab]
 
@@ -115,6 +115,18 @@ export default function SystemDistribution({
 
 	const headerLabels = HEADER_LABELS[activeTab]
 
+	async function handleTabClick(distributionTab: DistributionTab) {
+		const nextView: UserViewDto = {
+			...view,
+			dashboard: {
+				...view.dashboard,
+				distributionTab,
+			},
+		}
+
+		await updateView(nextView)
+	}
+
 	return (
 		<Section>
 			<TabsWrapper>
@@ -123,7 +135,7 @@ export default function SystemDistribution({
 						<TabItem
 							key={tab.id}
 							$active={tab.id === activeTab}
-							onClick={() => setActiveTab(tab.id)}
+							onClick={() => handleTabClick(tab.id)}
 						>
 							<TabTitle $active={tab.id === activeTab}>{tab.label}</TabTitle>
 						</TabItem>
@@ -161,7 +173,7 @@ export default function SystemDistribution({
 							title={tabDescription.title}
 							description={tabDescription.description}
 						>
-							{activeTab === DistributionTab.LOAD && (
+							{activeTab === DistributionTab.load && (
 								<Button variant="outline" size="sm" onClick={onSetAssignees}>
 									הגדרת מקבלי הנחיות
 									<Users size={16} />

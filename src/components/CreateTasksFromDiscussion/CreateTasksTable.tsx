@@ -185,8 +185,8 @@ function CreateTasksTable({
 			return next
 		})
 
-		if ("assigneeIds" in updates) {
-			const newIds = updates.assigneeIds!
+		if ("assigneeIds" in updates && updates.assigneeIds) {
+			const newIds = updates.assigneeIds
 			if (newIds.length > 1) {
 				setExpandedRows((prev) => new Set(prev).add(id))
 			} else {

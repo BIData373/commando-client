@@ -14,8 +14,10 @@ import {
   type SortingState,
   type TableMeta,
 } from '@tanstack/react-table'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import {
   Fragment,
+  memo,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -31,6 +33,8 @@ declare module '@tanstack/react-table' {
     grow?: boolean
   }
 }
+
+const EXPANSION_ROW_ATTR = 'data-expansion-row'
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
@@ -55,6 +59,66 @@ interface DataTableProps<TData> {
   emptyState?: ReactNode
   isLoading?: boolean
 }
+
+interface DataTableRowProps<TData> {
+  row: Row<TData>
+  index: number
+  isSelected: boolean
+  isHighlighted: boolean
+  rowRef?: (node: HTMLTableRowElement | null) => void
+  onCellClick?: (row: Row<TData>, columnId: string) => void
+  onRowContextMenu?: (row: Row<TData>, event: MouseEvent) => void
+  renderRowOverlay?: (row: Row<TData>) => ReactNode
+  renderRowExpansion?: (row: Row<TData>) => ReactNode
+  expansionColSpan: number
+}
+
+function DataTableRowInner<TData>({
+  row,
+  index,
+  isSelected,
+  isHighlighted,
+  rowRef,
+  onCellClick,
+  onRowContextMenu,
+  renderRowOverlay,
+  renderRowExpansion,
+  expansionColSpan,
+}: DataTableRowProps<TData>) {
+  const expansionContent = renderRowExpansion?.(row)
+
+  return (
+    <Fragment>
+      <TableRow
+        ref={rowRef}
+        data-index={index}
+        data-state={isSelected ? 'selected' : undefined}
+        data-highlighted={isHighlighted ? '' : undefined}
+        onContextMenu={onRowContextMenu ? (event) => onRowContextMenu(row, event) : undefined}
+      >
+        {row.getVisibleCells().map((cell) => (
+          <TableCell
+            key={cell.id}
+            data-column-id={cell.column.id}
+            onClick={onCellClick ? () => onCellClick(row, cell.column.id) : undefined}
+          >
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </TableCell>
+        ))}
+        {renderRowOverlay?.(row)}
+      </TableRow>
+      {expansionContent != null && (
+        <tr {...{ [EXPANSION_ROW_ATTR]: '' }}>
+          <ExpansionCell colSpan={expansionColSpan}>
+            {expansionContent}
+          </ExpansionCell>
+        </tr>
+      )}
+    </Fragment>
+  )
+}
+
+const DataTableRow = memo(DataTableRowInner) as typeof DataTableRowInner
 
 export function DataTable<TData>({
   columns,
@@ -120,30 +184,31 @@ export function DataTable<TData>({
 
   const visibleColumns = table.getVisibleLeafColumns()
 
-  // Single pass: partition columns into fixed-width and growable, summing sizes for each group
-  const { fixedTotal, growTotal, growColumns } = visibleColumns.reduce(
-    (acc, col) => {
-      const size = col.columnDef.size ?? 0
-      if (col.columnDef.meta?.grow) {
-        acc.growTotal += size
-        acc.growColumns.push(col)
-      } else {
-        acc.fixedTotal += size
-      }
-      return acc
-    },
-    { fixedTotal: 0, growTotal: 0, growColumns: [] } as {
-      fixedTotal: number
-      growTotal: number
-      growColumns: typeof visibleColumns
-    },
+  const { fixedTotal, growTotal, growColumns } = useMemo(
+    () =>
+      visibleColumns.reduce(
+        (acc, col) => {
+          const size = col.columnDef.size ?? 0
+          if (col.columnDef.meta?.grow) {
+            acc.growTotal += size
+            acc.growColumns.push(col)
+          } else {
+            acc.fixedTotal += size
+          }
+          return acc
+        },
+        { fixedTotal: 0, growTotal: 0, growColumns: [] } as {
+          fixedTotal: number
+          growTotal: number
+          growColumns: typeof visibleColumns
+        },
+      ),
+    [visibleColumns],
   )
 
   const borderTotal = visibleColumns.length * 0.5
   const growSpace = containerWidth > 0 ? containerWidth - fixedTotal - borderTotal : 0
 
-  // Distribute remaining horizontal space proportionally among grow columns.
-  // Uses Math.floor per column and assigns the rounding remainder to the last column.
   const growWidths = useMemo(() => {
     const map = new Map<string, number>()
     if (growSpace <= 0 || growTotal <= 0) return map
@@ -159,31 +224,49 @@ export function DataTable<TData>({
     return map
   }, [growSpace, growTotal, growColumns])
 
-  const colgroup = (
-    <colgroup>
-      {visibleColumns.map((column) => {
-        const width = growWidths.get(column.id) ?? column.columnDef.size
-        return (
-          <col
-            key={column.id}
-            style={width !== undefined ? { width: `${width}px` } : undefined}
-          />
-        )
-      })}
-    </colgroup>
+  const colgroup = useMemo(
+    () => (
+      <colgroup>
+        {visibleColumns.map((column) => (
+          <Col key={column.id} $width={growWidths.get(column.id) ?? column.columnDef.size} />
+        ))}
+      </colgroup>
+    ),
+    [visibleColumns, growWidths],
   )
 
   const totalSize = fixedTotal + growTotal
 
-  const rows = table.getRowModel().rows.map((row) => ({
-    row,
-    expansionContent: renderRowExpansion?.(row),
-  }))
+  const hasExpansion = renderRowExpansion !== undefined
+
+  const tableRows = table.getRowModel().rows
+  const { getVirtualItems, getTotalSize, measureElement } = useVirtualizer({
+    count: tableRows.length,
+    getScrollElement: () => containerRef.current,
+    estimateSize: () => 44,
+    overscan: 16,
+    useFlushSync: false,
+    measureElement: (el) => {
+      let height = el.clientHeight
+      const next = el.nextElementSibling
+      if (next?.hasAttribute(EXPANSION_ROW_ATTR)) {
+        height += (next as HTMLElement).clientHeight
+      }
+      return height
+    }
+  })
+
+  const rowRef = hasExpansion ? measureElement : undefined
 
   const tableMinWidth = totalSize > 0 ? totalSize : undefined
 
+  const virtualRows = getVirtualItems()
+  const paddingTop = virtualRows.length > 0 ? virtualRows[0].start : 0
+  const paddingBottom =
+    virtualRows.length > 0 ? getTotalSize() - virtualRows[virtualRows.length - 1].end : 0
+
   return (
-    <Table containerRef={containerRef} containerClassName={containerClassName} style={{ minWidth: tableMinWidth }}>
+    <StyledTable containerRef={containerRef} containerClassName={containerClassName} $minWidth={tableMinWidth}>
       {colgroup}
       {showHeader && (
         <TableHeader>
@@ -201,36 +284,31 @@ export function DataTable<TData>({
         </TableHeader>
       )}
       <TableBody>
-        {rows.length ? (
-          rows.map(({ row, expansionContent }) => (
-            <Fragment key={row.id}>
-              <TableRow
-                data-state={row.getIsSelected() ? 'selected' : undefined}
-                data-highlighted={highlightedRowIds?.has(row.id) ? '' : undefined}
-                onContextMenu={
-                  onRowContextMenu ? (event) => onRowContextMenu(row, event) : undefined
-                }
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    data-column-id={cell.column.id}
-                    onClick={onCellClick ? () => onCellClick(row, cell.column.id) : undefined}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-                {renderRowOverlay?.(row)}
-              </TableRow>
-              {expansionContent != null && (
-                <tr data-expansion-row="">
-                  <ExpansionCell colSpan={expansionColSpan ?? columns.length}>
-                    {expansionContent}
-                  </ExpansionCell>
-                </tr>
-              )}
-            </Fragment>
-          ))
+        {paddingTop > 0 && (
+          <tr>
+            <SpacerCell colSpan={columns.length} $height={paddingTop} />
+          </tr>
+        )}
+        {virtualRows.length ? (
+          virtualRows.map((virtualRow) => {
+            const row = tableRows[virtualRow.index]
+
+            return (
+              <DataTableRow
+                key={row.id}
+                row={row}
+                index={virtualRow.index}
+                isSelected={row.getIsSelected()}
+                isHighlighted={highlightedRowIds?.has(row.id) ?? false}
+                rowRef={rowRef}
+                onCellClick={onCellClick}
+                onRowContextMenu={onRowContextMenu}
+                renderRowOverlay={renderRowOverlay}
+                renderRowExpansion={renderRowExpansion}
+                expansionColSpan={expansionColSpan ?? columns.length}
+              />
+            )
+          })
         ) : isLoading ? (
           <EmptyRow>
             <EmptyCell colSpan={columns.length}>
@@ -244,22 +322,25 @@ export function DataTable<TData>({
             </EmptyCell>
           </EmptyRow>
         )}
+        {paddingBottom > 0 && (
+          <tr>
+            <SpacerCell colSpan={columns.length} $height={paddingBottom} />
+          </tr>
+        )}
       </TableBody>
-    </Table>
+    </StyledTable>
   )
 }
-
-// ─── Styled Components ─────────────────────────────────────────────────────
 
 const EmptyRow = styled.tr`
   &:hover {
     background: none !important;
   }
 `
+
 const EmptyCell = styled.td`
   text-align: center;
   padding: 72px 0 !important;
-
 `
 
 const ExpansionCell = styled.td`
@@ -268,5 +349,19 @@ const ExpansionCell = styled.td`
   height: auto;
   background: var(--colors-base-neutral-3) !important;
   outline: none !important;
+`
+
+const StyledTable = styled(Table)<{ $minWidth?: number }>`
+  min-width: ${({ $minWidth }) => ($minWidth !== undefined ? `${$minWidth}px` : undefined)};
+`
+
+const Col = styled.col<{ $width?: number }>`
+  width: ${({ $width }) => ($width !== undefined ? `${$width}px` : undefined)};
+`
+
+const SpacerCell = styled.td<{ $height: number }>`
+  height: ${({ $height }) => `${$height}px`};
+  padding: 0;
+  border: none;
 `
 

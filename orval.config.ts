@@ -14,7 +14,7 @@ export default defineConfig({
       client: 'react-query',
       mock: {
         indexMockFiles: true,
-        type: 'msw'
+        generators: [{ type: 'msw' }]
       },
       httpClient: 'axios',
       namingConvention: 'kebab-case',
@@ -39,9 +39,6 @@ export default defineConfig({
           name: 'serializeFormData'
         },
         query: {
-          useQuery: true,
-          useMutation: true,
-
           usePrefetch: false,
           useInvalidate: false,
           useSetQueryData: false,

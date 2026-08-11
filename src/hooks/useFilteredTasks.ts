@@ -35,10 +35,16 @@ function getTaskDate<T extends TaskRowDto>(
 	}
 }
 
+interface UseFilteredTasksOptions<T> {
+	additionalFilter?: (task: T) => boolean
+	skipQuickFilters?: boolean
+}
+
 export function useFilteredTasks<T extends TaskRowDto>(
 	tasks: T[],
-	additionalFilter?: (task: T) => boolean,
+	options: UseFilteredTasksOptions<T> = {},
 ): T[] {
+	const { additionalFilter, skipQuickFilters = false } = options
 	const { searchQuery, activeQuickFilters, dateRange, dateType } =
 		useTasksFilters()
 
@@ -53,7 +59,7 @@ export function useFilteredTasks<T extends TaskRowDto>(
 				.filter((task) => {
 					const matchers = [
 						...(additionalFilter ? [additionalFilter(task)] : []),
-						...(activeQuickFilters.size > 0
+						...(!skipQuickFilters && activeQuickFilters.size > 0
 							? [
 									Array.from(activeQuickFilters).some((filter) =>
 										matchesQuickFilter(task, filter),
@@ -80,6 +86,7 @@ export function useFilteredTasks<T extends TaskRowDto>(
 				}),
 		[
 			activeQuickFilters,
+			skipQuickFilters,
 			searchQuery,
 			searchedTasks,
 			additionalFilter,
