@@ -55,14 +55,13 @@ const ContentPanel = styled.div`
     border-bottom: 0.5px solid rgba(0, 0, 0, 0.04);
     height: 44px;
   }
-  
+
   [data-slot="table-cell"] {
     height: 44px;
     padding-block: 0;
     vertical-align: middle;
     border-inline-start: 0.5px solid rgba(0, 0, 0, 0.04);
   }
-
 
   [data-slot="table-cell"]:first-child {
     border-inline-start: none;

@@ -327,7 +327,8 @@ export function AssigneeDialog({
 }
 
 const AssigneeDialogContent = styled(ModalContent)`
-  width: 700px;
+  width: 600px;
+  height: 800px;
   max-width: calc(100vw - 2rem);
   max-height: 70vh;
   overflow: hidden;
@@ -428,12 +429,15 @@ const SearchRow = styled.div`
 
 const DialogHeader = styled.div<{ $shadow: boolean }>`
   flex-shrink: 0;
-  padding-inline: 38px;
+  padding: 24px 38px 12px;
   position: relative;
   z-index: 1;
+
   clip-path: inset(0 0 -20px 0);
+
   transition: box-shadow 200ms ease;
-  box-shadow: ${({ $shadow }) => ($shadow ? "0px 10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
+  box-shadow: ${({ $shadow }) =>
+		$shadow ? "0 10px 20px rgba(0, 0, 0, 0.06)" : "none"};
 `
 
 const DialogActions = styled.div<{ $shadow: boolean }>`
@@ -446,5 +450,6 @@ const DialogActions = styled.div<{ $shadow: boolean }>`
   z-index: 1;
   clip-path: inset(-20px 0 0 0);
   transition: box-shadow 200ms ease;
-  box-shadow: ${({ $shadow }) => ($shadow ? "0px -10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
+  box-shadow: ${({ $shadow }) =>
+		$shadow ? "0px -10px 20px 0px rgba(0, 0, 0, 0.06)" : "none"};
 `

@@ -72,7 +72,10 @@ const HeaderRoot = styled.header`
   border-radius: var(--radius-lg);
   padding-inline: 24px;
   z-index: var(--z-dropdown);
-  box-shadow: 0 4px 50px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0px 6px 16px rgba(0, 0, 0, 0.08),
+    0px 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0px 9px 28px 8px rgba(0, 0, 0, 0.05);
   color: white;
 `
 
@@ -80,7 +83,7 @@ const HeaderInner = styled.div`
   display: grid;
   grid-template-columns: 1fr minmax(0, auto) 1fr;
   align-items: center;
-  height: 62px;
+  padding: 8px 0;
 `
 
 const StartSection = styled.div`
@@ -102,7 +105,7 @@ const CenterTitle = styled.p`
   font-size: var(--fs-heading-3);
   font-weight: 500;
   line-height: 32px;
-  color: #C7C9CB;
+  color: var(--colors-base-neutral-11);
   min-width: 0;
   overflow: hidden;
   display: flex;
@@ -132,7 +135,7 @@ const UserMenuButton = styled.button`
   background: transparent;
   outline: none;
   cursor: pointer;
-  
+
   transition: background 150ms ease-in-out;
 
   &:hover,
@@ -156,7 +159,7 @@ const StyledLink = styled(Link)`
 `
 
 const BiData = styled.span`
-  color: #D2E0FA;
+  color: #d2e0fa;
   font-size: var(--fs-btn);
   align-self: flex-start;
   line-height: 40px;
