@@ -201,7 +201,7 @@ const Section = styled.div`
     grid-row: 2;
     width: 100%;
     flex-shrink: 1;
-}
+  }
 `
 
 const TabsWrapper = styled.div`
@@ -224,9 +224,11 @@ const TabItem = styled.button<{ $active: boolean }>`
   align-items: center;
   justify-content: flex-end;
   border: 1px solid var(--border);
-  border-bottom-color: ${({ $active }) => ($active ? "var(--background)" : "var(--border)")};
+  border-bottom-color: ${({ $active }) =>
+		$active ? "var(--background)" : "var(--border)"};
   border-radius: 6px 6px 0 0;
-  background: ${({ $active }) => ($active ? "var(--background)" : "transparent")};
+  background: ${({ $active }) =>
+		$active ? "var(--background)" : "transparent"};
   opacity: ${({ $active }) => ($active ? 1 : 0.5)};
   cursor: pointer;
   margin-bottom: -1px;
@@ -244,13 +246,11 @@ const ContentPanel = styled.div<{ $hasData?: boolean }>`
   background: var(--background);
   border-radius: 8px;
   border-start-start-radius: 0;
-  max-height: 352px;
   display: flex;
   align-items: ${({ $hasData }) => ($hasData ? "flex-start" : "center")};
   justify-content: center;
   position: relative;
   z-index: 1;
-  overflow-y: auto;
   direction: ltr;
 `
 
