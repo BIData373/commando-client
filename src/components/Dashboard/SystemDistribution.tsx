@@ -267,13 +267,11 @@ const ContentPanel = styled.div<{ $hasData?: boolean }>`
   background: var(--background);
   border-radius: 8px;
   border-start-start-radius: 0;
-  max-height: 352px;
   display: flex;
   align-items: ${({ $hasData }) => ($hasData ? "flex-start" : "center")};
   justify-content: center;
   position: relative;
   z-index: 1;
-  overflow-y: auto;
   direction: ltr;
 `
 

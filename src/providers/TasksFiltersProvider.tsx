@@ -1,4 +1,4 @@
-import { useLocalStorage } from "@mantine/hooks"
+import { useDebouncedCallback, useLocalStorage } from "@mantine/hooks"
 import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
 import {
 	createContext,
@@ -6,6 +6,7 @@ import {
 	type PropsWithChildren,
 	type SetStateAction,
 	useContext,
+	useEffect,
 	useMemo,
 	useState,
 } from "react"
@@ -53,6 +54,8 @@ interface TasksFiltersContextValue {
 }
 
 const TasksFiltersContext = createContext<TasksFiltersContextValue | null>(null)
+
+const QUICK_FILTER_DEBOUNCE_MS = 300
 
 interface TasksFiltersProviderProps extends PropsWithChildren {
 	initialQuickFilters?: Set<QuickFilter>
@@ -108,6 +111,19 @@ export function TasksFiltersProvider({
 		[localQuickFilters, quickFilter],
 	)
 
+	useEffect(() => {
+		if (!localQuickFilters) return
+
+		const serverQuickFilters = new Set<QuickFilter>(quickFilter)
+		const matchesServer =
+			localQuickFilters.size === serverQuickFilters.size &&
+			[...localQuickFilters].every((filter) => serverQuickFilters.has(filter))
+
+		if (matchesServer) {
+			setLocalQuickFilters(undefined)
+		}
+	}, [localQuickFilters, quickFilter])
+
 	const columnOrder = useMemo(
 		() => reconcileColumnOrder(columnOrderRaw, knownColumnIds),
 		[columnOrderRaw, knownColumnIds],
@@ -129,6 +145,13 @@ export function TasksFiltersProvider({
 		updateView(nextView)
 	}
 
+	const debouncedUpdateQuickFilter = useDebouncedCallback(
+		(nextQuickFilters: QuickFilter[]) => {
+			updateTableView({ quickFilter: nextQuickFilters })
+		},
+		QUICK_FILTER_DEBOUNCE_MS,
+	)
+
 	function toggleQuickFilter(filter: QuickFilter) {
 		const nextQuickFilters = new Set(activeQuickFilters)
 
@@ -138,17 +161,13 @@ export function TasksFiltersProvider({
 			nextQuickFilters.add(filter)
 		}
 
-		setLocalQuickFilters(undefined)
-		updateTableView({
-			quickFilter: [...nextQuickFilters],
-		})
+		setLocalQuickFilters(nextQuickFilters)
+		debouncedUpdateQuickFilter([...nextQuickFilters])
 	}
 
 	function clearQuickFilters() {
-		setLocalQuickFilters(undefined)
-		updateTableView({
-			quickFilter: [],
-		})
+		setLocalQuickFilters(new Set())
+		debouncedUpdateQuickFilter([])
 	}
 
 	function setColumnsFilters(columnsFilters: ColumnFiltersState) {

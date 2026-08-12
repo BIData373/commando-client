@@ -1,5 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query"
-import { createContext, type PropsWithChildren, useContext } from "react"
+import {
+	createContext,
+	type PropsWithChildren,
+	useContext,
+	useRef,
+} from "react"
 import type { UserViewDto } from "src/api/model"
 import { DistributionTab } from "src/api/model/distribution-tab"
 import { QuickFilter } from "src/api/model/quick-filter"
@@ -83,16 +88,26 @@ export function UserViewProvider({
 
 	const view = data ?? defaultView
 
+	const latestViewRef = useRef<UserViewDto | null>(null)
+
 	const updateView = async (nextView: UserViewDto) => {
-		queryClient.setQueryData(getGetUserViewQueryKey({ workspaceId }), nextView)
-		upsertUserView({
+		const queryKey = getGetUserViewQueryKey({ workspaceId })
+
+		latestViewRef.current = nextView
+
+		await queryClient.cancelQueries({ queryKey })
+		if (latestViewRef.current !== nextView) return
+
+		queryClient.setQueryData(queryKey, nextView)
+
+		await upsertUserView({
 			workspaceId,
 			view: nextView,
-		}).then(() => {
-			queryClient.invalidateQueries({
-				queryKey: getGetUserViewQueryKey({ workspaceId }),
-			})
 		})
+
+		if (latestViewRef.current === nextView) {
+			queryClient.invalidateQueries({ queryKey })
+		}
 	}
 
 	return isLoading ? (

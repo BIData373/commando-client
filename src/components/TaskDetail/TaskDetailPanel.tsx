@@ -375,7 +375,7 @@ const BottomBar = styled.div<{ $hidden?: boolean; $shadow: boolean }>`
   flex-shrink: 0;
   background: var(--background-area);
   height: 53px;
-  border-top: 10px solid rgba(0, 0, 0, 0.0);
+  border-top: 10px solid rgba(0, 0, 0, 0);
   display: ${({ $hidden }) => ($hidden ? "none" : "flex")};
   align-items: center;
   justify-content: space-between;
@@ -386,7 +386,8 @@ const BottomBar = styled.div<{ $hidden?: boolean; $shadow: boolean }>`
   position: relative;
   z-index: 1;
   transition: box-shadow 200ms ease;
-  box-shadow: ${({ $shadow }) => ($shadow ? "0px -10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
+  box-shadow: ${({ $shadow }) =>
+		$shadow ? "0px -10px 20px 0px rgba(0, 0, 0, 0.06)" : "none"};
 
   &:hover {
     background: var(--Bar-hover);
@@ -403,9 +404,9 @@ const SectionLabel = styled.p`
 `
 
 const HeaderRow = styled.div`
-	display: flex;
-	flex-direction: column;
-	padding: 16px 48px 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 48px 20px;
 `
 
 const TitleRow = styled.div<{ $shadow: boolean }>`
@@ -419,7 +420,8 @@ const TitleRow = styled.div<{ $shadow: boolean }>`
   z-index: 1;
   clip-path: inset(0 0 -20px 0);
   transition: box-shadow 200ms ease;
-  box-shadow: ${({ $shadow }) => ($shadow ? "0px 10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
+  box-shadow: ${({ $shadow }) =>
+		$shadow ? "0px 10px 20px 0px rgba(0, 0, 0, 0.06)" : "none"};
 `
 
 const TextWrapper = styled.div`
@@ -435,11 +437,9 @@ const TitleText = styled.span`
   font-weight: 500;
   line-height: 32px;
   color: var(--text-color);
-  text-align: end;
   white-space: normal;
   overflow-wrap: anywhere;
   width: 100%;
-  direction: ltr;
   max-height: 5lh;
   overflow-y: auto;
 `
@@ -503,7 +503,7 @@ const MetaText = styled.span`
 `
 
 const StatusTagContainer = styled.div`
-	width: 100%;
+  width: 100%;
 `
 
 // ─── Divider ───────────────────────────────────────────────────────────────────
