@@ -29,15 +29,26 @@ export function AssigneeDetailPopover({
 				</DetailedHeader>
 				{assignee.users.length > 0 && (
 					<>
-						<SectionLabel>משתמשים :</SectionLabel>
+						<SectionLabel>משתמשים מכותבים:</SectionLabel>
 						<UserScrollArea>
 							<UserList>
 								{assignee.users.map((u) => (
 									<UserRow key={u.id}>
-										<UserInfo>
-											<UserName>{u.info?.name}</UserName>
-											<UserEmail>{u.upn}</UserEmail>
-										</UserInfo>
+										<UserPrimary>
+											{u.info?.name && (
+												<>
+													<UserName title={u.info?.name}>
+														{u.info?.name}
+													</UserName>
+													<UserDash>{" - "}</UserDash>
+												</>
+											)}
+
+											<UserUpn title={u.upn}>{u.upn}</UserUpn>
+										</UserPrimary>
+										<UserMeta title={u.info?.displayName}>
+											{u.info?.displayName ?? ""}
+										</UserMeta>
 									</UserRow>
 								))}
 							</UserList>
@@ -100,6 +111,7 @@ const DetailedHeader = styled.div`
   align-items: center;
   gap: 8px;
   padding-inline-end: 24px;
+  font-weight: 500;
 `
 
 const RoleText = styled.span`
@@ -114,7 +126,6 @@ const RoleText = styled.span`
 
 const SectionLabel = styled.span`
   font-size: var(--fs-base);
-  font-weight: 500;
   line-height: 24px;
   color: var(--text-subtitle-color);
 `
@@ -123,41 +134,77 @@ const UserScrollArea = styled.div`
   direction: ltr;
   overflow-y: auto;
   max-height: 110px;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 999px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--sea-ink-soft);
+  }
 `
 
 const UserList = styled.div`
   direction: rtl;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-inline-start: 8px;
+  gap: 6px;
+  padding-right: 8px;
 `
 
 const UserRow = styled.div`
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
 `
 
-const UserInfo = styled.div`
+const UserPrimary = styled.span`
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
+  align-items: center;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+
+  font-size: var(--fs-base);
+  font-weight: 400;
+  color: var(--text-color-2);
 `
 
 const UserName = styled.span`
-  font-size: var(--fs-btn);
-  color: var(--sea-ink);
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
 `
 
-const UserEmail = styled.span`
-  font-size: var(--fs-sm);
-  color: var(--sea-ink-soft);
+const UserDash = styled.span`
+  padding: 0 3px;
+`
+
+const UserUpn = styled.span`
+  white-space: nowrap;
+  flex-shrink: 0;
+`
+
+const UserMeta = styled.span`
+  font-size: var(--fs-btn);
+  color: var(--text-color-400);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 100%;
 `

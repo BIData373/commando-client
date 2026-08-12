@@ -148,7 +148,7 @@ export default function SystemDistribution({
 								<TbHelpCircle size={16} />
 							</HelpIconWrapper>
 						</TooltipTrigger>
-						<TooltipContent side="top" sideOffset={-16} collisionPadding={12}>
+						<TooltipContent side="top" collisionPadding={12}>
 							הנחיות שלא הסתיימו בלבד
 						</TooltipContent>
 					</Tooltip>

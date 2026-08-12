@@ -93,23 +93,16 @@ const ModalHeader = styled.div`
 `
 
 const CloseButton = styled(DialogClose)`
-  position: absolute;
-  inset-block-start: 16px;
-  inset-inline-end: 16px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 32px;
   height: 32px;
-  border: none;
   border-radius: 6px;
-  background: transparent;
-
+  flex-shrink: 0;
   color: var(--sea-ink-soft);
   cursor: pointer;
-  z-index: 1;
+  outline: none;
 
   transition:
     background 150ms ease-in-out,

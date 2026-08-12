@@ -18,7 +18,6 @@ import {
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries, queryClient } from "src/queryClient"
 import { CancelButton } from "../shared/CancelButton"
 import { FormField } from "../shared/FormField"
@@ -327,12 +326,15 @@ export function AssigneeDialog({
 }
 
 const AssigneeDialogContent = styled(ModalContent)`
-  width: 600px;
+  width: 700px;
   height: 800px;
   max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 2rem);
   max-height: 70vh;
   overflow: hidden;
   direction: rtl;
+  gap: 2.4rem;
+  padding: 32px 48px;
 `
 
 const DialogTitleLarge = styled(DialogTitle)`
@@ -350,15 +352,31 @@ const StyledDialogDescription = styled(DialogDescription)`
   color: var(--text-color);
   font-weight: 400;
   line-height: 1.4;
+  padding-top: 8px;
 `
 
 const ScrollableContent = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 38px 16px;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 999px;
+  }
 `
 
 const DialogBody = styled.div`
@@ -429,7 +447,6 @@ const SearchRow = styled.div`
 
 const DialogHeader = styled.div<{ $shadow: boolean }>`
   flex-shrink: 0;
-  padding: 24px 38px 12px;
   position: relative;
   z-index: 1;
 
@@ -444,7 +461,6 @@ const DialogActions = styled.div<{ $shadow: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
   flex-shrink: 0;
   position: relative;
   z-index: 1;

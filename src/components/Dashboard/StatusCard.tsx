@@ -187,5 +187,4 @@ const StatusBadge = styled.span<{ $color: string }>`
   white-space: nowrap;
   ${({ $color }) => `color: oklch(from ${$color} clamp(0, l, 0.5) c h);`}
   ${({ $color }) => `background: rgb(from ${$color} r g b / 0.1);`}
-  ${({ $color }) => `border: 1px solid oklch(from ${$color} calc(l * 0.85) c h / clamp(0, calc((l - 0.7) * 10), 1));`}
 `

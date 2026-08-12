@@ -130,7 +130,8 @@ body,
   --Success-color-success-border-hover: #95de64;
   --Color-Subtitle: #1d293d;
   --Colors-Base-Geekblue-10: #030852;
-  --Colors-Brand-Warning-colorWarningText: oklch(80.16% 0.17 76);
+  --Colors-Brand-Warning-colorWarningText: #d48806;
+  --Colors-Brand-Error-colorErrorActive: #d9363e;
   --Border-color-border-secondary: #303030;
   --Error-color-error: #dc4446;
   --Text-color-text: rgba(255, 255, 255, 0.85);
