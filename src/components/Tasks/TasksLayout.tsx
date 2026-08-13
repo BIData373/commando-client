@@ -21,7 +21,6 @@ import {
 	type TasksSearchSchemaType,
 	TasksView,
 } from "src/routes/workspace/$urlName/tasks"
-import type { QuickFilter } from "src/utils/filter-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
@@ -33,7 +32,6 @@ import { TaskTable } from "./TaskTable"
 export interface TasksLayoutProps {
 	view: TasksView
 	urlName: string
-	tabFilter: QuickFilter[]
 	statusFilter: WorkspaceStatusType[]
 	deadlineTypeFilter: DeadlineType[]
 }
@@ -41,13 +39,12 @@ export interface TasksLayoutProps {
 function TasksLayout({
 	view,
 	urlName,
-	tabFilter,
 	statusFilter,
 	deadlineTypeFilter,
 }: TasksLayoutProps) {
 	const navigate = useNavigate({ from: "/workspace/$urlName/tasks" })
 
-	const { columnOrder, hiddenColumns, toggleQuickFilter } = useTasksFilters()
+	const { columnOrder, hiddenColumns } = useTasksFilters()
 
 	const {
 		workspace: { id: workspaceId, title: workspaceTitle },
@@ -87,7 +84,6 @@ function TasksLayout({
 			params: { urlName },
 			search: {
 				view,
-				tabFilter,
 				statusFilter,
 				deadlineTypeFilter,
 				...taskFilter,
@@ -109,14 +105,6 @@ function TasksLayout({
 			params: { urlName, taskId: String(taskId) },
 			search: { view },
 		})
-	}
-
-	function handleToggleTabFilter(filter: QuickFilter) {
-		toggleQuickFilter(filter)
-		const next = tabFilter.includes(filter)
-			? tabFilter.filter((f) => f !== filter)
-			: [...tabFilter, filter]
-		navigate({ search: (prev) => ({ ...prev, tabFilter: next }) })
 	}
 
 	function handleColumnFiltersChange(
@@ -147,10 +135,6 @@ function TasksLayout({
 		})
 	}
 
-	function handleClearQuickFilters() {
-		navigate({ search: (prev) => ({ ...prev, tabFilter: [] }) })
-	}
-
 	return (
 		<TooltipProvider>
 			<TasksRoot>
@@ -160,9 +144,6 @@ function TasksLayout({
 					columnOrder={noWorkspaceColumnOrder}
 					hiddenColumns={noWorkspaceHiddenColumns}
 					onClearColumnFilters={handleClearColumnFilters}
-					onClearQuickFilters={handleClearQuickFilters}
-					tabFilter={tabFilter}
-					onToggleTabFilter={handleToggleTabFilter}
 					urlColumnFilters={urlColumnFilters}
 					startSlot={<TasksDatePicker />}
 					exportFilePrefix={workspaceTitle}

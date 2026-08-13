@@ -7,10 +7,12 @@ function appendValue(formData: FormData, key: string, value: unknown): void {
 		formData.append(key, value.toISOString())
 	} else if (Array.isArray(value)) {
 		if (value.length === 0) {
-			formData.append(key, "")
+			if (!key.includes("[")) {
+				formData.append(key, "")
+			}
 		} else {
-			value.forEach((item) => {
-				appendValue(formData, key, item)
+			value.forEach((item, index) => {
+				appendValue(formData, `${key}[${index}]`, item)
 			})
 		}
 	} else if (typeof value === "object") {

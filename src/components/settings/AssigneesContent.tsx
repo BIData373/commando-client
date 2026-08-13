@@ -92,7 +92,7 @@ export function AssigneesContent() {
 				<SettingsSection>
 					<SettingToggleRow
 						label="אפשר לאחראים לעדכן סטטוס"
-						tooltip="מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות כבויה – עדכון הסטטוס יתאפשר רק למנהלי הלשכה."
+						tooltip="מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות כבויה – עדכון הסטטוס יתאפשר רק למנהלי הסביבה."
 						icon={<Pencil size={18} />}
 						checked={assigneeStatusEditable}
 						onCheckedChange={handleStatusEditableChange}

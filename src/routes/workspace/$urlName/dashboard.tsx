@@ -9,7 +9,7 @@ export const Route = createFileRoute("/workspace/$urlName/dashboard")({
 
 function Dashboard() {
 	return (
-		<TasksFiltersProvider storageKey="dashboard">
+		<TasksFiltersProvider>
 			<PageWrapper>
 				<DashboardContent />
 			</PageWrapper>

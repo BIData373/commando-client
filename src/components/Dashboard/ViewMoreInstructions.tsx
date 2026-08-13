@@ -2,18 +2,18 @@ import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { ChevronLeft } from "lucide-react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
+import type { QuickFilter } from "src/api/model/quick-filter"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import type { QuickFilter } from "src/utils/filter-utils"
 
 interface IViewInstruction {
-	tabFilter?: QuickFilter
+	quickFilter?: QuickFilter
 	statusFilter?: WorkspaceStatusType
 	deadlineTypeFilter?: DeadlineType
 }
 
 export const ViewMoreInstructions = ({
-	tabFilter,
+	quickFilter,
 	statusFilter,
 	deadlineTypeFilter,
 }: IViewInstruction) => {
@@ -29,7 +29,7 @@ export const ViewMoreInstructions = ({
 			params: { urlName },
 			search: {
 				view: TasksView.TABLE,
-				tabFilter,
+				quickFilter: quickFilter ? [quickFilter] : [],
 				statusFilter,
 				deadlineTypeFilter,
 			},
