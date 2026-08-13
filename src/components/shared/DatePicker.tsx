@@ -57,18 +57,15 @@ export default DatePicker
 const StyledCalendar = styled(Calendar)`
   width: 100%;
   min-height: 0;
-  background: white;
+  background: var(--background);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  box-shadow:
-    0 6px 16px 0 rgba(0, 0, 0, 0.08),
-    0 3px 6px -4px rgba(0, 0, 0, 0.12),
-    0 9px 28px 8px rgba(0, 0, 0, 0.05);
 
   /* ── Hide default caption (rendered inside custom Nav) ── */
   .rdp-month_caption {
     display: none;
   }
-  .rdp-months{
+  .rdp-months {
     flex-direction: column;
   }
   /* ── Override nav positioning (custom Nav handles layout) ── */
@@ -114,13 +111,14 @@ const StyledCalendar = styled(Calendar)`
     --muted: transparent;
   }
 
-  .rdp-today:not(.rdp-range_start):not(.rdp-range_end):not(.rdp-range_middle) button {
+  .rdp-today:not(.rdp-range_start):not(.rdp-range_end):not(.rdp-range_middle)
+    button {
     border: 1px solid var(--primary);
     color: rgba(0, 0, 0, 0.88) !important;
   }
 
   /* ── Selected single: purple bg, white text ── */
-  .rdp-day button[data-selected-single='true'] {
+  .rdp-day button[data-selected-single="true"] {
     background: var(--primary) !important;
     color: white !important;
     border: none !important;
@@ -133,31 +131,30 @@ const StyledCalendar = styled(Calendar)`
     outline: none !important;
   }
 
-
   /* ── Light-purple band for range cells ── */
   .rdp-range_start,
   .rdp-range_end {
-    background-color: #E6E5FF !important;
+    background-color: #e6e5ff !important;
   }
 
   .rdp-range_start::after,
   .rdp-range_end::after {
-    background-color: #E6E5FF !important;
+    background-color: #e6e5ff !important;
   }
 
   .rdp-range_middle {
-    background-color: #E6E5FF !important;
+    background-color: #e6e5ff !important;
     border-radius: 0 !important;
   }
 
-  .rdp-day button[data-range-middle='true'] {
+  .rdp-day button[data-range-middle="true"] {
     background: transparent !important;
     color: rgba(0, 0, 0, 0.88) !important;
   }
 
   /* ── Range start/end: purple circle ── */
-  .rdp-day button[data-range-start='true'],
-  .rdp-day button[data-range-end='true'] {
+  .rdp-day button[data-range-start="true"],
+  .rdp-day button[data-range-end="true"] {
     background: var(--primary) !important;
     color: white !important;
     border-radius: 6px !important;
@@ -165,5 +162,4 @@ const StyledCalendar = styled(Calendar)`
     height: 24px !important;
     min-width: 24px !important;
   }
-
 `

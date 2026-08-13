@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { chain, compact, countBy, flatMap, get } from "lodash"
 import { Users } from "lucide-react"
 import { useMemo } from "react"
+import { TbHelpCircle } from "react-icons/tb"
 import { useListAssignees } from "src/api/assignee/assignee"
 import {
 	DistributionTab,
@@ -140,6 +141,17 @@ export default function SystemDistribution({
 							<TabTitle $active={tab.id === activeTab}>{tab.label}</TabTitle>
 						</TabItem>
 					))}
+
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<HelpIconWrapper>
+								<TbHelpCircle size={16} />
+							</HelpIconWrapper>
+						</TooltipTrigger>
+						<TooltipContent side="top" collisionPadding={12}>
+							הנחיות שלא הסתיימו בלבד
+						</TooltipContent>
+					</Tooltip>
 				</TabsHeader>
 				<ContentPanel $hasData={hasData}>
 					{hasData ? (
@@ -223,7 +235,6 @@ const TabItem = styled.button<{ $active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  border: 1px solid var(--border);
   border-bottom-color: ${({ $active }) =>
 		$active ? "var(--background)" : "var(--border)"};
   border-radius: 6px 6px 0 0;
@@ -239,6 +250,16 @@ const TabTitle = styled.span<{ $active: boolean }>`
   font-size: 15px;
   font-weight: 400;
   color: var(--foreground);
+`
+
+const HelpIconWrapper = styled.span`
+  margin-inline-start: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color-400);
+  padding: 0.8rem;
+  flex-shrink: 0;
 `
 
 const ContentPanel = styled.div<{ $hasData?: boolean }>`

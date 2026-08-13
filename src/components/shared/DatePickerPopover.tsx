@@ -88,14 +88,17 @@ function DatePickerPopover({
 					side={side}
 					sideOffset={sideOffset}
 				>
-					{header?.(slotProps)}
+					{header && <HeaderSection>{header(slotProps)}</HeaderSection>}
 
-					<DatePicker
-						mode={mode}
-						selected={value}
-						showWeekNumber={showWeekNumber}
-						onSelect={handleSelect}
-					/>
+					<CalendarSection>
+						<DatePicker
+							mode={mode}
+							selected={value}
+							showWeekNumber={showWeekNumber}
+							onSelect={handleSelect}
+						/>
+					</CalendarSection>
+
 					{footer?.(slotProps)}
 				</PopoverContent>
 			</Popover.Portal>
@@ -115,7 +118,16 @@ const PopoverContent = styled(Popover.Content)`
   box-shadow: var(--shadow-popover);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   width: 340px;
   z-index: var(--z-dropdown);
+`
+
+const HeaderSection = styled.div`
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+`
+
+const CalendarSection = styled.div`
+  padding: 0;
 `

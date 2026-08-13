@@ -30,7 +30,7 @@ export default function RecentlyCompleted({
 			gap={20}
 			tabButtons={
 				<TabsButtons>
-					<SectionTitle>הנחיות שבוצעו לאחרונה</SectionTitle>
+					<SectionTitle>הנחיות שבוצעו</SectionTitle>
 					<ViewMoreInstructions statusFilter={WorkspaceStatusType.COMPLETED} />
 				</TabsButtons>
 			}
@@ -47,9 +47,9 @@ export default function RecentlyCompleted({
 }
 
 const TabsButtons = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `
 
 const SectionTitle = styled.h2`

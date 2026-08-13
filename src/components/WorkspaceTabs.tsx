@@ -54,25 +54,25 @@ export function WorkspaceTabs() {
 
 const NavMenuLink = styled(NavigationMenuLink)`
   && {
-    padding: 8px 8px;
-    color: #C7C9CB;
+    padding: 10px 8px;
+    color: #c7c9cb;
     font-weight: 400;
     font-size: var(--fs-btn);
     background: transparent;
     border-radius: 6px;
 
     &:hover {
-      color: #C7C9CB;
+      color: #c7c9cb;
       background: rgba(255, 255, 255, 0.1);
     }
 
-    &[data-status='active'] {
-      color: #C7C9CB;
+    &[data-status="active"] {
+      color: #c7c9cb;
       background: rgba(255, 255, 255, 0.15);
     }
   }
 `
 
 const StyledLink = styled(Link)`
-	white-space: nowrap;
+  white-space: nowrap;
 `
