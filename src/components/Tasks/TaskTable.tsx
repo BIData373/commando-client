@@ -333,8 +333,9 @@ const TableWrapper = styled.div`
   overflow: hidden;
 
   [data-slot="table-container"] {
+    height: 100%;
+    min-height: 0;
     overflow: auto;
-    max-height: 100%;
     direction: ltr;
   }
 
@@ -369,7 +370,7 @@ const TableWrapper = styled.div`
     background: var(--background);
     border-right: 0.5px solid var(--Background-color-bg-text-active);
     box-shadow: inset 0 -0.5px 0 0 var(--Background-color-bg-text-active);
-	cursor: default;
+    cursor: default;
 
     &:first-of-type {
       border-right: none;
@@ -384,8 +385,8 @@ const TableWrapper = styled.div`
     vertical-align: middle;
     overflow: hidden;
     border: 0.5px solid var(--Background-color-bg-text-active);
-	cursor: default;
-	
+    cursor: default;
+
     &:first-of-type {
       border-right: none;
     }

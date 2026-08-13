@@ -11,17 +11,36 @@ const HighlightMatch = ({
 	query,
 	variant = "bold",
 }: HighlightMatchProps) => {
-	const index = text.indexOf(query)
-	if (!query || index === -1) return <>{text}</>
+	const normalizedQuery = query.trim()
+
+	if (!normalizedQuery) {
+		return <TextWrapper dir="auto">{text}</TextWrapper>
+	}
+
+	const escapedQuery = normalizedQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+
+	const regex = new RegExp(`(${escapedQuery})`, "gi")
+	const parts = text.split(regex)
 
 	const Highlight = variant === "mark" ? HighlightMark : HighlightBold
 
+	let position = 0
+
 	return (
-		<>
-			{text.slice(0, index)}
-			<Highlight>{text.slice(index, index + query.length)}</Highlight>
-			{text.slice(index + query.length)}
-		</>
+		<TextWrapper dir="auto">
+			{parts.map((part) => {
+				const startPosition = position
+				position += part.length
+
+				const isMatch = part.toLowerCase() === normalizedQuery.toLowerCase()
+
+				return isMatch ? (
+					<Highlight key={`match-${startPosition}`}>{part}</Highlight>
+				) : (
+					<span key={`text-${startPosition}`}>{part}</span>
+				)
+			})}
+		</TextWrapper>
 	)
 }
 
@@ -38,4 +57,8 @@ const HighlightMark = styled.mark`
 
 const HighlightBold = styled.span`
   font-weight: 700;
+`
+
+const TextWrapper = styled.span`
+  unicode-bidi: isolate;
 `

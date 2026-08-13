@@ -131,7 +131,15 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						row: {
 							original: { id },
 						},
-					}) => <IdCell>{id}</IdCell>,
+					}) => (
+						<IdCell>
+							<HighlightMatch
+								text={String(id)}
+								query={searchQuery ?? ""}
+								variant="mark"
+							/>
+						</IdCell>
+					),
 				}
 
 		const pinnedEndColumn: ColumnDef<TTask> | undefined =
@@ -365,15 +373,26 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						return null
 					}
 
-					const parts = [
+					const sourceText = [
 						source.name,
 						...(source.date ? [formatDateShort(source.date)] : []),
-					].filter(Boolean)
+					]
+						.filter(Boolean)
+						.join(" | ")
 
 					return (
 						<SourceCell>
 							{source.attachmentKey && <SourceAttachmentIcon size={18} />}
-							{parts.length > 0 && <SourceText>{parts.join(" | ")}</SourceText>}
+
+							{sourceText && (
+								<SourceText>
+									<HighlightMatch
+										text={sourceText}
+										query={searchQuery ?? ""}
+										variant="mark"
+									/>
+								</SourceText>
+							)}
 						</SourceCell>
 					)
 				},
@@ -398,7 +417,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				}) => {
 					const allNames = uniq(map(concat(tags, source?.tags ?? []), "name"))
 
-					return <TopicCell tags={allNames} />
+					return <TopicCell tags={allNames} searchQuery={searchQuery} />
 				},
 			},
 			{
@@ -496,7 +515,7 @@ const IdCell = styled.span`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 24px;
-  color:rgba(0, 0, 0, 0.65);
+  color: rgba(0, 0, 0, 0.65);
   width: 100%;
   height: 100%;
   cursor: pointer;
@@ -594,8 +613,8 @@ const SourceCell = styled.div`
 `
 
 const SourceAttachmentIcon = styled(Paperclip)`
-	flex-shrink: 0;
-  	color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  color: rgba(0, 0, 0, 0.45);
 `
 
 const SourceText = styled.span`

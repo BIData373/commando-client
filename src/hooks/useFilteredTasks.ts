@@ -2,19 +2,17 @@ import { endOfDay, isWithinInterval, startOfDay } from "date-fns"
 import { some } from "lodash"
 import { useMemo } from "react"
 import type { TaskRowDto } from "src/api/model"
+import { formatDateShort } from "src/functions/date-utils"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { DATE_TYPE } from "src/utils/date-utils"
 import { useFuse } from "./useFuse"
 
 const FUSE_OPTIONS = {
-	threshold: 0.5,
-	keys: [
-		"title",
-		"assignee.description",
-		"otherAssignees.description",
-		"notes",
-	],
+	threshold: 0.3,
+	ignoreLocation: true,
+	minMatchCharLength: 1,
+	keys: ["searchText"],
 }
 
 function getTaskDate<T extends TaskRowDto>(
@@ -37,21 +35,66 @@ function getTaskDate<T extends TaskRowDto>(
 
 interface UseFilteredTasksOptions<T> {
 	additionalFilter?: (task: T) => boolean
+	additionalSearchValues?: (
+		task: T,
+	) => Array<string | number | null | undefined>
 	skipQuickFilters?: boolean
+}
+
+function buildTaskSearchText<T extends TaskRowDto>(
+	task: T,
+	additionalSearchValues?: (
+		task: T,
+	) => Array<string | number | null | undefined>,
+): string {
+	const values = [
+		String(task.id),
+		task.title,
+		task.description,
+		task.source?.name,
+		task.source?.date ? formatDateShort(task.source.date) : undefined,
+		...task.tags.map((tag) => tag.name),
+		...(task.source?.tags ?? []).map((tag) => tag.name),
+		task.notes,
+		...(additionalSearchValues?.(task) ?? []),
+	]
+
+	return values
+		.filter((value) => value !== undefined && value !== null && value !== "")
+		.map(String)
+		.join(" ")
 }
 
 export function useFilteredTasks<T extends TaskRowDto>(
 	tasks: T[],
 	options: UseFilteredTasksOptions<T> = {},
 ): T[] {
-	const { additionalFilter, skipQuickFilters = false } = options
+	const {
+		additionalFilter,
+		additionalSearchValues,
+		skipQuickFilters = false,
+	} = options
 	const { searchQuery, activeQuickFilters, dateRange, dateType } =
 		useTasksFilters()
 
 	const from = dateRange?.from
 	const to = dateRange?.to
 
-	const searchedTasks = useFuse(tasks, searchQuery, FUSE_OPTIONS)
+	const searchableTasks = useMemo(
+		() =>
+			tasks.map((task) => ({
+				task,
+				searchText: buildTaskSearchText(task, additionalSearchValues),
+			})),
+		[tasks, additionalSearchValues],
+	)
+
+	const searchResults = useFuse(searchableTasks, searchQuery, FUSE_OPTIONS)
+
+	const searchedTasks = useMemo(
+		() => searchResults.map(({ task }) => task),
+		[searchResults],
+	)
 
 	return useMemo(
 		() =>

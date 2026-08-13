@@ -1,14 +1,16 @@
 import styled from "@emotion/styled"
 import { useCallback, useLayoutEffect, useRef, useState } from "react"
+import HighlightMatch from "../shared/HighlightMatch"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card"
 
 interface TopicCellProps {
 	tags: string[]
+	searchQuery?: string
 }
 
 const GAP = 4
 
-export function TopicCell({ tags }: TopicCellProps) {
+export function TopicCell({ tags, searchQuery }: TopicCellProps) {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const measureRef = useRef<HTMLDivElement>(null)
 	const [visibleCount, setVisibleCount] = useState(tags.length)
@@ -81,7 +83,9 @@ export function TopicCell({ tags }: TopicCellProps) {
 			</MeasureLayer>
 
 			{tags.slice(0, visibleCount).map((tag) => (
-				<Tag key={tag}>{tag}</Tag>
+				<Tag key={tag}>
+					<HighlightMatch text={tag} query={searchQuery ?? ""} variant="mark" />
+				</Tag>
 			))}
 
 			{/* Overflow tags shown via Radix HoverCard (replaces manual onMouseEnter/onMouseLeave + Popover) */}
