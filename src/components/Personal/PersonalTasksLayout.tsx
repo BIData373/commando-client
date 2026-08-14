@@ -23,32 +23,44 @@ import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
 
-const EXTRA_COLUMNS: ColumnDef<TaskRowWithWorkspaceDto>[] = [
-	{
-		id: "workspace",
-		header: ({ column }) => (
-			<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
-		),
-		size: 170,
-		enableColumnFilter: false,
-		sortingFn: (rowA, rowB) => {
-			const a = rowA.original.workspace?.title ?? ""
-			const b = rowB.original.workspace?.title ?? ""
-			return a.localeCompare(b, "he")
-		},
-		accessorFn: (row) => row.workspace?.title,
-		cell: ({
-			row: {
-				original: { workspace },
+function getExtraColumns(
+	searchQuery: string,
+): ColumnDef<TaskRowWithWorkspaceDto>[] {
+	return [
+		{
+			id: "workspace",
+			header: ({ column }) => (
+				<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
+			),
+			size: 170,
+			enableColumnFilter: false,
+			sortingFn: (rowA, rowB) => {
+				const a = rowA.original.workspace?.title ?? ""
+				const b = rowB.original.workspace?.title ?? ""
+				return a.localeCompare(b, "he")
 			},
-		}) => <WorkspaceCell workspace={workspace} />,
-	},
-]
+			accessorFn: (row) => row.workspace?.title,
+			cell: ({
+				row: {
+					original: { workspace },
+				},
+			}) => <WorkspaceCell workspace={workspace} searchQuery={searchQuery} />,
+		},
+	]
+}
+
+function getPersonalTaskSearchValues(
+	task: TaskRowWithWorkspaceDto,
+): Array<string | number | null | undefined> {
+	return [task.workspace?.title]
+}
 
 function PersonalTasksLayout() {
 	const navigate = useNavigate()
 
-	const { columnOrder, hiddenColumns } = useTasksFilters()
+	const { columnOrder, hiddenColumns, searchQuery } = useTasksFilters()
+
+	const extraColumns = getExtraColumns(searchQuery)
 
 	const {
 		data: allTaskRows = [],
@@ -78,8 +90,9 @@ function PersonalTasksLayout() {
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
 	).length
 
-	const baseFilteredTaskRows = useFilteredTasks(allTaskRows)
-
+	const baseFilteredTaskRows = useFilteredTasks(allTaskRows, {
+		additionalSearchValues: getPersonalTaskSearchValues,
+	})
 	const filteredTaskRows = useMemo(
 		() =>
 			activeWorkspaceFilters.size > 0
@@ -129,7 +142,7 @@ function PersonalTasksLayout() {
 					filteredTasks={filteredTaskRows}
 					columnOrder={columnOrder}
 					hiddenColumns={hiddenColumns}
-					extraColumns={EXTRA_COLUMNS}
+					extraColumns={extraColumns}
 					extraColumnsMeta={[{ id: "workspace", label: "מפקד מנחה" }]}
 					startSlot={<TasksDatePicker />}
 					exportFilePrefix="אזור אישי"
@@ -169,7 +182,7 @@ function PersonalTasksLayout() {
 					onEdit={handleEdit}
 					onClick={handleOpenTask}
 					getPermissionType={(task) => task?.workspace?.permissionType}
-					extraColumns={EXTRA_COLUMNS}
+					extraColumns={extraColumns}
 				/>
 			</PageRoot>
 			<Outlet />
