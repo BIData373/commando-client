@@ -43,5 +43,6 @@ export interface TaskRowWithWorkspaceDto {
 	status: WorkspaceStatusDto
 	editable: boolean
 	otherAssignees: AssigneeStatusDto[]
+	archivedAt?: Date
 	workspace: WorkspaceWithPermissionDto
 }

@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useMemo } from "react"
 import { DeadlineType, QuickFilter, WorkspaceStatusType } from "src/api/model"
+import { DropdownSection } from "src/components/shared/ArchiveDropdown"
+import { WorkspaceTabs } from "src/components/WorkspaceTabs"
 import { z } from "zod"
 import TasksLayout from "../../../components/Tasks/TasksLayout"
 import { TasksFiltersProvider } from "../../../providers/TasksFiltersProvider"
@@ -17,10 +19,10 @@ const queryArray = <T extends z.ZodTypeAny>(schema: T) =>
 	)
 
 const TasksSearchSchema = z.object({
-	view: z.nativeEnum(TasksView).default(TasksView.TABLE),
-	quickFilter: queryArray(z.nativeEnum(QuickFilter)).optional(),
-	statusFilter: queryArray(z.nativeEnum(WorkspaceStatusType)).default([]),
-	deadlineTypeFilter: queryArray(z.nativeEnum(DeadlineType)).default([]),
+	view: z.enum(TasksView).default(TasksView.TABLE),
+	quickFilter: queryArray(z.enum(QuickFilter)).optional(),
+	statusFilter: queryArray(z.enum(WorkspaceStatusType)).default([]),
+	deadlineTypeFilter: queryArray(z.enum(DeadlineType)).default([]),
 })
 
 export type TasksSearchSchemaType = z.infer<typeof TasksSearchSchema>
@@ -43,6 +45,7 @@ function TasksPage() {
 
 	return (
 		<TasksFiltersProvider initialQuickFilters={initialQuickFilters}>
+			<WorkspaceTabs section={DropdownSection.TASKS} />
 			<TasksLayout
 				view={view}
 				urlName={urlName}

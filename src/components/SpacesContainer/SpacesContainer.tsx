@@ -104,11 +104,13 @@ export default function SpacesContainer() {
 					)}
 				</EmptySpace>
 			) : (
-				<WorkspacesContainer>
-					{displayedWorkspaces.map((ws) => (
-						<WorkspaceCard key={ws.urlName} workspace={ws} />
-					))}
-				</WorkspacesContainer>
+				<ScrollContainer>
+					<WorkspacesContainer>
+						{displayedWorkspaces.map((ws) => (
+							<WorkspaceCard key={ws.urlName} workspace={ws} />
+						))}
+					</WorkspacesContainer>
+				</ScrollContainer>
 			)}
 		</SpaceContainerCard>
 	)
@@ -124,6 +126,7 @@ const SpaceContainerCard = styled.div`
   flex: 1;
   min-height: 0;
   border-radius: 8px;
+  width: 100%;
 `
 
 const HeaderRow = styled.div`
@@ -236,17 +239,23 @@ const Tab = styled.button<{ $active: boolean }>`
   white-space: nowrap;
 `
 
+const ScrollContainer = styled.div`
+  direction: ltr;
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  min-height: 0;
+`
+
 const WorkspacesContainer = styled.div`
   direction: rtl;
-  flex: 1;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  overflow-y: auto;
-  min-height: 0;
-  padding-bottom: 16px;
   justify-content: flex-start;
   padding-inline-end: 4px;
+  padding-bottom: 16px;
 `
 
 const EmptySpace = styled.div`

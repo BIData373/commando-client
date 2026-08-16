@@ -1,10 +1,11 @@
 import styled from "@emotion/styled"
-import type { LinkComponentProps } from "@tanstack/react-router"
-import { Link } from "@tanstack/react-router"
+import { createLink } from "@tanstack/react-router"
+import { useLayoutEffect } from "react"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { ArchiveDropdown, type DropdownSection } from "./shared/ArchiveDropdown"
 import {
 	NavigationMenu,
 	NavigationMenuItem,
@@ -12,41 +13,65 @@ import {
 	NavigationMenuList,
 } from "./ui/navigation-menu"
 
-export function WorkspaceTabs() {
+interface WorkspaceTabsProps {
+	section?: DropdownSection
+	isActive?: boolean
+}
+
+export function WorkspaceTabs({
+	section,
+	isActive = true,
+}: WorkspaceTabsProps) {
 	const {
-		workspace: { id: workspaceId },
+		workspace: { id: workspaceId, urlName },
+		activeSection,
+		setActiveSection,
 	} = useWorkspace()
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const isManager = myPermission?.type === PermissionType.MANAGER
 
-	const links: LinkComponentProps[] = [
-		...(isManager
-			? [
-					{
-						to: "/workspace/$urlName/settings",
-						children: "הגדרות סביבה",
-					} as LinkComponentProps,
-				]
-			: []),
-		{ to: "/workspace/$urlName/tasks", children: "הנחיות" },
-		{ to: "/workspace/$urlName/dashboard", children: "מסך המפקד" },
-	]
+	useLayoutEffect(() => {
+		if (isActive && section) setActiveSection(section)
+	}, [isActive, section, setActiveSection])
+
+	const displaySection = isActive && section ? section : activeSection
 
 	useRenderInHeader(
 		"right",
-		<NavigationMenu>
+		<NavigationMenu viewport={false}>
 			<NavigationMenuList>
-				{links.map((link) => (
-					<NavigationMenuItem key={link.to}>
+				{isManager && (
+					<NavigationMenuItem>
 						<NavMenuLink asChild>
-							<StyledLink to={link.to}>{link.children}</StyledLink>
+							<StyledLink
+								to="/workspace/$urlName/settings"
+								params={{ urlName }}
+							>
+								הגדרות סביבה
+							</StyledLink>
 						</NavMenuLink>
 					</NavigationMenuItem>
-				))}
+				)}
+				<ArchiveDropdown
+					tasksRoute={{ to: "/workspace/$urlName/tasks", params: { urlName } }}
+					archiveRoute={{
+						to: "/workspace/$urlName/archive",
+						params: { urlName },
+					}}
+					isActive={isActive}
+					section={displaySection}
+				/>
+				<NavigationMenuItem>
+					<NavMenuLink asChild>
+						<StyledLink to="/workspace/$urlName/dashboard" params={{ urlName }}>
+							מסך המפקד
+						</StyledLink>
+					</NavMenuLink>
+				</NavigationMenuItem>
 			</NavigationMenuList>
 		</NavigationMenu>,
-		[isManager],
+		[isManager, displaySection, isActive, urlName],
 	)
 
 	return null
@@ -54,25 +79,27 @@ export function WorkspaceTabs() {
 
 const NavMenuLink = styled(NavigationMenuLink)`
   && {
-    padding: 8px 8px;
-    color: #C7C9CB;
+    padding: 10px 8px;
+    color: var(--Menu-Tab-Text);
     font-weight: 400;
     font-size: var(--fs-btn);
     background: transparent;
     border-radius: 6px;
 
     &:hover {
-      color: #C7C9CB;
-      background: rgba(255, 255, 255, 0.1);
+      color: var(--Menu-Tab-Text);
+      background: var(--Menu-Tab-Hover);
     }
 
     &[data-status='active'] {
-      color: #C7C9CB;
-      background: rgba(255, 255, 255, 0.15);
+      color: var(--Menu-Tab-Text);
+      background: var(--Menu-Tab-Hover);
     }
   }
 `
 
-const StyledLink = styled(Link)`
-	white-space: nowrap;
+const StyledLinkBase = styled.a`
+  white-space: nowrap;
 `
+
+const StyledLink = createLink(StyledLinkBase)

@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { DashboardContent } from "src/components/Dashboard/DashboardContent"
+import { WorkspaceTabs } from "src/components/WorkspaceTabs"
 import { TasksFiltersProvider } from "src/providers/TasksFiltersProvider"
 
 export const Route = createFileRoute("/workspace/$urlName/dashboard")({
@@ -10,6 +11,7 @@ export const Route = createFileRoute("/workspace/$urlName/dashboard")({
 function Dashboard() {
 	return (
 		<TasksFiltersProvider>
+			<WorkspaceTabs isActive={false} />
 			<PageWrapper>
 				<DashboardContent />
 			</PageWrapper>

@@ -25,58 +25,50 @@ export function UserItem({ user: { upn, info } }: UserItemProps) {
 }
 
 const StyledUser = styled.div`
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	height: 100%;
-	align-items: center;
-	align-content: center;
-	overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  align-items: right;
 `
 
 const UserPrimary = styled.span`
-	display: flex;
-	flex-wrap: nowrap;
-	align-items: center;
-	overflow: hidden;
-	min-width: 0;
-	flex-shrink: 1;
+  display: flex;
+  align-items: center;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  color: var(--text-color-2);
 `
 
 const UserName = styled.span`
-	font-size: var(--fs-base);
-	font-weight: 600;
-	color: var(--text-color-2);
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	flex-shrink: 1;
-	min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+  min-width: 0;
 `
 
 const UserDash = styled.span`
-	font-size: var(--fs-base);
-	font-weight: 400;
-	color: var(--text-color-2);
-	padding: 0 3px;
+  padding: 0 3px;
 `
 
 const UserUpn = styled.span`
-	font-size: var(--fs-base);
-	font-weight: 400;
-	color: var(--text-color-2);
-	white-space: nowrap;
-	flex-shrink: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
 `
 
 const UserMeta = styled.span`
-	font-size: var(--fs-btn);
-	font-weight: 400;
-	color: var(--text-color-400);
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	flex: 1;
-	min-width: 0;
-	text-align: right;
+  font-size: var(--fs-sm);
+  color: var(--text-color-400);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 `
