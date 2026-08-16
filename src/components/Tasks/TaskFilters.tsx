@@ -124,7 +124,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 				<FilterPill
 					key={QuickFilter.flagged}
 					$active={activeQuickFilters.has(QuickFilter.flagged)}
-					onClick={() => handleToggle(QuickFilter.flagged)}
+					onClick={() => toggleQuickFilter(QuickFilter.flagged)}
 				>
 					חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
 				</FilterPill>
@@ -134,7 +134,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					<WarningTrigger>
 						<FilterPill
 							$active={activeQuickFilters.has(QuickFilter.approaching)}
-							onClick={() => handleToggle(QuickFilter.approaching)}
+							onClick={() => toggleQuickFilter(QuickFilter.approaching)}
 						>
 							תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
 						</FilterPill>
@@ -146,7 +146,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 				<FilterPill
 					key={QuickFilter.overdue}
 					$active={activeQuickFilters.has(QuickFilter.overdue)}
-					onClick={() => handleToggle(QuickFilter.overdue)}
+					onClick={() => toggleQuickFilter(QuickFilter.overdue)}
 				>
 					חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
 				</FilterPill>
@@ -155,7 +155,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 				<FilterPill
 					key={QuickFilter.rolling}
 					$active={activeQuickFilters.has(QuickFilter.rolling)}
-					onClick={() => handleToggle(QuickFilter.rolling)}
+					onClick={() => toggleQuickFilter(QuickFilter.rolling)}
 				>
 					שוטפות{rollingCount > 0 && ` (${rollingCount})`}
 				</FilterPill>
@@ -167,6 +167,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 			approachingCount,
 			overdueCount,
 			rollingCount,
+			toggleQuickFilter,
 		],
 	)
 

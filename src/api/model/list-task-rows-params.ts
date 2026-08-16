@@ -7,6 +7,7 @@
  */
 
 export type ListTaskRowsParams = {
+	workspaceId: number
 	/**
 	 * @nullable
 	 */

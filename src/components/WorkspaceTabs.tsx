@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
+import { useLayoutEffect } from "react"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
@@ -13,7 +14,7 @@ import {
 } from "./ui/navigation-menu"
 
 interface WorkspaceTabsProps {
-	section: DropdownSection
+	section?: DropdownSection
 	isActive?: boolean
 }
 
@@ -23,10 +24,18 @@ export function WorkspaceTabs({
 }: WorkspaceTabsProps) {
 	const {
 		workspace: { id: workspaceId, urlName },
+		activeSection,
+		setActiveSection,
 	} = useWorkspace()
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const isManager = myPermission?.type === PermissionType.MANAGER
+
+	useLayoutEffect(() => {
+		if (isActive && section) setActiveSection(section)
+	}, [isActive, section, setActiveSection])
+
+	const displaySection = isActive && section ? section : activeSection
 
 	useRenderInHeader(
 		"right",
@@ -48,7 +57,7 @@ export function WorkspaceTabs({
 						params: { urlName },
 					}}
 					isActive={isActive}
-					section={section}
+					section={displaySection}
 				/>
 				<NavigationMenuItem>
 					<NavMenuLink asChild>
@@ -59,7 +68,7 @@ export function WorkspaceTabs({
 				</NavigationMenuItem>
 			</NavigationMenuList>
 		</NavigationMenu>,
-		[isManager, section, urlName],
+		[isManager, displaySection, isActive, urlName],
 	)
 
 	return null

@@ -39,7 +39,7 @@ export function matchesQuickFilter(
 			)
 		case QuickFilter.flagged:
 			return !!task.flagged
-		case QuickFilter.ROLLING:
+		case QuickFilter.rolling:
 			return task.deadlineType === DeadlineType.ROLLING
 
 		default:

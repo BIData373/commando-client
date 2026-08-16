@@ -21,7 +21,6 @@ import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import type { QuickFilter } from "src/utils/filter-utils"
 import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
@@ -37,26 +36,22 @@ import { TaskTable } from "./TaskTable"
 
 export interface WorkspaceTaskTableProps {
 	view?: TasksView
-	tabFilter?: QuickFilter[]
 	statusFilter?: WorkspaceStatusType[]
 	deadlineTypeFilter?: DeadlineType[]
 	isArchived?: boolean
 	extraColumnsMeta?: TaskColumnMeta[]
 	extraColumns?: ColumnDef<TaskRowDto>[]
 	onEdit?(taskId: number): void
-	clearQuickFilters?(): void
 	clearColumnFilters?(): void
 	onColumnFilterChange?(
 		newStatusFilter: WorkspaceStatusType[],
 		newDeadlineTypeFilter: DeadlineType[],
 	): void
-	toggleTabFilter?(filter: QuickFilter): void
 	onOpenTask(taskId: number): void
 }
 
 function WorkspaceTaskTable({
 	view = TasksView.TABLE,
-	tabFilter,
 	statusFilter = [],
 	deadlineTypeFilter = [],
 	isArchived,
@@ -64,10 +59,8 @@ function WorkspaceTaskTable({
 	extraColumnsMeta,
 	onOpenTask,
 	onEdit,
-	clearQuickFilters,
 	clearColumnFilters,
 	onColumnFilterChange,
-	toggleTabFilter,
 }: WorkspaceTaskTableProps) {
 	const { columnOrder, hiddenColumns } = useTasksFilters()
 
@@ -135,15 +128,14 @@ function WorkspaceTaskTable({
 	return (
 		<TooltipProvider>
 			<TasksRoot>
+				{isArchived && <ArchiveHeader>ארכיון</ArchiveHeader>}
+
 				<TaskFilters
 					allTaskRows={tasks}
 					filteredTasks={filteredTaskRows}
 					columnOrder={noWorkspaceColumnOrder}
 					hiddenColumns={noWorkspaceHiddenColumns}
 					onClearColumnFilters={clearColumnFilters}
-					onClearQuickFilters={clearQuickFilters}
-					tabFilter={tabFilter}
-					onToggleTabFilter={toggleTabFilter}
 					quickFilters={
 						isArchived ? ARCHIVE_QUICK_FILTERS : ACTIVE_QUICK_FILTERS
 					}

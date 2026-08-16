@@ -256,7 +256,7 @@ export function useListTasks<
 }
 
 export const listTaskRows = (
-	params?: ListTaskRowsParams,
+	params: ListTaskRowsParams,
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<TaskRowDto[]>({
@@ -275,7 +275,7 @@ export const getListTaskRowsQueryOptions = <
 	TData = Awaited<ReturnType<typeof listTaskRows>>,
 	TError = ErrorType<unknown>,
 >(
-	params?: ListTaskRowsParams,
+	params: ListTaskRowsParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTaskRows>>, TError, TData>
@@ -306,7 +306,7 @@ export function useListTaskRows<
 	TData = Awaited<ReturnType<typeof listTaskRows>>,
 	TError = ErrorType<unknown>,
 >(
-	params: undefined | ListTaskRowsParams,
+	params: ListTaskRowsParams,
 	options: {
 		query: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTaskRows>>, TError, TData>
@@ -328,7 +328,7 @@ export function useListTaskRows<
 	TData = Awaited<ReturnType<typeof listTaskRows>>,
 	TError = ErrorType<unknown>,
 >(
-	params?: ListTaskRowsParams,
+	params: ListTaskRowsParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTaskRows>>, TError, TData>
@@ -350,7 +350,7 @@ export function useListTaskRows<
 	TData = Awaited<ReturnType<typeof listTaskRows>>,
 	TError = ErrorType<unknown>,
 >(
-	params?: ListTaskRowsParams,
+	params: ListTaskRowsParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTaskRows>>, TError, TData>
@@ -365,7 +365,7 @@ export function useListTaskRows<
 	TData = Awaited<ReturnType<typeof listTaskRows>>,
 	TError = ErrorType<unknown>,
 >(
-	params?: ListTaskRowsParams,
+	params: ListTaskRowsParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTaskRows>>, TError, TData>

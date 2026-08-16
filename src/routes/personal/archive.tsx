@@ -9,6 +9,7 @@ import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithAc
 import { formatDateShort } from "src/functions/date-utils"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
+import { UserViewProvider } from "../../providers/UserViewProvider"
 
 export const Route = createFileRoute("/personal/archive")({
 	component: PersonalArchivePage,
@@ -69,12 +70,11 @@ function PersonalArchivePage() {
 	}
 
 	return (
-		<TasksFiltersProvider
-			storageKey="personal-archive"
+		<UserViewProvider
 			defaultColumnOrder={ARCHIVE_DEFAULT_COLUMN_ORDER}
 			defaultHiddenColumns={ARCHIVE_DEFAULT_HIDDEN}
 		>
-			<>
+			<TasksFiltersProvider>
 				<PersonalSectionDropdown current={DropdownSection.ARCHIVE} />
 				<PersonalTaskTable
 					filePrefix="ארכיון אישי"
@@ -83,8 +83,8 @@ function PersonalArchivePage() {
 					extraColumnsMeta={[{ id: "archivedAt", label: "הועבר לארכיון" }]}
 					extraColumns={ARCHIVE_EXTRA_COLUMNS}
 				/>
-			</>
-		</TasksFiltersProvider>
+			</TasksFiltersProvider>
+		</UserViewProvider>
 	)
 }
 

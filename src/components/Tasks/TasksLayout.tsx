@@ -1,14 +1,9 @@
 import { useNavigate } from "@tanstack/react-router"
-import type {
-	DeadlineType,
-	QuickFilter,
-	WorkspaceStatusType,
-} from "src/api/model"
+import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import {
 	type TasksSearchSchemaType,
 	TasksView,
 } from "src/routes/workspace/$urlName/tasks"
-import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { DropdownSection } from "../shared/ArchiveDropdown"
 import { WorkspaceTabs } from "../WorkspaceTabs"
 import WorkspaceTaskTable from "./WorkspaceTaskTable"
@@ -27,9 +22,6 @@ function TasksLayout({
 	deadlineTypeFilter = [],
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
-
-	const { toggleQuickFilter } = useTasksFilters()
-	const { columnOrder, hiddenColumns } = useTasksFilters()
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -60,14 +52,6 @@ function TasksLayout({
 		})
 	}
 
-	function handleToggleTabFilter(filter: QuickFilter) {
-		toggleQuickFilter(filter)
-		const next = tabFilter.includes(filter)
-			? tabFilter.filter((f) => f !== filter)
-			: [...tabFilter, filter]
-		navigateToTasks({ tabFilter: next })
-	}
-
 	function handleColumnFiltersChange(
 		newStatusFilter: WorkspaceStatusType[],
 		newDeadlineTypeFilter: DeadlineType[],
@@ -82,10 +66,6 @@ function TasksLayout({
 		navigateToTasks({ statusFilter: [], deadlineTypeFilter: [] })
 	}
 
-	function handleClearQuickFilters() {
-		navigateToTasks({ tabFilter: [] })
-	}
-
 	return (
 		<>
 			<WorkspaceTabs section={DropdownSection.TASKS} />
@@ -93,11 +73,8 @@ function TasksLayout({
 				onOpenTask={handleOpenTask}
 				onEdit={handleEdit}
 				clearColumnFilters={handleClearColumnFilters}
-				clearQuickFilters={handleClearQuickFilters}
 				onColumnFilterChange={handleColumnFiltersChange}
-				toggleTabFilter={handleToggleTabFilter}
 				deadlineTypeFilter={deadlineTypeFilter}
-				tabFilter={tabFilter}
 				statusFilter={statusFilter}
 			/>
 		</>

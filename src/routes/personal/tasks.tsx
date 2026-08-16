@@ -4,6 +4,7 @@ import { PersonalSectionDropdown } from "src/components/Personal/PersonalSection
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
+import { UserViewProvider } from "../../providers/UserViewProvider"
 import { TasksView } from "../workspace/$urlName/tasks"
 
 export const Route = createFileRoute("/personal/tasks")({
@@ -52,19 +53,18 @@ function PersonalTasksPage() {
 	}
 
 	return (
-		<TasksFiltersProvider
-			storageKey="personal"
+		<UserViewProvider
 			defaultColumnOrder={PERSONAL_DEFAULT_COLUMN_ORDER}
 			defaultHiddenColumns={PERSONAL_DEFAULT_HIDDEN}
 		>
-			<>
+			<TasksFiltersProvider>
 				<PersonalSectionDropdown current={DropdownSection.TASKS} />
 				<PersonalTaskTable
 					filePrefix="אזור אישי"
 					onOpenTask={handleOpenTask}
 					onEdit={handleEdit}
 				/>
-			</>
-		</TasksFiltersProvider>
+			</TasksFiltersProvider>
+		</UserViewProvider>
 	)
 }

@@ -135,6 +135,8 @@ function PersonalTaskTable({
 	return (
 		<TooltipProvider>
 			<PageRoot>
+				{isArchived && <ArchiveHeader>ארכיון</ArchiveHeader>}
+
 				{showMetricsBar && (
 					<MetricsBar
 						totalCount={totalCount}
