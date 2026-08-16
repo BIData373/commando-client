@@ -105,9 +105,11 @@ const columns: ColumnDef<NewTaskRow>[] = [
 		cell: ({ row, table }) => {
 			const { id, title } = row.original
 			const { updateRow } = table.options.meta as TaskTableMeta
+			const uniqueTextareaId = `textarea-${id}-${title}`
 			return (
-				<TextareaCellWrapper>
+				<TextareaCellWrapper as="label">
 					<CellTextarea
+						id={uniqueTextareaId}
 						$color="var(--text-color-2)"
 						data-row={row.index}
 						data-col={0}
@@ -262,6 +264,7 @@ const TextareaCellWrapper = styled.div`
   display: flex;
   align-items: center;
   height: 100%;
+  cursor: text;
 `
 
 const CellTextarea = styled.textarea<{ $color?: string }>`

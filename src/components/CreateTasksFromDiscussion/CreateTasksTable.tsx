@@ -485,6 +485,9 @@ const TableOuterContainer = styled.div`
       outline-offset: -2px;
     }
   }
+   &:has(textarea){
+	 padding: 0 12px 0 0;
+  }
 }
 `
 
