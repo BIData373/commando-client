@@ -41,23 +41,25 @@ export function ModalContent({
 				onPointerDownOutside={closable ? onPointerDownOutside : preventClose}
 				{...props}
 			>
-				{headerActions ? (
-					<ModalHeader>
-						{headerActions}
+				<ModalHeader>
+					{headerActions ? (
+						<>
+							{headerActions}
 
-						{showCloseButton && (
-							<CloseButton>
+							{showCloseButton && (
+								<CloseButton>
+									<X size={16} />
+								</CloseButton>
+							)}
+						</>
+					) : (
+						showCloseButton && (
+							<FloatingCloseButton>
 								<X size={16} />
-							</CloseButton>
-						)}
-					</ModalHeader>
-				) : (
-					showCloseButton && (
-						<FloatingCloseButton>
-							<X size={16} />
-						</FloatingCloseButton>
-					)
-				)}
+							</FloatingCloseButton>
+						)
+					)}
+				</ModalHeader>
 
 				{children}
 			</ModalRoot>
