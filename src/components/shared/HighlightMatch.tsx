@@ -22,18 +22,13 @@ const HighlightMatch = ({
 
 		const Highlight = variant === "mark" ? HighlightMark : HighlightBold
 
-		let position = 0
-
-		content = parts.map((part) => {
-			const startPosition = position
-			position += part.length
-
+		content = parts.map((part, index) => {
 			const isMatch = part.toLowerCase() === normalizedQuery.toLowerCase()
-
+			const key = `${part}-${index}`
 			return isMatch ? (
-				<Highlight key={`match-${startPosition}`}>{part}</Highlight>
+				<Highlight key={`match-${key}`}>{part}</Highlight>
 			) : (
-				<span key={`text-${startPosition}`}>{part}</span>
+				<span key={`text-${key}`}>{part}</span>
 			)
 		})
 	}
