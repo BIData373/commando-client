@@ -4,6 +4,7 @@ export const ContentScrollArea = styled.div`
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  scrollbar-gutter: stable;
   padding-inline: 24px;
   direction: ltr;
 

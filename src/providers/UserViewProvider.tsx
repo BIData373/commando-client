@@ -1,3 +1,4 @@
+import styled from "@emotion/styled"
 import { useQueryClient } from "@tanstack/react-query"
 import {
 	createContext,
@@ -127,7 +128,9 @@ export function UserViewProvider({
 	}
 
 	return isLoading ? (
-		<Spinner />
+		<LoadingContainer>
+			<Spinner />
+		</LoadingContainer>
 	) : (
 		<UserViewContext.Provider
 			value={{
@@ -139,6 +142,14 @@ export function UserViewProvider({
 		</UserViewContext.Provider>
 	)
 }
+
+const LoadingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+`
 
 export function useUserView() {
 	const context = useContext(UserViewContext)
