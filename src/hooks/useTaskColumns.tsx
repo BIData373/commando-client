@@ -200,21 +200,21 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					<TitleCell>
 						{flagged && <FlagIcon />}
 						<TitleContent
-							tooltip={description ? `${title} - ${description}` : title}
+							tooltip={`${title}${description ? ` - ${description}` : ""}`}
 						>
-							{description ? (
+							<TitlePart>
+								{searchQuery ? (
+									<HighlightMatch
+										text={title}
+										query={searchQuery}
+										variant="mark"
+									/>
+								) : (
+									title
+								)}
+							</TitlePart>
+							{description && (
 								<>
-									<TitlePart>
-										{searchQuery ? (
-											<HighlightMatch
-												text={title}
-												query={searchQuery}
-												variant="mark"
-											/>
-										) : (
-											title
-										)}
-									</TitlePart>
 									<TitleSeparator> - </TitleSeparator>
 									<DetailsPart>
 										{searchQuery ? (
@@ -228,18 +228,6 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 										)}
 									</DetailsPart>
 								</>
-							) : (
-								<TitleFull>
-									{searchQuery ? (
-										<HighlightMatch
-											text={title}
-											query={searchQuery}
-											variant="mark"
-										/>
-									) : (
-										title
-									)}
-								</TitleFull>
 							)}
 						</TitleContent>
 					</TitleCell>
@@ -577,6 +565,11 @@ const TitlePart = styled.span`
   white-space: nowrap;
   max-width: 50%;
   flex-shrink: 0;
+
+  &:only-child {
+    max-width: 100%;
+    flex: 1;
+  }
 `
 
 const TitleSeparator = styled.span`
@@ -586,14 +579,6 @@ const TitleSeparator = styled.span`
 
 const DetailsPart = styled.span`
   font-weight: 300;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-  min-width: 0;
-`
-
-const TitleFull = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
