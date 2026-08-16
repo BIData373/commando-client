@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Link } from "@tanstack/react-router"
+import { createLink } from "@tanstack/react-router"
 import { useLayoutEffect } from "react"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
@@ -44,9 +44,12 @@ export function WorkspaceTabs({
 				{isManager && (
 					<NavigationMenuItem>
 						<NavMenuLink asChild>
-							<Link to="/workspace/$urlName/settings" params={{ urlName }}>
+							<StyledLink
+								to="/workspace/$urlName/settings"
+								params={{ urlName }}
+							>
 								הגדרות סביבה
-							</Link>
+							</StyledLink>
 						</NavMenuLink>
 					</NavigationMenuItem>
 				)}
@@ -61,9 +64,9 @@ export function WorkspaceTabs({
 				/>
 				<NavigationMenuItem>
 					<NavMenuLink asChild>
-						<Link to="/workspace/$urlName/dashboard" params={{ urlName }}>
+						<StyledLink to="/workspace/$urlName/dashboard" params={{ urlName }}>
 							מסך המפקד
-						</Link>
+						</StyledLink>
 					</NavMenuLink>
 				</NavigationMenuItem>
 			</NavigationMenuList>
@@ -94,3 +97,9 @@ const NavMenuLink = styled(NavigationMenuLink)`
     }
   }
 `
+
+const StyledLinkBase = styled.a`
+  white-space: nowrap;
+`
+
+const StyledLink = createLink(StyledLinkBase)
