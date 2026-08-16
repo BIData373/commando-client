@@ -76,8 +76,7 @@ export function WorkspaceTabs({
 
 const NavMenuLink = styled(NavigationMenuLink)`
   && {
-    padding: 8px 8px;
-    white-space: nowrap;
+    padding: 10px 8px;
     color: var(--Menu-Tab-Text);
     font-weight: 400;
     font-size: var(--fs-btn);

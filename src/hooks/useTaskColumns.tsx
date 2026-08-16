@@ -343,37 +343,45 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						createdAt,
 					)
 
+					const deadlineTooltipText = isOverdue
+						? `חריגה של ${Math.abs(daysUntil)} ימים`
+						: isApproaching
+							? daysUntil === 0
+								? 'תג"ב היום'
+								: 'תג"ב מחר'
+							: null
+
+					const showDeadlineTooltip =
+						status?.type !== WorkspaceStatusType.COMPLETED &&
+						deadlineTooltipText !== null
+
 					return (
 						<DeadlineCell>
 							<DeadlineTypeTag type={deadlineType} />
-							{displayDate && (
-								<DeadlineDateText>
-									{formatDateShort(new Date(displayDate))}
-								</DeadlineDateText>
-							)}
-							{status?.type !== WorkspaceStatusType.COMPLETED &&
-								(isOverdue || isApproaching) && (
-									<DeadlineWarning>
-										<TooltipProvider>
-											<Tooltip>
-												<WarningTrigger>
-													{isOverdue ? (
-														<OverdueIcon size={16} />
-													) : (
-														<ApproachingIcon size={16} />
-													)}
-												</WarningTrigger>
-												<TooltipContent>
-													{isOverdue
-														? `חריגה של ${Math.abs(daysUntil)} ימים`
-														: daysUntil === 0
-															? 'תג"ב היום'
-															: 'תג"ב מחר'}
-												</TooltipContent>
-											</Tooltip>
-										</TooltipProvider>
-									</DeadlineWarning>
-								)}
+							{displayDate &&
+								(showDeadlineTooltip ? (
+									<TooltipProvider>
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<DeadlineDateText
+													$isOverdue={isOverdue}
+													$isApproaching={isApproaching}
+												>
+													{formatDateShort(new Date(displayDate))}
+												</DeadlineDateText>
+											</TooltipTrigger>
+
+											<TooltipContent>{deadlineTooltipText}</TooltipContent>
+										</Tooltip>
+									</TooltipProvider>
+								) : (
+									<DeadlineDateText
+										$isOverdue={isOverdue}
+										$isApproaching={isApproaching}
+									>
+										{formatDateShort(new Date(displayDate))}
+									</DeadlineDateText>
+								))}
 						</DeadlineCell>
 					)
 				},
@@ -529,7 +537,7 @@ const IdCell = styled.span`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 24px;
-  color:rgba(0, 0, 0, 0.65);
+  color: rgba(0, 0, 0, 0.65);
   width: 100%;
   height: 100%;
   cursor: pointer;
@@ -584,39 +592,26 @@ const DeadlineCell = styled.div`
   gap: 6px;
 `
 
-const DeadlineDateText = styled.span`
+const DeadlineDateText = styled.span<{
+	$isOverdue?: boolean
+	$isApproaching?: boolean
+}>`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.65);
   white-space: nowrap;
-`
 
-const DeadlineWarning = styled.span`
-  margin-inline-start: auto;
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-`
+  color: ${({ $isOverdue, $isApproaching }) => {
+		if ($isOverdue) {
+			return "var(--Colors-Brand-Error-colorErrorActive)"
+		}
 
-const WarningTrigger = styled(TooltipTrigger)`
-  display: inline-flex;
-  align-items: center;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: default;
-  line-height: 0;
-`
+		if ($isApproaching) {
+			return "var(--Colors-Brand-Warning-colorWarningText)"
+		}
 
-const OverdueIcon = styled(AlertTriangle)`
-  color: #f5222d;
-  flex-shrink: 0;
-`
-
-const ApproachingIcon = styled(AlertTriangle)`
-  color: rgba(212, 107, 8, 0.9);
-  flex-shrink: 0;
+		return "var(--sea-ink-soft)"
+	}};
 `
 
 const SourceCell = styled.div`
@@ -627,8 +622,8 @@ const SourceCell = styled.div`
 `
 
 const SourceAttachmentIcon = styled(Paperclip)`
-	flex-shrink: 0;
-  	color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  color: rgba(0, 0, 0, 0.45);
 `
 
 const SourceText = styled.span`

@@ -33,11 +33,9 @@ const Button = styled.button`
 
   &:hover {
     background: var(--button-hover);
-
   }
 
   &:active {
     background: var(--button-active);
-
   }
 `
