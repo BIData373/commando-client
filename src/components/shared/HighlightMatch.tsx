@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import type { ReactNode } from "react"
 
 interface HighlightMatchProps {
 	text: string
@@ -12,36 +13,32 @@ const HighlightMatch = ({
 	variant = "bold",
 }: HighlightMatchProps) => {
 	const normalizedQuery = query.trim()
+	let content: ReactNode = text
 
-	if (!normalizedQuery) {
-		return <TextWrapper dir="auto">{text}</TextWrapper>
+	if (normalizedQuery) {
+		const escapedQuery = normalizedQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+		const regex = new RegExp(`(${escapedQuery})`, "gi")
+		const parts = text.split(regex)
+
+		const Highlight = variant === "mark" ? HighlightMark : HighlightBold
+
+		let position = 0
+
+		content = parts.map((part) => {
+			const startPosition = position
+			position += part.length
+
+			const isMatch = part.toLowerCase() === normalizedQuery.toLowerCase()
+
+			return isMatch ? (
+				<Highlight key={`match-${startPosition}`}>{part}</Highlight>
+			) : (
+				<span key={`text-${startPosition}`}>{part}</span>
+			)
+		})
 	}
 
-	const escapedQuery = normalizedQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-
-	const regex = new RegExp(`(${escapedQuery})`, "gi")
-	const parts = text.split(regex)
-
-	const Highlight = variant === "mark" ? HighlightMark : HighlightBold
-
-	let position = 0
-
-	return (
-		<TextWrapper dir="auto">
-			{parts.map((part) => {
-				const startPosition = position
-				position += part.length
-
-				const isMatch = part.toLowerCase() === normalizedQuery.toLowerCase()
-
-				return isMatch ? (
-					<Highlight key={`match-${startPosition}`}>{part}</Highlight>
-				) : (
-					<span key={`text-${startPosition}`}>{part}</span>
-				)
-			})}
-		</TextWrapper>
-	)
+	return <TextWrapper dir="auto">{content}</TextWrapper>
 }
 
 export default HighlightMatch
