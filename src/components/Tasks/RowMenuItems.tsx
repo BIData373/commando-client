@@ -50,7 +50,7 @@ export function RowMenuItems({
 			{onArchive && (
 				<MenuItem onSelect={onArchive}>
 					<Archive size={16} />
-					ארכיון
+					העבר לארכיון
 				</MenuItem>
 			)}
 			{onUnarchive && (
