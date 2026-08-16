@@ -8,4 +8,8 @@
 
 export type ListTaskRowsParams = {
 	workspaceId: number
+	/**
+	 * @nullable
+	 */
+	isArchived?: boolean | null
 }

@@ -89,6 +89,7 @@ body,
   --text-color-400: rgba(0, 0, 0, 0.45);
   --card-background: rgba(0, 0, 0, 0.02);
   --icon-background: rgba(0, 0, 0, 0.4);
+  --dropdown-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   --card-shadow:
     0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12),
     0 9px 28px 8px rgba(0, 0, 0, 0.05);
@@ -142,6 +143,9 @@ body,
   --active-color: #1677ff;
   --active-color-button: rgba(9, 88, 217, 1);
   --color-danger: #e53e3e;
+  --Menu-Tab-Hover: rgba(255, 255, 255, 0.1);
+  --Menu-Tab-Active: rgba(255, 255, 255, 0.15);
+  --Menu-Tab-Text: #C7C9CB;
 
   --font-sans: "Rubik Variable", ui-sans-serif, sans-serif;
   --font-serif: "Rubik Variable", ui-sans-serif, sans-serif;

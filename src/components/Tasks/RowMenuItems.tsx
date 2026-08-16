@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { CheckCircle2, Pencil, Trash2 } from "lucide-react"
+import { Archive, ArchiveX, CheckCircle2, Pencil, Trash2 } from "lucide-react"
 import {
 	DropdownMenuContent,
 	DropdownMenuItem,
@@ -11,6 +11,8 @@ interface RowMenuItemsProps {
 	onEdit?: () => void
 	onEnterSelect?: () => void
 	onDelete?: () => void
+	onArchive?(): void
+	onUnarchive?(): void
 	popoverOpen: boolean
 	onPopoverOpenChange: (open: boolean) => void
 }
@@ -21,8 +23,16 @@ export function RowMenuItems({
 	onDelete,
 	popoverOpen,
 	onPopoverOpenChange,
+	onArchive,
+	onUnarchive,
 }: RowMenuItemsProps) {
-	const itemCount = [onEdit, onEnterSelect, onDelete].filter(Boolean).length
+	const itemCount = [
+		onArchive,
+		onUnarchive,
+		onEdit,
+		onEnterSelect,
+		onDelete,
+	].filter(Boolean).length
 	const hasMoreThanTwo = itemCount >= 2
 
 	function handleDeleteClick() {
@@ -37,13 +47,25 @@ export function RowMenuItems({
 					עריכה
 				</MenuItem>
 			)}
+			{onArchive && (
+				<MenuItem onSelect={onArchive}>
+					<Archive size={16} />
+					ארכיון
+				</MenuItem>
+			)}
+			{onUnarchive && (
+				<MenuItem onSelect={onUnarchive}>
+					<ArchiveX size={16} />
+					הסר מארכיון
+				</MenuItem>
+			)}
 			{onEnterSelect && (
 				<MenuItem onSelect={onEnterSelect}>
 					<CheckCircle2 size={16} />
 					סמן
 				</MenuItem>
 			)}
-			{hasMoreThanTwo && <MenuSeparator />}
+			{hasMoreThanTwo && onDelete && <MenuSeparator />}
 			{onDelete && (
 				<DeletePopover
 					count={1}
