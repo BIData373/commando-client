@@ -8,12 +8,14 @@ interface AssigneeSectionProps {
 	taskId: number
 	workspaceId: number
 	assigneeStatuses: AssigneeStatusDto[]
+	isArchived: boolean
 }
 
 export const AssigneeSection = ({
 	taskId,
 	workspaceId,
 	assigneeStatuses,
+	isArchived,
 }: AssigneeSectionProps) => {
 	const currentUser = useCurrentUser()
 	const { data: permission } = useGetMyPermission({ workspaceId })
@@ -57,7 +59,7 @@ export const AssigneeSection = ({
 								workspaceId={workspaceId}
 								assignee={item}
 								isAdmin={isAdmin}
-								editable={item.editable}
+								editable={!isArchived && item.editable}
 							/>
 						))}
 					</AssigneeRowsList>
@@ -75,7 +77,7 @@ export const AssigneeSection = ({
 									workspaceId={workspaceId}
 									assignee={item}
 									isAdmin={isAdmin}
-									editable={item.editable}
+									editable={!isArchived && item.editable}
 								/>
 							))}
 						</AssigneeRowsList>

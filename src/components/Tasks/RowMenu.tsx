@@ -9,6 +9,8 @@ interface RowMenuProps {
 	onEdit?: () => void
 	onEnterSelect?: () => void
 	onDelete?: () => void
+	onArchive?(): void
+	onUnarchive?(): void
 }
 
 export function RowMenu({
@@ -18,10 +20,18 @@ export function RowMenu({
 	onEdit,
 	onEnterSelect,
 	onDelete,
+	onArchive,
+	onUnarchive,
 }: RowMenuProps) {
 	const [popoverOpen, setPopoverOpen] = useState(false)
 
-	const itemCount = [onEdit, onEnterSelect, onDelete].filter(Boolean).length
+	const itemCount = [
+		onArchive,
+		onUnarchive,
+		onEdit,
+		onEnterSelect,
+		onDelete,
+	].filter(Boolean).length
 
 	function handleOpenChange(nextOpen: boolean) {
 		if (!nextOpen && popoverOpen) return
@@ -41,6 +51,8 @@ export function RowMenu({
 					onEdit={onEdit}
 					onEnterSelect={onEnterSelect}
 					onDelete={onDelete}
+					onArchive={onArchive}
+					onUnarchive={onUnarchive}
 					popoverOpen={popoverOpen}
 					onPopoverOpenChange={handlePopoverOpenChange}
 				/>

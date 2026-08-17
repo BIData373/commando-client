@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Trash2, X } from "lucide-react"
+import { Archive, ArchiveX, Trash2, X } from "lucide-react"
 import { useState } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { StatusTag } from "../shared/StatusTag"
@@ -20,8 +20,9 @@ interface BulkActionsBarProps {
 	deleteDisabled?: boolean
 	statusDisabled?: boolean
 	onChangeStatus: (status: WorkspaceStatusDto) => void
-	onArchive: () => void
-	onDelete: () => void
+	onArchive?: () => void
+	onUnarchive?: () => void
+	onDelete?: () => void
 	onExitSelect: () => void
 }
 
@@ -32,7 +33,8 @@ export function BulkActionsBar({
 	deleteDisabled = false,
 	statusDisabled = false,
 	onChangeStatus,
-	// onArchive,
+	onArchive,
+	onUnarchive,
 	onDelete,
 	onExitSelect,
 }: BulkActionsBarProps) {
@@ -45,23 +47,44 @@ export function BulkActionsBar({
 	return (
 		<Bar $visible={isVisible}>
 			<ActionsSection>
-				<DeletePopover
-					count={selectedCount}
-					onConfirm={onDelete}
-					open={popoverOpen}
-					onOpenChange={setPopoverOpen}
-					trigger={
-						<GhostButton
-							$danger
-							$disabled={deleteDisabled}
-							onClick={handleDeleteClick}
-						>
-							מחק הנחיה
-							<Trash2 size={16} />
-						</GhostButton>
-					}
-				/>
-				{statuses && (
+				{onDelete && (
+					<>
+						<DeletePopover
+							count={selectedCount}
+							onConfirm={onDelete}
+							open={popoverOpen}
+							onOpenChange={setPopoverOpen}
+							trigger={
+								<GhostButton
+									$danger
+									$disabled={deleteDisabled}
+									onClick={handleDeleteClick}
+								>
+									מחק הנחיה
+									<Trash2 size={16} />
+								</GhostButton>
+							}
+						/>
+						<BarDivider />
+					</>
+				)}
+				{
+					<>
+						{onArchive && (
+							<GhostButton onClick={onArchive}>
+								העבר לארכיון
+								<Archive size={16} />
+							</GhostButton>
+						)}
+						{onUnarchive && (
+							<GhostButton onClick={onUnarchive}>
+								הסר מארכיון
+								<ArchiveX size={16} />
+							</GhostButton>
+						)}
+					</>
+				}
+				{!onUnarchive && statuses && (
 					<>
 						<BarDivider />
 						<DropdownMenu>
@@ -91,10 +114,10 @@ const Bar = styled.div<{ $visible: boolean }>`
   position: fixed;
   bottom: 32px;
   left: 50%;
+  min-width: 630px;
   transform: translateX(-50%);
   z-index: var(--z-dropdown);
   direction: ltr;
-  width: 450px;
   display: flex;
   align-items: center;
   justify-content: space-between;

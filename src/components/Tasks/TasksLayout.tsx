@@ -1,33 +1,12 @@
-import styled from "@emotion/styled"
-import { Outlet, useNavigate } from "@tanstack/react-router"
-import type { ColumnFiltersState } from "@tanstack/react-table"
-import { without } from "lodash"
-import { useMemo } from "react"
-import type {
-	DeadlineType,
-	TaskRowDto,
-	WorkspaceStatusType,
-} from "src/api/model"
-import { PermissionType } from "src/api/model"
-import { useGetMyPermission } from "src/api/permission/permission"
-import {
-	getListPersonalTaskRowsQueryKey,
-	useListTaskRows,
-} from "src/api/task/task"
-import { useFilteredTasks } from "src/hooks/useFilteredTasks"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries } from "src/queryClient"
+import { useNavigate } from "@tanstack/react-router"
+import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import {
 	type TasksSearchSchemaType,
 	TasksView,
 } from "src/routes/workspace/$urlName/tasks"
-import { useTasksFilters } from "../../providers/TasksFiltersProvider"
-import { CreateTaskButton } from "../shared/CreateTaskButton"
-import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
-import { TooltipProvider } from "../ui/tooltip"
-import { TaskCardGrid } from "./TaskCardGrid"
-import { FilterSeparator, TaskFilters } from "./TaskFilters"
-import { TaskTable } from "./TaskTable"
+import { DropdownSection } from "../shared/ArchiveDropdown"
+import { WorkspaceTabs } from "../WorkspaceTabs"
+import WorkspaceTaskTable from "./WorkspaceTaskTable"
 
 export interface TasksLayoutProps {
 	view: TasksView
@@ -37,46 +16,12 @@ export interface TasksLayoutProps {
 }
 
 function TasksLayout({
-	view,
+	view = TasksView.TABLE,
 	urlName,
-	statusFilter,
-	deadlineTypeFilter,
+	statusFilter = [],
+	deadlineTypeFilter = [],
 }: TasksLayoutProps) {
-	const navigate = useNavigate({ from: "/workspace/$urlName/tasks" })
-
-	const { columnOrder, hiddenColumns } = useTasksFilters()
-
-	const {
-		workspace: { id: workspaceId, title: workspaceTitle },
-		statuses,
-	} = useWorkspace()
-
-	const {
-		data: tasks = [],
-		queryKey,
-		isLoading,
-	} = useListTaskRows({ workspaceId })
-
-	const { data: myPermission } = useGetMyPermission({ workspaceId })
-
-	const noWorkspaceColumnOrder = useMemo(
-		() => without(columnOrder, "workspace") as (keyof TaskRowDto)[],
-		[columnOrder],
-	)
-
-	const noWorkspaceHiddenColumns = useMemo(
-		() => new Set([...hiddenColumns].filter((item) => item !== "workspace")),
-		[hiddenColumns],
-	)
-
-	const urlColumnFilters: ColumnFiltersState = [
-		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
-		...(deadlineTypeFilter.length
-			? [{ id: "deadlineType", value: deadlineTypeFilter }]
-			: []),
-	]
-
-	const filteredTaskRows = useFilteredTasks(tasks)
+	const navigate = useNavigate()
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -95,7 +40,7 @@ function TasksLayout({
 		navigate({
 			to: "/workspace/$urlName/tasks/$taskId",
 			params: { urlName, taskId: String(taskId) },
-			search: { view },
+			search: { view: TasksView.TABLE },
 		})
 	}
 
@@ -117,98 +62,23 @@ function TasksLayout({
 		})
 	}
 
-	function handleChangeSuccess() {
-		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
-	}
-
-	// function handleViewChange(newView: TasksView) {
-	// 	navigateToTasks({ view: newView })
-	// }
-
 	function handleClearColumnFilters() {
-		navigate({
-			search: (prev) => ({
-				...prev,
-				statusFilter: [],
-				deadlineTypeFilter: [],
-			}),
-		})
+		navigateToTasks({ statusFilter: [], deadlineTypeFilter: [] })
 	}
 
 	return (
-		<TooltipProvider>
-			<TasksRoot>
-				<TaskFilters
-					allTaskRows={tasks}
-					filteredTasks={filteredTaskRows}
-					columnOrder={noWorkspaceColumnOrder}
-					hiddenColumns={noWorkspaceHiddenColumns}
-					onClearColumnFilters={handleClearColumnFilters}
-					urlColumnFilters={urlColumnFilters}
-					startSlot={<TasksDatePicker />}
-					exportFilePrefix={workspaceTitle}
-					extraButtons={
-						myPermission?.type === PermissionType.MANAGER && (
-							<ButtonGroup>
-								<FilterSeparator />
-
-								<CreateTaskButton view={view} />
-							</ButtonGroup>
-						)
-					}
-				/>
-
-				<ContentArea>
-					{view === TasksView.TABLE ? (
-						<TaskTable
-							onChangeSuccess={handleChangeSuccess}
-							tasks={filteredTaskRows}
-							statuses={Object.values(statuses)}
-							onEdit={handleEdit}
-							statusFilter={statusFilter}
-							deadlineTypeFilter={deadlineTypeFilter}
-							onFiltersChange={handleColumnFiltersChange}
-							onClick={handleOpenTask}
-							isLoading={isLoading}
-							getPermissionType={() => myPermission?.type}
-							columnOrder={noWorkspaceColumnOrder}
-							hiddenColumns={noWorkspaceHiddenColumns}
-						/>
-					) : (
-						<TaskCardGrid taskRows={filteredTaskRows} />
-					)}
-				</ContentArea>
-			</TasksRoot>
-			<Outlet />
-		</TooltipProvider>
+		<>
+			<WorkspaceTabs section={DropdownSection.TASKS} />
+			<WorkspaceTaskTable
+				onOpenTask={handleOpenTask}
+				onEdit={handleEdit}
+				clearColumnFilters={handleClearColumnFilters}
+				onColumnFilterChange={handleColumnFiltersChange}
+				deadlineTypeFilter={deadlineTypeFilter}
+				statusFilter={statusFilter}
+			/>
+		</>
 	)
 }
 
 export default TasksLayout
-
-// ─── Layout ───────────────────────────────────────────────────────────────────
-
-const TasksRoot = styled.div`
-  padding-block: 24px;
-  height: 100%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  overflow: hidden;
-`
-
-const ContentArea = styled.div`
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-`
-
-// ─── Title Bar Actions ───────────────────────────────────────────────────────
-
-const ButtonGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-`

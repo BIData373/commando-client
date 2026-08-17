@@ -55,5 +55,5 @@ export function useRenderInHeader(
 		setElementPlacements((prev) => ({ ...prev, [key]: node }))
 
 		return () => setElementPlacements(({ [key]: _, ...rest }) => rest)
-	}, [setElementPlacements, ...deps])
+	}, [setElementPlacements, ...deps, key])
 }

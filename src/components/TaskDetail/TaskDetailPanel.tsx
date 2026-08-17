@@ -36,8 +36,9 @@ import TaskHistoryPanel from "./TaskHistoryPanel"
 interface TaskDetailPanelProps {
 	task: TaskDetailsDto
 	onClose: () => void
-	onEdit: () => void
+	onEdit?: () => void
 	showWorkspace?: boolean
+	isArchived?: boolean
 }
 
 function TaskDetailPanel({
@@ -60,6 +61,7 @@ function TaskDetailPanel({
 	showWorkspace = false,
 	onClose,
 	onEdit,
+	isArchived = false,
 }: TaskDetailPanelProps) {
 	const [showHistory, setShowHistory] = useState(false)
 	const [showConversation, setShowConversation] = useState(false)
@@ -142,6 +144,7 @@ function TaskDetailPanel({
 	}
 
 	function handleEdit() {
+		if (!onEdit) return
 		handleSuccess()
 		onEdit()
 	}
@@ -166,7 +169,7 @@ function TaskDetailPanel({
 						<TaskIdLabel>#{id}</TaskIdLabel>
 						<RowActionsMenu
 							workspaceId={workspaceId}
-							onEdit={isManager ? handleEdit : undefined}
+							onEdit={isManager && onEdit ? handleEdit : undefined}
 							onDelete={isManager ? handleDelete : undefined}
 						/>
 					</>
@@ -222,6 +225,7 @@ function TaskDetailPanel({
 							taskId={id}
 							workspaceId={workspaceId}
 							assigneeStatuses={assigneeStatuses}
+							isArchived={isArchived}
 						/>
 					) : (
 						status && (

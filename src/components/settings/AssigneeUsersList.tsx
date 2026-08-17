@@ -50,58 +50,56 @@ export function AssigneeUsersList({ users, onRemove }: AssigneeUsersListProps) {
 
 const UserListArea = styled.div`
   min-height: 127px;
-  max-height: 127px;
+  max-height: 500px;
   width: 100%;
   overflow-y: auto;
   border-radius: 6px;
-  background-color: var(--background-area);
-  padding: 8px;
+  padding: 4px;
 `
 
 const UserCard = styled.div`
-  padding: 1px 8px;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
+  flex-direction: column;
 `
 
 const UserCardItem = styled.div`
-    display: flex;
-    align-items: center;
-    max-width: 224px;
-    gap: 6px;
-    padding-right: 8px;
-    background: rgba(0, 0, 0, 0.02);
-    border: 1px solid #f0f0f0;
-    border-radius: 4px;
+  display: flex;
+  width: 100%;
+  gap: 6px;
+  padding-right: 8px;
+  background: var(--card-background);
+  border: 1px solid var(--line);
+  border-radius: 4px;
 `
 
 const UserCardInfo = styled.div`
-    display: flex;
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
 `
 
 const UserCardClose = styled.button`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 2px;
-    color: rgba(0, 0, 0, 0.45);
-    flex-shrink: 0;
-    align-self: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  align-self: flex-start;
 
-    &:hover {
-        color: var(--sea-ink);
-    }
+  &:hover {
+    color: var(--sea-ink);
+  }
 `
 
 const UserTooltipContent = styled(TooltipPrimitive.Content)`
-  max-width: 260px;
+  max-width: 100%;
   padding: 10px 14px;
   background: var(--text-color-2);
   border-radius: 8px;

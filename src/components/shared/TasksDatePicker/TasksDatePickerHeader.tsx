@@ -25,15 +25,16 @@ export function TasksDatePickerHeader({
 					{dateType}
 					<ChevronDown size={16} />
 				</DateTypeTrigger>
-				<StyledDropdownMenuContent align="end">
+				<StyledDropdownMenuContent align="start" sideOffset={6}>
 					{Object.values(DATE_TYPE).map((type) => (
-						<DropdownMenuItem
+						<DateTypeItem
 							key={type}
+							$selected={type === dateType}
 							dir="rtl"
 							onSelect={() => onDateTypeChange(type)}
 						>
 							{type}
-						</DropdownMenuItem>
+						</DateTypeItem>
 					))}
 				</StyledDropdownMenuContent>
 			</DropdownMenu>
@@ -41,18 +42,16 @@ export function TasksDatePickerHeader({
 	)
 }
 
-const StyledDropdownMenuContent = styled(DropdownMenuContent)`
-	z-index: 1000;
-`
-
 const PopupHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 `
 
 const FilterLabel = styled.span`
-  font-size: var(--fs-btn);
+  font-size: var(--fs-base);
+  font-weight: 600;
   color: var(--sea-ink-soft);
   white-space: nowrap;
 `
@@ -62,9 +61,9 @@ const DateTypeTrigger = styled(DropdownMenuTrigger)`
   align-items: center;
   gap: 6px;
   height: 32px;
-  padding: 0 10px;
+  padding: 0 16px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   background: var(--background);
   color: var(--sea-ink);
   font-size: var(--fs-btn);
@@ -73,5 +72,39 @@ const DateTypeTrigger = styled(DropdownMenuTrigger)`
 
   &:hover {
     background: var(--chip-bg);
+  }
+
+  &[data-state="open"] {
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+`
+
+const StyledDropdownMenuContent = styled(DropdownMenuContent)`
+  padding: 4px;
+  background: var(--background);
+  border-radius: 6px;
+  box-shadow: var(--shadow-popover);
+  z-index: var(--z-dropdown);
+`
+
+const DateTypeItem = styled(DropdownMenuItem)<{ $selected: boolean }>`
+  padding: 0.4rem;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  border-radius: 6px;
+  background: ${({ $selected }) =>
+		$selected ? "var(--link-bg-hover)" : "transparent"};
+
+  color: var(--sea-ink);
+  font-size: var(--fs-btn);
+  text-align: start;
+
+  &:focus {
+    background: var(--link-bg-hover);
   }
 `

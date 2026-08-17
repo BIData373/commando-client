@@ -9,6 +9,8 @@ interface RowActionsMenuProps {
 	onEdit?: () => void
 	onEnterSelect?: () => void
 	onDelete?: () => void
+	onArchive?(): void
+	onUnarchive?(): void
 }
 
 export function RowActionsMenu({
@@ -16,6 +18,8 @@ export function RowActionsMenu({
 	onEdit,
 	onEnterSelect,
 	onDelete,
+	onArchive,
+	onUnarchive,
 }: RowActionsMenuProps) {
 	const [open, setOpen] = useState(false)
 
@@ -33,6 +37,8 @@ export function RowActionsMenu({
 			onEdit={onEdit}
 			onEnterSelect={onEnterSelect}
 			onDelete={onDelete}
+			onArchive={onArchive}
+			onUnarchive={onUnarchive}
 		/>
 	)
 }

@@ -57,6 +57,8 @@ const AppShell = styled.div`
 `
 
 const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   flex: 1;
   overflow: hidden;
   min-height: 0;

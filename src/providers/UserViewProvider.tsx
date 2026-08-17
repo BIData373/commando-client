@@ -1,3 +1,4 @@
+import styled from "@emotion/styled"
 import { useQueryClient } from "@tanstack/react-query"
 import {
 	createContext,
@@ -5,7 +6,7 @@ import {
 	useContext,
 	useRef,
 } from "react"
-import type { UserViewDto } from "src/api/model"
+import type { TaskRowWithWorkspaceDto, UserViewDto } from "src/api/model"
 import { DistributionTab } from "src/api/model/distribution-tab"
 import { QuickFilter } from "src/api/model/quick-filter"
 import {
@@ -41,19 +42,27 @@ const PERSONAL_DEFAULT_HIDDEN = ["tags", "notes", "updatedAt"]
 
 const WORKSPACE_DEFAULT_HIDDEN = ["notes", "updatedAt"]
 
-function getDefaultView(workspaceId: number | null): UserViewDto {
+function getDefaultView(
+	workspaceId: number | null,
+	defaultColumnOrder?: (keyof TaskRowWithWorkspaceDto)[],
+	defaultHiddenColumns?: Set<keyof TaskRowWithWorkspaceDto>,
+): UserViewDto {
 	return {
 		table: {
 			sorting: [],
 			columnFilters: [],
 			quickFilter: [],
 			columnVisibility: {
-				columnOrder: workspaceId
-					? [...DEFAULT_COLUMN_ORDER]
-					: [...PERSONAL_DEFAULT_COLUMN_ORDER],
-				hiddenColumns: workspaceId
-					? [...WORKSPACE_DEFAULT_HIDDEN]
-					: [...PERSONAL_DEFAULT_HIDDEN],
+				columnOrder: [
+					...(defaultColumnOrder ??
+						(workspaceId
+							? DEFAULT_COLUMN_ORDER
+							: PERSONAL_DEFAULT_COLUMN_ORDER)),
+				],
+				hiddenColumns: [
+					...(defaultHiddenColumns ??
+						(workspaceId ? WORKSPACE_DEFAULT_HIDDEN : PERSONAL_DEFAULT_HIDDEN)),
+				],
 			},
 		},
 		dashboard: {
@@ -65,14 +74,22 @@ function getDefaultView(workspaceId: number | null): UserViewDto {
 
 interface UserViewProviderProps extends PropsWithChildren {
 	workspaceId?: number
+	defaultColumnOrder?: (keyof TaskRowWithWorkspaceDto)[]
+	defaultHiddenColumns?: Set<keyof TaskRowWithWorkspaceDto>
 }
 
 export function UserViewProvider({
 	children,
 	workspaceId,
+	defaultColumnOrder,
+	defaultHiddenColumns,
 }: UserViewProviderProps) {
 	const queryClient = useQueryClient()
-	const defaultView = getDefaultView(workspaceId ?? null)
+	const defaultView = getDefaultView(
+		workspaceId ?? null,
+		defaultColumnOrder,
+		defaultHiddenColumns,
+	)
 
 	const { data, isLoading } = useGetUserView(
 		{ workspaceId },
@@ -111,7 +128,9 @@ export function UserViewProvider({
 	}
 
 	return isLoading ? (
-		<Spinner />
+		<LoadingContainer>
+			<Spinner />
+		</LoadingContainer>
 	) : (
 		<UserViewContext.Provider
 			value={{
@@ -123,6 +142,14 @@ export function UserViewProvider({
 		</UserViewContext.Provider>
 	)
 }
+
+const LoadingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+`
 
 export function useUserView() {
 	const context = useContext(UserViewContext)

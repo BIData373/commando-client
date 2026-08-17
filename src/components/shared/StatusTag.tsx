@@ -2,6 +2,7 @@ import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import { TbChevronDown } from "react-icons/tb"
 import type { WorkspaceStatusDto } from "src/api/model"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface StatusTagProps {
 	status: Pick<WorkspaceStatusDto, "name" | "color">
@@ -18,7 +19,7 @@ export function StatusTag({
 	withArrow = false,
 	open = false,
 }: StatusTagProps) {
-	return (
+	const tag = (
 		<Tag
 			$fontColor={color}
 			$backgroundColor={color}
@@ -28,6 +29,15 @@ export function StatusTag({
 			{name}
 			{withArrow && <Arrow size={12} $open={open} />}
 		</Tag>
+	)
+
+	return editable ? (
+		tag
+	) : (
+		<Tooltip>
+			<TooltipTrigger asChild>{tag}</TooltipTrigger>
+			<TooltipContent>לא קיימות הרשאות עריכה</TooltipContent>
+		</Tooltip>
 	)
 }
 

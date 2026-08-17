@@ -12,14 +12,20 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as NewWorkspaceRouteImport } from './routes/new-workspace'
 import { Route as PersonalRouteImport } from './routes/personal'
+import { Route as PersonalIndexRouteImport } from './routes/personal/index'
+import { Route as PersonalArchiveRouteImport } from './routes/personal/archive'
+import { Route as PersonalTasksRouteImport } from './routes/personal/tasks'
 import { Route as WorkspaceUrlNameRouteRouteImport } from './routes/workspace/$urlName/route'
 import { Route as PersonalTaskTaskIdRouteImport } from './routes/personal/task/$taskId'
 import { Route as WorkspaceUrlNameIndexRouteImport } from './routes/workspace/$urlName/index'
+import { Route as WorkspaceUrlNameArchiveRouteImport } from './routes/workspace/$urlName/archive'
 import { Route as WorkspaceUrlNameDashboardRouteImport } from './routes/workspace/$urlName/dashboard'
 import { Route as WorkspaceUrlNameSettingsRouteImport } from './routes/workspace/$urlName/settings'
 import { Route as WorkspaceUrlNameTasksRouteImport } from './routes/workspace/$urlName/tasks'
+import { Route as PersonalArchiveTaskTaskIdRouteImport } from './routes/personal/archive/task/$taskId'
 import { Route as PersonalTaskTaskIdIndexRouteImport } from './routes/personal/task/$taskId/index'
 import { Route as PersonalTaskTaskIdEditRouteImport } from './routes/personal/task/$taskId/edit'
+import { Route as PersonalTasksTaskTaskIdRouteImport } from './routes/personal/tasks/task/$taskId'
 import { Route as WorkspaceUrlNameDashboardNewRouteImport } from './routes/workspace/$urlName/dashboard/new'
 import { Route as WorkspaceUrlNameSettingsIndexRouteImport } from './routes/workspace/$urlName/settings/index'
 import { Route as WorkspaceUrlNameSettingsAssigneesRouteImport } from './routes/workspace/$urlName/settings/assignees'
@@ -28,11 +34,16 @@ import { Route as WorkspaceUrlNameSettingsPermissionsRouteImport } from './route
 import { Route as WorkspaceUrlNameTasksIndexRouteImport } from './routes/workspace/$urlName/tasks/index'
 import { Route as WorkspaceUrlNameTasksTaskIdRouteImport } from './routes/workspace/$urlName/tasks/$taskId'
 import { Route as WorkspaceUrlNameTasksNewRouteImport } from './routes/workspace/$urlName/tasks/new'
+import { Route as PersonalArchiveTaskTaskIdIndexRouteImport } from './routes/personal/archive/task/$taskId/index'
+import { Route as PersonalTasksTaskTaskIdIndexRouteImport } from './routes/personal/tasks/task/$taskId/index'
+import { Route as PersonalTasksTaskTaskIdEditRouteImport } from './routes/personal/tasks/task/$taskId/edit'
+import { Route as WorkspaceUrlNameArchiveTaskTaskIdRouteImport } from './routes/workspace/$urlName/archive/task/$taskId'
 import { Route as WorkspaceUrlNameDashboardTaskTaskIdRouteImport } from './routes/workspace/$urlName/dashboard/task/$taskId'
 import { Route as WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteImport } from './routes/workspace/$urlName/settings/assignees/$assigneeId'
 import { Route as WorkspaceUrlNameSettingsAssigneesNewRouteImport } from './routes/workspace/$urlName/settings/assignees/new'
 import { Route as WorkspaceUrlNameTasksTaskIdIndexRouteImport } from './routes/workspace/$urlName/tasks/$taskId/index'
 import { Route as WorkspaceUrlNameTasksTaskIdEditRouteImport } from './routes/workspace/$urlName/tasks/$taskId/edit'
+import { Route as WorkspaceUrlNameArchiveTaskTaskIdIndexRouteImport } from './routes/workspace/$urlName/archive/task/$taskId/index'
 import { Route as WorkspaceUrlNameDashboardTaskTaskIdIndexRouteImport } from './routes/workspace/$urlName/dashboard/task/$taskId/index'
 import { Route as WorkspaceUrlNameDashboardTaskTaskIdEditRouteImport } from './routes/workspace/$urlName/dashboard/task/$taskId/edit'
 import { Route as WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRouteImport } from './routes/workspace/$urlName/settings/assignees/$assigneeId/index'
@@ -52,6 +63,21 @@ const PersonalRoute = PersonalRouteImport.update({
   path: '/personal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PersonalIndexRoute = PersonalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PersonalRoute,
+} as any)
+const PersonalArchiveRoute = PersonalArchiveRouteImport.update({
+  id: '/archive',
+  path: '/archive',
+  getParentRoute: () => PersonalRoute,
+} as any)
+const PersonalTasksRoute = PersonalTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => PersonalRoute,
+} as any)
 const WorkspaceUrlNameRouteRoute = WorkspaceUrlNameRouteRouteImport.update({
   id: '/workspace/$urlName',
   path: '/workspace/$urlName',
@@ -65,6 +91,11 @@ const PersonalTaskTaskIdRoute = PersonalTaskTaskIdRouteImport.update({
 const WorkspaceUrlNameIndexRoute = WorkspaceUrlNameIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => WorkspaceUrlNameRouteRoute,
+} as any)
+const WorkspaceUrlNameArchiveRoute = WorkspaceUrlNameArchiveRouteImport.update({
+  id: '/archive',
+  path: '/archive',
   getParentRoute: () => WorkspaceUrlNameRouteRoute,
 } as any)
 const WorkspaceUrlNameDashboardRoute =
@@ -84,6 +115,12 @@ const WorkspaceUrlNameTasksRoute = WorkspaceUrlNameTasksRouteImport.update({
   path: '/tasks',
   getParentRoute: () => WorkspaceUrlNameRouteRoute,
 } as any)
+const PersonalArchiveTaskTaskIdRoute =
+  PersonalArchiveTaskTaskIdRouteImport.update({
+    id: '/task/$taskId',
+    path: '/task/$taskId',
+    getParentRoute: () => PersonalArchiveRoute,
+  } as any)
 const PersonalTaskTaskIdIndexRoute = PersonalTaskTaskIdIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -93,6 +130,11 @@ const PersonalTaskTaskIdEditRoute = PersonalTaskTaskIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
   getParentRoute: () => PersonalTaskTaskIdRoute,
+} as any)
+const PersonalTasksTaskTaskIdRoute = PersonalTasksTaskTaskIdRouteImport.update({
+  id: '/task/$taskId',
+  path: '/task/$taskId',
+  getParentRoute: () => PersonalTasksRoute,
 } as any)
 const WorkspaceUrlNameDashboardNewRoute =
   WorkspaceUrlNameDashboardNewRouteImport.update({
@@ -142,6 +184,30 @@ const WorkspaceUrlNameTasksNewRoute =
     path: '/new',
     getParentRoute: () => WorkspaceUrlNameTasksRoute,
   } as any)
+const PersonalArchiveTaskTaskIdIndexRoute =
+  PersonalArchiveTaskTaskIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => PersonalArchiveTaskTaskIdRoute,
+  } as any)
+const PersonalTasksTaskTaskIdIndexRoute =
+  PersonalTasksTaskTaskIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => PersonalTasksTaskTaskIdRoute,
+  } as any)
+const PersonalTasksTaskTaskIdEditRoute =
+  PersonalTasksTaskTaskIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => PersonalTasksTaskTaskIdRoute,
+  } as any)
+const WorkspaceUrlNameArchiveTaskTaskIdRoute =
+  WorkspaceUrlNameArchiveTaskTaskIdRouteImport.update({
+    id: '/task/$taskId',
+    path: '/task/$taskId',
+    getParentRoute: () => WorkspaceUrlNameArchiveRoute,
+  } as any)
 const WorkspaceUrlNameDashboardTaskTaskIdRoute =
   WorkspaceUrlNameDashboardTaskTaskIdRouteImport.update({
     id: '/task/$taskId',
@@ -172,6 +238,12 @@ const WorkspaceUrlNameTasksTaskIdEditRoute =
     path: '/edit',
     getParentRoute: () => WorkspaceUrlNameTasksTaskIdRoute,
   } as any)
+const WorkspaceUrlNameArchiveTaskTaskIdIndexRoute =
+  WorkspaceUrlNameArchiveTaskTaskIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => WorkspaceUrlNameArchiveTaskTaskIdRoute,
+  } as any)
 const WorkspaceUrlNameDashboardTaskTaskIdIndexRoute =
   WorkspaceUrlNameDashboardTaskTaskIdIndexRouteImport.update({
     id: '/',
@@ -196,12 +268,18 @@ export interface FileRoutesByFullPath {
   '/new-workspace': typeof NewWorkspaceRoute
   '/personal': typeof PersonalRouteWithChildren
   '/workspace/$urlName': typeof WorkspaceUrlNameRouteRouteWithChildren
+  '/personal/archive': typeof PersonalArchiveRouteWithChildren
+  '/personal/tasks': typeof PersonalTasksRouteWithChildren
+  '/personal/': typeof PersonalIndexRoute
   '/personal/task/$taskId': typeof PersonalTaskTaskIdRouteWithChildren
+  '/workspace/$urlName/archive': typeof WorkspaceUrlNameArchiveRouteWithChildren
   '/workspace/$urlName/dashboard': typeof WorkspaceUrlNameDashboardRouteWithChildren
   '/workspace/$urlName/settings': typeof WorkspaceUrlNameSettingsRouteWithChildren
   '/workspace/$urlName/tasks': typeof WorkspaceUrlNameTasksRouteWithChildren
   '/workspace/$urlName/': typeof WorkspaceUrlNameIndexRoute
+  '/personal/archive/task/$taskId': typeof PersonalArchiveTaskTaskIdRouteWithChildren
   '/personal/task/$taskId/edit': typeof PersonalTaskTaskIdEditRoute
+  '/personal/tasks/task/$taskId': typeof PersonalTasksTaskTaskIdRouteWithChildren
   '/workspace/$urlName/dashboard/new': typeof WorkspaceUrlNameDashboardNewRoute
   '/workspace/$urlName/settings/assignees': typeof WorkspaceUrlNameSettingsAssigneesRouteWithChildren
   '/workspace/$urlName/settings/general': typeof WorkspaceUrlNameSettingsGeneralRoute
@@ -211,19 +289,27 @@ export interface FileRoutesByFullPath {
   '/personal/task/$taskId/': typeof PersonalTaskTaskIdIndexRoute
   '/workspace/$urlName/settings/': typeof WorkspaceUrlNameSettingsIndexRoute
   '/workspace/$urlName/tasks/': typeof WorkspaceUrlNameTasksIndexRoute
+  '/personal/tasks/task/$taskId/edit': typeof PersonalTasksTaskTaskIdEditRoute
+  '/workspace/$urlName/archive/task/$taskId': typeof WorkspaceUrlNameArchiveTaskTaskIdRouteWithChildren
   '/workspace/$urlName/dashboard/task/$taskId': typeof WorkspaceUrlNameDashboardTaskTaskIdRouteWithChildren
   '/workspace/$urlName/settings/assignees/$assigneeId': typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteWithChildren
   '/workspace/$urlName/settings/assignees/new': typeof WorkspaceUrlNameSettingsAssigneesNewRoute
   '/workspace/$urlName/tasks/$taskId/edit': typeof WorkspaceUrlNameTasksTaskIdEditRoute
+  '/personal/archive/task/$taskId/': typeof PersonalArchiveTaskTaskIdIndexRoute
+  '/personal/tasks/task/$taskId/': typeof PersonalTasksTaskTaskIdIndexRoute
   '/workspace/$urlName/tasks/$taskId/': typeof WorkspaceUrlNameTasksTaskIdIndexRoute
   '/workspace/$urlName/dashboard/task/$taskId/edit': typeof WorkspaceUrlNameDashboardTaskTaskIdEditRoute
+  '/workspace/$urlName/archive/task/$taskId/': typeof WorkspaceUrlNameArchiveTaskTaskIdIndexRoute
   '/workspace/$urlName/dashboard/task/$taskId/': typeof WorkspaceUrlNameDashboardTaskTaskIdIndexRoute
   '/workspace/$urlName/settings/assignees/$assigneeId/': typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/new-workspace': typeof NewWorkspaceRoute
-  '/personal': typeof PersonalRouteWithChildren
+  '/personal/archive': typeof PersonalArchiveRouteWithChildren
+  '/personal/tasks': typeof PersonalTasksRouteWithChildren
+  '/personal': typeof PersonalIndexRoute
+  '/workspace/$urlName/archive': typeof WorkspaceUrlNameArchiveRouteWithChildren
   '/workspace/$urlName/dashboard': typeof WorkspaceUrlNameDashboardRouteWithChildren
   '/workspace/$urlName': typeof WorkspaceUrlNameIndexRoute
   '/personal/task/$taskId/edit': typeof PersonalTaskTaskIdEditRoute
@@ -235,10 +321,14 @@ export interface FileRoutesByTo {
   '/personal/task/$taskId': typeof PersonalTaskTaskIdIndexRoute
   '/workspace/$urlName/settings': typeof WorkspaceUrlNameSettingsIndexRoute
   '/workspace/$urlName/tasks': typeof WorkspaceUrlNameTasksIndexRoute
+  '/personal/tasks/task/$taskId/edit': typeof PersonalTasksTaskTaskIdEditRoute
   '/workspace/$urlName/settings/assignees/new': typeof WorkspaceUrlNameSettingsAssigneesNewRoute
   '/workspace/$urlName/tasks/$taskId/edit': typeof WorkspaceUrlNameTasksTaskIdEditRoute
+  '/personal/archive/task/$taskId': typeof PersonalArchiveTaskTaskIdIndexRoute
+  '/personal/tasks/task/$taskId': typeof PersonalTasksTaskTaskIdIndexRoute
   '/workspace/$urlName/tasks/$taskId': typeof WorkspaceUrlNameTasksTaskIdIndexRoute
   '/workspace/$urlName/dashboard/task/$taskId/edit': typeof WorkspaceUrlNameDashboardTaskTaskIdEditRoute
+  '/workspace/$urlName/archive/task/$taskId': typeof WorkspaceUrlNameArchiveTaskTaskIdIndexRoute
   '/workspace/$urlName/dashboard/task/$taskId': typeof WorkspaceUrlNameDashboardTaskTaskIdIndexRoute
   '/workspace/$urlName/settings/assignees/$assigneeId': typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRoute
 }
@@ -248,12 +338,18 @@ export interface FileRoutesById {
   '/new-workspace': typeof NewWorkspaceRoute
   '/personal': typeof PersonalRouteWithChildren
   '/workspace/$urlName': typeof WorkspaceUrlNameRouteRouteWithChildren
+  '/personal/archive': typeof PersonalArchiveRouteWithChildren
+  '/personal/tasks': typeof PersonalTasksRouteWithChildren
+  '/personal/': typeof PersonalIndexRoute
   '/personal/task/$taskId': typeof PersonalTaskTaskIdRouteWithChildren
+  '/workspace/$urlName/archive': typeof WorkspaceUrlNameArchiveRouteWithChildren
   '/workspace/$urlName/dashboard': typeof WorkspaceUrlNameDashboardRouteWithChildren
   '/workspace/$urlName/settings': typeof WorkspaceUrlNameSettingsRouteWithChildren
   '/workspace/$urlName/tasks': typeof WorkspaceUrlNameTasksRouteWithChildren
   '/workspace/$urlName/': typeof WorkspaceUrlNameIndexRoute
+  '/personal/archive/task/$taskId': typeof PersonalArchiveTaskTaskIdRouteWithChildren
   '/personal/task/$taskId/edit': typeof PersonalTaskTaskIdEditRoute
+  '/personal/tasks/task/$taskId': typeof PersonalTasksTaskTaskIdRouteWithChildren
   '/workspace/$urlName/dashboard/new': typeof WorkspaceUrlNameDashboardNewRoute
   '/workspace/$urlName/settings/assignees': typeof WorkspaceUrlNameSettingsAssigneesRouteWithChildren
   '/workspace/$urlName/settings/general': typeof WorkspaceUrlNameSettingsGeneralRoute
@@ -263,12 +359,17 @@ export interface FileRoutesById {
   '/personal/task/$taskId/': typeof PersonalTaskTaskIdIndexRoute
   '/workspace/$urlName/settings/': typeof WorkspaceUrlNameSettingsIndexRoute
   '/workspace/$urlName/tasks/': typeof WorkspaceUrlNameTasksIndexRoute
+  '/personal/tasks/task/$taskId/edit': typeof PersonalTasksTaskTaskIdEditRoute
+  '/workspace/$urlName/archive/task/$taskId': typeof WorkspaceUrlNameArchiveTaskTaskIdRouteWithChildren
   '/workspace/$urlName/dashboard/task/$taskId': typeof WorkspaceUrlNameDashboardTaskTaskIdRouteWithChildren
   '/workspace/$urlName/settings/assignees/$assigneeId': typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteWithChildren
   '/workspace/$urlName/settings/assignees/new': typeof WorkspaceUrlNameSettingsAssigneesNewRoute
   '/workspace/$urlName/tasks/$taskId/edit': typeof WorkspaceUrlNameTasksTaskIdEditRoute
+  '/personal/archive/task/$taskId/': typeof PersonalArchiveTaskTaskIdIndexRoute
+  '/personal/tasks/task/$taskId/': typeof PersonalTasksTaskTaskIdIndexRoute
   '/workspace/$urlName/tasks/$taskId/': typeof WorkspaceUrlNameTasksTaskIdIndexRoute
   '/workspace/$urlName/dashboard/task/$taskId/edit': typeof WorkspaceUrlNameDashboardTaskTaskIdEditRoute
+  '/workspace/$urlName/archive/task/$taskId/': typeof WorkspaceUrlNameArchiveTaskTaskIdIndexRoute
   '/workspace/$urlName/dashboard/task/$taskId/': typeof WorkspaceUrlNameDashboardTaskTaskIdIndexRoute
   '/workspace/$urlName/settings/assignees/$assigneeId/': typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRoute
 }
@@ -279,12 +380,18 @@ export interface FileRouteTypes {
     | '/new-workspace'
     | '/personal'
     | '/workspace/$urlName'
+    | '/personal/archive'
+    | '/personal/tasks'
+    | '/personal/'
     | '/personal/task/$taskId'
+    | '/workspace/$urlName/archive'
     | '/workspace/$urlName/dashboard'
     | '/workspace/$urlName/settings'
     | '/workspace/$urlName/tasks'
     | '/workspace/$urlName/'
+    | '/personal/archive/task/$taskId'
     | '/personal/task/$taskId/edit'
+    | '/personal/tasks/task/$taskId'
     | '/workspace/$urlName/dashboard/new'
     | '/workspace/$urlName/settings/assignees'
     | '/workspace/$urlName/settings/general'
@@ -294,19 +401,27 @@ export interface FileRouteTypes {
     | '/personal/task/$taskId/'
     | '/workspace/$urlName/settings/'
     | '/workspace/$urlName/tasks/'
+    | '/personal/tasks/task/$taskId/edit'
+    | '/workspace/$urlName/archive/task/$taskId'
     | '/workspace/$urlName/dashboard/task/$taskId'
     | '/workspace/$urlName/settings/assignees/$assigneeId'
     | '/workspace/$urlName/settings/assignees/new'
     | '/workspace/$urlName/tasks/$taskId/edit'
+    | '/personal/archive/task/$taskId/'
+    | '/personal/tasks/task/$taskId/'
     | '/workspace/$urlName/tasks/$taskId/'
     | '/workspace/$urlName/dashboard/task/$taskId/edit'
+    | '/workspace/$urlName/archive/task/$taskId/'
     | '/workspace/$urlName/dashboard/task/$taskId/'
     | '/workspace/$urlName/settings/assignees/$assigneeId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/new-workspace'
+    | '/personal/archive'
+    | '/personal/tasks'
     | '/personal'
+    | '/workspace/$urlName/archive'
     | '/workspace/$urlName/dashboard'
     | '/workspace/$urlName'
     | '/personal/task/$taskId/edit'
@@ -318,10 +433,14 @@ export interface FileRouteTypes {
     | '/personal/task/$taskId'
     | '/workspace/$urlName/settings'
     | '/workspace/$urlName/tasks'
+    | '/personal/tasks/task/$taskId/edit'
     | '/workspace/$urlName/settings/assignees/new'
     | '/workspace/$urlName/tasks/$taskId/edit'
+    | '/personal/archive/task/$taskId'
+    | '/personal/tasks/task/$taskId'
     | '/workspace/$urlName/tasks/$taskId'
     | '/workspace/$urlName/dashboard/task/$taskId/edit'
+    | '/workspace/$urlName/archive/task/$taskId'
     | '/workspace/$urlName/dashboard/task/$taskId'
     | '/workspace/$urlName/settings/assignees/$assigneeId'
   id:
@@ -330,12 +449,18 @@ export interface FileRouteTypes {
     | '/new-workspace'
     | '/personal'
     | '/workspace/$urlName'
+    | '/personal/archive'
+    | '/personal/tasks'
+    | '/personal/'
     | '/personal/task/$taskId'
+    | '/workspace/$urlName/archive'
     | '/workspace/$urlName/dashboard'
     | '/workspace/$urlName/settings'
     | '/workspace/$urlName/tasks'
     | '/workspace/$urlName/'
+    | '/personal/archive/task/$taskId'
     | '/personal/task/$taskId/edit'
+    | '/personal/tasks/task/$taskId'
     | '/workspace/$urlName/dashboard/new'
     | '/workspace/$urlName/settings/assignees'
     | '/workspace/$urlName/settings/general'
@@ -345,12 +470,17 @@ export interface FileRouteTypes {
     | '/personal/task/$taskId/'
     | '/workspace/$urlName/settings/'
     | '/workspace/$urlName/tasks/'
+    | '/personal/tasks/task/$taskId/edit'
+    | '/workspace/$urlName/archive/task/$taskId'
     | '/workspace/$urlName/dashboard/task/$taskId'
     | '/workspace/$urlName/settings/assignees/$assigneeId'
     | '/workspace/$urlName/settings/assignees/new'
     | '/workspace/$urlName/tasks/$taskId/edit'
+    | '/personal/archive/task/$taskId/'
+    | '/personal/tasks/task/$taskId/'
     | '/workspace/$urlName/tasks/$taskId/'
     | '/workspace/$urlName/dashboard/task/$taskId/edit'
+    | '/workspace/$urlName/archive/task/$taskId/'
     | '/workspace/$urlName/dashboard/task/$taskId/'
     | '/workspace/$urlName/settings/assignees/$assigneeId/'
   fileRoutesById: FileRoutesById
@@ -385,6 +515,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PersonalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/personal/': {
+      id: '/personal/'
+      path: '/'
+      fullPath: '/personal/'
+      preLoaderRoute: typeof PersonalIndexRouteImport
+      parentRoute: typeof PersonalRoute
+    }
+    '/personal/archive': {
+      id: '/personal/archive'
+      path: '/archive'
+      fullPath: '/personal/archive'
+      preLoaderRoute: typeof PersonalArchiveRouteImport
+      parentRoute: typeof PersonalRoute
+    }
+    '/personal/tasks': {
+      id: '/personal/tasks'
+      path: '/tasks'
+      fullPath: '/personal/tasks'
+      preLoaderRoute: typeof PersonalTasksRouteImport
+      parentRoute: typeof PersonalRoute
+    }
     '/workspace/$urlName': {
       id: '/workspace/$urlName'
       path: '/workspace/$urlName'
@@ -404,6 +555,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/workspace/$urlName/'
       preLoaderRoute: typeof WorkspaceUrlNameIndexRouteImport
+      parentRoute: typeof WorkspaceUrlNameRouteRoute
+    }
+    '/workspace/$urlName/archive': {
+      id: '/workspace/$urlName/archive'
+      path: '/archive'
+      fullPath: '/workspace/$urlName/archive'
+      preLoaderRoute: typeof WorkspaceUrlNameArchiveRouteImport
       parentRoute: typeof WorkspaceUrlNameRouteRoute
     }
     '/workspace/$urlName/dashboard': {
@@ -427,6 +585,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceUrlNameTasksRouteImport
       parentRoute: typeof WorkspaceUrlNameRouteRoute
     }
+    '/personal/archive/task/$taskId': {
+      id: '/personal/archive/task/$taskId'
+      path: '/task/$taskId'
+      fullPath: '/personal/archive/task/$taskId'
+      preLoaderRoute: typeof PersonalArchiveTaskTaskIdRouteImport
+      parentRoute: typeof PersonalArchiveRoute
+    }
     '/personal/task/$taskId/': {
       id: '/personal/task/$taskId/'
       path: '/'
@@ -440,6 +605,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/personal/task/$taskId/edit'
       preLoaderRoute: typeof PersonalTaskTaskIdEditRouteImport
       parentRoute: typeof PersonalTaskTaskIdRoute
+    }
+    '/personal/tasks/task/$taskId': {
+      id: '/personal/tasks/task/$taskId'
+      path: '/task/$taskId'
+      fullPath: '/personal/tasks/task/$taskId'
+      preLoaderRoute: typeof PersonalTasksTaskTaskIdRouteImport
+      parentRoute: typeof PersonalTasksRoute
     }
     '/workspace/$urlName/dashboard/new': {
       id: '/workspace/$urlName/dashboard/new'
@@ -497,6 +669,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceUrlNameTasksNewRouteImport
       parentRoute: typeof WorkspaceUrlNameTasksRoute
     }
+    '/personal/archive/task/$taskId/': {
+      id: '/personal/archive/task/$taskId/'
+      path: '/'
+      fullPath: '/personal/archive/task/$taskId/'
+      preLoaderRoute: typeof PersonalArchiveTaskTaskIdIndexRouteImport
+      parentRoute: typeof PersonalArchiveTaskTaskIdRoute
+    }
+    '/personal/tasks/task/$taskId/': {
+      id: '/personal/tasks/task/$taskId/'
+      path: '/'
+      fullPath: '/personal/tasks/task/$taskId/'
+      preLoaderRoute: typeof PersonalTasksTaskTaskIdIndexRouteImport
+      parentRoute: typeof PersonalTasksTaskTaskIdRoute
+    }
+    '/personal/tasks/task/$taskId/edit': {
+      id: '/personal/tasks/task/$taskId/edit'
+      path: '/edit'
+      fullPath: '/personal/tasks/task/$taskId/edit'
+      preLoaderRoute: typeof PersonalTasksTaskTaskIdEditRouteImport
+      parentRoute: typeof PersonalTasksTaskTaskIdRoute
+    }
+    '/workspace/$urlName/archive/task/$taskId': {
+      id: '/workspace/$urlName/archive/task/$taskId'
+      path: '/task/$taskId'
+      fullPath: '/workspace/$urlName/archive/task/$taskId'
+      preLoaderRoute: typeof WorkspaceUrlNameArchiveTaskTaskIdRouteImport
+      parentRoute: typeof WorkspaceUrlNameArchiveRoute
+    }
     '/workspace/$urlName/dashboard/task/$taskId': {
       id: '/workspace/$urlName/dashboard/task/$taskId'
       path: '/task/$taskId'
@@ -532,6 +732,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceUrlNameTasksTaskIdEditRouteImport
       parentRoute: typeof WorkspaceUrlNameTasksTaskIdRoute
     }
+    '/workspace/$urlName/archive/task/$taskId/': {
+      id: '/workspace/$urlName/archive/task/$taskId/'
+      path: '/'
+      fullPath: '/workspace/$urlName/archive/task/$taskId/'
+      preLoaderRoute: typeof WorkspaceUrlNameArchiveTaskTaskIdIndexRouteImport
+      parentRoute: typeof WorkspaceUrlNameArchiveTaskTaskIdRoute
+    }
     '/workspace/$urlName/dashboard/task/$taskId/': {
       id: '/workspace/$urlName/dashboard/task/$taskId/'
       path: '/'
@@ -556,6 +763,60 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface PersonalArchiveTaskTaskIdRouteChildren {
+  PersonalArchiveTaskTaskIdIndexRoute: typeof PersonalArchiveTaskTaskIdIndexRoute
+}
+
+const PersonalArchiveTaskTaskIdRouteChildren: PersonalArchiveTaskTaskIdRouteChildren =
+  {
+    PersonalArchiveTaskTaskIdIndexRoute: PersonalArchiveTaskTaskIdIndexRoute,
+  }
+
+const PersonalArchiveTaskTaskIdRouteWithChildren =
+  PersonalArchiveTaskTaskIdRoute._addFileChildren(
+    PersonalArchiveTaskTaskIdRouteChildren,
+  )
+
+interface PersonalArchiveRouteChildren {
+  PersonalArchiveTaskTaskIdRoute: typeof PersonalArchiveTaskTaskIdRouteWithChildren
+}
+
+const PersonalArchiveRouteChildren: PersonalArchiveRouteChildren = {
+  PersonalArchiveTaskTaskIdRoute: PersonalArchiveTaskTaskIdRouteWithChildren,
+}
+
+const PersonalArchiveRouteWithChildren = PersonalArchiveRoute._addFileChildren(
+  PersonalArchiveRouteChildren,
+)
+
+interface PersonalTasksTaskTaskIdRouteChildren {
+  PersonalTasksTaskTaskIdEditRoute: typeof PersonalTasksTaskTaskIdEditRoute
+  PersonalTasksTaskTaskIdIndexRoute: typeof PersonalTasksTaskTaskIdIndexRoute
+}
+
+const PersonalTasksTaskTaskIdRouteChildren: PersonalTasksTaskTaskIdRouteChildren =
+  {
+    PersonalTasksTaskTaskIdEditRoute: PersonalTasksTaskTaskIdEditRoute,
+    PersonalTasksTaskTaskIdIndexRoute: PersonalTasksTaskTaskIdIndexRoute,
+  }
+
+const PersonalTasksTaskTaskIdRouteWithChildren =
+  PersonalTasksTaskTaskIdRoute._addFileChildren(
+    PersonalTasksTaskTaskIdRouteChildren,
+  )
+
+interface PersonalTasksRouteChildren {
+  PersonalTasksTaskTaskIdRoute: typeof PersonalTasksTaskTaskIdRouteWithChildren
+}
+
+const PersonalTasksRouteChildren: PersonalTasksRouteChildren = {
+  PersonalTasksTaskTaskIdRoute: PersonalTasksTaskTaskIdRouteWithChildren,
+}
+
+const PersonalTasksRouteWithChildren = PersonalTasksRoute._addFileChildren(
+  PersonalTasksRouteChildren,
+)
+
 interface PersonalTaskTaskIdRouteChildren {
   PersonalTaskTaskIdEditRoute: typeof PersonalTaskTaskIdEditRoute
   PersonalTaskTaskIdIndexRoute: typeof PersonalTaskTaskIdIndexRoute
@@ -570,16 +831,52 @@ const PersonalTaskTaskIdRouteWithChildren =
   PersonalTaskTaskIdRoute._addFileChildren(PersonalTaskTaskIdRouteChildren)
 
 interface PersonalRouteChildren {
+  PersonalArchiveRoute: typeof PersonalArchiveRouteWithChildren
+  PersonalTasksRoute: typeof PersonalTasksRouteWithChildren
+  PersonalIndexRoute: typeof PersonalIndexRoute
   PersonalTaskTaskIdRoute: typeof PersonalTaskTaskIdRouteWithChildren
 }
 
 const PersonalRouteChildren: PersonalRouteChildren = {
+  PersonalArchiveRoute: PersonalArchiveRouteWithChildren,
+  PersonalTasksRoute: PersonalTasksRouteWithChildren,
+  PersonalIndexRoute: PersonalIndexRoute,
   PersonalTaskTaskIdRoute: PersonalTaskTaskIdRouteWithChildren,
 }
 
 const PersonalRouteWithChildren = PersonalRoute._addFileChildren(
   PersonalRouteChildren,
 )
+
+interface WorkspaceUrlNameArchiveTaskTaskIdRouteChildren {
+  WorkspaceUrlNameArchiveTaskTaskIdIndexRoute: typeof WorkspaceUrlNameArchiveTaskTaskIdIndexRoute
+}
+
+const WorkspaceUrlNameArchiveTaskTaskIdRouteChildren: WorkspaceUrlNameArchiveTaskTaskIdRouteChildren =
+  {
+    WorkspaceUrlNameArchiveTaskTaskIdIndexRoute:
+      WorkspaceUrlNameArchiveTaskTaskIdIndexRoute,
+  }
+
+const WorkspaceUrlNameArchiveTaskTaskIdRouteWithChildren =
+  WorkspaceUrlNameArchiveTaskTaskIdRoute._addFileChildren(
+    WorkspaceUrlNameArchiveTaskTaskIdRouteChildren,
+  )
+
+interface WorkspaceUrlNameArchiveRouteChildren {
+  WorkspaceUrlNameArchiveTaskTaskIdRoute: typeof WorkspaceUrlNameArchiveTaskTaskIdRouteWithChildren
+}
+
+const WorkspaceUrlNameArchiveRouteChildren: WorkspaceUrlNameArchiveRouteChildren =
+  {
+    WorkspaceUrlNameArchiveTaskTaskIdRoute:
+      WorkspaceUrlNameArchiveTaskTaskIdRouteWithChildren,
+  }
+
+const WorkspaceUrlNameArchiveRouteWithChildren =
+  WorkspaceUrlNameArchiveRoute._addFileChildren(
+    WorkspaceUrlNameArchiveRouteChildren,
+  )
 
 interface WorkspaceUrlNameDashboardTaskTaskIdRouteChildren {
   WorkspaceUrlNameDashboardTaskTaskIdEditRoute: typeof WorkspaceUrlNameDashboardTaskTaskIdEditRoute
@@ -707,6 +1004,7 @@ const WorkspaceUrlNameTasksRouteWithChildren =
   )
 
 interface WorkspaceUrlNameRouteRouteChildren {
+  WorkspaceUrlNameArchiveRoute: typeof WorkspaceUrlNameArchiveRouteWithChildren
   WorkspaceUrlNameDashboardRoute: typeof WorkspaceUrlNameDashboardRouteWithChildren
   WorkspaceUrlNameSettingsRoute: typeof WorkspaceUrlNameSettingsRouteWithChildren
   WorkspaceUrlNameTasksRoute: typeof WorkspaceUrlNameTasksRouteWithChildren
@@ -714,6 +1012,7 @@ interface WorkspaceUrlNameRouteRouteChildren {
 }
 
 const WorkspaceUrlNameRouteRouteChildren: WorkspaceUrlNameRouteRouteChildren = {
+  WorkspaceUrlNameArchiveRoute: WorkspaceUrlNameArchiveRouteWithChildren,
   WorkspaceUrlNameDashboardRoute: WorkspaceUrlNameDashboardRouteWithChildren,
   WorkspaceUrlNameSettingsRoute: WorkspaceUrlNameSettingsRouteWithChildren,
   WorkspaceUrlNameTasksRoute: WorkspaceUrlNameTasksRouteWithChildren,

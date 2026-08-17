@@ -32,8 +32,6 @@ export function ModalContent({
 		e.preventDefault()
 	}
 
-	const hasHeader = headerActions != null || showCloseButton
-
 	return (
 		<DialogPortal>
 			<DialogOverlay />
@@ -43,16 +41,26 @@ export function ModalContent({
 				onPointerDownOutside={closable ? onPointerDownOutside : preventClose}
 				{...props}
 			>
-				{hasHeader && (
-					<ModalHeader>
-						{headerActions}
-						{showCloseButton && (
-							<CloseButton>
+				<ModalHeader>
+					{headerActions ? (
+						<>
+							{headerActions}
+
+							{showCloseButton && (
+								<CloseButton>
+									<X size={16} />
+								</CloseButton>
+							)}
+						</>
+					) : (
+						showCloseButton && (
+							<FloatingCloseButton>
 								<X size={16} />
-							</CloseButton>
-						)}
-					</ModalHeader>
-				)}
+							</FloatingCloseButton>
+						)
+					)}
+				</ModalHeader>
+
 				{children}
 			</ModalRoot>
 		</DialogPortal>
@@ -98,8 +106,9 @@ const CloseButton = styled(DialogClose)`
   cursor: pointer;
   outline: none;
 
-  transition-property: background, color;
-  transition: 150ms ease-in-out;
+  transition:
+    background 150ms ease-in-out,
+    color 150ms ease-in-out;
 
   &:hover {
     background: var(--button-hover);
@@ -110,4 +119,11 @@ const CloseButton = styled(DialogClose)`
     background: var(--button-active);
     color: var(--sea-ink);
   }
+`
+
+const FloatingCloseButton = styled(CloseButton)`
+  position: absolute;
+  inset-block-start: 16px;
+  inset-inline-end: 16px;
+  z-index: 2;
 `
