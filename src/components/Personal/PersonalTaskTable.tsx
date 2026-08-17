@@ -4,6 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
+import { toast } from "sonner"
 import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
 import {
 	type TaskRowWithWorkspaceDto,
@@ -79,7 +80,7 @@ function PersonalTaskTable({
 		queryKey,
 	} = useListPersonalTaskRows({ isArchived })
 
-	const { mutate: toggleArchive } = useToggleUserTaskArchive({
+	const { mutateAsync: toggleArchive } = useToggleUserTaskArchive({
 		mutation: { onSuccess: handleChangeSuccess },
 	})
 
@@ -121,15 +122,38 @@ function PersonalTaskTable({
 		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
 	}
 
-	function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
-		entries.forEach(({ id, assigneeId }) => {
-			if (assigneeId) {
-				toggleArchive({ pathParams: { id }, params: { assigneeId } })
-			}
-		})
+	async function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
+		const requests = entries.flatMap(({ id, assigneeId }) =>
+			assigneeId
+				? [toggleArchive({ pathParams: { id }, params: { assigneeId } })]
+				: [],
+		)
+
+		await Promise.all(requests)
 	}
 
-	const onArchive = !isArchived ? toggleArchiveEntries : undefined
+	async function handleArchive(entries: TaskArchiveEntry[]) {
+		try {
+			await toggleArchiveEntries(entries)
+			toast.success(
+				entries.length === 1
+					? "הנחיה הועברה לארכיון בהצלחה"
+					: "ההנחיות הועברו לארכיון בהצלחה",
+				{
+					action: {
+						label: "ביטול",
+						onClick: () => {
+							void toggleArchiveEntries(entries).catch(() =>
+								toast.error("ביטול ההעברה לארכיון נכשל"),
+							)
+						},
+					},
+				},
+			)
+		} catch {}
+	}
+
+	const onArchive = !isArchived ? handleArchive : undefined
 	const onUnarchive = isArchived ? toggleArchiveEntries : undefined
 
 	return (

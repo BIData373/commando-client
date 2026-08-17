@@ -193,6 +193,15 @@ body,
   --status-pending: #fa541c;
   --status-pending-bg: #fff2e8;
 
+  /* Alert colors */
+  --alert-success-bg: #F6FFED;
+  --alert-success-border: #B7EB8F;
+  --alert-success-global-success: #52C41A;
+
+  --alert-error-bg: #FFF2F0;
+  --alert-error-border: #FFCCC7;
+  --alert-error-global-error: #FF4D4F;
+
   /* Purple accent */
   --purple-start: oklch(0.6 0.23 272);
   --purple-end: oklch(0.46 0.32 305);

@@ -7,6 +7,7 @@ import type {
 import { uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
+import { toast } from "sonner"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import type {
 	DeadlineType,
@@ -90,8 +91,8 @@ function TaskTable<TTask extends TaskRowDto>({
 		mutation: { onSuccess: onChangeSuccess },
 	})
 
-	const { mutate: upsertStatus } = useUpsertAssigneeTaskStatus({
-		mutation: { onSuccess: onChangeSuccess },
+	const { mutateAsync: upsertStatus } = useUpsertAssigneeTaskStatus({
+		mutation: { networkMode: "always", onSuccess: onChangeSuccess },
 	})
 
 	const [selectMode, setSelectMode] = useState(false)
@@ -215,21 +216,31 @@ function TaskTable<TTask extends TaskRowDto>({
 		handleExitSelectMode()
 	}
 
-	function bulkUpdateStatus(rowKeys: string[], status: WorkspaceStatusDto) {
-		rowKeys.forEach((rowKey) => {
+	async function bulkUpdateStatus(
+		rowKeys: string[],
+		status: WorkspaceStatusDto,
+	) {
+		const requests = rowKeys.flatMap((rowKey) => {
 			const task = tasks.find((t) => t.rowKey === rowKey)
-			if (!task || !task.assignee) {
-				return
-			}
-
-			upsertStatus({
-				data: {
-					taskId: task.id,
-					assigneeId: task.assignee.id,
-					statusId: status.id,
-				},
-			})
+			return task?.assignee
+				? [
+						upsertStatus({
+							data: {
+								taskId: task.id,
+								assigneeId: task.assignee.id,
+								statusId: status.id,
+							},
+						}),
+					]
+				: []
 		})
+
+		try {
+			await Promise.all(requests)
+			toast.success("הסטטוס עודכן בהצלחה")
+		} catch {
+			toast.error("שגיאה - סטטוס לא עודכן")
+		}
 	}
 
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])

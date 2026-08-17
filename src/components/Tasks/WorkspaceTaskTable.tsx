@@ -3,6 +3,7 @@ import { Outlet } from "@tanstack/react-router"
 import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
 import { without } from "lodash"
 import { useMemo } from "react"
+import { toast } from "sonner"
 import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assignee/archived-workspace-assignee"
 import type {
 	DeadlineType,
@@ -77,7 +78,7 @@ function WorkspaceTaskTable({
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
-	const { mutate: toggleArchive } = useToggleWorkspaceTaskArchive({
+	const { mutateAsync: toggleArchive } = useToggleWorkspaceTaskArchive({
 		mutation: { onSuccess: handleChangeSuccess },
 	})
 
@@ -108,18 +109,37 @@ function WorkspaceTaskTable({
 		])
 	}
 
-	function handleToggleArchive(entries: TaskArchiveEntry[]) {
-		entries.forEach(({ id, assigneeId }) => {
-			toggleArchive({ pathParams: { id }, params: { assigneeId } })
-		})
+	async function handleToggleArchive(entries: TaskArchiveEntry[]) {
+		await Promise.all(
+			entries.map(({ id, assigneeId }) =>
+				toggleArchive({ pathParams: { id }, params: { assigneeId } }),
+			),
+		)
 	}
 
-	function handleArchive(entries: TaskArchiveEntry[]) {
-		handleToggleArchive(entries)
+	async function handleArchive(entries: TaskArchiveEntry[]) {
+		try {
+			await handleToggleArchive(entries)
+			toast.success(
+				entries.length === 1
+					? "ההנחיה הועברו לארכיון בהצלחה"
+					: "ההנחיות הועברו לארכיון בהצלחה",
+				{
+					action: {
+						label: "ביטול",
+						onClick: () => {
+							void handleToggleArchive(entries).catch(() =>
+								toast.error("ביטול ההעברה לארכיון נכשל"),
+							)
+						},
+					},
+				},
+			)
+		} catch {}
 	}
 
 	function handleUnarchive(entries: TaskArchiveEntry[]) {
-		handleToggleArchive(entries)
+		void handleToggleArchive(entries)
 	}
 
 	const onArchive = !isArchived ? handleArchive : undefined

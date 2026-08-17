@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { toast } from "sonner"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import type { AssigneeStatusDto } from "src/api/model"
 import {
@@ -29,12 +30,17 @@ export const AssigneeContainer = ({
 	const { mutateAsync: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus(
 		{
 			mutation: {
+				networkMode: "always",
 				onSuccess: () => {
 					invalidateQueries([
 						getGetTaskQueryKey({ id: taskId }),
 						getListTaskRowsQueryKey({ workspaceId }),
 						getListPersonalTaskRowsQueryKey(),
 					])
+					toast.success("הסטטוס עודכן בהצלחה")
+				},
+				onError: () => {
+					toast.error("שגיאה - סטטוס לא עודכן")
 				},
 			},
 		},
@@ -45,9 +51,9 @@ export const AssigneeContainer = ({
 		assigneeId: number,
 		statusId: number,
 	) {
-		upsertAssigneeTaskStatus({
+		void upsertAssigneeTaskStatus({
 			data: { taskId, assigneeId, statusId },
-		})
+		}).catch(() => {})
 	}
 
 	return (

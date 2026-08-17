@@ -5,6 +5,7 @@ import { concat, map, uniq } from "lodash"
 import { AlertTriangle } from "lucide-react"
 import { useCallback, useMemo } from "react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
+import { toast } from "sonner"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import {
 	DeadlineType,
@@ -83,9 +84,14 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 }: UseTaskColumnsOptions<TTask>) {
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
+			networkMode: "always",
 			onSuccess: ({ task: { id } }) => {
 				invalidateQueries([getGetTaskQueryKey({ id })])
 				onUpdateStatusSuccess?.()
+				toast.success("הסטטוס עודכן בהצלחה")
+			},
+			onError: () => {
+				toast.error("שגיאה - סטטוס לא עודכן")
 			},
 		},
 	})
