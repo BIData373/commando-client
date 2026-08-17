@@ -10,12 +10,6 @@ import {
 } from "react"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card"
 
-// Tag pixel width depends only on its text (shared font/padding across every
-// row), and the column budget is identical for every row (table-layout is
-// fixed) — so both are safe to cache across every TopicCell within the same
-// table instead of remeasuring per row. This is what turns an O(rows × tags)
-// forced-layout cost during a big scroll jump into roughly O(unique tags),
-// since most rows end up reusing tag widths another row already measured.
 export interface TagMeasurementCache {
 	widths: Map<string, number>
 	columnWidth: number | null
@@ -25,10 +19,6 @@ function createTagMeasurementCache(): TagMeasurementCache {
 	return { widths: new Map(), columnWidth: null }
 }
 
-// Optional: wrap a table's rows in this once to let every TopicCell inside
-// it share one cache. Without it, TopicCell still works correctly — it just
-// falls back to a private, per-instance cache with no cross-row sharing.
-// Either way, nothing module-level: no leaking across unrelated tables.
 const TagMeasurementCacheContext = createContext<TagMeasurementCache | null>(
 	null,
 )
@@ -153,7 +143,6 @@ export const TopicCell = memo(function TopicCell({ tags }: TopicCellProps) {
 				<Tag key={tag}>{tag}</Tag>
 			))}
 
-			{/* Overflow tags shown via Radix HoverCard (replaces manual onMouseEnter/onMouseLeave + Popover) */}
 			{hiddenTags.length > 0 && (
 				<HoverCard openDelay={200} closeDelay={100}>
 					<HoverCardTrigger asChild>
