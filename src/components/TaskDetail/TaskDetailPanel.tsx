@@ -1,21 +1,7 @@
-import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import { concat, uniqBy } from "lodash"
-import {
-	Calendar,
-	Loader2,
-	MoreVertical,
-	Paperclip,
-	Pencil,
-	Trash2,
-} from "lucide-react"
+import { Calendar, Paperclip, Pencil } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
-import {
-	getListMessagesQueryKey,
-	useCreateMessage,
-	useDeleteMessage,
-	useListMessages,
-} from "src/api/message/message"
 import {
 	DeadlineType,
 	PermissionType,
@@ -31,25 +17,21 @@ import {
 } from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { downloadFromUrl } from "src/functions/download-utils"
-import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { invalidateQueries } from "src/queryClient"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
+import { CommentsDivider } from "../shared/CommentsDivider"
 import { DeadlineTypeTag } from "../shared/DeadlineTypeTag"
 import FlagIcon from "../shared/FlagIcon"
 import { ModalContent } from "../shared/ModalContent"
+import { SpinIcon } from "../shared/SpinIcon"
 import { StatusTag } from "../shared/StatusTag"
 import WorkspaceCell from "../shared/WorkspaceCell"
 import { RowActionsMenu } from "../Tasks/RowActionsMenu"
 import { Dialog } from "../ui/dialog"
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
 import { AssigneeSection } from "./AssigneeSection"
+import TaskCommentsSection from "./TaskCommentsSection"
 import TaskHistoryPanel from "./TaskHistoryPanel"
 
 interface TaskDetailPanelProps {
@@ -83,7 +65,6 @@ function TaskDetailPanel({
 }: TaskDetailPanelProps) {
 	const [showHistory, setShowHistory] = useState(false)
 	const [showEditDiscussion, setShowEditDiscussion] = useState(false)
-	const [commentValue, setCommentValue] = useState("")
 	const [commentsDividerStuck, setCommentsDividerStuck] = useState(false)
 	const commentsDividerRef = useRef<HTMLDivElement>(null)
 	const scrollRef = useRef<HTMLDivElement>(null)
@@ -105,14 +86,10 @@ function TaskDetailPanel({
 		requestAnimationFrame(checkCommentsDividerVisibility)
 	}, [])
 
-	const currentUser = useCurrentUser()
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const isManager = myPermission?.type === PermissionType.MANAGER
 
 	const { data: history } = useListTaskHistory({ taskId: id })
-	const { data: messages = [], isLoading: isLoadingMessages } = useListMessages(
-		{ taskId: id },
-	)
 
 	function handleSuccess() {
 		invalidateQueries([
@@ -167,41 +144,6 @@ function TaskDetailPanel({
 
 	function handleCloseEditDiscussion() {
 		setShowEditDiscussion(false)
-	}
-
-	const { mutate: createMessage, isPending: isSendingComment } =
-		useCreateMessage()
-	const { mutate: deleteMessage } = useDeleteMessage({
-		mutation: {
-			onSuccess() {
-				invalidateQueries([getListMessagesQueryKey({ taskId: id })])
-			},
-		},
-	})
-
-	function handleCommentInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
-		setCommentValue(e.target.value)
-	}
-
-	function handleCommentKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-		if (e.key === "Enter" && !e.shiftKey) {
-			e.preventDefault()
-			submitComment()
-		}
-	}
-
-	function submitComment() {
-		const content = commentValue.trim()
-		if (!content) return
-		createMessage(
-			{ data: { taskId: id, content } },
-			{
-				onSuccess() {
-					setCommentValue("")
-					invalidateQueries([getListMessagesQueryKey({ taskId: id })])
-				},
-			},
-		)
 	}
 
 	function handleOpenChange(open: boolean) {
@@ -320,9 +262,7 @@ function TaskDetailPanel({
 												disabled={isDownloadingAttachment}
 											>
 												{source.attachmentName}
-												{isDownloadingAttachment && (
-													<AttachmentSpinIcon size={12} />
-												)}
+												{isDownloadingAttachment && <SpinIcon size={12} />}
 											</AttachmentDownloadButton>
 										</>
 									)}
@@ -341,93 +281,16 @@ function TaskDetailPanel({
 						)}
 					</InfoGrid>
 
-					<CommentsSection>
-						<CommentsDividerRow ref={commentsDividerRef}>
-							<CommentsDividerLine />
-							<CommentsDividerLabel>
-								{isLoadingMessages
-									? "תגובות"
-									: messages.length > 0
-										? `תגובות (${messages.length})`
-										: "תגובות"}
-								{isLoadingMessages && <AttachmentSpinIcon size={14} />}
-							</CommentsDividerLabel>
-							<CommentsDividerLine />
-						</CommentsDividerRow>
-						<TextareaRow>
-							<CommentsTextarea
-								value={commentValue}
-								onChange={handleCommentInput}
-								onKeyDown={handleCommentKeyDown}
-								placeholder="הוספת תגובה"
-								disabled={isSendingComment}
-								dir="rtl"
-								rows={1}
-							/>
-							{isSendingComment && <AttachmentSpinIcon size={16} />}
-						</TextareaRow>
-						{[...messages].reverse().map((msg) => {
-							const canDelete = isManager || msg.user.upn === currentUser.upn
-							return (
-								<CommentCard key={msg.id}>
-									<CommentMainRow>
-										{canDelete && (
-											<DropdownMenu>
-												<DropdownMenuTrigger asChild>
-													<CommentMenuButton>
-														<MoreVertical size={14} />
-													</CommentMenuButton>
-												</DropdownMenuTrigger>
-												<DropdownMenuContent align="start" side="bottom">
-													<DeleteMenuItem
-														onClick={() =>
-															deleteMessage({
-																pathParams: { id: msg.id },
-															})
-														}
-													>
-														מחק תגובה
-														<Trash2 size={16} />
-													</DeleteMenuItem>
-												</DropdownMenuContent>
-											</DropdownMenu>
-										)}
-										<CommentContent>{msg.content}</CommentContent>
-									</CommentMainRow>
-									<CommentFooter>
-										<CommentDate>
-											{formatMinutesHours(msg.createdAt)} ·{" "}
-											{formatDateMonthYear(msg.createdAt)}
-										</CommentDate>
-										<CommentUserDetails>
-											<CommentUserMeta>
-												{msg.user.upn}
-												{msg.user.info?.displayName &&
-													` - ${msg.user.info.displayName}`}
-											</CommentUserMeta>
-											<CommentUserName>
-												{msg.user.info?.name ?? msg.user.upn}
-											</CommentUserName>
-										</CommentUserDetails>
-									</CommentFooter>
-								</CommentCard>
-							)
-						})}
-					</CommentsSection>
+					<TaskCommentsSection
+						taskId={id}
+						isManager={isManager}
+						commentsDividerRef={commentsDividerRef}
+					/>
 				</ScrollContent>
 
 				{commentsDividerStuck && (
 					<FixedCommentsBar>
-						<CommentsDividerLine />
-						<CommentsDividerLabel>
-							{isLoadingMessages
-								? "תגובות"
-								: messages.length > 0
-									? `תגובות (${messages.length})`
-									: "תגובות"}
-							{isLoadingMessages && <AttachmentSpinIcon size={14} />}
-						</CommentsDividerLabel>
-						<CommentsDividerLine />
+						<CommentsDivider taskId={id} />
 					</FixedCommentsBar>
 				)}
 
@@ -647,16 +510,6 @@ const InfoAttachment = styled.div`
   color: var(--active-color);
 `
 
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`
-
-const AttachmentSpinIcon = styled(Loader2)`
-  flex-shrink: 0;
-  animation: ${spin} 0.8s linear infinite;
-`
-
 const AttachmentDownloadButton = styled.button`
   display: inline-flex;
   align-items: center;
@@ -708,9 +561,6 @@ const PencilButton = styled.button`
 
 const FixedCommentsBar = styled.div`
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 16px;
   padding: 15px 48px;
   background: var(--background);
   box-shadow: var(--shadow-comment-bar);
@@ -723,170 +573,4 @@ const HistoryOverlay = styled.div`
   background: var(--Text-color-text-placeholder);
   backdrop-filter: blur(2px);
   z-index: 1;
-`
-
-// ─── Comments section ─────────────────────────────────────────────────────────
-
-const CommentsSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  padding-bottom: 12px;
-`
-
-const CommentsDividerRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-`
-
-const CommentsDividerLine = styled.div`
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-  min-width: 0;
-`
-
-const CommentsDividerLabel = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color);
-  white-space: nowrap;
-  flex-shrink: 0;
-`
-
-const TextareaRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-`
-
-const CommentsTextarea = styled.textarea`
-  field-sizing: content;
-  width: 100%;
-  min-height: 32px;
-  max-height: 124px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 4px 11px;
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  font-family: inherit;
-  color: var(--sea-ink);
-  background: var(--background);
-  text-align: start;
-  outline: none;
-  resize: none;
-  overflow-y: auto;
-
-  &::placeholder {
-    color: var(--Text-color-text-placeholder);
-  }
-
-  &:hover {
-    border-color: var(--button-color-hover);
-  }
-
-  &:focus {
-    border-color: var(--active-color);
-    box-shadow: var(--shadow-textarea-focus);
-  }
-`
-
-const CommentCard = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background: var(--card-background);
-  width: 100%;
-  direction: ltr;
-`
-
-const CommentMainRow = styled.div`
-  display: flex;
-  gap: 4px;
-  align-items: flex-start;
-  width: 100%;
-`
-
-const CommentMenuButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  flex-shrink: 0;
-  color: var(--sea-ink-soft);
-  cursor: pointer;
-
-  &:hover,
-  &[data-state="open"] {
-    background: var(--Background-color-bg-text-active);
-    color: var(--sea-ink);
-  }
-`
-
-const DeleteMenuItem = styled(DropdownMenuItem)`
-  color: var(--Components-Form-Component-labelRequiredMarkColor);
-  gap: 8px;
-  justify-content: flex-end;
-  cursor: pointer;
-`
-
-const CommentContent = styled.p`
-  flex: 1;
-  min-width: 0;
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--sea-ink);
-  text-align: end;
-  width: 100%;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  margin: 0;
-`
-
-const CommentFooter = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  font-size: var(--fs-sm);
-  line-height: 20px;
-  white-space: nowrap;
-`
-
-const CommentDate = styled.span`
-  font-weight: 400;
-  color: var(--text-color-400);
-`
-
-const CommentUserDetails = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-align: end;
-`
-
-const CommentUserMeta = styled.span`
-  font-weight: 400;
-  color: var(--sea-ink-soft);
-`
-
-const CommentUserName = styled.span`
-  font-weight: 500;
-  color: var(--sea-ink);
 `
