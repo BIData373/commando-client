@@ -141,7 +141,15 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						row: {
 							original: { id },
 						},
-					}) => <IdCell>{id}</IdCell>,
+					}) => (
+						<IdCell>
+							<HighlightMatch
+								text={String(id)}
+								query={searchQuery ?? ""}
+								variant="mark"
+							/>
+						</IdCell>
+					),
 				}
 
 		const pinnedEndColumn: ColumnDef<TTask> | undefined =
@@ -407,15 +415,26 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						return null
 					}
 
-					const parts = [
+					const sourceText = [
 						source.name,
 						...(source.date ? [formatDateShort(source.date)] : []),
-					].filter(Boolean)
+					]
+						.filter(Boolean)
+						.join(" | ")
 
 					return (
 						<SourceCell>
 							{source.attachmentKey && <SourceAttachmentIcon size={18} />}
-							{parts.length > 0 && <SourceText>{parts.join(" | ")}</SourceText>}
+
+							{sourceText && (
+								<SourceText>
+									<HighlightMatch
+										text={sourceText}
+										query={searchQuery ?? ""}
+										variant="mark"
+									/>
+								</SourceText>
+							)}
 						</SourceCell>
 					)
 				},
@@ -433,7 +452,9 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				enableSorting: false,
 				...TASK_COLUMN_DEFINITIONS.tags,
 				meta: { grow: true },
-				cell: ({ getValue }) => <TopicCell tags={getValue<string[]>()} />,
+				cell: ({ getValue }) => (
+					<TopicCell tags={getValue<string[]>()} searchQuery={searchQuery} />
+				),
 			},
 			{
 				id: "notes",

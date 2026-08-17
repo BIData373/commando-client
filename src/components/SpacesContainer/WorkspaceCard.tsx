@@ -80,7 +80,7 @@ const CardRoot = styled.div`
 const PermissionRow = styled.div`
   display: flex;
   align-items: flex-start;
-  justify-content: flex-end;
+  justify-content: flex-start;
   width: 100%;
   min-height: 16px;
 `
@@ -89,6 +89,7 @@ const PermissionBadge = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
+  direction: ltr;
 `
 
 const PermissionText = styled.span`

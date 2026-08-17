@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { memo } from "react"
+import { memo, useMemo } from "react"
 
 interface HighlightMatchProps {
 	text: string
@@ -12,18 +12,31 @@ const HighlightMatch = memo(function HighlightMatch({
 	query,
 	variant = "bold",
 }: HighlightMatchProps) {
-	const index = text.indexOf(query)
-	if (!query || index === -1) return <>{text}</>
+	const normalizedQuery = query.trim()
 
-	const Highlight = variant === "mark" ? HighlightMark : HighlightBold
+	const content = useMemo(() => {
+		if (!normalizedQuery) return text
 
-	return (
-		<>
-			{text.slice(0, index)}
-			<Highlight>{text.slice(index, index + query.length)}</Highlight>
-			{text.slice(index + query.length)}
-		</>
-	)
+		const escapedQuery = normalizedQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+		const regex = new RegExp(`(${escapedQuery})`, "gi")
+		const parts = text.split(regex)
+
+		const Highlight = variant === "mark" ? HighlightMark : HighlightBold
+		const normalizedQueryLowerCase = normalizedQuery.toLowerCase()
+
+		return parts.map((part, index) => {
+			const isMatch = part.toLowerCase() === normalizedQueryLowerCase
+			const key = `${part}-${index}`
+
+			return isMatch ? (
+				<Highlight key={`match-${key}`}>{part}</Highlight>
+			) : (
+				<span key={`text-${key}`}>{part}</span>
+			)
+		})
+	}, [normalizedQuery, text, variant])
+
+	return <TextWrapper dir="auto">{content}</TextWrapper>
 })
 
 export default HighlightMatch
@@ -39,4 +52,8 @@ const HighlightMark = styled.mark`
 
 const HighlightBold = styled.span`
   font-weight: 700;
+`
+
+const TextWrapper = styled.span`
+  unicode-bidi: isolate;
 `

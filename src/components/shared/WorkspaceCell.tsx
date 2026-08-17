@@ -1,15 +1,18 @@
 import styled from "@emotion/styled"
 import type { WorkspaceDto } from "src/api/model"
 import { formatMesibaIcon } from "src/utils/icon-utils"
+import HighlightMatch from "./HighlightMatch"
 
 interface WorkspaceCellProps {
 	workspace?: WorkspaceDto
 	iconSize?: number
+	searchQuery?: string
 }
 
 export default function WorkspaceCell({
 	workspace,
 	iconSize = 20,
+	searchQuery,
 }: WorkspaceCellProps) {
 	return workspace ? (
 		<WorkspaceWrapper>
@@ -21,7 +24,13 @@ export default function WorkspaceCell({
 				/>
 			)}
 
-			<WorkspaceCellName>{workspace.title}</WorkspaceCellName>
+			<WorkspaceCellName>
+				<HighlightMatch
+					text={workspace.title}
+					query={searchQuery ?? ""}
+					variant="mark"
+				/>
+			</WorkspaceCellName>
 		</WorkspaceWrapper>
 	) : null
 }

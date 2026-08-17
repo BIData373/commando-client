@@ -8,6 +8,7 @@ import {
 	useRef,
 	useState,
 } from "react"
+import HighlightMatch from "../shared/HighlightMatch"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card"
 
 export interface TagMeasurementCache {
@@ -42,16 +43,19 @@ const OVERFLOW_TAG_CACHE_KEY = "__overflow__"
 
 interface TopicCellProps {
 	tags: string[]
+	searchQuery?: string
 }
 
 const GAP = 4
 
-export const TopicCell = memo(function TopicCell({ tags }: TopicCellProps) {
+export const TopicCell = memo(function TopicCell({
+	tags,
+	searchQuery,
+}: TopicCellProps) {
 	const contextCache = useContext(TagMeasurementCacheContext)
 	const ownCacheRef = useRef<TagMeasurementCache>(undefined)
 	ownCacheRef.current ??= createTagMeasurementCache()
 	const cache = contextCache ?? ownCacheRef.current
-
 	const containerRef = useRef<HTMLDivElement>(null)
 	const measureRef = useRef<HTMLDivElement>(null)
 	const [visibleCount, setVisibleCount] = useState(tags.length)
@@ -140,7 +144,9 @@ export const TopicCell = memo(function TopicCell({ tags }: TopicCellProps) {
 			</MeasureLayer>
 
 			{tags.slice(0, visibleCount).map((tag) => (
-				<Tag key={tag}>{tag}</Tag>
+				<Tag key={tag}>
+					<HighlightMatch text={tag} query={searchQuery ?? ""} variant="mark" />
+				</Tag>
 			))}
 
 			{hiddenTags.length > 0 && (
