@@ -1,6 +1,54 @@
 import styled from "@emotion/styled"
-import { memo, useCallback, useLayoutEffect, useRef, useState } from "react"
+import {
+	createContext,
+	memo,
+	useCallback,
+	useContext,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card"
+
+// Tag pixel width depends only on its text (shared font/padding across every
+// row), and the column budget is identical for every row (table-layout is
+// fixed) — so both are safe to cache across every TopicCell within the same
+// table instead of remeasuring per row. This is what turns an O(rows × tags)
+// forced-layout cost during a big scroll jump into roughly O(unique tags),
+// since most rows end up reusing tag widths another row already measured.
+export interface TagMeasurementCache {
+	widths: Map<string, number>
+	columnWidth: number | null
+}
+
+function createTagMeasurementCache(): TagMeasurementCache {
+	return { widths: new Map(), columnWidth: null }
+}
+
+// Optional: wrap a table's rows in this once to let every TopicCell inside
+// it share one cache. Without it, TopicCell still works correctly — it just
+// falls back to a private, per-instance cache with no cross-row sharing.
+// Either way, nothing module-level: no leaking across unrelated tables.
+const TagMeasurementCacheContext = createContext<TagMeasurementCache | null>(
+	null,
+)
+
+export function TagMeasurementCacheProvider({
+	children,
+}: {
+	children: React.ReactNode
+}) {
+	const cacheRef = useRef<TagMeasurementCache>(undefined)
+	cacheRef.current ??= createTagMeasurementCache()
+
+	return (
+		<TagMeasurementCacheContext.Provider value={cacheRef.current}>
+			{children}
+		</TagMeasurementCacheContext.Provider>
+	)
+}
+
+const OVERFLOW_TAG_CACHE_KEY = "__overflow__"
 
 interface TopicCellProps {
 	tags: string[]
@@ -8,11 +56,12 @@ interface TopicCellProps {
 
 const GAP = 4
 
-const OVERFLOW_TAG_CACHE_KEY = "__overflow__"
-const tagWidthCache = new Map<string, number>()
-let cachedColumnWidth: number | null = null
-
 export const TopicCell = memo(function TopicCell({ tags }: TopicCellProps) {
+	const contextCache = useContext(TagMeasurementCacheContext)
+	const ownCacheRef = useRef<TagMeasurementCache>(undefined)
+	ownCacheRef.current ??= createTagMeasurementCache()
+	const cache = contextCache ?? ownCacheRef.current
+
 	const containerRef = useRef<HTMLDivElement>(null)
 	const measureRef = useRef<HTMLDivElement>(null)
 	const [visibleCount, setVisibleCount] = useState(tags.length)
@@ -26,17 +75,17 @@ export const TopicCell = memo(function TopicCell({ tags }: TopicCellProps) {
 			return
 		}
 
-		if (cachedColumnWidth === null) {
-			cachedColumnWidth = container.offsetWidth
+		if (cache.columnWidth === null) {
+			cache.columnWidth = container.offsetWidth
 		}
-		const budget = cachedColumnWidth
+		const budget = cache.columnWidth
 		const children = Array.from(measure.children) as HTMLElement[]
 
 		function widthOf(key: string, el: HTMLElement) {
-			const cached = tagWidthCache.get(key)
+			const cached = cache.widths.get(key)
 			if (cached !== undefined) return cached
 			const width = el.offsetWidth
-			tagWidthCache.set(key, width)
+			cache.widths.set(key, width)
 			return width
 		}
 
@@ -69,21 +118,21 @@ export const TopicCell = memo(function TopicCell({ tags }: TopicCellProps) {
 		}
 
 		setVisibleCount(fits)
-	}, [tags.length])
+	}, [tags.length, cache])
 
 	useLayoutEffect(() => {
 		const container = containerRef.current
 		if (!container) return
 
 		const observer = new ResizeObserver(() => {
-			cachedColumnWidth = null
+			cache.columnWidth = null
 			calculateVisibleTags()
 		})
 
 		observer.observe(container)
 
 		return () => observer.disconnect()
-	}, [calculateVisibleTags])
+	}, [calculateVisibleTags, cache])
 
 	useLayoutEffect(() => {
 		calculateVisibleTags()
