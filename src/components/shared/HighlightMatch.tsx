@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import type { ReactNode } from "react"
+import { useMemo } from "react"
 
 interface HighlightMatchProps {
 	text: string
@@ -13,25 +13,28 @@ const HighlightMatch = ({
 	variant = "bold",
 }: HighlightMatchProps) => {
 	const normalizedQuery = query.trim()
-	let content: ReactNode = text
 
-	if (normalizedQuery) {
+	const content = useMemo(() => {
+		if (!normalizedQuery) return text
+
 		const escapedQuery = normalizedQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 		const regex = new RegExp(`(${escapedQuery})`, "gi")
 		const parts = text.split(regex)
 
 		const Highlight = variant === "mark" ? HighlightMark : HighlightBold
+		const normalizedQueryLowerCase = normalizedQuery.toLowerCase()
 
-		content = parts.map((part, index) => {
-			const isMatch = part.toLowerCase() === normalizedQuery.toLowerCase()
+		return parts.map((part, index) => {
+			const isMatch = part.toLowerCase() === normalizedQueryLowerCase
 			const key = `${part}-${index}`
+
 			return isMatch ? (
 				<Highlight key={`match-${key}`}>{part}</Highlight>
 			) : (
 				<span key={`text-${key}`}>{part}</span>
 			)
 		})
-	}
+	}, [normalizedQuery, text, variant])
 
 	return <TextWrapper dir="auto">{content}</TextWrapper>
 }
