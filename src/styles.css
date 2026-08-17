@@ -210,6 +210,9 @@ body,
   --shadow-popover: 0 8px 32px rgba(0, 0, 0, 0.12);
   --shadow-button: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
   --shadow-button-hover: 0 2px 0 rgba(5, 145, 255, 0.1);
+  --shadow-title-row: 0 10px 20px 0 rgba(0, 0, 0, 0.06);
+  --shadow-comment-bar: 0 -4px 3.5px rgba(0, 0, 0, 0.1);
+  --shadow-textarea-focus: 0 0 0 2px rgba(5, 145, 255, 0.1);
 }
 
 .dark {
