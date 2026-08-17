@@ -2,7 +2,6 @@ import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
 import { omit, uniq } from "lodash"
-import { ChevronDown, ChevronUp } from "lucide-react"
 import { useRef, useState } from "react"
 import {
 	type CreateTaskDto,
@@ -34,7 +33,6 @@ import { Checkbox } from "../ui/checkbox"
 import { Dialog } from "../ui/dialog"
 import AssigneeField from "./AssigneeField"
 import DeadlineField from "./DeadlineField"
-import NotesField from "./NotesField"
 import SourceField from "./SourceField"
 import TagField from "./TagField"
 
@@ -89,8 +87,6 @@ function CreateTaskModal({
 			onSuccess: handleUpdateSuccess,
 		},
 	})
-
-	const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
 
 	function handleUpdateSuccess() {
 		invalidateQueries([
@@ -258,14 +254,6 @@ function CreateTaskModal({
 		)
 	}
 
-	function handleToggleDetails() {
-		setIsDetailsExpanded((prev) => !prev)
-	}
-
-	function handleNotesChange(value: string) {
-		form.setFieldValue("notes", value)
-	}
-
 	function handleAssigneeStatusChange(
 		_taskId: number,
 		assigneeId: number,
@@ -323,7 +311,6 @@ function CreateTaskModal({
 	function validateSourceDate({ value }: { value: Date | null }) {
 		const { source, linkedSource } = form.state.values
 		if (source.trim() && !linkedSource && !value) {
-			setIsDetailsExpanded(true)
 			return "יש לבחור תאריך למקור חדש"
 		}
 		return undefined
@@ -411,27 +398,8 @@ function CreateTaskModal({
 								)}
 							</form.Field>
 
-							{/* ─── Expand / Collapse Divider ──────────────────────────── */}
-							<DividerRow>
-								<DividerLine />
-								<ExpandButton onClick={handleToggleDetails}>
-									{isDetailsExpanded ? (
-										<ChevronUp size={16} />
-									) : (
-										<ChevronDown size={16} />
-									)}
-									<ExpandButtonText $expanded={isDetailsExpanded}>
-										פרטים נוספים
-									</ExpandButtonText>
-								</ExpandButton>
-								<DividerLine />
-							</DividerRow>
-
 							{/* ─── Additional Details ─────────────────────────────────── */}
-							<AdditionalDetailsWrapper
-								$expanded={isDetailsExpanded}
-								aria-hidden={!isDetailsExpanded}
-							>
+							<AdditionalDetailsWrapper>
 								<AdditionalDetails>
 									{/* Source + Date row */}
 									<form.Field
@@ -459,12 +427,6 @@ function CreateTaskModal({
 										lockedTags={linkedTagNames}
 										onTagSelect={handleTagSelect}
 										onTagRemove={handleTagRemove}
-									/>
-
-									{/* Notes */}
-									<NotesField
-										notes={values.notes ?? ""}
-										onNotesChange={handleNotesChange}
 									/>
 								</AdditionalDetails>
 							</AdditionalDetailsWrapper>
@@ -496,7 +458,7 @@ const ModalCard = styled(ModalContent)`
   width: 100%;
   max-width: 900px;
   max-height: 82vh;
-  min-height: 800px;
+  min-height: 850px;
   overflow: hidden;
 `
 
@@ -519,7 +481,7 @@ const ModalHeader = styled.div<{ $shadow: boolean }>`
   position: relative;
   z-index: 1;
   clip-path: inset(0 0 -20px 0);
-  box-shadow: ${({ $shadow }) => ($shadow ? "0px 10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
+  box-shadow: ${({ $shadow }) => ($shadow ? "var(--shadow-modal-header)" : "none")};
 `
 
 const ScrollableContent = styled.div`
@@ -542,7 +504,7 @@ const ModalTitle = styled.h1`
   font-weight: 600;
   font-size: var(--fs-heading-h1);
   line-height: 50px;
-  color: black;
+  color: var(--text-color-2);
   margin: 0;
 `
 
@@ -552,13 +514,13 @@ const DirectiveTextarea = styled.textarea`
   width: 100%;
   height: 60px;
   padding: 4px 11px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--card-border);
   border-radius: 8px;
-  background: white;
+  background: var(--background);
   font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   resize: none;
   outline: none;
   box-sizing: border-box;
@@ -569,8 +531,8 @@ const DirectiveTextarea = styled.textarea`
   }
 
   &:focus {
-    border-color: #4096ff;
-    box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+    border-color: var(--button-color-hover);
+    box-shadow: var(--shadow-tag-focus);
   }
 `
 
@@ -594,63 +556,15 @@ const CheckboxLabelText = styled.span`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   white-space: nowrap;
   cursor: pointer;
-`
-
-// ─── Divider ─────────────────────────────────────────────────────────────────
-
-const DividerRow = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-`
-
-const DividerLine = styled.div`
-  flex: 1;
-  height: 1px;
-  background: #d9d9d9;
-`
-
-const ExpandButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 32px;
-  padding-inline: 15px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  border-radius: 6px;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.04);
-  }
-`
-
-const ExpandButtonText = styled.span<{ $expanded: boolean }>`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: ${({ $expanded }) => ($expanded ? "rgba(0, 0, 0, 0.25)" : "#1677ff")};
-  white-space: nowrap;
 `
 
 // ─── Additional Details ──────────────────────────────────────────────────────
 
-const AdditionalDetailsWrapper = styled.div<{ $expanded: boolean }>`
-  display: grid;
+const AdditionalDetailsWrapper = styled.div`
   width: 100%;
-  grid-template-rows: ${({ $expanded }) => ($expanded ? "1fr" : "0fr")};
-  opacity: ${({ $expanded }) => ($expanded ? 1 : 0)};
-  transition: grid-template-rows 280ms ease, opacity 220ms ease;
-
-  & > * {
-    min-height: 0;
-    overflow: ${({ $expanded }) => ($expanded ? "visible" : "hidden")};
-  }
 `
 
 const AdditionalDetails = styled.div`
