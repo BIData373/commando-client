@@ -16,6 +16,8 @@ import type {
 } from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
+import { buildFilterOptionsMap } from "src/functions/filter-utils"
+import { type TaskArchiveEntry, useTaskColumns } from "src/hooks/useTaskColumns"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { getEmptyState } from "src/utils/empty-state-utils"
 import {
@@ -23,8 +25,6 @@ import {
 	HAS_ASSIGNEE_DATA_ATTR,
 	TASK_ROW_ID_SEPARATOR,
 } from "src/utils/task-table-utils"
-import { buildFilterOptionsMap } from "../../functions/filter-utils"
-import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
@@ -49,6 +49,9 @@ interface TaskTableProps<TTask extends TaskRowDto> {
 	isLoading?: boolean
 	hideStatusAction?: boolean
 	showActionsColumn?: boolean
+	allowDelete?: boolean
+	onArchive?: (tasks: TaskArchiveEntry[]) => void
+	onUnarchive?: (tasks: TaskArchiveEntry[]) => void
 	onChangeSuccess?(): void
 }
 
@@ -58,7 +61,7 @@ function TaskTable<TTask extends TaskRowDto>({
 	columnOrder,
 	hiddenColumns,
 	statuses,
-	onEdit = () => {},
+	onEdit,
 	onClick,
 	extraColumns = [],
 	showHeader = true,
@@ -69,6 +72,9 @@ function TaskTable<TTask extends TaskRowDto>({
 	isLoading,
 	hideStatusAction = false,
 	showActionsColumn = true,
+	onArchive,
+	onUnarchive,
+	allowDelete = true,
 }: TaskTableProps<TTask>) {
 	const {
 		searchQuery,
@@ -186,8 +192,21 @@ function TaskTable<TTask extends TaskRowDto>({
 		})
 	}
 
+	function getSelectedArchiveEntries() {
+		return tasks
+			.filter((task) =>
+				selectedRowKeys.some((rowKey) => task.rowKey === rowKey),
+			)
+			.map(({ id, assignee }) => ({ id, assigneeId: assignee?.id }))
+	}
+
 	function handleBulkArchive() {
-		removeTasks(selectedTaskIds)
+		onArchive?.(getSelectedArchiveEntries())
+		handleExitSelectMode()
+	}
+
+	function handleBulkUnarchive() {
+		onUnarchive?.(getSelectedArchiveEntries())
 		handleExitSelectMode()
 	}
 
@@ -231,8 +250,9 @@ function TaskTable<TTask extends TaskRowDto>({
 		showMenuColumn: showActionsColumn,
 		actions: {
 			onEdit,
-			onArchive: removeTasks,
-			onDelete: removeTasks,
+			onArchive,
+			onUnarchive,
+			onDelete: allowDelete ? removeTasks : undefined,
 			onEnterSelectMode: handleEnterSelectMode,
 		},
 	})
@@ -306,8 +326,9 @@ function TaskTable<TTask extends TaskRowDto>({
 				selectedCount={selectedTaskIds.length}
 				statuses={hideStatusAction ? undefined : statuses}
 				onChangeStatus={(status) => bulkUpdateStatus(selectedRowKeys, status)}
-				onArchive={handleBulkArchive}
-				onDelete={handleBulkDelete}
+				onArchive={onArchive ? handleBulkArchive : undefined}
+				onUnarchive={onUnarchive ? handleBulkUnarchive : undefined}
+				onDelete={allowDelete ? handleBulkDelete : undefined}
 				deleteDisabled={bulkDeleteDisabled}
 				statusDisabled={bulkStatusDisabled}
 				onExitSelect={handleExitSelectMode}

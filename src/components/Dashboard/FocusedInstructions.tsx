@@ -6,10 +6,7 @@ import {
 	type TaskRowDto,
 	WorkspaceStatusType,
 } from "src/api/model"
-import {
-	QuickFilter as FocusedTab,
-	QuickFilter,
-} from "src/api/model/quick-filter"
+import { QuickFilter } from "src/api/model/quick-filter"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { useUserView } from "src/providers/UserViewProvider"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
@@ -27,25 +24,31 @@ const VISIBLE_COLUMNS: (keyof TaskRowDto)[] = [
 ]
 
 interface TabConfig {
-	id: FocusedTab
+	id: QuickFilter
 	label: string
 	count: number
 	weekDelta: number
 }
 
 const TAB_LABELS: Pick<TabConfig, "id" | "label" | "weekDelta">[] = [
-	{ id: FocusedTab.flagged, label: "הנחיות חשובות", weekDelta: 0 },
-	{ id: FocusedTab.approaching, label: "הנחיות לביצוע מיידי", weekDelta: 0 },
-	{ id: FocusedTab.overdue, label: 'חריגות מתג"ב', weekDelta: 0 },
+	{ id: QuickFilter.flagged, label: "הנחיות חשובות", weekDelta: 0 },
+	{ id: QuickFilter.approaching, label: "הנחיות לביצוע מיידי", weekDelta: 0 },
+	{ id: QuickFilter.overdue, label: 'חריגות מתג"ב', weekDelta: 0 },
 ]
 
-const TAB_FILTERS: Record<FocusedTab, (task: TaskRowDto) => boolean> = {
-	[FocusedTab.flagged]: (task) => matchesQuickFilter(task, QuickFilter.flagged),
-	[FocusedTab.approaching]: (task) =>
-		task.deadlineType === DeadlineType.IMMEDIATE,
-	[FocusedTab.overdue]: (task) =>
-		matchesQuickFilter(task, QuickFilter.overdue) ||
-		task.deadlineType === DeadlineType.IMMEDIATE,
+const TAB_FILTERS: Partial<Record<QuickFilter, (task: TaskRowDto) => boolean>> =
+	{
+		[QuickFilter.flagged]: (task) =>
+			matchesQuickFilter(task, QuickFilter.flagged),
+		[QuickFilter.approaching]: (task) =>
+			task.deadlineType === DeadlineType.IMMEDIATE,
+		[QuickFilter.overdue]: (task) =>
+			matchesQuickFilter(task, QuickFilter.overdue) ||
+			task.deadlineType === DeadlineType.IMMEDIATE,
+	}
+
+function getTabFilter(tab: QuickFilter): (task: TaskRowDto) => boolean {
+	return TAB_FILTERS[tab] ?? (() => true)
 }
 
 function compareByDeadlineDate(a: TaskRowDto, b: TaskRowDto): number {
@@ -84,7 +87,7 @@ export default function FocusedInstructions({
 
 	const activeTab = view.dashboard.focusedInstructionsTab
 
-	async function handleTabClick(focusedInstructionsTab: FocusedTab) {
+	async function handleTabClick(focusedInstructionsTab: QuickFilter) {
 		await updateView({
 			...view,
 			dashboard: {
@@ -100,7 +103,7 @@ export default function FocusedInstructions({
 	const filteredTasks = useMemo(
 		() =>
 			notCompletedTasks
-				.filter(TAB_FILTERS[activeTab])
+				.filter(getTabFilter(activeTab))
 				.sort(compareByDeadlineDate),
 		[activeTab, notCompletedTasks],
 	)
@@ -109,7 +112,7 @@ export default function FocusedInstructions({
 		() =>
 			TAB_LABELS.map((tab) => ({
 				...tab,
-				count: notCompletedTasks.filter(TAB_FILTERS[tab.id]).length,
+				count: notCompletedTasks.filter(getTabFilter(tab.id)).length,
 			})),
 		[notCompletedTasks],
 	)
@@ -133,10 +136,10 @@ export default function FocusedInstructions({
 					</TabsHeader>
 					<ViewMoreInstructions
 						quickFilter={
-							activeTab === FocusedTab.approaching ? undefined : activeTab
+							activeTab === QuickFilter.approaching ? undefined : activeTab
 						}
 						deadlineTypeFilter={
-							activeTab === FocusedTab.approaching
+							activeTab === QuickFilter.approaching
 								? DeadlineType.IMMEDIATE
 								: undefined
 						}

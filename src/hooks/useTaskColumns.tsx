@@ -44,10 +44,16 @@ interface SelectModeConfig<TTask extends TaskRowDto> {
 	onSelectAll: (checked: boolean) => void
 }
 
+export interface TaskArchiveEntry {
+	id: number
+	assigneeId?: number
+}
+
 interface ActionsConfig {
-	onEdit: (taskId: number) => void
-	onArchive(taskIds: number[]): void
-	onDelete(taskIds: number[]): void
+	onEdit?: (taskId: number) => void
+	onArchive?(tasks: TaskArchiveEntry[]): void
+	onUnarchive?(tasks: TaskArchiveEntry[]): void
+	onDelete?(taskIds: number[]): void
 	onEnterSelectMode(rowKey?: string): void
 }
 
@@ -143,16 +149,36 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						enableColumnFilter: false,
 						cell: ({
 							row: {
-								original: { id, workspaceId, rowKey },
+								original: { id, workspaceId, rowKey, assignee },
 							},
-						}) => (
-							<RowActionsMenu
-								workspaceId={workspaceId}
-								onEdit={() => actions.onEdit?.(id)}
-								onEnterSelect={() => actions.onEnterSelectMode?.(rowKey)}
-								onDelete={() => actions.onDelete?.([id])}
-							/>
-						),
+						}) => {
+							const handleEdit = actions.onEdit
+								? () => actions.onEdit?.(id)
+								: undefined
+							const handleArchive = actions.onArchive
+								? () => actions.onArchive?.([{ id, assigneeId: assignee?.id }])
+								: undefined
+							const handleUnarchive = actions.onUnarchive
+								? () =>
+										actions.onUnarchive?.([{ id, assigneeId: assignee?.id }])
+								: undefined
+							const handleEnterSelect = () =>
+								actions.onEnterSelectMode?.(rowKey)
+							const handleDelete = actions.onDelete
+								? () => actions.onDelete?.([id])
+								: undefined
+
+							return (
+								<RowActionsMenu
+									workspaceId={workspaceId}
+									onEdit={handleEdit}
+									onArchive={handleArchive}
+									onUnarchive={handleUnarchive}
+									onEnterSelect={handleEnterSelect}
+									onDelete={handleDelete}
+								/>
+							)
+						},
 					}
 				: undefined
 
@@ -227,14 +253,21 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				...TASK_COLUMN_DEFINITIONS.status,
 				cell: ({
 					row: {
-						original: { id, status, assignee, workspaceId, editable },
+						original: {
+							id,
+							status,
+							assignee,
+							workspaceId,
+							editable,
+							archivedAt,
+						},
 					},
 				}) =>
 					status && (
 						<StatusDropdown
 							status={status}
 							assigneeId={assignee?.id}
-							editable={editable}
+							editable={!archivedAt && editable}
 							taskId={id}
 							workspaceId={workspaceId}
 							onUpdate={handleUpdateStatus}

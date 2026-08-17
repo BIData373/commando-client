@@ -6,6 +6,7 @@ import {
 	useRouterState,
 } from "@tanstack/react-router"
 import { PermissionType } from "src/api/model"
+import { WorkspaceTabs } from "src/components/WorkspaceTabs"
 import { SETTINGS_TABS, SettingTabPath } from "src/utils/settings-utils"
 import { Tabs, TabsList, TabsTrigger } from "../../../components/ui/tabs"
 import { AuthorizationWrapper } from "../../../wrappers/AuthorizationWrapper"
@@ -36,6 +37,7 @@ function SettingsLayout() {
 
 	return (
 		<AuthorizationWrapper type={PermissionType.MANAGER}>
+			<WorkspaceTabs isActive={false} />
 			<SettingsRoot>
 				<Tabs value={activeTab} onValueChange={handleTabChange}>
 					<FullWidthTabsList variant="line">

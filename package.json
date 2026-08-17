@@ -69,6 +69,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.5",
+    "@emotion/babel-plugin": "^11.13.5",
     "@faker-js/faker": "^10.4.0",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/devtools-vite": "latest",

@@ -22,7 +22,19 @@ const config = defineConfig({
 		tsconfigPaths({ projects: ["./tsconfig.json"] }),
 		tailwindcss(),
 		tanstackRouter({ target: "react", autoCodeSplitting: true }),
-		viteReact(),
+		viteReact({
+			babel: {
+				plugins: [
+					[
+						"@emotion/babel-plugin",
+						{
+							autoLabel: "dev-only",
+							labelFormat: "[local]",
+						},
+					],
+				],
+			},
+		}),
 	],
 })
 

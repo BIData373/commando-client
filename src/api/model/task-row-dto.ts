@@ -42,4 +42,5 @@ export interface TaskRowDto {
 	status: WorkspaceStatusDto
 	editable: boolean
 	otherAssignees: AssigneeStatusDto[]
+	archivedAt?: Date
 }

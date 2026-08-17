@@ -10,7 +10,8 @@ interface TaskDetailViewProps<
 	task?: TaskDetailsDto
 	showWorkspace?: boolean
 	closeTo: NavigateOptions<RegisteredRouter, string, TCloseTo>
-	editTo: NavigateOptions<RegisteredRouter, string, TEditTo>
+	editTo?: NavigateOptions<RegisteredRouter, string, TEditTo>
+	isArchived?: boolean
 }
 
 function TaskDetailView<
@@ -21,6 +22,7 @@ function TaskDetailView<
 	showWorkspace,
 	closeTo,
 	editTo,
+	isArchived = false,
 }: TaskDetailViewProps<TCloseTo, TEditTo>) {
 	const navigate = useNavigate()
 
@@ -33,7 +35,8 @@ function TaskDetailView<
 			task={task}
 			showWorkspace={showWorkspace}
 			onClose={() => navigate(closeTo)}
-			onEdit={() => navigate(editTo)}
+			onEdit={editTo ? () => navigate(editTo) : undefined}
+			isArchived={isArchived}
 		/>
 	)
 }

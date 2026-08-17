@@ -21,7 +21,7 @@
 		"enabled": true,
 		"indentStyle": "tab",
 		"indentWidth": 2,
-		"lineEnding": "auto"
+		"lineEnding": "lf"
 	},
 	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"linter": {
