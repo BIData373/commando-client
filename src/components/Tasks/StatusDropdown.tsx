@@ -80,7 +80,7 @@ export const StatusDropdown = memo(function StatusDropdown({
 					</StatusDropdownContent>
 				</DropdownMenu>
 			) : (
-				<StatusTag status={status} />
+				<StatusTag status={status} editable={editable} />
 			)}
 		</CellCenter>
 	)
