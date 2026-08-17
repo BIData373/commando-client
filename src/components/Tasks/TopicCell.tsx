@@ -76,10 +76,6 @@ export const TopicCell = memo(function TopicCell({ tags }: TopicCellProps) {
 		if (!container) return
 
 		const observer = new ResizeObserver(() => {
-			// Column width can genuinely change (e.g. window/column resize) —
-			// invalidate the shared cache so this and every other mounted row
-			// picks up the fresh value on their own observer callback instead
-			// of reusing a stale one.
 			cachedColumnWidth = null
 			calculateVisibleTags()
 		})
