@@ -31,11 +31,9 @@ export function StatusTag({
 		</Tag>
 	)
 
-	if (editable !== false) {
-		return tag
-	}
-
-	return (
+	return editable ? (
+		tag
+	) : (
 		<Tooltip>
 			<TooltipTrigger asChild>{tag}</TooltipTrigger>
 			<TooltipContent>לא קיימות הרשאות עריכה</TooltipContent>
