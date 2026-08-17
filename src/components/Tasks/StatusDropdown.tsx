@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { useState } from "react"
+import { memo, useState } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { HAS_ASSIGNEE_DATA_ATTR } from "src/utils/task-table-utils"
@@ -13,26 +13,37 @@ import {
 
 interface StatusDropdownProps {
 	status: WorkspaceStatusDto
+	statuses?: WorkspaceStatusDto[]
+	workspaceId?: number
 	taskId: number
-	workspaceId: number
 	assigneeId?: number
 	editable?: boolean
 	onUpdate: (taskId: number, assigneeId: number, statusId: number) => void
 }
 
-export function StatusDropdown({
+export const StatusDropdown = memo(function StatusDropdown({
 	status,
+	statuses: providedStatuses,
+	workspaceId,
 	taskId,
 	assigneeId,
-	workspaceId,
 	editable = false,
 	onUpdate,
 }: StatusDropdownProps) {
 	const [isOpen, setIsOpen] = useState(false)
 
-	const { data: statuses = [], isLoading } = useListWorkspaceStatuses({
-		workspaceId,
-	})
+	const { data: fetchedStatuses = [], isLoading: isFetchingStatuses } =
+		useListWorkspaceStatuses(
+			{ workspaceId: workspaceId ?? 0 },
+			{
+				query: {
+					enabled: providedStatuses === undefined && workspaceId !== undefined,
+				},
+			},
+		)
+
+	const statuses = providedStatuses ?? fetchedStatuses
+	const statusesReady = providedStatuses !== undefined || !isFetchingStatuses
 
 	function handleSelectStatus(newStatusId: number) {
 		if (newStatusId !== status.id && assigneeId) {
@@ -41,43 +52,39 @@ export function StatusDropdown({
 	}
 
 	return (
-		!isLoading && (
-			<CellCenter
-				{...{ [HAS_ASSIGNEE_DATA_ATTR]: assigneeId ? "" : undefined }}
-			>
-				{editable ? (
-					<DropdownMenu onOpenChange={setIsOpen}>
-						<DropdownMenuTrigger asChild>
-							<TriggerWrapper tabIndex={0} $hasAssignee={!!assigneeId}>
-								<StatusTag
-									open={isOpen}
-									status={status}
-									interactive
-									editable
-									withArrow={editable}
-								/>
-							</TriggerWrapper>
-						</DropdownMenuTrigger>
-						<StatusDropdownContent align="center" sideOffset={6}>
-							{Object.values(statuses).map((s) => (
-								<StatusDropdownItem
-									key={s.id}
-									$selected={s.id === status.id}
-									$hasAssignee={!!assigneeId}
-									onSelect={() => handleSelectStatus(s.id)}
-								>
-									<StatusTag status={s} interactive editable={editable} />
-								</StatusDropdownItem>
-							))}
-						</StatusDropdownContent>
-					</DropdownMenu>
-				) : (
-					<StatusTag status={status} />
-				)}
-			</CellCenter>
-		)
+		<CellCenter {...{ [HAS_ASSIGNEE_DATA_ATTR]: assigneeId ? "" : undefined }}>
+			{editable && statusesReady ? (
+				<DropdownMenu onOpenChange={setIsOpen}>
+					<DropdownMenuTrigger asChild>
+						<TriggerWrapper tabIndex={0} $hasAssignee={!!assigneeId}>
+							<StatusTag
+								open={isOpen}
+								status={status}
+								interactive
+								editable
+								withArrow={editable}
+							/>
+						</TriggerWrapper>
+					</DropdownMenuTrigger>
+					<StatusDropdownContent align="center" sideOffset={6}>
+						{statuses.map((s) => (
+							<StatusDropdownItem
+								key={s.id}
+								$selected={s.id === status.id}
+								$hasAssignee={!!assigneeId}
+								onSelect={() => handleSelectStatus(s.id)}
+							>
+								<StatusTag status={s} interactive editable={editable} />
+							</StatusDropdownItem>
+						))}
+					</StatusDropdownContent>
+				</DropdownMenu>
+			) : (
+				<StatusTag status={status} />
+			)}
+		</CellCenter>
 	)
-}
+})
 
 const CellCenter = styled.div`
   display: flex;

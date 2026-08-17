@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { useCallback, useLayoutEffect, useRef, useState } from "react"
+import { memo, useCallback, useLayoutEffect, useRef, useState } from "react"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card"
 
 interface TopicCellProps {
@@ -8,7 +8,11 @@ interface TopicCellProps {
 
 const GAP = 4
 
-export function TopicCell({ tags }: TopicCellProps) {
+const OVERFLOW_TAG_CACHE_KEY = "__overflow__"
+const tagWidthCache = new Map<string, number>()
+let cachedColumnWidth: number | null = null
+
+export const TopicCell = memo(function TopicCell({ tags }: TopicCellProps) {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const measureRef = useRef<HTMLDivElement>(null)
 	const [visibleCount, setVisibleCount] = useState(tags.length)
@@ -22,9 +26,24 @@ export function TopicCell({ tags }: TopicCellProps) {
 			return
 		}
 
-		const budget = container.offsetWidth
+		if (cachedColumnWidth === null) {
+			cachedColumnWidth = container.offsetWidth
+		}
+		const budget = cachedColumnWidth
 		const children = Array.from(measure.children) as HTMLElement[]
-		const overflowWidth = children[children.length - 1].offsetWidth
+
+		function widthOf(key: string, el: HTMLElement) {
+			const cached = tagWidthCache.get(key)
+			if (cached !== undefined) return cached
+			const width = el.offsetWidth
+			tagWidthCache.set(key, width)
+			return width
+		}
+
+		const overflowWidth = widthOf(
+			OVERFLOW_TAG_CACHE_KEY,
+			children[children.length - 1],
+		)
 
 		let used = 0
 		let fits = 0
@@ -32,7 +51,7 @@ export function TopicCell({ tags }: TopicCellProps) {
 		let canFit = true
 
 		while (i < tags.length && canFit) {
-			const tagWidth = children[i].offsetWidth
+			const tagWidth = widthOf(tags[i], children[i])
 			const addition = i === 0 ? tagWidth : GAP + tagWidth
 			const isLast = i === tags.length - 1
 
@@ -57,6 +76,11 @@ export function TopicCell({ tags }: TopicCellProps) {
 		if (!container) return
 
 		const observer = new ResizeObserver(() => {
+			// Column width can genuinely change (e.g. window/column resize) —
+			// invalidate the shared cache so this and every other mounted row
+			// picks up the fresh value on their own observer callback instead
+			// of reusing a stale one.
+			cachedColumnWidth = null
 			calculateVisibleTags()
 		})
 
@@ -101,7 +125,7 @@ export function TopicCell({ tags }: TopicCellProps) {
 			)}
 		</CellRoot>
 	)
-}
+})
 
 const CellRoot = styled.div`
   position: relative;

@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { Popover as PopoverPrimitive } from "radix-ui"
-import type { AssigneeDto, WorkspaceStatusDto } from "src/api/model"
+import { memo } from "react"
+import type { AssigneeDto, AssigneeStatusDto } from "src/api/model"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { AssigneeDetailPopover } from "../shared/AssigneeDetailPopover"
 import { StatusTag } from "../shared/StatusTag"
@@ -9,20 +10,20 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 //delete after replace assigneeAvatar
 export type AvatarColor = "cyan" | "blue" | "green" | "orange" | "gray"
 
-export interface RelatedDirective {
-	assignee: AssigneeDto
-	status: WorkspaceStatusDto
-}
-
 interface AssigneeCellProps {
 	responsible: AssigneeDto | null
-	relatedDirectives: RelatedDirective[]
+	otherAssignees: AssigneeStatusDto[]
 }
 
-export function AssigneeCell({
+export const AssigneeCell = memo(function AssigneeCell({
 	responsible,
-	relatedDirectives,
+	otherAssignees,
 }: AssigneeCellProps) {
+	const relatedDirectives = otherAssignees.map((s) => ({
+		assignee: s.assignee,
+		status: s.status,
+	}))
+
 	return (
 		<CellRoot>
 			{responsible && (
@@ -51,7 +52,7 @@ export function AssigneeCell({
 			)}
 		</CellRoot>
 	)
-}
+})
 
 // ─── Cell layout ──────────────────────────────────────────────────────────────
 

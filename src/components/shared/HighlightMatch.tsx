@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { memo } from "react"
 
 interface HighlightMatchProps {
 	text: string
@@ -6,11 +7,11 @@ interface HighlightMatchProps {
 	variant?: "mark" | "bold"
 }
 
-const HighlightMatch = ({
+const HighlightMatch = memo(function HighlightMatch({
 	text,
 	query,
 	variant = "bold",
-}: HighlightMatchProps) => {
+}: HighlightMatchProps) {
 	const index = text.indexOf(query)
 	if (!query || index === -1) return <>{text}</>
 
@@ -23,7 +24,7 @@ const HighlightMatch = ({
 			{text.slice(index + query.length)}
 		</>
 	)
-}
+})
 
 export default HighlightMatch
 

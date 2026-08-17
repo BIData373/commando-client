@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { X } from "lucide-react"
 import { useRef } from "react"
 import type { AssigneesDto, WorkspaceStatusDto } from "src/api/model"
+import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
 import { AssigneeAvatar } from "./AssigneeAvatar"
 
@@ -45,6 +46,8 @@ function AssigneeRowList({
 	taskId,
 }: AssigneeRowListProps) {
 	const detailRefs = useRef<Record<number, HTMLSpanElement | null>>({})
+
+	const { data: statuses = [] } = useListWorkspaceStatuses({ workspaceId })
 
 	function handleDetailInput(id: number, e: React.FormEvent<HTMLSpanElement>) {
 		onDetailChange(id, e.currentTarget.textContent ?? "")
@@ -101,10 +104,10 @@ function AssigneeRowList({
 							taskId != null && (
 								<StatusDropdown
 									status={assigneeExtras[assignee.id].status!}
+									statuses={statuses}
 									taskId={taskId}
 									assigneeId={assignee.id}
 									editable={assigneeExtras[assignee.id].editable}
-									workspaceId={workspaceId}
 									onUpdate={onStatusChange}
 								/>
 							)}

@@ -169,6 +169,8 @@ export function DataTable<TData>({
     const el = containerRef.current
     if (!el) return
 
+    el.style.overflowAnchor = 'none'
+
     function updateWidth(width: number) {
       const rounded = Math.round(width)
       setContainerWidth((prev) => (prev === rounded ? prev : rounded))
@@ -181,6 +183,15 @@ export function DataTable<TData>({
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
+
+  const [measuredRowHeight, setMeasuredRowHeight] = useState<number | null>(null)
+
+  useLayoutEffect(() => {
+    if (measuredRowHeight !== null) return
+    const row = containerRef.current?.querySelector('tbody tr[data-index]')
+    if (!row) return
+    setMeasuredRowHeight(row.getBoundingClientRect().height)
+  })
 
   const visibleColumns = table.getVisibleLeafColumns()
 
@@ -243,7 +254,7 @@ export function DataTable<TData>({
   const { getVirtualItems, getTotalSize, measureElement } = useVirtualizer({
     count: tableRows.length,
     getScrollElement: () => containerRef.current,
-    estimateSize: () => 44,
+    estimateSize: () => measuredRowHeight ?? 43,
     overscan: 16,
     useFlushSync: false,
     measureElement: (el) => {
@@ -360,8 +371,8 @@ const Col = styled.col<{ $width?: number }>`
 `
 
 const SpacerCell = styled.td<{ $height: number }>`
-  height: ${({ $height }) => `${$height}px`};
-  padding: 0;
-  border: none;
+  height: ${({ $height }) => `${$height}px`} !important;
+  max-height: none !important;
+  padding: 0 !important;
+  border: none !important;
 `
-
