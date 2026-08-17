@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
-import { type ReactNode, useLayoutEffect, useRef, useState } from "react"
+import type { ReactNode } from "react"
+import { useOverflow } from "src/hooks/useOverflow"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface EllipsisTooltipProps {
@@ -17,44 +18,15 @@ export default function EllipsisTooltip({
 	dir,
 	side,
 }: EllipsisTooltipProps) {
-	const textRef = useRef<HTMLSpanElement>(null)
-	const [isOverflowing, setIsOverflowing] = useState(false)
-
-	useLayoutEffect(() => {
-		const element = textRef.current
-
-		if (!element) {
-			return
-		}
-
-		function updateOverflow() {
-			if (!element) {
-				return
-			}
-
-			const descendants = Array.from(element.querySelectorAll<HTMLElement>("*"))
-			const hasOverflow = [element, ...descendants].some(
-				(node) => node.scrollWidth > node.clientWidth,
-			)
-
-			setIsOverflowing(hasOverflow)
-		}
-
-		updateOverflow()
-
-		const observer = new ResizeObserver(updateOverflow)
-		observer.observe(element)
-		element.querySelectorAll<HTMLElement>("*").forEach((descendant) => {
-			observer.observe(descendant)
-		})
-
-		return () => observer.disconnect()
-	}, [tooltip])
+	const { ref, isOverflowing } = useOverflow<HTMLSpanElement>({
+		content: tooltip,
+		includeDescendants: true,
+	})
 
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
-				<Text ref={textRef} className={className} dir={dir}>
+				<Text ref={ref} className={className} dir={dir}>
 					{children}
 				</Text>
 			</TooltipTrigger>
