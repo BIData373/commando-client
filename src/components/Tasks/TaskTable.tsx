@@ -390,7 +390,7 @@ const TableWrapper = styled.div`
     background: var(--background);
     border-right: 0.5px solid var(--Background-color-bg-text-active);
     box-shadow: inset 0 -0.5px 0 0 var(--Background-color-bg-text-active);
-	cursor: default;
+    cursor: default;
 
     &:first-of-type {
       border-right: none;
@@ -399,14 +399,17 @@ const TableWrapper = styled.div`
 
   td {
     position: relative;
+    vertical-align: middle;
+    cursor: default;
+  }
+
+  td:not([data-virtual-spacer]) {
     padding: 0 6px;
     height: 43px;
     max-height: 43px;
-    vertical-align: middle;
     overflow: hidden;
     border: 0.5px solid var(--Background-color-bg-text-active);
-	cursor: default;
-	
+
     &:first-of-type {
       border-right: none;
     }
@@ -423,5 +426,12 @@ const TableWrapper = styled.div`
         background: var(--status-cell-bg-hover);
       }
     }
+  }
+
+  td[data-virtual-spacer] {
+    padding: 0;
+    border: none;
+    max-height: none;
+    overflow: visible;
   }
 `

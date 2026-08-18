@@ -2,7 +2,6 @@ import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
 import { concat, map, uniq } from "lodash"
-import { AlertTriangle } from "lucide-react"
 import { useCallback, useMemo } from "react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
@@ -137,7 +136,15 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						row: {
 							original: { id },
 						},
-					}) => <IdCell>{id}</IdCell>,
+					}) => (
+						<IdCell>
+							<HighlightMatch
+								text={String(id)}
+								query={searchQuery ?? ""}
+								variant="mark"
+							/>
+						</IdCell>
+					),
 				}
 
 		const pinnedEndColumn: ColumnDef<TTask> | undefined =
@@ -406,15 +413,26 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						return null
 					}
 
-					const parts = [
+					const sourceText = [
 						source.name,
 						...(source.date ? [formatDateShort(source.date)] : []),
-					].filter(Boolean)
+					]
+						.filter(Boolean)
+						.join(" | ")
 
 					return (
 						<SourceCell>
 							{source.attachmentKey && <SourceAttachmentIcon size={18} />}
-							{parts.length > 0 && <SourceText>{parts.join(" | ")}</SourceText>}
+
+							{sourceText && (
+								<SourceText>
+									<HighlightMatch
+										text={sourceText}
+										query={searchQuery ?? ""}
+										variant="mark"
+									/>
+								</SourceText>
+							)}
 						</SourceCell>
 					)
 				},
@@ -439,22 +457,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				}) => {
 					const allNames = uniq(map(concat(tags, source?.tags ?? []), "name"))
 
-					return <TopicCell tags={allNames} />
-				},
-			},
-			{
-				id: "notes",
-				accessorKey: "notes",
-				header: COLUMN_LABELS.notes,
-				size: 100,
-				enableSorting: false,
-				enableColumnFilter: false,
-				meta: { grow: true },
-				cell: ({ getValue }) => {
-					const notes = getValue<string>()
-					return notes ? (
-						<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
-					) : null
+					return <TopicCell tags={allNames} searchQuery={searchQuery} />
 				},
 			},
 			{
@@ -634,41 +637,6 @@ const SourceText = styled.span`
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.65);
-`
-
-const NotesText = styled.div`
-  overflow: hidden;
-  max-height: 40px;
-
-  font-size: var(--fs-btn);
-  line-height: 20px;
-  color: var(--sea-ink-soft);
-
-  p {
-    margin: 0;
-  }
-
-  ol {
-    margin: 0;
-    padding-inline-start: 20px;
-    list-style-type: decimal;
-  }
-
-  li {
-    margin: 0;
-  }
-
-  li p {
-    display: inline;
-  }
-
-  strong {
-    font-weight: 600;
-  }
-
-  u {
-    text-decoration: underline;
-  }
 `
 
 const DateText = styled.span`

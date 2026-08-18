@@ -107,7 +107,6 @@ function CreateTaskModal({
 			source: task?.source?.name ?? "",
 			sourceDate: task?.source?.date ?? null,
 			tags: task?.tags.map((t) => t.name) ?? [],
-			notes: task?.notes ?? "",
 			sourceId: task?.source?.id ?? null,
 			assignees:
 				task?.assigneeStatuses.map((as) => ({
