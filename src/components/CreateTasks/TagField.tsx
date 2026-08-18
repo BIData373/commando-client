@@ -3,6 +3,7 @@ import { ChevronDown, Tag, X } from "lucide-react"
 import { useRef, useState } from "react"
 import { useListTags } from "src/api/tag/tag"
 import HighlightMatch from "../shared/HighlightMatch"
+import { Popover, PopoverAnchor, PopoverContent } from "../ui/popover"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -83,10 +84,12 @@ function TagField({
 
 	function handleInputBoxClick() {
 		inputRef.current?.focus()
+		setIsDropdownOpen(true)
 	}
 
 	function handleQueryChange(e: React.ChangeEvent<HTMLInputElement>) {
 		setTagQuery(e.target.value)
+		if (!isDropdownOpen) setIsDropdownOpen(true)
 	}
 
 	function handleFocus() {
@@ -100,68 +103,79 @@ function TagField({
 	return (
 		<FormItem>
 			<FormLabelRow>
-				<LabelText>נושא</LabelText>
+				<LabelText>תגיות</LabelText>
 			</FormLabelRow>
-			<TagFieldWrapper>
-				<TagInputBox onClick={handleInputBoxClick}>
-					<StyledChevronDown size={16} />
-					<InputContent>
-						{tags.map((tag) => (
-							<TagChip key={tag}>
-								<TagText>{tag}</TagText>
-								{!lockedTags.includes(tag) && (
-									<TagRemoveButton onMouseDown={(e) => handleRemoveTag(e, tag)}>
-										<X size={12} />
-									</TagRemoveButton>
-								)}
-							</TagChip>
-						))}
-						<TagInputField
-							ref={inputRef}
-							value={tagQuery}
-							onChange={handleQueryChange}
-							onFocus={handleFocus}
-							onBlur={handleBlur}
-							onKeyDown={handleKeyDown}
-							placeholder={
-								tags.length === 0
-									? "מאמץ/מבצע/קטגוריה (לדוג': 'שאגת הארי' , הגנה במרחב)"
-									: ""
-							}
-							dir="rtl"
-						/>
-					</InputContent>
-					{tags.length === 0 && <StyledTag size={16} />}
-				</TagInputBox>
-				{showDropdown && (
-					<DropdownMenu>
-						{filteredTags.length > 0 && tagQuery && (
-							<SuggestionsHeader>הצעות</SuggestionsHeader>
-						)}
-						{filteredTags.map(({ name }) => (
-							<TagOption
-								key={name}
-								onMouseDown={(e) => handleSelectMouseDown(e, name)}
-							>
+			<Popover open={showDropdown}>
+				<TagFieldWrapper>
+					<PopoverAnchor asChild>
+						<TagInputBox onClick={handleInputBoxClick}>
+							<StyledChevronDown size={16} />
+							<InputContent>
+								{tags.map((tag) => (
+									<TagChip key={tag}>
+										<TagText>{tag}</TagText>
+										{!lockedTags.includes(tag) && (
+											<TagRemoveButton
+												onMouseDown={(e) => handleRemoveTag(e, tag)}
+											>
+												<X size={12} />
+											</TagRemoveButton>
+										)}
+									</TagChip>
+								))}
+								<TagInputField
+									ref={inputRef}
+									value={tagQuery}
+									onChange={handleQueryChange}
+									onFocus={handleFocus}
+									onBlur={handleBlur}
+									onKeyDown={handleKeyDown}
+									placeholder={
+										tags.length === 0
+											? "מאמץ/מבצע/קטגוריה (לדוג': 'שאגת הארי' , הגנה במרחב)"
+											: ""
+									}
+									dir="rtl"
+								/>
+							</InputContent>
+							{tags.length === 0 && <StyledTag size={16} />}
+						</TagInputBox>
+					</PopoverAnchor>
+				</TagFieldWrapper>
+				<TagDropdown
+					sideOffset={4}
+					align="start"
+					onOpenAutoFocus={(e) => e.preventDefault()}
+					onWheel={(e) => e.stopPropagation()}
+				>
+					{filteredTags.length > 0 && (
+						<SuggestionsHeader>הצעות</SuggestionsHeader>
+					)}
+					{filteredTags.map(({ name }) => (
+						<TagOption
+							key={name}
+							onMouseDown={(e) => handleSelectMouseDown(e, name)}
+						>
+							<TagOptionText>
 								{tagQuery ? (
 									<HighlightMatch text={name} query={tagQuery} />
 								) : (
 									name
 								)}
+							</TagOptionText>
+						</TagOption>
+					))}
+					{isNewTag && (
+						<>
+							{filteredTags.length > 0 && <Divider />}
+							<TagOption onMouseDown={handleCreateNewMouseDown}>
+								<HighlightedText>{tagQuery}</HighlightedText>
+								<span> (חדש)</span>
 							</TagOption>
-						))}
-						{isNewTag && (
-							<>
-								{filteredTags.length > 0 && <Divider />}
-								<TagOption onMouseDown={handleCreateNewMouseDown}>
-									<HighlightedText>{tagQuery}</HighlightedText>
-									<span> (חדש)</span>
-								</TagOption>
-							</>
-						)}
-					</DropdownMenu>
-				)}
-			</TagFieldWrapper>
+						</>
+					)}
+				</TagDropdown>
+			</Popover>
 		</FormItem>
 	)
 }
@@ -190,7 +204,7 @@ const LabelText = styled.span`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   white-space: nowrap;
 `
 
@@ -205,15 +219,15 @@ const TagInputBox = styled.div`
   width: 100%;
   height: 40px;
   padding-inline: 11px;
-  background: white;
-  border: 1px solid #d9d9d9;
+  background: var(--background);
+  border: 1px solid var(--card-border);
   border-radius: 8px;
   gap: 4px;
   cursor: text;
 
   &:focus-within {
-    border-color: #1677ff;
-    box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+    border-color: var(--active-color);
+    box-shadow: var(--shadow-tag-focus);
   }
 `
 
@@ -240,12 +254,12 @@ const TagInputField = styled.input`
   font-size: var(--fs-base);
   font-weight: 400;
   line-height: 18px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   min-width: 60px;
   text-align: start;
 
   &::placeholder {
-    color: rgba(0, 0, 0, 0.25);
+    color: var(--Text-color-text-placeholder);
   }
 `
 
@@ -254,7 +268,7 @@ const TagChip = styled.span`
   align-items: center;
   gap: 4px;
   padding: 1px 8px;
-  background: rgba(0, 0, 0, 0.02);
+  background: var(--card-background);
   border-radius: 4px;
   flex-shrink: 0;
 `
@@ -263,7 +277,7 @@ const TagText = styled.span`
   font-size: var(--fs-sm);
   font-weight: 400;
   line-height: 20px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   white-space: nowrap;
 `
 
@@ -274,29 +288,24 @@ const TagRemoveButton = styled.button`
   border: none;
   background: transparent;
   cursor: pointer;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
   padding: 0;
 
   &:hover {
-    color: rgba(0, 0, 0, 0.88);
+    color: var(--text-color-2);
   }
 `
 
-const DropdownMenu = styled.div`
-  position: absolute;
-  inset-block-start: calc(100% + 4px);
-  inset-inline: 0;
-  z-index: 40;
-  background: white;
-  border-radius: 8px;
-  box-shadow:
-    0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px rgba(0, 0, 0, 0.12),
-    0px 9px 28px rgba(0, 0, 0, 0.05);
-  max-height: 168px;
+const TagDropdown = styled(PopoverContent)`
+  width: var(--radix-popover-trigger-width);
+  z-index: var(--z-dropdown);
+  max-height: 150px;
   overflow-y: auto;
   padding: 4px;
+  border-radius: 8px;
   direction: rtl;
+  animation: none !important;
+  gap: 0;
 `
 
 const SuggestionsHeader = styled.div`
@@ -309,33 +318,37 @@ const SuggestionsHeader = styled.div`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
   white-space: nowrap;
 `
 
 const TagOption = styled.button`
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  gap: 8px;
   width: 100%;
-  height: 32px;
+  min-height: 32px;
   padding-inline: 12px;
   padding-block: 5px;
   border: none;
   background: transparent;
   cursor: pointer;
   border-radius: 4px;
+  direction: rtl;
   font-size: var(--fs-btn);
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: start;
+  color: var(--text-color-2);
+  flex-shrink: 0;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.04);
+    background: var(--link-bg-hover);
   }
+`
+
+const TagOptionText = styled.span`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 const HighlightedText = styled.span`
@@ -343,13 +356,13 @@ const HighlightedText = styled.span`
 `
 
 const StyledChevronDown = styled(ChevronDown)`
-  color: rgba(0, 0, 0, 0.25);
+  color: var(--Text-color-text-placeholder);
 `
 const StyledTag = styled(Tag)`
-  color: rgba(0, 0, 0, 0.25);
+  color: var(--Text-color-text-placeholder);
 `
 const Divider = styled.div`
   height: 1px;
-  background: rgba(0, 0, 0, 0.06);
+  background: var(--line);
   margin-block: 4px;
 `
