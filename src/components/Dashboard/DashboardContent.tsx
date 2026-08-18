@@ -1,13 +1,16 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
+import { useState } from "react"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTaskRows } from "src/api/task/task"
+import { matchesAssigneeFilter } from "src/functions/assignee-filter-utils"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
+import { AssigneeFilterDropdown } from "./chooseAssinee/AssigneeFilterDropdown"
 import FocusedInstructions from "./FocusedInstructions"
 import RecentlyCompleted from "./RecentlyCompleted"
 import StatusCard from "./StatusCard"
@@ -20,11 +23,17 @@ export function DashboardContent() {
 
 	const navigate = useNavigate()
 
+	const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<number[]>([])
+
 	const { data: taskRows = [], queryKey } = useListTaskRows({ workspaceId: id })
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId: id })
 
-	const filteredTasks = useFilteredTasks(taskRows, { skipQuickFilters: true })
+	const filteredTasks = useFilteredTasks(taskRows, {
+		skipQuickFilters: true,
+		additionalFilter: (task) =>
+			matchesAssigneeFilter(task, selectedAssigneeIds),
+	})
 
 	const tasks = [...filteredTasks].sort(
 		(a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
@@ -54,6 +63,15 @@ export function DashboardContent() {
 				{myPermission?.type === PermissionType.MANAGER && (
 					<CreateTaskButton context="dashboard" />
 				)}
+
+				<FilterSlot>
+					<AssigneeFilterDropdown
+						workspaceId={id}
+						selectedIds={selectedAssigneeIds}
+						onApply={setSelectedAssigneeIds}
+					/>
+				</FilterSlot>
+
 				<DatePickerSlot>
 					<TasksDatePicker showPlaceholder />
 				</DatePickerSlot>
@@ -88,11 +106,14 @@ const ContentArea = styled.div`
 const ButtonGroup = styled.div`
   display: flex;
   align-items: center;
+  gap: 12px;
   `
 
-const DatePickerSlot = styled.div`
+const FilterSlot = styled.div`
   margin-inline-start: auto;
   `
+
+const DatePickerSlot = styled.div``
 
 const GridLayout = styled.div`
   display: grid;
