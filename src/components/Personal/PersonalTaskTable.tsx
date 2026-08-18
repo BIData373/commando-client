@@ -52,6 +52,12 @@ export const WORKSPACE_COLUMN: ColumnDef<TaskRowWithWorkspaceDto> = {
 	}) => <WorkspaceCell workspace={workspace} />,
 }
 
+function getPersonalTaskSearchValues(
+	task: TaskRowWithWorkspaceDto,
+): Array<string | number | null | undefined> {
+	return [task.workspace?.title]
+}
+
 interface PersonalTaskTableProps {
 	isArchived?: boolean
 	extraColumnsMeta?: TaskColumnMeta[]
@@ -71,7 +77,7 @@ function PersonalTaskTable({
 	showMetricsBar = false,
 	filePrefix,
 }: PersonalTaskTableProps) {
-	const { columnOrder, hiddenColumns } = useTasksFilters()
+	const { columnOrder, hiddenColumns, searchQuery } = useTasksFilters()
 
 	const {
 		data: tasks = [],
@@ -91,7 +97,21 @@ function PersonalTaskTable({
 		({ workspace }) => workspace,
 	)
 
-	const baseFilteredTaskRows = useFilteredTasks(tasks)
+	const baseFilteredTaskRows = useFilteredTasks(tasks, {
+		additionalSearchValues: getPersonalTaskSearchValues,
+	})
+
+	const workspaceColumn = useMemo<ColumnDef<TaskRowWithWorkspaceDto>>(
+		() => ({
+			...WORKSPACE_COLUMN,
+			cell: ({
+				row: {
+					original: { workspace },
+				},
+			}) => <WorkspaceCell workspace={workspace} searchQuery={searchQuery} />,
+		}),
+		[searchQuery],
+	)
 
 	const filteredTaskRows = useMemo(
 		() =>
@@ -151,7 +171,7 @@ function PersonalTaskTable({
 					filteredTasks={filteredTaskRows}
 					columnOrder={columnOrder}
 					hiddenColumns={hiddenColumns}
-					extraColumns={[WORKSPACE_COLUMN, ...(extraColumns ?? [])]}
+					extraColumns={[workspaceColumn, ...(extraColumns ?? [])]}
 					extraColumnsMeta={[
 						{ id: "workspace", label: "מפקד מנחה" },
 						...(extraColumnsMeta ?? []),
@@ -197,7 +217,7 @@ function PersonalTaskTable({
 					onEdit={onEdit}
 					onClick={onOpenTask}
 					getPermissionType={(task) => task?.workspace?.permissionType}
-					extraColumns={[WORKSPACE_COLUMN, ...(extraColumns ?? [])]}
+					extraColumns={[workspaceColumn, ...(extraColumns ?? [])]}
 					onArchive={onArchive}
 					onUnarchive={onUnarchive}
 					allowDelete={false}

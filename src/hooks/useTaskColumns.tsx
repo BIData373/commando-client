@@ -137,7 +137,15 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						row: {
 							original: { id },
 						},
-					}) => <IdCell>{id}</IdCell>,
+					}) => (
+						<IdCell>
+							<HighlightMatch
+								text={String(id)}
+								query={searchQuery ?? ""}
+								variant="mark"
+							/>
+						</IdCell>
+					),
 				}
 
 		const pinnedEndColumn: ColumnDef<TTask> | undefined =
@@ -406,15 +414,26 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						return null
 					}
 
-					const parts = [
+					const sourceText = [
 						source.name,
 						...(source.date ? [formatDateShort(source.date)] : []),
-					].filter(Boolean)
+					]
+						.filter(Boolean)
+						.join(" | ")
 
 					return (
 						<SourceCell>
 							{source.attachmentKey && <SourceAttachmentIcon size={18} />}
-							{parts.length > 0 && <SourceText>{parts.join(" | ")}</SourceText>}
+
+							{sourceText && (
+								<SourceText>
+									<HighlightMatch
+										text={sourceText}
+										query={searchQuery ?? ""}
+										variant="mark"
+									/>
+								</SourceText>
+							)}
 						</SourceCell>
 					)
 				},
@@ -439,7 +458,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				}) => {
 					const allNames = uniq(map(concat(tags, source?.tags ?? []), "name"))
 
-					return <TopicCell tags={allNames} />
+					return <TopicCell tags={allNames} searchQuery={searchQuery} />
 				},
 			},
 			{
