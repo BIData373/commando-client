@@ -34,7 +34,6 @@ import { Checkbox } from "../ui/checkbox"
 import { Dialog } from "../ui/dialog"
 import AssigneeField from "./AssigneeField"
 import DeadlineField from "./DeadlineField"
-import NotesField from "./NotesField"
 import SourceField from "./SourceField"
 import TagField from "./TagField"
 
@@ -111,7 +110,6 @@ function CreateTaskModal({
 			source: task?.source?.name ?? "",
 			sourceDate: task?.source?.date ?? null,
 			tags: task?.tags.map((t) => t.name) ?? [],
-			notes: task?.notes ?? "",
 			sourceId: task?.source?.id ?? null,
 			assignees:
 				task?.assigneeStatuses.map((as) => ({
@@ -260,10 +258,6 @@ function CreateTaskModal({
 
 	function handleToggleDetails() {
 		setIsDetailsExpanded((prev) => !prev)
-	}
-
-	function handleNotesChange(value: string) {
-		form.setFieldValue("notes", value)
 	}
 
 	function handleAssigneeStatusChange(
@@ -459,12 +453,6 @@ function CreateTaskModal({
 										lockedTags={linkedTagNames}
 										onTagSelect={handleTagSelect}
 										onTagRemove={handleTagRemove}
-									/>
-
-									{/* Notes */}
-									<NotesField
-										notes={values.notes ?? ""}
-										onNotesChange={handleNotesChange}
 									/>
 								</AdditionalDetails>
 							</AdditionalDetailsWrapper>

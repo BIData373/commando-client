@@ -100,7 +100,6 @@ function CreateTasksTable({
 			dueDate: null,
 			assigneeIds: [],
 			assigneeDetails: {},
-			notes: "",
 			flagged: false,
 		}
 	}, [workspaceId])
@@ -120,7 +119,6 @@ function CreateTasksTable({
 			assigneeDetails: Object.fromEntries(
 				task.assigneeStatuses.map((s) => [s.assignee.id, s.description]),
 			),
-			notes: task.notes ?? "",
 			flagged: task.flagged,
 		}
 	}, [])
