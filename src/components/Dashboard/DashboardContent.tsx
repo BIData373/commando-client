@@ -1,16 +1,15 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
-import { PermissionType } from "src/api/model"
+import { PermissionType, type TaskRowDto } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTaskRows } from "src/api/task/task"
-import { matchesAssigneeFilter } from "src/functions/assignee-filter-utils"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
-import { AssigneeFilterDropdown } from "./chooseAssinee/AssigneeFilterDropdown"
+import { AssigneeFilterDropdown } from "./AssigneeFilterDropdown/AssigneeFilterDropdown"
 import FocusedInstructions from "./FocusedInstructions"
 import RecentlyCompleted from "./RecentlyCompleted"
 import StatusCard from "./StatusCard"
@@ -55,6 +54,17 @@ export function DashboardContent() {
 			to: "/workspace/$urlName/dashboard/task/$taskId",
 			params: { urlName, taskId: String(taskId) },
 		})
+	}
+
+	function matchesAssigneeFilter(task: TaskRowDto, assigneeIds: number[]) {
+		if (assigneeIds.length === 0) return true
+
+		const taskAssigneeIds = [
+			task.assignee?.id,
+			...task.otherAssignees.map((a) => a.assignee.id),
+		]
+
+		return assigneeIds.some((id) => taskAssigneeIds.includes(id))
 	}
 
 	return (

@@ -4,7 +4,7 @@ import { useState } from "react"
 import {} from "react-icons"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover"
-import AssingneeDropDown from "./AssingneeDropDown"
+import AssingneeDropDown from "./AssingneeDropdown"
 
 interface AssigneeFilterDropdownProps {
 	workspaceId: number
@@ -136,10 +136,7 @@ const StyledPopoverContent = styled(PopoverContent)`
   padding: 0;
   gap: 0;
   border-radius: 6px;
-  box-shadow:
-    0px 9px 28px 8px rgba(0, 0, 0, 0.05),
-    0px 3px 6px -4px rgba(0, 0, 0, 0.12),
-    0px 6px 16px rgba(0, 0, 0, 0.08);
+  box-shadow:var(--boxShadowSecondary)
 `
 
 const SearchRow = styled.div`

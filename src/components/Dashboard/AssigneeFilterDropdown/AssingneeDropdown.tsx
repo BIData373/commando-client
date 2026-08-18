@@ -1,10 +1,11 @@
 import styled from "@emotion/styled"
 import type { AssigneeDto, AssigneesDto } from "src/api/model"
+import { AssigneeAvatar } from "src/components/shared/AssigneeAvatar"
 import { isColorVarDark } from "src/functions/contrast-color"
 import { getInitials } from "src/utils/avatar-utils"
 import { Checkbox } from "../../ui/checkbox"
 
-interface AssingneeDropDownProps {
+interface AssingneeDropdownProps {
 	filteredAssignees: AssigneesDto[]
 	handleToggle: (id: number) => void
 	pendingIds: number[]
@@ -14,7 +15,7 @@ export default function AssingneeDropDown({
 	filteredAssignees,
 	handleToggle,
 	pendingIds,
-}: AssingneeDropDownProps) {
+}: AssingneeDropdownProps) {
 	return (
 		<OptionsList>
 			{filteredAssignees.map((assignee) => (
@@ -28,7 +29,7 @@ export default function AssingneeDropDown({
 							onCheckedChange={() => handleToggle(assignee.id)}
 							onClick={(e) => e.stopPropagation()}
 						/>
-						<AssigneeBadge assignee={assignee} />
+						<AssigneeAvatar assignee={assignee} />
 						<AssigneeName>{assignee.name}</AssigneeName>
 					</AssigneeOptionRow>
 				</AssigneeOption>
