@@ -3,7 +3,8 @@ import { useForm } from "@tanstack/react-form"
 import { useNavigate } from "@tanstack/react-router"
 import { useStore } from "@tanstack/react-store"
 import { Check, Paperclip, Sparkles } from "lucide-react"
-import { useEffect, useState } from "react"
+import { lazy, Suspense, useEffect, useState } from "react"
+import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AI_ENABLED } from "src/utils/env-utils"
 import {
@@ -34,9 +35,10 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip"
-import CreateTasksTable from "./CreateTasksTable"
 import DiscussionForm from "./DiscussionForm"
 import type { NewTaskRow } from "./TasksColumns"
+
+const CreateTasksTable = lazy(() => import("./CreateTasksTable"))
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -94,6 +96,7 @@ function CreateDiscussionModal({
 	const [step, setStep] = useState<Steps>(
 		sourceId ? Steps.Tasks : Steps.Discussion,
 	)
+	const [tasksStepReached, setTasksStepReached] = useState(step === Steps.Tasks)
 
 	const defaultValues: CreateSourceDto = {
 		workspaceId,
@@ -112,6 +115,10 @@ function CreateDiscussionModal({
 	})
 
 	const values = useStore(form.store, (state) => state.values)
+
+	useEffect(() => {
+		if (step === Steps.Tasks) setTasksStepReached(true)
+	}, [step])
 
 	useEffect(() => {
 		if (!source) return
@@ -384,13 +391,17 @@ function CreateDiscussionModal({
 					</StepPane>
 
 					<StepPane $active={isCurrentStepTasks}>
-						<CreateTasksTable
-							onSave={handleSave}
-							onDeleteRow={handleDeleteRow}
-							onBack={handleBack}
-							isLoading={isCreateTasks || isCreateSource || isUpdateSource}
-							sourceId={sourceId}
-						/>
+						{tasksStepReached && (
+							<Suspense fallback={<LoadingSpinner />}>
+								<CreateTasksTable
+									onSave={handleSave}
+									onDeleteRow={handleDeleteRow}
+									onBack={handleBack}
+									isLoading={isCreateTasks || isCreateSource || isUpdateSource}
+									sourceId={sourceId}
+								/>
+							</Suspense>
+						)}
 					</StepPane>
 				</ModalBody>
 			</ModalCard>

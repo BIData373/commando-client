@@ -1,7 +1,13 @@
 import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import { map } from "lodash"
-import { useCallback, useEffect, useRef, useState } from "react"
+import {
+	startTransition,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react"
 import {
 	DeadlineType,
 	ExtractionStatus,
@@ -66,7 +72,7 @@ function CreateTasksTable({
 	const [alertDismissed, setAlertDismissed] = useState(false)
 	const [extractedCount, setExtractedCount] = useState(0)
 
-	const { data: source } = useGetSource(
+	const { data: source, isLoading: isSourceLoading } = useGetSource(
 		{ id: sourceId ?? 0 },
 		{ query: { enabled: sourceId !== undefined } },
 	)
@@ -138,8 +144,10 @@ function CreateTasksTable({
 				setAlertDismissed(false)
 
 				if (dto.extractionStatus === ExtractionStatus.FINISHED_WITH_TASKS) {
-					setExtractedCount(dto.tasks.length)
-					setRows([...map(dto.tasks, mapTaskDtoToRow), createEmptyRow()])
+					startTransition(() => {
+						setExtractedCount(dto.tasks.length)
+						setRows([...map(dto.tasks, mapTaskDtoToRow), createEmptyRow()])
+					})
 				}
 			}
 		},
@@ -153,8 +161,10 @@ function CreateTasksTable({
 		if (source.tasks.length > 0) {
 			const mapped = source.tasks.map(mapTaskDtoToRow)
 
-			setExtractedCount(mapped.length)
-			setRows([...mapped, createEmptyRow()])
+			startTransition(() => {
+				setExtractedCount(mapped.length)
+				setRows([...mapped, createEmptyRow()])
+			})
 		}
 
 		if (TERMINAL_EXTRACTION_STATUSES.has(source.extractionStatus)) {
@@ -273,7 +283,8 @@ function CreateTasksTable({
 			<TableOuterContainer>
 				<DataTable
 					columns={columns}
-					data={rows}
+					data={isSourceLoading ? [] : rows}
+					isLoading={isSourceLoading}
 					getRowId={(row) => row.rowKey}
 					meta={meta}
 					containerClassName="overflow-x-hidden"
