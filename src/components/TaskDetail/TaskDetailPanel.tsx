@@ -50,7 +50,6 @@ function TaskDetailPanel({
 		dueDate,
 		updatedAt,
 		createdAt,
-		notes,
 		source,
 		tags,
 		assigneeStatuses,
@@ -98,8 +97,7 @@ function TaskDetailPanel({
 	const showDueDateMeta = deadlineType !== DeadlineType.IMMEDIATE
 
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
-	const showExtraInfo =
-		allTags.length > 0 || !!source || (notes && notes.length > 0)
+	const showExtraInfo = allTags.length > 0 || !!source
 
 	const [isDownloadingAttachment, setIsDownloadingAttachment] = useState(false)
 
@@ -290,13 +288,6 @@ function TaskDetailPanel({
 									</InfoBlock>
 								)}
 							</InfoGrid>
-
-							{notes && (
-								<NotesSection>
-									<SectionLabel>הערות הנחיה</SectionLabel>
-									<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
-								</NotesSection>
-							)}
 						</>
 					)}
 				</ScrollContent>
@@ -645,16 +636,6 @@ const PencilButton = styled.button`
   }
 `
 
-// ─── Notes ─────────────────────────────────────────────────────────────────────
-
-const NotesSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  align-items: flex-start;
-`
-
 const HistoryOverlay = styled.div`
   position: absolute;
   inset: 0;
@@ -676,38 +657,4 @@ const ChatLabel = styled.span`
   font-weight: 500;
   line-height: 21px;
   color: var(--sea-ink);
-`
-
-const NotesText = styled.div`
-  width: 100%;
-  overflow-wrap: break-word;
-  font-size: var(--fs-btn);
-  line-height: 20px;
-  color: var(--sea-ink-soft);
-
-  p {
-    margin: 0;
-  }
-
-  ol {
-    margin: 0;
-    padding-inline-start: 20px;
-    list-style-type: decimal;
-  }
-
-  li {
-    margin: 0;
-  }
-
-  li p {
-    display: inline;
-  }
-
-  strong {
-    font-weight: 600;
-  }
-
-  u {
-    text-decoration: underline;
-  }
 `
