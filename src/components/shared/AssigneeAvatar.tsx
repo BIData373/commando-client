@@ -53,7 +53,7 @@ const ColoredFallback = styled(MesibaAvatarFallback)<{
 	$color: string | null
 }>`
   background: ${({ $color }) => $color ?? "var(--chip-bg)"};
-    color: ${({ $color }) => ($color && isColorVarDark($color) ? "white" : "black")};
+    color: ${({ $color }) => ($color && isColorVarDark($color) ? "var(--background)" : "var(--foreground)")};
   font-size: var(--fs-btn);
   font-weight: 400;
   width: 100%;

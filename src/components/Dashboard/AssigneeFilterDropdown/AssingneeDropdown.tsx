@@ -5,7 +5,7 @@ import { isColorVarDark } from "src/functions/contrast-color"
 import { getInitials } from "src/utils/avatar-utils"
 import { Checkbox } from "../../ui/checkbox"
 
-interface AssingneeDropdownProps {
+interface AssigneeDropdownProps {
 	filteredAssignees: AssigneesDto[]
 	handleToggle: (id: number) => void
 	pendingIds: number[]
@@ -15,7 +15,7 @@ export default function AssingneeDropDown({
 	filteredAssignees,
 	handleToggle,
 	pendingIds,
-}: AssingneeDropdownProps) {
+}: AssigneeDropdownProps) {
 	return (
 		<OptionsList>
 			{filteredAssignees.map((assignee) => (
