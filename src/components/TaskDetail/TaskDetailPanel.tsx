@@ -1,7 +1,6 @@
-import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import { concat, uniqBy } from "lodash"
-import { Calendar, ChevronUp, Loader2, Paperclip, Pencil } from "lucide-react"
+import { Calendar, ChevronUp, Paperclip, Pencil } from "lucide-react"
 import { useRef, useState } from "react"
 import {
 	DeadlineType,
@@ -9,7 +8,6 @@ import {
 	type TaskDetailsDto,
 } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
-import { getAttachmentSignedUrl } from "src/api/s3/s3"
 import {
 	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
@@ -17,7 +15,7 @@ import {
 	useDeleteTask,
 } from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
-import { downloadFromUrl } from "src/functions/download-utils"
+import { useAttachmentDownload } from "src/hooks/useAttachmentDownload"
 import { invalidateQueries } from "src/queryClient"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
@@ -25,6 +23,7 @@ import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModa
 import { DeadlineTypeTag } from "../shared/DeadlineTypeTag"
 import FlagIcon from "../shared/FlagIcon"
 import { ModalContent } from "../shared/ModalContent"
+import { SpinIcon } from "../shared/SpinIcon"
 import { StatusTag } from "../shared/StatusTag"
 import WorkspaceCell from "../shared/WorkspaceCell"
 import { RowActionsMenu } from "../Tasks/RowActionsMenu"
@@ -101,25 +100,11 @@ function TaskDetailPanel({
 	const showExtraInfo =
 		allTags.length > 0 || !!source || (notes && notes.length > 0)
 
-	const [isDownloadingAttachment, setIsDownloadingAttachment] = useState(false)
+	const { isDownloading: isDownloadingAttachment, download } =
+		useAttachmentDownload()
 
-	async function handleAttachmentDownload() {
-		if (
-			!source?.attachmentKey ||
-			!source?.attachmentName ||
-			isDownloadingAttachment
-		)
-			return
-		setIsDownloadingAttachment(true)
-		try {
-			const { url } = await getAttachmentSignedUrl({
-				key: source.attachmentKey,
-				filename: source.attachmentName,
-			})
-			if (url) await downloadFromUrl(url, source.attachmentName)
-		} finally {
-			setIsDownloadingAttachment(false)
-		}
+	function handleAttachmentDownload() {
+		download(source?.attachmentKey, source?.attachmentName)
 	}
 
 	function handleScroll() {
@@ -270,9 +255,7 @@ function TaskDetailPanel({
 														disabled={isDownloadingAttachment}
 													>
 														{source.attachmentName}
-														{isDownloadingAttachment && (
-															<AttachmentSpinIcon size={12} />
-														)}
+														{isDownloadingAttachment && <SpinIcon size={12} />}
 													</AttachmentDownloadButton>
 												</>
 											)}
@@ -583,16 +566,6 @@ const InfoAttachment = styled.div`
   align-items: center;
   gap: 8px;
   color: var(--active-color);
-`
-
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`
-
-const AttachmentSpinIcon = styled(Loader2)`
-  flex-shrink: 0;
-  animation: ${spin} 0.8s linear infinite;
 `
 
 const AttachmentDownloadButton = styled.button`

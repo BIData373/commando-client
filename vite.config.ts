@@ -25,13 +25,13 @@ const config = defineConfig({
 		viteReact({
 			babel: {
 				plugins: [
-					[
-						"@emotion/babel-plugin",
-						{
-							autoLabel: "dev-only",
-							labelFormat: "[local]",
-						},
-					],
+					// [
+					// 	"@emotion/babel-plugin",
+					// 	{
+					// 		autoLabel: "dev-only",
+					// 		labelFormat: "[local]",
+					// 	},
+					// ],
 				],
 			},
 		}),
