@@ -47,7 +47,6 @@ function buildTaskSearchText<T extends TaskRowDto>(
 		task.source?.date ? formatDateShort(task.source.date) : undefined,
 		...task.tags.map((tag) => tag.name),
 		...(task.source?.tags ?? []).map((tag) => tag.name),
-		task.notes,
 		...(additionalSearchValues?.(task) ?? []),
 	]
 
