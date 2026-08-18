@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { NotesText } from "src/utils/notes-utils"
 
 interface NotesBlockProps {
 	notes: string
@@ -8,7 +9,7 @@ function NotesBlock({ notes }: NotesBlockProps) {
 	return (
 		<NotesSection>
 			<SectionLabel>הערות הנחיה</SectionLabel>
-			<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
+			<FullWidthNotesText dangerouslySetInnerHTML={{ __html: notes }} />
 		</NotesSection>
 	)
 }
@@ -32,36 +33,7 @@ const NotesSection = styled.div`
   align-items: flex-start;
 `
 
-const NotesText = styled.div`
+const FullWidthNotesText = styled(NotesText)`
   width: 100%;
   overflow-wrap: break-word;
-  font-size: var(--fs-btn);
-  line-height: 20px;
-  color: var(--sea-ink-soft);
-
-  p {
-    margin: 0;
-  }
-
-  ol {
-    margin: 0;
-    padding-inline-start: 20px;
-    list-style-type: decimal;
-  }
-
-  li {
-    margin: 0;
-  }
-
-  li p {
-    display: inline;
-  }
-
-  strong {
-    font-weight: 600;
-  }
-
-  u {
-    text-decoration: underline;
-  }
 `
