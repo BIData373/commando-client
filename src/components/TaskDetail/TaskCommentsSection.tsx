@@ -141,7 +141,7 @@ export default TaskCommentsSection
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 20px;
   width: 100%;
   padding-bottom: 12px;
 `
@@ -151,9 +151,11 @@ const TextareaRow = styled.div`
   align-items: center;
   gap: 8px;
   width: 100%;
+  margin-top: 12px;
 `
 
 const CommentsTextarea = styled.textarea`
+  field-sizing: content;
   width: 100%;
   min-height: 32px;
   max-height: 124px;

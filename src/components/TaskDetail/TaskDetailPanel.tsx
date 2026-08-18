@@ -68,10 +68,7 @@ function TaskDetailPanel({
 	const [commentsDividerStuck, setCommentsDividerStuck] = useState(false)
 	const commentsDividerRef = useRef<HTMLDivElement>(null)
 	const scrollRef = useRef<HTMLDivElement>(null)
-	const [scrollShadow, setScrollShadow] = useState({
-		top: false,
-		bottom: false,
-	})
+	const [scrollShadowTop, setScrollShadowTop] = useState(false)
 
 	function checkCommentsDividerVisibility() {
 		const el = scrollRef.current
@@ -137,13 +134,16 @@ function TaskDetailPanel({
 		const el = scrollRef.current
 		if (!el) return
 		const atTop = el.scrollTop <= 0
-		const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
-		setScrollShadow({ top: !atTop, bottom: !atBottom })
+		setScrollShadowTop(!atTop)
 		checkCommentsDividerVisibility()
 	}
 
 	function handleCloseEditDiscussion() {
 		setShowEditDiscussion(false)
+	}
+
+	function handleScrollToComments() {
+		commentsDividerRef.current?.scrollIntoView({ behavior: "smooth" })
 	}
 
 	function handleOpenChange(open: boolean) {
@@ -187,7 +187,7 @@ function TaskDetailPanel({
 						<WorkspaceCell workspace={workspace} iconSize={20} />
 					)}
 
-					<TitleRow $shadow={scrollShadow.top}>
+					<TitleRow $shadow={scrollShadowTop}>
 						<TextWrapper>
 							{flagged && <FlagIcon size={20} />}
 							<TitleText title={title}>{title}</TitleText>
@@ -289,7 +289,7 @@ function TaskDetailPanel({
 				</ScrollContent>
 
 				{commentsDividerStuck && (
-					<FixedCommentsBar>
+					<FixedCommentsBar onClick={handleScrollToComments}>
 						<CommentsDivider taskId={id} />
 					</FixedCommentsBar>
 				)}
@@ -324,7 +324,7 @@ const Panel = styled(ModalContent)`
   width: 100%;
   max-width: 900px;
   max-height: 82vh;
-  min-height: 800px;
+  min-height: 850px;
   overflow: hidden;
   direction: rtl;
 `
@@ -565,6 +565,7 @@ const FixedCommentsBar = styled.div`
   background: var(--background);
   box-shadow: var(--shadow-comment-bar);
   border-radius: 0 0 8px 8px;
+  cursor: pointer;
 `
 
 const HistoryOverlay = styled.div`
