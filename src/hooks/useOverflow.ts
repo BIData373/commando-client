@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 
 interface UseOverflowOptions {
-	content?: unknown
+	content?: string
 	includeDescendants?: boolean
 }
 
