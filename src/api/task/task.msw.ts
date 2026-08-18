@@ -51,10 +51,6 @@ export const getCreateTaskResponseMock = (
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		null,
 	]),
-	notes: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	source: faker.helpers.arrayElement([
 		{
@@ -123,6 +119,48 @@ export const getCreateTaskResponseMock = (
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 	})),
+	lastMessage: {
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		createdBy: faker.number.float({ fractionDigits: 2 }),
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		updatedBy: faker.number.float({ fractionDigits: 2 }),
+		deletedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
+		deletedBy: faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
+		id: faker.number.float({ fractionDigits: 2 }),
+		content: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		user: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: faker.helpers.arrayElement([
+				{
+					...{
+						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						displayName: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						name: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						isBI: faker.helpers.arrayElement([
+							faker.datatype.boolean(),
+							undefined,
+						]),
+					},
+				},
+				null,
+			]),
+		},
+		taskId: faker.number.float({ fractionDigits: 2 }),
+	},
+	messageCount: faker.number.float({ fractionDigits: 2 }),
 	assigneeStatuses: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -252,10 +290,6 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
-		notes: faker.helpers.arrayElement([
-			faker.string.alpha({ length: { min: 10, max: 20 } }),
-			null,
-		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 		source: faker.helpers.arrayElement([
 			{
@@ -328,6 +362,48 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		})),
+		lastMessage: {
+			createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			createdBy: faker.number.float({ fractionDigits: 2 }),
+			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			updatedBy: faker.number.float({ fractionDigits: 2 }),
+			deletedAt: faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
+			deletedBy: faker.helpers.arrayElement([
+				faker.number.float({ fractionDigits: 2 }),
+				null,
+			]),
+			id: faker.number.float({ fractionDigits: 2 }),
+			content: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			user: {
+				id: faker.number.float({ fractionDigits: 2 }),
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				info: faker.helpers.arrayElement([
+					{
+						...{
+							upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+							displayName: faker.helpers.arrayElement([
+								faker.string.alpha({ length: { min: 10, max: 20 } }),
+								undefined,
+							]),
+							name: faker.helpers.arrayElement([
+								faker.string.alpha({ length: { min: 10, max: 20 } }),
+								undefined,
+							]),
+							isBI: faker.helpers.arrayElement([
+								faker.datatype.boolean(),
+								undefined,
+							]),
+						},
+					},
+					null,
+				]),
+			},
+			taskId: faker.number.float({ fractionDigits: 2 }),
+		},
+		messageCount: faker.number.float({ fractionDigits: 2 }),
 		assigneeStatuses: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
@@ -427,10 +503,6 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
-		notes: faker.helpers.arrayElement([
-			faker.string.alpha({ length: { min: 10, max: 20 } }),
-			null,
-		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 		source: faker.helpers.arrayElement([
 			{
@@ -503,6 +575,48 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		})),
+		lastMessage: {
+			createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			createdBy: faker.number.float({ fractionDigits: 2 }),
+			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			updatedBy: faker.number.float({ fractionDigits: 2 }),
+			deletedAt: faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
+			deletedBy: faker.helpers.arrayElement([
+				faker.number.float({ fractionDigits: 2 }),
+				null,
+			]),
+			id: faker.number.float({ fractionDigits: 2 }),
+			content: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			user: {
+				id: faker.number.float({ fractionDigits: 2 }),
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				info: faker.helpers.arrayElement([
+					{
+						...{
+							upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+							displayName: faker.helpers.arrayElement([
+								faker.string.alpha({ length: { min: 10, max: 20 } }),
+								undefined,
+							]),
+							name: faker.helpers.arrayElement([
+								faker.string.alpha({ length: { min: 10, max: 20 } }),
+								undefined,
+							]),
+							isBI: faker.helpers.arrayElement([
+								faker.datatype.boolean(),
+								undefined,
+							]),
+						},
+					},
+					null,
+				]),
+			},
+			taskId: faker.number.float({ fractionDigits: 2 }),
+		},
+		messageCount: faker.number.float({ fractionDigits: 2 }),
 		rowKey: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		assignee: faker.helpers.arrayElement([
 			{
@@ -671,10 +785,6 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
-		notes: faker.helpers.arrayElement([
-			faker.string.alpha({ length: { min: 10, max: 20 } }),
-			null,
-		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 		source: faker.helpers.arrayElement([
 			{
@@ -747,6 +857,48 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		})),
+		lastMessage: {
+			createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			createdBy: faker.number.float({ fractionDigits: 2 }),
+			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			updatedBy: faker.number.float({ fractionDigits: 2 }),
+			deletedAt: faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
+			deletedBy: faker.helpers.arrayElement([
+				faker.number.float({ fractionDigits: 2 }),
+				null,
+			]),
+			id: faker.number.float({ fractionDigits: 2 }),
+			content: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			user: {
+				id: faker.number.float({ fractionDigits: 2 }),
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				info: faker.helpers.arrayElement([
+					{
+						...{
+							upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+							displayName: faker.helpers.arrayElement([
+								faker.string.alpha({ length: { min: 10, max: 20 } }),
+								undefined,
+							]),
+							name: faker.helpers.arrayElement([
+								faker.string.alpha({ length: { min: 10, max: 20 } }),
+								undefined,
+							]),
+							isBI: faker.helpers.arrayElement([
+								faker.datatype.boolean(),
+								undefined,
+							]),
+						},
+					},
+					null,
+				]),
+			},
+			taskId: faker.number.float({ fractionDigits: 2 }),
+		},
+		messageCount: faker.number.float({ fractionDigits: 2 }),
 		assigneeStatuses: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
@@ -876,10 +1028,6 @@ export const getListPersonalTaskRowsResponseMock =
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				null,
 			]),
-			notes: faker.helpers.arrayElement([
-				faker.string.alpha({ length: { min: 10, max: 20 } }),
-				null,
-			]),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 			source: faker.helpers.arrayElement([
 				{
@@ -952,6 +1100,48 @@ export const getListPersonalTaskRowsResponseMock =
 				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			})),
+			lastMessage: {
+				createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				createdBy: faker.number.float({ fractionDigits: 2 }),
+				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				updatedBy: faker.number.float({ fractionDigits: 2 }),
+				deletedAt: faker.helpers.arrayElement([
+					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+					null,
+				]),
+				deletedBy: faker.helpers.arrayElement([
+					faker.number.float({ fractionDigits: 2 }),
+					null,
+				]),
+				id: faker.number.float({ fractionDigits: 2 }),
+				content: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				user: {
+					id: faker.number.float({ fractionDigits: 2 }),
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					info: faker.helpers.arrayElement([
+						{
+							...{
+								upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+								displayName: faker.helpers.arrayElement([
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
+								]),
+								name: faker.helpers.arrayElement([
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
+								]),
+								isBI: faker.helpers.arrayElement([
+									faker.datatype.boolean(),
+									undefined,
+								]),
+							},
+						},
+						null,
+					]),
+				},
+				taskId: faker.number.float({ fractionDigits: 2 }),
+			},
+			messageCount: faker.number.float({ fractionDigits: 2 }),
 			rowKey: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			assignee: faker.helpers.arrayElement([
 				{
@@ -1155,10 +1345,6 @@ export const getGetTaskResponseMock = (
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		null,
 	]),
-	notes: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	source: faker.helpers.arrayElement([
 		{
@@ -1227,6 +1413,48 @@ export const getGetTaskResponseMock = (
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 	})),
+	lastMessage: {
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		createdBy: faker.number.float({ fractionDigits: 2 }),
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		updatedBy: faker.number.float({ fractionDigits: 2 }),
+		deletedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
+		deletedBy: faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
+		id: faker.number.float({ fractionDigits: 2 }),
+		content: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		user: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: faker.helpers.arrayElement([
+				{
+					...{
+						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						displayName: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						name: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						isBI: faker.helpers.arrayElement([
+							faker.datatype.boolean(),
+							undefined,
+						]),
+					},
+				},
+				null,
+			]),
+		},
+		taskId: faker.number.float({ fractionDigits: 2 }),
+	},
+	messageCount: faker.number.float({ fractionDigits: 2 }),
 	assigneeStatuses: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -1364,10 +1592,6 @@ export const getUpdateTaskResponseMock = (
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		null,
 	]),
-	notes: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	source: faker.helpers.arrayElement([
 		{
@@ -1436,6 +1660,48 @@ export const getUpdateTaskResponseMock = (
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 	})),
+	lastMessage: {
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		createdBy: faker.number.float({ fractionDigits: 2 }),
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		updatedBy: faker.number.float({ fractionDigits: 2 }),
+		deletedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
+		deletedBy: faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
+		id: faker.number.float({ fractionDigits: 2 }),
+		content: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		user: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: faker.helpers.arrayElement([
+				{
+					...{
+						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						displayName: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						name: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						isBI: faker.helpers.arrayElement([
+							faker.datatype.boolean(),
+							undefined,
+						]),
+					},
+				},
+				null,
+			]),
+		},
+		taskId: faker.number.float({ fractionDigits: 2 }),
+	},
+	messageCount: faker.number.float({ fractionDigits: 2 }),
 	assigneeStatuses: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -1563,10 +1829,6 @@ export const getDeleteTaskResponseMock = (
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		null,
 	]),
-	notes: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	source: faker.helpers.arrayElement([
 		{
@@ -1635,6 +1897,48 @@ export const getDeleteTaskResponseMock = (
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 	})),
+	lastMessage: {
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		createdBy: faker.number.float({ fractionDigits: 2 }),
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		updatedBy: faker.number.float({ fractionDigits: 2 }),
+		deletedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
+		deletedBy: faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
+		id: faker.number.float({ fractionDigits: 2 }),
+		content: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		user: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: faker.helpers.arrayElement([
+				{
+					...{
+						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						displayName: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						name: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						isBI: faker.helpers.arrayElement([
+							faker.datatype.boolean(),
+							undefined,
+						]),
+					},
+				},
+				null,
+			]),
+		},
+		taskId: faker.number.float({ fractionDigits: 2 }),
+	},
+	messageCount: faker.number.float({ fractionDigits: 2 }),
 	assigneeStatuses: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
