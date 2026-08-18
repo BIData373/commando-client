@@ -21,7 +21,6 @@ const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
 	"deadlineType",
 	"source",
 	"tags",
-	"notes",
 	"workspace",
 	"createdAt",
 	"updatedAt",
@@ -29,7 +28,6 @@ const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
 
 const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 	"tags",
-	"notes",
 	"updatedAt",
 ])
 

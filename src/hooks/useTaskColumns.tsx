@@ -457,21 +457,6 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				),
 			},
 			{
-				id: "notes",
-				accessorKey: "notes",
-				header: COLUMN_LABELS.notes,
-				size: 100,
-				enableSorting: false,
-				enableColumnFilter: false,
-				meta: { grow: true },
-				cell: ({ getValue }) => {
-					const notes = getValue<string>()
-					return notes ? (
-						<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
-					) : null
-				},
-			},
-			{
 				id: "createdAt",
 				accessorKey: "createdAt",
 				header: ({ column }) => (
@@ -649,41 +634,6 @@ const SourceText = styled.span`
   font-weight: 400;
   line-height: 22px;
   color: rgba(0, 0, 0, 0.65);
-`
-
-const NotesText = styled.div`
-  overflow: hidden;
-  max-height: 40px;
-
-  font-size: var(--fs-btn);
-  line-height: 20px;
-  color: var(--sea-ink-soft);
-
-  p {
-    margin: 0;
-  }
-
-  ol {
-    margin: 0;
-    padding-inline-start: 20px;
-    list-style-type: decimal;
-  }
-
-  li {
-    margin: 0;
-  }
-
-  li p {
-    display: inline;
-  }
-
-  strong {
-    font-weight: 600;
-  }
-
-  u {
-    text-decoration: underline;
-  }
 `
 
 const DateText = styled.span`
