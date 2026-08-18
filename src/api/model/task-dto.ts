@@ -7,6 +7,7 @@
  */
 import type { AssigneeStatusDto } from "./assignee-status-dto"
 import type { DeadlineType } from "./deadline-type"
+import type { MessageDto } from "./message-dto"
 import type { SourceDto } from "./source-dto"
 import type { TagDto } from "./tag-dto"
 import type { TaskCreationType } from "./task-creation-type"
@@ -29,11 +30,11 @@ export interface TaskDto {
 	creationType: TaskCreationType
 	/** @nullable */
 	dueDate: Date | null
-	/** @nullable */
-	notes: string | null
 	workspaceId: number
 	/** @nullable */
 	source: SourceDto | null
 	tags: TagDto[]
+	lastMessage: MessageDto
+	messageCount: number
 	assigneeStatuses: AssigneeStatusDto[]
 }

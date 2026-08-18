@@ -16,7 +16,6 @@ export interface UpdateTaskDto {
 	deadlineType?: DeadlineType
 	/** @nullable */
 	dueDate?: Date | null
-	notes?: string
 	tags?: string[]
 	creationType?: TaskCreationType
 	/** @nullable */

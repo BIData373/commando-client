@@ -19,7 +19,6 @@ export const TASK_COLUMNS_META: TaskColumnMeta[] = [
 	{ id: "deadlineType", label: 'תג"ב' },
 	{ id: "source", label: "מקור הנחיה" },
 	{ id: "tags", label: "נושא" },
-	{ id: "notes", label: "הערות" },
 	{ id: "createdAt", label: "תאריך יצירה" },
 	{ id: "updatedAt", label: "עודכן ב" },
 ]
