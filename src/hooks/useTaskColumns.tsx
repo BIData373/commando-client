@@ -305,7 +305,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				}) =>
 					assignee && (
 						<AssigneeCell
-							responsible={assignee}
+							assignee={assignee}
 							otherAssignees={otherAssignees ?? []}
 						/>
 					),

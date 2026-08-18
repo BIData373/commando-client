@@ -11,39 +11,34 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 export type AvatarColor = "cyan" | "blue" | "green" | "orange" | "gray"
 
 interface AssigneeCellProps {
-	responsible: AssigneeDto | null
+	assignee: AssigneeDto | null
 	otherAssignees: AssigneeStatusDto[]
 }
 
 export const AssigneeCell = memo(function AssigneeCell({
-	responsible,
+	assignee,
 	otherAssignees,
 }: AssigneeCellProps) {
-	const relatedDirectives = otherAssignees.map((s) => ({
-		assignee: s.assignee,
-		status: s.status,
-	}))
-
 	return (
 		<CellRoot>
-			{responsible && (
-				<AssigneeDetailPopover assignee={responsible}>
-					<AssigneeAvatar assignee={responsible} cursor />
+			{assignee && (
+				<AssigneeDetailPopover assignee={assignee}>
+					<AssigneeAvatar assignee={assignee} cursor />
 				</AssigneeDetailPopover>
 			)}
-			{relatedDirectives.length > 0 && (
+			{otherAssignees.length > 0 && (
 				<Popover>
 					<PopoverTrigger asChild>
-						<AvatarCircle>{relatedDirectives.length}+</AvatarCircle>
+						<AvatarCircle>{otherAssignees.length}+</AvatarCircle>
 					</PopoverTrigger>
 					<CompactContent side="top" sideOffset={10} align="center">
 						<PopoverArrow width={12} height={6} />
 						<CompactList>
-							{relatedDirectives.map((d) => (
-								<CompactRow key={d.assignee.id}>
-									<StatusTag status={d.status} />
-									<CompactRole>{d.assignee.name}</CompactRole>
-									<AssigneeAvatar assignee={d.assignee} />
+							{otherAssignees.map((otherAssignee) => (
+								<CompactRow key={otherAssignee.assignee.id}>
+									<StatusTag status={otherAssignee.status} />
+									<CompactRole>{otherAssignee.assignee.name}</CompactRole>
+									<AssigneeAvatar assignee={otherAssignee.assignee} />
 								</CompactRow>
 							))}
 						</CompactList>
