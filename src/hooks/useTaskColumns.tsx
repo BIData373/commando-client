@@ -431,6 +431,47 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				},
 			},
 			{
+				id: "lastMessage",
+				header: ({ column }) => (
+					<ColumnHeaderWithActions
+						label={COLUMN_LABELS.lastMessage}
+						column={column}
+					/>
+				),
+				size: 100,
+				meta: { grow: true },
+				enableSorting: false,
+				enableColumnFilter: false,
+				cell: ({
+					row: {
+						original: { lastMessage, messageCount },
+					},
+				}) => {
+					const userName =
+						lastMessage?.user?.info?.displayName ??
+						lastMessage?.user?.info?.name
+					const text = userName
+						? `${userName}: ${lastMessage.content}`
+						: (lastMessage?.content ?? "")
+
+					return (
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<CommentCell>
+										<CommentText>{text}</CommentText>
+										{messageCount > 1 && (
+											<CommentCount>({messageCount})</CommentCount>
+										)}
+									</CommentCell>
+								</TooltipTrigger>
+								{text && <CommentTooltip>{text}</CommentTooltip>}
+							</Tooltip>
+						</TooltipProvider>
+					)
+				},
+			},
+			{
 				id: "tags",
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
@@ -533,7 +574,7 @@ const IdCell = styled.span`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 24px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   width: 100%;
   height: 100%;
   cursor: pointer;
@@ -626,7 +667,7 @@ const SourceCell = styled.div`
 
 const SourceAttachmentIcon = styled(Paperclip)`
   flex-shrink: 0;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
 `
 
 const SourceText = styled.span`
@@ -636,7 +677,55 @@ const SourceText = styled.span`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
+`
+
+const CommentCell = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+`
+
+const CommentCount = styled.span`
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--text-color-400);
+  flex-shrink: 0;
+  opacity: 0;
+
+  ${CommentCell}:hover & {
+    opacity: 1;
+  }
+`
+
+const CommentTooltip = styled(TooltipContent)`
+  background: var(--Components-Tooltip-Global-colorBgSpotlight);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--background);
+  text-align: start;
+  max-width: 300px;
+`
+
+const CommentText = styled.span`
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--text-color-2);
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 `
 
 const DateText = styled.span`
