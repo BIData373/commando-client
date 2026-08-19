@@ -16,7 +16,6 @@ export interface CreateTaskDto {
 	deadlineType: DeadlineType
 	/** @nullable */
 	dueDate?: Date | null
-	notes?: string
 	tags?: string[]
 	creationType?: TaskCreationType
 	workspaceId: number
