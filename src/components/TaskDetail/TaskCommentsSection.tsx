@@ -7,6 +7,7 @@ import {
 	useDeleteMessage,
 	useListMessages,
 } from "src/api/message/message"
+import { getListTaskRowsQueryKey } from "src/api/task/task"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { invalidateQueries } from "src/queryClient"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
@@ -64,7 +65,10 @@ function TaskCommentsSection({
 			{
 				onSuccess() {
 					setCommentValue("")
-					invalidateQueries([getListMessagesQueryKey({ taskId })])
+					invalidateQueries([
+						getListMessagesQueryKey({ taskId }),
+						getListTaskRowsQueryKey(),
+					])
 				},
 			},
 		)
