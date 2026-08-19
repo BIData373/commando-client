@@ -1,13 +1,13 @@
 import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
-import { concat, map, uniq } from "lodash"
 import { useCallback, useMemo } from "react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import {
 	DeadlineType,
 	type TaskRowDto,
+	type WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
@@ -66,6 +66,7 @@ interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	selectMode?: SelectModeConfig<TTask>
 	actions?: ActionsConfig
 	showMenuColumn?: boolean
+	statuses?: WorkspaceStatusDto[]
 	onUpdateStatusSuccess?(): void
 	onTitleDoubleClick?: (taskId: number) => void
 }
@@ -79,6 +80,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 	selectMode,
 	actions,
 	showMenuColumn = true,
+	statuses,
 	onUpdateStatusSuccess,
 }: UseTaskColumnsOptions<TTask>) {
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
@@ -99,6 +101,9 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 
 	const columns = useMemo<ColumnDef<TTask>[]>(() => {
 		// TODO Move all constant fields to task-table-utils
+
+		const today = startOfToday()
+
 		const pinnedStartColumn: ColumnDef<TTask> = selectMode?.enabled
 			? {
 					id: "select",
@@ -266,10 +271,11 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					status && (
 						<StatusDropdown
 							status={status}
+							statuses={statuses}
+							workspaceId={workspaceId}
 							assigneeId={assignee?.id}
 							editable={!archivedAt && editable}
 							taskId={id}
-							workspaceId={workspaceId}
 							onUpdate={handleUpdateStatus}
 						/>
 					),
@@ -292,11 +298,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				}) =>
 					assignee && (
 						<AssigneeCell
-							responsible={assignee}
-							relatedDirectives={(otherAssignees ?? []).map((s) => ({
-								assignee: s.assignee,
-								status: s.status,
-							}))}
+							assignee={assignee}
+							otherAssignees={otherAssignees ?? []}
 						/>
 					),
 			},
@@ -324,7 +327,6 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					},
 				}) => {
 					const deadlineType = rawDeadlineType
-					const today = startOfToday()
 					const daysUntil = dueDate
 						? differenceInDays(new Date(dueDate), today)
 						: null
@@ -367,7 +369,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 													$isOverdue={isOverdue}
 													$isApproaching={isApproaching}
 												>
-													{formatDateShort(new Date(displayDate))}
+													{formatDateShort(displayDate)}
 												</DeadlineDateText>
 											</TooltipTrigger>
 
@@ -379,7 +381,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 										$isOverdue={isOverdue}
 										$isApproaching={isApproaching}
 									>
-										{formatDateShort(new Date(displayDate))}
+										{formatDateShort(displayDate)}
 									</DeadlineDateText>
 								))}
 						</DeadlineCell>
@@ -484,15 +486,9 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				enableSorting: false,
 				...TASK_COLUMN_DEFINITIONS.tags,
 				meta: { grow: true },
-				cell: ({
-					row: {
-						original: { tags, source },
-					},
-				}) => {
-					const allNames = uniq(map(concat(tags, source?.tags ?? []), "name"))
-
-					return <TopicCell tags={allNames} searchQuery={searchQuery} />
-				},
+				cell: ({ getValue }) => (
+					<TopicCell tags={getValue<string[]>()} searchQuery={searchQuery} />
+				),
 			},
 			{
 				id: "createdAt",
@@ -555,6 +551,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 		selectMode,
 		actions,
 		showMenuColumn,
+		statuses,
 		handleUpdateStatus,
 	])
 
