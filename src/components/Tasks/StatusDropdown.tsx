@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { useDisclosure } from "@mantine/hooks"
 import { memo, useState } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
@@ -31,11 +32,11 @@ export const StatusDropdown = memo(
 		editable = false,
 		onUpdate,
 	}: StatusDropdownProps) => {
-		const [isOpen, setIsOpen] = useState(false)
+		const [isOpen, { toggle: toggleOpen }] = useDisclosure(false)
 
 		const { data: fetchedStatuses = [], isLoading: isFetchingStatuses } =
 			useListWorkspaceStatuses(
-				{ workspaceId: workspaceId ?? 0 },
+				{ workspaceId: workspaceId ?? -1 },
 				{
 					query: {
 						enabled:
@@ -58,7 +59,7 @@ export const StatusDropdown = memo(
 				{...{ [HAS_ASSIGNEE_DATA_ATTR]: assigneeId ? "" : undefined }}
 			>
 				{editable && statusesReady ? (
-					<DropdownMenu onOpenChange={setIsOpen}>
+					<DropdownMenu onOpenChange={toggleOpen}>
 						<DropdownMenuTrigger asChild>
 							<TriggerWrapper tabIndex={0} $hasAssignee={!!assigneeId}>
 								<StatusTag
