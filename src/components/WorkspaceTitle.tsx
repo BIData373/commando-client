@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import EllipsisTooltip from "src/components/shared/EllipsisTooltip"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { formatMesibaIcon } from "src/utils/icon-utils"
@@ -15,7 +16,7 @@ export function WorkspaceTitle() {
 				<WorkspaceIcon src={formatMesibaIcon(icon)} alt="Workspace icon" />
 			)}
 
-			{title}
+			<EllipsisTooltip tooltip={title}>{title}</EllipsisTooltip>
 		</>,
 		[icon, title],
 	)
