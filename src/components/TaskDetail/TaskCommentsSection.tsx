@@ -85,52 +85,50 @@ function TaskCommentsSection({
 				/>
 				{isSendingComment && <SpinIcon size={16} />}
 			</TextareaRow>
-			{messages.map((msg) => {
-				return (
-					<CommentCard key={msg.id}>
-						<CommentMainRow>
-							{(isManager || msg.user.upn === currentUser.upn) && (
-								<DropdownMenu>
-									<DropdownMenuTrigger asChild>
-										<CommentMenuButton>
-											<MoreVertical size={14} />
-										</CommentMenuButton>
-									</DropdownMenuTrigger>
-									<DropdownMenuContent align="start" side="bottom">
-										<DeleteMenuItem
-											onClick={() =>
-												deleteMessage({
-													pathParams: { id: msg.id },
-												})
-											}
-										>
-											מחק תגובה
-											<Trash2 size={16} />
-										</DeleteMenuItem>
-									</DropdownMenuContent>
-								</DropdownMenu>
-							)}
-							<CommentContent>{msg.content}</CommentContent>
-						</CommentMainRow>
-						<CommentFooter>
-							<CommentDate>
-								{formatMinutesHours(msg.createdAt)} ·{" "}
-								{formatDateMonthYear(msg.createdAt)}
-							</CommentDate>
-							<CommentUserDetails>
-								<CommentUserMeta>
-									{msg.user.upn}
-									{msg.user.info?.displayName &&
-										` - ${msg.user.info.displayName}`}
-								</CommentUserMeta>
-								<CommentUserName>
-									{msg.user.info?.name ?? msg.user.upn}
-								</CommentUserName>
-							</CommentUserDetails>
-						</CommentFooter>
-					</CommentCard>
-				)
-			})}
+			{messages.map((msg) => (
+				<CommentCard key={msg.id}>
+					<CommentMainRow>
+						{(isManager || msg.user.upn === currentUser.upn) && (
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<CommentMenuButton>
+										<MoreVertical size={14} />
+									</CommentMenuButton>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="start" side="bottom">
+									<DeleteMenuItem
+										onClick={() =>
+											deleteMessage({
+												pathParams: { id: msg.id },
+											})
+										}
+									>
+										מחק תגובה
+										<Trash2 size={16} />
+									</DeleteMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						)}
+						<CommentContent>{msg.content}</CommentContent>
+					</CommentMainRow>
+					<CommentFooter>
+						<CommentDate>
+							{formatMinutesHours(msg.createdAt)} ·{" "}
+							{formatDateMonthYear(msg.createdAt)}
+						</CommentDate>
+						<CommentUserDetails>
+							<CommentUserMeta>
+								{msg.user.upn}
+								{msg.user.info?.displayName &&
+									` - ${msg.user.info.displayName}`}
+							</CommentUserMeta>
+							<CommentUserName>
+								{msg.user.info?.name ?? msg.user.upn}
+							</CommentUserName>
+						</CommentUserDetails>
+					</CommentFooter>
+				</CommentCard>
+			))}
 		</Wrapper>
 	)
 }
