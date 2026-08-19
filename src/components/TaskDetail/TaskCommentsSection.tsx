@@ -85,12 +85,11 @@ function TaskCommentsSection({
 				/>
 				{isSendingComment && <SpinIcon size={16} />}
 			</TextareaRow>
-			{[...messages].map((msg) => {
-				const canDelete = isManager || msg.user.upn === currentUser.upn
+			{messages.map((msg) => {
 				return (
 					<CommentCard key={msg.id}>
 						<CommentMainRow>
-							{canDelete && (
+							{(isManager || msg.user.upn === currentUser.upn) && (
 								<DropdownMenu>
 									<DropdownMenuTrigger asChild>
 										<CommentMenuButton>
@@ -216,6 +215,7 @@ const CommentMenuButton = styled.button`
   flex-shrink: 0;
   color: var(--sea-ink-soft);
   cursor: pointer;
+  outline: none;
 
   &:hover,
   &[data-state="open"] {
