@@ -207,7 +207,7 @@ const TagInputBox = styled.div<{ $flush: boolean }>`
 
   &:focus-within {
     border-color: ${({ $flush }) => ($flush ? "transparent" : "var(--active-color)")};
-    box-shadow: ${({ $flush }) => ($flush ? "none" : "var(--shadow-tag-focus)")};
+    box-shadow: ${({ $flush }) => ($flush ? "none" : "var(--shadow-textarea-focus)")};
   }
 `
 

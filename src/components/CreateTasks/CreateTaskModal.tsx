@@ -531,7 +531,7 @@ const DirectiveTextarea = styled.textarea`
 
   &:focus {
     border-color: var(--button-color-hover);
-    box-shadow: var(--shadow-tag-focus);
+    box-shadow: var(--shadow-textarea-focus);
   }
 `
 

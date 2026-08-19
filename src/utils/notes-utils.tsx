@@ -3,21 +3,29 @@ import type { ColumnDef } from "@tanstack/react-table"
 import type { TaskRowDto } from "src/api/model"
 import type { TaskColumnMeta } from "./task-table-utils"
 
+interface NotesColumnMeta extends Omit<TaskColumnMeta, "id"> {
+	id: string
+}
+
 /**
  * All notes-related consts, functions, and styled components in one place.
  * Extracted to allow easy removal/restoration of notes feature.
  */
 
+interface TaskRowWithNotes extends TaskRowDto {
+	notes?: string | null
+}
+
 // ─── Column Meta ───────────────────────────────────────────────────────────
 
-export const NOTES_COLUMN_META: TaskColumnMeta = {
+export const NOTES_COLUMN_META: NotesColumnMeta = {
 	id: "notes",
 	label: "הערות",
 }
 
 // ─── Search ────────────────────────────────────────────────────────────────
 
-export function getNotesSearchValues(task: TaskRowDto): string[] {
+export function getNotesSearchValues(task: TaskRowWithNotes): string[] {
 	return task.notes ? [task.notes] : []
 }
 
@@ -34,7 +42,7 @@ export function getNotesSaveFields(notes?: string | null): {
 export const NOTES_EXPORT_COLUMN = {
 	header: "הערות",
 	maxWidth: 50,
-	accessor: (t: TaskRowDto) => t.notes ?? "",
+	accessor: (t: TaskRowWithNotes) => t.notes ?? "",
 }
 
 // ─── Styled ────────────────────────────────────────────────────────────────
@@ -79,7 +87,7 @@ const TableNotesText = styled(NotesText)`
 `
 
 export function getNotesColumnDef<
-	TTask extends TaskRowDto,
+	TTask extends TaskRowWithNotes,
 >(): ColumnDef<TTask> {
 	return {
 		id: "notes",
