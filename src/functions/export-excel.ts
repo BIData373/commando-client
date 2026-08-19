@@ -15,10 +15,12 @@ interface CellValue {
 	link?: string
 }
 
+type BuildTaskUrl = (taskId: number) => string
+
 interface ExportColumn<T> {
 	header: string
 	maxWidth?: number
-	accessor: (row: T) => string | CellValue
+	accessor: (row: T, buildTaskUrl: BuildTaskUrl) => string | CellValue
 }
 
 function isCellValue(val: string | CellValue): val is CellValue {
@@ -97,14 +99,15 @@ const COLUMN_DEFS: Partial<
 	},
 	source: {
 		header: "מקור הנחיה",
-		accessor: (t) => {
+		accessor: (t, buildTaskUrl) => {
 			if (!t.source) {
 				return ""
 			}
 
-			const source = `${t.source.name} | ${formatDate(t.source.date)}`
+			const dateStr = t.source.date ? formatDate(t.source.date) : ""
+			const source = dateStr ? `${t.source.name} | ${dateStr}` : t.source.name
 			return t.source.attachmentKey
-				? { value: source, link: t.source.attachmentKey }
+				? { value: source, link: buildTaskUrl(t.id) }
 				: source
 		},
 	},
@@ -132,6 +135,7 @@ export async function exportTasksToExcel<TTask extends TaskRowDto>(
 	tasks: TTask[],
 	columnOrder: (keyof TTask)[],
 	hiddenColumns: Set<keyof TTask>,
+	buildTaskUrl: BuildTaskUrl,
 	fileNamePrefix?: string,
 ) {
 	await exportToExcel(
@@ -146,6 +150,7 @@ export async function exportTasksToExcel<TTask extends TaskRowDto>(
 				.map((id) => COLUMN_DEFS[id as keyof TaskRowWithWorkspaceDto])
 				.filter((row) => !!row),
 		],
+		buildTaskUrl,
 		`${fileNamePrefix ? `${fileNamePrefix} - ` : ""} הנחיות ${format(new Date(), "yyyy-MM-dd HH-mm-ss")}`,
 	)
 }
@@ -169,6 +174,7 @@ function getCellText(value: ExcelJS.CellValue): string {
 async function exportToExcel<T>(
 	rows: T[],
 	columns: ExportColumn<T>[],
+	buildTaskUrl: BuildTaskUrl,
 	fileName: string,
 ) {
 	const workbook = new ExcelJS.Workbook()
@@ -187,13 +193,13 @@ async function exportToExcel<T>(
 
 	rows.forEach((row) => {
 		const values = columns.map((col) => {
-			const raw = col.accessor(row)
+			const raw = col.accessor(row, buildTaskUrl)
 			return isCellValue(raw) ? raw.value : raw
 		})
 		const excelRow = worksheet.addRow(values)
 
 		columns.forEach((col, colIdx) => {
-			const raw = col.accessor(row)
+			const raw = col.accessor(row, buildTaskUrl)
 			const cell = excelRow.getCell(colIdx + 1)
 			const data = isCellValue(raw) ? raw : null
 

@@ -19,4 +19,11 @@ declare module "@tanstack/react-router" {
 	}
 }
 
+export function buildAbsoluteUrl(
+	options: Parameters<typeof router.buildLocation>[0],
+): string {
+	const { href } = router.buildLocation(options)
+	return `${window.location.origin}${href}`
+}
+
 export default router

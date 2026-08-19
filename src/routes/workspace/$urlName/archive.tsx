@@ -7,6 +7,7 @@ import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithAc
 import WorkspaceTaskTable from "src/components/Tasks/WorkspaceTaskTable"
 import { WorkspaceTabs } from "src/components/WorkspaceTabs"
 import { formatDateShort } from "src/functions/date-utils"
+import { buildAbsoluteUrl } from "src/router"
 import { TasksFiltersProvider } from "../../../providers/TasksFiltersProvider"
 import { TasksView } from "./tasks"
 
@@ -70,6 +71,13 @@ function WorkspaceArchivePage() {
 		})
 	}
 
+	function buildTaskUrl(taskId: number) {
+		return buildAbsoluteUrl({
+			to: "/workspace/$urlName/archive/task/$taskId",
+			params: { urlName, taskId: String(taskId) },
+		})
+	}
+
 	return (
 		<TasksFiltersProvider
 			storageKey="workspace-archive"
@@ -80,6 +88,7 @@ function WorkspaceArchivePage() {
 				<WorkspaceTabs section={DropdownSection.ARCHIVE} />
 				<WorkspaceTaskTable
 					onOpenTask={handleOpenTask}
+					buildTaskUrl={buildTaskUrl}
 					isArchived={true}
 					extraColumns={ARCHIVE_EXTRA_COLUMNS}
 					extraColumnsMeta={[{ id: "archivedAt", label: "הועבר לארכיון" }]}

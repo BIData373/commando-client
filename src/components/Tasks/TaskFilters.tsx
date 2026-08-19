@@ -30,6 +30,7 @@ interface TaskFiltersProps<TTask extends TaskRowDto> {
 	urlColumnFilters?: ColumnFiltersState
 	exportFilePrefix?: string
 	quickFilters: QuickFilter[]
+	buildTaskUrl: (taskId: number) => string
 }
 
 export function TaskFilters<TTask extends TaskRowDto>({
@@ -46,6 +47,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 	extraButtons,
 	exportFilePrefix,
 	quickFilters,
+	buildTaskUrl,
 }: TaskFiltersProps<TTask>) {
 	const {
 		activeQuickFilters,
@@ -187,6 +189,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					hiddenColumns={hiddenColumns}
 					extraColumns={extraColumns}
 					exportFilePrefix={exportFilePrefix}
+					buildTaskUrl={buildTaskUrl}
 				/>
 
 				<TaskSearchInput />

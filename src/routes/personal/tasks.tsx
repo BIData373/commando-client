@@ -3,6 +3,7 @@ import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
+import { buildAbsoluteUrl } from "src/router"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../providers/UserViewProvider"
 import { TasksView } from "../workspace/$urlName/tasks"
@@ -52,6 +53,13 @@ function PersonalTasksPage() {
 		})
 	}
 
+	function buildTaskUrl(taskId: number) {
+		return buildAbsoluteUrl({
+			to: "/personal/tasks/task/$taskId",
+			params: { taskId: String(taskId) },
+		})
+	}
+
 	return (
 		<UserViewProvider
 			defaultColumnOrder={PERSONAL_DEFAULT_COLUMN_ORDER}
@@ -63,6 +71,7 @@ function PersonalTasksPage() {
 					filePrefix="אזור אישי"
 					onOpenTask={handleOpenTask}
 					onEdit={handleEdit}
+					buildTaskUrl={buildTaskUrl}
 				/>
 			</TasksFiltersProvider>
 		</UserViewProvider>

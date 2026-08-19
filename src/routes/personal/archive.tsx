@@ -7,6 +7,7 @@ import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithActions"
 import { formatDateShort } from "src/functions/date-utils"
+import { buildAbsoluteUrl } from "src/router"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../providers/UserViewProvider"
@@ -69,6 +70,13 @@ function PersonalArchivePage() {
 		})
 	}
 
+	function buildTaskUrl(taskId: number) {
+		return buildAbsoluteUrl({
+			to: "/personal/archive/task/$taskId",
+			params: { taskId: String(taskId) },
+		})
+	}
+
 	return (
 		<UserViewProvider
 			defaultColumnOrder={ARCHIVE_DEFAULT_COLUMN_ORDER}
@@ -79,6 +87,7 @@ function PersonalArchivePage() {
 				<PersonalTaskTable
 					filePrefix="ארכיון אישי"
 					onOpenTask={handleOpenTask}
+					buildTaskUrl={buildTaskUrl}
 					isArchived={true}
 					extraColumnsMeta={[{ id: "archivedAt", label: "הועבר לארכיון" }]}
 					extraColumns={ARCHIVE_EXTRA_COLUMNS}
