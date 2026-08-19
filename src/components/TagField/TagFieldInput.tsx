@@ -7,23 +7,28 @@ import { Popover, PopoverAnchor, PopoverContent } from "../ui/popover"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-interface TagFieldProps {
+export type TagFieldInputVariant = "boxed" | "flush"
+
+interface TagFieldInputProps {
 	workspaceId: number
 	tags: string[]
 	lockedTags: string[]
 	onTagSelect: (tag: string) => void
 	onTagRemove: (tag: string) => void
+	variant?: TagFieldInputVariant
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-function TagField({
+function TagFieldInput({
 	workspaceId,
 	tags,
 	lockedTags,
 	onTagSelect,
 	onTagRemove,
-}: TagFieldProps) {
+	variant = "boxed",
+}: TagFieldInputProps) {
+	const isFlush = variant === "flush"
 	const [tagQuery, setTagQuery] = useState("")
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 	const inputRef = useRef<HTMLInputElement>(null)
@@ -101,133 +106,109 @@ function TagField({
 	}
 
 	return (
-		<FormItem>
-			<FormLabelRow>
-				<LabelText>תגיות</LabelText>
-			</FormLabelRow>
-			<Popover open={showDropdown}>
-				<TagFieldWrapper>
-					<PopoverAnchor asChild>
-						<TagInputBox onClick={handleInputBoxClick}>
-							<StyledChevronDown size={16} />
-							<InputContent>
-								{tags.map((tag) => (
-									<TagChip key={tag}>
-										<TagText>{tag}</TagText>
-										{!lockedTags.includes(tag) && (
-											<TagRemoveButton
-												onMouseDown={(e) => handleRemoveTag(e, tag)}
-											>
-												<X size={12} />
-											</TagRemoveButton>
-										)}
-									</TagChip>
-								))}
-								<TagInputField
-									ref={inputRef}
-									value={tagQuery}
-									onChange={handleQueryChange}
-									onFocus={handleFocus}
-									onBlur={handleBlur}
-									onKeyDown={handleKeyDown}
-									placeholder={
-										tags.length === 0
-											? "מאמץ/מבצע/קטגוריה (לדוג': 'שאגת הארי' , הגנה במרחב)"
-											: ""
-									}
-									dir="rtl"
-								/>
-							</InputContent>
-							{tags.length === 0 && <StyledTag size={16} />}
-						</TagInputBox>
-					</PopoverAnchor>
-				</TagFieldWrapper>
-				<TagDropdown
-					sideOffset={4}
-					align="start"
-					onOpenAutoFocus={(e) => e.preventDefault()}
-					onWheel={(e) => e.stopPropagation()}
-				>
-					{filteredTags.length > 0 && (
-						<SuggestionsHeader>הצעות</SuggestionsHeader>
-					)}
-					{filteredTags.map(({ name }) => (
-						<TagOption
-							key={name}
-							onMouseDown={(e) => handleSelectMouseDown(e, name)}
-						>
-							<TagOptionText>
-								{tagQuery ? (
-									<HighlightMatch text={name} query={tagQuery} />
-								) : (
-									name
-								)}
-							</TagOptionText>
+		<Popover open={showDropdown}>
+			<TagFieldWrapper $flush={isFlush}>
+				<PopoverAnchor asChild>
+					<TagInputBox $flush={isFlush} onClick={handleInputBoxClick}>
+						<InputContent>
+							{tags.map((tag) => (
+								<TagChip key={tag}>
+									<TagText>{tag}</TagText>
+									{!lockedTags.includes(tag) && (
+										<TagRemoveButton
+											onMouseDown={(e) => handleRemoveTag(e, tag)}
+										>
+											<X size={12} />
+										</TagRemoveButton>
+									)}
+								</TagChip>
+							))}
+
+							<TagInputField
+								ref={inputRef}
+								value={tagQuery}
+								onChange={handleQueryChange}
+								onFocus={handleFocus}
+								onBlur={handleBlur}
+								onKeyDown={handleKeyDown}
+								placeholder={
+									tags.length === 0
+										? "מאמץ/מבצע/קטגוריה (לדוג': 'שאגת הארי' , הגנה במרחב)"
+										: ""
+								}
+								dir="rtl"
+							/>
+						</InputContent>
+
+						<StyledChevronDown size={16} />
+
+						{tags.length === 0 && <StyledTag size={16} />}
+					</TagInputBox>
+				</PopoverAnchor>
+			</TagFieldWrapper>
+			<TagDropdown
+				sideOffset={4}
+				align="start"
+				onOpenAutoFocus={(e) => e.preventDefault()}
+				onWheel={(e) => e.stopPropagation()}
+			>
+				{filteredTags.length > 0 && (
+					<SuggestionsHeader>הצעות</SuggestionsHeader>
+				)}
+				{filteredTags.map(({ name }) => (
+					<TagOption
+						key={name}
+						onMouseDown={(e) => handleSelectMouseDown(e, name)}
+					>
+						<TagOptionText>
+							{tagQuery ? (
+								<HighlightMatch text={name} query={tagQuery} />
+							) : (
+								name
+							)}
+						</TagOptionText>
+					</TagOption>
+				))}
+				{isNewTag && (
+					<>
+						{filteredTags.length > 0 && <Divider />}
+						<TagOption onMouseDown={handleCreateNewMouseDown}>
+							<HighlightedText>{tagQuery}</HighlightedText>
+							<span> (חדש)</span>
 						</TagOption>
-					))}
-					{isNewTag && (
-						<>
-							{filteredTags.length > 0 && <Divider />}
-							<TagOption onMouseDown={handleCreateNewMouseDown}>
-								<HighlightedText>{tagQuery}</HighlightedText>
-								<span> (חדש)</span>
-							</TagOption>
-						</>
-					)}
-				</TagDropdown>
-			</Popover>
-		</FormItem>
+					</>
+				)}
+			</TagDropdown>
+		</Popover>
 	)
 }
 
-export default TagField
+export default TagFieldInput
 
 // ─── Styled ─────────────────────────────────────────────────────────────────
 
-const FormItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  width: 100%;
-`
-
-const FormLabelRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0px;
-  padding-block-end: 8px;
-  width: 100%;
-`
-
-const LabelText = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color-2);
-  white-space: nowrap;
-`
-
-const TagFieldWrapper = styled.div`
+const TagFieldWrapper = styled.div<{ $flush: boolean }>`
 position: relative;
 width: 100%;
+height: ${({ $flush }) => ($flush ? "100%" : "auto")};
 `
 
-const TagInputBox = styled.div`
+const TagInputBox = styled.div<{ $flush: boolean }>`
+  direction: rtl;
   display: flex;
   align-items: center;
   width: 100%;
-  height: 40px;
-  padding-inline: 11px;
-  background: var(--background);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
+  height: ${({ $flush }) => ($flush ? "100%" : "40px")};
+  padding-inline: ${({ $flush }) => ($flush ? "0" : "11px")};
+  background: ${({ $flush }) => ($flush ? "transparent" : "var(--background)")};
+  border: ${({ $flush }) => ($flush ? "none" : "1px solid var(--card-border)")};
+  border-radius: ${({ $flush }) => ($flush ? "0" : "8px")};
   gap: 4px;
   cursor: text;
 
   &:focus-within {
-    border-color: var(--active-color);
-    box-shadow: var(--shadow-tag-focus);
+    border-color: ${({ $flush }) => ($flush ? "transparent" : "var(--active-color)")};
+    box-shadow: ${({ $flush }) => ($flush ? "none" : "var(--shadow-tag-focus)")};
   }
 `
 

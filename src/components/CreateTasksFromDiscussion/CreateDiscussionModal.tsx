@@ -388,6 +388,7 @@ function CreateDiscussionModal({
 							onBack={handleBack}
 							isLoading={isCreateTasks || isCreateSource || isUpdateSource}
 							sourceId={sourceId}
+							sourceTags={values.tags ?? []}
 						/>
 					</StepPane>
 				</ModalBody>

@@ -7,6 +7,7 @@ import { TrashButton } from "../shared/TrashButton"
 import { Checkbox } from "../ui/checkbox"
 import AssigneeTableCell from "./AssigneeTableCell"
 import DeadlineCell from "./DeadlineCell"
+import TagsTableCell from "./TagsTableCell"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -30,6 +31,7 @@ export interface TaskTableMeta {
 	toggleRowExpansion: (id: number) => void
 	deleteRow: (id: number) => void
 	isLastRow: (index: number) => boolean
+	lockedTags: string[]
 }
 
 // ─── Cell Handlers ─────────────────────────────────────────────────────────
@@ -154,6 +156,17 @@ const columns: ColumnDef<NewTaskRow>[] = [
 		header: () => <HeaderLabel>אחראי</HeaderLabel>,
 		cell: ({ row, table }) => (
 			<AssigneeTableCell
+				row={row.original}
+				meta={table.options.meta as TaskTableMeta}
+			/>
+		),
+	},
+	{
+		id: "tags",
+		size: 350,
+		header: () => <HeaderLabel>תגיות</HeaderLabel>,
+		cell: ({ row, table }) => (
+			<TagsTableCell
 				row={row.original}
 				meta={table.options.meta as TaskTableMeta}
 			/>

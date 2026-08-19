@@ -39,12 +39,17 @@ const ACTIVE_EXTRACTION_STATUSES = new Set<ExtractionStatus>([
 	ExtractionStatus.IN_PROGRESS,
 ])
 
+function mergeTags(base: string[], extra: string[]): string[] {
+	return Array.from(new Set([...base, ...extra]))
+}
+
 interface CreateTasksTableProps {
 	onSave: (tasks: NewTaskRow[]) => void
 	onDeleteRow?: (row: NewTaskRow) => void
 	onBack: () => void
 	isLoading?: boolean
 	sourceId?: number
+	sourceTags?: string[]
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -55,6 +60,7 @@ function CreateTasksTable({
 	onBack,
 	isLoading,
 	sourceId,
+	sourceTags = [],
 }: CreateTasksTableProps) {
 	const {
 		workspace: { id: workspaceId },
@@ -100,6 +106,7 @@ function CreateTasksTable({
 			dueDate: null,
 			assigneeIds: [],
 			assigneeDetails: {},
+			tags: [],
 			flagged: false,
 		}
 	}, [workspaceId])
@@ -119,6 +126,7 @@ function CreateTasksTable({
 			assigneeDetails: Object.fromEntries(
 				task.assigneeStatuses.map((s) => [s.assignee.id, s.description]),
 			),
+			tags: task.tags.map((tag) => tag.name),
 			flagged: task.flagged,
 		}
 	}, [])
@@ -215,7 +223,9 @@ function CreateTasksTable({
 	}
 
 	function handleSave() {
-		const filled = rows.filter((r) => r.title.trim())
+		const filled = rows
+			.filter((r) => r.title.trim())
+			.map((r) => ({ ...r, tags: mergeTags(sourceTags, r.tags ?? []) }))
 		onSave(filled)
 	}
 
@@ -232,6 +242,7 @@ function CreateTasksTable({
 		toggleRowExpansion,
 		deleteRow,
 		isLastRow: (index: number) => index === rows.length - 1,
+		lockedTags: sourceTags,
 	}
 
 	return isExtracting ? (
