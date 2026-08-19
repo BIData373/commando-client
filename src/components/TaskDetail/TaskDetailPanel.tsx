@@ -376,7 +376,7 @@ const TitleRow = styled.div<{ $shadow: boolean }>`
   clip-path: inset(0 0 -20px 0);
   transition: box-shadow 200ms ease;
   box-shadow: ${({ $shadow }) =>
-		$shadow ? "var(--shadow-title-row)" : "none"};
+		$shadow ? "var(--shadow-modal-header)" : "none"};
 `
 
 const TextWrapper = styled.div`
