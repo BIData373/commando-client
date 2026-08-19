@@ -345,7 +345,6 @@ const DialogBody = styled.div`
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  verflow: hidden;
   gap: 16px;
   width: 100%;
 `
