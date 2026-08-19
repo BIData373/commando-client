@@ -110,6 +110,7 @@ function TagFieldInput({
 			<TagFieldWrapper $flush={isFlush}>
 				<PopoverAnchor asChild>
 					<TagInputBox $flush={isFlush} onClick={handleInputBoxClick}>
+						{tags.length === 0 && !isFlush && <StyledTag size={16} />}
 						<InputContent>
 							{tags.map((tag) => (
 								<TagChip key={tag}>
@@ -141,8 +142,6 @@ function TagFieldInput({
 						</InputContent>
 
 						<StyledChevronDown size={16} />
-
-						{tags.length === 0 && <StyledTag size={16} />}
 					</TagInputBox>
 				</PopoverAnchor>
 			</TagFieldWrapper>
