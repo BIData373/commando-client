@@ -89,7 +89,11 @@ const COLUMN_DEFS: Partial<
 		header: 'תג"ב',
 		accessor: (t) => {
 			const typeStr = DEADLINE_LABELS[t.deadlineType] ?? ""
-			const dateStr = t.dueDate ? formatDate(t.dueDate) : ""
+			const displayDate =
+				t.deadlineType === DeadlineType.IMMEDIATE
+					? (t.source?.date ?? t.createdAt)
+					: t.dueDate
+			const dateStr = displayDate ? formatDate(displayDate) : ""
 			const value =
 				typeStr && dateStr ? `${typeStr} | ${dateStr}` : typeStr || dateStr
 			return { value, ...getDeadlineDateStyle(t) }
@@ -102,7 +106,9 @@ const COLUMN_DEFS: Partial<
 				return ""
 			}
 
-			const source = `${t.source.name} | ${formatDate(t.source.date)}`
+			const source = t.source.date
+				? `${t.source.name} | ${formatDate(t.source.date)}`
+				: t.source.name
 			return t.source.attachmentKey
 				? { value: source, link: t.source.attachmentKey }
 				: source
