@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
-import { useDisclosure } from "@mantine/hooks"
-import { memo, useState } from "react"
+import { useToggle } from "@mantine/hooks"
+import { memo } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { HAS_ASSIGNEE_DATA_ATTR } from "src/utils/task-table-utils"
@@ -32,7 +32,7 @@ export const StatusDropdown = memo(
 		editable = false,
 		onUpdate,
 	}: StatusDropdownProps) => {
-		const [isOpen, { toggle: toggleOpen }] = useDisclosure(false)
+		const [isOpen, toggleOpen] = useToggle()
 
 		const { data: fetchedStatuses = [], isLoading: isFetchingStatuses } =
 			useListWorkspaceStatuses(
