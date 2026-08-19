@@ -85,8 +85,8 @@ const AssigneeRowContainer = styled.div<{ $enabled?: boolean }>`
   justify-content: flex-start;
   gap: 24px;
   padding: 7px 12px;
-  background: ${({ $enabled }) => ($enabled ? "var(--background)" : "var(--background-assignee)")};
-  border: 0.5px solid var(--line);
+  background: ${({ $enabled }) => ($enabled ? "var(--background)" : "var(--background-area)")};
+  border: 0.8px solid var(--line);
   border-radius: 8px;
   width: 100%;
 `

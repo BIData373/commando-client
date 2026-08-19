@@ -227,7 +227,7 @@ const TagInputBox = styled.div`
 
   &:focus-within {
     border-color: var(--active-color);
-    box-shadow: var(--shadow-tag-focus);
+    box-shadow: var(--shadow-textarea-focus);
   }
 `
 
