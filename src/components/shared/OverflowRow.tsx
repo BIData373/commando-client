@@ -3,8 +3,12 @@ import { type ReactElement, useLayoutEffect, useRef, useState } from "react"
 
 interface OverflowRowProps {
 	items: ReactElement[]
-	renderOverflow: (remaining: number) => ReactElement
+	renderOverflow: (
+		remaining: number,
+		hiddenItems: ReactElement[],
+	) => ReactElement
 	gap?: number
+	preserveOrder?: boolean
 }
 
 interface RowLayout {
@@ -21,17 +25,13 @@ function identityLayout(items: ReactElement[]): RowLayout {
 	}
 }
 
-// Narrowest-first so the greedy pack fits as many full items as possible
 function packByWidth(
+	order: number[],
 	widths: (number | undefined)[],
 	containerWidth: number,
 	overflowWidth: number,
 	gap: number,
 ): { order: number[]; visibleCount: number } {
-	const order = widths
-		.map((_, i) => i)
-		.sort((a, b) => (widths[a] ?? Infinity) - (widths[b] ?? Infinity))
-
 	// Running total width (incl. gaps) after including each rank, in order
 	const cumulativeWidths = order.reduce<number[]>((totals, itemIndex, rank) => {
 		const width = widths[itemIndex]
@@ -61,6 +61,7 @@ export function OverflowRow({
 	items,
 	renderOverflow,
 	gap = 8,
+	preserveOrder = false,
 }: OverflowRowProps) {
 	const [measured, setMeasured] = useState<RowLayout | null>(null)
 
@@ -89,9 +90,15 @@ export function OverflowRow({
 				.slice(0, items.length)
 				.map((el) => el?.offsetWidth)
 
+			const order = preserveOrder
+				? widths.map((_, i) => i)
+				: widths
+						.map((_, i) => i)
+						.sort((a, b) => (widths[a] ?? Infinity) - (widths[b] ?? Infinity))
+
 			setMeasured({
 				itemCount: items.length,
-				...packByWidth(widths, containerWidth, overflowWidth, gap),
+				...packByWidth(order, widths, containerWidth, overflowWidth, gap),
 			})
 		}
 
@@ -101,9 +108,14 @@ export function OverflowRow({
 		ro.observe(container)
 
 		return () => ro.disconnect()
-	}, [items, gap])
+	}, [items, gap, preserveOrder])
 
 	const remaining = items.length - layout.visibleCount
+	const isFullyVisible = remaining === 0
+	const hiddenItems = layout.order
+		.slice(layout.visibleCount)
+		.sort((a, b) => a - b)
+		.map((itemIndex) => items[itemIndex])
 
 	return (
 		<Row ref={containerRef} $gap={gap}>
@@ -127,10 +139,13 @@ export function OverflowRow({
 				ref={(el: HTMLElement | null) => {
 					overflowEl.current = el
 				}}
-				$hidden={remaining === 0}
-				aria-hidden={remaining === 0 || undefined}
+				$hidden={isFullyVisible}
+				aria-hidden={isFullyVisible || undefined}
 			>
-				{renderOverflow(remaining === 0 ? items.length : remaining)}
+				{renderOverflow(
+					isFullyVisible ? items.length : remaining,
+					isFullyVisible ? items : hiddenItems,
+				)}
 			</OverflowIndicator>
 		</Row>
 	)

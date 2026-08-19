@@ -23,7 +23,7 @@ import {
   useRef,
   useState,
   type MouseEvent,
-  type ReactNode,
+  type ReactNode
 } from 'react'
 import { LoadingSpinner } from '../shared/LoadingSpinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
@@ -184,15 +184,6 @@ export function DataTable<TData>({
     return () => observer.disconnect()
   }, [])
 
-  const [measuredRowHeight, setMeasuredRowHeight] = useState<number | null>(null)
-
-  useLayoutEffect(() => {
-    if (measuredRowHeight !== null) return
-    const row = containerRef.current?.querySelector('tbody tr[data-index]')
-    if (!row) return
-    setMeasuredRowHeight(row.getBoundingClientRect().height)
-  })
-
   const visibleColumns = table.getVisibleLeafColumns()
 
   const { fixedTotal, growTotal, growColumns } = useMemo(
@@ -248,13 +239,11 @@ export function DataTable<TData>({
 
   const totalSize = fixedTotal + growTotal
 
-  const hasExpansion = renderRowExpansion !== undefined
-
   const tableRows = table.getRowModel().rows
   const { getVirtualItems, getTotalSize, measureElement } = useVirtualizer({
     count: tableRows.length,
     getScrollElement: () => containerRef.current,
-    estimateSize: () => measuredRowHeight ?? 43,
+    estimateSize: () => 43,
     overscan: 16,
     useFlushSync: false,
     measureElement: (el) => {
@@ -266,8 +255,6 @@ export function DataTable<TData>({
       return height
     }
   })
-
-  const rowRef = hasExpansion ? measureElement : undefined
 
   const tableMinWidth = totalSize > 0 ? totalSize : undefined
 
@@ -311,7 +298,7 @@ export function DataTable<TData>({
                 index={virtualRow.index}
                 isSelected={row.getIsSelected()}
                 isHighlighted={highlightedRowIds?.has(row.id) ?? false}
-                rowRef={rowRef}
+                rowRef={measureElement}
                 onCellClick={onCellClick}
                 onRowContextMenu={onRowContextMenu}
                 renderRowOverlay={renderRowOverlay}
@@ -362,7 +349,7 @@ const ExpansionCell = styled.td`
   outline: none !important;
 `
 
-const StyledTable = styled(Table)<{ $minWidth?: number }>`
+const StyledTable = styled(Table) <{ $minWidth?: number }>`
   min-width: ${({ $minWidth }) => ($minWidth !== undefined ? `${$minWidth}px` : undefined)};
 `
 

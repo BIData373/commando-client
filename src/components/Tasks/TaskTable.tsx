@@ -29,7 +29,6 @@ import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 import { RowContextMenu } from "./RowContextMenu"
-import { TagMeasurementCacheProvider } from "./TopicCell"
 
 interface TaskTableProps<TTask extends TaskRowDto> {
 	tasks: TTask[]
@@ -284,38 +283,36 @@ function TaskTable<TTask extends TaskRowDto>({
 	return (
 		<>
 			<TableWrapper>
-				<TagMeasurementCacheProvider>
-					<DataTable
-						columns={columns}
-						data={tasks}
-						rowSelection={selectMode ? rowSelection : undefined}
-						onRowSelectionChange={selectMode ? setRowSelection : undefined}
-						columnFilters={columnFilters}
-						onColumnFiltersChange={handleColumnFiltersChange}
-						sorting={sorting}
-						onSortingChange={setSorting}
-						getRowId={(row) => row.rowKey}
-						highlightedRowIds={
-							contextMenu ? new Set([contextMenu.task.rowKey]) : undefined
-						}
-						onCellClick={handleCellClick}
-						onRowContextMenu={
-							showActionsColumn ? handleRowContextMenu : undefined
-						}
-						showHeader={showHeader}
-						isLoading={isLoading}
-						emptyState={
-							<EmptyCardState
-								{...getEmptyState(
-									activeQuickFilters,
-									searchQuery,
-									tasks.length > 0,
-									dateRange,
-								)}
-							/>
-						}
-					/>
-				</TagMeasurementCacheProvider>
+				<DataTable
+					columns={columns}
+					data={tasks}
+					rowSelection={selectMode ? rowSelection : undefined}
+					onRowSelectionChange={selectMode ? setRowSelection : undefined}
+					columnFilters={columnFilters}
+					onColumnFiltersChange={handleColumnFiltersChange}
+					sorting={sorting}
+					onSortingChange={setSorting}
+					getRowId={(row) => row.rowKey}
+					highlightedRowIds={
+						contextMenu ? new Set([contextMenu.task.rowKey]) : undefined
+					}
+					onCellClick={handleCellClick}
+					onRowContextMenu={
+						showActionsColumn ? handleRowContextMenu : undefined
+					}
+					showHeader={showHeader}
+					isLoading={isLoading}
+					emptyState={
+						<EmptyCardState
+							{...getEmptyState(
+								activeQuickFilters,
+								searchQuery,
+								tasks.length > 0,
+								dateRange,
+							)}
+						/>
+					}
+				/>
 			</TableWrapper>
 			<RowContextMenu
 				task={contextMenu?.task ?? null}

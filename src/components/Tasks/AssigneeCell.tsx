@@ -15,11 +15,8 @@ interface AssigneeCellProps {
 	otherAssignees: AssigneeStatusDto[]
 }
 
-export const AssigneeCell = memo(function AssigneeCell({
-	assignee,
-	otherAssignees,
-}: AssigneeCellProps) {
-	return (
+export const AssigneeCell = memo(
+	({ assignee, otherAssignees }: AssigneeCellProps) => (
 		<CellRoot>
 			{assignee && (
 				<AssigneeDetailPopover assignee={assignee}>
@@ -46,8 +43,8 @@ export const AssigneeCell = memo(function AssigneeCell({
 				</Popover>
 			)}
 		</CellRoot>
-	)
-})
+	),
+)
 
 // ─── Cell layout ──────────────────────────────────────────────────────────────
 
