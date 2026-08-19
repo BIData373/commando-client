@@ -157,7 +157,7 @@ export function StepOne({
 						<IconPlaceholderWrapper>
 							<IconPlaceholderMain>כאן יופיע הסמל שנבחר</IconPlaceholderMain>
 							<IconPlaceholderSub>
-								כלל הסמלים נמצאים במאגר הסמ&quot;כ
+								כלל הסמלים נמשכים ממאגר מסיב&quot;ה
 							</IconPlaceholderSub>
 						</IconPlaceholderWrapper>
 					)}
@@ -215,7 +215,7 @@ const UrlNameLabelRow = styled.div`
 `
 
 const RequiredMark = styled.span`
-  color: #ff4d4f;
+  color: var(--Components-Form-Component-labelRequiredMarkColor);
   font-size: var(--fs-btn);
 `
 
@@ -249,7 +249,7 @@ const IconPreview = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px dashed #D9D9D9;
+  border: 1px dashed var(--card-border);
   border-radius: 6px;
   padding: 36px 10px;
   gap: 4px;;

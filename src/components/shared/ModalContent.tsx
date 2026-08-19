@@ -15,6 +15,7 @@ interface ModalContentProps
 	headerActions?: ReactNode
 	closable?: boolean
 	showCloseButton?: boolean
+	headerPadding?: number
 }
 
 export function ModalContent({
@@ -24,6 +25,7 @@ export function ModalContent({
 	closable = true,
 	showCloseButton = true,
 	onPointerDownOutside,
+	headerPadding,
 	...props
 }: ModalContentProps) {
 	useHotkeys(closable ? [] : [["Escape", (e) => e.stopPropagation()]])
@@ -41,7 +43,7 @@ export function ModalContent({
 				onPointerDownOutside={closable ? onPointerDownOutside : preventClose}
 				{...props}
 			>
-				<ModalHeader>
+				<ModalHeader $padding={headerPadding}>
 					{headerActions ? (
 						<>
 							{headerActions}
@@ -85,12 +87,12 @@ const ModalRoot = styled(DialogContentPrimitive)`
   outline: none;
 `
 
-const ModalHeader = styled.div`
+const ModalHeader = styled.div<{ $padding?: number }>`
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 4px;
-  padding: 16px;
+  padding: ${({ $padding }) => $padding ?? 16}px;
   flex-shrink: 0;
 `
 

@@ -72,6 +72,8 @@ body,
   --Text-color-text-placeholder: rgba(0, 0, 0, 0.25);
   --Tabs-border-color: rgb(245, 245, 245);
   --Bar-hover: #f5f5f5;
+  --Active-Step: #6866ff;
+  --Rectangle: #3633FF;
 
   /* Typography scale */
   --fs-heading-h1: 42px;
@@ -146,6 +148,7 @@ body,
   --Menu-Tab-Hover: rgba(255, 255, 255, 0.1);
   --Menu-Tab-Active: rgba(255, 255, 255, 0.15);
   --Menu-Tab-Text: #C7C9CB;
+  --
 
   --font-sans: "Rubik Variable", ui-sans-serif, sans-serif;
   --font-serif: "Rubik Variable", ui-sans-serif, sans-serif;
