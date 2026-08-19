@@ -1,8 +1,6 @@
 import styled from "@emotion/styled"
-import type { AssigneeDto, AssigneesDto } from "src/api/model"
+import type { AssigneesDto } from "src/api/model"
 import { AssigneeAvatar } from "src/components/shared/AssigneeAvatar"
-import { isColorVarDark } from "src/functions/contrast-color"
-import { getInitials } from "src/utils/avatar-utils"
 import { Checkbox } from "../../ui/checkbox"
 
 interface AssigneeDropdownProps {
@@ -37,30 +35,6 @@ export default function AssingneeDropDown({
 		</OptionsList>
 	)
 }
-interface AssigneeBadgeProps {
-	assignee: AssigneeDto
-}
-
-function AssigneeBadge({ assignee }: AssigneeBadgeProps) {
-	return (
-		<BadgeRoot $color={assignee.color}>{getInitials(assignee.name)}</BadgeRoot>
-	)
-}
-
-const BadgeRoot = styled.div<{ $color: string | null }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: ${({ $color }) => $color ?? "var(--chip-bg)"};
-  color: ${({ $color }) => ($color && isColorVarDark($color) ? "white" : "black")};
-  font-size: var(--fs-sm);
-  font-weight: 400;
-  line-height: 20px;
-`
 
 // ─── Styled ─────────────────────────────────────────────────────────────────
 

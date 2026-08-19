@@ -4,7 +4,7 @@ import { useState } from "react"
 import {} from "react-icons"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover"
-import AssingneeDropDown from "./AssingneeDropdown"
+import AssigneeDropdown from "./AssigneeDropdown"
 
 interface AssigneeFilterDropdownProps {
 	workspaceId: number
@@ -68,16 +68,16 @@ function AssigneeFilterDropdown({
 			<StyledPopoverContent align="start" sideOffset={4}>
 				<SearchRow>
 					<SearchWrapper>
+						<Search opacity={0.5} size={14} />
 						<SearchField
 							placeholder="חפש אחראי"
 							value={search}
 							onChange={(e) => setSearch(e.target.value)}
 						/>
-						<Search size={14} />
 					</SearchWrapper>
 				</SearchRow>
 
-				<AssingneeDropDown
+				<AssigneeDropdown
 					filteredAssignees={filteredAssignees}
 					pendingIds={pendingIds}
 					handleToggle={handleToggle}
