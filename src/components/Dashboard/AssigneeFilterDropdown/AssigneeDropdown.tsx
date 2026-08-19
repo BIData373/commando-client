@@ -9,7 +9,7 @@ interface AssigneeDropdownProps {
 	pendingIds: number[]
 }
 
-export default function AssingneeDropDown({
+export default function AssigneeDropdown({
 	filteredAssignees,
 	handleToggle,
 	pendingIds,
