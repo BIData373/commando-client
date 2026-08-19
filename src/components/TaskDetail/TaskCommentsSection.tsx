@@ -85,7 +85,7 @@ function TaskCommentsSection({
 				/>
 				{isSendingComment && <SpinIcon size={16} />}
 			</TextareaRow>
-			{[...messages].reverse().map((msg) => {
+			{[...messages].map((msg) => {
 				const canDelete = isManager || msg.user.upn === currentUser.upn
 				return (
 					<CommentCard key={msg.id}>

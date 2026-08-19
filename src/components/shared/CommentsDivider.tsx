@@ -1,7 +1,6 @@
 import styled from "@emotion/styled"
 import type { RefObject } from "react"
-import { useListMessages } from "src/api/message/message"
-import { SpinIcon } from "./SpinIcon"
+import { useGetTask } from "src/api/task/task"
 
 interface CommentsDividerProps {
 	taskId: number
@@ -9,18 +8,15 @@ interface CommentsDividerProps {
 }
 
 export function CommentsDivider({ taskId, dividerRef }: CommentsDividerProps) {
-	const { data: messages = [], isLoading } = useListMessages({ taskId })
+	const { data: messageCount = 0 } = useGetTask(
+		{ id: taskId },
+		{ query: { select: ({ messageCount }) => messageCount } },
+	)
+
 	return (
 		<Row ref={dividerRef}>
 			<Line />
-			<Label>
-				{isLoading
-					? "תגובות"
-					: messages.length > 0
-						? `תגובות (${messages.length})`
-						: "תגובות"}
-				{isLoading && <SpinIcon size={14} />}
-			</Label>
+			<Label>{messageCount > 0 ? `תגובות (${messageCount})` : "תגובות"}</Label>
 			<Line />
 		</Row>
 	)
