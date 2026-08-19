@@ -151,6 +151,7 @@ const SearchWrapper = styled.div`
   display: flex;
   flex: 1;
   align-items: center;
+  gap: 4px;
   height: 32px;
   padding-inline-start: 11px;
   border: 1px solid var(--card-border);
