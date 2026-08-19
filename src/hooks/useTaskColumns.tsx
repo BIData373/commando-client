@@ -449,8 +449,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				}) => {
 					const userName =
 						lastMessage?.user?.info?.displayName ??
-						lastMessage?.user?.info?.name ??
-						""
+						lastMessage?.user?.info?.name
 					const text = userName
 						? `${userName}: ${lastMessage.content}`
 						: (lastMessage?.content ?? "")
