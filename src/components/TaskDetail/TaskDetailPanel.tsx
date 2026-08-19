@@ -1,8 +1,7 @@
-import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import { concat, uniqBy } from "lodash"
-import { Calendar, ChevronUp, Loader2, Paperclip, Pencil } from "lucide-react"
-import { useRef, useState } from "react"
+import { Calendar, Paperclip, Pencil } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 import {
 	DeadlineType,
 	PermissionType,
@@ -22,15 +21,17 @@ import { invalidateQueries } from "src/queryClient"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
+import { CommentsDivider } from "../shared/CommentsDivider"
 import { DeadlineTypeTag } from "../shared/DeadlineTypeTag"
 import FlagIcon from "../shared/FlagIcon"
 import { ModalContent } from "../shared/ModalContent"
+import { SpinIcon } from "../shared/SpinIcon"
 import { StatusTag } from "../shared/StatusTag"
 import WorkspaceCell from "../shared/WorkspaceCell"
 import { RowActionsMenu } from "../Tasks/RowActionsMenu"
 import { Dialog } from "../ui/dialog"
 import { AssigneeSection } from "./AssigneeSection"
-import TaskConversationPanel from "./TaskConversationPanel"
+import TaskCommentsSection from "./TaskCommentsSection"
 import TaskHistoryPanel from "./TaskHistoryPanel"
 
 interface TaskDetailPanelProps {
@@ -63,14 +64,24 @@ function TaskDetailPanel({
 	isArchived = false,
 }: TaskDetailPanelProps) {
 	const [showHistory, setShowHistory] = useState(false)
-	const [showConversation, setShowConversation] = useState(false)
-
 	const [showEditDiscussion, setShowEditDiscussion] = useState(false)
+	const [commentsDividerStuck, setCommentsDividerStuck] = useState(false)
+	const commentsDividerRef = useRef<HTMLDivElement>(null)
 	const scrollRef = useRef<HTMLDivElement>(null)
-	const [scrollShadow, setScrollShadow] = useState({
-		top: false,
-		bottom: false,
-	})
+	const [scrollShadowTop, setScrollShadowTop] = useState(false)
+
+	function checkCommentsDividerVisibility() {
+		const el = scrollRef.current
+		const divider = commentsDividerRef.current
+		if (!el || !divider) return
+		const scrollRect = el.getBoundingClientRect()
+		const dividerRect = divider.getBoundingClientRect()
+		setCommentsDividerStuck(dividerRect.top > scrollRect.bottom)
+	}
+
+	useEffect(() => {
+		requestAnimationFrame(checkCommentsDividerVisibility)
+	}, [])
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const isManager = myPermission?.type === PermissionType.MANAGER
@@ -97,7 +108,6 @@ function TaskDetailPanel({
 	const showDueDateMeta = deadlineType !== DeadlineType.IMMEDIATE
 
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
-	const showExtraInfo = allTags.length > 0 || !!source
 
 	const [isDownloadingAttachment, setIsDownloadingAttachment] = useState(false)
 
@@ -124,17 +134,16 @@ function TaskDetailPanel({
 		const el = scrollRef.current
 		if (!el) return
 		const atTop = el.scrollTop <= 0
-		const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
-		setScrollShadow({ top: !atTop, bottom: !atBottom })
+		setScrollShadowTop(!atTop)
+		checkCommentsDividerVisibility()
 	}
 
 	function handleCloseEditDiscussion() {
 		setShowEditDiscussion(false)
 	}
 
-	function handleBottomBarClick() {
-		setShowConversation(true)
-		setShowHistory(false)
+	function handleScrollToComments() {
+		commentsDividerRef.current?.scrollIntoView({ behavior: "smooth" })
 	}
 
 	function handleOpenChange(open: boolean) {
@@ -178,7 +187,7 @@ function TaskDetailPanel({
 						<WorkspaceCell workspace={workspace} iconSize={20} />
 					)}
 
-					<TitleRow $shadow={scrollShadow.top}>
+					<TitleRow $shadow={scrollShadowTop}>
 						<TextWrapper>
 							{flagged && <FlagIcon size={20} />}
 							<TitleText title={title}>{title}</TitleText>
@@ -186,11 +195,7 @@ function TaskDetailPanel({
 					</TitleRow>
 				</HeaderRow>
 
-				<ScrollContent
-					$noScroll={showConversation}
-					ref={scrollRef}
-					onScroll={handleScroll}
-				>
+				<ScrollContent ref={scrollRef} onScroll={handleScroll}>
 					<DeadlineSection>
 						<SectionLabel>תג"ב</SectionLabel>
 						<MetaRow>
@@ -232,76 +237,62 @@ function TaskDetailPanel({
 							</StatusTagContainer>
 						)
 					)}
-					{showExtraInfo && (
-						<>
-							<DividerRow>
-								<DividerLine />
-								<DividerText>פרטים נוספים</DividerText>
-								<DividerLine />
-							</DividerRow>
 
-							<InfoGrid>
-								{!!source && (
-									<InfoBlock>
-										<SectionLabel>מקור הנחיה</SectionLabel>
-										<SourceRow>
-											{permissionType === PermissionType.MANAGER && (
-												<PencilButton
-													onClick={() => setShowEditDiscussion(true)}
-												>
-													<Pencil size={14} />
-												</PencilButton>
-											)}
-											<SourceName>{source.name}</SourceName>
-											{source.date && (
-												<SourceDate>
-													{formatDateMonthYear(source.date)}
-												</SourceDate>
-											)}
-										</SourceRow>
-										<InfoAttachment>
-											{source.attachmentKey && (
-												<>
-													<Paperclip size={16} />
-													<AttachmentDownloadButton
-														onClick={handleAttachmentDownload}
-														disabled={isDownloadingAttachment}
-													>
-														{source.attachmentName}
-														{isDownloadingAttachment && (
-															<AttachmentSpinIcon size={12} />
-														)}
-													</AttachmentDownloadButton>
-												</>
-											)}
-										</InfoAttachment>
-									</InfoBlock>
-								)}
-								{allTags.length > 0 && (
-									<InfoBlock>
-										<SectionLabel>נושא</SectionLabel>
-										<TagsRow>
-											{allTags.map((tag) => (
-												<TagChip key={tag.id}>{tag.name}</TagChip>
-											))}
-										</TagsRow>
-									</InfoBlock>
-								)}
-							</InfoGrid>
-						</>
-					)}
+					<InfoGrid>
+						{!!source && (
+							<InfoBlock>
+								<SectionLabel>מקור הנחיה</SectionLabel>
+								<SourceRow>
+									{permissionType === PermissionType.MANAGER && (
+										<PencilButton onClick={() => setShowEditDiscussion(true)}>
+											<Pencil size={14} />
+										</PencilButton>
+									)}
+									<SourceName>{source.name}</SourceName>
+									{source.date && (
+										<SourceDate>{formatDateMonthYear(source.date)}</SourceDate>
+									)}
+								</SourceRow>
+								<InfoAttachment>
+									{source.attachmentKey && (
+										<>
+											<Paperclip size={16} />
+											<AttachmentDownloadButton
+												onClick={handleAttachmentDownload}
+												disabled={isDownloadingAttachment}
+											>
+												{source.attachmentName}
+												{isDownloadingAttachment && <SpinIcon size={12} />}
+											</AttachmentDownloadButton>
+										</>
+									)}
+								</InfoAttachment>
+							</InfoBlock>
+						)}
+						{allTags.length > 0 && (
+							<InfoBlock>
+								<SectionLabel>נושא</SectionLabel>
+								<TagsRow>
+									{allTags.map((tag) => (
+										<TagChip key={tag.id}>{tag.name}</TagChip>
+									))}
+								</TagsRow>
+							</InfoBlock>
+						)}
+					</InfoGrid>
+
+					<TaskCommentsSection
+						taskId={id}
+						isManager={isManager}
+						commentsDividerRef={commentsDividerRef}
+					/>
 				</ScrollContent>
 
-				<BottomBar
-					onClick={handleBottomBarClick}
-					$hidden={showConversation}
-					$shadow={scrollShadow.bottom}
-				>
-					<ChatGroup>
-						<ChatLabel>שיחה ועדכונים</ChatLabel>
-					</ChatGroup>
-					<ChevronUp size={20} />
-				</BottomBar>
+				{commentsDividerStuck && (
+					<FixedCommentsBar onClick={handleScrollToComments}>
+						<CommentsDivider taskId={id} />
+					</FixedCommentsBar>
+				)}
 
 				{showHistory && (
 					<>
@@ -309,15 +300,6 @@ function TaskDetailPanel({
 						<TaskHistoryPanel
 							history={history ?? []}
 							onClose={() => setShowHistory(false)}
-						/>
-					</>
-				)}
-				{showConversation && (
-					<>
-						<HistoryOverlay />
-						<TaskConversationPanel
-							taskId={id}
-							onClose={() => setShowConversation(false)}
 						/>
 					</>
 				)}
@@ -339,9 +321,10 @@ export default TaskDetailPanel
 // ─── Layout ────────────────────────────────────────────────────────────────────
 
 const Panel = styled(ModalContent)`
-  width: 1100px;
-  height: 850px;
-  max-height: 85vh;
+  width: 100%;
+  max-width: 900px;
+  max-height: 82vh;
+  min-height: 850px;
   overflow: hidden;
   direction: rtl;
 `
@@ -354,39 +337,16 @@ const TaskIdLabel = styled.span`
   color: var(--text-color-400);
 `
 
-const ScrollContent = styled.div<{ $noScroll: boolean }>`
+const ScrollContent = styled.div`
   flex: 1;
   min-height: 0;
-  overflow-y: ${({ $noScroll }) => ($noScroll ? "hidden" : "auto")};
+  overflow-y: auto;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: 32px;
   padding: 36px 48px 20px;
   align-items: flex-end;
-`
-
-const BottomBar = styled.div<{ $hidden?: boolean; $shadow: boolean }>`
-  flex-shrink: 0;
-  background: var(--background-area);
-  height: 53px;
-  border-top: 10px solid rgba(0, 0, 0, 0);
-  display: ${({ $hidden }) => ($hidden ? "none" : "flex")};
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  border-radius: 0 0 8px 8px;
-  color: var(--sea-ink-soft);
-  cursor: pointer;
-  position: relative;
-  z-index: 1;
-  transition: box-shadow 200ms ease;
-  box-shadow: ${({ $shadow }) =>
-		$shadow ? "0px -10px 20px 0px rgba(0, 0, 0, 0.06)" : "none"};
-
-  &:hover {
-    background: var(--Bar-hover);
-  }
 `
 
 const SectionLabel = styled.p`
@@ -416,7 +376,7 @@ const TitleRow = styled.div<{ $shadow: boolean }>`
   clip-path: inset(0 0 -20px 0);
   transition: box-shadow 200ms ease;
   box-shadow: ${({ $shadow }) =>
-		$shadow ? "0px 10px 20px 0px rgba(0, 0, 0, 0.06)" : "none"};
+		$shadow ? "var(--shadow-modal-header)" : "none"};
 `
 
 const TextWrapper = styled.div`
@@ -500,31 +460,6 @@ const MetaText = styled.span`
 const StatusTagContainer = styled.div`
   width: 100%;
 `
-
-// ─── Divider ───────────────────────────────────────────────────────────────────
-const DividerRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-`
-
-const DividerLine = styled.div`
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-  min-width: 0;
-`
-
-const DividerText = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color-200);
-  white-space: nowrap;
-  flex-shrink: 0;
-`
-
 // ─── Additional info ───────────────────────────────────────────────────────────
 
 const InfoGrid = styled.div`
@@ -563,10 +498,9 @@ const TagChip = styled.span`
 
 const SourceRow = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
-  min-width: 0;
-  width: 100%;
+  align-self: stretch;
 `
 
 const InfoAttachment = styled.div`
@@ -574,16 +508,6 @@ const InfoAttachment = styled.div`
   align-items: center;
   gap: 8px;
   color: var(--active-color);
-`
-
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`
-
-const AttachmentSpinIcon = styled(Loader2)`
-  flex-shrink: 0;
-  animation: ${spin} 0.8s linear infinite;
 `
 
 const AttachmentDownloadButton = styled.button`
@@ -613,7 +537,6 @@ const SourceName = styled.span`
   color: var(--sea-ink);
   white-space: normal;
   overflow-wrap: break-word;
-  flex: 1;
   min-width: 0;
 `
 
@@ -636,25 +559,19 @@ const PencilButton = styled.button`
   }
 `
 
+const FixedCommentsBar = styled.div`
+  flex-shrink: 0;
+  padding: 15px 48px;
+  background: var(--background);
+  box-shadow: var(--shadow-comment-bar);
+  border-radius: 0 0 8px 8px;
+  cursor: pointer;
+`
+
 const HistoryOverlay = styled.div`
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--Text-color-text-placeholder);
   backdrop-filter: blur(2px);
   z-index: 1;
-`
-
-// ─── Bottom bar ────────────────────────────────────────────────────────────────
-
-const ChatGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`
-
-const ChatLabel = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 500;
-  line-height: 21px;
-  color: var(--sea-ink);
 `

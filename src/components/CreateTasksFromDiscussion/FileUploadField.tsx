@@ -1,9 +1,9 @@
-import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
-import { FileText, Inbox, Loader2, Trash2 } from "lucide-react"
+import { FileText, Inbox, Trash2 } from "lucide-react"
 import { useRef, useState } from "react"
 import { getAttachmentSignedUrl } from "../../api/s3/s3"
 import { downloadFromUrl } from "../../functions/download-utils"
+import { SpinIcon } from "../shared/SpinIcon"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -279,16 +279,6 @@ const FileName = styled.span`
   white-space: nowrap;
   text-align: start;
   padding-inline: 8px;
-`
-
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`
-
-const SpinIcon = styled(Loader2)`
-  flex-shrink: 0;
-  animation: ${spin} 0.8s linear infinite;
 `
 
 const FileDownloadButton = styled.button`

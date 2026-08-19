@@ -19,6 +19,7 @@ import {
 	TASK_COLUMN_DEFINITIONS,
 } from "src/utils/task-table-utils"
 import { DeadlineTypeTag } from "../components/shared/DeadlineTypeTag"
+import EllipsisTooltip from "../components/shared/EllipsisTooltip"
 import FlagIcon from "../components/shared/FlagIcon"
 import HighlightMatch from "../components/shared/HighlightMatch"
 import { AssigneeCell } from "../components/Tasks/AssigneeCell"
@@ -210,34 +211,10 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				}) => (
 					<TitleCell>
 						{flagged && <FlagIcon />}
-						{description ? (
-							<>
-								<TitlePart>
-									{searchQuery ? (
-										<HighlightMatch
-											text={title}
-											query={searchQuery}
-											variant="mark"
-										/>
-									) : (
-										title
-									)}
-								</TitlePart>
-								<TitleSeparator> - </TitleSeparator>
-								<DetailsPart>
-									{searchQuery ? (
-										<HighlightMatch
-											text={description}
-											query={searchQuery}
-											variant="mark"
-										/>
-									) : (
-										description
-									)}
-								</DetailsPart>
-							</>
-						) : (
-							<TitleFull>
+						<TitleContent
+							tooltip={`${title}${description ? ` - ${description}` : ""}`}
+						>
+							<TitlePart>
 								{searchQuery ? (
 									<HighlightMatch
 										text={title}
@@ -247,8 +224,24 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 								) : (
 									title
 								)}
-							</TitleFull>
-						)}
+							</TitlePart>
+							{description && (
+								<>
+									<TitleSeparator> - </TitleSeparator>
+									<DetailsPart>
+										{searchQuery ? (
+											<HighlightMatch
+												text={description}
+												query={searchQuery}
+												variant="mark"
+											/>
+										) : (
+											description
+										)}
+									</DetailsPart>
+								</>
+							)}
+						</TitleContent>
 					</TitleCell>
 				),
 			},
@@ -557,6 +550,14 @@ const TitleCell = styled.div<{ $clickable?: boolean }>`
   cursor: pointer;
 `
 
+const TitleContent = styled(EllipsisTooltip)`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+`
+
 const TitlePart = styled.span`
   font-weight: 400;
   overflow: hidden;
@@ -564,6 +565,11 @@ const TitlePart = styled.span`
   white-space: nowrap;
   max-width: 50%;
   flex-shrink: 0;
+
+  &:only-child {
+    max-width: 100%;
+    flex: 1;
+  }
 `
 
 const TitleSeparator = styled.span`
@@ -578,12 +584,6 @@ const DetailsPart = styled.span`
   white-space: nowrap;
   flex: 1;
   min-width: 0;
-`
-
-const TitleFull = styled.span`
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 `
 
 const DeadlineCell = styled.div`
