@@ -1,5 +1,12 @@
 import styled from "@emotion/styled"
-import { Archive, ArchiveX, CheckCircle2, Pencil, Trash2 } from "lucide-react"
+import {
+	Archive,
+	ArchiveX,
+	CheckCircle2,
+	MessageCircle,
+	Pencil,
+	Trash2,
+} from "lucide-react"
 import {
 	DropdownMenuContent,
 	DropdownMenuItem,
@@ -9,6 +16,7 @@ import { DeletePopover } from "./DeletePopover"
 
 interface RowMenuItemsProps {
 	onEdit?: () => void
+	onAddComment?: () => void
 	onEnterSelect?: () => void
 	onDelete?: () => void
 	onArchive?(): void
@@ -19,6 +27,7 @@ interface RowMenuItemsProps {
 
 export function RowMenuItems({
 	onEdit,
+	onAddComment,
 	onEnterSelect,
 	onDelete,
 	popoverOpen,
@@ -27,6 +36,7 @@ export function RowMenuItems({
 	onUnarchive,
 }: RowMenuItemsProps) {
 	const itemCount = [
+		onAddComment,
 		onArchive,
 		onUnarchive,
 		onEdit,
@@ -41,6 +51,16 @@ export function RowMenuItems({
 
 	return (
 		<MenuContent align="start" sideOffset={4}>
+			{onAddComment && (
+				<MenuItem onSelect={onAddComment}>
+					<MessageCircle size={16} />
+					הוספת תגובה
+				</MenuItem>
+			)}
+			{onAddComment &&
+				(onEdit || onArchive || onUnarchive || onEnterSelect || onDelete) && (
+					<MenuSeparator />
+				)}
 			{onEdit && (
 				<MenuItem onSelect={onEdit}>
 					<Pencil size={16} />

@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
+import { useSearch } from "@tanstack/react-router"
 import { MoreVertical, Trash2 } from "lucide-react"
-import { type RefObject, useState } from "react"
+import { type RefObject, useEffect, useRef, useState } from "react"
 import {
 	getListMessagesQueryKey,
 	useCreateMessage,
@@ -31,6 +32,20 @@ function TaskCommentsSection({
 	commentsDividerRef,
 }: TaskCommentsSectionProps) {
 	const [commentValue, setCommentValue] = useState("")
+	const textareaRef = useRef<HTMLTextAreaElement>(null)
+	const { focusComment } = useSearch({ strict: false }) as {
+		focusComment?: boolean
+	}
+
+	useEffect(() => {
+		if (focusComment) {
+			requestAnimationFrame(() => {
+				textareaRef.current?.scrollIntoView({ behavior: "smooth" })
+				textareaRef.current?.focus()
+			})
+		}
+	}, [focusComment])
+
 	const currentUser = useCurrentUser()
 
 	const { data: messages = [] } = useListMessages({ taskId })
@@ -75,6 +90,7 @@ function TaskCommentsSection({
 			<CommentsDivider taskId={taskId} dividerRef={commentsDividerRef} />
 			<TextareaRow>
 				<CommentsTextarea
+					ref={textareaRef}
 					value={commentValue}
 					onChange={handleCommentInput}
 					onKeyDown={handleCommentKeyDown}
