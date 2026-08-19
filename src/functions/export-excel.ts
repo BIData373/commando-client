@@ -106,9 +106,7 @@ const COLUMN_DEFS: Partial<
 				return ""
 			}
 
-			const source = t.source.date
-				? `${t.source.name} | ${formatDate(t.source.date)}`
-				: t.source.name
+			const source = `${t.source.name}${t.source.date ? ` | ${formatDate(t.source.date)}` : ""}}`
 			return t.source.attachmentKey
 				? { value: source, link: t.source.attachmentKey }
 				: source
