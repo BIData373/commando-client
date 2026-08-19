@@ -49,19 +49,19 @@ export function AssigneeUsersList({ users, onRemove }: AssigneeUsersListProps) {
 }
 
 const UserListArea = styled.div`
-  min-height: 127px;
-  max-height: 500px;
+  min-height: 0;
+  max-height: 290px;
   width: 100%;
   overflow-y: auto;
+  overscroll-behavior: contain;
   border-radius: 6px;
   padding: 4px;
 `
 
 const UserCard = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
   flex-direction: column;
+  gap: 8px;
 `
 
 const UserCardItem = styled.div`
