@@ -217,6 +217,8 @@ body,
   --shadow-popover: 0 8px 32px rgba(0, 0, 0, 0.12);
   --shadow-button: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
   --shadow-button-hover: 0 2px 0 rgba(5, 145, 255, 0.1);
+  --shadow-tag-focus: 0 0 0 2px rgba(5, 145, 255, 0.1);
+  --shadow-modal-header: 0px 10px 20px 0px rgba(0, 0, 0, 0.06);
 }
 
 .dark {

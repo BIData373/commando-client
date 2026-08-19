@@ -112,7 +112,6 @@ const COLUMN_DEFS: Partial<
 		header: "נושא",
 		accessor: (t) => t.tags.map(({ name }) => name).join(", "),
 	},
-	notes: { header: "הערות", maxWidth: 50, accessor: (t) => t.notes ?? "" },
 	createdAt: {
 		header: "תאריך יצירה",
 		accessor: (t) => formatDate(t.createdAt),

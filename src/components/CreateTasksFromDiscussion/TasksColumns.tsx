@@ -160,30 +160,6 @@ const columns: ColumnDef<NewTaskRow>[] = [
 		),
 	},
 	{
-		id: "notes",
-		size: 350,
-		header: () => <HeaderLabel>הערות הנחיה</HeaderLabel>,
-		cell: ({ row, table }) => {
-			const { id, notes } = row.original
-			const { updateRow } = table.options.meta as TaskTableMeta
-			return (
-				<TextareaCellWrapper>
-					<CellTextarea
-						data-row={row.index}
-						data-col={1}
-						value={notes ?? ""}
-						onChange={(e) =>
-							handleTextareaChange(e, id, TaskColumnId.Notes, updateRow)
-						}
-						onKeyDown={handleCellKeyDown}
-						placeholder=""
-						rows={1}
-					/>
-				</TextareaCellWrapper>
-			)
-		},
-	},
-	{
 		id: "important",
 		size: 62,
 		header: () => (

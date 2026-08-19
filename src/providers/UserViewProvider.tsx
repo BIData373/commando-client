@@ -32,15 +32,14 @@ const PERSONAL_DEFAULT_COLUMN_ORDER = [
 	"deadlineType",
 	"source",
 	"tags",
-	"notes",
 	"workspace",
 	"createdAt",
 	"updatedAt",
 ]
 
-const PERSONAL_DEFAULT_HIDDEN = ["tags", "notes", "updatedAt"]
+const PERSONAL_DEFAULT_HIDDEN = ["tags", "updatedAt"]
 
-const WORKSPACE_DEFAULT_HIDDEN = ["notes", "updatedAt"]
+const WORKSPACE_DEFAULT_HIDDEN = ["updatedAt"]
 
 function getDefaultView(
 	workspaceId: number | null,

@@ -286,7 +286,7 @@ export function DataTable<TData>({
       <TableBody>
         {paddingTop > 0 && (
           <tr>
-            <SpacerCell colSpan={columns.length} $height={paddingTop} />
+            <SpacerCell data-virtual-spacer colSpan={columns.length} $height={paddingTop} />
           </tr>
         )}
         {virtualRows.length ? (
@@ -324,7 +324,7 @@ export function DataTable<TData>({
         )}
         {paddingBottom > 0 && (
           <tr>
-            <SpacerCell colSpan={columns.length} $height={paddingBottom} />
+            <SpacerCell data-virtual-spacer colSpan={columns.length} $height={paddingBottom} />
           </tr>
         )}
       </TableBody>
