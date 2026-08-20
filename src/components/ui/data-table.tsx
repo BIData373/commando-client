@@ -23,7 +23,7 @@ import {
   useRef,
   useState,
   type MouseEvent,
-  type ReactNode,
+  type ReactNode
 } from 'react'
 import { LoadingSpinner } from '../shared/LoadingSpinner'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
@@ -169,6 +169,8 @@ export function DataTable<TData>({
     const el = containerRef.current
     if (!el) return
 
+    el.style.overflowAnchor = 'none'
+
     function updateWidth(width: number) {
       const rounded = Math.round(width)
       setContainerWidth((prev) => (prev === rounded ? prev : rounded))
@@ -237,13 +239,11 @@ export function DataTable<TData>({
 
   const totalSize = fixedTotal + growTotal
 
-  const hasExpansion = renderRowExpansion !== undefined
-
   const tableRows = table.getRowModel().rows
   const { getVirtualItems, getTotalSize, measureElement } = useVirtualizer({
     count: tableRows.length,
     getScrollElement: () => containerRef.current,
-    estimateSize: () => 44,
+    estimateSize: () => 43,
     overscan: 16,
     useFlushSync: false,
     measureElement: (el) => {
@@ -255,8 +255,6 @@ export function DataTable<TData>({
       return height
     }
   })
-
-  const rowRef = hasExpansion ? measureElement : undefined
 
   const tableMinWidth = totalSize > 0 ? totalSize : undefined
 
@@ -300,7 +298,7 @@ export function DataTable<TData>({
                 index={virtualRow.index}
                 isSelected={row.getIsSelected()}
                 isHighlighted={highlightedRowIds?.has(row.id) ?? false}
-                rowRef={rowRef}
+                rowRef={measureElement}
                 onCellClick={onCellClick}
                 onRowContextMenu={onRowContextMenu}
                 renderRowOverlay={renderRowOverlay}
@@ -351,7 +349,7 @@ const ExpansionCell = styled.td`
   outline: none !important;
 `
 
-const StyledTable = styled(Table)<{ $minWidth?: number }>`
+const StyledTable = styled(Table) <{ $minWidth?: number }>`
   min-width: ${({ $minWidth }) => ($minWidth !== undefined ? `${$minWidth}px` : undefined)};
 `
 
@@ -360,8 +358,8 @@ const Col = styled.col<{ $width?: number }>`
 `
 
 const SpacerCell = styled.td<{ $height: number }>`
-  height: ${({ $height }) => `${$height}px`};
-  padding: 0;
-  border: none;
+  height: ${({ $height }) => `${$height}px`} !important;
+  max-height: none !important;
+  padding: 0 !important;
+  border: none !important;
 `
-

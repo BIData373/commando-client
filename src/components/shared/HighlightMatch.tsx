@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { useMemo } from "react"
+import { memo, useMemo } from "react"
 
 interface HighlightMatchProps {
 	text: string
@@ -7,37 +7,38 @@ interface HighlightMatchProps {
 	variant?: "mark" | "bold"
 }
 
-const HighlightMatch = ({
-	text,
-	query,
-	variant = "bold",
-}: HighlightMatchProps) => {
-	const normalizedQuery = query.trim()
+const HighlightMatch = memo(
+	({ text, query, variant = "bold" }: HighlightMatchProps) => {
+		const normalizedQuery = query.trim()
 
-	const content = useMemo(() => {
-		if (!normalizedQuery) return text
+		const content = useMemo(() => {
+			if (!normalizedQuery) return text
 
-		const escapedQuery = normalizedQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-		const regex = new RegExp(`(${escapedQuery})`, "gi")
-		const parts = text.split(regex)
-
-		const Highlight = variant === "mark" ? HighlightMark : HighlightBold
-		const normalizedQueryLowerCase = normalizedQuery.toLowerCase()
-
-		return parts.map((part, index) => {
-			const isMatch = part.toLowerCase() === normalizedQueryLowerCase
-			const key = `${part}-${index}`
-
-			return isMatch ? (
-				<Highlight key={`match-${key}`}>{part}</Highlight>
-			) : (
-				<span key={`text-${key}`}>{part}</span>
+			const escapedQuery = normalizedQuery.replace(
+				/[.*+?^${}()|[\]\\]/g,
+				"\\$&",
 			)
-		})
-	}, [normalizedQuery, text, variant])
+			const regex = new RegExp(`(${escapedQuery})`, "gi")
+			const parts = text.split(regex)
 
-	return <span>{content}</span>
-}
+			const Highlight = variant === "mark" ? HighlightMark : HighlightBold
+			const normalizedQueryLowerCase = normalizedQuery.toLowerCase()
+
+			return parts.map((part, index) => {
+				const isMatch = part.toLowerCase() === normalizedQueryLowerCase
+				const key = `${part}-${index}`
+
+				return isMatch ? (
+					<Highlight key={`match-${key}`}>{part}</Highlight>
+				) : (
+					<span key={`text-${key}`}>{part}</span>
+				)
+			})
+		}, [normalizedQuery, text, variant])
+
+		return <span>{content}</span>
+	},
+)
 
 export default HighlightMatch
 
