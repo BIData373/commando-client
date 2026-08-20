@@ -13,12 +13,14 @@ interface RecentlyCompletedProps {
 	tasks: TaskRowDto[]
 	onUpdateStatusSuccess?(): void
 	onClick?(taskId: number): void
+	assigneeFilter?: string[]
 }
 
 export default function RecentlyCompleted({
 	tasks,
 	onUpdateStatusSuccess,
 	onClick,
+	assigneeFilter,
 }: RecentlyCompletedProps) {
 	const completedTasks = useMemo(
 		() => tasks.filter((t) => t.status?.type === WorkspaceStatusType.COMPLETED),
@@ -31,7 +33,10 @@ export default function RecentlyCompleted({
 			tabButtons={
 				<TabsButtons>
 					<SectionTitle>הנחיות שבוצעו</SectionTitle>
-					<ViewMoreInstructions statusFilter={WorkspaceStatusType.COMPLETED} />
+					<ViewMoreInstructions
+						statusFilter={WorkspaceStatusType.COMPLETED}
+						assigneeFilter={assigneeFilter}
+					/>
 				</TabsButtons>
 			}
 		>

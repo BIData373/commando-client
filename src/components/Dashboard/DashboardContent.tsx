@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
+import { useListAssignees } from "src/api/assignee/assignee"
 import { PermissionType, type TaskRowDto } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTaskRows } from "src/api/task/task"
@@ -27,6 +28,12 @@ export function DashboardContent() {
 	const { data: taskRows = [], queryKey } = useListTaskRows({ workspaceId: id })
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId: id })
+
+	const { data: assignees = [] } = useListAssignees({ workspaceId: id })
+
+	const selectedAssigneeNames = assignees
+		.filter((assignee) => selectedAssigneeIds.includes(assignee.id))
+		.map((assignee) => assignee.name)
 
 	const filteredTasks = useFilteredTasks(taskRows, {
 		skipQuickFilters: true,
@@ -59,12 +66,7 @@ export function DashboardContent() {
 	function matchesAssigneeFilter(task: TaskRowDto, assigneeIds: number[]) {
 		if (assigneeIds.length === 0) return true
 
-		const taskAssigneeIds = [
-			task.assignee?.id,
-			...task.otherAssignees.map((a) => a.assignee.id),
-		]
-
-		return assigneeIds.some((id) => taskAssigneeIds.includes(id))
+		return task.assignee ? assigneeIds.includes(task.assignee.id) : false
 	}
 
 	return (
@@ -92,12 +94,14 @@ export function DashboardContent() {
 					onUpdateStatusSuccess={handleUpdateSuccess}
 					onClick={handleOpenTask}
 					taskRows={tasks}
+					assigneeFilter={selectedAssigneeNames}
 				/>
 				<StatusCard tasks={tasks} />
 				<RecentlyCompleted
 					onUpdateStatusSuccess={handleUpdateSuccess}
 					onClick={handleOpenTask}
 					tasks={tasks}
+					assigneeFilter={selectedAssigneeNames}
 				/>
 				<SystemDistribution onSetAssignees={handleSetAssignees} tasks={tasks} />
 			</GridLayout>

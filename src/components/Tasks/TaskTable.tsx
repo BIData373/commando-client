@@ -42,9 +42,11 @@ interface TaskTableProps<TTask extends TaskRowDto> {
 	showHeader?: boolean
 	statusFilter?: WorkspaceStatusType[]
 	deadlineTypeFilter?: DeadlineType[]
+	assigneeFilter?: string[]
 	onFiltersChange?: (
 		statusFilter: WorkspaceStatusType[],
 		deadlineTypeFilter: DeadlineType[],
+		assigneeFilter: string[],
 	) => void
 	isLoading?: boolean
 	hideStatusAction?: boolean
@@ -67,6 +69,7 @@ function TaskTable<TTask extends TaskRowDto>({
 	showHeader = true,
 	statusFilter = [],
 	deadlineTypeFilter = [],
+	assigneeFilter = [],
 	onFiltersChange,
 	onChangeSuccess,
 	isLoading,
@@ -108,8 +111,11 @@ function TaskTable<TTask extends TaskRowDto>({
 			...(deadlineTypeFilter.length
 				? [{ id: "deadlineType", value: deadlineTypeFilter }]
 				: []),
+			...(assigneeFilter.length
+				? [{ id: "assignee", value: assigneeFilter }]
+				: []),
 		],
-		[statusFilter, deadlineTypeFilter],
+		[statusFilter, deadlineTypeFilter, assigneeFilter],
 	)
 
 	const columnFilters: ColumnFiltersState = useMemo(() => {
@@ -136,8 +142,17 @@ function TaskTable<TTask extends TaskRowDto>({
 			"deadlineType",
 		) as DeadlineType[]
 
+		const tableAssigneeColumnValue = getColumnFilter(
+			newFilters,
+			"assignee",
+		) as string[]
+
 		setColumnsFilters(newFilters)
-		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
+		onFiltersChange?.(
+			tableStatusColumnValue,
+			tableDeadlineColumnValue,
+			tableAssigneeColumnValue,
+		)
 	}
 
 	const selectedRowKeys = Object.keys(rowSelection).filter(

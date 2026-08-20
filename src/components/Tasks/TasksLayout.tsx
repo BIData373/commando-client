@@ -13,6 +13,7 @@ export interface TasksLayoutProps {
 	urlName: string
 	statusFilter: WorkspaceStatusType[]
 	deadlineTypeFilter: DeadlineType[]
+	assigneeFilter: string[]
 }
 
 function TasksLayout({
@@ -20,6 +21,7 @@ function TasksLayout({
 	urlName,
 	statusFilter = [],
 	deadlineTypeFilter = [],
+	assigneeFilter = [],
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
 
@@ -31,6 +33,7 @@ function TasksLayout({
 				view,
 				statusFilter,
 				deadlineTypeFilter,
+				assigneeFilter,
 				...taskFilter,
 			},
 		})
@@ -55,15 +58,21 @@ function TasksLayout({
 	function handleColumnFiltersChange(
 		newStatusFilter: WorkspaceStatusType[],
 		newDeadlineTypeFilter: DeadlineType[],
+		newAssigneeFilter: string[],
 	) {
 		navigateToTasks({
 			statusFilter: newStatusFilter,
 			deadlineTypeFilter: newDeadlineTypeFilter,
+			assigneeFilter: newAssigneeFilter,
 		})
 	}
 
 	function handleClearColumnFilters() {
-		navigateToTasks({ statusFilter: [], deadlineTypeFilter: [] })
+		navigateToTasks({
+			statusFilter: [],
+			deadlineTypeFilter: [],
+			assigneeFilter: [],
+		})
 	}
 
 	return (
@@ -76,6 +85,7 @@ function TasksLayout({
 				onColumnFilterChange={handleColumnFiltersChange}
 				deadlineTypeFilter={deadlineTypeFilter}
 				statusFilter={statusFilter}
+				assigneeFilter={assigneeFilter}
 			/>
 		</>
 	)

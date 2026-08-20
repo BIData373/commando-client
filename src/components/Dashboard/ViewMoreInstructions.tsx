@@ -10,12 +10,14 @@ interface IViewInstruction {
 	quickFilter?: QuickFilter
 	statusFilter?: WorkspaceStatusType
 	deadlineTypeFilter?: DeadlineType
+	assigneeFilter?: string[]
 }
 
 export const ViewMoreInstructions = ({
 	quickFilter,
 	statusFilter,
 	deadlineTypeFilter,
+	assigneeFilter,
 }: IViewInstruction) => {
 	const {
 		workspace: { urlName },
@@ -32,6 +34,7 @@ export const ViewMoreInstructions = ({
 				quickFilter: quickFilter ? [quickFilter] : [],
 				statusFilter,
 				deadlineTypeFilter,
+				assigneeFilter,
 			},
 		})
 	}

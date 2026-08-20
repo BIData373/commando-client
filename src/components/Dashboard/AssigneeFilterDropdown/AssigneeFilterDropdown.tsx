@@ -3,6 +3,8 @@ import { CircleUser, Search } from "lucide-react"
 import { useState } from "react"
 import {} from "react-icons"
 import { useListAssignees } from "src/api/assignee/assignee"
+import { useFilteredAssignees } from "src/hooks/useFilteredAssignees"
+import { useFuse } from "src/hooks/useFuse"
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover"
 import AssigneeDropdown from "./AssigneeDropdown"
 
@@ -23,9 +25,10 @@ function AssigneeFilterDropdown({
 
 	const { data: assignees = [] } = useListAssignees({ workspaceId })
 
-	const filteredAssignees = assignees.filter((assignee) =>
-		search.trim() ? assignee.name.includes(search) : true,
-	)
+	const filteredAssignees = useFilteredAssignees(assignees, search)
+	// const filteredAssignees = assignees.filter((assignee) =>
+	//   search.trim() ? assignee.name.includes(search) : true,
+	// )
 
 	function handleOpenChange(nextOpen: boolean) {
 		setOpen(nextOpen)
