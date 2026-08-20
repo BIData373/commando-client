@@ -243,6 +243,7 @@ function TaskTable<TTask extends TaskRowDto>({
 		onUpdateStatusSuccess: onChangeSuccess,
 		searchQuery,
 		filterOptionsMap,
+		statuses,
 		selectMode: {
 			enabled: selectMode,
 			tasks,
@@ -360,6 +361,7 @@ const TableWrapper = styled.div`
     overflow: auto;
     max-height: 100%;
     direction: ltr;
+    overscroll-behavior: contain;
   }
 
   table {
@@ -369,14 +371,12 @@ const TableWrapper = styled.div`
   }
 
   tr {
+    border-bottom: none;
+
     &:hover,
     &[data-highlighted],
     &:has([data-slot="dropdown-menu-trigger"][data-state="open"]) {
       background: var(--table-rows-bg-hover);
-    }
-
-    &:last-of-type td {
-      border-bottom: none;
     }
   }
 

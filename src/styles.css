@@ -131,6 +131,10 @@ body,
   --Colors-Base-Blue-3: oklch(80.61% 0.11 241.5);
   --Colors-Base-Blue-6: oklch(52.19% 0.23 241.5);
 
+  --Components-Tooltip-Global-colorBgSpotlight: rgba(0, 0, 0, 0.85);
+
+
+
   --Success-color-success-border-hover: #95de64;
   --Color-Subtitle: #1d293d;
   --Colors-Base-Geekblue-10: #030852;

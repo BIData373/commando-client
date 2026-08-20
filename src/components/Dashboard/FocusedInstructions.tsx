@@ -43,8 +43,7 @@ const TAB_FILTERS: Partial<Record<QuickFilter, (task: TaskRowDto) => boolean>> =
 		[QuickFilter.approaching]: (task) =>
 			task.deadlineType === DeadlineType.IMMEDIATE,
 		[QuickFilter.overdue]: (task) =>
-			matchesQuickFilter(task, QuickFilter.overdue) ||
-			task.deadlineType === DeadlineType.IMMEDIATE,
+			matchesQuickFilter(task, QuickFilter.overdue),
 	}
 
 function getTabFilter(tab: QuickFilter): (task: TaskRowDto) => boolean {

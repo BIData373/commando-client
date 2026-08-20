@@ -6,12 +6,7 @@ import { useHeader } from "../providers/HeaderProvider"
 import { UserDropdown } from "./UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Separator } from "./ui/separator"
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "./ui/tooltip"
+import { TooltipProvider } from "./ui/tooltip"
 
 export default function Header() {
 	const {
@@ -26,14 +21,7 @@ export default function Header() {
 
 					<CenterSection>
 						<TooltipProvider>
-							<Tooltip>
-								<TooltipTrigger>
-									<TooltipTrigger asChild>
-										<CenterTitle>{center}</CenterTitle>
-									</TooltipTrigger>
-									<TooltipContent>{center}</TooltipContent>
-								</TooltipTrigger>
-							</Tooltip>
+							<CenterTitle>{center}</CenterTitle>
 						</TooltipProvider>
 					</CenterSection>
 
