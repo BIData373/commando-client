@@ -26,9 +26,6 @@ function AssigneeFilterDropdown({
 	const { data: assignees = [] } = useListAssignees({ workspaceId })
 
 	const filteredAssignees = useFilteredAssignees(assignees, search)
-	// const filteredAssignees = assignees.filter((assignee) =>
-	//   search.trim() ? assignee.name.includes(search) : true,
-	// )
 
 	function handleOpenChange(nextOpen: boolean) {
 		setOpen(nextOpen)
