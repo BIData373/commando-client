@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
-import { useState } from "react"
+import { useToggle } from "@mantine/hooks"
+import { memo } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { HAS_ASSIGNEE_DATA_ATTR } from "src/utils/task-table-utils"
@@ -13,40 +14,52 @@ import {
 
 interface StatusDropdownProps {
 	status: WorkspaceStatusDto
+	statuses?: WorkspaceStatusDto[]
+	workspaceId?: number
 	taskId: number
-	workspaceId: number
 	assigneeId?: number
 	editable?: boolean
 	onUpdate: (taskId: number, assigneeId: number, statusId: number) => void
 }
 
-export function StatusDropdown({
-	status,
-	taskId,
-	assigneeId,
-	workspaceId,
-	editable = false,
-	onUpdate,
-}: StatusDropdownProps) {
-	const [isOpen, setIsOpen] = useState(false)
-
-	const { data: statuses = [], isLoading } = useListWorkspaceStatuses({
+export const StatusDropdown = memo(
+	({
+		status,
+		statuses: providedStatuses,
 		workspaceId,
-	})
+		taskId,
+		assigneeId,
+		editable = false,
+		onUpdate,
+	}: StatusDropdownProps) => {
+		const [isOpen, toggleOpen] = useToggle()
 
-	function handleSelectStatus(newStatusId: number) {
-		if (newStatusId !== status.id && assigneeId) {
-			onUpdate(taskId, assigneeId, newStatusId)
+		const { data: fetchedStatuses = [], isLoading: isFetchingStatuses } =
+			useListWorkspaceStatuses(
+				{ workspaceId: workspaceId ?? -1 },
+				{
+					query: {
+						enabled:
+							providedStatuses === undefined && workspaceId !== undefined,
+					},
+				},
+			)
+
+		const statuses = providedStatuses ?? fetchedStatuses
+		const statusesReady = statuses !== undefined && !isFetchingStatuses
+
+		function handleSelectStatus(newStatusId: number) {
+			if (newStatusId !== status.id && assigneeId) {
+				onUpdate(taskId, assigneeId, newStatusId)
+			}
 		}
-	}
 
-	return (
-		!isLoading && (
+		return (
 			<CellCenter
 				{...{ [HAS_ASSIGNEE_DATA_ATTR]: assigneeId ? "" : undefined }}
 			>
-				{editable ? (
-					<DropdownMenu onOpenChange={setIsOpen}>
+				{editable && statusesReady ? (
+					<DropdownMenu onOpenChange={toggleOpen}>
 						<DropdownMenuTrigger asChild>
 							<TriggerWrapper tabIndex={0} $hasAssignee={!!assigneeId}>
 								<StatusTag
@@ -59,7 +72,7 @@ export function StatusDropdown({
 							</TriggerWrapper>
 						</DropdownMenuTrigger>
 						<StatusDropdownContent align="center" sideOffset={6}>
-							{Object.values(statuses).map((s) => (
+							{statuses.map((s) => (
 								<StatusDropdownItem
 									key={s.id}
 									$selected={s.id === status.id}
@@ -76,8 +89,8 @@ export function StatusDropdown({
 				)}
 			</CellCenter>
 		)
-	)
-}
+	},
+)
 
 const CellCenter = styled.div`
   display: flex;
