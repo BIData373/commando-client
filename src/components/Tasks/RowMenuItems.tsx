@@ -7,12 +7,14 @@ import {
 	Pencil,
 	Trash2,
 } from "lucide-react"
-import {
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-} from "../ui/dropdown-menu"
+import { type ReactNode, useMemo } from "react"
+import { DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu"
 import { DeletePopover } from "./DeletePopover"
+
+interface MenuItemDef {
+	key: string
+	node: ReactNode
+}
 
 interface RowMenuItemsProps {
 	onEdit?: () => void
@@ -35,73 +37,111 @@ export function RowMenuItems({
 	onArchive,
 	onUnarchive,
 }: RowMenuItemsProps) {
-	const itemCount = [
+	const groups = useMemo(() => {
+		const group1: MenuItemDef[] = []
+		const group2: MenuItemDef[] = []
+		const group3: MenuItemDef[] = []
+
+		if (onAddComment) {
+			group1.push({
+				key: "comment",
+				node: (
+					<MenuItem onSelect={onAddComment}>
+						<MessageCircle size={16} />
+						הוספת תגובה
+					</MenuItem>
+				),
+			})
+		}
+
+		if (onEdit) {
+			group2.push({
+				key: "edit",
+				node: (
+					<MenuItem onSelect={onEdit}>
+						<Pencil size={16} />
+						עריכה
+					</MenuItem>
+				),
+			})
+		}
+		if (onArchive) {
+			group2.push({
+				key: "archive",
+				node: (
+					<MenuItem onSelect={onArchive}>
+						<Archive size={16} />
+						העבר לארכיון
+					</MenuItem>
+				),
+			})
+		}
+		if (onUnarchive) {
+			group2.push({
+				key: "unarchive",
+				node: (
+					<MenuItem onSelect={onUnarchive}>
+						<ArchiveX size={16} />
+						הסר מארכיון
+					</MenuItem>
+				),
+			})
+		}
+		if (onEnterSelect) {
+			group2.push({
+				key: "select",
+				node: (
+					<MenuItem onSelect={onEnterSelect}>
+						<CheckCircle2 size={16} />
+						סמן
+					</MenuItem>
+				),
+			})
+		}
+
+		if (onDelete) {
+			group3.push({
+				key: "delete",
+				node: (
+					<DeletePopover
+						count={1}
+						side="right"
+						align="end"
+						onConfirm={onDelete}
+						open={popoverOpen}
+						onOpenChange={onPopoverOpenChange}
+						trigger={
+							<DestructiveMenuItem onClick={() => onPopoverOpenChange(true)}>
+								<Trash2 size={16} />
+								מחק
+							</DestructiveMenuItem>
+						}
+					/>
+				),
+			})
+		}
+
+		return [group1, group2, group3].filter((g) => g.length > 0)
+	}, [
 		onAddComment,
+		onEdit,
 		onArchive,
 		onUnarchive,
-		onEdit,
 		onEnterSelect,
 		onDelete,
-	].filter(Boolean).length
-	const hasMoreThanTwo = itemCount >= 2
-
-	function handleDeleteClick() {
-		onPopoverOpenChange(true)
-	}
+		popoverOpen,
+		onPopoverOpenChange,
+	])
 
 	return (
 		<MenuContent align="start" sideOffset={4}>
-			{onAddComment && (
-				<MenuItem onSelect={onAddComment}>
-					<MessageCircle size={16} />
-					הוספת תגובה
-				</MenuItem>
-			)}
-			{onAddComment &&
-				(onEdit || onArchive || onUnarchive || onEnterSelect || onDelete) && (
-					<MenuSeparator />
-				)}
-			{onEdit && (
-				<MenuItem onSelect={onEdit}>
-					<Pencil size={16} />
-					עריכה
-				</MenuItem>
-			)}
-			{onArchive && (
-				<MenuItem onSelect={onArchive}>
-					<Archive size={16} />
-					העבר לארכיון
-				</MenuItem>
-			)}
-			{onUnarchive && (
-				<MenuItem onSelect={onUnarchive}>
-					<ArchiveX size={16} />
-					הסר מארכיון
-				</MenuItem>
-			)}
-			{onEnterSelect && (
-				<MenuItem onSelect={onEnterSelect}>
-					<CheckCircle2 size={16} />
-					סמן
-				</MenuItem>
-			)}
-			{hasMoreThanTwo && onDelete && <MenuSeparator />}
-			{onDelete && (
-				<DeletePopover
-					count={1}
-					side="right"
-					align="end"
-					onConfirm={onDelete}
-					open={popoverOpen}
-					onOpenChange={onPopoverOpenChange}
-					trigger={
-						<DestructiveMenuItem onClick={handleDeleteClick}>
-							<Trash2 size={16} />
-							מחק
-						</DestructiveMenuItem>
-					}
-				/>
-			)}
+			{groups.map((group) => (
+				<Group key={group[0].key}>
+					{group.map((item) => (
+						<div key={item.key}>{item.node}</div>
+					))}
+				</Group>
+			))}
 		</MenuContent>
 	)
 }
@@ -147,7 +187,10 @@ const DestructiveMenuItem = styled(MenuItem)`
   }
 `
 
-const MenuSeparator = styled(DropdownMenuSeparator)`
-  margin-block: 4px;
-  background: var(--button-hover);
+const Group = styled.div`
+  & + & {
+    border-block-start: 1px solid var(--button-hover);
+    margin-block-start: 4px;
+    padding-block-start: 4px;
+  }
 `
