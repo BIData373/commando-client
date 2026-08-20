@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { Popover as PopoverPrimitive } from "radix-ui"
-import type { AssigneeDto, WorkspaceStatusDto } from "src/api/model"
+import { memo } from "react"
+import type { AssigneeDto, AssigneeStatusDto } from "src/api/model"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { AssigneeDetailPopover } from "../shared/AssigneeDetailPopover"
 import { StatusTag } from "../shared/StatusTag"
@@ -9,40 +10,32 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 //delete after replace assigneeAvatar
 export type AvatarColor = "cyan" | "blue" | "green" | "orange" | "gray"
 
-export interface RelatedDirective {
-	assignee: AssigneeDto
-	status: WorkspaceStatusDto
-}
-
 interface AssigneeCellProps {
-	responsible: AssigneeDto | null
-	relatedDirectives: RelatedDirective[]
+	assignee: AssigneeDto | null
+	otherAssignees: AssigneeStatusDto[]
 }
 
-export function AssigneeCell({
-	responsible,
-	relatedDirectives,
-}: AssigneeCellProps) {
-	return (
+export const AssigneeCell = memo(
+	({ assignee, otherAssignees }: AssigneeCellProps) => (
 		<CellRoot>
-			{responsible && (
-				<AssigneeDetailPopover assignee={responsible}>
-					<AssigneeAvatar assignee={responsible} cursor />
+			{assignee && (
+				<AssigneeDetailPopover assignee={assignee}>
+					<AssigneeAvatar assignee={assignee} cursor />
 				</AssigneeDetailPopover>
 			)}
-			{relatedDirectives.length > 0 && (
+			{otherAssignees.length > 0 && (
 				<Popover>
 					<PopoverTrigger asChild>
-						<AvatarCircle>{relatedDirectives.length}+</AvatarCircle>
+						<AvatarCircle>{otherAssignees.length}+</AvatarCircle>
 					</PopoverTrigger>
 					<CompactContent side="top" sideOffset={10} align="center">
 						<PopoverArrow width={12} height={6} />
 						<CompactList>
-							{relatedDirectives.map((d) => (
-								<CompactRow key={d.assignee.id}>
-									<StatusTag status={d.status} />
-									<CompactRole>{d.assignee.name}</CompactRole>
-									<AssigneeAvatar assignee={d.assignee} />
+							{otherAssignees.map((otherAssignee) => (
+								<CompactRow key={otherAssignee.assignee.id}>
+									<StatusTag status={otherAssignee.status} />
+									<CompactRole>{otherAssignee.assignee.name}</CompactRole>
+									<AssigneeAvatar assignee={otherAssignee.assignee} />
 								</CompactRow>
 							))}
 						</CompactList>
@@ -50,8 +43,8 @@ export function AssigneeCell({
 				</Popover>
 			)}
 		</CellRoot>
-	)
-}
+	),
+)
 
 // ─── Cell layout ──────────────────────────────────────────────────────────────
 

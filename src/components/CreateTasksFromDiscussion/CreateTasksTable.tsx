@@ -69,7 +69,7 @@ function CreateTasksTable({
 	const [extractedCount, setExtractedCount] = useState(0)
 
 	const { data: source } = useGetSource(
-		{ id: sourceId ?? 0 },
+		{ id: sourceId ?? -1 },
 		{ query: { enabled: sourceId !== undefined } },
 	)
 
