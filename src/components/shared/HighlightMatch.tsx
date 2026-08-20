@@ -36,7 +36,7 @@ const HighlightMatch = ({
 		})
 	}, [normalizedQuery, text, variant])
 
-	return <TextWrapper dir="auto">{content}</TextWrapper>
+	return <span>{content}</span>
 }
 
 export default HighlightMatch
@@ -52,8 +52,4 @@ const HighlightMark = styled.mark`
 
 const HighlightBold = styled.span`
   font-weight: 700;
-`
-
-const TextWrapper = styled.span`
-  unicode-bidi: isolate;
 `

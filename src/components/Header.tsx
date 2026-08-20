@@ -66,7 +66,7 @@ const HeaderRoot = styled.header`
 
 const HeaderInner = styled.div`
   display: grid;
-  grid-template-columns: 1fr minmax(0, auto) 1fr;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   padding: 8px 0;
 `
@@ -80,6 +80,7 @@ const StartSection = styled.div`
 const CenterSection = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   min-width: 0;
   overflow: hidden;
@@ -148,4 +149,5 @@ const BiData = styled.span`
   font-size: var(--fs-btn);
   align-self: flex-start;
   line-height: 40px;
+  white-space: nowrap;
 `
