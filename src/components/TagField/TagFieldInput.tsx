@@ -111,35 +111,37 @@ function TagFieldInput({
 				<PopoverAnchor asChild>
 					<TagInputBox $flush={isFlush} onClick={handleInputBoxClick}>
 						{tags.length === 0 && !isFlush && <StyledTag size={16} />}
-						<InputContent>
-							{tags.map((tag) => (
-								<TagChip key={tag}>
-									<TagText>{tag}</TagText>
-									{!lockedTags.includes(tag) && (
-										<TagRemoveButton
-											onMouseDown={(e) => handleRemoveTag(e, tag)}
-										>
-											<X size={12} />
-										</TagRemoveButton>
-									)}
-								</TagChip>
-							))}
+						<InputScroll>
+							<InputContent>
+								{tags.map((tag) => (
+									<TagChip key={tag}>
+										<TagText>{tag}</TagText>
+										{!lockedTags.includes(tag) && (
+											<TagRemoveButton
+												onMouseDown={(e) => handleRemoveTag(e, tag)}
+											>
+												<X size={12} />
+											</TagRemoveButton>
+										)}
+									</TagChip>
+								))}
 
-							<TagInputField
-								ref={inputRef}
-								value={tagQuery}
-								onChange={handleQueryChange}
-								onFocus={handleFocus}
-								onBlur={handleBlur}
-								onKeyDown={handleKeyDown}
-								placeholder={
-									tags.length === 0
-										? "מאמץ/מבצע/קטגוריה (לדוג': 'שאגת הארי' , הגנה במרחב)"
-										: ""
-								}
-								dir="rtl"
-							/>
-						</InputContent>
+								<TagInputField
+									ref={inputRef}
+									value={tagQuery}
+									onChange={handleQueryChange}
+									onFocus={handleFocus}
+									onBlur={handleBlur}
+									onKeyDown={handleKeyDown}
+									placeholder={
+										tags.length === 0
+											? "מאמץ/מבצע/קטגוריה (לדוג': 'שאגת הארי' , הגנה במרחב)"
+											: ""
+									}
+									dir="rtl"
+								/>
+							</InputContent>
+						</InputScroll>
 
 						<StyledChevronDown size={16} />
 					</TagInputBox>
@@ -211,18 +213,23 @@ const TagInputBox = styled.div<{ $flush: boolean }>`
   }
 `
 
-const InputContent = styled.div`
-  display: flex;
+const InputScroll = styled.div`
   flex: 1;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
   max-height: 40px;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-block: 2px;
   min-width: 0;
+  transform: scaleX(-1);
+`
+
+const InputContent = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-block: 2px;
   direction: rtl;
+  transform: scaleX(-1);
 `
 
 const TagInputField = styled.input`

@@ -39,10 +39,6 @@ const ACTIVE_EXTRACTION_STATUSES = new Set<ExtractionStatus>([
 	ExtractionStatus.IN_PROGRESS,
 ])
 
-function mergeTags(base: string[], extra: string[]): string[] {
-	return Array.from(new Set([...base, ...extra]))
-}
-
 interface CreateTasksTableProps {
 	onSave: (tasks: NewTaskRow[]) => void
 	onDeleteRow?: (row: NewTaskRow) => void
@@ -225,7 +221,10 @@ function CreateTasksTable({
 	function handleSave() {
 		const filled = rows
 			.filter((r) => r.title.trim())
-			.map((r) => ({ ...r, tags: mergeTags(sourceTags, r.tags ?? []) }))
+			.map((r) => ({
+				...r,
+				tags: Array.from(new Set([...sourceTags, ...(r.tags ?? [])])),
+			}))
 		onSave(filled)
 	}
 
