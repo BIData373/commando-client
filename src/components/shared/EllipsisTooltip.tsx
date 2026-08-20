@@ -31,7 +31,11 @@ export default function EllipsisTooltip({
 				</Text>
 			</TooltipTrigger>
 
-			{isOverflowing && <TooltipContent side={side}>{tooltip}</TooltipContent>}
+			{isOverflowing && (
+				<TooltipContent side={side}>
+					<TooltipTextWrap>{tooltip}</TooltipTextWrap>
+				</TooltipContent>
+			)}
 		</Tooltip>
 	)
 }
@@ -43,4 +47,11 @@ const Text = styled.span`
   text-overflow: ellipsis;
   white-space: nowrap;
   unicode-bidi: plaintext;
+`
+
+const TooltipTextWrap = styled.span`
+  display: block;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
 `
