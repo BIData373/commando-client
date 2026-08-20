@@ -202,6 +202,14 @@ body,
   --alert-error-border: #FFCCC7;
   --alert-error-global-error: #FF4D4F;
 
+  --alert-info-bg: #E6F4FF;
+  --alert-info-border: #91CAFF;
+  --alert-info-global-info: #1677FF;
+
+  --alert-warning-bg: #FFFBE6;
+  --alert-warning-border: #FFE58F;
+  --alert-warning-global-warning: #FAAD14;
+
   /* Purple accent */
   --purple-start: oklch(0.6 0.23 272);
   --purple-end: oklch(0.46 0.32 305);

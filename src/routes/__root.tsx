@@ -24,6 +24,7 @@ function RootComponent() {
 			<TooltipProvider>
 				<HeaderProvider>
 					<AppShell>
+						<Toaster />
 						<PageContainer>
 							<Outlet />
 						</PageContainer>
@@ -31,7 +32,6 @@ function RootComponent() {
 				</HeaderProvider>
 			</TooltipProvider>
 			<ErrorModal />
-			<Toaster />
 			{IS_DEV && (
 				<TanStackDevtools
 					config={{

@@ -2,10 +2,8 @@ import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
 import { concat, map, uniq } from "lodash"
-import { AlertTriangle } from "lucide-react"
 import { useCallback, useMemo } from "react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
-import { toast } from "sonner"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import {
 	DeadlineType,
@@ -13,6 +11,7 @@ import {
 	WorkspaceStatusType,
 } from "src/api/model"
 import { getGetTaskQueryKey } from "src/api/task/task"
+import { toast } from "src/components/ui/sonner"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { invalidateQueries } from "src/queryClient"
 import {
@@ -88,10 +87,15 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 			onSuccess: ({ task: { id } }) => {
 				invalidateQueries([getGetTaskQueryKey({ id })])
 				onUpdateStatusSuccess?.()
-				toast.success("הסטטוס עודכן בהצלחה")
+				toast.success("הסטטוס עודכן בהצלחה", {
+					description: "השינוי נשמר ויופיע בכל האזורים הרלוונטיים",
+					closeButton: true,
+				})
 			},
 			onError: () => {
-				toast.error("שגיאה - סטטוס לא עודכן")
+				toast.error("שגיאה - סטטוס לא עודכן", {
+					banner: false,
+				})
 			},
 		},
 	})
