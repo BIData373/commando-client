@@ -74,8 +74,8 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 			pikudId: undefined,
 			icon: null,
 		} as NewWorkspaceValues,
-		onSubmit: async ({ value, formApi }) => {
-			const request = await createWorkspaceRequest(
+		onSubmit: async ({ value }) => {
+			await createWorkspaceRequest(
 				{
 					data: {
 						title: value.title,
@@ -91,18 +91,18 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 							title: isWorkspaceExist(error)
 								? "שם סביבה זה כבר קיים"
 								: undefined,
-							urlName: isUrlNameExist(error) ? "כתובת זו כבר קיימת" : undefined,
+							urlName: isUrlNameExist(error) ? "הנתיב הזה כבר קיים" : undefined,
 						})
 						setStep1Attempted(true)
 						setStep(Steps.WorkspaceDetails)
-
-						formApi.reset()
+					},
+					onSuccess: (data) => {
+						invalidateQueries([getListWorkspaceRequestsQueryKey()])
+						setCreatedRequestId(data.id)
+						setStep(Steps.Success)
 					},
 				},
 			)
-			invalidateQueries([getListWorkspaceRequestsQueryKey()])
-			setCreatedRequestId(request.id)
-			setStep(Steps.Success)
 		},
 	})
 
@@ -168,10 +168,14 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 
 	function handleTitleChange(value: string) {
 		form.setFieldValue("title", value)
+		if (serverErrors.title)
+			setServerErrors((prev) => ({ ...prev, title: undefined }))
 	}
 
 	function handleUrlNameChange(value: string) {
 		form.setFieldValue("urlName", value)
+		if (serverErrors.urlName)
+			setServerErrors((prev) => ({ ...prev, urlName: undefined }))
 	}
 
 	function handlePikudChange(value: number) {
