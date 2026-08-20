@@ -20,6 +20,7 @@ const CLOSE_TEXT = "סגור"
 
 const TOAST_CLASS = {
   banner: "toast-banner",
+  bannerRight: "toast-banner-right",
   borderless: "toast-borderless",
   closeText: "toast-close-text",
   customActions: "toast-custom-actions",
@@ -59,7 +60,8 @@ export interface ToastAction {
  * available. The options below add application-specific presentation:
  *
  * - `actions`: one or more primary, cancel, or danger actions.
- * - `banner`: places the toast at the top center and removes its card radius/shadow.
+ * - `banner`: places the toast at the top and removes its card radius/shadow.
+ * - `bannerAlign`: aligns banner content to the center or right. Defaults to `center`.
  * - `border`: shows the status border. Defaults to `true`.
  * - `closeText`: displays the fixed `סגור` dismiss action.
  * - `icon`: `true` uses the status icon, `false` hides it, or pass a custom node.
@@ -71,6 +73,7 @@ export type AppToastOptions = Omit<
 > & {
   actions?: ToastAction | ToastAction[]
   banner?: boolean
+  bannerAlign?: "center" | "right"
   border?: boolean
   closeText?: boolean
   icon?: boolean | ReactNode
@@ -79,11 +82,16 @@ export type AppToastOptions = Omit<
 
 function getToastClassName({
   banner,
+  bannerAlign,
   border,
   progressBar,
-}: Pick<AppToastOptions, "banner" | "border" | "progressBar">) {
+}: Pick<
+  AppToastOptions,
+  "banner" | "bannerAlign" | "border" | "progressBar"
+>) {
   return [
     banner && TOAST_CLASS.banner,
+    banner && bannerAlign === "right" && TOAST_CLASS.bannerRight,
     !border && TOAST_CLASS.borderless,
     !progressBar && TOAST_CLASS.noProgress,
   ]
@@ -148,6 +156,7 @@ function showToast(
   {
     actions,
     banner = false,
+    bannerAlign = "center",
     border = true,
     closeText = false,
     icon = true,
@@ -156,7 +165,12 @@ function showToast(
     ...options
   }: AppToastOptions = {},
 ) {
-  const className = getToastClassName({ banner, border, progressBar })
+  const className = getToastClassName({
+    banner,
+    bannerAlign,
+    border,
+    progressBar,
+  })
   const toastActions = normalizeActions(actions)
   const hasActions = toastActions.length > 0
   const toastId = options.id ?? crypto.randomUUID()
@@ -313,8 +327,22 @@ const StyledSonner = styled(Sonner)`
     left: 0;
     width: 100%;
     max-width: none;
+    justify-content: center;
     border-radius: 0;
     box-shadow: none;
+  }
+
+  [data-sonner-toast].toast-banner [data-content] {
+    flex: 0 1 auto;
+    text-align: center;
+  }
+
+  [data-sonner-toast].toast-banner-right {
+    justify-content: flex-start;
+  }
+
+  [data-sonner-toast].toast-banner-right [data-content] {
+    text-align: right;
   }
 
   [data-sonner-toast].toast-borderless {

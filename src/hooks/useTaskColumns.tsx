@@ -94,7 +94,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 			},
 			onError: () => {
 				toast.error("שגיאה - סטטוס לא עודכן", {
-					banner: false,
+					banner: true,
+					bannerAlign: "center",
 				})
 			},
 		},
