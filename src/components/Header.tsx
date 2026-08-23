@@ -66,9 +66,9 @@ const HeaderRoot = styled.header`
 
 const HeaderInner = styled.div`
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 8px 0;
+  height: 56px;
 `
 
 const StartSection = styled.div`
@@ -82,6 +82,7 @@ const CenterSection = styled.div`
   align-items: center;
   justify-content: center;
   gap: 8px;
+  width: min(60vw, 640px);
   min-width: 0;
   overflow: hidden;
 `
