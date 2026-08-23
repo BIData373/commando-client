@@ -51,6 +51,7 @@ export interface TaskArchiveEntry {
 
 interface ActionsConfig {
 	onEdit?: (taskId: number) => void
+	onAddComment?: (taskId: number) => void
 	onArchive?(tasks: TaskArchiveEntry[]): void
 	onUnarchive?(tasks: TaskArchiveEntry[]): void
 	onDelete?(taskIds: number[]): void
@@ -168,6 +169,9 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							const handleEdit = actions.onEdit
 								? () => actions.onEdit?.(id)
 								: undefined
+							const handleAddComment = actions.onAddComment
+								? () => actions.onAddComment?.(id)
+								: undefined
 							const handleArchive = actions.onArchive
 								? () => actions.onArchive?.([{ id, assigneeId: assignee?.id }])
 								: undefined
@@ -185,6 +189,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 								<RowActionsMenu
 									workspaceId={workspaceId}
 									onEdit={handleEdit}
+									onAddComment={handleAddComment}
 									onArchive={handleArchive}
 									onUnarchive={handleUnarchive}
 									onEnterSelect={handleEnterSelect}
