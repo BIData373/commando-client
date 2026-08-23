@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { useState } from "react"
-import { NOTES_MAX_LENGTH } from "../../functions/notes-constants"
+import { NOTES_MAX_LENGTH } from "../../utils/form-utils"
 import {
 	handleCellKeyDown,
 	handleTextareaChange,
