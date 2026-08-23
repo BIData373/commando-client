@@ -19,6 +19,7 @@ import type {
 } from "src/api/model"
 import { DATE_TYPE } from "src/utils/date-utils"
 import {
+	dashboardFilterAssigneeKey,
 	dashboardFilterDataTypeKey,
 	dashboardFilterRangeKey,
 } from "src/utils/filter-utils"
@@ -45,6 +46,9 @@ interface TasksFiltersContextValue {
 	setDateType: (type: DATE_TYPE) => void
 	dateRange: DateRange | undefined
 	setDateRange: (range: DateRange | undefined) => void
+
+	assigneeFilter: string[]
+	setAssigneeFilter: (assigneeFilter: string[]) => void
 
 	columnsFilters: ColumnFiltersState
 	setColumnsFilters(columnsFilters: ColumnFiltersState): void
@@ -99,6 +103,11 @@ export function TasksFiltersProvider({
 				return undefined
 			}
 		},
+	})
+
+	const [assigneeFilter, setAssigneeFilter] = useLocalStorage<string[]>({
+		key: dashboardFilterAssigneeKey,
+		defaultValue: [],
 	})
 
 	const knownColumnIds: (keyof TaskRowWithWorkspaceDto)[] = useMemo(
@@ -225,6 +234,8 @@ export function TasksFiltersProvider({
 				setDateType,
 				dateRange,
 				setDateRange,
+				assigneeFilter,
+				setAssigneeFilter,
 				columnsFilters: columnFilters,
 				setColumnsFilters,
 				sorting: sorting,

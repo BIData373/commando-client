@@ -1,11 +1,11 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
-import { useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { PermissionType, type TaskRowDto } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTaskRows } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
@@ -23,7 +23,7 @@ export function DashboardContent() {
 
 	const navigate = useNavigate()
 
-	const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<number[]>([])
+	const { assigneeFilter, setAssigneeFilter } = useTasksFilters()
 
 	const { data: taskRows = [], queryKey } = useListTaskRows({ workspaceId: id })
 
@@ -31,14 +31,13 @@ export function DashboardContent() {
 
 	const { data: assignees = [] } = useListAssignees({ workspaceId: id })
 
-	const selectedAssigneeNames = assignees
-		.filter((assignee) => selectedAssigneeIds.includes(assignee.id))
-		.map((assignee) => assignee.name)
+	const selectedAssigneeIds = assignees
+		.filter((assignee) => assigneeFilter.includes(assignee.name))
+		.map((assignee) => assignee.id)
 
 	const filteredTasks = useFilteredTasks(taskRows, {
 		skipQuickFilters: true,
-		additionalFilter: (task) =>
-			matchesAssigneeFilter(task, selectedAssigneeIds),
+		additionalFilter: (task) => matchesAssigneeFilter(task, assigneeFilter),
 	})
 
 	const tasks = [...filteredTasks].sort(
@@ -63,10 +62,18 @@ export function DashboardContent() {
 		})
 	}
 
-	function matchesAssigneeFilter(task: TaskRowDto, assigneeIds: number[]) {
-		if (assigneeIds.length === 0) return true
+	function matchesAssigneeFilter(task: TaskRowDto, assigneeNames: string[]) {
+		if (assigneeNames.length === 0) return true
 
-		return task.assignee ? assigneeIds.includes(task.assignee.id) : false
+		return task.assignee ? assigneeNames.includes(task.assignee.name) : false
+	}
+
+	function handleApplyAssigneeFilter(ids: number[]) {
+		const names = assignees
+			.filter((assignee) => ids.includes(assignee.id))
+			.map((assignee) => assignee.name)
+
+		setAssigneeFilter(names)
 	}
 
 	return (
@@ -80,7 +87,7 @@ export function DashboardContent() {
 					<AssigneeFilterDropdown
 						workspaceId={id}
 						selectedIds={selectedAssigneeIds}
-						onApply={setSelectedAssigneeIds}
+						onApply={handleApplyAssigneeFilter}
 					/>
 				</FilterSlot>
 
@@ -94,14 +101,12 @@ export function DashboardContent() {
 					onUpdateStatusSuccess={handleUpdateSuccess}
 					onClick={handleOpenTask}
 					taskRows={tasks}
-					assigneeFilter={selectedAssigneeNames}
 				/>
 				<StatusCard tasks={tasks} />
 				<RecentlyCompleted
 					onUpdateStatusSuccess={handleUpdateSuccess}
 					onClick={handleOpenTask}
 					tasks={tasks}
-					assigneeFilter={selectedAssigneeNames}
 				/>
 				<SystemDistribution onSetAssignees={handleSetAssignees} tasks={tasks} />
 			</GridLayout>

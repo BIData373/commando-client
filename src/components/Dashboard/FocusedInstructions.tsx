@@ -75,14 +75,12 @@ interface FocusedInstructionProps {
 	taskRows: TaskRowDto[]
 	onUpdateStatusSuccess?(): void
 	onClick?(taskId: number): void
-	assigneeFilter?: string[]
 }
 
 export default function FocusedInstructions({
 	taskRows,
 	onUpdateStatusSuccess,
 	onClick,
-	assigneeFilter,
 }: FocusedInstructionProps) {
 	const { view, updateView } = useUserView()
 
@@ -144,7 +142,6 @@ export default function FocusedInstructions({
 								? DeadlineType.IMMEDIATE
 								: undefined
 						}
-						assigneeFilter={assigneeFilter}
 					/>
 				</TabsButtons>
 			}

@@ -38,7 +38,6 @@ export interface WorkspaceTaskTableProps {
 	view?: TasksView
 	statusFilter?: WorkspaceStatusType[]
 	deadlineTypeFilter?: DeadlineType[]
-	assigneeFilter?: string[]
 	isArchived?: boolean
 	extraColumnsMeta?: TaskColumnMeta[]
 	extraColumns?: ColumnDef<TaskRowDto>[]
@@ -47,7 +46,6 @@ export interface WorkspaceTaskTableProps {
 	onColumnFilterChange?(
 		newStatusFilter: WorkspaceStatusType[],
 		newDeadlineTypeFilter: DeadlineType[],
-		newAssigneeFilter: string[],
 	): void
 	onOpenTask(taskId: number): void
 }
@@ -56,7 +54,6 @@ function WorkspaceTaskTable({
 	view = TasksView.TABLE,
 	statusFilter = [],
 	deadlineTypeFilter = [],
-	assigneeFilter = [],
 	isArchived,
 	extraColumns,
 	extraColumnsMeta,
@@ -65,7 +62,7 @@ function WorkspaceTaskTable({
 	clearColumnFilters,
 	onColumnFilterChange,
 }: WorkspaceTaskTableProps) {
-	const { columnOrder, hiddenColumns } = useTasksFilters()
+	const { columnOrder, hiddenColumns, assigneeFilter } = useTasksFilters()
 
 	const {
 		workspace: { id: workspaceId, title: workspaceTitle },
@@ -173,7 +170,6 @@ function WorkspaceTaskTable({
 							onEdit={onEdit}
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}
-							assigneeFilter={assigneeFilter}
 							onFiltersChange={onColumnFilterChange}
 							onClick={onOpenTask}
 							isLoading={isLoading}
