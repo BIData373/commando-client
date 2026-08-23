@@ -6,6 +6,8 @@ import {
 	type TaskRowWithWorkspaceDto,
 } from "src/api/model"
 import { DEADLINE_LABELS } from "src/components/shared/DeadlineTag"
+import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
+import { COLUMN_LABELS, TASK_COLUMN_ID } from "src/utils/task-table-utils"
 import { formatDate } from "./date-utils"
 
 interface CellValue {
@@ -66,32 +68,34 @@ function getDeadlineDateStyle(task: TaskRowDto): Pick<CellValue, "fontColor"> {
 const COLUMN_DEFS: Partial<
 	Partial<Record<keyof TaskRowWithWorkspaceDto, ExportColumn<TaskRowDto>>>
 > = {
-	title: {
-		header: "ההנחיה",
+	[TASK_COLUMN_ID.title]: {
+		header: COLUMN_LABELS.title,
 		maxWidth: 60,
 		accessor: (t) =>
 			t.description ? `${t.title} – ${t.description}` : t.title,
 	},
-	status: {
-		header: "סטטוס",
+	[TASK_COLUMN_ID.status]: {
+		header: COLUMN_LABELS.status,
 		accessor: (t) => ({
 			value: t.status?.name ?? "",
 			fontColor: t.status?.color,
 			bgColor: t.status?.color,
 		}),
 	},
-	assignee: {
-		header: "אחראי",
+	[TASK_COLUMN_ID.assignee]: {
+		header: COLUMN_LABELS.assignee,
 		accessor: (t) => t.assignee?.name ?? "",
 	},
-	deadlineType: {
-		header: 'תג"ב',
+	[TASK_COLUMN_ID.deadlineType]: {
+		header: COLUMN_LABELS.deadlineType,
 		accessor: (t) => {
 			const typeStr = DEADLINE_LABELS[t.deadlineType] ?? ""
-			const displayDate =
-				t.deadlineType === DeadlineType.IMMEDIATE
-					? (t.source?.date ?? t.createdAt)
-					: t.dueDate
+			const displayDate = getDeadlineDisplayDate(
+				t.deadlineType,
+				t.dueDate,
+				t.source,
+				t.createdAt,
+			)
 			const dateString = displayDate ? formatDate(displayDate) : ""
 			const value =
 				typeStr && dateString
@@ -100,8 +104,8 @@ const COLUMN_DEFS: Partial<
 			return { value, ...getDeadlineDateStyle(t) }
 		},
 	},
-	source: {
-		header: "מקור הנחיה",
+	[TASK_COLUMN_ID.source]: {
+		header: COLUMN_LABELS.source,
 		accessor: (t) => {
 			if (!t.source) {
 				return ""
@@ -111,20 +115,24 @@ const COLUMN_DEFS: Partial<
 			return dateString ? `${t.source.name} | ${dateString}` : t.source.name
 		},
 	},
-	tags: {
-		header: "נושא",
+	[TASK_COLUMN_ID.tags]: {
+		header: COLUMN_LABELS.tags,
 		accessor: (t) => t.tags.map(({ name }) => name).join(", "),
 	},
-	createdAt: {
-		header: "תאריך יצירה",
+	[TASK_COLUMN_ID.createdAt]: {
+		header: COLUMN_LABELS.createdAt,
 		accessor: (t) => formatDate(t.createdAt),
 	},
-	updatedAt: {
-		header: "עודכן ב",
+	[TASK_COLUMN_ID.updatedAt]: {
+		header: COLUMN_LABELS.updatedAt,
 		accessor: (t) => formatDate(t.updatedAt),
 	},
-	workspace: {
-		header: "מפקד מנחה",
+	[TASK_COLUMN_ID.archivedAt]: {
+		header: COLUMN_LABELS.archivedAt,
+		accessor: (t) => (t.archivedAt ? formatDate(t.archivedAt) : ""),
+	},
+	[TASK_COLUMN_ID.workspace]: {
+		header: COLUMN_LABELS.workspace,
 		accessor: (t) =>
 			(t as Partial<TaskRowWithWorkspaceDto>).workspace?.title ?? "",
 	},
@@ -140,7 +148,7 @@ export async function exportTasksToExcel<TTask extends TaskRowDto>(
 		tasks,
 		[
 			{
-				header: 'מס"ד',
+				header: COLUMN_LABELS.id,
 				accessor: (t) => String(t.id),
 			},
 			...columnOrder
