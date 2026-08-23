@@ -485,6 +485,7 @@ const MetaText = styled.span`
 `
 
 const StatusTagContainer = styled.div`
+  display: flex;
   width: 100%;
 `
 // ─── Additional info ───────────────────────────────────────────────────────────
