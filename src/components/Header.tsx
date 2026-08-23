@@ -6,12 +6,7 @@ import { useHeader } from "../providers/HeaderProvider"
 import { UserDropdown } from "./UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Separator } from "./ui/separator"
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "./ui/tooltip"
+import { TooltipProvider } from "./ui/tooltip"
 
 export default function Header() {
 	const {
@@ -26,14 +21,7 @@ export default function Header() {
 
 					<CenterSection>
 						<TooltipProvider>
-							<Tooltip>
-								<TooltipTrigger>
-									<TooltipTrigger asChild>
-										<CenterTitle>{center}</CenterTitle>
-									</TooltipTrigger>
-									<TooltipContent>{center}</TooltipContent>
-								</TooltipTrigger>
-							</Tooltip>
+							<CenterTitle>{center}</CenterTitle>
 						</TooltipProvider>
 					</CenterSection>
 
@@ -77,22 +65,24 @@ const HeaderRoot = styled.header`
 `
 
 const HeaderInner = styled.div`
-  display: grid;
-  grid-template-columns: 1fr minmax(0, auto) 1fr;
+  display: flex;
   align-items: center;
-  padding: 8px 0;
+  height: 56px;
 `
 
 const StartSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 0 0 auto;
 `
 
 const CenterSection = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  flex: 1 1 0;
   min-width: 0;
   overflow: hidden;
 `
@@ -114,6 +104,7 @@ const EndSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  flex: 0 0 auto;
 `
 
 const EndSectionSeparator = styled(Separator)`
@@ -160,4 +151,5 @@ const BiData = styled.span`
   font-size: var(--fs-btn);
   align-self: flex-start;
   line-height: 40px;
+  white-space: nowrap;
 `

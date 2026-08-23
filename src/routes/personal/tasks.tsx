@@ -9,8 +9,13 @@ import { TasksView } from "../workspace/$urlName/tasks"
 
 export const Route = createFileRoute("/personal/tasks")({
 	component: PersonalTasksPage,
-	validateSearch: (search: Record<string, unknown>): { view: TasksView } => ({
+	validateSearch: (
+		search: Record<string, unknown>,
+	): { view: TasksView; focusComment?: boolean } => ({
 		view: search.view === TasksView.CARDS ? TasksView.CARDS : TasksView.TABLE,
+		focusComment: search.focusComment
+			? Boolean(search.focusComment)
+			: undefined,
 	}),
 })
 
@@ -21,7 +26,6 @@ const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
 	"deadlineType",
 	"source",
 	"tags",
-	"notes",
 	"workspace",
 	"createdAt",
 	"updatedAt",
@@ -29,7 +33,6 @@ const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
 
 const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 	"tags",
-	"notes",
 	"updatedAt",
 ])
 
@@ -52,6 +55,14 @@ function PersonalTasksPage() {
 		})
 	}
 
+	function handleAddComment(taskId: number) {
+		navigate({
+			to: "/personal/tasks/task/$taskId",
+			params: { taskId: String(taskId) },
+			search: { view: TasksView.TABLE, focusComment: true },
+		})
+	}
+
 	return (
 		<UserViewProvider
 			defaultColumnOrder={PERSONAL_DEFAULT_COLUMN_ORDER}
@@ -63,6 +74,7 @@ function PersonalTasksPage() {
 					filePrefix="אזור אישי"
 					onOpenTask={handleOpenTask}
 					onEdit={handleEdit}
+					onAddComment={handleAddComment}
 				/>
 			</TasksFiltersProvider>
 		</UserViewProvider>

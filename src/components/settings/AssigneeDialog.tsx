@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useState } from "react"
 import {
 	getGetAssigneeQueryKey,
 	getListAssigneesQueryKey,
@@ -203,20 +203,6 @@ export function AssigneeDialog({
 		form.reset()
 	}
 
-	const scrollRef = useRef<HTMLDivElement>(null)
-	const [scrollShadow, setScrollShadow] = useState({
-		top: false,
-		bottom: false,
-	})
-
-	function handleScroll() {
-		const el = scrollRef.current
-		if (!el) return
-		const atTop = el.scrollTop <= 0
-		const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
-		setScrollShadow({ top: !atTop, bottom: !atBottom })
-	}
-
 	function handleOpenChange(open: boolean) {
 		resetForm()
 		onOpenChange(open)
@@ -225,93 +211,88 @@ export function AssigneeDialog({
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<AssigneeDialogContent closable={false}>
-				<DialogHeader $shadow={scrollShadow.top}>
-					<DialogTitleLarge>
-						{isUpdate ? "עריכת אחראי" : "יצירת אחראי"}
-					</DialogTitleLarge>
-					<StyledDialogDescription>
-						'אחראי' אליו ניתן לשייך הנחיות.
-						<br />
-						לכל אחראי ניתן לכתב מספר משתמשים, אשר יקבלו את ההנחיות לאזור האישי
-						שלהם.
-					</StyledDialogDescription>
-				</DialogHeader>
-
-				<ScrollableContent ref={scrollRef} onScroll={handleScroll}>
-					<DialogBody>
-						<form.Field
-							name="name"
-							validators={{
-								onSubmit: ({ value }) =>
-									!value.trim() ? "שם אחראי הוא שדה חובה" : undefined,
-							}}
-						>
-							{(field) => (
-								<FieldGroup>
-									<FieldLabel>שם אחראי</FieldLabel>
-									<FormField field={field}>
-										<Input
-											value={field.state.value}
-											onKeyDown={handleKeyChange}
-											onChange={(e) => field.handleChange(e.target.value)}
-											placeholder='לדוגמה: מג"ד, רע"ן מפקדים, קמב"צ...'
-										/>
-									</FormField>
-								</FieldGroup>
-							)}
-						</form.Field>
-
-						<FieldGroup>
-							<EitherOrRow>
-								<form.Subscribe selector={(s) => s.values.color}>
-									{(color) => (
-										<ColorRow>
-											<ColorLabel>בחר צבע לאחראי</ColorLabel>
-											<ColorPicker
-												selectedColor={color}
-												onChange={handleColorChange}
-											/>
-										</ColorRow>
-									)}
-								</form.Subscribe>
-								<OrSeparator>או</OrSeparator>
-								<EmblemSection>
-									<IconDropdown
-										value={iconSearch}
-										onChange={setIconSearch}
-										onSelect={handleIconSelect}
-										onClear={handleIconClear}
-										selectedItem={selectedIcon ?? undefined}
+				<DialogTitleLarge>
+					{isUpdate ? "עריכת אחראי" : "יצירת אחראי"}
+				</DialogTitleLarge>
+				<StyledDialogDescription>
+					'אחראי' אליו ניתן לשייך הנחיות.
+					<br />
+					לכל אחראי ניתן לכתב מספר משתמשים, אשר יקבלו את ההנחיות לאזור האישי
+					שלהם.
+				</StyledDialogDescription>
+				<DialogBody>
+					<form.Field
+						name="name"
+						validators={{
+							onSubmit: ({ value }) =>
+								!value.trim() ? "שם אחראי הוא שדה חובה" : undefined,
+						}}
+					>
+						{(field) => (
+							<FieldGroup>
+								<FieldLabel>שם אחראי</FieldLabel>
+								<FormField field={field}>
+									<Input
+										value={field.state.value}
+										onKeyDown={handleKeyChange}
+										onChange={(e) => field.handleChange(e.target.value)}
+										placeholder='לדוגמה: מג"ד, רע"ן מפקדים, קמב"צ...'
 									/>
-								</EmblemSection>
-							</EitherOrRow>
-						</FieldGroup>
+								</FormField>
+							</FieldGroup>
+						)}
+					</form.Field>
 
-						<form.Field name="users">
-							{(field) => (
-								<FieldGroup>
-									<FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
-									<SearchRow>
-										<DropdownUsers
-											value={searchValue}
-											onChange={setSearchValue}
-											onSelect={handleSearchSelect}
-											onClear={handleSearchClear}
-											showAddButton={false}
-											placeholder="חפש שם/ תפקיד/ מספר אישי"
+					<FieldGroup>
+						<EitherOrRow>
+							<form.Subscribe selector={(s) => s.values.color}>
+								{(color) => (
+									<ColorRow>
+										<ColorLabel>בחר צבע לאחראי</ColorLabel>
+										<ColorPicker
+											selectedColor={color}
+											onChange={handleColorChange}
 										/>
-									</SearchRow>
-									<AssigneeUsersList
-										users={field.state.value}
-										onRemove={handleRemoveAssignee}
-									/>
-								</FieldGroup>
-							)}
-						</form.Field>
-					</DialogBody>
-				</ScrollableContent>
+									</ColorRow>
+								)}
+							</form.Subscribe>
+							<OrSeparator>או</OrSeparator>
+							<EmblemSection>
+								<IconDropdown
+									value={iconSearch}
+									onChange={setIconSearch}
+									onSelect={handleIconSelect}
+									onClear={handleIconClear}
+									selectedItem={selectedIcon ?? undefined}
+								/>
+							</EmblemSection>
+						</EitherOrRow>
+					</FieldGroup>
 
-				<DialogActions $shadow={scrollShadow.bottom}>
+					<form.Field name="users">
+						{(field) => (
+							<UsersFieldGroup>
+								<FieldLabel>הוספת משתמשים מכותבים</FieldLabel>
+								<SearchRow>
+									<DropdownUsers
+										value={searchValue}
+										onChange={setSearchValue}
+										onSelect={handleSearchSelect}
+										onClear={handleSearchClear}
+										showAddButton={false}
+										placeholder="חפש שם/ תפקיד/ מספר אישי"
+									/>
+								</SearchRow>
+								<AssigneeUsersList
+									users={field.state.value}
+									onRemove={handleRemoveAssignee}
+								/>
+							</UsersFieldGroup>
+						)}
+					</form.Field>
+				</DialogBody>
+
+				<DialogActions>
 					<DialogClose asChild>
 						<CancelButton title="ביטול" />
 					</DialogClose>
@@ -333,8 +314,12 @@ const AssigneeDialogContent = styled(ModalContent)`
   max-height: 70vh;
   overflow: hidden;
   direction: rtl;
-  gap: 2.4rem;
+  gap: 24px;
   padding: 32px 48px;
+
+  > div:first-of-type {
+    display: contents;
+  }
 `
 
 const DialogTitleLarge = styled(DialogTitle)`
@@ -355,33 +340,11 @@ const StyledDialogDescription = styled(DialogDescription)`
   padding-top: 8px;
 `
 
-const ScrollableContent = styled.div`
+const DialogBody = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-
-  scrollbar-width: thin;
-  scrollbar-color: var(--line) transparent;
-
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--line);
-    border-radius: 999px;
-  }
-`
-
-const DialogBody = styled.div`
-  display: flex;
-  flex-direction: column;
   gap: 16px;
   width: 100%;
 `
@@ -391,6 +354,11 @@ const FieldGroup = styled.div`
   flex-direction: column;
   gap: 6px;
   align-items: flex-start;
+`
+
+const UsersFieldGroup = styled(FieldGroup)`
+  flex: 1;
+  min-height: 0;
 `
 
 const FieldLabel = styled.span`
@@ -445,19 +413,7 @@ const SearchRow = styled.div`
   width: 100%;
 `
 
-const DialogHeader = styled.div<{ $shadow: boolean }>`
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-
-  clip-path: inset(0 0 -20px 0);
-
-  transition: box-shadow 200ms ease;
-  box-shadow: ${({ $shadow }) =>
-		$shadow ? "0 10px 20px rgba(0, 0, 0, 0.06)" : "none"};
-`
-
-const DialogActions = styled.div<{ $shadow: boolean }>`
+const DialogActions = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -466,6 +422,4 @@ const DialogActions = styled.div<{ $shadow: boolean }>`
   z-index: 1;
   clip-path: inset(-20px 0 0 0);
   transition: box-shadow 200ms ease;
-  box-shadow: ${({ $shadow }) =>
-		$shadow ? "0px -10px 20px 0px rgba(0, 0, 0, 0.06)" : "none"};
 `

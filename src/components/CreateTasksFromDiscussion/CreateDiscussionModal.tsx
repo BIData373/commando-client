@@ -87,7 +87,7 @@ function CreateDiscussionModal({
 	)
 
 	const { data: source } = useGetSource(
-		{ id: sourceId ?? 0 },
+		{ id: sourceId ?? -1 },
 		{ query: { enabled: sourceId !== undefined } },
 	)
 
@@ -221,7 +221,6 @@ function CreateDiscussionModal({
 							title,
 							deadlineType,
 							dueDate,
-							notes,
 							flagged,
 							assigneeIds,
 							assigneeDetails,
@@ -229,7 +228,6 @@ function CreateDiscussionModal({
 							title: title.trim(),
 							deadlineType: deadlineType ?? DeadlineType.ROLLING,
 							dueDate: dueDate ?? null,
-							notes: notes || undefined,
 							flagged,
 							assignees: assigneeIds.map((assigneeId) => ({
 								id: assigneeId,

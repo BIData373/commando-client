@@ -1,7 +1,6 @@
-import styled from "@emotion/styled"
+import WorkspaceIconTitle from "src/components/shared/WorkspaceIconTitle"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { formatMesibaIcon } from "src/utils/icon-utils"
 
 export function WorkspaceTitle() {
 	const {
@@ -10,21 +9,9 @@ export function WorkspaceTitle() {
 
 	useRenderInHeader(
 		"center",
-		<>
-			{icon && (
-				<WorkspaceIcon src={formatMesibaIcon(icon)} alt="Workspace icon" />
-			)}
-
-			{title}
-		</>,
+		<WorkspaceIconTitle icon={icon} title={title} iconSize={32} />,
 		[icon, title],
 	)
 
 	return null
 }
-
-const WorkspaceIcon = styled.img`
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-`

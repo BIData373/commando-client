@@ -7,6 +7,7 @@ interface RowMenuProps {
 	open: boolean
 	onOpenChange: (open: boolean) => void
 	onEdit?: () => void
+	onAddComment?: () => void
 	onEnterSelect?: () => void
 	onDelete?: () => void
 	onArchive?(): void
@@ -18,6 +19,7 @@ export function RowMenu({
 	open,
 	onOpenChange,
 	onEdit,
+	onAddComment,
 	onEnterSelect,
 	onDelete,
 	onArchive,
@@ -26,6 +28,7 @@ export function RowMenu({
 	const [popoverOpen, setPopoverOpen] = useState(false)
 
 	const itemCount = [
+		onAddComment,
 		onArchive,
 		onUnarchive,
 		onEdit,
@@ -49,6 +52,7 @@ export function RowMenu({
 				<DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
 				<RowMenuItems
 					onEdit={onEdit}
+					onAddComment={onAddComment}
 					onEnterSelect={onEnterSelect}
 					onDelete={onDelete}
 					onArchive={onArchive}

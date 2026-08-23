@@ -63,6 +63,7 @@ interface PersonalTaskTableProps {
 	extraColumnsMeta?: TaskColumnMeta[]
 	extraColumns?: ColumnDef<TaskRowWithWorkspaceDto>[]
 	onEdit?(taskId: number): void
+	onAddComment?(taskId: number): void
 	onOpenTask(taskId: number): void
 	showMetricsBar?: boolean
 	filePrefix: string
@@ -73,6 +74,7 @@ function PersonalTaskTable({
 	extraColumnsMeta,
 	extraColumns,
 	onEdit,
+	onAddComment,
 	onOpenTask,
 	showMetricsBar = false,
 	filePrefix,
@@ -215,6 +217,7 @@ function PersonalTaskTable({
 					hiddenColumns={hiddenColumns}
 					onChangeSuccess={handleChangeSuccess}
 					onEdit={onEdit}
+					onAddComment={onAddComment}
 					onClick={onOpenTask}
 					getPermissionType={(task) => task?.workspace?.permissionType}
 					extraColumns={[workspaceColumn, ...(extraColumns ?? [])]}

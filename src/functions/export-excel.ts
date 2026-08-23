@@ -88,7 +88,11 @@ const COLUMN_DEFS: Partial<
 		header: 'תג"ב',
 		accessor: (t) => {
 			const typeStr = DEADLINE_LABELS[t.deadlineType] ?? ""
-			const dateStr = t.dueDate ? formatDate(t.dueDate) : ""
+			const displayDate =
+				t.deadlineType === DeadlineType.IMMEDIATE
+					? (t.source?.date ?? t.createdAt)
+					: t.dueDate
+			const dateStr = displayDate ? formatDate(displayDate) : ""
 			const value =
 				typeStr && dateStr ? `${typeStr} | ${dateStr}` : typeStr || dateStr
 			return { value, ...getDeadlineDateStyle(t) }
@@ -109,7 +113,6 @@ const COLUMN_DEFS: Partial<
 		header: "נושא",
 		accessor: (t) => t.tags.map(({ name }) => name).join(", "),
 	},
-	notes: { header: "הערות", maxWidth: 50, accessor: (t) => t.notes ?? "" },
 	createdAt: {
 		header: "תאריך יצירה",
 		accessor: (t) => formatDate(t.createdAt),

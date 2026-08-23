@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import type { AssigneeDto } from "src/api/model"
+import { isColorVarDark } from "src/functions/contrast-color"
 import { getInitials } from "src/utils/avatar-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import {
@@ -52,7 +53,7 @@ const ColoredFallback = styled(MesibaAvatarFallback)<{
 	$color: string | null
 }>`
   background: ${({ $color }) => $color ?? "var(--chip-bg)"};
-  color: var(--background);
+    color: ${({ $color }) => ($color && isColorVarDark($color) ? "var(--background)" : "var(--foreground)")};
   font-size: var(--fs-btn);
   font-weight: 400;
   width: 100%;

@@ -6,6 +6,7 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
+import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { invalidateQueries } from "src/queryClient"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { AssigneeDetailPopover } from "../shared/AssigneeDetailPopover"
@@ -26,6 +27,8 @@ export const AssigneeContainer = ({
 	isAdmin,
 	editable,
 }: AssigneeContainerProps) => {
+	const { data: statuses = [] } = useListWorkspaceStatuses({ workspaceId })
+
 	const { mutateAsync: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus(
 		{
 			mutation: {
@@ -65,10 +68,10 @@ export const AssigneeContainer = ({
 				{status && (
 					<StatusDropdown
 						status={status}
+						statuses={statuses}
 						taskId={taskId}
 						assigneeId={assignee.id}
 						editable={editable}
-						workspaceId={workspaceId}
 						onUpdate={handleUpdateAssigneeStatus}
 					/>
 				)}
@@ -85,8 +88,8 @@ const AssigneeRowContainer = styled.div<{ $enabled?: boolean }>`
   justify-content: flex-start;
   gap: 24px;
   padding: 7px 12px;
-  background: ${({ $enabled }) => ($enabled ? "var(--background)" : "var(--background-assignee)")};
-  border: 0.5px solid var(--line);
+  background: ${({ $enabled }) => ($enabled ? "var(--background)" : "var(--background-area)")};
+  border: 0.8px solid var(--line);
   border-radius: 8px;
   width: 100%;
 `

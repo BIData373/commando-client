@@ -37,6 +37,7 @@ interface TaskTableProps<TTask extends TaskRowDto> {
 	hiddenColumns: Set<keyof TTask>
 	statuses?: WorkspaceStatusDto[]
 	onEdit?: (taskId: number) => void
+	onAddComment?: (taskId: number) => void
 	onClick?: (taskId: number) => void
 	extraColumns?: ColumnDef<TTask>[]
 	showHeader?: boolean
@@ -62,6 +63,7 @@ function TaskTable<TTask extends TaskRowDto>({
 	hiddenColumns,
 	statuses,
 	onEdit,
+	onAddComment,
 	onClick,
 	extraColumns = [],
 	showHeader = true,
@@ -241,6 +243,7 @@ function TaskTable<TTask extends TaskRowDto>({
 		onUpdateStatusSuccess: onChangeSuccess,
 		searchQuery,
 		filterOptionsMap,
+		statuses,
 		selectMode: {
 			enabled: selectMode,
 			tasks,
@@ -250,6 +253,7 @@ function TaskTable<TTask extends TaskRowDto>({
 		showMenuColumn: showActionsColumn,
 		actions: {
 			onEdit,
+			onAddComment,
 			onArchive,
 			onUnarchive,
 			onDelete: allowDelete ? removeTasks : undefined,
@@ -357,6 +361,7 @@ const TableWrapper = styled.div`
     overflow: auto;
     max-height: 100%;
     direction: ltr;
+    overscroll-behavior: contain;
   }
 
   table {
@@ -366,14 +371,12 @@ const TableWrapper = styled.div`
   }
 
   tr {
+    border-bottom: none;
+
     &:hover,
     &[data-highlighted],
     &:has([data-slot="dropdown-menu-trigger"][data-state="open"]) {
       background: var(--table-rows-bg-hover);
-    }
-
-    &:last-of-type td {
-      border-bottom: none;
     }
   }
 
