@@ -13,7 +13,9 @@ export const Route = createFileRoute("/personal/tasks")({
 		search: Record<string, unknown>,
 	): { view: TasksView; focusComment?: boolean } => ({
 		view: search.view === TasksView.CARDS ? TasksView.CARDS : TasksView.TABLE,
-		focusComment: search.focusComment === true ? true : undefined,
+		focusComment: search.focusComment
+			? Boolean(search.focusComment)
+			: undefined,
 	}),
 })
 

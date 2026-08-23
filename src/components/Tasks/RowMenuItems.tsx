@@ -38,88 +38,104 @@ export function RowMenuItems({
 	onUnarchive,
 }: RowMenuItemsProps) {
 	const groups = useMemo(() => {
-		const group1: MenuItemDef[] = []
-		const group2: MenuItemDef[] = []
-		const group3: MenuItemDef[] = []
+		const group1: MenuItemDef[] = [
+			...(onAddComment
+				? [
+						{
+							key: "comment",
+							node: (
+								<MenuItem onSelect={onAddComment}>
+									<MessageCircle size={16} />
+									הוספת תגובה
+								</MenuItem>
+							),
+						},
+					]
+				: []),
+		]
 
-		if (onAddComment) {
-			group1.push({
-				key: "comment",
-				node: (
-					<MenuItem onSelect={onAddComment}>
-						<MessageCircle size={16} />
-						הוספת תגובה
-					</MenuItem>
-				),
-			})
-		}
+		const group2: MenuItemDef[] = [
+			...(onEdit
+				? [
+						{
+							key: "edit",
+							node: (
+								<MenuItem onSelect={onEdit}>
+									<Pencil size={16} />
+									עריכה
+								</MenuItem>
+							),
+						},
+					]
+				: []),
+			...(onArchive
+				? [
+						{
+							key: "archive",
+							node: (
+								<MenuItem onSelect={onArchive}>
+									<Archive size={16} />
+									העבר לארכיון
+								</MenuItem>
+							),
+						},
+					]
+				: []),
+			...(onUnarchive
+				? [
+						{
+							key: "unarchive",
+							node: (
+								<MenuItem onSelect={onUnarchive}>
+									<ArchiveX size={16} />
+									הסר מארכיון
+								</MenuItem>
+							),
+						},
+					]
+				: []),
+			...(onEnterSelect
+				? [
+						{
+							key: "select",
+							node: (
+								<MenuItem onSelect={onEnterSelect}>
+									<CheckCircle2 size={16} />
+									סמן
+								</MenuItem>
+							),
+						},
+					]
+				: []),
+		]
 
-		if (onEdit) {
-			group2.push({
-				key: "edit",
-				node: (
-					<MenuItem onSelect={onEdit}>
-						<Pencil size={16} />
-						עריכה
-					</MenuItem>
-				),
-			})
-		}
-		if (onArchive) {
-			group2.push({
-				key: "archive",
-				node: (
-					<MenuItem onSelect={onArchive}>
-						<Archive size={16} />
-						העבר לארכיון
-					</MenuItem>
-				),
-			})
-		}
-		if (onUnarchive) {
-			group2.push({
-				key: "unarchive",
-				node: (
-					<MenuItem onSelect={onUnarchive}>
-						<ArchiveX size={16} />
-						הסר מארכיון
-					</MenuItem>
-				),
-			})
-		}
-		if (onEnterSelect) {
-			group2.push({
-				key: "select",
-				node: (
-					<MenuItem onSelect={onEnterSelect}>
-						<CheckCircle2 size={16} />
-						סמן
-					</MenuItem>
-				),
-			})
-		}
-
-		if (onDelete) {
-			group3.push({
-				key: "delete",
-				node: (
-					<DeletePopover
-						count={1}
-						side="right"
-						align="end"
-						onConfirm={onDelete}
-						open={popoverOpen}
-						onOpenChange={onPopoverOpenChange}
-						trigger={
-							<DestructiveMenuItem onClick={() => onPopoverOpenChange(true)}>
-								<Trash2 size={16} />
-								מחק
-							</DestructiveMenuItem>
-						}
-					/>
-				),
-			})
-		}
+		const group3: MenuItemDef[] = [
+			...(onDelete
+				? [
+						{
+							key: "delete",
+							node: (
+								<DeletePopover
+									count={1}
+									side="right"
+									align="end"
+									onConfirm={onDelete}
+									open={popoverOpen}
+									onOpenChange={onPopoverOpenChange}
+									trigger={
+										<DestructiveMenuItem
+											onClick={() => onPopoverOpenChange(true)}
+										>
+											<Trash2 size={16} />
+											מחק
+										</DestructiveMenuItem>
+									}
+								/>
+							),
+						},
+					]
+				: []),
+		]
 
 		return [group1, group2, group3].filter((g) => g.length > 0)
 	}, [
