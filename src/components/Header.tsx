@@ -65,8 +65,7 @@ const HeaderRoot = styled.header`
 `
 
 const HeaderInner = styled.div`
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
   height: 56px;
 `
@@ -75,6 +74,7 @@ const StartSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 0 0 auto;
 `
 
 const CenterSection = styled.div`
@@ -82,8 +82,8 @@ const CenterSection = styled.div`
   align-items: center;
   justify-content: center;
   gap: 8px;
+  flex: 1 1 0;
   min-width: 0;
-  max-width: 100%;
   overflow: hidden;
 `
 
@@ -104,6 +104,7 @@ const EndSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  flex: 0 0 auto;
 `
 
 const EndSectionSeparator = styled(Separator)`

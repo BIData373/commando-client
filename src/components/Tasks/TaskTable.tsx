@@ -36,6 +36,7 @@ interface TaskTableProps<TTask extends TaskRowDto> {
 	hiddenColumns: Set<keyof TTask>
 	statuses?: WorkspaceStatusDto[]
 	onEdit?: (taskId: number) => void
+	onAddComment?: (taskId: number) => void
 	onClick?: (taskId: number) => void
 	extraColumns?: ColumnDef<TTask>[]
 	showHeader?: boolean
@@ -61,6 +62,7 @@ function TaskTable<TTask extends TaskRowDto>({
 	hiddenColumns,
 	statuses,
 	onEdit,
+	onAddComment,
 	onClick,
 	extraColumns = [],
 	showHeader = true,
@@ -261,6 +263,7 @@ function TaskTable<TTask extends TaskRowDto>({
 		showMenuColumn: showActionsColumn,
 		actions: {
 			onEdit,
+			onAddComment,
 			onArchive,
 			onUnarchive,
 			onDelete: allowDelete ? removeTasks : undefined,
