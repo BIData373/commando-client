@@ -499,6 +499,19 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				),
 			},
 			{
+				id: "notes",
+				accessorKey: "notes",
+				header: COLUMN_LABELS.notes,
+				size: 100,
+				enableSorting: false,
+				enableColumnFilter: false,
+				meta: { grow: true },
+				cell: ({ getValue }) => {
+					const notes = getValue<string>()
+					return notes ? <NotesText tooltip={notes}>{notes}</NotesText> : null
+				},
+			},
+			{
 				id: "createdAt",
 				accessorKey: "createdAt",
 				header: ({ column }) => (
@@ -731,6 +744,12 @@ const CommentText = styled.span`
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+`
+
+const NotesText = styled(EllipsisTooltip)`
+  font-size: var(--fs-btn);
+  line-height: 20px;
+  color: var(--sea-ink-soft);
 `
 
 const DateText = styled.span`

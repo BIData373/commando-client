@@ -20,6 +20,7 @@ export const TASK_COLUMNS_META: TaskColumnMeta[] = [
 	{ id: "source", label: "מקור הנחיה" },
 	{ id: "lastMessage", label: "תגובות" },
 	{ id: "tags", label: "נושא" },
+	{ id: "notes", label: "הערות" },
 	{ id: "createdAt", label: "תאריך יצירה" },
 	{ id: "updatedAt", label: "עודכן ב" },
 ]

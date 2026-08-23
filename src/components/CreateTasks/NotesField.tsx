@@ -1,8 +1,7 @@
 import styled from "@emotion/styled"
-import { EditorContent, useEditor } from "@tiptap/react"
-import { Bold, ListOrdered, Underline } from "lucide-react"
-import { useEffect, useState } from "react"
-import { editorExtensions } from "src/utils/tiptap-utils"
+import { useRef, useState } from "react"
+
+const MAX_LENGTH = 150
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -14,76 +13,40 @@ interface NotesFieldProps {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function NotesField({ notes, onNotesChange }: NotesFieldProps) {
+	const textareaRef = useRef<HTMLTextAreaElement>(null)
 	const [isFocused, setIsFocused] = useState(false)
-	const [, setTick] = useState(0)
 
-	const editor = useEditor({
-		...editorExtensions,
-		content: notes,
-		onUpdate: ({ editor }) => {
-			onNotesChange(editor.getHTML())
-		},
-		onFocus: () => setIsFocused(true),
-		onBlur: () => setIsFocused(false),
-		onTransaction: () => setTick((t) => t + 1),
-	})
-
-	useEffect(() => {
-		if (editor && notes !== editor.getHTML()) {
-			editor.commands.setContent(notes)
-		}
-	}, [notes, editor])
-
-	function handleToggleBold() {
-		editor?.chain().focus().toggleBold().run()
+	function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+		onNotesChange(e.target.value)
 	}
 
-	function handleToggleUnderline() {
-		editor?.chain().focus().toggleUnderline().run()
-	}
-
-	function handleToggleOrderedList() {
-		editor?.chain().focus().toggleOrderedList().run()
-	}
-
-	function handlePreventDefault(e: React.MouseEvent) {
-		e.preventDefault()
+	function handleWrapperClick() {
+		textareaRef.current?.focus()
 	}
 
 	return (
 		<FormItem>
 			<FormLabelRow>
-				<LabelText>הערות הנחיה</LabelText>
+				<LabelText>הערה</LabelText>
 			</FormLabelRow>
-			<NotesEditorWrapper>
+			<InputWrapper $focused={isFocused} onClick={handleWrapperClick}>
+				<NotesTextarea
+					ref={textareaRef}
+					value={notes}
+					onChange={handleChange}
+					onFocus={() => setIsFocused(true)}
+					onBlur={() => setIsFocused(false)}
+					placeholder="הערה"
+					dir="rtl"
+					maxLength={MAX_LENGTH}
+					rows={1}
+				/>
 				{isFocused && (
-					<NotesToolbar onMouseDown={handlePreventDefault}>
-						<ToolbarButton
-							type="button"
-							$active={editor?.isActive("orderedList") ?? false}
-							onClick={handleToggleOrderedList}
-						>
-							<ListOrdered size={16} />
-						</ToolbarButton>
-						<ToolbarDivider />
-						<ToolbarButton
-							type="button"
-							$active={editor?.isActive("underline") ?? false}
-							onClick={handleToggleUnderline}
-						>
-							<Underline size={16} />
-						</ToolbarButton>
-						<ToolbarButton
-							type="button"
-							$active={editor?.isActive("bold") ?? false}
-							onClick={handleToggleBold}
-						>
-							<Bold size={16} />
-						</ToolbarButton>
-					</NotesToolbar>
+					<CharCount>
+						{notes.length}/{MAX_LENGTH}
+					</CharCount>
 				)}
-				<StyledEditorContent editor={editor} dir="rtl" />
-			</NotesEditorWrapper>
+			</InputWrapper>
 		</FormItem>
 	)
 }
@@ -112,90 +75,45 @@ const FormLabelRow = styled.div`
 `
 
 const LabelText = styled.span`
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
 `
 
-const NotesEditorWrapper = styled.div`
+const InputWrapper = styled.div<{ $focused: boolean }>`
   position: relative;
   width: 100%;
+  border: 1px solid ${({ $focused }) => ($focused ? "var(--button-color-hover)" : "var(--card-border)")};
+  border-radius: 8px;
+  background: var(--background);
+  box-shadow: ${({ $focused }) => ($focused ? "var(--shadow-textarea-focus)" : "none")};
+  cursor: text;
 `
 
-const NotesToolbar = styled.div`
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
+const NotesTextarea = styled.textarea`
+  width: 100%;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 16px;
-  background: white;
-  border-radius: 4px;
-  box-shadow:
-    0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px rgba(0, 0, 0, 0.12),
-    0px 9px 28px rgba(0, 0, 0, 0.05);
-  z-index: var(--z-dropdown);
-`
-
-const ToolbarButton = styled.button<{ $active: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0 4px;
-  background: ${({ $active }) => ($active ? "rgba(22, 119, 255, 0.1)" : "transparent")};
+  padding: 4px 11px 4px 50px;
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  color: ${({ $active }) => ($active ? "#1677ff" : "rgba(0, 0, 0, 0.88)")};
+  border-radius: 8px;
+  background: transparent;
+  font-size: var(--fs-base);
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--text-color-2);
+  outline: none;
+  box-sizing: border-box;
+  resize: none;
 
-  &:hover {
-    background: ${({ $active }) => ($active ? "rgba(22, 119, 255, 0.15)" : "rgba(0, 0, 0, 0.04)")};
+  &::placeholder {
+    color: var(--Text-color-text-placeholder);
   }
 `
 
-const ToolbarDivider = styled.div`
-  width: 1px;
-  height: 16px;
-  background: #d9d9d9;
-`
-
-const StyledEditorContent = styled(EditorContent)`
-  .tiptap {
-    width: 100%;
-    height: 52px;
-    padding: 4px 11px;
-    border: 1px solid #d9d9d9;
-    border-radius: 8px;
-    background: white;
-    font-size: var(--fs-base);
-    font-weight: 400;
-    line-height: 20px;
-    color: rgba(0, 0, 0, 0.88);
-    outline: none;
-    box-sizing: border-box;
-    overflow-y: auto;
-    overflow-wrap: anywhere;
-
-    &:focus {
-      border-color: #4096ff;
-      box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
-    }
-
-    p.is-editor-empty:first-child::before {
-      content: attr(data-placeholder);
-      color: rgba(0, 0, 0, 0.25);
-      pointer-events: none;
-      float: inline-start;
-      height: 0;
-    }
-
-    ol {
-      padding-inline-start: 24px;
-      margin: 0;
-      list-style-type: decimal;
-    }
-  }
+const CharCount = styled.span`
+  position: absolute;
+  inset-block-end: 4px;
+  inset-inline-start: 8px;
+  font-size: var(--fs-sm);
+  line-height: 20px;
+  color: var(--sea-ink-soft);
+  pointer-events: none;
 `

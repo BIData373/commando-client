@@ -52,6 +52,7 @@ function TaskDetailPanel({
 		updatedAt,
 		createdAt,
 		source,
+		notes,
 		tags,
 		assigneeStatuses,
 		status,
@@ -238,6 +239,12 @@ function TaskDetailPanel({
 						)
 					)}
 
+					{!!notes && (
+						<NotesBlock>
+							<SectionLabel>הערה</SectionLabel>
+							<NotesValue>{notes}</NotesValue>
+						</NotesBlock>
+					)}
 					<InfoGrid>
 						{!!source && (
 							<InfoBlock>
@@ -494,6 +501,25 @@ const TagChip = styled.span`
   border: 1px solid var(--chip-line);
   color: var(--sea-ink);
   white-space: nowrap;
+`
+
+const NotesBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  align-items: flex-start;
+`
+
+const NotesValue = styled.span`
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--sea-ink);
+  white-space: normal;
+  overflow-wrap: break-word;
+  min-width: 0;
+  align-self: stretch;
 `
 
 const SourceRow = styled.div`

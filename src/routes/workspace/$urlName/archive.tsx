@@ -29,11 +29,13 @@ const ARCHIVE_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
 	"archivedAt",
 	"createdAt",
 	"tags",
+	"notes",
 	"updatedAt",
 ]
 
 const ARCHIVE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 	"tags",
+	"notes",
 	"updatedAt",
 ])
 

@@ -35,11 +35,12 @@ export function useSaveTasks(workspaceId: number, onDone?: () => void) {
 	})
 
 	function saveTasks(inputs: TaskInput[]) {
-		for (const { deadlineType, title, taskId, ...input } of inputs) {
+		for (const { deadlineType, notes, title, taskId, ...input } of inputs) {
 			const data = {
 				title: title.trim(),
 				deadlineType: deadlineType ?? DeadlineType.ROLLING,
 				dueDate: input.dueDate ?? null,
+				notes: notes || undefined,
 				...input,
 			}
 
