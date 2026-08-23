@@ -186,22 +186,24 @@ export function DataTable<TData>({
 
   const visibleColumns = table.getVisibleLeafColumns()
 
-  const { fixedTotal, growTotal, growColumns } = useMemo(
+  const { fixedTotal, growTotal, growMinTotal, growColumns } = useMemo(
     () =>
       visibleColumns.reduce(
         (acc, col) => {
           const size = col.columnDef.size ?? 0
           if (col.columnDef.meta?.grow) {
             acc.growTotal += size
+            acc.growMinTotal += col.columnDef.minSize ?? size
             acc.growColumns.push(col)
           } else {
             acc.fixedTotal += size
           }
           return acc
         },
-        { fixedTotal: 0, growTotal: 0, growColumns: [] } as {
+        { fixedTotal: 0, growTotal: 0, growMinTotal: 0, growColumns: [] } as {
           fixedTotal: number
           growTotal: number
+          growMinTotal: number
           growColumns: typeof visibleColumns
         },
       ),
@@ -213,18 +215,34 @@ export function DataTable<TData>({
 
   const growWidths = useMemo(() => {
     const map = new Map<string, number>()
-    if (growSpace <= 0 || growTotal <= 0) return map
+    if (growColumns.length === 0) return map
 
-    const floored = growColumns.map((col) => ({
-      id: col.id,
-      width: Math.floor(growSpace * ((col.columnDef.size ?? 0) / growTotal)),
-    }))
+    if (growSpace <= growMinTotal) {
+      growColumns.forEach((col) => {
+        map.set(col.id, col.columnDef.minSize ?? col.columnDef.size ?? 0)
+      })
+      return map
+    }
+
+    const usingAuthoredSize = growSpace >= growTotal
+    const floored = growColumns.map((col) => {
+      const size = col.columnDef.size ?? 0
+      if (usingAuthoredSize) {
+        const width = growTotal > 0 ? Math.floor(growSpace * (size / growTotal)) : 0
+        return { id: col.id, width }
+      }
+
+      const minSize = col.columnDef.minSize ?? size
+      const shrinkRange = growTotal - growMinTotal
+      const ratio = shrinkRange > 0 ? (growSpace - growMinTotal) / shrinkRange : 0
+      return { id: col.id, width: Math.floor(minSize + (size - minSize) * ratio) }
+    })
     const flooredTotal = floored.reduce((sum, col) => sum + col.width, 0)
     floored.forEach(({ id, width }, i) => {
       map.set(id, i === floored.length - 1 ? width + (growSpace - flooredTotal) : width)
     })
     return map
-  }, [growSpace, growTotal, growColumns])
+  }, [growSpace, growTotal, growMinTotal, growColumns])
 
   const colgroup = useMemo(
     () => (
@@ -237,7 +255,7 @@ export function DataTable<TData>({
     [visibleColumns, growWidths],
   )
 
-  const totalSize = fixedTotal + growTotal
+  const totalSize = fixedTotal + growMinTotal
 
   const tableRows = table.getRowModel().rows
   const { getVirtualItems, getTotalSize, measureElement } = useVirtualizer({
