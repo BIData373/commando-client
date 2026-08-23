@@ -1,18 +1,16 @@
 import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import {
 	DeadlineType,
 	type TaskRowDto,
 	type WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
-import { getGetTaskQueryKey, useUpdateTask } from "src/api/task/task"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
-import { invalidateQueries } from "src/queryClient"
+import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import {
 	COLUMN_LABELS,
 	DEFAULT_COLUMN_ORDER,
@@ -84,34 +82,9 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 	statuses,
 	onUpdateStatusSuccess,
 }: UseTaskColumnsOptions<TTask>) {
-	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
-		mutation: {
-			onSuccess: ({ task: { id } }) => {
-				invalidateQueries([getGetTaskQueryKey({ id })])
-				onUpdateStatusSuccess?.()
-			},
-		},
+	const handleUpdateStatus = useUpdateTaskStatus({
+		onSuccess: onUpdateStatusSuccess,
 	})
-
-	const { mutate: updateTask } = useUpdateTask({
-		mutation: {
-			onSuccess: ({ id }) => {
-				invalidateQueries([getGetTaskQueryKey({ id })])
-				onUpdateStatusSuccess?.()
-			},
-		},
-	})
-
-	const handleUpdateStatus = useCallback(
-		(taskId: number, assigneeId: number | undefined, statusId: number) => {
-			if (assigneeId) {
-				upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } })
-			} else {
-				updateTask({ pathParams: { id: taskId }, data: { statusId } })
-			}
-		},
-		[upsertAssigneeTaskStatus, updateTask],
-	)
 
 	const columns = useMemo<ColumnDef<TTask>[]>(() => {
 		// TODO Move all constant fields to task-table-utils

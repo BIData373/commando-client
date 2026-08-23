@@ -14,10 +14,10 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 	useDeleteTask,
-	useUpdateTask,
 } from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { downloadFromUrl } from "src/functions/download-utils"
+import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { invalidateQueries } from "src/queryClient"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
@@ -100,25 +100,15 @@ function TaskDetailPanel({
 		mutation: { onSuccess: handleSuccess },
 	})
 
-	const { mutate: updateTask } = useUpdateTask({
-		mutation: {
-			onSuccess: () => {
-				invalidateQueries([
-					getGetTaskQueryKey({ id }),
-					getListTaskRowsQueryKey({ workspaceId }),
-					getListPersonalTaskRowsQueryKey(),
-				])
-			},
+	const handleUpdateTaskStatus = useUpdateTaskStatus({
+		onSuccess: () => {
+			invalidateQueries([
+				getGetTaskQueryKey({ id }),
+				getListTaskRowsQueryKey({ workspaceId }),
+				getListPersonalTaskRowsQueryKey(),
+			])
 		},
 	})
-
-	function handleUpdateTaskStatus(
-		taskId: number,
-		_assigneeId: number | undefined,
-		statusId: number,
-	) {
-		updateTask({ pathParams: { id: taskId }, data: { statusId } })
-	}
 
 	const displayDate = getDeadlineDisplayDate(
 		deadlineType,
@@ -258,7 +248,7 @@ function TaskDetailPanel({
 									status={status}
 									workspaceId={workspaceId}
 									taskId={id}
-									editable={!isArchived && isManager}
+									editable={isManager}
 									onUpdate={handleUpdateTaskStatus}
 								/>
 							</StatusTagContainer>

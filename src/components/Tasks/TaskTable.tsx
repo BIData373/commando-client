@@ -7,7 +7,6 @@ import type {
 import { uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import type {
 	DeadlineType,
 	TaskRowDto,
@@ -15,9 +14,10 @@ import type {
 	WorkspaceStatusType,
 } from "src/api/model"
 import { PermissionType } from "src/api/model"
-import { useDeleteTask, useUpdateTask } from "src/api/task/task"
+import { useDeleteTask } from "src/api/task/task"
 import { buildFilterOptionsMap } from "src/functions/filter-utils"
 import { type TaskArchiveEntry, useTaskColumns } from "src/hooks/useTaskColumns"
+import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { getEmptyState } from "src/utils/empty-state-utils"
 import {
@@ -91,12 +91,8 @@ function TaskTable<TTask extends TaskRowDto>({
 		mutation: { onSuccess: onChangeSuccess },
 	})
 
-	const { mutate: upsertStatus } = useUpsertAssigneeTaskStatus({
-		mutation: { onSuccess: onChangeSuccess },
-	})
-
-	const { mutate: updateTaskStatus } = useUpdateTask({
-		mutation: { onSuccess: onChangeSuccess },
+	const updateStatus = useUpdateTaskStatus({
+		onSuccess: onChangeSuccess,
 	})
 
 	const [selectMode, setSelectMode] = useState(false)
@@ -227,20 +223,7 @@ function TaskTable<TTask extends TaskRowDto>({
 				return
 			}
 
-			if (task.assignee) {
-				upsertStatus({
-					data: {
-						taskId: task.id,
-						assigneeId: task.assignee.id,
-						statusId: status.id,
-					},
-				})
-			} else {
-				updateTaskStatus({
-					pathParams: { id: task.id },
-					data: { statusId: status.id },
-				})
-			}
+			updateStatus(task.id, task.assignee?.id, status.id)
 		})
 	}
 
