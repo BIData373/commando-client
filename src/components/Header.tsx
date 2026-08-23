@@ -82,8 +82,8 @@ const CenterSection = styled.div`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: min(60vw, 640px);
   min-width: 0;
+  max-width: 100%;
   overflow: hidden;
 `
 
