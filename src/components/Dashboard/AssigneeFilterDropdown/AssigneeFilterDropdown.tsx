@@ -1,10 +1,8 @@
 import styled from "@emotion/styled"
 import { CircleUser, Search } from "lucide-react"
 import { useState } from "react"
-import {} from "react-icons"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { useFilteredAssignees } from "src/hooks/useFilteredAssignees"
-import { useFuse } from "src/hooks/useFuse"
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover"
 import AssigneeDropdown from "./AssigneeDropdown"
 
