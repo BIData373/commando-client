@@ -86,6 +86,8 @@ function TaskTable<TTask extends TaskRowDto>({
 		setSorting,
 		columnsFilters,
 		setColumnsFilters,
+		assigneeFilter,
+		setAssigneeFilter,
 	} = useTasksFilters()
 
 	const { mutate: deleteTaskMutate } = useDeleteTask({
@@ -110,8 +112,11 @@ function TaskTable<TTask extends TaskRowDto>({
 			...(deadlineTypeFilter.length
 				? [{ id: "deadlineType", value: deadlineTypeFilter }]
 				: []),
+			...(assigneeFilter.length
+				? [{ id: "assignee", value: assigneeFilter }]
+				: []),
 		],
-		[statusFilter, deadlineTypeFilter],
+		[statusFilter, deadlineTypeFilter, assigneeFilter],
 	)
 
 	const columnFilters: ColumnFiltersState = useMemo(() => {
@@ -138,7 +143,13 @@ function TaskTable<TTask extends TaskRowDto>({
 			"deadlineType",
 		) as DeadlineType[]
 
+		const tableAssigneeColumnValue = getColumnFilter(
+			newFilters,
+			"assignee",
+		) as string[]
+
 		setColumnsFilters(newFilters)
+		setAssigneeFilter(tableAssigneeColumnValue)
 		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
 	}
 

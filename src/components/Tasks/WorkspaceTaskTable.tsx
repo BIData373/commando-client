@@ -62,7 +62,7 @@ function WorkspaceTaskTable({
 	clearColumnFilters,
 	onColumnFilterChange,
 }: WorkspaceTaskTableProps) {
-	const { columnOrder, hiddenColumns } = useTasksFilters()
+	const { columnOrder, hiddenColumns, assigneeFilter } = useTasksFilters()
 
 	const {
 		workspace: { id: workspaceId, title: workspaceTitle },
@@ -85,6 +85,9 @@ function WorkspaceTaskTable({
 		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
 		...(deadlineTypeFilter.length
 			? [{ id: "deadlineType", value: deadlineTypeFilter }]
+			: []),
+		...(assigneeFilter.length
+			? [{ id: "assignee", value: assigneeFilter }]
 			: []),
 	]
 
