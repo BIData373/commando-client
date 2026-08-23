@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { useState } from "react"
+import { NOTES_MAX_LENGTH } from "../../functions/notes-constants"
 import {
 	handleCellKeyDown,
 	handleTextareaChange,
@@ -8,7 +9,6 @@ import {
 	type TaskTableMeta,
 } from "./TasksColumns"
 
-const MAX_LENGTH = 150
 const CHAR_COUNT_THRESHOLD = 140
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -49,11 +49,11 @@ function NotesCell({ row, meta }: NotesCellProps) {
 				onBlur={handleBlur}
 				placeholder="הערה"
 				rows={1}
-				maxLength={MAX_LENGTH}
+				maxLength={NOTES_MAX_LENGTH}
 			/>
 			{isFocused && length >= CHAR_COUNT_THRESHOLD && (
-				<NotesCharCount $limit={length >= MAX_LENGTH}>
-					{length}/{MAX_LENGTH}
+				<NotesCharCount $limit={length >= NOTES_MAX_LENGTH}>
+					{length}/{NOTES_MAX_LENGTH}
 				</NotesCharCount>
 			)}
 		</NotesCellWrapper>

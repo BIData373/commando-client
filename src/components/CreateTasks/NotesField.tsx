@@ -1,7 +1,6 @@
 import styled from "@emotion/styled"
 import { useRef, useState } from "react"
-
-const MAX_LENGTH = 150
+import { NOTES_MAX_LENGTH } from "../../functions/notes-constants"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -38,12 +37,12 @@ function NotesField({ notes, onNotesChange }: NotesFieldProps) {
 					onBlur={() => setIsFocused(false)}
 					placeholder="הערה"
 					dir="rtl"
-					maxLength={MAX_LENGTH}
+					maxLength={NOTES_MAX_LENGTH}
 					rows={1}
 				/>
 				{isFocused && (
 					<CharCount>
-						{notes.length}/{MAX_LENGTH}
+						{notes.length}/{NOTES_MAX_LENGTH}
 					</CharCount>
 				)}
 			</InputWrapper>
