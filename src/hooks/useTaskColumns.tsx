@@ -201,6 +201,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				accessorKey: "title",
 				header: COLUMN_LABELS.title,
 				size: 300,
+				minSize: 160,
 				meta: { grow: true },
 				enableSorting: false,
 				enableColumnFilter: false,
@@ -441,6 +442,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					/>
 				),
 				size: 100,
+				minSize: 70,
 				meta: { grow: true },
 				enableSorting: false,
 				enableColumnFilter: false,
@@ -483,6 +485,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					/>
 				),
 				size: 100,
+				minSize: 70,
 				enableSorting: false,
 				...TASK_COLUMN_DEFINITIONS.tags,
 				meta: { grow: true },
