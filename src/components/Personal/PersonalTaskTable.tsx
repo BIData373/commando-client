@@ -66,7 +66,6 @@ interface PersonalTaskTableProps {
 	onOpenTask(taskId: number): void
 	showMetricsBar?: boolean
 	filePrefix: string
-	buildTaskUrl(taskId: number): string
 }
 
 function PersonalTaskTable({
@@ -77,7 +76,6 @@ function PersonalTaskTable({
 	onOpenTask,
 	showMetricsBar = false,
 	filePrefix,
-	buildTaskUrl,
 }: PersonalTaskTableProps) {
 	const { columnOrder, hiddenColumns, searchQuery } = useTasksFilters()
 
@@ -183,7 +181,6 @@ function PersonalTaskTable({
 					}
 					startSlot={<TasksDatePicker />}
 					exportFilePrefix={filePrefix}
-					buildTaskUrl={buildTaskUrl}
 					extraFilters={
 						<MultiSelectFilterDropdown
 							label={

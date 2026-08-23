@@ -15,7 +15,6 @@ interface ExportButtonProps<TTask extends TaskRowDto> {
 	hiddenColumns: Set<keyof TTask>
 	extraColumns?: ColumnDef<TTask>[]
 	exportFilePrefix?: string
-	buildTaskUrl: (taskId: number) => string
 }
 
 function ExportButton<TTask extends TaskRowDto>({
@@ -25,7 +24,6 @@ function ExportButton<TTask extends TaskRowDto>({
 	hiddenColumns,
 	extraColumns = [],
 	exportFilePrefix,
-	buildTaskUrl,
 }: ExportButtonProps<TTask>) {
 	const { sorting } = useTasksFilters()
 
@@ -46,14 +44,8 @@ function ExportButton<TTask extends TaskRowDto>({
 			.getSortedRowModel()
 			.rows.map((row) => row.original)
 
-		exportTasksToExcel(
-			exportRows,
-			columnOrder,
-			hiddenColumns,
-			buildTaskUrl,
-			exportFilePrefix,
-		)
-	}, [exportTable, columnOrder, hiddenColumns, exportFilePrefix, buildTaskUrl])
+		exportTasksToExcel(exportRows, columnOrder, hiddenColumns, exportFilePrefix)
+	}, [exportTable, columnOrder, hiddenColumns, exportFilePrefix])
 
 	return (
 		<ActionButton onClick={handleExport}>

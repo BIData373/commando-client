@@ -48,7 +48,6 @@ export interface WorkspaceTaskTableProps {
 		newDeadlineTypeFilter: DeadlineType[],
 	): void
 	onOpenTask(taskId: number): void
-	buildTaskUrl(taskId: number): string
 }
 
 function WorkspaceTaskTable({
@@ -62,7 +61,6 @@ function WorkspaceTaskTable({
 	onEdit,
 	clearColumnFilters,
 	onColumnFilterChange,
-	buildTaskUrl,
 }: WorkspaceTaskTableProps) {
 	const { columnOrder, hiddenColumns } = useTasksFilters()
 
@@ -144,7 +142,6 @@ function WorkspaceTaskTable({
 					urlColumnFilters={urlColumnFilters ?? []}
 					startSlot={<TasksDatePicker />}
 					exportFilePrefix={`${isArchived ? "ארכיון " : ""}${workspaceTitle}`}
-					buildTaskUrl={buildTaskUrl}
 					extraColumns={extraColumns}
 					extraColumnsMeta={extraColumnsMeta}
 					extraButtons={

@@ -1,6 +1,5 @@
 import { useNavigate } from "@tanstack/react-router"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
-import { buildAbsoluteUrl } from "src/router"
 import {
 	type TasksSearchSchemaType,
 	TasksView,
@@ -45,13 +44,6 @@ function TasksLayout({
 		})
 	}
 
-	function buildTaskUrl(taskId: number) {
-		return buildAbsoluteUrl({
-			to: "/workspace/$urlName/tasks/$taskId",
-			params: { urlName, taskId: String(taskId) },
-		})
-	}
-
 	function handleEdit(taskId: number) {
 		navigate({
 			to: "/workspace/$urlName/tasks/$taskId/edit",
@@ -80,7 +72,6 @@ function TasksLayout({
 			<WorkspaceTaskTable
 				onOpenTask={handleOpenTask}
 				onEdit={handleEdit}
-				buildTaskUrl={buildTaskUrl}
 				clearColumnFilters={handleClearColumnFilters}
 				onColumnFilterChange={handleColumnFiltersChange}
 				deadlineTypeFilter={deadlineTypeFilter}
