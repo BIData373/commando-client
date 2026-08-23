@@ -92,9 +92,11 @@ const COLUMN_DEFS: Partial<
 				t.deadlineType === DeadlineType.IMMEDIATE
 					? (t.source?.date ?? t.createdAt)
 					: t.dueDate
-			const dateStr = displayDate ? formatDate(displayDate) : ""
+			const dateString = displayDate ? formatDate(displayDate) : ""
 			const value =
-				typeStr && dateStr ? `${typeStr} | ${dateStr}` : typeStr || dateStr
+				typeStr && dateString
+					? `${typeStr} | ${dateString}`
+					: typeStr || dateString
 			return { value, ...getDeadlineDateStyle(t) }
 		},
 	},
@@ -105,8 +107,8 @@ const COLUMN_DEFS: Partial<
 				return ""
 			}
 
-			const dateStr = t.source.date ? formatDate(t.source.date) : ""
-			return dateStr ? `${t.source.name} | ${dateStr}` : t.source.name
+			const dateString = t.source.date ? formatDate(t.source.date) : ""
+			return dateString ? `${t.source.name} | ${dateString}` : t.source.name
 		},
 	},
 	tags: {

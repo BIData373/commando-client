@@ -108,8 +108,7 @@ function TaskDetailPanel({
 
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
 
-	const { isDownloading: isDownloadingAttachment, download } =
-		useAttachmentDownload()
+	const { isDownloading, download } = useAttachmentDownload()
 
 	function handleAttachmentDownload() {
 		download(source?.attachmentKey, source?.attachmentName)
@@ -244,10 +243,10 @@ function TaskDetailPanel({
 											<Paperclip size={16} />
 											<AttachmentDownloadButton
 												onClick={handleAttachmentDownload}
-												disabled={isDownloadingAttachment}
+												disabled={isDownloading}
 											>
 												{source.attachmentName}
-												{isDownloadingAttachment && <SpinIcon size={12} />}
+												{isDownloading && <SpinIcon size={12} />}
 											</AttachmentDownloadButton>
 										</>
 									)}
