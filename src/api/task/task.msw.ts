@@ -52,6 +52,10 @@ export const getCreateTaskResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	statusId: faker.helpers.arrayElement([
+		faker.number.float({ fractionDigits: 2 }),
+		null,
+	]),
 	source: faker.helpers.arrayElement([
 		{
 			...{
@@ -291,6 +295,10 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		statusId: faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -504,6 +512,10 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		statusId: faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -786,6 +798,10 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		statusId: faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -1029,6 +1045,10 @@ export const getListPersonalTaskRowsResponseMock =
 				null,
 			]),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
+			statusId: faker.helpers.arrayElement([
+				faker.number.float({ fractionDigits: 2 }),
+				null,
+			]),
 			source: faker.helpers.arrayElement([
 				{
 					...{
@@ -1346,6 +1366,10 @@ export const getGetTaskResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	statusId: faker.helpers.arrayElement([
+		faker.number.float({ fractionDigits: 2 }),
+		null,
+	]),
 	source: faker.helpers.arrayElement([
 		{
 			...{
@@ -1593,6 +1617,10 @@ export const getUpdateTaskResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	statusId: faker.helpers.arrayElement([
+		faker.number.float({ fractionDigits: 2 }),
+		null,
+	]),
 	source: faker.helpers.arrayElement([
 		{
 			...{
@@ -1830,6 +1858,10 @@ export const getDeleteTaskResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	statusId: faker.helpers.arrayElement([
+		faker.number.float({ fractionDigits: 2 }),
+		null,
+	]),
 	source: faker.helpers.arrayElement([
 		{
 			...{

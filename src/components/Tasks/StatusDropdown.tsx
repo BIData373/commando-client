@@ -3,7 +3,6 @@ import { useToggle } from "@mantine/hooks"
 import { memo } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
-import { HAS_ASSIGNEE_DATA_ATTR } from "src/utils/task-table-utils"
 import { StatusTag } from "../shared/StatusTag"
 import {
 	DropdownMenu,
@@ -19,7 +18,11 @@ interface StatusDropdownProps {
 	taskId: number
 	assigneeId?: number
 	editable?: boolean
-	onUpdate: (taskId: number, assigneeId: number, statusId: number) => void
+	onUpdate: (
+		taskId: number,
+		assigneeId: number | undefined,
+		statusId: number,
+	) => void
 }
 
 export const StatusDropdown = memo(
@@ -49,19 +52,17 @@ export const StatusDropdown = memo(
 		const statusesReady = statuses !== undefined && !isFetchingStatuses
 
 		function handleSelectStatus(newStatusId: number) {
-			if (newStatusId !== status.id && assigneeId) {
+			if (newStatusId !== status.id) {
 				onUpdate(taskId, assigneeId, newStatusId)
 			}
 		}
 
 		return (
-			<CellCenter
-				{...{ [HAS_ASSIGNEE_DATA_ATTR]: assigneeId ? "" : undefined }}
-			>
+			<CellCenter>
 				{editable && statusesReady ? (
 					<DropdownMenu onOpenChange={toggleOpen}>
 						<DropdownMenuTrigger asChild>
-							<TriggerWrapper tabIndex={0} $hasAssignee={!!assigneeId}>
+							<TriggerWrapper tabIndex={0}>
 								<StatusTag
 									open={isOpen}
 									status={status}
@@ -76,7 +77,6 @@ export const StatusDropdown = memo(
 								<StatusDropdownItem
 									key={s.id}
 									$selected={s.id === status.id}
-									$hasAssignee={!!assigneeId}
 									onSelect={() => handleSelectStatus(s.id)}
 								>
 									<StatusTag status={s} interactive editable={editable} />
@@ -98,8 +98,8 @@ const CellCenter = styled.div`
   align-items: center;
 `
 
-const TriggerWrapper = styled.span<{ $hasAssignee: boolean }>`
-  cursor: ${({ $hasAssignee }) => ($hasAssignee ? "pointer" : "default")};
+const TriggerWrapper = styled.span`
+  cursor: pointer;
 
   &:focus-visible {
     outline: none;
@@ -122,7 +122,6 @@ const StatusDropdownContent = styled(DropdownMenuContent)`
 
 const StatusDropdownItem = styled(DropdownMenuItem)<{
 	$selected: boolean
-	$hasAssignee: boolean
 }>`
   display: flex;
   align-items: center;
@@ -131,7 +130,7 @@ const StatusDropdownItem = styled(DropdownMenuItem)<{
   padding: 4px;
   border-radius: 4px;
   background: ${({ $selected }) => ($selected ? "rgba(230, 244, 255, 1)" : "transparent")};
-  cursor: ${({ $hasAssignee }) => ($hasAssignee ? "pointer" : "default")};
+  cursor: pointer;
   outline: none;
 
   &[data-highlighted],

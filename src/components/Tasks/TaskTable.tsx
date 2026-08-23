@@ -15,14 +15,13 @@ import type {
 	WorkspaceStatusType,
 } from "src/api/model"
 import { PermissionType } from "src/api/model"
-import { useDeleteTask } from "src/api/task/task"
+import { useDeleteTask, useUpdateTask } from "src/api/task/task"
 import { buildFilterOptionsMap } from "src/functions/filter-utils"
 import { type TaskArchiveEntry, useTaskColumns } from "src/hooks/useTaskColumns"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { getEmptyState } from "src/utils/empty-state-utils"
 import {
 	DISABLED_CLICK_COLUMNS,
-	HAS_ASSIGNEE_DATA_ATTR,
 	TASK_ROW_ID_SEPARATOR,
 } from "src/utils/task-table-utils"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -91,6 +90,10 @@ function TaskTable<TTask extends TaskRowDto>({
 	})
 
 	const { mutate: upsertStatus } = useUpsertAssigneeTaskStatus({
+		mutation: { onSuccess: onChangeSuccess },
+	})
+
+	const { mutate: updateTaskStatus } = useUpdateTask({
 		mutation: { onSuccess: onChangeSuccess },
 	})
 
@@ -218,17 +221,24 @@ function TaskTable<TTask extends TaskRowDto>({
 	function bulkUpdateStatus(rowKeys: string[], status: WorkspaceStatusDto) {
 		rowKeys.forEach((rowKey) => {
 			const task = tasks.find((t) => t.rowKey === rowKey)
-			if (!task || !task.assignee) {
+			if (!task) {
 				return
 			}
 
-			upsertStatus({
-				data: {
-					taskId: task.id,
-					assigneeId: task.assignee.id,
-					statusId: status.id,
-				},
-			})
+			if (task.assignee) {
+				upsertStatus({
+					data: {
+						taskId: task.id,
+						assigneeId: task.assignee.id,
+						statusId: status.id,
+					},
+				})
+			} else {
+				updateTaskStatus({
+					pathParams: { id: task.id },
+					data: { statusId: status.id },
+				})
+			}
 		})
 	}
 
@@ -418,8 +428,7 @@ const TableWrapper = styled.div`
       border-left: none;
     }
 
-    /* Status cell is interactive (opens dropdown) only when the row has an assignee */
-    &[data-column-id="status"]:has([${HAS_ASSIGNEE_DATA_ATTR}]) {
+    &[data-column-id="status"] {
       cursor: pointer;
 
       &:hover {

@@ -45,9 +45,10 @@ export const AssigneeContainer = ({
 
 	function handleUpdateAssigneeStatus(
 		taskId: number,
-		assigneeId: number,
+		assigneeId: number | undefined,
 		statusId: number,
 	) {
+		if (!assigneeId) return
 		upsertAssigneeTaskStatus({
 			data: { taskId, assigneeId, statusId },
 		})

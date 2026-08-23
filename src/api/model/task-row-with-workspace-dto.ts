@@ -35,6 +35,8 @@ export interface TaskRowWithWorkspaceDto {
 	dueDate: Date | null
 	workspaceId: number
 	/** @nullable */
+	statusId: number | null
+	/** @nullable */
 	source: SourceDto | null
 	tags: TagDto[]
 	lastMessage: MessageDto

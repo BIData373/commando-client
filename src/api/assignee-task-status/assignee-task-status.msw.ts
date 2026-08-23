@@ -51,6 +51,10 @@ export const getListAssigneeTaskStatusesResponseMock =
 					null,
 				]),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
+				statusId: faker.helpers.arrayElement([
+					faker.number.float({ fractionDigits: 2 }),
+					null,
+				]),
 				source: faker.helpers.arrayElement([
 					{
 						...{
@@ -339,6 +343,10 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		statusId: faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -614,6 +622,10 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		statusId: faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		source: faker.helpers.arrayElement([
 			{
 				...{

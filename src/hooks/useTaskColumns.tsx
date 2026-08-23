@@ -10,7 +10,7 @@ import {
 	type WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
-import { getGetTaskQueryKey } from "src/api/task/task"
+import { getGetTaskQueryKey, useUpdateTask } from "src/api/task/task"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { invalidateQueries } from "src/queryClient"
 import {
@@ -92,11 +92,24 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 		},
 	})
 
-	const handleUpdateStatus = useCallback(
-		(taskId: number, assigneeId: number, statusId: number) => {
-			upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } })
+	const { mutate: updateTask } = useUpdateTask({
+		mutation: {
+			onSuccess: ({ id }) => {
+				invalidateQueries([getGetTaskQueryKey({ id })])
+				onUpdateStatusSuccess?.()
+			},
 		},
-		[upsertAssigneeTaskStatus],
+	})
+
+	const handleUpdateStatus = useCallback(
+		(taskId: number, assigneeId: number | undefined, statusId: number) => {
+			if (assigneeId) {
+				upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } })
+			} else {
+				updateTask({ pathParams: { id: taskId }, data: { statusId } })
+			}
+		},
+		[upsertAssigneeTaskStatus, updateTask],
 	)
 
 	const columns = useMemo<ColumnDef<TTask>[]>(() => {

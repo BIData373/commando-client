@@ -194,6 +194,10 @@ export const getGetSourceResponseMock = (
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		statusId: faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -605,6 +609,10 @@ export const getAiExtractionCallbackResponseMock = (
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		statusId: faker.helpers.arrayElement([
+			faker.number.float({ fractionDigits: 2 }),
+			null,
+		]),
 		source: faker.helpers.arrayElement([
 			{
 				...{
