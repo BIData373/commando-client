@@ -15,6 +15,7 @@ import {
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
+import { DATA_COUNTER_CLASS, NAME_MAX_LENGTH } from "src/utils/const-utils"
 import { isWorkspaceExist } from "src/utils/error-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import { FormField } from "../shared/FormField"
@@ -22,9 +23,6 @@ import { Input } from "../ui/input"
 import { IconDropdown } from "./IconDropdown"
 import { SelectCommand } from "./SelectCommand"
 
-const DATA_COUNTER_CLASS = "data-char-counter"
-
-const NAME_MAX_LENGTH = 50
 const DEBOUNCE_MS = 300
 
 export function SettingsForm() {

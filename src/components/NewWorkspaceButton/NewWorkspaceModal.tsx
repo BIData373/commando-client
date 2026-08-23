@@ -1,25 +1,23 @@
 import styled from "@emotion/styled"
-import { useForm } from "@tanstack/react-form"
-import { useStore } from "@tanstack/react-store"
+import { useForm, useStore } from "@tanstack/react-form"
 import { Check } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import type { MirageUserDto } from "src/api/model"
 import {
 	getListWorkspaceRequestsQueryKey,
 	useCreateWorkspaceRequest,
 } from "src/api/workspace-requests/workspace-requests"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
-import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { invalidateQueries } from "src/queryClient"
 import { isUrlNameExist, isWorkspaceExist } from "src/utils/error-utils"
-import { concatName } from "src/utils/user-utils"
 import logoWithText from "../../assets/logo-with-text-dark.png"
 import quickPage from "../../assets/quick_page.svg"
 import requestSentImg from "../../assets/request_sent.svg"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
-import { StepOne } from "./StepOne"
-import { StepTwo } from "./StepTwo"
+import type { NewWorkspaceDetailsValues } from "./NewWorkspaceDetailsForm"
+import { NewWorkspaceDetailsForm } from "./NewWorkspaceDetailsForm"
+import { NewWorkspaceManagersForm } from "./NewWorkspaceManagersForm"
 
 enum Steps {
 	WorkspaceDetails = 1,
@@ -52,20 +50,11 @@ interface NewWorkspaceModalProps {
 export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 	const currentUser = useCurrentUser()
 	const [step, setStep] = useState<Steps>(Steps.WorkspaceDetails)
-	const [iconSearch, setIconSearch] = useState("")
-	const [step1Attempted, setStep1Attempted] = useState(false)
-	const [managers, setManagers] = useState<MirageUserDto[]>([])
-	const [managerSearch, setManagerSearch] = useState("")
-	const [selectedManagerUser, setSelectedManagerUser] =
-		useState<MirageUserDto | null>(null)
-	const [createdRequestId, setCreatedRequestId] = useState<number | null>(null)
 	const [serverErrors, setServerErrors] = useState<StepOneErrors>({})
+	const [showErrors, setShowErrors] = useState(false)
+	const [createdRequestId, setCreatedRequestId] = useState<number | null>(null)
 
 	const { mutateAsync: createWorkspaceRequest } = useCreateWorkspaceRequest()
-
-	useEffect(() => {
-		setManagers([{ upn: currentUser.upn, info: currentUser.info ?? null }])
-	}, [currentUser])
 
 	const form = useForm({
 		defaultValues: {
@@ -74,48 +63,50 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 			pikudId: undefined,
 			icon: null,
 		} as NewWorkspaceValues,
-		onSubmit: async ({ value }) => {
-			await createWorkspaceRequest(
-				{
-					data: {
-						title: value.title,
-						urlName: value.urlName,
-						pikudId: value.pikudId!,
-						icon: value.icon,
-						managers: managers.map((m) => m.upn),
-					},
-				},
-				{
-					onError: (error) => {
-						setServerErrors({
-							title: isWorkspaceExist(error)
-								? "שם סביבה זה כבר קיים"
-								: undefined,
-							urlName: isUrlNameExist(error) ? "הנתיב הזה כבר קיים" : undefined,
-						})
-						setStep1Attempted(true)
-						setStep(Steps.WorkspaceDetails)
-					},
-					onSuccess: (data) => {
-						invalidateQueries([getListWorkspaceRequestsQueryKey()])
-						setCreatedRequestId(data.id)
-						setStep(Steps.Success)
-					},
-				},
-			)
-		},
 	})
-
 	const values = useStore(form.store, (s) => s.values)
-
-	const step1Errors: StepOneErrors = {
-		title: !values.title.trim() ? "שדה חובה" : serverErrors.title,
-		urlName: !values.urlName ? "שדה חובה" : serverErrors.urlName,
-		pikudId: !values.pikudId ? "שדה חובה" : undefined,
-	}
 
 	const isCurrentStepWorkspaceDetails = step === Steps.WorkspaceDetails
 
+	const initialManagers: MirageUserDto[] = [
+		{ upn: currentUser.upn, info: currentUser.info ?? null },
+	]
+
+	function setFormValues(values: NewWorkspaceDetailsValues) {
+		form.setFieldValue("title", values.title)
+		form.setFieldValue("urlName", values.urlName)
+		form.setFieldValue("pikudId", values.pikudId)
+		form.setFieldValue("icon", values.icon)
+	}
+
+	async function handleStep2Submit(managers: MirageUserDto[]) {
+		const { title, urlName, pikudId, icon } = form.state.values
+		await createWorkspaceRequest(
+			{
+				data: {
+					title,
+					urlName,
+					pikudId: pikudId!,
+					icon,
+					managers: managers.map((m) => m.upn),
+				},
+			},
+			{
+				onError: (error) => {
+					setServerErrors({
+						title: isWorkspaceExist(error) ? "שם סביבה זה כבר קיים" : undefined,
+						urlName: isUrlNameExist(error) ? "הנתיב הזה כבר קיים" : undefined,
+					})
+					setStep(Steps.WorkspaceDetails)
+				},
+				onSuccess: (data) => {
+					invalidateQueries([getListWorkspaceRequestsQueryKey()])
+					setCreatedRequestId(data.id)
+					setStep(Steps.Success)
+				},
+			},
+		)
+	}
 	const primaryButtonAction: Record<Steps, StepButtonAction> = {
 		[Steps.WorkspaceDetails]: { label: "המשך", onClick: handleNext },
 		[Steps.AdminSettings]: { label: "שלח בקשה", onClick: form.handleSubmit },
@@ -123,88 +114,26 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 	}
 
 	const action = primaryButtonAction[step]
-
-	function handleNext() {
-		setStep1Attempted(true)
-		const isValid =
-			!step1Errors.title && !step1Errors.urlName && !step1Errors.pikudId
-		if (isValid) setStep(Steps.AdminSettings)
-	}
-
-	function handleSuccess() {
-		onClose()
-	}
-
 	function handleClear() {
 		form.reset()
-		setIconSearch("")
-		setStep1Attempted(false)
-		setManagers(managers.slice(0, 1))
-		setManagerSearch("")
-		setSelectedManagerUser(null)
+		setServerErrors({})
+		setShowErrors(false)
 	}
 
-	function handleAddManager() {
-		if (!selectedManagerUser) return
-		if (managers.some((m) => m.upn === selectedManagerUser.upn)) return
-		setManagers((prev) => [...prev, selectedManagerUser])
-		setManagerSearch("")
-		setSelectedManagerUser(null)
-	}
-
-	function handleRemoveManager(upn: string) {
-		setManagers((prev) => prev.filter((m) => m.upn !== upn))
-	}
-
-	function handleManagerSearchClear() {
-		setManagerSearch("")
-		setSelectedManagerUser(null)
+	function handleNext() {
+		if (!values.title.trim() || !values.urlName || !values.pikudId) {
+			setShowErrors(true)
+			return
+		}
+		setStep(Steps.AdminSettings)
 	}
 
 	function handleGoToStep1() {
 		setStep(Steps.WorkspaceDetails)
-		setStep1Attempted(false)
 	}
 
-	function handleTitleChange(value: string) {
-		form.setFieldValue("title", value)
-		if (serverErrors.title)
-			setServerErrors((prev) => ({ ...prev, title: undefined }))
-	}
-
-	function handleUrlNameChange(value: string) {
-		form.setFieldValue("urlName", value)
-		if (serverErrors.urlName)
-			setServerErrors((prev) => ({ ...prev, urlName: undefined }))
-	}
-
-	function handlePikudChange(value: number) {
-		form.setFieldValue("pikudId", value)
-	}
-
-	function handleIconSelect(icon: IMesibaIcon) {
-		form.setFieldValue("icon", icon.iconName)
-		setIconSearch(icon.heb_name)
-	}
-
-	function handleIconClear() {
-		form.setFieldValue("icon", null)
-		setIconSearch("")
-	}
-
-	function handleIconSearchChange(value: string) {
-		setIconSearch(value)
-	}
-
-	function handleIconSearchClear() {
-		setIconSearch("")
-	}
-
-	function handleManagerSelect(manager: MirageUserDto | null) {
-		setSelectedManagerUser(manager)
-		if (manager) {
-			setManagerSearch(concatName(manager))
-		}
+	function handleSuccess() {
+		onClose()
 	}
 
 	return (
@@ -261,32 +190,16 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 										<RequestId>מספר בקשה: {createdRequestId}</RequestId>
 									</SuccessBody>
 								) : isCurrentStepWorkspaceDetails ? (
-									<StepOne
-										title={values.title}
-										urlName={values.urlName}
-										pikudId={values.pikudId}
-										icon={values.icon}
-										iconSearch={iconSearch}
-										showErrors={step1Attempted}
-										errors={step1Errors}
-										onTitleChange={handleTitleChange}
-										onUrlNameChange={handleUrlNameChange}
-										onPikudChange={handlePikudChange}
-										onIconSelect={handleIconSelect}
-										onIconSearchChange={handleIconSearchChange}
-										onIconClear={handleIconClear}
-										onIconSearchClear={handleIconSearchClear}
+									<NewWorkspaceDetailsForm
+										serverErrors={serverErrors}
+										showErrors={showErrors}
+										initialValues={values}
+										setFormValues={setFormValues}
 									/>
 								) : (
-									<StepTwo
-										managers={managers}
-										search={managerSearch}
-										selectedUser={selectedManagerUser}
-										onSearchChange={setManagerSearch}
-										onSearchClear={handleManagerSearchClear}
-										onUserSelect={handleManagerSelect}
-										onAdd={handleAddManager}
-										onRemove={handleRemoveManager}
+									<NewWorkspaceManagersForm
+										initialManagers={initialManagers}
+										onSubmit={handleStep2Submit}
 									/>
 								)}
 							</FormBodyContent>
@@ -557,15 +470,15 @@ const ClearButton = styled.button`
   padding: 3px 15px;
   gap: 8px;
   border-radius: 6px;
-  border:  1px solid  var(--card-border);
+  border: 1px solid var(--card-border);
   cursor: pointer;
 
   :hover {
-	background: var(--button-hover);
+    background: var(--button-hover);
   }
 
   :active {
-	background: var(--button-active);
+    background: var(--button-active);
   }
 `
 

@@ -1,31 +1,56 @@
 import styled from "@emotion/styled"
+import { useState } from "react"
 import type { MirageUserDto } from "src/api/model"
+import { concatName } from "src/utils/user-utils"
 import { DropdownUsers } from "../settings/DropdownUsers"
 import { TrashButton } from "../shared/TrashButton"
 
-interface StepTwoProps {
-	managers: MirageUserDto[]
-	search: string
-	selectedUser: MirageUserDto | null
-	onSearchChange(value: string): void
-	onSearchClear(): void
-	onUserSelect(user: MirageUserDto | null): void
-	onAdd(): void
-	onRemove(upn: string): void
+interface NewWorkspaceManagersFormProps {
+	initialManagers: MirageUserDto[]
+	onSubmit(managers: MirageUserDto[]): void
 }
 
-export function StepTwo({
-	managers,
-	search,
-	selectedUser,
-	onSearchChange,
-	onSearchClear,
-	onUserSelect,
-	onAdd,
-	onRemove,
-}: StepTwoProps) {
+export function NewWorkspaceManagersForm({
+	initialManagers,
+	onSubmit,
+}: NewWorkspaceManagersFormProps) {
+	const [managers, setManagers] = useState(initialManagers)
+	const [managerSearch, setManagerSearch] = useState("")
+	const [selectedUser, setSelectedUser] = useState<MirageUserDto | null>(null)
+
+	function handleSubmit(e: React.FormEvent) {
+		e.preventDefault()
+		onSubmit(managers)
+	}
+
+	function handleSearchChange(value: string) {
+		setManagerSearch(value)
+	}
+
+	function handleSearchClear() {
+		setManagerSearch("")
+		setSelectedUser(null)
+	}
+
+	function handleUserSelect(user: MirageUserDto | null) {
+		setSelectedUser(user)
+		if (user) setManagerSearch(concatName(user))
+	}
+
+	function handleAdd() {
+		if (!selectedUser) return
+		if (managers.some((m) => m.upn === selectedUser.upn)) return
+		setManagers((prev) => [...prev, selectedUser])
+		setManagerSearch("")
+		setSelectedUser(null)
+	}
+
+	function handleRemove(upn: string) {
+		setManagers((prev) => prev.filter((m) => m.upn !== upn))
+	}
+
 	return (
-		<Root>
+		<Root id="step-two-form" onSubmit={handleSubmit}>
 			<Section>
 				<LabelRow>
 					<Required>*</Required>
@@ -36,11 +61,11 @@ export function StepTwo({
 					ההנחיות בסביבה
 				</Description>
 				<DropdownUsers
-					value={search}
-					onChange={onSearchChange}
-					onSelect={onUserSelect}
-					onClear={onSearchClear}
-					onAdd={onAdd}
+					value={managerSearch}
+					onChange={handleSearchChange}
+					onSelect={handleUserSelect}
+					onClear={handleSearchClear}
+					onAdd={handleAdd}
 					selectedUser={selectedUser}
 					showAddButton
 					placeholder="חפש שם/ תפקיד/ מספר אישי"
@@ -62,7 +87,7 @@ export function StepTwo({
 							<RoleLabel>ניהול</RoleLabel>
 							<TrashButton
 								visible={!isCreator}
-								onClick={() => onRemove(manager.upn)}
+								onClick={() => handleRemove(manager.upn)}
 								size={22}
 							/>
 						</ManagerRow>
@@ -73,7 +98,7 @@ export function StepTwo({
 	)
 }
 
-const Root = styled.div`
+const Root = styled.form`
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -96,7 +121,7 @@ const LabelRow = styled.div`
 `
 
 const Required = styled.span`
-  color: var(--color-error, #ff4d4f);
+  color: var(--Error-color-error);
   font-size: var(--fs-base);
 `
 
@@ -126,7 +151,7 @@ const ManagerRow = styled.div`
   align-items: center;
   gap: 8px;
   padding: 12px;
-  border-block-end: 1px solid rgba(0, 0, 0, 0.06);
+  border-block-end: 1px solid var(--button-hover);
 `
 
 const ManagerInfo = styled.div`
@@ -169,6 +194,6 @@ const ManagerSubtext = styled.span`
 
 const RoleLabel = styled.span`
   font-size: var(--fs-base);
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   flex-shrink: 0;
 `

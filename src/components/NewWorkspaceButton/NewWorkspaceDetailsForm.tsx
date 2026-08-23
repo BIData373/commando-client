@@ -1,6 +1,9 @@
 import styled from "@emotion/styled"
+import { useForm, useStore } from "@tanstack/react-form"
 import { CircleHelp, X } from "lucide-react"
+import { useState } from "react"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
+import { DATA_COUNTER_CLASS, NAME_MAX_LENGTH } from "src/utils/const-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import { IconDropdown } from "../settings/IconDropdown"
 import { SelectCommand } from "../settings/SelectCommand"
@@ -13,55 +16,80 @@ import {
 	TooltipTrigger,
 } from "../ui/tooltip"
 
-const NAME_MAX_LENGTH = 50
-const DATA_COUNTER_CLASS = "data-char-counter"
-
-interface StepOneErrors {
+interface NewWorkspaceDetailsErrors {
 	title?: string
 	urlName?: string
 	pikudId?: string
 }
 
-interface StepOneProps {
+export interface NewWorkspaceDetailsValues {
 	title: string
 	urlName: string
 	pikudId: number | undefined
 	icon: string | null
-	iconSearch: string
-	showErrors: boolean
-	errors: StepOneErrors
-	onTitleChange(value: string): void
-	onUrlNameChange(value: string): void
-	onPikudChange(value: number): void
-	onIconSelect(icon: IMesibaIcon): void
-	onIconSearchChange(value: string): void
-	onIconClear(): void
-	onIconSearchClear(): void
 }
 
-export function StepOne({
-	title,
-	urlName,
-	pikudId,
-	icon,
-	iconSearch,
+interface NewWorkspaceDetailsProps {
+	serverErrors: NewWorkspaceDetailsErrors
+	showErrors: boolean
+	initialValues: NewWorkspaceDetailsValues
+	setFormValues(values: NewWorkspaceDetailsValues): void
+}
+
+export function NewWorkspaceDetailsForm({
+	serverErrors,
 	showErrors,
-	errors,
-	onTitleChange,
-	onUrlNameChange,
-	onPikudChange,
-	onIconSelect,
-	onIconSearchChange,
-	onIconClear,
-	onIconSearchClear,
-}: StepOneProps) {
+	initialValues,
+	setFormValues,
+}: NewWorkspaceDetailsProps) {
+	const [iconSearch, setIconSearch] = useState(initialValues.icon ?? "")
+
+	const form = useForm({
+		defaultValues: initialValues,
+	})
+	const values = useStore(form.store, (s) => s.values)
+
+	const errors: NewWorkspaceDetailsErrors = {
+		title: !values.title.trim() ? "שדה חובה" : serverErrors.title,
+		urlName: !values.urlName ? "שדה חובה" : serverErrors.urlName,
+		pikudId: !values.pikudId ? "שדה חובה" : undefined,
+	}
+
 	function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
-		onTitleChange(e.target.value.slice(0, NAME_MAX_LENGTH))
+		const title = e.target.value.slice(0, NAME_MAX_LENGTH)
+		form.setFieldValue("title", title)
+		setFormValues({ ...values, title })
 	}
 
 	function handleUrlNameChange(e: React.ChangeEvent<HTMLInputElement>) {
-		const sanitized = e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, "")
-		onUrlNameChange(sanitized)
+		const urlName = e.target.value.replace(/[^a-zA-Z0-9_]/g, "")
+		form.setFieldValue("urlName", urlName)
+		setFormValues({ ...values, urlName })
+	}
+
+	function handlePikudChange(value: number) {
+		form.setFieldValue("pikudId", value)
+		setFormValues({ ...values, pikudId: value })
+	}
+
+	function handleIconSelect(icon: IMesibaIcon) {
+		form.setFieldValue("icon", icon.iconName)
+		setIconSearch(icon.heb_name)
+		setFormValues({ ...values, icon: icon.iconName })
+	}
+
+	function handleIconClear() {
+		form.setFieldValue("icon", null)
+		setIconSearch("")
+		setFormValues({ ...values, icon: null })
+	}
+
+	function handleIconSearchChange(value: string) {
+		setIconSearch(value)
+	}
+
+	function handleIconSearchClear() {
+		setIconSearch("")
 	}
 
 	function handleImageNotFound(e: React.SyntheticEvent<HTMLImageElement>) {
@@ -78,16 +106,16 @@ export function StepOne({
 			>
 				<InputWrapper>
 					<StyledInput
-						value={title}
+						value={values.title}
 						onChange={handleTitleChange}
-						placeholder="למשל ‘לשכת אלוף פד”ם’"
+						placeholder="למשל 'לשכת אלוף פד&quot;ם'"
 						maxLength={NAME_MAX_LENGTH}
 					/>
 					<CharCounter
-						$atLimit={title.length >= NAME_MAX_LENGTH}
+						$atLimit={values.title.length >= NAME_MAX_LENGTH}
 						className={DATA_COUNTER_CLASS}
 					>
-						{title.length}/{NAME_MAX_LENGTH}
+						{values.title.length}/{NAME_MAX_LENGTH}
 					</CharCounter>
 				</InputWrapper>
 			</FormField>
@@ -105,17 +133,17 @@ export function StepOne({
 							</TooltipTrigger>
 							<TooltipContent side="top">
 								<p>
-									שם זה ישמש כזיהוי ייחודי בכתובת ה-URL. השתמש באותיות גדולות
-									ומספרים בלבד, ללא רווחים.
+									שם זה ישמש כזיהוי ייחודי בכתובת ה-URL. השתמש באותיות ומספרים
+									בלבד, ללא רווחים.
 								</p>
 							</TooltipContent>
 						</Tooltip>
 					</TooltipProvider>
 				</UrlNameLabelRow>
 				<StyledInput
-					value={urlName}
+					value={values.urlName}
 					onChange={handleUrlNameChange}
-					placeholder="למשל ”LISHKAT_PADAM”"
+					placeholder='למשל "lishkat_padam"'
 				/>
 				{showErrors && errors.urlName && (
 					<ErrorText>{errors.urlName}</ErrorText>
@@ -128,28 +156,28 @@ export function StepOne({
 				error={showErrors ? errors.pikudId : undefined}
 			>
 				<SelectCommand
-					value={pikudId}
-					onChange={onPikudChange}
-					placeHolder="חפש יחידה"
+					value={values.pikudId}
+					onChange={handlePikudChange}
+					placeholder="חפש יחידה"
 				/>
 			</FormField>
 
 			<FormField label="סמל">
 				<IconDropdown
 					value={iconSearch}
-					onChange={onIconSearchChange}
-					onClear={onIconSearchClear}
-					onSelect={onIconSelect}
-					placeHolder="חפש יחידה"
+					onChange={handleIconSearchChange}
+					onClear={handleIconSearchClear}
+					onSelect={handleIconSelect}
+					placeholder="חפש יחידה"
 				/>
 				<IconPreview>
-					{icon ? (
+					{values.icon ? (
 						<>
-							<IconClearButton type="button" onClick={onIconClear}>
+							<IconClearButton type="button" onClick={handleIconClear}>
 								<X size={16} />
 							</IconClearButton>
 							<IconImg
-								src={formatMesibaIcon(icon)}
+								src={formatMesibaIcon(values.icon)}
 								onError={handleImageNotFound}
 							/>
 						</>
@@ -240,7 +268,7 @@ const InfoButton = styled.button`
 
 const ErrorText = styled.span`
   font-size: 13px;
-  color: var(--color-error, #ef4444);
+  color: var(--Error-color-error);
   line-height: 18px;
 `
 
@@ -252,7 +280,7 @@ const IconPreview = styled.div`
   border: 1px dashed var(--card-border);
   border-radius: 6px;
   padding: 36px 10px;
-  gap: 4px;;
+  gap: 4px;
   height: 138px;
   width: 100%;
 `
@@ -274,7 +302,6 @@ const IconPlaceholderMain = styled.span`
   color: var(--sea-ink-soft);
   font-weight: 600;
   opacity: 0.6;
-
 `
 
 const IconPlaceholderSub = styled.span`
