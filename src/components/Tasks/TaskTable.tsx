@@ -389,7 +389,7 @@ const TableWrapper = styled.div`
     line-height: 24px;
     color: var(--text-color);
     height: 48px;
-    white-space: nowrap;
+    white-space: normal;
     background: var(--background);
     border-right: 0.5px solid var(--Background-color-bg-text-active);
     box-shadow: inset 0 -0.5px 0 0 var(--Background-color-bg-text-active);

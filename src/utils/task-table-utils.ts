@@ -3,7 +3,7 @@ import type {
 	ColumnDef,
 	FilterFn,
 } from "@tanstack/react-table"
-import { concat, intersection, map, uniq } from "lodash"
+import { concat, intersection, map, uniq, zipObject } from "lodash"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
 
 export interface TaskColumnMeta {
@@ -11,17 +11,50 @@ export interface TaskColumnMeta {
 	label: string
 }
 
+function toColumnsMeta<
+	T extends Partial<Record<keyof TaskRowWithWorkspaceDto, string>>,
+>(labels: T): { id: keyof T; label: string }[] {
+	return map(labels, (label, id) => ({ id, label })) as {
+		id: keyof T
+		label: string
+	}[]
+}
+
+const CONFIGURABLE_COLUMNS_META = toColumnsMeta({
+	id: 'מס"ד',
+	title: "ההנחיה",
+	status: "סטטוס",
+	assignee: "אחראי",
+	deadlineType: 'תג"ב',
+	source: "מקור הנחיה",
+	lastMessage: "תגובות",
+	tags: "נושא",
+	createdAt: "תאריך יצירה",
+	updatedAt: "עודכן ב",
+})
+
+export const EXTRA_COLUMNS_META = toColumnsMeta({
+	workspace: "מפקד מנחה",
+	archivedAt: "הועבר לארכיון",
+})
+
+export const [WORKSPACE_COLUMN_META, ARCHIVED_AT_COLUMN_META] =
+	EXTRA_COLUMNS_META
+
+const TASK_COLUMN_IDS = [
+	...CONFIGURABLE_COLUMNS_META.map((c) => c.id),
+	...EXTRA_COLUMNS_META.map((c) => c.id),
+	"select",
+	"actions",
+] as const
+
+export const TASK_COLUMN_ID = zipObject(TASK_COLUMN_IDS, TASK_COLUMN_IDS) as {
+	[K in (typeof TASK_COLUMN_IDS)[number]]: K
+}
+
 export const TASK_COLUMNS_META: TaskColumnMeta[] = [
-	{ id: "id", label: 'מס"ד' },
-	{ id: "title", label: "ההנחיה" },
-	{ id: "status", label: "סטטוס" },
-	{ id: "assignee", label: "אחראי" },
-	{ id: "deadlineType", label: 'תג"ב' },
-	{ id: "source", label: "מקור הנחיה" },
-	{ id: "lastMessage", label: "תגובות" },
-	{ id: "tags", label: "נושא" },
-	{ id: "createdAt", label: "תאריך יצירה" },
-	{ id: "updatedAt", label: "עודכן ב" },
+	...CONFIGURABLE_COLUMNS_META,
+	...EXTRA_COLUMNS_META,
 ]
 
 export const COLUMN_LABELS = Object.fromEntries(
@@ -42,24 +75,24 @@ export const TASK_COLUMN_DEFINITIONS: Partial<
 		Partial<AccessorColumnDef<Partial<TaskRowDto>>>
 	>
 > = {
-	status: {
+	[TASK_COLUMN_ID.status]: {
 		accessorFn: (row) => row.status?.type,
 		sortingFn: (rowA, rowB) =>
 			(rowA.original.status?.id ?? 0) - (rowB.original.status?.id ?? 0),
 		filterFn: multiSelectColumnFilter,
 	},
-	assignee: {
+	[TASK_COLUMN_ID.assignee]: {
 		sortingFn: "text",
 		accessorFn: (row) => row.assignee?.name,
 		filterFn: multiSelectColumnFilter,
 	},
-	tags: {
+	[TASK_COLUMN_ID.tags]: {
 		accessorFn: (row) =>
 			uniq(map(concat(row.tags, row.source?.tags ?? []), "name")),
 		filterFn: "arrIncludesSome",
 	},
-	deadlineType: {
-		accessorKey: "deadlineType",
+	[TASK_COLUMN_ID.deadlineType]: {
+		accessorKey: TASK_COLUMN_ID.deadlineType,
 		sortingFn: (
 			{ original: { dueDate: dueDateA } },
 			{ original: { dueDate: dueDateB } },
@@ -70,13 +103,13 @@ export const TASK_COLUMN_DEFINITIONS: Partial<
 		},
 		filterFn: multiSelectColumnFilter,
 	},
-	source: {
+	[TASK_COLUMN_ID.source]: {
 		sortingFn: "text",
 		accessorFn: (row) => row.source?.name,
 		filterFn: multiSelectColumnFilter,
 	},
-	createdAt: { sortingFn: "datetime" },
-	updatedAt: { sortingFn: "datetime" },
+	[TASK_COLUMN_ID.createdAt]: { sortingFn: "datetime" },
+	[TASK_COLUMN_ID.updatedAt]: { sortingFn: "datetime" },
 }
 
 export function buildCountingColumns<TTask extends TaskRowDto>(
@@ -91,8 +124,8 @@ export function buildCountingColumns<TTask extends TaskRowDto>(
 	] as ColumnDef<TTask>[]
 }
 
-export const CONFIGURABLE_COLUMNS = TASK_COLUMNS_META.filter(
-	(c) => c.id !== "id",
+export const CONFIGURABLE_COLUMNS = CONFIGURABLE_COLUMNS_META.filter(
+	(c) => c.id !== TASK_COLUMN_ID.id,
 )
 
 export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id)
@@ -125,10 +158,10 @@ export function toHiddenColumns<TId extends string>(
 }
 
 export const DISABLED_CLICK_COLUMNS = new Set([
-	"assignee",
-	"status",
-	"actions",
-	"select",
+	TASK_COLUMN_ID.assignee,
+	TASK_COLUMN_ID.status,
+	TASK_COLUMN_ID.actions,
+	TASK_COLUMN_ID.select,
 ])
 
 // FIX Remove?
