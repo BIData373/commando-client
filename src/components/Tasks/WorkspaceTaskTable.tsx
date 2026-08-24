@@ -54,7 +54,7 @@ function WorkspaceTaskTable({
 	view = TasksView.TABLE,
 	statusFilter = [],
 	deadlineTypeFilter = [],
-	isArchived,
+	isArchived = false,
 	extraColumns,
 	extraColumnsMeta,
 	onOpenTask,
