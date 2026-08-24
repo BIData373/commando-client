@@ -7,12 +7,14 @@ import { useMemo, useState } from "react"
 import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
 import {
 	type TaskRowWithWorkspaceDto,
+	type UserDto,
 	WorkspaceStatusType,
 } from "src/api/model"
 import {
 	getListPersonalTaskRowsQueryKey,
 	useListPersonalTaskRows,
 } from "src/api/task/task"
+import { useListUsers } from "src/api/user/user"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
@@ -63,6 +65,10 @@ function getPersonalTaskSearchValues(
 	return [task.workspace?.title]
 }
 
+function getUserDisplayName(user?: UserDto): string | undefined {
+	return user?.info?.name ?? user?.info?.displayName ?? user?.upn
+}
+
 interface PersonalTaskTableProps {
 	isArchived?: boolean
 	extraColumnsMeta?: TaskColumnMeta[]
@@ -92,6 +98,12 @@ function PersonalTaskTable({
 		queryKey,
 	} = useListPersonalTaskRows({ isArchived })
 
+	const { data: users = [] } = useListUsers()
+	const usersById = useMemo(
+		() => new Map(users.map((user) => [user.id, user])),
+		[users],
+	)
+
 	const { mutate: toggleArchive } = useToggleUserTaskArchive({
 		mutation: { onSuccess: handleChangeSuccess },
 	})
@@ -113,11 +125,17 @@ function PersonalTaskTable({
 			...WORKSPACE_COLUMN,
 			cell: ({
 				row: {
-					original: { workspace },
+					original: { workspace, createdBy },
 				},
-			}) => <WorkspaceCell workspace={workspace} searchQuery={searchQuery} />,
+			}) => (
+				<WorkspaceCell
+					workspace={workspace}
+					searchQuery={searchQuery}
+					creatorName={getUserDisplayName(usersById.get(createdBy))}
+				/>
+			),
 		}),
-		[searchQuery],
+		[searchQuery, usersById],
 	)
 
 	const filteredTaskRows = useMemo(

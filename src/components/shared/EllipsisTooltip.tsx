@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 interface EllipsisTooltipProps {
 	children: ReactNode
 	tooltip: string
+	extra?: string
 	className?: string
 	dir?: "auto" | "ltr" | "rtl"
 	side?: "top" | "right" | "bottom" | "left"
@@ -14,6 +15,7 @@ interface EllipsisTooltipProps {
 export default function EllipsisTooltip({
 	children,
 	tooltip,
+	extra,
 	className,
 	dir,
 	side,
@@ -23,6 +25,8 @@ export default function EllipsisTooltip({
 		includeDescendants: true,
 	})
 
+	const showTooltip = isOverflowing || !!extra
+
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
@@ -31,9 +35,12 @@ export default function EllipsisTooltip({
 				</Text>
 			</TooltipTrigger>
 
-			{isOverflowing && (
+			{showTooltip && (
 				<TooltipContent side={side}>
-					<TooltipTextWrap>{tooltip}</TooltipTextWrap>
+					<TooltipTextWrap>
+						{isOverflowing && <div>{tooltip}</div>}
+						{extra && <div>{extra}</div>}
+					</TooltipTextWrap>
 				</TooltipContent>
 			)}
 		</Tooltip>
