@@ -2,9 +2,10 @@ import styled from "@emotion/styled"
 import { useForm, useStore } from "@tanstack/react-form"
 import { CircleHelp, X } from "lucide-react"
 import { useState } from "react"
+import type { CreateWorkspaceRequestDto } from "src/api/model"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
-import { DATA_COUNTER_CLASS, NAME_MAX_LENGTH } from "src/utils/const-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
+import { DATA_COUNTER_CLASS, NAME_MAX_LENGTH } from "src/utils/workspace-utils"
 import { IconDropdown } from "../settings/IconDropdown"
 import { SelectCommand } from "../settings/SelectCommand"
 import { FormField } from "../shared/FormField"
@@ -15,6 +16,9 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip"
+import { StepFooter } from "./StepFooter"
+
+const REQUIRED_ERROR_MESSAGE = "שדה חובה"
 
 interface NewWorkspaceDetailsErrors {
 	title?: string
@@ -22,18 +26,13 @@ interface NewWorkspaceDetailsErrors {
 	pikudId?: string
 }
 
-export interface NewWorkspaceDetailsValues {
-	title: string
-	urlName: string
-	pikudId: number | undefined
-	icon: string | null
-}
-
 interface NewWorkspaceDetailsProps {
 	serverErrors: NewWorkspaceDetailsErrors
 	showErrors: boolean
-	initialValues: NewWorkspaceDetailsValues
-	setFormValues(values: NewWorkspaceDetailsValues): void
+	initialValues: CreateWorkspaceRequestDto
+	setFormValues(values: CreateWorkspaceRequestDto): void
+	onNext(): void
+	onClear(): void
 }
 
 export function NewWorkspaceDetailsForm({
@@ -41,6 +40,8 @@ export function NewWorkspaceDetailsForm({
 	showErrors,
 	initialValues,
 	setFormValues,
+	onNext,
+	onClear,
 }: NewWorkspaceDetailsProps) {
 	const [iconSearch, setIconSearch] = useState(initialValues.icon ?? "")
 
@@ -50,9 +51,9 @@ export function NewWorkspaceDetailsForm({
 	const values = useStore(form.store, (s) => s.values)
 
 	const errors: NewWorkspaceDetailsErrors = {
-		title: !values.title.trim() ? "שדה חובה" : serverErrors.title,
-		urlName: !values.urlName ? "שדה חובה" : serverErrors.urlName,
-		pikudId: !values.pikudId ? "שדה חובה" : undefined,
+		title: !values.title.trim() ? REQUIRED_ERROR_MESSAGE : serverErrors.title,
+		urlName: !values.urlName ? REQUIRED_ERROR_MESSAGE : serverErrors.urlName,
+		pikudId: !values.pikudId ? REQUIRED_ERROR_MESSAGE : undefined,
 	}
 
 	function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -191,6 +192,13 @@ export function NewWorkspaceDetailsForm({
 					)}
 				</IconPreview>
 			</FormField>
+
+			<StepFooter
+				primaryLabel="המשך"
+				onPrimary={onNext}
+				secondaryLabel="נקה טופס"
+				onSecondary={onClear}
+			/>
 		</Root>
 	)
 }
@@ -198,6 +206,8 @@ export function NewWorkspaceDetailsForm({
 const Root = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
   gap: 16px;
   width: 100%;
 `

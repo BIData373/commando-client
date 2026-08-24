@@ -1,12 +1,13 @@
 import styled from "@emotion/styled"
 import { useForm, useStore } from "@tanstack/react-form"
 import { Check } from "lucide-react"
-import { useState } from "react"
-import type { MirageUserDto } from "src/api/model"
+import React, { type ReactNode, useEffect, useMemo, useState } from "react"
+import type { CreateWorkspaceRequestDto, MirageUserDto } from "src/api/model"
 import {
 	getListWorkspaceRequestsQueryKey,
 	useCreateWorkspaceRequest,
 } from "src/api/workspace-requests/workspace-requests"
+import { Dialog } from "src/components/ui/dialog"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { invalidateQueries } from "src/queryClient"
 import { isUrlNameExist, isWorkspaceExist } from "src/utils/error-utils"
@@ -15,32 +16,30 @@ import quickPage from "../../assets/quick_page.svg"
 import requestSentImg from "../../assets/request_sent.svg"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
-import type { NewWorkspaceDetailsValues } from "./NewWorkspaceDetailsForm"
 import { NewWorkspaceDetailsForm } from "./NewWorkspaceDetailsForm"
 import { NewWorkspaceManagersForm } from "./NewWorkspaceManagersForm"
+import { StepFooter } from "./StepFooter"
 
 enum Steps {
-	WorkspaceDetails = 1,
-	AdminSettings = 2,
+	Details = 1,
+	Managers = 2,
 	Success = 3,
 }
 
-interface NewWorkspaceValues {
-	title: string
-	urlName: string
-	pikudId: number | undefined
-	icon: string | null
+interface StepConfig {
+	key: Steps
+	label: string
 }
+
+const VISIBLE_STEPS: StepConfig[] = [
+	{ key: Steps.Details, label: "פרטי הסביבה" },
+	{ key: Steps.Managers, label: "הגדרות מנהלים" },
+]
 
 interface StepOneErrors {
 	title?: string
 	urlName?: string
 	pikudId?: string
-}
-
-interface StepButtonAction {
-	label: string
-	onClick(): void
 }
 
 interface NewWorkspaceModalProps {
@@ -49,30 +48,29 @@ interface NewWorkspaceModalProps {
 
 export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 	const currentUser = useCurrentUser()
-	const [step, setStep] = useState<Steps>(Steps.WorkspaceDetails)
+	const [step, setStep] = useState<Steps>(Steps.Details)
 	const [serverErrors, setServerErrors] = useState<StepOneErrors>({})
 	const [showErrors, setShowErrors] = useState(false)
 	const [createdRequestId, setCreatedRequestId] = useState<number | null>(null)
+	const [managers, setManagers] = useState<MirageUserDto[]>([])
 
 	const { mutateAsync: createWorkspaceRequest } = useCreateWorkspaceRequest()
+
+	useEffect(() => {
+		setManagers([{ upn: currentUser.upn, info: currentUser.info ?? null }])
+	}, [currentUser])
 
 	const form = useForm({
 		defaultValues: {
 			title: "",
 			urlName: "",
-			pikudId: undefined,
+			pikudId: -1,
 			icon: null,
-		} as NewWorkspaceValues,
+		} as CreateWorkspaceRequestDto,
 	})
 	const values = useStore(form.store, (s) => s.values)
 
-	const isCurrentStepWorkspaceDetails = step === Steps.WorkspaceDetails
-
-	const initialManagers: MirageUserDto[] = [
-		{ upn: currentUser.upn, info: currentUser.info ?? null },
-	]
-
-	function setFormValues(values: NewWorkspaceDetailsValues) {
+	function setFormValues(values: CreateWorkspaceRequestDto) {
 		form.setFieldValue("title", values.title)
 		form.setFieldValue("urlName", values.urlName)
 		form.setFieldValue("pikudId", values.pikudId)
@@ -86,7 +84,7 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 				data: {
 					title,
 					urlName,
-					pikudId: pikudId!,
+					pikudId,
 					icon,
 					managers: managers.map((m) => m.upn),
 				},
@@ -97,7 +95,7 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 						title: isWorkspaceExist(error) ? "שם סביבה זה כבר קיים" : undefined,
 						urlName: isUrlNameExist(error) ? "הנתיב הזה כבר קיים" : undefined,
 					})
-					setStep(Steps.WorkspaceDetails)
+					setStep(Steps.Details)
 				},
 				onSuccess: (data) => {
 					invalidateQueries([getListWorkspaceRequestsQueryKey()])
@@ -107,149 +105,117 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 			},
 		)
 	}
-	const primaryButtonAction: Record<Steps, StepButtonAction> = {
-		[Steps.WorkspaceDetails]: { label: "המשך", onClick: handleNext },
-		[Steps.AdminSettings]: { label: "שלח בקשה", onClick: form.handleSubmit },
-		[Steps.Success]: { label: "מעולה, תודה", onClick: handleSuccess },
-	}
-
-	const action = primaryButtonAction[step]
 	function handleClear() {
 		form.reset()
 		setServerErrors({})
 		setShowErrors(false)
+		setManagers(managers.slice(0, 1))
 	}
 
 	function handleNext() {
-		if (!values.title.trim() || !values.urlName || !values.pikudId) {
+		if (!values.title.trim() || !values.urlName || values.pikudId <= 0) {
 			setShowErrors(true)
 			return
 		}
-		setStep(Steps.AdminSettings)
+		setStep(Steps.Managers)
 	}
 
 	function handleGoToStep1() {
-		setStep(Steps.WorkspaceDetails)
+		setStep(Steps.Details)
 	}
 
 	function handleSuccess() {
 		onClose()
 	}
 
+	const stepContent: Record<Steps, ReactNode> = {
+		[Steps.Details]: (
+			<NewWorkspaceDetailsForm
+				serverErrors={serverErrors}
+				showErrors={showErrors}
+				initialValues={values}
+				setFormValues={setFormValues}
+				onNext={handleNext}
+				onClear={handleClear}
+			/>
+		),
+		[Steps.Managers]: (
+			<NewWorkspaceManagersForm
+				initialManagers={managers}
+				onBack={handleGoToStep1}
+				onSubmit={handleStep2Submit}
+				onManagersChange={setManagers}
+			/>
+		),
+		[Steps.Success]: (
+			<SuccessBody>
+				<SuccessTitle>הבקשה נשלחה בהצלחה</SuccessTitle>
+				<SuccessSubtitle>נעדכן בצ'אט המבצעי ברגע שהיא תאושר</SuccessSubtitle>
+				<RequestId>מספר בקשה: {createdRequestId}</RequestId>
+				<SuccessImg src={requestSentImg} />
+			</SuccessBody>
+		),
+	}
+
+	const stepFooter: Partial<Record<Steps, ReactNode>> = {
+		[Steps.Success]: (
+			<StepFooter primaryLabel="מעולה, תודה" onPrimary={handleSuccess} />
+		),
+	}
+
 	return (
-		<ModalContent headerPadding={0} showCloseButton={false}>
-			<Panel>
-				<FormPanel>
-					<FormPanelInner>
-						<ModalTitle>בקשה לפתיחת סביבה חדשה</ModalTitle>
+		<Dialog open onOpenChange={onClose}>
+			<ModalContent headerPadding={0} showCloseButton={false}>
+				<Panel>
+					<FormPanel>
+						<FormPanelInner>
+							<ModalTitle>בקשה לפתיחת סביבה חדשה</ModalTitle>
 
-						<StepsRow>
-							<StepItem>
-								<StepLabel $active>פרטי הסביבה</StepLabel>
-								{!isCurrentStepWorkspaceDetails ? (
-									<StepCircleCompleted
-										onClick={
-											step === Steps.AdminSettings ? handleGoToStep1 : undefined
-										}
-										$clickable={step === Steps.AdminSettings}
-									>
-										<Check size={12} />
-									</StepCircleCompleted>
-								) : (
-									<StepCircleActive>1</StepCircleActive>
-								)}
-							</StepItem>
+							<StepsRow>
+								{VISIBLE_STEPS.map(({ key, label }, i) => (
+									<React.Fragment key={key}>
+										<StepItem>
+											<StepLabel $active={step >= key}>{label}</StepLabel>
+											{step > key ? (
+												<StepCircleCompleted>
+													<Check size={12} />
+												</StepCircleCompleted>
+											) : (
+												<StepCircle $active={step === key}>{key}</StepCircle>
+											)}
+										</StepItem>
+										{i < VISIBLE_STEPS.length - 1 && (
+											<StepTail $completed={step > key} />
+										)}
+									</React.Fragment>
+								))}
+							</StepsRow>
 
-							<StepTail $completed={!isCurrentStepWorkspaceDetails} />
+							<FormBody>
+								<FormBodyContent>{stepContent[step]}</FormBodyContent>
+							</FormBody>
 
-							<StepItem>
-								<StepLabel $active={!isCurrentStepWorkspaceDetails}>
-									הגדרות מנהלים
-								</StepLabel>
-								{step === Steps.Success ? (
-									<StepCircleCompleted $clickable={false}>
-										<Check size={12} />
-									</StepCircleCompleted>
-								) : (
-									<StepCircle $active={step === Steps.AdminSettings}>
-										2
-									</StepCircle>
-								)}
-							</StepItem>
-						</StepsRow>
+							{stepFooter[step]}
+						</FormPanelInner>
+					</FormPanel>
 
-						<FormBody>
-							<FormBodyContent>
-								{step === Steps.Success ? (
-									<SuccessBody>
-										<SuccessImg src={requestSentImg} alt="" />
-										<SuccessTitle>הבקשה נשלחה בהצלחה</SuccessTitle>
-										<SuccessSubtitle>
-											נעדכן בצ'אט המבצעי ברגע שהיא תאושר
-										</SuccessSubtitle>
-										<RequestId>מספר בקשה: {createdRequestId}</RequestId>
-									</SuccessBody>
-								) : isCurrentStepWorkspaceDetails ? (
-									<NewWorkspaceDetailsForm
-										serverErrors={serverErrors}
-										showErrors={showErrors}
-										initialValues={values}
-										setFormValues={setFormValues}
-									/>
-								) : (
-									<NewWorkspaceManagersForm
-										initialManagers={initialManagers}
-										onSubmit={handleStep2Submit}
-									/>
-								)}
-							</FormBodyContent>
-						</FormBody>
+					<BrandingPanel>
+						<LogoHeader>
+							<LogoImg src={logoWithText} />
+							<BrandingSubtitle>מערכת לניהול הנחיות</BrandingSubtitle>
+						</LogoHeader>
+						<ScreenshotGroup>
+							<Rectangle />
+							<ScreenshotImg src={quickPage} />
+						</ScreenshotGroup>
 
-						<BottomSection>
-							{step === Steps.AdminSettings && (
-								<StepTwoFootnote>
-									*ניתן לשנות או לעדכן את מנהלי הסביבה בכל עת דרך הגדרות הסביבה
-								</StepTwoFootnote>
-							)}
-							<Footer>
-								{step !== Steps.Success && (
-									<ClearButton
-										onClick={
-											isCurrentStepWorkspaceDetails
-												? handleClear
-												: handleGoToStep1
-										}
-									>
-										{isCurrentStepWorkspaceDetails ? "נקה טופס" : "חזור"}
-									</ClearButton>
-								)}
-								<PrimaryButton
-									height={30}
-									title={action.label}
-									type="button"
-									onClick={action.onClick}
-								/>
-							</Footer>
-						</BottomSection>
-					</FormPanelInner>
-				</FormPanel>
-
-				<BrandingPanel>
-					<LogoHeader>
-						<LogoImg src={logoWithText} />
-						<BrandingSubtitle>מערכת לניהול הנחיות</BrandingSubtitle>
-					</LogoHeader>
-					<ScreenshotGroup>
-						<Rectangle />
-						<ScreenshotImg src={quickPage} />
-					</ScreenshotGroup>
-
-					<CloseButton type="button" onClick={onClose}>
-						✕
-					</CloseButton>
-				</BrandingPanel>
-			</Panel>
-		</ModalContent>
+						<CloseButton type="button" onClick={onClose}>
+							✕
+						</CloseButton>
+					</BrandingPanel>
+				</Panel>
+			</ModalContent>
+		</Dialog>
 	)
 }
 
@@ -397,17 +363,10 @@ const stepCircleBase = `
   flex-shrink: 0;
 `
 
-const StepCircleActive = styled.div`
-  ${stepCircleBase}
-  background: var(--Active-Step);
-  color: var(--background);
-`
-
-const StepCircleCompleted = styled.div<{ $clickable: boolean }>`
+const StepCircleCompleted = styled.div`
   ${stepCircleBase}
   background: #e2e2ff;
   color: var(--Active-Step);
-  cursor: ${({ $clickable }) => ($clickable ? "pointer" : "default")};
 `
 
 const StepCircle = styled.div<{ $active: boolean }>`

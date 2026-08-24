@@ -4,22 +4,26 @@ import type { MirageUserDto } from "src/api/model"
 import { concatName } from "src/utils/user-utils"
 import { DropdownUsers } from "../settings/DropdownUsers"
 import { TrashButton } from "../shared/TrashButton"
+import { StepFooter } from "./StepFooter"
 
 interface NewWorkspaceManagersFormProps {
 	initialManagers: MirageUserDto[]
+	onBack(): void
 	onSubmit(managers: MirageUserDto[]): void
+	onManagersChange(managers: MirageUserDto[]): void
 }
 
 export function NewWorkspaceManagersForm({
 	initialManagers,
+	onBack,
 	onSubmit,
+	onManagersChange,
 }: NewWorkspaceManagersFormProps) {
 	const [managers, setManagers] = useState(initialManagers)
 	const [managerSearch, setManagerSearch] = useState("")
 	const [selectedUser, setSelectedUser] = useState<MirageUserDto | null>(null)
 
-	function handleSubmit(e: React.FormEvent) {
-		e.preventDefault()
+	function handleSubmitClick() {
 		onSubmit(managers)
 	}
 
@@ -40,17 +44,21 @@ export function NewWorkspaceManagersForm({
 	function handleAdd() {
 		if (!selectedUser) return
 		if (managers.some((m) => m.upn === selectedUser.upn)) return
-		setManagers((prev) => [...prev, selectedUser])
+		const updated = [...managers, selectedUser]
+		setManagers(updated)
+		onManagersChange(updated)
 		setManagerSearch("")
 		setSelectedUser(null)
 	}
 
 	function handleRemove(upn: string) {
-		setManagers((prev) => prev.filter((m) => m.upn !== upn))
+		const updated = managers.filter((m) => m.upn !== upn)
+		setManagers(updated)
+		onManagersChange(updated)
 	}
 
 	return (
-		<Root id="step-two-form" onSubmit={handleSubmit}>
+		<Root>
 			<Section>
 				<LabelRow>
 					<Required>*</Required>
@@ -73,37 +81,43 @@ export function NewWorkspaceManagersForm({
 			</Section>
 
 			<ManagerList>
-				{managers.map((manager, index) => {
-					const isCreator = index === 0
-					return (
-						<ManagerRow key={manager.upn}>
-							<ManagerInfo>
-								<ManagerHeader>
-									<ManagerName>{manager.info?.name}</ManagerName>
-									<ManagerUpn> - {manager.upn}</ManagerUpn>
-								</ManagerHeader>
-								<ManagerSubtext>{manager.info?.displayName}</ManagerSubtext>
-							</ManagerInfo>
-							<RoleLabel>ניהול</RoleLabel>
-							<TrashButton
-								visible={!isCreator}
-								onClick={() => handleRemove(manager.upn)}
-								size={22}
-							/>
-						</ManagerRow>
-					)
-				})}
+				{managers.map((manager, index) => (
+					<ManagerRow key={manager.upn}>
+						<ManagerInfo>
+							<ManagerHeader>
+								<ManagerName>{manager.info?.name}</ManagerName>
+								<ManagerUpn> - {manager.upn}</ManagerUpn>
+							</ManagerHeader>
+							<ManagerSubtext>{manager.info?.displayName}</ManagerSubtext>
+						</ManagerInfo>
+						<RoleLabel>ניהול</RoleLabel>
+						<TrashButton
+							visible={index !== 0}
+							onClick={() => handleRemove(manager.upn)}
+							size={22}
+						/>
+					</ManagerRow>
+				))}
 			</ManagerList>
+
+			<StepFooter
+				primaryLabel="שלח בקשה"
+				onPrimary={handleSubmitClick}
+				secondaryLabel="חזור"
+				onSecondary={onBack}
+				footnote="*ניתן לשנות או לעדכן את מנהלי הסביבה בכל עת דרך הגדרות הסביבה"
+			/>
 		</Root>
 	)
 }
 
-const Root = styled.form`
+const Root = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
   flex: 1;
   min-height: 0;
+  min-width: 0;
 `
 
 const Section = styled.div`
@@ -142,6 +156,7 @@ const ManagerList = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
   overflow-y: auto;
   gap: 4px;
 `
@@ -152,6 +167,8 @@ const ManagerRow = styled.div`
   gap: 8px;
   padding: 12px;
   border-block-end: 1px solid var(--button-hover);
+  min-width: 0;
+  max-width: 420px;
 `
 
 const ManagerInfo = styled.div`
@@ -160,18 +177,22 @@ const ManagerInfo = styled.div`
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+
 `
 
 const ManagerHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
+  min-width: 0;
+  overflow: hidden;
 `
 
 const ManagerName = styled.span`
   font-size: var(--fs-base);
   font-weight: 500;
   color: var(--sea-ink);
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -181,12 +202,16 @@ const ManagerUpn = styled.span`
   font-size: var(--fs-base);
   font-weight: 400;
   color: var(--sea-ink);
+  min-width: 0;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const ManagerSubtext = styled.span`
   font-size: var(--fs-sm);
   color: var(--sea-ink-soft);
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
