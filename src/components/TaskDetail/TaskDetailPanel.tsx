@@ -99,15 +99,7 @@ function TaskDetailPanel({
 		mutation: { onSuccess: handleSuccess },
 	})
 
-	const handleUpdateTaskStatus = useUpdateTaskStatus({
-		onSuccess: () => {
-			invalidateQueries([
-				getGetTaskQueryKey({ id }),
-				getListTaskRowsQueryKey({ workspaceId }),
-				getListPersonalTaskRowsQueryKey(),
-			])
-		},
-	})
+	const handleUpdateTaskStatus = useUpdateTaskStatus({ workspaceId })
 
 	const displayDate = getDeadlineDisplayDate(
 		deadlineType,

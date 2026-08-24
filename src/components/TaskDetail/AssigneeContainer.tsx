@@ -1,13 +1,7 @@
 import styled from "@emotion/styled"
 import type { AssigneeStatusDto } from "src/api/model"
-import {
-	getGetTaskQueryKey,
-	getListPersonalTaskRowsQueryKey,
-	getListTaskRowsQueryKey,
-} from "src/api/task/task"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
-import { invalidateQueries } from "src/queryClient"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { AssigneeDetailPopover } from "../shared/AssigneeDetailPopover"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
@@ -29,15 +23,7 @@ export const AssigneeContainer = ({
 }: AssigneeContainerProps) => {
 	const { data: statuses = [] } = useListWorkspaceStatuses({ workspaceId })
 
-	const handleUpdateAssigneeStatus = useUpdateTaskStatus({
-		onSuccess: () => {
-			invalidateQueries([
-				getGetTaskQueryKey({ id: taskId }),
-				getListTaskRowsQueryKey({ workspaceId }),
-				getListPersonalTaskRowsQueryKey(),
-			])
-		},
-	})
+	const handleUpdateAssigneeStatus = useUpdateTaskStatus({ workspaceId })
 
 	return (
 		<AssigneeRowContainer $enabled={editable && !isAdmin}>

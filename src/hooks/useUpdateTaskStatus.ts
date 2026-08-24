@@ -1,29 +1,40 @@
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
-import { getGetTaskQueryKey, useUpdateTask } from "src/api/task/task"
+import {
+	getGetTaskQueryKey,
+	getListPersonalTaskRowsQueryKey,
+	getListTaskRowsQueryKey,
+	useUpdateTask,
+} from "src/api/task/task"
 import { invalidateQueries } from "src/queryClient"
 
 interface UseUpdateTaskStatusOptions {
+	workspaceId?: number
 	onSuccess?(): void
 }
 
 export function useUpdateTaskStatus({
+	workspaceId,
 	onSuccess,
 }: UseUpdateTaskStatusOptions = {}) {
+	function handleSettled(taskId: number) {
+		const keys = [
+			getGetTaskQueryKey({ id: taskId }),
+			getListPersonalTaskRowsQueryKey(),
+			...(workspaceId ? [getListTaskRowsQueryKey({ workspaceId })] : []),
+		]
+		invalidateQueries(keys)
+		onSuccess?.()
+	}
+
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
-			onSuccess: ({ task: { id } }) => {
-				invalidateQueries([getGetTaskQueryKey({ id })])
-				onSuccess?.()
-			},
+			onSettled: (data) => data && handleSettled(data.task.id),
 		},
 	})
 
 	const { mutate: updateTask } = useUpdateTask({
 		mutation: {
-			onSuccess: ({ id }) => {
-				invalidateQueries([getGetTaskQueryKey({ id })])
-				onSuccess?.()
-			},
+			onSettled: (data) => data && handleSettled(data.id),
 		},
 	})
 
