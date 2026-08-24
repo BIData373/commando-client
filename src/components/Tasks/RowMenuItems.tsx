@@ -16,27 +16,35 @@ interface MenuItemDef {
 	node: ReactNode
 }
 
-interface RowMenuItemsProps {
-	onEdit?: () => void
-	onAddComment?: () => void
-	onEnterSelect?: () => void
-	onDelete?: () => void
+export interface RowMenuActions {
+	onEdit?(): void
+	onAddComment?(): void
+	onEnterSelect?(): void
+	onDelete?(): void
 	onArchive?(): void
 	onUnarchive?(): void
+}
+
+interface RowMenuItemsProps {
+	actions?: RowMenuActions
 	popoverOpen: boolean
 	onPopoverOpenChange: (open: boolean) => void
 }
 
 export function RowMenuItems({
-	onEdit,
-	onAddComment,
-	onEnterSelect,
-	onDelete,
+	actions,
 	popoverOpen,
 	onPopoverOpenChange,
-	onArchive,
-	onUnarchive,
 }: RowMenuItemsProps) {
+	const {
+		onEdit,
+		onAddComment,
+		onEnterSelect,
+		onDelete,
+		onArchive,
+		onUnarchive,
+	} = actions || {}
+
 	const groups = useMemo(() => {
 		const group1: MenuItemDef[] = [
 			...(onAddComment
