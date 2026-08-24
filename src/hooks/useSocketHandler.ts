@@ -26,10 +26,14 @@ export function useSocketHandler(listeners: SocketListeners) {
 	const socket = useSocket()
 
 	useEffect(() => {
+		if (!socket) {
+			return
+		}
+
 		applyListeners(listeners, socket.on.bind(socket))
 
 		return () => {
 			applyListeners(listeners, socket.off.bind(socket))
 		}
-	}, [listeners])
+	}, [listeners, socket])
 }

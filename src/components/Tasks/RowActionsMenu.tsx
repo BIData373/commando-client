@@ -7,6 +7,7 @@ interface RowActionsMenuProps {
 	trigger?: ReactNode
 	workspaceId: number
 	onEdit?: () => void
+	onAddComment?: () => void
 	onEnterSelect?: () => void
 	onDelete?: () => void
 	onArchive?(): void
@@ -16,6 +17,7 @@ interface RowActionsMenuProps {
 export function RowActionsMenu({
 	trigger,
 	onEdit,
+	onAddComment,
 	onEnterSelect,
 	onDelete,
 	onArchive,
@@ -35,6 +37,7 @@ export function RowActionsMenu({
 			open={open}
 			onOpenChange={setOpen}
 			onEdit={onEdit}
+			onAddComment={onAddComment}
 			onEnterSelect={onEnterSelect}
 			onDelete={onDelete}
 			onArchive={onArchive}

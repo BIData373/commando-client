@@ -7,7 +7,10 @@ import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithAc
 import WorkspaceTaskTable from "src/components/Tasks/WorkspaceTaskTable"
 import { WorkspaceTabs } from "src/components/WorkspaceTabs"
 import { formatDateShort } from "src/functions/date-utils"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { COLUMN_LABELS, TASK_COLUMN_ID } from "src/utils/task-table-utils"
 import { TasksFiltersProvider } from "../../../providers/TasksFiltersProvider"
+import { UserViewProvider } from "../../../providers/UserViewProvider"
 import { TasksView } from "./tasks"
 
 export const Route = createFileRoute("/workspace/$urlName/archive")({
@@ -20,28 +23,31 @@ export const Route = createFileRoute("/workspace/$urlName/archive")({
 })
 
 const ARCHIVE_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
-	"title",
-	"status",
-	"assignee",
-	"deadlineType",
-	"source",
-	"workspace",
-	"archivedAt",
-	"createdAt",
-	"tags",
-	"updatedAt",
+	TASK_COLUMN_ID.title,
+	TASK_COLUMN_ID.status,
+	TASK_COLUMN_ID.assignee,
+	TASK_COLUMN_ID.deadlineType,
+	TASK_COLUMN_ID.source,
+	TASK_COLUMN_ID.workspace,
+	TASK_COLUMN_ID.archivedAt,
+	TASK_COLUMN_ID.createdAt,
+	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.updatedAt,
 ]
 
 const ARCHIVE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
-	"tags",
-	"updatedAt",
+	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.updatedAt,
 ])
 
 const ARCHIVE_EXTRA_COLUMNS: ColumnDef<TaskRowDto>[] = [
 	{
-		id: "archivedAt",
+		id: TASK_COLUMN_ID.archivedAt,
 		header: ({ column }) => (
-			<ColumnHeaderWithActions label="הועבר לארכיון" column={column} />
+			<ColumnHeaderWithActions
+				label={COLUMN_LABELS.archivedAt}
+				column={column}
+			/>
 		),
 		size: 140,
 		enableColumnFilter: false,
@@ -59,6 +65,9 @@ const ARCHIVE_EXTRA_COLUMNS: ColumnDef<TaskRowDto>[] = [
 function WorkspaceArchivePage() {
 	const { urlName } = Route.useParams()
 	const navigate = Route.useNavigate()
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
 
 	function handleOpenTask(taskId: number) {
 		navigate({
@@ -69,21 +78,23 @@ function WorkspaceArchivePage() {
 	}
 
 	return (
-		<TasksFiltersProvider
-			storageKey="workspace-archive"
+		<UserViewProvider
+			workspaceId={workspaceId}
 			defaultColumnOrder={ARCHIVE_DEFAULT_COLUMN_ORDER}
 			defaultHiddenColumns={ARCHIVE_DEFAULT_HIDDEN}
 		>
-			<>
+			<TasksFiltersProvider>
 				<WorkspaceTabs section={DropdownSection.ARCHIVE} />
 				<WorkspaceTaskTable
 					onOpenTask={handleOpenTask}
 					isArchived={true}
 					extraColumns={ARCHIVE_EXTRA_COLUMNS}
-					extraColumnsMeta={[{ id: "archivedAt", label: "הועבר לארכיון" }]}
+					extraColumnsMeta={[
+						{ id: TASK_COLUMN_ID.archivedAt, label: COLUMN_LABELS.archivedAt },
+					]}
 				/>
-			</>
-		</TasksFiltersProvider>
+			</TasksFiltersProvider>
+		</UserViewProvider>
 	)
 }
 

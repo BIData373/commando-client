@@ -16,7 +16,10 @@ import {
 } from "src/api/user-view/user-view"
 
 import { Spinner } from "src/components/ui/spinner"
-import { DEFAULT_COLUMN_ORDER } from "src/utils/task-table-utils"
+import {
+	DEFAULT_COLUMN_ORDER,
+	TASK_COLUMN_ID,
+} from "src/utils/task-table-utils"
 
 export interface UserViewContext {
 	view: UserViewDto
@@ -26,20 +29,20 @@ export interface UserViewContext {
 const UserViewContext = createContext<UserViewContext | null>(null)
 
 const PERSONAL_DEFAULT_COLUMN_ORDER = [
-	"title",
-	"status",
-	"assignee",
-	"deadlineType",
-	"source",
-	"tags",
-	"workspace",
-	"createdAt",
-	"updatedAt",
+	TASK_COLUMN_ID.title,
+	TASK_COLUMN_ID.status,
+	TASK_COLUMN_ID.assignee,
+	TASK_COLUMN_ID.deadlineType,
+	TASK_COLUMN_ID.source,
+	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.workspace,
+	TASK_COLUMN_ID.createdAt,
+	TASK_COLUMN_ID.updatedAt,
 ]
 
-const PERSONAL_DEFAULT_HIDDEN = ["tags", "updatedAt"]
+const PERSONAL_DEFAULT_HIDDEN = [TASK_COLUMN_ID.tags, TASK_COLUMN_ID.updatedAt]
 
-const WORKSPACE_DEFAULT_HIDDEN = ["updatedAt"]
+const WORKSPACE_DEFAULT_HIDDEN = [TASK_COLUMN_ID.updatedAt]
 
 function getDefaultView(
 	workspaceId: number | null,

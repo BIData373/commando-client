@@ -53,6 +53,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		clearQuickFilters,
 		columnsFilters,
 		setColumnsFilters,
+		setAssigneeFilter,
 	} = useTasksFilters()
 
 	const hasActiveColumnFilters =
@@ -60,6 +61,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 
 	function clearAllColumnFilters() {
 		setColumnsFilters([])
+		setAssigneeFilter([])
 		onClearColumnFilters?.()
 	}
 
