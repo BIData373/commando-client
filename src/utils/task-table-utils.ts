@@ -29,6 +29,7 @@ const CONFIGURABLE_COLUMNS_META = toColumnsMeta({
 	source: "מקור הנחיה",
 	lastMessage: "תגובות",
 	tags: "נושא",
+	notes: "הערות",
 	createdAt: "תאריך יצירה",
 	updatedAt: "עודכן ב",
 })
@@ -157,7 +158,7 @@ export function toHiddenColumns<TId extends string>(
 	)
 }
 
-export const DISABLED_CLICK_COLUMNS = new Set([
+export const DISABLED_CLICK_COLUMNS = new Set<string>([
 	TASK_COLUMN_ID.assignee,
 	TASK_COLUMN_ID.status,
 	TASK_COLUMN_ID.actions,

@@ -103,6 +103,7 @@ function CreateTasksTable({
 			assigneeIds: [],
 			assigneeDetails: {},
 			tags: [],
+			notes: "",
 			flagged: false,
 		}
 	}, [workspaceId])
@@ -123,6 +124,7 @@ function CreateTasksTable({
 				task.assigneeStatuses.map((s) => [s.assignee.id, s.description]),
 			),
 			tags: task.tags.map((tag) => tag.name),
+			notes: task.notes ?? "",
 			flagged: task.flagged,
 		}
 	}, [])

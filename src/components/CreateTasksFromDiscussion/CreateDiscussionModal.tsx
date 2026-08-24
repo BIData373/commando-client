@@ -221,6 +221,7 @@ function CreateDiscussionModal({
 							title,
 							deadlineType,
 							dueDate,
+							notes,
 							flagged,
 							assigneeIds,
 							assigneeDetails,
@@ -228,6 +229,7 @@ function CreateDiscussionModal({
 							title: title.trim(),
 							deadlineType: deadlineType ?? DeadlineType.ROLLING,
 							dueDate: dueDate ?? null,
+							notes: notes || undefined,
 							flagged,
 							assignees: assigneeIds.map((assigneeId) => ({
 								id: assigneeId,

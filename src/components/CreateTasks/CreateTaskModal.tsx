@@ -34,6 +34,7 @@ import { Checkbox } from "../ui/checkbox"
 import { Dialog } from "../ui/dialog"
 import AssigneeField from "./AssigneeField"
 import DeadlineField from "./DeadlineField"
+import NotesField from "./NotesField"
 import SourceField from "./SourceField"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -107,6 +108,7 @@ function CreateTaskModal({
 			source: task?.source?.name ?? "",
 			sourceDate: task?.source?.date ?? null,
 			tags: task?.tags.map((t) => t.name) ?? [],
+			notes: task?.notes ?? "",
 			sourceId: task?.source?.id ?? null,
 			assignees:
 				task?.assigneeStatuses.map((as) => ({
@@ -251,6 +253,10 @@ function CreateTaskModal({
 			"tags",
 			(values.tags ?? []).filter((t) => t !== tag),
 		)
+	}
+
+	function handleNotesChange(value: string) {
+		form.setFieldValue("notes", value)
 	}
 
 	function handleAssigneeStatusChange(
@@ -400,24 +406,11 @@ function CreateTaskModal({
 							{/* ─── Additional Details ─────────────────────────────────── */}
 							<AdditionalDetailsWrapper>
 								<AdditionalDetails>
-									{/* Source + Date row */}
-									<form.Field
-										name="sourceDate"
-										validators={{ onSubmit: validateSourceDate }}
-									>
-										{(field) => (
-											<SourceField
-												workspaceId={workspaceId}
-												label="מקור הנחיה"
-												source={values.source}
-												sourceDate={values.sourceDate}
-												linkedSource={values.linkedSource}
-												onSourceSelect={handleSourceSelect}
-												onDateSelect={handleSourceDateSelect}
-												fields={{ date: field }}
-											/>
-										)}
-									</form.Field>
+									{/* Notes */}
+									<NotesField
+										notes={values.notes ?? ""}
+										onNotesChange={handleNotesChange}
+									/>
 
 									{/* Tag field */}
 									<TagField
@@ -427,6 +420,26 @@ function CreateTaskModal({
 										onTagSelect={handleTagSelect}
 										onTagRemove={handleTagRemove}
 									/>
+
+									{/* Source + Date row */}
+									<form.Field
+										name="sourceDate"
+										validators={{ onSubmit: validateSourceDate }}
+									>
+										{(field) => (
+											<SourceField
+												workspaceId={workspaceId}
+												label="שייך למקור"
+												source={values.source}
+												sourceDate={values.sourceDate}
+												linkedSource={values.linkedSource}
+												onSourceSelect={handleSourceSelect}
+												onDateSelect={handleSourceDateSelect}
+												fields={{ date: field }}
+												hideDateLabel
+											/>
+										)}
+									</form.Field>
 								</AdditionalDetails>
 							</AdditionalDetailsWrapper>
 						</FormContainer>

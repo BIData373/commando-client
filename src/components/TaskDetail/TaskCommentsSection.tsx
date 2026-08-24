@@ -9,6 +9,7 @@ import {
 	useListMessages,
 } from "src/api/message/message"
 import {
+	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
@@ -54,14 +55,26 @@ function TaskCommentsSection({
 
 	const { data: messages = [] } = useListMessages({ taskId })
 
+	function handleSettled() {
+		invalidateQueries([
+			getListMessagesQueryKey({ taskId }),
+			getGetTaskQueryKey({ id: taskId }),
+			getListTaskRowsQueryKey(),
+			getListPersonalTaskRowsQueryKey(),
+		])
+	}
+
 	const { mutate: createMessage, isPending: isSendingComment } =
-		useCreateMessage()
-	const { mutate: deleteMessage } = useDeleteMessage({
-		mutation: {
-			onSuccess() {
-				invalidateQueries([getListMessagesQueryKey({ taskId })])
+		useCreateMessage({
+			mutation: {
+				onSettled: handleSettled,
+				onSuccess() {
+					setCommentValue("")
+				},
 			},
-		},
+		})
+	const { mutate: deleteMessage } = useDeleteMessage({
+		mutation: { onSettled: handleSettled },
 	})
 
 	function handleCommentInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -78,19 +91,7 @@ function TaskCommentsSection({
 	function submitComment() {
 		const content = commentValue.trim()
 		if (!content) return
-		createMessage(
-			{ data: { taskId, content } },
-			{
-				onSuccess() {
-					setCommentValue("")
-					invalidateQueries([
-						getListMessagesQueryKey({ taskId }),
-						getListTaskRowsQueryKey(),
-						getListPersonalTaskRowsQueryKey(),
-					])
-				},
-			},
-		)
+		createMessage({ data: { taskId, content } })
 	}
 
 	return (

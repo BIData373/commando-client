@@ -32,11 +32,13 @@ const ARCHIVE_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
 	TASK_COLUMN_ID.archivedAt,
 	TASK_COLUMN_ID.createdAt,
 	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.notes,
 	TASK_COLUMN_ID.updatedAt,
 ]
 
 const ARCHIVE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.notes,
 	TASK_COLUMN_ID.updatedAt,
 ])
 
@@ -71,6 +73,14 @@ function PersonalArchivePage() {
 		})
 	}
 
+	function handleAddComment(taskId: number) {
+		navigate({
+			to: "/personal/archive/task/$taskId",
+			params: { taskId: String(taskId) },
+			search: { view: TasksView.TABLE, focusComment: true },
+		})
+	}
+
 	return (
 		<UserViewProvider
 			defaultColumnOrder={ARCHIVE_DEFAULT_COLUMN_ORDER}
@@ -86,6 +96,7 @@ function PersonalArchivePage() {
 						{ id: TASK_COLUMN_ID.archivedAt, label: COLUMN_LABELS.archivedAt },
 					]}
 					extraColumns={ARCHIVE_EXTRA_COLUMNS}
+					onAddComment={handleAddComment}
 				/>
 			</TasksFiltersProvider>
 		</UserViewProvider>
