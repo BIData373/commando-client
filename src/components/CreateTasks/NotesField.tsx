@@ -1,5 +1,4 @@
 import styled from "@emotion/styled"
-import { useRef, useState } from "react"
 import { NOTES_MAX_LENGTH } from "../../utils/form-utils"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -12,15 +11,8 @@ interface NotesFieldProps {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function NotesField({ notes, onNotesChange }: NotesFieldProps) {
-	const textareaRef = useRef<HTMLTextAreaElement>(null)
-	const [isFocused, setIsFocused] = useState(false)
-
 	function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
 		onNotesChange(e.target.value)
-	}
-
-	function handleWrapperClick() {
-		textareaRef.current?.focus()
 	}
 
 	return (
@@ -28,23 +20,18 @@ function NotesField({ notes, onNotesChange }: NotesFieldProps) {
 			<FormLabelRow>
 				<LabelText>הערה</LabelText>
 			</FormLabelRow>
-			<InputWrapper $focused={isFocused} onClick={handleWrapperClick}>
+			<InputWrapper>
 				<NotesTextarea
-					ref={textareaRef}
 					value={notes}
 					onChange={handleChange}
-					onFocus={() => setIsFocused(true)}
-					onBlur={() => setIsFocused(false)}
 					placeholder="הערה"
 					dir="rtl"
 					maxLength={NOTES_MAX_LENGTH}
 					rows={1}
 				/>
-				{isFocused && (
-					<CharCount>
-						{notes.length}/{NOTES_MAX_LENGTH}
-					</CharCount>
-				)}
+				<CharCount>
+					{notes.length}/{NOTES_MAX_LENGTH}
+				</CharCount>
 			</InputWrapper>
 		</FormItem>
 	)
@@ -77,14 +64,18 @@ const LabelText = styled.span`
   color: var(--text-color-2);
 `
 
-const InputWrapper = styled.div<{ $focused: boolean }>`
+const InputWrapper = styled.div`
   position: relative;
   width: 100%;
-  border: 1px solid ${({ $focused }) => ($focused ? "var(--button-color-hover)" : "var(--card-border)")};
+  border: 1px solid var(--card-border);
   border-radius: 8px;
   background: var(--background);
-  box-shadow: ${({ $focused }) => ($focused ? "var(--shadow-textarea-focus)" : "none")};
   cursor: text;
+
+  &:focus-within {
+    border-color: var(--button-color-hover);
+    box-shadow: var(--shadow-textarea-focus);
+  }
 `
 
 const NotesTextarea = styled.textarea`
@@ -109,10 +100,16 @@ const NotesTextarea = styled.textarea`
 
 const CharCount = styled.span`
   position: absolute;
-  inset-block-end: 4px;
+  inset-block-start: 50%;
   inset-inline-start: 8px;
+  transform: translateY(-50%);
   font-size: var(--fs-sm);
   line-height: 20px;
   color: var(--sea-ink-soft);
   pointer-events: none;
+  display: none;
+
+  ${InputWrapper}:focus-within & {
+    display: block;
+  }
 `
