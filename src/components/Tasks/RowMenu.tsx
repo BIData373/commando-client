@@ -1,40 +1,23 @@
 import { type ReactNode, useState } from "react"
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu"
-import { RowMenuItems } from "./RowMenuItems"
+import { type RowMenuActions, RowMenuItems } from "./RowMenuItems"
 
 interface RowMenuProps {
 	trigger: ReactNode
 	open: boolean
 	onOpenChange: (open: boolean) => void
-	onEdit?: () => void
-	onAddComment?: () => void
-	onEnterSelect?: () => void
-	onDelete?: () => void
-	onArchive?(): void
-	onUnarchive?(): void
+	actions?: RowMenuActions
 }
 
 export function RowMenu({
 	trigger,
 	open,
 	onOpenChange,
-	onEdit,
-	onAddComment,
-	onEnterSelect,
-	onDelete,
-	onArchive,
-	onUnarchive,
+	actions = {},
 }: RowMenuProps) {
 	const [popoverOpen, setPopoverOpen] = useState(false)
 
-	const itemCount = [
-		onAddComment,
-		onArchive,
-		onUnarchive,
-		onEdit,
-		onEnterSelect,
-		onDelete,
-	].filter(Boolean).length
+	const itemCount = Object.values(actions).filter(Boolean).length
 
 	function handleOpenChange(nextOpen: boolean) {
 		if (!nextOpen && popoverOpen) return
@@ -51,12 +34,7 @@ export function RowMenu({
 			<DropdownMenu open={open || popoverOpen} onOpenChange={handleOpenChange}>
 				<DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
 				<RowMenuItems
-					onEdit={onEdit}
-					onAddComment={onAddComment}
-					onEnterSelect={onEnterSelect}
-					onDelete={onDelete}
-					onArchive={onArchive}
-					onUnarchive={onUnarchive}
+					actions={actions}
 					popoverOpen={popoverOpen}
 					onPopoverOpenChange={handlePopoverOpenChange}
 				/>
