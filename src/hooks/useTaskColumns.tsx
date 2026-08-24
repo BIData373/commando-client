@@ -508,7 +508,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				meta: { grow: true },
 				cell: ({ getValue }) => {
 					const notes = getValue<string>()
-					return notes ? <NotesText tooltip={notes}>{notes}</NotesText> : null
+					return notes && <NotesText tooltip={notes}>{notes}</NotesText>
 				},
 			},
 			{
