@@ -87,7 +87,7 @@ const CenterSection = styled.div`
   overflow: hidden;
 `
 
-const CenterTitle = styled.p`
+const CenterTitle = styled.div`
   margin: 0;
   font-size: var(--fs-heading-3);
   font-weight: 500;

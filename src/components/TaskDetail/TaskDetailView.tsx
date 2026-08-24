@@ -12,6 +12,7 @@ interface TaskDetailViewProps<
 	closeTo: NavigateOptions<RegisteredRouter, string, TCloseTo>
 	editTo?: NavigateOptions<RegisteredRouter, string, TEditTo>
 	isArchived?: boolean
+	isPersonal?: boolean
 }
 
 function TaskDetailView<
@@ -23,6 +24,7 @@ function TaskDetailView<
 	closeTo,
 	editTo,
 	isArchived = false,
+	isPersonal = false,
 }: TaskDetailViewProps<TCloseTo, TEditTo>) {
 	const navigate = useNavigate()
 
@@ -37,6 +39,7 @@ function TaskDetailView<
 			onClose={() => navigate(closeTo)}
 			onEdit={editTo ? () => navigate(editTo) : undefined}
 			isArchived={isArchived}
+			isPersonal={isPersonal}
 		/>
 	)
 }

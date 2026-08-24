@@ -16,6 +16,7 @@ function PersonalArchiveTaskDetail() {
 			showWorkspace={true}
 			closeTo={{ to: "/personal/archive" }}
 			isArchived={true}
+			isPersonal
 		/>
 	)
 }
