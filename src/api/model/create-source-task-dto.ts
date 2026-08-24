@@ -13,6 +13,8 @@ export interface CreateSourceTaskDto {
 	deadlineType: DeadlineType
 	/** @nullable */
 	dueDate?: Date | null
+	notes?: string
 	flagged?: boolean
+	tags?: string[]
 	assignees?: GetTaskAssigneeDto[]
 }
