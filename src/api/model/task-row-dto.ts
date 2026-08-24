@@ -32,6 +32,8 @@ export interface TaskRowDto {
 	creationType: TaskCreationType
 	/** @nullable */
 	dueDate: Date | null
+	/** @nullable */
+	notes: string | null
 	workspaceId: number
 	/** @nullable */
 	source: SourceDto | null

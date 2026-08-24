@@ -27,6 +27,7 @@ const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
 	TASK_COLUMN_ID.deadlineType,
 	TASK_COLUMN_ID.source,
 	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.notes,
 	TASK_COLUMN_ID.workspace,
 	TASK_COLUMN_ID.createdAt,
 	TASK_COLUMN_ID.updatedAt,
@@ -34,6 +35,7 @@ const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
 
 const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.notes,
 	TASK_COLUMN_ID.updatedAt,
 ])
 

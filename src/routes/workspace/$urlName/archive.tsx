@@ -32,11 +32,13 @@ const ARCHIVE_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
 	TASK_COLUMN_ID.archivedAt,
 	TASK_COLUMN_ID.createdAt,
 	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.notes,
 	TASK_COLUMN_ID.updatedAt,
 ]
 
 const ARCHIVE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.notes,
 	TASK_COLUMN_ID.updatedAt,
 ])
 

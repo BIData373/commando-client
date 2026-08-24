@@ -7,6 +7,7 @@ import { TrashButton } from "../shared/TrashButton"
 import { Checkbox } from "../ui/checkbox"
 import AssigneeTableCell from "./AssigneeTableCell"
 import DeadlineCell from "./DeadlineCell"
+import NotesCell from "./NotesCell"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -34,9 +35,9 @@ export interface TaskTableMeta {
 
 // ─── Cell Handlers ─────────────────────────────────────────────────────────
 
-const MAX_HEIGHT = 40
+export const MAX_HEIGHT = 40
 
-function handleTextareaChange(
+export function handleTextareaChange(
 	e: React.ChangeEvent<HTMLTextAreaElement>,
 	id: number,
 	field: TaskColumnId,
@@ -61,7 +62,7 @@ function handleDelete(id: number, deleteRow: TaskTableMeta["deleteRow"]) {
 	deleteRow(id)
 }
 
-function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+export function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
 	const target = e.target as HTMLElement
 	const row = Number(target.dataset.row)
 	const col = Number(target.dataset.col)
@@ -157,6 +158,14 @@ const columns: ColumnDef<NewTaskRow>[] = [
 				row={row.original}
 				meta={table.options.meta as TaskTableMeta}
 			/>
+		),
+	},
+	{
+		id: "notes",
+		size: 350,
+		header: () => <HeaderLabel>הערה</HeaderLabel>,
+		cell: ({ row, table }) => (
+			<NotesCell row={row} meta={table.options.meta as TaskTableMeta} />
 		),
 	},
 	{
