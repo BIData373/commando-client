@@ -50,6 +50,10 @@ export const getListAssigneeTaskStatusesResponseMock =
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 					null,
 				]),
+				notes: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					null,
+				]),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 				source: faker.helpers.arrayElement([
 					{
@@ -338,6 +342,10 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
+		notes: faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
+			null,
+		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 		source: faker.helpers.arrayElement([
 			{
@@ -611,6 +619,10 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 		creationType: faker.helpers.arrayElement(Object.values(TaskCreationType)),
 		dueDate: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
+		notes: faker.helpers.arrayElement([
+			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
