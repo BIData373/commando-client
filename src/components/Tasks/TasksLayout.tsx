@@ -63,7 +63,10 @@ function TasksLayout({
 	}
 
 	function handleClearColumnFilters() {
-		navigateToTasks({ statusFilter: [], deadlineTypeFilter: [] })
+		navigateToTasks({
+			statusFilter: [],
+			deadlineTypeFilter: [],
+		})
 	}
 
 	return (

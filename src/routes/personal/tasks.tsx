@@ -5,6 +5,7 @@ import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../providers/UserViewProvider"
+import { TASK_COLUMN_ID } from "../../utils/task-table-utils"
 import { TasksView } from "../workspace/$urlName/tasks"
 
 export const Route = createFileRoute("/personal/tasks")({
@@ -20,22 +21,22 @@ export const Route = createFileRoute("/personal/tasks")({
 })
 
 const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
-	"title",
-	"status",
-	"assignee",
-	"deadlineType",
-	"source",
-	"tags",
-	"notes",
-	"workspace",
-	"createdAt",
-	"updatedAt",
+	TASK_COLUMN_ID.title,
+	TASK_COLUMN_ID.status,
+	TASK_COLUMN_ID.assignee,
+	TASK_COLUMN_ID.deadlineType,
+	TASK_COLUMN_ID.source,
+	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.notes,
+	TASK_COLUMN_ID.workspace,
+	TASK_COLUMN_ID.createdAt,
+	TASK_COLUMN_ID.updatedAt,
 ]
 
 const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
-	"tags",
-	"notes",
-	"updatedAt",
+	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.notes,
+	TASK_COLUMN_ID.updatedAt,
 ])
 
 function PersonalTasksPage() {

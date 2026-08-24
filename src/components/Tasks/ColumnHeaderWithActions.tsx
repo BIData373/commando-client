@@ -30,7 +30,7 @@ function ColumnHeaderWithActions<TData>({
 
 	return (
 		<HeaderWrapper $alwaysShow={alwaysShow}>
-			<span>{label}</span>
+			<Label>{label}</Label>
 			<ActionsArea data-slot="actions-area" $show={alwaysShow}>
 				{canFilter && (
 					<ColumnFilterDropdown
@@ -103,10 +103,17 @@ const HeaderWrapper = styled.div<{ $alwaysShow: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
-  height: 100%;
+  min-height: 100%;
   width: 100%;
+  padding-inline-end: 8px;
+  box-sizing: border-box;
 
   &:hover [data-slot="actions-area"] {
     opacity: 1;
   }
+`
+
+const Label = styled.span`
+  white-space: normal;
+  overflow-wrap: break-word;
 `

@@ -22,7 +22,12 @@ import {
 	ARCHIVE_QUICK_FILTERS,
 } from "src/utils/filter-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
-import type { TaskColumnMeta } from "src/utils/task-table-utils"
+import {
+	COLUMN_LABELS,
+	TASK_COLUMN_ID,
+	type TaskColumnMeta,
+	WORKSPACE_COLUMN_META,
+} from "src/utils/task-table-utils"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import WorkspaceCell from "../shared/WorkspaceCell"
@@ -33,9 +38,9 @@ import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
 
 export const WORKSPACE_COLUMN: ColumnDef<TaskRowWithWorkspaceDto> = {
-	id: "workspace",
+	id: TASK_COLUMN_ID.workspace,
 	header: ({ column }) => (
-		<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
+		<ColumnHeaderWithActions label={COLUMN_LABELS.workspace} column={column} />
 	),
 	size: 170,
 	enableColumnFilter: false,
@@ -175,7 +180,7 @@ function PersonalTaskTable({
 					hiddenColumns={hiddenColumns}
 					extraColumns={[workspaceColumn, ...(extraColumns ?? [])]}
 					extraColumnsMeta={[
-						{ id: "workspace", label: "מפקד מנחה" },
+						WORKSPACE_COLUMN_META,
 						...(extraColumnsMeta ?? []),
 					]}
 					quickFilters={
