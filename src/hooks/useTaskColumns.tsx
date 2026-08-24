@@ -175,12 +175,14 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							return (
 								<RowActionsMenu
 									workspaceId={workspaceId}
-									onEdit={handleEdit}
-									onAddComment={handleAddComment}
-									onArchive={handleArchive}
-									onUnarchive={handleUnarchive}
-									onEnterSelect={handleEnterSelect}
-									onDelete={handleDelete}
+									actions={{
+										onEdit: handleEdit,
+										onAddComment: handleAddComment,
+										onArchive: handleArchive,
+										onUnarchive: handleUnarchive,
+										onEnterSelect: handleEnterSelect,
+										onDelete: handleDelete,
+									}}
 								/>
 							)
 						},

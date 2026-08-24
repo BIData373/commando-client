@@ -322,12 +322,40 @@ function TaskTable<TTask extends TaskRowDto>({
 				/>
 			</TableWrapper>
 			<RowContextMenu
-				task={contextMenu?.task ?? null}
 				position={contextMenu ? { x: contextMenu.x, y: contextMenu.y } : null}
 				onOpenChange={handleContextMenuOpenChange}
-				onEdit={onEdit}
-				onEnterSelect={handleEnterSelectMode}
-				onDelete={(id) => removeTasks([id])}
+				actions={
+					contextMenu
+						? {
+								onEdit: onEdit && (() => onEdit(contextMenu.task.id)),
+								onAddComment:
+									onAddComment && (() => onAddComment(contextMenu.task.id)),
+								onArchive:
+									onArchive &&
+									(() =>
+										onArchive([
+											{
+												id: contextMenu.task.id,
+												assigneeId: contextMenu.task.assignee?.id,
+											},
+										])),
+								onUnarchive:
+									onUnarchive &&
+									(() =>
+										onUnarchive([
+											{
+												id: contextMenu.task.id,
+												assigneeId: contextMenu.task.assignee?.id,
+											},
+										])),
+								onEnterSelect: () =>
+									handleEnterSelectMode(contextMenu.task.rowKey),
+								onDelete: allowDelete
+									? () => removeTasks([contextMenu.task.id])
+									: undefined,
+							}
+						: {}
+				}
 			/>
 			<BulkActionsBar
 				isVisible={selectMode}

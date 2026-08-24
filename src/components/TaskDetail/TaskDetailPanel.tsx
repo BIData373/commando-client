@@ -171,8 +171,10 @@ function TaskDetailPanel({
 						<TaskIdLabel>#{id}</TaskIdLabel>
 						<RowActionsMenu
 							workspaceId={workspaceId}
-							onEdit={isManager && onEdit ? handleEdit : undefined}
-							onDelete={isManager ? handleDelete : undefined}
+							actions={{
+								onEdit: isManager && onEdit ? handleEdit : undefined,
+								onDelete: isManager ? handleDelete : undefined,
+							}}
 						/>
 					</>
 				}

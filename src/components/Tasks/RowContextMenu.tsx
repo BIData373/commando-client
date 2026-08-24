@@ -1,34 +1,26 @@
 import styled from "@emotion/styled"
-import type { TaskRowDto } from "src/api/model"
 import { RowMenu } from "./RowMenu"
+import type { RowMenuActions } from "./RowMenuItems"
 
-interface RowContextMenuProps<TTask extends TaskRowDto> {
-	task: TTask | null
+interface RowContextMenuProps {
 	position: { x: number; y: number } | null
 	onOpenChange: (open: boolean) => void
-	onEdit?: (taskId: number) => void
-	onEnterSelect?: (rowKey: string) => void
-	onDelete?: (taskId: number) => void
+	actions: RowMenuActions
 }
 
-export function RowContextMenu<TTask extends TaskRowDto>({
-	task,
+export function RowContextMenu({
 	position,
 	onOpenChange,
-	onEdit,
-	onEnterSelect,
-	onDelete,
-}: RowContextMenuProps<TTask>) {
-	if (!task || !position) return null
+	actions,
+}: RowContextMenuProps) {
+	if (!position) return null
 
 	return (
 		<RowMenu
 			trigger={<AnchorPoint style={{ left: position.x, top: position.y }} />}
 			open
 			onOpenChange={onOpenChange}
-			onEdit={onEdit && (() => onEdit(task.id))}
-			onEnterSelect={onEnterSelect && (() => onEnterSelect(task.rowKey))}
-			onDelete={onDelete && (() => onDelete(task.id))}
+			actions={actions}
 		/>
 	)
 }
