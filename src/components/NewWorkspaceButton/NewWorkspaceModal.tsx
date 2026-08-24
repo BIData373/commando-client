@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { useForm, useStore } from "@tanstack/react-form"
 import { Check } from "lucide-react"
-import React, { type ReactNode, useEffect, useMemo, useState } from "react"
+import React, { type ReactNode, useEffect, useState } from "react"
 import type { CreateWorkspaceRequestDto, MirageUserDto } from "src/api/model"
 import {
 	getListWorkspaceRequestsQueryKey,
@@ -15,7 +15,6 @@ import logoWithText from "../../assets/logo-with-text-dark.png"
 import quickPage from "../../assets/quick_page.svg"
 import requestSentImg from "../../assets/request_sent.svg"
 import { ModalContent } from "../shared/ModalContent"
-import { PrimaryButton } from "../shared/PrimaryButton"
 import { NewWorkspaceDetailsForm } from "./NewWorkspaceDetailsForm"
 import { NewWorkspaceManagersForm } from "./NewWorkspaceManagersForm"
 import { StepFooter } from "./StepFooter"
@@ -403,42 +402,6 @@ const FormBodyContent = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-`
-
-const BottomSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  flex-shrink: 0;
-`
-
-const Footer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  gap: 16px;
-`
-
-const StepTwoFootnote = styled.p`
-  font-size: var(--fs-sm);
-  color: var(--sea-ink-soft);
-  margin: 0;
-`
-
-const ClearButton = styled.button`
-  padding: 3px 15px;
-  gap: 8px;
-  border-radius: 6px;
-  border: 1px solid var(--card-border);
-  cursor: pointer;
-
-  :hover {
-    background: var(--button-hover);
-  }
-
-  :active {
-    background: var(--button-active);
-  }
 `
 
 const SuccessBody = styled.div`

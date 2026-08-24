@@ -3,7 +3,7 @@ import { useState } from "react"
 import type { MirageUserDto } from "src/api/model"
 import { concatName } from "src/utils/user-utils"
 import { DropdownUsers } from "../settings/DropdownUsers"
-import { TrashButton } from "../shared/TrashButton"
+import { UserPermissionList } from "../settings/UserPermissionList"
 import { StepFooter } from "./StepFooter"
 
 interface NewWorkspaceManagersFormProps {
@@ -80,25 +80,14 @@ export function NewWorkspaceManagersForm({
 				/>
 			</Section>
 
-			<ManagerList>
-				{managers.map((manager, index) => (
-					<ManagerRow key={manager.upn}>
-						<ManagerInfo>
-							<ManagerHeader>
-								<ManagerName>{manager.info?.name}</ManagerName>
-								<ManagerUpn> - {manager.upn}</ManagerUpn>
-							</ManagerHeader>
-							<ManagerSubtext>{manager.info?.displayName}</ManagerSubtext>
-						</ManagerInfo>
-						<RoleLabel>ניהול</RoleLabel>
-						<TrashButton
-							visible={index !== 0}
-							onClick={() => handleRemove(manager.upn)}
-							size={22}
-						/>
-					</ManagerRow>
-				))}
-			</ManagerList>
+			<ManagerListContainer>
+				<UserPermissionList<MirageUserDto>
+					items={managers}
+					getUser={(m) => m}
+					onDelete={(m) => handleRemove(m.upn)}
+					canDelete={(_, index) => index !== 0}
+				/>
+			</ManagerListContainer>
 
 			<StepFooter
 				primaryLabel="שלח בקשה"
@@ -152,73 +141,9 @@ const Description = styled.p`
   line-height: 1.5;
 `
 
-const ManagerList = styled.div`
-  display: flex;
-  flex-direction: column;
+const ManagerListContainer = styled.div`
   flex: 1;
-  min-width: 0;
-  overflow-y: auto;
-  gap: 4px;
-`
-
-const ManagerRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  border-block-end: 1px solid var(--button-hover);
-  min-width: 0;
   max-width: 420px;
-`
-
-const ManagerInfo = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-
-`
-
-const ManagerHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  min-width: 0;
+  min-height: 0;
   overflow: hidden;
-`
-
-const ManagerName = styled.span`
-  font-size: var(--fs-base);
-  font-weight: 500;
-  color: var(--sea-ink);
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
-const ManagerUpn = styled.span`
-  font-size: var(--fs-base);
-  font-weight: 400;
-  color: var(--sea-ink);
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
-const ManagerSubtext = styled.span`
-  font-size: var(--fs-sm);
-  color: var(--sea-ink-soft);
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
-const RoleLabel = styled.span`
-  font-size: var(--fs-base);
-  color: var(--text-color);
-  flex-shrink: 0;
 `
