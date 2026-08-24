@@ -13,7 +13,9 @@ export default function PersonalAreaCard() {
 	const user = useCurrentUser()
 	const userName = user.info?.name || user.upn
 
-	const { data: allTaskRows = [] } = useListPersonalTaskRows()
+	const { data: allTaskRows = [] } = useListPersonalTaskRows({
+		isArchived: false,
+	})
 
 	const totalCount = allTaskRows.length
 
