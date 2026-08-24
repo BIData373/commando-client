@@ -12,18 +12,13 @@ import {
 	InputGroupAddon,
 	InputGroupInput,
 } from "src/components/ui/input-group"
-import { useFuse } from "src/hooks/useFuse"
+import { useFilteredAssignees } from "src/hooks/useFilteredAssignees"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import noResultsFound from "../../assets/empty-states/no-results-found.svg"
 import addPerson from "../../assets/icons/add-person.svg"
 import chatIcon from "../../assets/icons/chat.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { Spinner } from "../ui/spinner"
-
-const fuseOptions = {
-	threshold: 0.3,
-	keys: ["name", "users.upn", "users.info.name", "users.info.displayName"],
-}
 
 export const assigneeStatusEditableId = "allow-status-update"
 
@@ -52,7 +47,7 @@ export function AssigneesContent() {
 
 	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
 
-	const filteredAssignees = useFuse(assignees, searchQuery, fuseOptions)
+	const filteredAssignees = useFilteredAssignees(assignees, searchQuery)
 
 	function handleStatusEditableChange(checked: boolean) {
 		updateSettings({

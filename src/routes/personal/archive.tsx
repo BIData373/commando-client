@@ -8,6 +8,7 @@ import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithActions"
 import { formatDateShort } from "src/functions/date-utils"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
+import { COLUMN_LABELS, TASK_COLUMN_ID } from "src/utils/task-table-utils"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../providers/UserViewProvider"
 
@@ -22,28 +23,33 @@ export const Route = createFileRoute("/personal/archive")({
 })
 
 const ARCHIVE_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
-	"title",
-	"status",
-	"assignee",
-	"deadlineType",
-	"source",
-	"workspace",
-	"archivedAt",
-	"createdAt",
-	"tags",
-	"updatedAt",
+	TASK_COLUMN_ID.title,
+	TASK_COLUMN_ID.status,
+	TASK_COLUMN_ID.assignee,
+	TASK_COLUMN_ID.deadlineType,
+	TASK_COLUMN_ID.source,
+	TASK_COLUMN_ID.workspace,
+	TASK_COLUMN_ID.archivedAt,
+	TASK_COLUMN_ID.createdAt,
+	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.notes,
+	TASK_COLUMN_ID.updatedAt,
 ]
 
 const ARCHIVE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
-	"tags",
-	"updatedAt",
+	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.notes,
+	TASK_COLUMN_ID.updatedAt,
 ])
 
 const ARCHIVE_EXTRA_COLUMNS: ColumnDef<TaskRowWithWorkspaceDto>[] = [
 	{
-		id: "archivedAt",
+		id: TASK_COLUMN_ID.archivedAt,
 		header: ({ column }) => (
-			<ColumnHeaderWithActions label="הועבר לארכיון" column={column} />
+			<ColumnHeaderWithActions
+				label={COLUMN_LABELS.archivedAt}
+				column={column}
+			/>
 		),
 		size: 140,
 		enableColumnFilter: false,
@@ -67,6 +73,14 @@ function PersonalArchivePage() {
 		})
 	}
 
+	function handleAddComment(taskId: number) {
+		navigate({
+			to: "/personal/archive/task/$taskId",
+			params: { taskId: String(taskId) },
+			search: { view: TasksView.TABLE, focusComment: true },
+		})
+	}
+
 	return (
 		<UserViewProvider
 			defaultColumnOrder={ARCHIVE_DEFAULT_COLUMN_ORDER}
@@ -78,8 +92,11 @@ function PersonalArchivePage() {
 					filePrefix="ארכיון אישי"
 					onOpenTask={handleOpenTask}
 					isArchived={true}
-					extraColumnsMeta={[{ id: "archivedAt", label: "הועבר לארכיון" }]}
+					extraColumnsMeta={[
+						{ id: TASK_COLUMN_ID.archivedAt, label: COLUMN_LABELS.archivedAt },
+					]}
 					extraColumns={ARCHIVE_EXTRA_COLUMNS}
+					onAddComment={handleAddComment}
 				/>
 			</TasksFiltersProvider>
 		</UserViewProvider>

@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
+import { useSearch } from "@tanstack/react-router"
 import { MoreVertical, Trash2 } from "lucide-react"
-import { type RefObject, useState } from "react"
+import { type RefObject, useEffect, useRef, useState } from "react"
 import {
 	getListMessagesQueryKey,
 	useCreateMessage,
@@ -8,6 +9,7 @@ import {
 	useListMessages,
 } from "src/api/message/message"
 import {
+	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
@@ -35,18 +37,44 @@ function TaskCommentsSection({
 	commentsDividerRef,
 }: TaskCommentsSectionProps) {
 	const [commentValue, setCommentValue] = useState("")
+	const textareaRef = useRef<HTMLTextAreaElement>(null)
+	const { focusComment } = useSearch({ strict: false }) as {
+		focusComment?: boolean
+	}
+
+	useEffect(() => {
+		if (focusComment) {
+			requestAnimationFrame(() => {
+				textareaRef.current?.scrollIntoView({ behavior: "smooth" })
+				textareaRef.current?.focus()
+			})
+		}
+	}, [focusComment])
+
 	const currentUser = useCurrentUser()
 
 	const { data: messages = [] } = useListMessages({ taskId })
 
+	function handleSettled() {
+		invalidateQueries([
+			getListMessagesQueryKey({ taskId }),
+			getGetTaskQueryKey({ id: taskId }),
+			getListTaskRowsQueryKey(),
+			getListPersonalTaskRowsQueryKey(),
+		])
+	}
+
 	const { mutate: createMessage, isPending: isSendingComment } =
-		useCreateMessage()
-	const { mutate: deleteMessage } = useDeleteMessage({
-		mutation: {
-			onSuccess() {
-				invalidateQueries([getListMessagesQueryKey({ taskId })])
+		useCreateMessage({
+			mutation: {
+				onSettled: handleSettled,
+				onSuccess() {
+					setCommentValue("")
+				},
 			},
-		},
+		})
+	const { mutate: deleteMessage } = useDeleteMessage({
+		mutation: { onSettled: handleSettled },
 	})
 
 	function handleCommentInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -63,19 +91,7 @@ function TaskCommentsSection({
 	function submitComment() {
 		const content = commentValue.trim()
 		if (!content) return
-		createMessage(
-			{ data: { taskId, content } },
-			{
-				onSuccess() {
-					setCommentValue("")
-					invalidateQueries([
-						getListMessagesQueryKey({ taskId }),
-						getListTaskRowsQueryKey(),
-						getListPersonalTaskRowsQueryKey(),
-					])
-				},
-			},
-		)
+		createMessage({ data: { taskId, content } })
 	}
 
 	return (
@@ -83,6 +99,7 @@ function TaskCommentsSection({
 			<CommentsDivider taskId={taskId} dividerRef={commentsDividerRef} />
 			<TextareaRow>
 				<CommentsTextarea
+					ref={textareaRef}
 					value={commentValue}
 					onChange={handleCommentInput}
 					onKeyDown={handleCommentKeyDown}

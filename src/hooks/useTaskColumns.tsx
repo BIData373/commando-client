@@ -17,6 +17,7 @@ import {
 	COLUMN_LABELS,
 	DEFAULT_COLUMN_ORDER,
 	TASK_COLUMN_DEFINITIONS,
+	TASK_COLUMN_ID,
 } from "src/utils/task-table-utils"
 import { DeadlineTypeTag } from "../components/shared/DeadlineTypeTag"
 import EllipsisTooltip from "../components/shared/EllipsisTooltip"
@@ -51,6 +52,7 @@ export interface TaskArchiveEntry {
 
 interface ActionsConfig {
 	onEdit?: (taskId: number) => void
+	onAddComment?: (taskId: number) => void
 	onArchive?(tasks: TaskArchiveEntry[]): void
 	onUnarchive?(tasks: TaskArchiveEntry[]): void
 	onDelete?(taskIds: number[]): void
@@ -106,7 +108,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 
 		const pinnedStartColumn: ColumnDef<TTask> = selectMode?.enabled
 			? {
-					id: "select",
+					id: TASK_COLUMN_ID.select,
 					size: 61,
 					enableSorting: false,
 					enableColumnFilter: false,
@@ -131,8 +133,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					),
 				}
 			: {
-					id: "id",
-					accessorKey: "id",
+					id: TASK_COLUMN_ID.id,
+					accessorKey: TASK_COLUMN_ID.id,
 					header: ({ column }) => (
 						<ColumnHeaderWithActions label={COLUMN_LABELS.id} column={column} />
 					),
@@ -156,7 +158,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 		const pinnedEndColumn: ColumnDef<TTask> | undefined =
 			showMenuColumn && actions
 				? {
-						id: "actions",
+						id: TASK_COLUMN_ID.actions,
 						size: 45,
 						enableSorting: false,
 						enableColumnFilter: false,
@@ -167,6 +169,9 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						}) => {
 							const handleEdit = actions.onEdit
 								? () => actions.onEdit?.(id)
+								: undefined
+							const handleAddComment = actions.onAddComment
+								? () => actions.onAddComment?.(id)
 								: undefined
 							const handleArchive = actions.onArchive
 								? () => actions.onArchive?.([{ id, assigneeId: assignee?.id }])
@@ -184,11 +189,14 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							return (
 								<RowActionsMenu
 									workspaceId={workspaceId}
-									onEdit={handleEdit}
-									onArchive={handleArchive}
-									onUnarchive={handleUnarchive}
-									onEnterSelect={handleEnterSelect}
-									onDelete={handleDelete}
+									actions={{
+										onEdit: handleEdit,
+										onAddComment: handleAddComment,
+										onArchive: handleArchive,
+										onUnarchive: handleUnarchive,
+										onEnterSelect: handleEnterSelect,
+										onDelete: handleDelete,
+									}}
 								/>
 							)
 						},
@@ -197,10 +205,11 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 
 		const middleColumns = [
 			{
-				id: "title",
-				accessorKey: "title",
+				id: TASK_COLUMN_ID.title,
+				accessorKey: TASK_COLUMN_ID.title,
 				header: COLUMN_LABELS.title,
 				size: 300,
+				minSize: 160,
 				meta: { grow: true },
 				enableSorting: false,
 				enableColumnFilter: false,
@@ -246,7 +255,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				),
 			},
 			{
-				id: "status",
+				id: TASK_COLUMN_ID.status,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.status}
@@ -281,7 +290,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					),
 			},
 			{
-				id: "assignee",
+				id: TASK_COLUMN_ID.assignee,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.assignee}
@@ -304,8 +313,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					),
 			},
 			{
-				id: "deadlineType",
-				accessorKey: "deadlineType",
+				id: TASK_COLUMN_ID.deadlineType,
+				accessorKey: TASK_COLUMN_ID.deadlineType,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.deadlineType}
@@ -389,7 +398,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				},
 			},
 			{
-				id: "source",
+				id: TASK_COLUMN_ID.source,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.source}
@@ -433,7 +442,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				},
 			},
 			{
-				id: "lastMessage",
+				id: TASK_COLUMN_ID.lastMessage,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.lastMessage}
@@ -441,6 +450,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					/>
 				),
 				size: 100,
+				minSize: 70,
 				meta: { grow: true },
 				enableSorting: false,
 				enableColumnFilter: false,
@@ -474,7 +484,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				},
 			},
 			{
-				id: "tags",
+				id: TASK_COLUMN_ID.tags,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.tags}
@@ -483,6 +493,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					/>
 				),
 				size: 100,
+				minSize: 70,
 				enableSorting: false,
 				...TASK_COLUMN_DEFINITIONS.tags,
 				meta: { grow: true },
@@ -491,8 +502,21 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				),
 			},
 			{
-				id: "createdAt",
-				accessorKey: "createdAt",
+				id: TASK_COLUMN_ID.notes,
+				accessorKey: TASK_COLUMN_ID.notes,
+				header: COLUMN_LABELS.notes,
+				size: 100,
+				enableSorting: false,
+				enableColumnFilter: false,
+				meta: { grow: true },
+				cell: ({ getValue }) => {
+					const notes = getValue<string>()
+					return notes && <NotesText tooltip={notes}>{notes}</NotesText>
+				},
+			},
+			{
+				id: TASK_COLUMN_ID.createdAt,
+				accessorKey: TASK_COLUMN_ID.createdAt,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.createdAt}
@@ -507,8 +531,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				),
 			},
 			{
-				id: "updatedAt",
-				accessorKey: "updatedAt",
+				id: TASK_COLUMN_ID.updatedAt,
+				accessorKey: TASK_COLUMN_ID.updatedAt,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.updatedAt}
@@ -723,6 +747,12 @@ const CommentText = styled.span`
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+`
+
+const NotesText = styled(EllipsisTooltip)`
+  font-size: var(--fs-btn);
+  line-height: 20px;
+  color: var(--sea-ink-soft);
 `
 
 const DateText = styled.span`

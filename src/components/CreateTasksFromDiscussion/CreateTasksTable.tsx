@@ -100,6 +100,7 @@ function CreateTasksTable({
 			dueDate: null,
 			assigneeIds: [],
 			assigneeDetails: {},
+			notes: "",
 			flagged: false,
 		}
 	}, [workspaceId])
@@ -119,6 +120,7 @@ function CreateTasksTable({
 			assigneeDetails: Object.fromEntries(
 				task.assigneeStatuses.map((s) => [s.assignee.id, s.description]),
 			),
+			notes: task.notes ?? "",
 			flagged: task.flagged,
 		}
 	}, [])
@@ -215,7 +217,12 @@ function CreateTasksTable({
 	}
 
 	function handleSave() {
-		const filled = rows.filter((r) => r.title.trim())
+		const filled = rows
+			.filter((r) => r.title.trim())
+			.map((r) => ({
+				...r,
+				tags: Array.from(new Set([...(r.tags ?? [])])),
+			}))
 		onSave(filled)
 	}
 

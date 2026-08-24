@@ -125,7 +125,8 @@ const TriggerButton = styled.button`
 
 const StyledPopoverContent = styled(PopoverContent)`
   direction: rtl;
-  width: 186px;
+  width: max-content;
+  min-width: 186px;
   padding: 4px;
   border-radius: 8px;
   gap: 0;

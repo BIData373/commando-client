@@ -38,6 +38,7 @@ interface SourceFieldProps {
 	uniqueNames?: boolean
 	fields?: SourceFieldValidation
 	required?: boolean
+	hideDateLabel?: boolean
 }
 
 export default function SourceField({
@@ -51,6 +52,7 @@ export default function SourceField({
 	uniqueNames = false,
 	fields,
 	required = false,
+	hideDateLabel = false,
 }: SourceFieldProps) {
 	const [sourceQuery, setSourceQuery] = useState(source)
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -183,8 +185,12 @@ export default function SourceField({
 					</Popover>
 				</FormField>
 			</SourceFormItem>
-			<DateFormItem>
-				<FormField field={fields?.date} label="תאריך" required={required}>
+			<DateFormItem $alignEnd={hideDateLabel}>
+				<FormField
+					field={fields?.date}
+					label={hideDateLabel ? "" : "תאריך"}
+					required={required}
+				>
 					<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
 						<TooltipProvider>
 							<Tooltip>
@@ -242,11 +248,12 @@ const SourceFormItem = styled.div`
   min-width: 0;
 `
 
-const DateFormItem = styled.div`
+const DateFormItem = styled.div<{ $alignEnd?: boolean }>`
   direction: ltr;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  align-self: ${({ $alignEnd }) => ($alignEnd ? "flex-end" : "flex-start")};
   width: 160px;
   flex-shrink: 0;
 `

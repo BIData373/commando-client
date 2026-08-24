@@ -36,7 +36,7 @@ const HighlightMatch = memo(
 			})
 		}, [normalizedQuery, text, variant])
 
-		return <TextWrapper dir="auto">{content}</TextWrapper>
+		return <span>{content}</span>
 	},
 )
 
@@ -53,8 +53,4 @@ const HighlightMark = styled.mark`
 
 const HighlightBold = styled.span`
   font-weight: 700;
-`
-
-const TextWrapper = styled.span`
-  unicode-bidi: isolate;
 `
