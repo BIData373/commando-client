@@ -65,7 +65,8 @@ const HeaderRoot = styled.header`
 `
 
 const HeaderInner = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(240px, auto) 1fr minmax(240px, auto);
   align-items: center;
   height: 56px;
 `
@@ -74,7 +75,8 @@ const StartSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 0 0 auto;
+  justify-content: flex-start;
+  min-width: 0;
 `
 
 const CenterSection = styled.div`
@@ -82,7 +84,6 @@ const CenterSection = styled.div`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  flex: 1 1 0;
   min-width: 0;
   overflow: hidden;
 `
@@ -95,6 +96,8 @@ const CenterTitle = styled.div`
   color: var(--colors-base-neutral-11);
   min-width: 0;
   overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -104,7 +107,7 @@ const EndSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  flex: 0 0 auto;
+  min-width: 0;
 `
 
 const EndSectionSeparator = styled(Separator)`
