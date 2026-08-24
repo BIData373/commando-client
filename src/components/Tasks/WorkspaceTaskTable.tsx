@@ -25,7 +25,7 @@ import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
 } from "src/utils/filter-utils"
-import type { TaskColumnMeta } from "src/utils/task-table-utils"
+import { TASK_COLUMN_ID, type TaskColumnMeta } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
@@ -62,7 +62,7 @@ function WorkspaceTaskTable({
 	clearColumnFilters,
 	onColumnFilterChange,
 }: WorkspaceTaskTableProps) {
-	const { columnOrder, hiddenColumns } = useTasksFilters()
+	const { columnOrder, hiddenColumns, assigneeFilter } = useTasksFilters()
 
 	const {
 		workspace: { id: workspaceId, title: workspaceTitle },
@@ -86,15 +86,22 @@ function WorkspaceTaskTable({
 		...(deadlineTypeFilter.length
 			? [{ id: "deadlineType", value: deadlineTypeFilter }]
 			: []),
+		...(assigneeFilter.length
+			? [{ id: "assignee", value: assigneeFilter }]
+			: []),
 	]
 
 	const noWorkspaceColumnOrder = useMemo(
-		() => without(columnOrder, "workspace") as (keyof TaskRowDto)[],
+		() =>
+			without(columnOrder, TASK_COLUMN_ID.workspace) as (keyof TaskRowDto)[],
 		[columnOrder],
 	)
 
 	const noWorkspaceHiddenColumns = useMemo(
-		() => new Set([...hiddenColumns].filter((item) => item !== "workspace")),
+		() =>
+			new Set(
+				[...hiddenColumns].filter((item) => item !== TASK_COLUMN_ID.workspace),
+			),
 		[hiddenColumns],
 	)
 
