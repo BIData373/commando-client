@@ -142,8 +142,10 @@ const Description = styled.p`
 `
 
 const ManagerListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   flex: 1;
   max-width: 420px;
   min-height: 0;
-  overflow: hidden;
+  direction: ltr;
 `

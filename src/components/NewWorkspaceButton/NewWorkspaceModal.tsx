@@ -11,6 +11,7 @@ import { Dialog } from "src/components/ui/dialog"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { invalidateQueries } from "src/queryClient"
 import { isUrlNameExist, isWorkspaceExist } from "src/utils/error-utils"
+import type { WorkspaceDetailsErrors } from "src/utils/workspace-utils"
 import logoWithText from "../../assets/logo-with-text-dark.png"
 import quickPage from "../../assets/quick_page.svg"
 import requestSentImg from "../../assets/request_sent.svg"
@@ -35,12 +36,6 @@ const VISIBLE_STEPS: StepConfig[] = [
 	{ key: Steps.Managers, label: "הגדרות מנהלים" },
 ]
 
-interface StepOneErrors {
-	title?: string
-	urlName?: string
-	pikudId?: string
-}
-
 interface NewWorkspaceModalProps {
 	onClose(): void
 }
@@ -48,7 +43,7 @@ interface NewWorkspaceModalProps {
 export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 	const currentUser = useCurrentUser()
 	const [step, setStep] = useState<Steps>(Steps.Details)
-	const [serverErrors, setServerErrors] = useState<StepOneErrors>({})
+	const [serverErrors, setServerErrors] = useState<WorkspaceDetailsErrors>({})
 	const [showErrors, setShowErrors] = useState(false)
 	const [createdRequestId, setCreatedRequestId] = useState<number | null>(null)
 	const [managers, setManagers] = useState<MirageUserDto[]>([])
@@ -393,15 +388,16 @@ const FormBody = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 5px;
-  direction: ltr;
+  direction: rtl;
   overflow-y: auto;
+  min-height: 0;
 `
 
 const FormBodyContent = styled.div`
-  direction: rtl;
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-height: 0;
 `
 
 const SuccessBody = styled.div`

@@ -5,7 +5,11 @@ import { useState } from "react"
 import type { CreateWorkspaceRequestDto } from "src/api/model"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { formatMesibaIcon } from "src/utils/icon-utils"
-import { DATA_COUNTER_CLASS, NAME_MAX_LENGTH } from "src/utils/workspace-utils"
+import {
+	DATA_COUNTER_CLASS,
+	NAME_MAX_LENGTH,
+	type WorkspaceDetailsErrors,
+} from "src/utils/workspace-utils"
 import { IconDropdown } from "../settings/IconDropdown"
 import { SelectCommand } from "../settings/SelectCommand"
 import { FormField } from "../shared/FormField"
@@ -20,14 +24,8 @@ import { StepFooter } from "./StepFooter"
 
 const REQUIRED_ERROR_MESSAGE = "שדה חובה"
 
-interface NewWorkspaceDetailsErrors {
-	title?: string
-	urlName?: string
-	pikudId?: string
-}
-
 interface NewWorkspaceDetailsProps {
-	serverErrors: NewWorkspaceDetailsErrors
+	serverErrors: WorkspaceDetailsErrors
 	showErrors: boolean
 	initialValues: CreateWorkspaceRequestDto
 	setFormValues(values: CreateWorkspaceRequestDto): void
@@ -50,7 +48,7 @@ export function NewWorkspaceDetailsForm({
 	})
 	const values = useStore(form.store, (s) => s.values)
 
-	const errors: NewWorkspaceDetailsErrors = {
+	const errors: WorkspaceDetailsErrors = {
 		title: !values.title.trim() ? REQUIRED_ERROR_MESSAGE : serverErrors.title,
 		urlName: !values.urlName ? REQUIRED_ERROR_MESSAGE : serverErrors.urlName,
 		pikudId: !values.pikudId ? REQUIRED_ERROR_MESSAGE : undefined,
