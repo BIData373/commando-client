@@ -14,7 +14,6 @@ interface CellValue {
 	value: string
 	fontColor?: string
 	bgColor?: string
-	link?: string
 }
 
 interface ExportColumn<T> {
@@ -97,9 +96,11 @@ const COLUMN_DEFS: Partial<
 				t.source,
 				t.createdAt,
 			)
-			const dateStr = displayDate ? formatDate(displayDate) : ""
+			const dateString = displayDate ? formatDate(displayDate) : ""
 			const value =
-				typeStr && dateStr ? `${typeStr} | ${dateStr}` : typeStr || dateStr
+				typeStr && dateString
+					? `${typeStr} | ${dateString}`
+					: typeStr || dateString
 			return { value, ...getDeadlineDateStyle(t) }
 		},
 	},
@@ -110,10 +111,8 @@ const COLUMN_DEFS: Partial<
 				return ""
 			}
 
-			const source = `${t.source.name}${t.source.date ? ` | ${formatDate(t.source.date)}` : ""}}`
-			return t.source.attachmentKey
-				? { value: source, link: t.source.attachmentKey }
-				: source
+			const dateString = t.source.date ? formatDate(t.source.date) : ""
+			return dateString ? `${t.source.name} | ${dateString}` : t.source.name
 		},
 	},
 	[TASK_COLUMN_ID.tags]: {
@@ -221,11 +220,6 @@ async function exportToExcel<T>(
 					pattern: "solid",
 					fgColor: { argb: lighten(data.bgColor, 0.1) },
 				}
-			}
-
-			if (data?.link) {
-				cell.value = { text: data.value, hyperlink: data.link }
-				cell.font = { underline: true, color: { argb: "FF0563C1" } }
 			}
 		})
 	})

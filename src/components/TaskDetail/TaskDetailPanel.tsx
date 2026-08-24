@@ -8,7 +8,6 @@ import {
 	type TaskDetailsDto,
 } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
-import { getAttachmentSignedUrl } from "src/api/s3/s3"
 import {
 	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
@@ -16,7 +15,7 @@ import {
 	useDeleteTask,
 } from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
-import { downloadFromUrl } from "src/functions/download-utils"
+import { useAttachmentDownload } from "src/hooks/useAttachmentDownload"
 import { invalidateQueries } from "src/queryClient"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
@@ -109,25 +108,10 @@ function TaskDetailPanel({
 
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
 
-	const [isDownloadingAttachment, setIsDownloadingAttachment] = useState(false)
+	const { isDownloading, download } = useAttachmentDownload()
 
-	async function handleAttachmentDownload() {
-		if (
-			!source?.attachmentKey ||
-			!source?.attachmentName ||
-			isDownloadingAttachment
-		)
-			return
-		setIsDownloadingAttachment(true)
-		try {
-			const { url } = await getAttachmentSignedUrl({
-				key: source.attachmentKey,
-				filename: source.attachmentName,
-			})
-			if (url) await downloadFromUrl(url, source.attachmentName)
-		} finally {
-			setIsDownloadingAttachment(false)
-		}
+	function handleAttachmentDownload() {
+		download(source?.attachmentKey, source?.attachmentName)
 	}
 
 	function handleScroll() {
@@ -259,10 +243,10 @@ function TaskDetailPanel({
 											<Paperclip size={16} />
 											<AttachmentDownloadButton
 												onClick={handleAttachmentDownload}
-												disabled={isDownloadingAttachment}
+												disabled={isDownloading}
 											>
 												{source.attachmentName}
-												{isDownloadingAttachment && <SpinIcon size={12} />}
+												{isDownloading && <SpinIcon size={12} />}
 											</AttachmentDownloadButton>
 										</>
 									)}
