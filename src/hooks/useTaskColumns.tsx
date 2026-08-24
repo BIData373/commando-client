@@ -15,6 +15,7 @@ import {
 	COLUMN_LABELS,
 	DEFAULT_COLUMN_ORDER,
 	TASK_COLUMN_DEFINITIONS,
+	TASK_COLUMN_ID,
 } from "src/utils/task-table-utils"
 import { DeadlineTypeTag } from "../components/shared/DeadlineTypeTag"
 import EllipsisTooltip from "../components/shared/EllipsisTooltip"
@@ -93,7 +94,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 
 		const pinnedStartColumn: ColumnDef<TTask> = selectMode?.enabled
 			? {
-					id: "select",
+					id: TASK_COLUMN_ID.select,
 					size: 61,
 					enableSorting: false,
 					enableColumnFilter: false,
@@ -118,8 +119,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					),
 				}
 			: {
-					id: "id",
-					accessorKey: "id",
+					id: TASK_COLUMN_ID.id,
+					accessorKey: TASK_COLUMN_ID.id,
 					header: ({ column }) => (
 						<ColumnHeaderWithActions label={COLUMN_LABELS.id} column={column} />
 					),
@@ -143,7 +144,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 		const pinnedEndColumn: ColumnDef<TTask> | undefined =
 			showMenuColumn && actions
 				? {
-						id: "actions",
+						id: TASK_COLUMN_ID.actions,
 						size: 45,
 						enableSorting: false,
 						enableColumnFilter: false,
@@ -188,8 +189,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 
 		const middleColumns = [
 			{
-				id: "title",
-				accessorKey: "title",
+				id: TASK_COLUMN_ID.title,
+				accessorKey: TASK_COLUMN_ID.title,
 				header: COLUMN_LABELS.title,
 				size: 300,
 				minSize: 160,
@@ -238,7 +239,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				),
 			},
 			{
-				id: "status",
+				id: TASK_COLUMN_ID.status,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.status}
@@ -273,7 +274,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					),
 			},
 			{
-				id: "assignee",
+				id: TASK_COLUMN_ID.assignee,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.assignee}
@@ -296,8 +297,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					),
 			},
 			{
-				id: "deadlineType",
-				accessorKey: "deadlineType",
+				id: TASK_COLUMN_ID.deadlineType,
+				accessorKey: TASK_COLUMN_ID.deadlineType,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.deadlineType}
@@ -381,7 +382,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				},
 			},
 			{
-				id: "source",
+				id: TASK_COLUMN_ID.source,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.source}
@@ -425,7 +426,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				},
 			},
 			{
-				id: "lastMessage",
+				id: TASK_COLUMN_ID.lastMessage,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.lastMessage}
@@ -467,7 +468,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				},
 			},
 			{
-				id: "tags",
+				id: TASK_COLUMN_ID.tags,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.tags}
@@ -485,8 +486,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				),
 			},
 			{
-				id: "createdAt",
-				accessorKey: "createdAt",
+				id: TASK_COLUMN_ID.createdAt,
+				accessorKey: TASK_COLUMN_ID.createdAt,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.createdAt}
@@ -501,8 +502,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				),
 			},
 			{
-				id: "updatedAt",
-				accessorKey: "updatedAt",
+				id: TASK_COLUMN_ID.updatedAt,
+				accessorKey: TASK_COLUMN_ID.updatedAt,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.updatedAt}

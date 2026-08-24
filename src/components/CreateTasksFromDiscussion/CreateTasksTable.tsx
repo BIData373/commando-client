@@ -215,7 +215,12 @@ function CreateTasksTable({
 	}
 
 	function handleSave() {
-		const filled = rows.filter((r) => r.title.trim())
+		const filled = rows
+			.filter((r) => r.title.trim())
+			.map((r) => ({
+				...r,
+				tags: Array.from(new Set([...(r.tags ?? [])])),
+			}))
 		onSave(filled)
 	}
 
