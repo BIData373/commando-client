@@ -23,17 +23,22 @@ export function useUpdateTaskStatus({
 			...(workspaceId ? [getListTaskRowsQueryKey({ workspaceId })] : []),
 		]
 		invalidateQueries(keys)
+	}
+
+	function handleSuccess() {
 		onSuccess?.()
 	}
 
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
+			onSuccess: handleSuccess,
 			onSettled: (data) => data && handleSettled(data.task.id),
 		},
 	})
 
 	const { mutate: updateTask } = useUpdateTask({
 		mutation: {
+			onSuccess: handleSuccess,
 			onSettled: (data) => data && handleSettled(data.id),
 		},
 	})
