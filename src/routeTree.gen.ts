@@ -9,9 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as NewWorkspaceRouteImport } from './routes/new-workspace'
+import { Route as HomeRouteImport } from './routes/_home'
 import { Route as PersonalRouteImport } from './routes/personal'
+import { Route as HomeIndexRouteImport } from './routes/_home/index'
+import { Route as HomeNewWorkspaceRouteImport } from './routes/_home/new-workspace'
 import { Route as PersonalIndexRouteImport } from './routes/personal/index'
 import { Route as PersonalArchiveRouteImport } from './routes/personal/archive'
 import { Route as PersonalTasksRouteImport } from './routes/personal/tasks'
@@ -48,20 +49,24 @@ import { Route as WorkspaceUrlNameDashboardTaskTaskIdIndexRouteImport } from './
 import { Route as WorkspaceUrlNameDashboardTaskTaskIdEditRouteImport } from './routes/workspace/$urlName/dashboard/task/$taskId/edit'
 import { Route as WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRouteImport } from './routes/workspace/$urlName/settings/assignees/$assigneeId/index'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NewWorkspaceRoute = NewWorkspaceRouteImport.update({
-  id: '/new-workspace',
-  path: '/new-workspace',
+const HomeRoute = HomeRouteImport.update({
+  id: '/_home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PersonalRoute = PersonalRouteImport.update({
   id: '/personal',
   path: '/personal',
   getParentRoute: () => rootRouteImport,
+} as any)
+const HomeIndexRoute = HomeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => HomeRoute,
+} as any)
+const HomeNewWorkspaceRoute = HomeNewWorkspaceRouteImport.update({
+  id: '/new-workspace',
+  path: '/new-workspace',
+  getParentRoute: () => HomeRoute,
 } as any)
 const PersonalIndexRoute = PersonalIndexRouteImport.update({
   id: '/',
@@ -264,10 +269,10 @@ const WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/new-workspace': typeof NewWorkspaceRoute
+  '/': typeof HomeIndexRoute
   '/personal': typeof PersonalRouteWithChildren
   '/workspace/$urlName': typeof WorkspaceUrlNameRouteRouteWithChildren
+  '/new-workspace': typeof HomeNewWorkspaceRoute
   '/personal/archive': typeof PersonalArchiveRouteWithChildren
   '/personal/tasks': typeof PersonalTasksRouteWithChildren
   '/personal/': typeof PersonalIndexRoute
@@ -304,10 +309,10 @@ export interface FileRoutesByFullPath {
   '/workspace/$urlName/settings/assignees/$assigneeId/': typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/new-workspace': typeof NewWorkspaceRoute
+  '/new-workspace': typeof HomeNewWorkspaceRoute
   '/personal/archive': typeof PersonalArchiveRouteWithChildren
   '/personal/tasks': typeof PersonalTasksRouteWithChildren
+  '/': typeof HomeIndexRoute
   '/personal': typeof PersonalIndexRoute
   '/workspace/$urlName/archive': typeof WorkspaceUrlNameArchiveRouteWithChildren
   '/workspace/$urlName/dashboard': typeof WorkspaceUrlNameDashboardRouteWithChildren
@@ -334,12 +339,13 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/new-workspace': typeof NewWorkspaceRoute
+  '/_home': typeof HomeRouteWithChildren
   '/personal': typeof PersonalRouteWithChildren
   '/workspace/$urlName': typeof WorkspaceUrlNameRouteRouteWithChildren
+  '/_home/new-workspace': typeof HomeNewWorkspaceRoute
   '/personal/archive': typeof PersonalArchiveRouteWithChildren
   '/personal/tasks': typeof PersonalTasksRouteWithChildren
+  '/_home/': typeof HomeIndexRoute
   '/personal/': typeof PersonalIndexRoute
   '/personal/task/$taskId': typeof PersonalTaskTaskIdRouteWithChildren
   '/workspace/$urlName/archive': typeof WorkspaceUrlNameArchiveRouteWithChildren
@@ -377,9 +383,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/new-workspace'
     | '/personal'
     | '/workspace/$urlName'
+    | '/new-workspace'
     | '/personal/archive'
     | '/personal/tasks'
     | '/personal/'
@@ -416,10 +422,10 @@ export interface FileRouteTypes {
     | '/workspace/$urlName/settings/assignees/$assigneeId/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/new-workspace'
     | '/personal/archive'
     | '/personal/tasks'
+    | '/'
     | '/personal'
     | '/workspace/$urlName/archive'
     | '/workspace/$urlName/dashboard'
@@ -445,12 +451,13 @@ export interface FileRouteTypes {
     | '/workspace/$urlName/settings/assignees/$assigneeId'
   id:
     | '__root__'
-    | '/'
-    | '/new-workspace'
+    | '/_home'
     | '/personal'
     | '/workspace/$urlName'
+    | '/_home/new-workspace'
     | '/personal/archive'
     | '/personal/tasks'
+    | '/_home/'
     | '/personal/'
     | '/personal/task/$taskId'
     | '/workspace/$urlName/archive'
@@ -486,26 +493,18 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  NewWorkspaceRoute: typeof NewWorkspaceRoute
+  HomeRoute: typeof HomeRouteWithChildren
   PersonalRoute: typeof PersonalRouteWithChildren
   WorkspaceUrlNameRouteRoute: typeof WorkspaceUrlNameRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
+    '/_home': {
+      id: '/_home'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/new-workspace': {
-      id: '/new-workspace'
-      path: '/new-workspace'
-      fullPath: '/new-workspace'
-      preLoaderRoute: typeof NewWorkspaceRouteImport
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/personal': {
@@ -514,6 +513,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/personal'
       preLoaderRoute: typeof PersonalRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_home/': {
+      id: '/_home/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof HomeIndexRouteImport
+      parentRoute: typeof HomeRoute
+    }
+    '/_home/new-workspace': {
+      id: '/_home/new-workspace'
+      path: '/new-workspace'
+      fullPath: '/new-workspace'
+      preLoaderRoute: typeof HomeNewWorkspaceRouteImport
+      parentRoute: typeof HomeRoute
     }
     '/personal/': {
       id: '/personal/'
@@ -762,6 +775,18 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface HomeRouteChildren {
+  HomeNewWorkspaceRoute: typeof HomeNewWorkspaceRoute
+  HomeIndexRoute: typeof HomeIndexRoute
+}
+
+const HomeRouteChildren: HomeRouteChildren = {
+  HomeNewWorkspaceRoute: HomeNewWorkspaceRoute,
+  HomeIndexRoute: HomeIndexRoute,
+}
+
+const HomeRouteWithChildren = HomeRoute._addFileChildren(HomeRouteChildren)
 
 interface PersonalArchiveTaskTaskIdRouteChildren {
   PersonalArchiveTaskTaskIdIndexRoute: typeof PersonalArchiveTaskTaskIdIndexRoute
@@ -1025,8 +1050,7 @@ const WorkspaceUrlNameRouteRouteWithChildren =
   )
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  NewWorkspaceRoute: NewWorkspaceRoute,
+  HomeRoute: HomeRouteWithChildren,
   PersonalRoute: PersonalRouteWithChildren,
   WorkspaceUrlNameRouteRoute: WorkspaceUrlNameRouteRouteWithChildren,
 }

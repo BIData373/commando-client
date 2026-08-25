@@ -1,7 +1,9 @@
 import styled from "@emotion/styled"
-import { useCallback } from "react"
-import { type PermissionDto, PermissionType, type UserDto } from "src/api/model"
-import { useCurrentUser } from "src/hooks/useCurrentUser"
+import {
+	type MirageUserDto,
+	PermissionType,
+	type UserInfoDto,
+} from "src/api/model"
 import { navigateToUserChat } from "src/utils/user-utils"
 import noUsersFound from "../../assets/empty-states/no-users-found.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -9,34 +11,39 @@ import { TrashButton } from "../shared/TrashButton"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { DropdownPermission } from "./DropdownPermission"
 
-interface UserPermissionListProps {
-	permissions: PermissionDto[]
-	onDelete: (user: UserDto) => void
-	onTypeChange: (user: UserDto, type: PermissionType) => void
+const PermissionTypeLabel: Record<PermissionType, string> = {
+	[PermissionType.MANAGER]: "ניהול",
+	[PermissionType.VIEWER]: "צפייה",
 }
 
-export function UserPermissionList({
-	permissions,
+interface UserPermissionListProps<T> {
+	items: T[]
+	getUser: (item: T) => MirageUserDto
+	getType?: (item: T) => PermissionType
+	onDelete: (item: T) => void
+	onTypeChange?: (item: T, type: PermissionType) => void
+	canDelete?: (item: T, index: number) => boolean
+	canChangeType?: (item: T) => boolean
+}
+
+export function UserPermissionList<T>({
+	items,
+	getUser,
+	getType,
 	onDelete,
 	onTypeChange,
-}: UserPermissionListProps) {
-	const currentUser = useCurrentUser()
-
-	function handleClickUserInfo(user: UserDto, type: PermissionType) {
+	canDelete,
+	canChangeType,
+}: UserPermissionListProps<T>) {
+	function handleClickUserInfo(item: T, type: PermissionType) {
 		if (type === PermissionType.MANAGER) {
-			navigateToUserChat(user)
+			navigateToUserChat(getUser(item))
 		}
 	}
 
-	const isCurrentUserPermitted = useCallback(
-		(user: UserDto) =>
-			user.upn !== currentUser.upn || !!currentUser?.info?.isBI,
-		[currentUser],
-	)
-
 	return (
 		<UserListRoot>
-			{permissions.length === 0 ? (
+			{items.length === 0 ? (
 				<CenterContainer>
 					<EmptyCardState
 						imgSrc={noUsersFound}
@@ -45,41 +52,55 @@ export function UserPermissionList({
 					/>
 				</CenterContainer>
 			) : (
-				permissions.map(({ user, type }) => (
-					<UserRow key={user.id}>
-						<UserInfo
-							$type={type}
-							onClick={() => handleClickUserInfo(user, type)}
-						>
-							<UserHeader>
-								<UserName title={user.info?.name}>{user.info?.name}</UserName>
-								<UserPersonalId title={user.upn}> - {user.upn}</UserPersonalId>
-							</UserHeader>
-							<UserSubtext title={user.info?.displayName}>
-								{user.info?.displayName}
-							</UserSubtext>
-						</UserInfo>
-						<DropdownPermission
-							value={type}
-							disabled={!isCurrentUserPermitted(user)}
-							onChange={(type) => onTypeChange(user, type)}
-						/>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<span>
-									<TrashButton
-										visible={isCurrentUserPermitted(user)}
-										onClick={() => onDelete(user)}
-										size={22}
-									/>
-								</span>
-							</TooltipTrigger>
-							<TooltipContent hidden={!isCurrentUserPermitted(user)}>
-								הסרת הרשאות
-							</TooltipContent>
-						</Tooltip>
-					</UserRow>
-				))
+				items.map((item, index) => {
+					const user = getUser(item)
+					const type = getType?.(item) ?? PermissionType.MANAGER
+					const deletable = canDelete?.(item, index) ?? true
+					const typeChangeable = canChangeType?.(item) ?? true
+
+					return (
+						<UserRow key={user.upn}>
+							<UserInfo
+								$type={type}
+								onClick={() => handleClickUserInfo(item, type)}
+							>
+								<UserHeader>
+									<UserName title={user.info?.name}>{user.info?.name}</UserName>
+									<UserPersonalId title={user.upn}>
+										{" "}
+										- {user.upn}
+									</UserPersonalId>
+								</UserHeader>
+								<UserSubtext title={user.info?.displayName}>
+									{user.info?.displayName}
+								</UserSubtext>
+							</UserInfo>
+							{onTypeChange ? (
+								<DropdownPermission
+									value={type}
+									disabled={!typeChangeable}
+									onChange={(t) => onTypeChange(item, t)}
+								/>
+							) : (
+								<StaticPermissionLabel>
+									{PermissionTypeLabel[type]}
+								</StaticPermissionLabel>
+							)}
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<span>
+										<TrashButton
+											visible={deletable}
+											onClick={() => onDelete(item)}
+											size={22}
+										/>
+									</span>
+								</TooltipTrigger>
+								<TooltipContent hidden={!deletable}>הסרת הרשאות</TooltipContent>
+							</Tooltip>
+						</UserRow>
+					)
+				})
 			)}
 		</UserListRoot>
 	)
@@ -112,7 +133,7 @@ const UserHeader = styled.div`
 
 const UserInfo = styled.div<{ $type: PermissionType }>`
   color: ${({ $type }) => ($type === PermissionType.MANAGER ? "var(--active-color)" : " var(--sea-ink)")};
-  
+
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -149,4 +170,10 @@ const CenterContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`
+
+const StaticPermissionLabel = styled.span`
+  font-size: var(--fs-base);
+  color: var(--text-color);
+  flex-shrink: 0;
 `
