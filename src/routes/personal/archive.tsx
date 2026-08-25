@@ -1,14 +1,17 @@
-import styled from "@emotion/styled"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
-import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithActions"
-import { formatDateShort } from "src/functions/date-utils"
+import { ARCHIVED_AT_COLUMN } from "src/components/Tasks/ArchivedAtColumn"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import { COLUMN_LABELS, TASK_COLUMN_ID } from "src/utils/task-table-utils"
+import {
+	ARCHIVE_DEFAULT_COLUMN_ORDER,
+	ARCHIVE_DEFAULT_HIDDEN,
+	COLUMN_LABELS,
+	TASK_COLUMN_ID,
+} from "src/utils/task-table-utils"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../providers/UserViewProvider"
 
@@ -22,45 +25,9 @@ export const Route = createFileRoute("/personal/archive")({
 	},
 })
 
-const ARCHIVE_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
-	TASK_COLUMN_ID.title,
-	TASK_COLUMN_ID.status,
-	TASK_COLUMN_ID.assignee,
-	TASK_COLUMN_ID.deadlineType,
-	TASK_COLUMN_ID.source,
-	TASK_COLUMN_ID.workspace,
-	TASK_COLUMN_ID.archivedAt,
-	TASK_COLUMN_ID.createdAt,
-	TASK_COLUMN_ID.tags,
-	TASK_COLUMN_ID.notes,
-	TASK_COLUMN_ID.updatedAt,
-]
-
-const ARCHIVE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
-	TASK_COLUMN_ID.tags,
-	TASK_COLUMN_ID.notes,
-	TASK_COLUMN_ID.updatedAt,
-])
-
-const ARCHIVE_EXTRA_COLUMNS: ColumnDef<TaskRowWithWorkspaceDto>[] = [
-	{
-		id: TASK_COLUMN_ID.archivedAt,
-		header: ({ column }) => (
-			<ColumnHeaderWithActions
-				label={COLUMN_LABELS.archivedAt}
-				column={column}
-			/>
-		),
-		size: 140,
-		enableColumnFilter: false,
-		accessorFn: (row) => row.archivedAt,
-		cell: ({
-			row: {
-				original: { archivedAt },
-			},
-		}) => <DateCell>{archivedAt && formatDateShort(archivedAt)}</DateCell>,
-	},
-]
+const ARCHIVE_EXTRA_COLUMNS = [
+	ARCHIVED_AT_COLUMN,
+] as ColumnDef<TaskRowWithWorkspaceDto>[]
 
 function PersonalArchivePage() {
 	const navigate = useNavigate()
@@ -102,9 +69,3 @@ function PersonalArchivePage() {
 		</UserViewProvider>
 	)
 }
-
-const DateCell = styled.span`
-  font-size: var(--fs-sm);
-  color: var(--sea-ink-soft);
-  padding-inline: 6px;
-`

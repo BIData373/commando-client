@@ -5,12 +5,8 @@ import { debounce } from "lodash"
 import { X } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
-import { getListAssigneesQueryKey } from "src/api/assignee/assignee"
 import type { UpdateWorkspaceDto } from "src/api/model"
-import {
-	getListPersonalTaskRowsQueryKey,
-	getListTaskRowsQueryKey,
-} from "src/api/task/task"
+import { getListPersonalTaskRowsQueryKey } from "src/api/task/task"
 import {
 	getGetPermittedWorkspacesQueryKey,
 	getListWorkspacesQueryKey,

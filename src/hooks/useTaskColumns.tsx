@@ -15,10 +15,10 @@ import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { invalidateQueries } from "src/queryClient"
 import {
 	COLUMN_LABELS,
-	DEFAULT_COLUMN_ORDER,
 	TASK_COLUMN_DEFINITIONS,
 	TASK_COLUMN_ID,
 } from "src/utils/task-table-utils"
+import { DateText } from "../components/shared/DateText"
 import { DeadlineTypeTag } from "../components/shared/DeadlineTypeTag"
 import EllipsisTooltip from "../components/shared/EllipsisTooltip"
 import FlagIcon from "../components/shared/FlagIcon"
@@ -60,7 +60,7 @@ interface ActionsConfig {
 }
 
 interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
-	columnOrder?: (keyof TTask)[]
+	columnOrder: (keyof TTask)[]
 	hiddenColumns?: Set<keyof TTask>
 	extraColumns?: ColumnDef<TTask>[]
 	searchQuery?: string
@@ -74,7 +74,7 @@ interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 }
 
 export function useTaskColumns<TTask extends TaskRowDto>({
-	columnOrder = DEFAULT_COLUMN_ORDER as (keyof TTask)[],
+	columnOrder,
 	hiddenColumns = new Set<keyof TTask>(),
 	extraColumns = [],
 	searchQuery,
@@ -752,10 +752,5 @@ const CommentText = styled.span`
 const NotesText = styled(EllipsisTooltip)`
   font-size: var(--fs-btn);
   line-height: 20px;
-  color: var(--sea-ink-soft);
-`
-
-const DateText = styled.span`
-  font-size: var(--fs-btn);
   color: var(--sea-ink-soft);
 `

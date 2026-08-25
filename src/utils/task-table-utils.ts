@@ -169,3 +169,29 @@ export const DISABLED_CLICK_COLUMNS = new Set<string>([
 export const TASK_ROW_ID_SEPARATOR = "_"
 
 export const HAS_ASSIGNEE_DATA_ATTR = "data-has-assignee"
+
+export const WORKSPACE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
+	TASK_COLUMN_ID.notes,
+	TASK_COLUMN_ID.updatedAt,
+])
+
+// ─── Archive ────────────────────────────────────────────────────────────────
+
+export const ARCHIVE_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
+	TASK_COLUMN_ID.title,
+	TASK_COLUMN_ID.status,
+	TASK_COLUMN_ID.assignee,
+	TASK_COLUMN_ID.deadlineType,
+	TASK_COLUMN_ID.source,
+	TASK_COLUMN_ID.workspace,
+	TASK_COLUMN_ID.archivedAt,
+	TASK_COLUMN_ID.createdAt,
+	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.notes,
+	TASK_COLUMN_ID.updatedAt,
+]
+
+export const ARCHIVE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
+	TASK_COLUMN_ID.tags,
+	...WORKSPACE_DEFAULT_HIDDEN,
+])

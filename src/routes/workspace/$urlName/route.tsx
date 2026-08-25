@@ -9,6 +9,10 @@ import {
 	useWorkspace,
 	WorkspaceProvider,
 } from "src/providers/WorkspaceProvider"
+import {
+	DEFAULT_COLUMN_ORDER,
+	WORKSPACE_DEFAULT_HIDDEN,
+} from "src/utils/task-table-utils"
 import { AuthorizationWrapper } from "src/wrappers/AuthorizationWrapper"
 import Header from "../../../components/Header"
 
@@ -28,7 +32,11 @@ function WorkspaceContent() {
 	const { workspace } = useWorkspace()
 
 	return (
-		<UserViewProvider workspaceId={workspace.id}>
+		<UserViewProvider
+			workspaceId={workspace.id}
+			defaultColumnOrder={DEFAULT_COLUMN_ORDER}
+			defaultHiddenColumns={WORKSPACE_DEFAULT_HIDDEN}
+		>
 			<AuthorizationWrapper type={PermissionType.VIEWER}>
 				<PageShell>
 					<Header />
