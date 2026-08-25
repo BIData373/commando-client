@@ -391,7 +391,7 @@ function CreateTaskModal({
 										<ImportantFlagTooltip side="left" />
 										<FlagIcon />
 										<CheckboxRow>
-											<CheckboxLabelText>הגדר כהנחיה חשובה</CheckboxLabelText>
+											<CheckboxLabelText>הגדר כהנחיה במיקוד</CheckboxLabelText>
 											<Checkbox
 												checked={field.state.value}
 												onCheckedChange={(checked) =>

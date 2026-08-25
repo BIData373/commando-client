@@ -8,6 +8,7 @@ interface IconDropdownProps {
 	onChange(value: string): void
 	onClear(): void
 	selectedItem?: IMesibaIcon
+	placeholder?: string
 }
 
 export function IconDropdown({
@@ -16,6 +17,7 @@ export function IconDropdown({
 	onChange,
 	onClear,
 	selectedItem,
+	placeholder,
 }: IconDropdownProps) {
 	const { data: icons = [], isFetching } = useSearchMesibaIcons(value)
 
@@ -27,7 +29,7 @@ export function IconDropdown({
 			onSelect={onSelect}
 			onClear={onClear}
 			isLoading={isFetching}
-			placeholder="חפש סמל"
+			placeholder={placeholder ?? "חפש סמל"}
 			selectedItem={selectedItem}
 			renderItem={(item) => <MesibaIcon icon={item} />}
 			getItemKey={({ id }) => id}

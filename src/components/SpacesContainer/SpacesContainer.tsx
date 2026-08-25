@@ -9,7 +9,7 @@ import emptyWorkspacesImage from "src/assets/empty-states/empty-workspace.svg"
 import noResultsFound from "src/assets/empty-states/no-results-found.svg"
 import { EmptyCardState } from "src/components/shared/EmptyCardState"
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
-// import NewWorkspaceButton from "./NewWorkspaceButton"
+import NewWorkspaceButton from "./NewWorkspaceButton"
 import WorkspaceCard from "./WorkspaceCard"
 
 function filterByTitle<T extends { title: string }>(items: T[], query: string) {
@@ -46,7 +46,7 @@ export default function SpacesContainer() {
 			<TopSection>
 				<HeaderRow>
 					<ActionsRow>
-						{/* <NewWorkspaceButton /> */}
+						<NewWorkspaceButton />
 
 						<SearchWrapper>
 							<SearchInput

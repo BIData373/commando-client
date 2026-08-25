@@ -23,7 +23,7 @@ function ImportantFlagTooltip({ side }: ImportantFlagTooltipProps) {
 				</TooltipTrigger>
 				<TooltipPrimitive.Portal>
 					<TooltipContent side={side} sideOffset={8}>
-						הנחיה חשובה תופיע עם סימון של דגל
+						הנחיה במיקוד תופיע עם סימון של דגל
 						<FlagIcon />
 					</TooltipContent>
 				</TooltipPrimitive.Portal>
