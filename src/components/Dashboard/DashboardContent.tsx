@@ -25,7 +25,10 @@ export function DashboardContent() {
 
 	const { assigneeFilter, setAssigneeFilter } = useTasksFilters()
 
-	const { data: taskRows = [], queryKey } = useListTaskRows({ workspaceId: id })
+	const { data: taskRows = [], queryKey } = useListTaskRows({
+		workspaceId: id,
+		isArchived: false,
+	})
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId: id })
 

@@ -25,6 +25,7 @@ import type { ErrorType } from "../../axios"
 
 import { sendRequest } from "../../axios"
 import type {
+	CreateWorkspaceRequestDto,
 	DeleteWorkspaceRequestPathParameters,
 	GetWorkspaceRequestPathParameters,
 	UpdateWorkspaceRequestDto,
@@ -50,6 +51,86 @@ const withQueryKey = <T extends object, K>(
 	return result
 }
 
+export const createWorkspaceRequest = (
+	createWorkspaceRequestDto: CreateWorkspaceRequestDto,
+	signal?: AbortSignal,
+) => {
+	return sendRequest<WorkspaceRequestDto>({
+		url: `/workspace-requests`,
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		data: createWorkspaceRequestDto,
+		signal,
+	})
+}
+
+export const getCreateWorkspaceRequestMutationOptions = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(options?: {
+	mutation?: UseMutationOptions<
+		Awaited<ReturnType<typeof createWorkspaceRequest>>,
+		TError,
+		{ data: CreateWorkspaceRequestDto },
+		TContext
+	>
+}): UseMutationOptions<
+	Awaited<ReturnType<typeof createWorkspaceRequest>>,
+	TError,
+	{ data: CreateWorkspaceRequestDto },
+	TContext
+> => {
+	const mutationKey = ["createWorkspaceRequest"]
+	const { mutation: mutationOptions } = options
+		? options.mutation &&
+			"mutationKey" in options.mutation &&
+			options.mutation.mutationKey
+			? options
+			: { ...options, mutation: { ...options.mutation, mutationKey } }
+		: { mutation: { mutationKey } }
+
+	const mutationFn: MutationFunction<
+		Awaited<ReturnType<typeof createWorkspaceRequest>>,
+		{ data: CreateWorkspaceRequestDto }
+	> = (props) => {
+		const { data } = props ?? {}
+
+		return createWorkspaceRequest(data)
+	}
+
+	return { mutationFn, ...mutationOptions }
+}
+
+export type CreateWorkspaceRequestMutationResult = NonNullable<
+	Awaited<ReturnType<typeof createWorkspaceRequest>>
+>
+export type CreateWorkspaceRequestMutationBody = CreateWorkspaceRequestDto
+export type CreateWorkspaceRequestMutationError = ErrorType<unknown>
+
+export const useCreateWorkspaceRequest = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
+	options?: {
+		mutation?: UseMutationOptions<
+			Awaited<ReturnType<typeof createWorkspaceRequest>>,
+			TError,
+			{ data: CreateWorkspaceRequestDto },
+			TContext
+		>
+	},
+	queryClient?: QueryClient,
+): UseMutationResult<
+	Awaited<ReturnType<typeof createWorkspaceRequest>>,
+	TError,
+	{ data: CreateWorkspaceRequestDto },
+	TContext
+> => {
+	return useMutation(
+		getCreateWorkspaceRequestMutationOptions(options),
+		queryClient,
+	)
+}
 export const listWorkspaceRequests = (signal?: AbortSignal) => {
 	return sendRequest<WorkspaceRequestDto[]>({
 		url: `/workspace-requests`,

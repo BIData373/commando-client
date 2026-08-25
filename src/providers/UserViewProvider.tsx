@@ -40,9 +40,16 @@ const PERSONAL_DEFAULT_COLUMN_ORDER = [
 	TASK_COLUMN_ID.updatedAt,
 ]
 
-const PERSONAL_DEFAULT_HIDDEN = [TASK_COLUMN_ID.tags, TASK_COLUMN_ID.updatedAt]
+const PERSONAL_DEFAULT_HIDDEN = [
+	TASK_COLUMN_ID.notes,
+	TASK_COLUMN_ID.tags,
+	TASK_COLUMN_ID.updatedAt,
+]
 
-const WORKSPACE_DEFAULT_HIDDEN = [TASK_COLUMN_ID.updatedAt]
+const WORKSPACE_DEFAULT_HIDDEN = [
+	TASK_COLUMN_ID.notes,
+	TASK_COLUMN_ID.updatedAt,
+]
 
 function getDefaultView(
 	workspaceId: number | null,

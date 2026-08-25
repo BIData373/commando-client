@@ -29,6 +29,7 @@ const CONFIGURABLE_COLUMNS_META = toColumnsMeta({
 	source: "מקור הנחיה",
 	lastMessage: "תגובות",
 	tags: "נושא",
+	notes: "הערות",
 	createdAt: "תאריך יצירה",
 	updatedAt: "עודכן ב",
 })

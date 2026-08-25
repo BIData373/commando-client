@@ -119,6 +119,11 @@ const COLUMN_DEFS: Partial<
 		header: COLUMN_LABELS.tags,
 		accessor: (t) => t.tags.map(({ name }) => name).join(", "),
 	},
+	[TASK_COLUMN_ID.notes]: {
+		header: "הערות",
+		maxWidth: 50,
+		accessor: (t) => t.notes ?? "",
+	},
 	[TASK_COLUMN_ID.createdAt]: {
 		header: COLUMN_LABELS.createdAt,
 		accessor: (t) => formatDate(t.createdAt),

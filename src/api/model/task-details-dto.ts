@@ -32,6 +32,8 @@ export interface TaskDetailsDto {
 	creationType: TaskCreationType
 	/** @nullable */
 	dueDate: Date | null
+	/** @nullable */
+	notes: string | null
 	workspaceId: number
 	/** @nullable */
 	statusId: number | null

@@ -11,6 +11,45 @@ import { HttpResponse, http } from "msw"
 
 import type { WorkspaceRequestDto } from "../model"
 
+export const getCreateWorkspaceRequestResponseMock = (
+	overrideResponse: Partial<Extract<WorkspaceRequestDto, object>> = {},
+): WorkspaceRequestDto => ({
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+	createdBy: faker.number.float({ fractionDigits: 2 }),
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+	updatedBy: faker.number.float({ fractionDigits: 2 }),
+	deletedAt: faker.helpers.arrayElement([
+		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		null,
+	]),
+	deletedBy: faker.helpers.arrayElement([
+		faker.number.float({ fractionDigits: 2 }),
+		null,
+	]),
+	id: faker.number.float({ fractionDigits: 2 }),
+	title: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	urlName: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	icon: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		null,
+	]),
+	pikudId: faker.number.float({ fractionDigits: 2 }),
+	managers: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1,
+	).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
+	status: faker.helpers.arrayElement([
+		"PENDING",
+		"APPROVED",
+		"REJECTED",
+	] as const),
+	declineMessage: faker.helpers.arrayElement([
+		faker.string.alpha({ length: { min: 10, max: 20 } }),
+		null,
+	]),
+	...overrideResponse,
+})
+
 export const getListWorkspaceRequestsResponseMock = (): WorkspaceRequestDto[] =>
 	Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
@@ -168,6 +207,30 @@ export const getDeleteWorkspaceRequestResponseMock = (
 	...overrideResponse,
 })
 
+export const getCreateWorkspaceRequestMockHandler = (
+	overrideResponse?:
+		| WorkspaceRequestDto
+		| ((
+				info: Parameters<Parameters<typeof http.post>[1]>[0],
+		  ) => Promise<WorkspaceRequestDto> | WorkspaceRequestDto),
+	options?: RequestHandlerOptions,
+) => {
+	return http.post(
+		"*/workspace-requests",
+		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+			return HttpResponse.json(
+				overrideResponse !== undefined
+					? typeof overrideResponse === "function"
+						? await overrideResponse(info)
+						: overrideResponse
+					: getCreateWorkspaceRequestResponseMock(),
+				{ status: 201 },
+			)
+		},
+		options,
+	)
+}
+
 export const getListWorkspaceRequestsMockHandler = (
 	overrideResponse?:
 		| WorkspaceRequestDto[]
@@ -264,6 +327,7 @@ export const getDeleteWorkspaceRequestMockHandler = (
 	)
 }
 export const getWorkspaceRequestsMock = () => [
+	getCreateWorkspaceRequestMockHandler(),
 	getListWorkspaceRequestsMockHandler(),
 	getGetWorkspaceRequestMockHandler(),
 	getUpdateWorkspaceRequestMockHandler(),

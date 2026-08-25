@@ -22,6 +22,7 @@ function PersonalTaskDetail() {
 				params: { taskId },
 				search: { view: TasksView.TABLE },
 			}}
+			isPersonal
 		/>
 	)
 }

@@ -2,6 +2,8 @@ import styled from "@emotion/styled"
 import { concat, uniqBy } from "lodash"
 import { Calendar, Paperclip, Pencil } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
+import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
+import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assignee/archived-workspace-assignee"
 import {
 	DeadlineType,
 	PermissionType,
@@ -16,6 +18,7 @@ import {
 } from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { useAttachmentDownload } from "src/hooks/useAttachmentDownload"
+import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { invalidateQueries } from "src/queryClient"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
@@ -40,6 +43,7 @@ interface TaskDetailPanelProps {
 	onEdit?: () => void
 	showWorkspace?: boolean
 	isArchived?: boolean
+	isPersonal?: boolean
 }
 
 function TaskDetailPanel({
@@ -52,6 +56,7 @@ function TaskDetailPanel({
 		updatedAt,
 		createdAt,
 		source,
+		notes,
 		tags,
 		assigneeStatuses,
 		status,
@@ -62,6 +67,7 @@ function TaskDetailPanel({
 	onClose,
 	onEdit,
 	isArchived = false,
+	isPersonal = false,
 }: TaskDetailPanelProps) {
 	const [showHistory, setShowHistory] = useState(false)
 	const [showEditDiscussion, setShowEditDiscussion] = useState(false)
@@ -73,10 +79,11 @@ function TaskDetailPanel({
 	function checkCommentsDividerVisibility() {
 		const el = scrollRef.current
 		const divider = commentsDividerRef.current
-		if (!el || !divider) return
-		const scrollRect = el.getBoundingClientRect()
-		const dividerRect = divider.getBoundingClientRect()
-		setCommentsDividerStuck(dividerRect.top > scrollRect.bottom)
+		if (el && divider) {
+			const scrollRect = el.getBoundingClientRect()
+			const dividerRect = divider.getBoundingClientRect()
+			setCommentsDividerStuck(dividerRect.top > scrollRect.bottom)
+		}
 	}
 
 	useEffect(() => {
@@ -85,18 +92,38 @@ function TaskDetailPanel({
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const isManager = myPermission?.type === PermissionType.MANAGER
+	const canArchive = isPersonal || isManager
 
 	const { data: history } = useListTaskHistory({ taskId: id })
 
-	function handleSuccess() {
-		invalidateQueries([
-			getListTaskRowsQueryKey({ workspaceId }),
-			getListPersonalTaskRowsQueryKey(),
-		])
+	const currentUser = useCurrentUser()
+	const myAssigneeId = assigneeStatuses.find(({ assignee }) =>
+		assignee.users.some((user) => user.upn === currentUser.upn),
+	)?.assignee.id
+
+	const taskRowKeys = [
+		getListTaskRowsQueryKey({ workspaceId }),
+		getListPersonalTaskRowsQueryKey(),
+	]
+
+	function handleSettledDelete() {
+		invalidateQueries(taskRowKeys)
+	}
+
+	function handleSettled() {
+		invalidateQueries([...taskRowKeys, getGetTaskQueryKey({ id })])
 	}
 
 	const { mutate: deleteTaskMutate } = useDeleteTask({
-		mutation: { onSuccess: handleSuccess },
+		mutation: { onSuccess: handleSettledDelete, onError: handleSettled },
+	})
+
+	const { mutate: toggleWorkspaceArchive } = useToggleWorkspaceTaskArchive({
+		mutation: { onSettled: handleSettled },
+	})
+
+	const { mutate: toggleUserArchive } = useToggleUserTaskArchive({
+		mutation: { onSettled: handleSettled },
 	})
 
 	const handleUpdateTaskStatus = useUpdateTaskStatus({ workspaceId })
@@ -119,10 +146,11 @@ function TaskDetailPanel({
 
 	function handleScroll() {
 		const el = scrollRef.current
-		if (!el) return
-		const atTop = el.scrollTop <= 0
-		setScrollShadowTop(!atTop)
-		checkCommentsDividerVisibility()
+		if (el) {
+			const atTop = el.scrollTop <= 0
+			setScrollShadowTop(!atTop)
+			checkCommentsDividerVisibility()
+		}
 	}
 
 	function handleCloseEditDiscussion() {
@@ -138,9 +166,8 @@ function TaskDetailPanel({
 	}
 
 	function handleEdit() {
-		if (!onEdit) return
-		handleSuccess()
-		onEdit()
+		handleSettled()
+		onEdit?.()
 	}
 
 	function handleDelete() {
@@ -148,11 +175,17 @@ function TaskDetailPanel({
 		onClose()
 	}
 
-	function handleEditDiscussionSuccess() {
-		invalidateQueries([
-			getListTaskRowsQueryKey({ workspaceId }),
-			getGetTaskQueryKey({ id }),
-		])
+	function handleToggleArchive() {
+		if (isPersonal) {
+			if (myAssigneeId) {
+				toggleUserArchive({
+					pathParams: { id },
+					params: { assigneeId: myAssigneeId },
+				})
+			}
+		} else {
+			toggleWorkspaceArchive({ pathParams: { id } })
+		}
 	}
 
 	return (
@@ -165,6 +198,10 @@ function TaskDetailPanel({
 							workspaceId={workspaceId}
 							actions={{
 								onEdit: isManager && onEdit ? handleEdit : undefined,
+								onArchive:
+									!isArchived && canArchive ? handleToggleArchive : undefined,
+								onUnarchive:
+									isArchived && canArchive ? handleToggleArchive : undefined,
 								onDelete: isManager ? handleDelete : undefined,
 							}}
 						/>
@@ -233,6 +270,12 @@ function TaskDetailPanel({
 						)
 					)}
 
+					{!!notes && (
+						<NotesBlock>
+							<SectionLabel>הערה</SectionLabel>
+							<NotesValue>{notes}</NotesValue>
+						</NotesBlock>
+					)}
 					<InfoGrid>
 						{!!source && (
 							<InfoBlock>
@@ -303,7 +346,7 @@ function TaskDetailPanel({
 						sourceId={source.id}
 						workspaceId={workspaceId}
 						onClose={handleCloseEditDiscussion}
-						onSuccess={handleEditDiscussionSuccess}
+						onSuccess={handleSettled}
 					/>
 				)}
 			</Panel>
@@ -490,6 +533,25 @@ const TagChip = styled.span`
   border: 1px solid var(--chip-line);
   color: var(--sea-ink);
   white-space: nowrap;
+`
+
+const NotesBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  align-items: flex-start;
+`
+
+const NotesValue = styled.span`
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--sea-ink);
+  white-space: normal;
+  overflow-wrap: break-word;
+  min-width: 0;
+  align-self: stretch;
 `
 
 const SourceRow = styled.div`
