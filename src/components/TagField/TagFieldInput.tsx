@@ -7,23 +7,28 @@ import { Popover, PopoverAnchor, PopoverContent } from "../ui/popover"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-interface TagFieldProps {
+export type TagFieldInputVariant = "boxed" | "flush"
+
+interface TagFieldInputProps {
 	workspaceId: number
 	tags: string[]
 	lockedTags: string[]
 	onTagSelect: (tag: string) => void
 	onTagRemove: (tag: string) => void
+	variant?: TagFieldInputVariant
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-function TagField({
+function TagFieldInput({
 	workspaceId,
 	tags,
 	lockedTags,
 	onTagSelect,
 	onTagRemove,
-}: TagFieldProps) {
+	variant = "boxed",
+}: TagFieldInputProps) {
+	const isFlush = variant === "flush"
 	const [tagQuery, setTagQuery] = useState("")
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 	const inputRef = useRef<HTMLInputElement>(null)
@@ -101,15 +106,12 @@ function TagField({
 	}
 
 	return (
-		<FormItem>
-			<FormLabelRow>
-				<LabelText>תגיות</LabelText>
-			</FormLabelRow>
-			<Popover open={showDropdown}>
-				<TagFieldWrapper>
-					<PopoverAnchor asChild>
-						<TagInputBox onClick={handleInputBoxClick}>
-							<StyledChevronDown size={16} />
+		<Popover open={showDropdown}>
+			<TagFieldWrapper $flush={isFlush}>
+				<PopoverAnchor asChild>
+					<TagInputBox $flush={isFlush} onClick={handleInputBoxClick}>
+						{tags.length === 0 && !isFlush && <StyledTag size={16} />}
+						<InputScroll>
 							<InputContent>
 								{tags.map((tag) => (
 									<TagChip key={tag}>
@@ -123,6 +125,7 @@ function TagField({
 										)}
 									</TagChip>
 								))}
+
 								<TagInputField
 									ref={inputRef}
 									value={tagQuery}
@@ -138,111 +141,95 @@ function TagField({
 									dir="rtl"
 								/>
 							</InputContent>
-							{tags.length === 0 && <StyledTag size={16} />}
-						</TagInputBox>
-					</PopoverAnchor>
-				</TagFieldWrapper>
-				<TagDropdown
-					sideOffset={4}
-					align="start"
-					onOpenAutoFocus={(e) => e.preventDefault()}
-					onWheel={(e) => e.stopPropagation()}
-				>
-					{filteredTags.length > 0 && (
-						<SuggestionsHeader>הצעות</SuggestionsHeader>
-					)}
-					{filteredTags.map(({ name }) => (
-						<TagOption
-							key={name}
-							onMouseDown={(e) => handleSelectMouseDown(e, name)}
-						>
-							<TagOptionText>
-								{tagQuery ? (
-									<HighlightMatch text={name} query={tagQuery} />
-								) : (
-									name
-								)}
-							</TagOptionText>
+						</InputScroll>
+
+						<StyledChevronDown size={16} />
+					</TagInputBox>
+				</PopoverAnchor>
+			</TagFieldWrapper>
+			<TagDropdown
+				sideOffset={4}
+				align="start"
+				onOpenAutoFocus={(e) => e.preventDefault()}
+				onWheel={(e) => e.stopPropagation()}
+			>
+				{filteredTags.length > 0 && (
+					<SuggestionsHeader>הצעות</SuggestionsHeader>
+				)}
+				{filteredTags.map(({ name }) => (
+					<TagOption
+						key={name}
+						onMouseDown={(e) => handleSelectMouseDown(e, name)}
+					>
+						<TagOptionText>
+							{tagQuery ? (
+								<HighlightMatch text={name} query={tagQuery} />
+							) : (
+								name
+							)}
+						</TagOptionText>
+					</TagOption>
+				))}
+				{isNewTag && (
+					<>
+						{filteredTags.length > 0 && <Divider />}
+						<TagOption onMouseDown={handleCreateNewMouseDown}>
+							<HighlightedText>{tagQuery}</HighlightedText>
+							<span> (חדש)</span>
 						</TagOption>
-					))}
-					{isNewTag && (
-						<>
-							{filteredTags.length > 0 && <Divider />}
-							<TagOption onMouseDown={handleCreateNewMouseDown}>
-								<HighlightedText>{tagQuery}</HighlightedText>
-								<span> (חדש)</span>
-							</TagOption>
-						</>
-					)}
-				</TagDropdown>
-			</Popover>
-		</FormItem>
+					</>
+				)}
+			</TagDropdown>
+		</Popover>
 	)
 }
 
-export default TagField
+export default TagFieldInput
 
 // ─── Styled ─────────────────────────────────────────────────────────────────
 
-const FormItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  width: 100%;
-`
-
-const FormLabelRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0px;
-  padding-block-end: 8px;
-  width: 100%;
-`
-
-const LabelText = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color-2);
-  white-space: nowrap;
-`
-
-const TagFieldWrapper = styled.div`
+const TagFieldWrapper = styled.div<{ $flush: boolean }>`
 position: relative;
 width: 100%;
+height: ${({ $flush }) => ($flush ? "100%" : "auto")};
 `
 
-const TagInputBox = styled.div`
+const TagInputBox = styled.div<{ $flush: boolean }>`
+  direction: rtl;
   display: flex;
   align-items: center;
   width: 100%;
-  height: 40px;
-  padding-inline: 11px;
-  background: var(--background);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
+  height: ${({ $flush }) => ($flush ? "100%" : "40px")};
+  padding-inline: ${({ $flush }) => ($flush ? "0" : "11px")};
+  background: ${({ $flush }) => ($flush ? "transparent" : "var(--background)")};
+  border: ${({ $flush }) => ($flush ? "none" : "1px solid var(--card-border)")};
+  border-radius: ${({ $flush }) => ($flush ? "0" : "8px")};
   gap: 4px;
   cursor: text;
 
   &:focus-within {
-    border-color: var(--active-color);
-    box-shadow: var(--shadow-textarea-focus);
+    border-color: ${({ $flush }) => ($flush ? "transparent" : "var(--active-color)")};
+    box-shadow: ${({ $flush }) => ($flush ? "none" : "var(--shadow-textarea-focus)")};
   }
+`
+
+const InputScroll = styled.div`
+  flex: 1;
+  max-height: 40px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-width: 0;
+  transform: scaleX(-1);
 `
 
 const InputContent = styled.div`
   display: flex;
-  flex: 1;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  max-height: 40px;
-  overflow-y: auto;
-  overflow-x: hidden;
   padding-block: 2px;
-  min-width: 0;
   direction: rtl;
+  transform: scaleX(-1);
 `
 
 const TagInputField = styled.input`

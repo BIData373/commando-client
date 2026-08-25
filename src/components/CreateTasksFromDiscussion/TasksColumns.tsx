@@ -8,6 +8,7 @@ import { Checkbox } from "../ui/checkbox"
 import AssigneeTableCell from "./AssigneeTableCell"
 import DeadlineCell from "./DeadlineCell"
 import NotesCell from "./NotesCell"
+import TagsTableCell from "./TagsTableCell"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -31,6 +32,7 @@ export interface TaskTableMeta {
 	toggleRowExpansion: (id: number) => void
 	deleteRow: (id: number) => void
 	isLastRow: (index: number) => boolean
+	lockedTags: string[]
 }
 
 // ─── Cell Handlers ─────────────────────────────────────────────────────────
@@ -96,7 +98,7 @@ export function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
 const columns: ColumnDef<NewTaskRow>[] = [
 	{
 		id: "title",
-		size: 655,
+		size: 583,
 		header: () => (
 			<HeaderLabelGroup>
 				<RequiredMark>*</RequiredMark>
@@ -151,7 +153,7 @@ const columns: ColumnDef<NewTaskRow>[] = [
 	},
 	{
 		id: "assignee",
-		size: 206,
+		size: 170,
 		header: () => <HeaderLabel>אחראי</HeaderLabel>,
 		cell: ({ row, table }) => (
 			<AssigneeTableCell
@@ -162,10 +164,21 @@ const columns: ColumnDef<NewTaskRow>[] = [
 	},
 	{
 		id: "notes",
-		size: 350,
+		size: 274,
 		header: () => <HeaderLabel>הערה</HeaderLabel>,
 		cell: ({ row, table }) => (
 			<NotesCell row={row} meta={table.options.meta as TaskTableMeta} />
+		),
+	},
+	{
+		id: "tags",
+		size: 224,
+		header: () => <HeaderLabel>תגיות</HeaderLabel>,
+		cell: ({ row, table }) => (
+			<TagsTableCell
+				row={row.original}
+				meta={table.options.meta as TaskTableMeta}
+			/>
 		),
 	},
 	{
