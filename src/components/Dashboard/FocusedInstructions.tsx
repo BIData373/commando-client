@@ -31,7 +31,7 @@ interface TabConfig {
 }
 
 const TAB_LABELS: Pick<TabConfig, "id" | "label" | "weekDelta">[] = [
-	{ id: QuickFilter.flagged, label: "הנחיות חשובות", weekDelta: 0 },
+	{ id: QuickFilter.flagged, label: "הנחיות במיקוד", weekDelta: 0 },
 	{ id: QuickFilter.approaching, label: "הנחיות לביצוע מיידי", weekDelta: 0 },
 	{ id: QuickFilter.overdue, label: 'חריגות מתג"ב', weekDelta: 0 },
 ]

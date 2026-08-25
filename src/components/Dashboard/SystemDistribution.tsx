@@ -53,7 +53,7 @@ const TabsDescription = {
 
 const HEADER_LABELS = {
 	[DistributionTab.load]: { name: "אחראי", count: "כמות הנחיות" },
-	[DistributionTab.attention]: { name: "נושא", count: "כמות הנחיות" },
+	[DistributionTab.attention]: { name: "תגיות", count: "כמות הנחיות" },
 }
 
 type NamedEntity = { name: string }

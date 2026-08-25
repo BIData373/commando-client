@@ -223,6 +223,7 @@ function CreateDiscussionModal({
 							dueDate,
 							notes,
 							flagged,
+							tags,
 							assigneeIds,
 							assigneeDetails,
 						}) => ({
@@ -231,6 +232,7 @@ function CreateDiscussionModal({
 							dueDate: dueDate ?? null,
 							notes: notes || undefined,
 							flagged,
+							tags,
 							assignees: assigneeIds.map((assigneeId) => ({
 								id: assigneeId,
 								description: assigneeDetails[assigneeId] || undefined,
@@ -390,6 +392,7 @@ function CreateDiscussionModal({
 							onBack={handleBack}
 							isLoading={isCreateTasks || isCreateSource || isUpdateSource}
 							sourceId={sourceId}
+							sourceTags={values.tags ?? []}
 						/>
 					</StepPane>
 				</ModalBody>
@@ -405,7 +408,7 @@ export default CreateDiscussionModal
 const ModalCard = styled(ModalContent)<{ $step: Steps }>`
   width: 100%;
   max-width: ${({ $step }) =>
-		$step === Steps.Discussion ? "753px" : "min(1550px, 95vw)"};
+		$step === Steps.Discussion ? "753px" : "min(1585px, 95vw)"};
   transition: max-width 300ms ease;
   height: min(796px, calc(100vh - 48px));
   overflow: hidden;

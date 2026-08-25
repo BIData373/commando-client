@@ -29,13 +29,13 @@ import { FormField } from "../shared/FormField"
 import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
+import TagField from "../TagField/TagField"
 import { Checkbox } from "../ui/checkbox"
 import { Dialog } from "../ui/dialog"
 import AssigneeField from "./AssigneeField"
 import DeadlineField from "./DeadlineField"
 import NotesField from "./NotesField"
 import SourceField from "./SourceField"
-import TagField from "./TagField"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -391,7 +391,7 @@ function CreateTaskModal({
 										<ImportantFlagTooltip side="left" />
 										<FlagIcon />
 										<CheckboxRow>
-											<CheckboxLabelText>הגדר כהנחיה חשובה</CheckboxLabelText>
+											<CheckboxLabelText>הגדר כהנחיה במיקוד</CheckboxLabelText>
 											<Checkbox
 												checked={field.state.value}
 												onCheckedChange={(checked) =>

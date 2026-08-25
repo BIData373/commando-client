@@ -18,11 +18,16 @@ import {
 // ] as const
 
 interface SelectCommandProps {
-	value: number
+	value?: number
 	onChange(value: number): void
+	placeholder?: string
 }
 
-export function SelectCommand({ value, onChange }: SelectCommandProps) {
+export function SelectCommand({
+	value,
+	onChange,
+	placeholder,
+}: SelectCommandProps) {
 	const { data: pikuds } = useListPikuds()
 
 	function handleChange(value: string) {
@@ -30,9 +35,9 @@ export function SelectCommand({ value, onChange }: SelectCommandProps) {
 	}
 
 	return (
-		<Select value={String(value)} onValueChange={handleChange}>
+		<Select value={value ? String(value) : ""} onValueChange={handleChange}>
 			<StyledSelectTrigger>
-				<SelectValue placeholder="בחר פיקוד" />
+				<SelectValue placeholder={placeholder ?? "בחר פיקוד"} />
 			</StyledSelectTrigger>
 			<StyledSelectContent position="popper" side="bottom">
 				{pikuds?.map(({ id, name }) => (

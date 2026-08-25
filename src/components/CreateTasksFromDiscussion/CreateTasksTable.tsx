@@ -45,6 +45,7 @@ interface CreateTasksTableProps {
 	onBack: () => void
 	isLoading?: boolean
 	sourceId?: number
+	sourceTags?: string[]
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -55,6 +56,7 @@ function CreateTasksTable({
 	onBack,
 	isLoading,
 	sourceId,
+	sourceTags = [],
 }: CreateTasksTableProps) {
 	const {
 		workspace: { id: workspaceId },
@@ -100,6 +102,7 @@ function CreateTasksTable({
 			dueDate: null,
 			assigneeIds: [],
 			assigneeDetails: {},
+			tags: [],
 			notes: "",
 			flagged: false,
 		}
@@ -120,6 +123,7 @@ function CreateTasksTable({
 			assigneeDetails: Object.fromEntries(
 				task.assigneeStatuses.map((s) => [s.assignee.id, s.description]),
 			),
+			tags: task.tags.map((tag) => tag.name),
 			notes: task.notes ?? "",
 			flagged: task.flagged,
 		}
@@ -221,7 +225,7 @@ function CreateTasksTable({
 			.filter((r) => r.title.trim())
 			.map((r) => ({
 				...r,
-				tags: Array.from(new Set([...(r.tags ?? [])])),
+				tags: Array.from(new Set([...sourceTags, ...(r.tags ?? [])])),
 			}))
 		onSave(filled)
 	}
@@ -239,6 +243,7 @@ function CreateTasksTable({
 		toggleRowExpansion,
 		deleteRow,
 		isLastRow: (index: number) => index === rows.length - 1,
+		lockedTags: sourceTags,
 	}
 
 	return isExtracting ? (

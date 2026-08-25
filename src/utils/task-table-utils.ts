@@ -28,7 +28,7 @@ const CONFIGURABLE_COLUMNS_META = toColumnsMeta({
 	deadlineType: 'תג"ב',
 	source: "מקור הנחיה",
 	lastMessage: "תגובות",
-	tags: "נושא",
+	tags: "תגיות",
 	notes: "הערות",
 	createdAt: "תאריך יצירה",
 	updatedAt: "עודכן ב",
