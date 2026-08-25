@@ -15,5 +15,6 @@ export interface CreateSourceTaskDto {
 	dueDate?: Date | null
 	notes?: string
 	flagged?: boolean
+	tags?: string[]
 	assignees?: GetTaskAssigneeDto[]
 }

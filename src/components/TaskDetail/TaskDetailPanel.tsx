@@ -305,7 +305,7 @@ function TaskDetailPanel({
 						)}
 						{allTags.length > 0 && (
 							<InfoBlock>
-								<SectionLabel>נושא</SectionLabel>
+								<SectionLabel>תגיות</SectionLabel>
 								<TagsRow>
 									{allTags.map((tag) => (
 										<TagChip key={tag.id}>{tag.name}</TagChip>
