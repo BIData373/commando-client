@@ -166,40 +166,29 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							row: {
 								original: { id, workspaceId, rowKey, assignee },
 							},
-						}) => {
-							const handleEdit = actions.onEdit
-								? () => actions.onEdit?.(id)
-								: undefined
-							const handleAddComment = actions.onAddComment
-								? () => actions.onAddComment?.(id)
-								: undefined
-							const handleArchive = actions.onArchive
-								? () => actions.onArchive?.([{ id, assigneeId: assignee?.id }])
-								: undefined
-							const handleUnarchive = actions.onUnarchive
-								? () =>
-										actions.onUnarchive?.([{ id, assigneeId: assignee?.id }])
-								: undefined
-							const handleEnterSelect = () =>
-								actions.onEnterSelectMode?.(rowKey)
-							const handleDelete = actions.onDelete
-								? () => actions.onDelete?.([id])
-								: undefined
-
-							return (
-								<RowActionsMenu
-									workspaceId={workspaceId}
-									actions={{
-										onEdit: handleEdit,
-										onAddComment: handleAddComment,
-										onArchive: handleArchive,
-										onUnarchive: handleUnarchive,
-										onEnterSelect: handleEnterSelect,
-										onDelete: handleDelete,
-									}}
-								/>
-							)
-						},
+						}) => (
+							<RowActionsMenu
+								workspaceId={workspaceId}
+								actions={{
+									onEdit: actions.onEdit && (() => actions.onEdit?.(id)),
+									onAddComment:
+										actions.onAddComment && (() => actions.onAddComment?.(id)),
+									onArchive:
+										actions.onArchive &&
+										(() =>
+											actions.onArchive?.([{ id, assigneeId: assignee?.id }])),
+									onUnarchive:
+										actions.onUnarchive &&
+										(() =>
+											actions.onUnarchive?.([
+												{ id, assigneeId: assignee?.id },
+											])),
+									onEnterSelect: () => actions.onEnterSelectMode?.(rowKey),
+									onDelete:
+										actions.onDelete && (() => actions.onDelete?.([id])),
+								}}
+							/>
+						),
 					}
 				: undefined
 
@@ -283,7 +272,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							statuses={statuses}
 							workspaceId={workspaceId}
 							assigneeId={assignee?.id}
-							editable={!archivedAt && editable}
+							editable={editable}
 							taskId={id}
 							onUpdate={handleUpdateStatus}
 						/>
