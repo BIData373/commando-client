@@ -9,6 +9,7 @@ interface TagFieldProps {
 	lockedTags: string[]
 	onTagSelect: (tag: string) => void
 	onTagRemove: (tag: string) => void
+	caption?: string
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -19,6 +20,7 @@ function TagField({
 	lockedTags,
 	onTagSelect,
 	onTagRemove,
+	caption,
 }: TagFieldProps) {
 	return (
 		<FormItem>
@@ -32,6 +34,7 @@ function TagField({
 				onTagSelect={onTagSelect}
 				onTagRemove={onTagRemove}
 			/>
+			{caption && <CaptionText>{caption}</CaptionText>}
 		</FormItem>
 	)
 }
@@ -62,4 +65,15 @@ const LabelText = styled.span`
   line-height: 22px;
   color: var(--text-color-2);
   white-space: nowrap;
+`
+
+const CaptionText = styled.p`
+  width: 100%;
+  margin: 0;
+  padding-block-start: 2px;
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--text-color-400);
+  text-align: end;
 `
