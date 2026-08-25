@@ -5,34 +5,25 @@ import { debounce } from "lodash"
 import { X } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
-import { getListAssigneesQueryKey } from "src/api/assignee/assignee"
 import type { UpdateWorkspaceDto } from "src/api/model"
-import {
-	getListPersonalTaskRowsQueryKey,
-	getListTaskRowsQueryKey,
-} from "src/api/task/task"
+import { getListPersonalTaskRowsQueryKey } from "src/api/task/task"
 import {
 	getGetPermittedWorkspacesQueryKey,
 	getListWorkspacesQueryKey,
 	useUpdateWorkspace,
 } from "src/api/workspace/workspace"
-import type { ErrorType } from "src/axios"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
+import { isWorkspaceExist } from "src/utils/error-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
+import { DATA_COUNTER_CLASS, NAME_MAX_LENGTH } from "src/utils/workspace-utils"
 import { FormField } from "../shared/FormField"
 import { Input } from "../ui/input"
 import { IconDropdown } from "./IconDropdown"
 import { SelectCommand } from "./SelectCommand"
 
-const titleExistsError = "title-exists"
-const DATA_COUNTER_CLASS = "data-char-counter"
-
-const NAME_MAX_LENGTH = 50
 const DEBOUNCE_MS = 300
-
-type ApiError = ErrorType<{ message: string | string[] }>
 
 export function SettingsForm() {
 	const {
@@ -66,10 +57,7 @@ export function SettingsForm() {
 				},
 				{
 					onError: (error) => {
-						const messages = (error as ApiError)?.response?.data?.message
-						const messageList = Array.isArray(messages) ? messages : [messages]
-
-						if (messageList.includes(titleExistsError)) {
+						if (isWorkspaceExist(error)) {
 							toast.error("שם סביבה זה כבר קיים, אנא נסו שוב", {
 								closeButton: true,
 							})

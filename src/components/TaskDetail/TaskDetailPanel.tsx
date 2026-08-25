@@ -92,6 +92,7 @@ function TaskDetailPanel({
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const isManager = myPermission?.type === PermissionType.MANAGER
 	const canArchive = isPersonal || isManager
+	const canShowArchiveAction = canArchive && assigneeStatuses.length === 0
 
 	const { data: history } = useListTaskHistory({ taskId: id })
 
@@ -196,9 +197,13 @@ function TaskDetailPanel({
 							actions={{
 								onEdit: isManager && onEdit ? handleEdit : undefined,
 								onArchive:
-									!isArchived && canArchive ? handleToggleArchive : undefined,
+									!isArchived && canShowArchiveAction
+										? handleToggleArchive
+										: undefined,
 								onUnarchive:
-									isArchived && canArchive ? handleToggleArchive : undefined,
+									isArchived && canShowArchiveAction
+										? handleToggleArchive
+										: undefined,
 								onDelete: isManager ? handleDelete : undefined,
 							}}
 						/>
@@ -300,7 +305,7 @@ function TaskDetailPanel({
 						)}
 						{allTags.length > 0 && (
 							<InfoBlock>
-								<SectionLabel>נושא</SectionLabel>
+								<SectionLabel>תגיות</SectionLabel>
 								<TagsRow>
 									{allTags.map((tag) => (
 										<TagChip key={tag.id}>{tag.name}</TagChip>
