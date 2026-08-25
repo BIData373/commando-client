@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { NewWorkspaceModal } from "src/components/NewWorkspaceButton/NewWorkspaceModal"
 
-export const Route = createFileRoute("/new-workspace")({
+export const Route = createFileRoute("/_home/new-workspace")({
 	component: NewWorkspace,
 })
 

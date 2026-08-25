@@ -54,33 +54,34 @@ export function NewWorkspaceDetailsForm({
 		pikudId: !values.pikudId ? REQUIRED_ERROR_MESSAGE : undefined,
 	}
 
+	function updateField<K extends keyof CreateWorkspaceRequestDto>(
+		key: K,
+		value: CreateWorkspaceRequestDto[K],
+	) {
+		form.setFieldValue(key, value as never)
+		setFormValues({ ...values, [key]: value })
+	}
+
 	function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
-		const title = e.target.value.slice(0, NAME_MAX_LENGTH)
-		form.setFieldValue("title", title)
-		setFormValues({ ...values, title })
+		updateField("title", e.target.value.slice(0, NAME_MAX_LENGTH))
 	}
 
 	function handleUrlNameChange(e: React.ChangeEvent<HTMLInputElement>) {
-		const urlName = e.target.value.replace(/[^a-zA-Z0-9_]/g, "")
-		form.setFieldValue("urlName", urlName)
-		setFormValues({ ...values, urlName })
+		updateField("urlName", e.target.value.replace(/[^a-zA-Z0-9_]/g, ""))
 	}
 
 	function handlePikudChange(value: number) {
-		form.setFieldValue("pikudId", value)
-		setFormValues({ ...values, pikudId: value })
+		updateField("pikudId", value)
 	}
 
 	function handleIconSelect(icon: IMesibaIcon) {
-		form.setFieldValue("icon", icon.iconName)
 		setIconSearch(icon.heb_name)
-		setFormValues({ ...values, icon: icon.iconName })
+		updateField("icon", icon.iconName)
 	}
 
 	function handleIconClear() {
-		form.setFieldValue("icon", null)
 		setIconSearch("")
-		setFormValues({ ...values, icon: null })
+		updateField("icon", null)
 	}
 
 	function handleIconSearchChange(value: string) {
