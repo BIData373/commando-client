@@ -388,7 +388,7 @@ const FormBody = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 5px;
-  direction: rtl;
+  direction: ltr;
   overflow-y: auto;
   min-height: 0;
 `
@@ -396,6 +396,7 @@ const FormBody = styled.div`
 const FormBodyContent = styled.div`
   display: flex;
   flex-direction: column;
+  direction: rtl;
   flex: 1;
   min-height: 0;
 `

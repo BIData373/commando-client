@@ -54,11 +54,8 @@ export function NewWorkspaceDetailsForm({
 		pikudId: !values.pikudId ? REQUIRED_ERROR_MESSAGE : undefined,
 	}
 
-	function updateField<K extends keyof CreateWorkspaceRequestDto>(
-		key: K,
-		value: CreateWorkspaceRequestDto[K],
-	) {
-		form.setFieldValue(key, value as never)
+	function updateField(...[key, value]: Parameters<typeof form.setFieldValue>) {
+		form.setFieldValue(key, value)
 		setFormValues({ ...values, [key]: value })
 	}
 
