@@ -35,14 +35,16 @@ export interface TaskDetailsDto {
 	/** @nullable */
 	notes: string | null
 	workspaceId: number
-	/** @nullable */
-	statusId: number | null
+	statusId: number
 	/** @nullable */
 	source: SourceDto | null
 	tags: TagDto[]
 	lastMessage: MessageDto
 	messageCount: number
+	editable: boolean
+	/** @nullable */
+	archivedAt: Date | null
 	assigneeStatuses: AssigneeStatusDto[]
 	workspace: WorkspaceWithPermissionDto
-	status?: WorkspaceStatusDto
+	status: WorkspaceStatusDto
 }

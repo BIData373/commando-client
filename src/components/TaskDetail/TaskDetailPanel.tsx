@@ -268,7 +268,7 @@ function TaskDetailPanel({
 									status={status}
 									workspaceId={workspaceId}
 									taskId={id}
-									editable={isManager}
+									editable={isManager && !isArchived}
 									onUpdate={handleUpdateTaskStatus}
 								/>
 							</StatusTagContainer>
