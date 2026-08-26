@@ -7,7 +7,7 @@ import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assign
 import {
 	DeadlineType,
 	PermissionType,
-	type TaskDetailsDto,
+	type TaskWithWorkspaceDto,
 } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import {
@@ -38,7 +38,7 @@ import TaskCommentsSection from "./TaskCommentsSection"
 import TaskHistoryPanel from "./TaskHistoryPanel"
 
 interface TaskDetailPanelProps {
-	task: TaskDetailsDto
+	task: TaskWithWorkspaceDto
 	onClose: () => void
 	onEdit?: () => void
 	showWorkspace?: boolean
