@@ -59,7 +59,7 @@ export function OnboardingModal() {
 					<Header>
 						<Logo src={logoWithText} alt="Vector" />
 					</Header>
-					{Pages[step]}
+					{pages[step]}
 				</ContentWrapper>
 			</FullScreenPanel>
 		</Dialog>
