@@ -10,6 +10,12 @@ import {
 } from "src/utils/env-utils"
 import { UserDropdown } from "../UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "../ui/tooltip"
 
 export default function HomeFooter() {
 	function handleOpenUserGuide() {
@@ -38,13 +44,27 @@ export default function HomeFooter() {
 					<GradientBookIcon size={18} />
 				</OutlineGradientButton>
 
-				<IconButton onClick={handleOpenPortalCatalog}>
-					<TbGridDots size={18} />
-				</IconButton>
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<IconButton onClick={handleOpenPortalCatalog}>
+								<TbGridDots size={18} />
+							</IconButton>
+						</TooltipTrigger>
+						<TooltipContent side="top">עוד מאיתנו</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
 
-				<IconButton onClick={handleOpenChatChannel}>
-					<TbMessage size={18} />
-				</IconButton>
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<IconButton onClick={handleOpenChatChannel}>
+								<TbMessage size={18} />
+							</IconButton>
+						</TooltipTrigger>
+						<TooltipContent side="top">צור קשר</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
 
 				{STATIC_TOKEN && (
 					<DropdownMenu>
