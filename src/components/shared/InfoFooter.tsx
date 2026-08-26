@@ -11,7 +11,7 @@ import {
 import { UserDropdown } from "../UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu"
 
-export default function HomeFooter() {
+export function InfoFooter({ className }: { className?: string }) {
 	function handleOpenUserGuide() {
 		window.open(USER_GUIDE_URL, "_blank")
 	}
@@ -25,7 +25,7 @@ export default function HomeFooter() {
 	}
 
 	return (
-		<FooterRoot>
+		<FooterRoot className={className}>
 			<FooterLeft>
 				<FooterIcon src={BIDataIcon} alt="BI DATA" />
 				<FooterText>2026©</FooterText>
