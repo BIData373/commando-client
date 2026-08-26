@@ -33,7 +33,7 @@ export function OnboardingModal() {
 		setIsOpen(false)
 	}
 
-	const Pages: Record<Steps, React.ReactNode> = {
+	const pages: Record<Steps, React.ReactNode> = {
 		[Steps.greeting]: <OnboardingGreetingPage onNext={handleStepIncrement} />,
 		[Steps.sysDesc]: (
 			<OnboardingSysDescPage
