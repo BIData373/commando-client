@@ -34,7 +34,7 @@ function PersonalArchivePage() {
 
 	function handleOpenTask(taskId: number) {
 		navigate({
-			to: "/personal/archive/task/$taskId",
+			to: "/personal/archive/$taskId",
 			params: { taskId: String(taskId) },
 			search: { view: TasksView.TABLE },
 		})
@@ -42,7 +42,7 @@ function PersonalArchivePage() {
 
 	function handleAddComment(taskId: number) {
 		navigate({
-			to: "/personal/archive/task/$taskId",
+			to: "/personal/archive/$taskId",
 			params: { taskId: String(taskId) },
 			search: { view: TasksView.TABLE, focusComment: true },
 		})

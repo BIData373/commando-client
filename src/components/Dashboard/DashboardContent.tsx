@@ -60,7 +60,7 @@ export function DashboardContent() {
 
 	function handleOpenTask(taskId: number) {
 		navigate({
-			to: "/workspace/$urlName/dashboard/task/$taskId",
+			to: "/workspace/$urlName/dashboard/$taskId",
 			params: { urlName, taskId: String(taskId) },
 		})
 	}

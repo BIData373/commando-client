@@ -262,6 +262,7 @@ function TaskTable<TTask extends TaskRowDto>({
 			onSelectAll: handleSelectAll,
 		},
 		showMenuColumn: showActionsColumn,
+		getPermissionType,
 		actions: {
 			onEdit,
 			onAddComment,
@@ -334,7 +335,11 @@ function TaskTable<TTask extends TaskRowDto>({
 				actions={
 					contextMenu
 						? {
-								onEdit: onEdit && (() => onEdit(contextMenu.task.id)),
+								onEdit:
+									onEdit &&
+									getPermissionType(contextMenu.task) === PermissionType.MANAGER
+										? () => onEdit(contextMenu.task.id)
+										: undefined,
 								onAddComment:
 									onAddComment && (() => onAddComment(contextMenu.task.id)),
 								onArchive:
@@ -357,9 +362,11 @@ function TaskTable<TTask extends TaskRowDto>({
 										])),
 								onEnterSelect: () =>
 									handleEnterSelectMode(contextMenu.task.rowKey),
-								onDelete: allowDelete
-									? () => removeTasks([contextMenu.task.id])
-									: undefined,
+								onDelete:
+									allowDelete &&
+									getPermissionType(contextMenu.task) === PermissionType.MANAGER
+										? () => removeTasks([contextMenu.task.id])
+										: undefined,
 							}
 						: {}
 				}

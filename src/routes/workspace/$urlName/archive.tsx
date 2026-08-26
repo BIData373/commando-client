@@ -36,7 +36,7 @@ function WorkspaceArchivePage() {
 
 	function handleOpenTask(taskId: number) {
 		navigate({
-			to: "/workspace/$urlName/archive/task/$taskId",
+			to: "/workspace/$urlName/archive/$taskId",
 			params: { urlName, taskId: String(taskId) },
 			search: { view: TasksView.TABLE },
 		})

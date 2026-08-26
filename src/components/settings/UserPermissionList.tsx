@@ -65,11 +65,15 @@ export function UserPermissionList<T>({
 								onClick={() => handleClickUserInfo(item, type)}
 							>
 								<UserHeader>
-									<UserName title={user.info?.name}>{user.info?.name}</UserName>
-									<UserPersonalId title={user.upn}>
-										{" "}
-										- {user.upn}
-									</UserPersonalId>
+									{user.info?.name && (
+										<>
+											<UserName title={user.info?.name}>
+												{user.info?.name}
+											</UserName>
+											<UserDash>{" - "}</UserDash>
+										</>
+									)}
+									<UserPersonalId title={user.upn}>{user.upn}</UserPersonalId>
 								</UserHeader>
 								<UserSubtext title={user.info?.displayName}>
 									{user.info?.displayName}
@@ -149,6 +153,11 @@ const UserName = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`
+
+const UserDash = styled.span`
+  font-size: var(--fs-base);
+  font-weight: 400;
 `
 
 const UserPersonalId = styled.span`

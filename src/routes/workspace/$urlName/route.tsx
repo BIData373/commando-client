@@ -37,7 +37,10 @@ function WorkspaceContent() {
 			defaultColumnOrder={DEFAULT_COLUMN_ORDER}
 			defaultHiddenColumns={WORKSPACE_DEFAULT_HIDDEN}
 		>
-			<AuthorizationWrapper type={PermissionType.VIEWER}>
+			<AuthorizationWrapper
+				type={PermissionType.VIEWER}
+				workspaceId={workspace.id}
+			>
 				<PageShell>
 					<Header />
 

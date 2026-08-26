@@ -6,6 +6,7 @@ import { BsPaperclip as Paperclip } from "react-icons/bs"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import {
 	DeadlineType,
+	PermissionType,
 	type TaskRowDto,
 	type WorkspaceStatusDto,
 	WorkspaceStatusType,
@@ -71,6 +72,7 @@ interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	statuses?: WorkspaceStatusDto[]
 	onUpdateStatusSuccess?(): void
 	onTitleDoubleClick?: (taskId: number) => void
+	getPermissionType?(task?: TTask): PermissionType | null | undefined
 }
 
 export function useTaskColumns<TTask extends TaskRowDto>({
@@ -84,6 +86,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 	showMenuColumn = true,
 	statuses,
 	onUpdateStatusSuccess,
+	getPermissionType,
 }: UseTaskColumnsOptions<TTask>) {
 	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
 		mutation: {
@@ -162,33 +165,43 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						size: 45,
 						enableSorting: false,
 						enableColumnFilter: false,
-						cell: ({
-							row: {
-								original: { id, workspaceId, rowKey, assignee },
-							},
-						}) => (
-							<RowActionsMenu
-								workspaceId={workspaceId}
-								actions={{
-									onEdit: actions.onEdit && (() => actions.onEdit?.(id)),
-									onAddComment:
-										actions.onAddComment && (() => actions.onAddComment?.(id)),
-									onArchive:
-										actions.onArchive &&
-										(() =>
-											actions.onArchive?.([{ id, assigneeId: assignee?.id }])),
-									onUnarchive:
-										actions.onUnarchive &&
-										(() =>
-											actions.onUnarchive?.([
-												{ id, assigneeId: assignee?.id },
-											])),
-									onEnterSelect: () => actions.onEnterSelectMode?.(rowKey),
-									onDelete:
-										actions.onDelete && (() => actions.onDelete?.([id])),
-								}}
-							/>
-						),
+						cell: ({ row: { original } }) => {
+							const { id, workspaceId, rowKey, assignee } = original
+							const isManager =
+								getPermissionType?.(original) === PermissionType.MANAGER
+
+							return (
+								<RowActionsMenu
+									workspaceId={workspaceId}
+									actions={{
+										onEdit:
+											actions.onEdit && isManager
+												? () => actions.onEdit?.(id)
+												: undefined,
+										onAddComment:
+											actions.onAddComment &&
+											(() => actions.onAddComment?.(id)),
+										onArchive:
+											actions.onArchive &&
+											(() =>
+												actions.onArchive?.([
+													{ id, assigneeId: assignee?.id },
+												])),
+										onUnarchive:
+											actions.onUnarchive &&
+											(() =>
+												actions.onUnarchive?.([
+													{ id, assigneeId: assignee?.id },
+												])),
+										onEnterSelect: () => actions.onEnterSelectMode?.(rowKey),
+										onDelete:
+											actions.onDelete && isManager
+												? () => actions.onDelete?.([id])
+												: undefined,
+									}}
+								/>
+							)
+						},
 					}
 				: undefined
 
@@ -495,6 +508,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				accessorKey: TASK_COLUMN_ID.notes,
 				header: COLUMN_LABELS.notes,
 				size: 100,
+				minSize: 100,
 				enableSorting: false,
 				enableColumnFilter: false,
 				meta: { grow: true },
@@ -566,6 +580,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 		showMenuColumn,
 		statuses,
 		handleUpdateStatus,
+		getPermissionType,
 	])
 
 	return { columns }
