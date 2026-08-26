@@ -83,7 +83,7 @@ function CreateTaskModal({
 			},
 		},
 	})
-	const { mutateAsync: updateTask } = useUpdateTask({
+	const { mutateAsync: updateTask, isPending: isUpdatingTask } = useUpdateTask({
 		mutation: {
 			onSuccess: handleUpdateSuccess,
 		},
@@ -451,7 +451,7 @@ function CreateTaskModal({
 							title="שמור"
 							onClick={form.handleSubmit}
 							disabled={!values.title.trim() || (isEditMode && !hasChanges)}
-							loading={isPending}
+							loading={isPending || isUpdatingTask}
 							width={133}
 						/>
 						<CancelButton title="ביטול" onClick={onCancel} />
