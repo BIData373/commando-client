@@ -4,7 +4,7 @@ import { PrimaryButton } from "../shared/PrimaryButton"
 import { ButtonGroup as ButtonGroupPrimitive } from "../ui/button-group"
 import { GhostButton } from "./GhostButton"
 
-interface OnboardingGreetingPageProps {
+interface OnboardingSysDescPageProps {
 	onNext: () => void
 	onPrevious: () => void
 	onSkip: () => void
@@ -14,7 +14,7 @@ export function OnboardingSysDescPage({
 	onNext,
 	onPrevious,
 	onSkip,
-}: OnboardingGreetingPageProps) {
+}: OnboardingSysDescPageProps) {
 	return (
 		<>
 			<Main src={systemDesc}></Main>

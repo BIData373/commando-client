@@ -50,8 +50,6 @@ export function OnboardingModal() {
 		),
 	}
 
-	if (!isOpen) return null
-
 	return (
 		<Dialog open={!!isOpen}>
 			<FullScreenPanel closable={false} showCloseButton={false}>
