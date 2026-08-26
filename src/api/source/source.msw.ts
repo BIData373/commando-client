@@ -198,7 +198,13 @@ export const getGetSourceResponseMock = (
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
-		statusId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -623,7 +629,13 @@ export const getAiExtractionCallbackResponseMock = (
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
-		statusId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 		source: faker.helpers.arrayElement([
 			{
 				...{

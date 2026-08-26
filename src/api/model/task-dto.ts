@@ -11,6 +11,7 @@ import type { MessageDto } from "./message-dto"
 import type { SourceDto } from "./source-dto"
 import type { TagDto } from "./tag-dto"
 import type { TaskCreationType } from "./task-creation-type"
+import type { WorkspaceStatusDto } from "./workspace-status-dto"
 
 export interface TaskDto {
 	createdAt: Date
@@ -33,7 +34,7 @@ export interface TaskDto {
 	/** @nullable */
 	notes: string | null
 	workspaceId: number
-	statusId: number
+	status: WorkspaceStatusDto
 	/** @nullable */
 	source: SourceDto | null
 	tags: TagDto[]

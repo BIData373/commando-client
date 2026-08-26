@@ -9,7 +9,6 @@ import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 import type {
-	TaskDetailsDto,
 	TaskDto,
 	TaskRowDto,
 	TaskRowWithWorkspaceDto,
@@ -56,7 +55,13 @@ export const getCreateTaskResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	statusId: faker.number.float({ fractionDigits: 2 }),
+	status: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+		workspaceId: faker.number.float({ fractionDigits: 2 }),
+	},
 	source: faker.helpers.arrayElement([
 		{
 			...{
@@ -309,7 +314,13 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
-		statusId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -536,7 +547,13 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
-		statusId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -712,13 +729,6 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 			},
 			undefined,
 		]),
-		status: {
-			id: faker.number.float({ fractionDigits: 2 }),
-			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
-			workspaceId: faker.number.float({ fractionDigits: 2 }),
-		},
 		otherAssignees: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
@@ -827,7 +837,13 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
-		statusId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -1084,7 +1100,13 @@ export const getListPersonalTaskRowsResponseMock =
 				null,
 			]),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
-			statusId: faker.number.float({ fractionDigits: 2 }),
+			status: {
+				id: faker.number.float({ fractionDigits: 2 }),
+				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+				workspaceId: faker.number.float({ fractionDigits: 2 }),
+			},
 			source: faker.helpers.arrayElement([
 				{
 					...{
@@ -1264,13 +1286,6 @@ export const getListPersonalTaskRowsResponseMock =
 				},
 				undefined,
 			]),
-			status: {
-				id: faker.number.float({ fractionDigits: 2 }),
-				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
-				workspaceId: faker.number.float({ fractionDigits: 2 }),
-			},
 			otherAssignees: Array.from(
 				{ length: faker.number.int({ min: 1, max: 10 }) },
 				(_, i) => i + 1,
@@ -1378,8 +1393,8 @@ export const getListPersonalTaskRowsResponseMock =
 		}))
 
 export const getGetTaskResponseMock = (
-	overrideResponse: Partial<Extract<TaskDetailsDto, object>> = {},
-): TaskDetailsDto => ({
+	overrideResponse: Partial<Extract<TaskWithWorkspaceDto, object>> = {},
+): TaskWithWorkspaceDto => ({
 	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1410,7 +1425,13 @@ export const getGetTaskResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	statusId: faker.number.float({ fractionDigits: 2 }),
+	status: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+		workspaceId: faker.number.float({ fractionDigits: 2 }),
+	},
 	source: faker.helpers.arrayElement([
 		{
 			...{
@@ -1625,13 +1646,6 @@ export const getGetTaskResponseMock = (
 			null,
 		]),
 	},
-	status: {
-		id: faker.number.float({ fractionDigits: 2 }),
-		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
-		workspaceId: faker.number.float({ fractionDigits: 2 }),
-	},
 	...overrideResponse,
 })
 
@@ -1668,7 +1682,13 @@ export const getUpdateTaskResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	statusId: faker.number.float({ fractionDigits: 2 }),
+	status: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+		workspaceId: faker.number.float({ fractionDigits: 2 }),
+	},
 	source: faker.helpers.arrayElement([
 		{
 			...{
@@ -1919,7 +1939,13 @@ export const getDeleteTaskResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	statusId: faker.number.float({ fractionDigits: 2 }),
+	status: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+		workspaceId: faker.number.float({ fractionDigits: 2 }),
+	},
 	source: faker.helpers.arrayElement([
 		{
 			...{
@@ -2259,10 +2285,10 @@ export const getListPersonalTaskRowsMockHandler = (
 
 export const getGetTaskMockHandler = (
 	overrideResponse?:
-		| TaskDetailsDto
+		| TaskWithWorkspaceDto
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0],
-		  ) => Promise<TaskDetailsDto> | TaskDetailsDto),
+		  ) => Promise<TaskWithWorkspaceDto> | TaskWithWorkspaceDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
