@@ -7,15 +7,19 @@ import { OnboardingGreetingPage } from "./OnboardingGreetingPage"
 import { OnboardingRedirectPage } from "./OnboardingRedirectPage"
 import { OnboardingSysDescPage } from "./OnboardingSysDescPage"
 
+enum Steps {
+	greeting,
+	sysDesc,
+	redirects,
+}
+
 export function OnboardingModal() {
 	const [isOpen, setIsOpen] = useLocalStorage({
 		key: "onboardingRequired",
 		defaultValue: true,
 	})
 
-	const [step, setStep] = useState(0)
-
-	if (step === 3 && isOpen === true) setIsOpen(false)
+	const [step, setStep] = useState(Steps.greeting)
 
 	const handleStepIncrement = () => {
 		setStep((prevStep) => prevStep + 1)
@@ -26,63 +30,66 @@ export function OnboardingModal() {
 	}
 
 	const handleCloseModal = () => {
-		setStep(0)
 		setIsOpen(false)
+	}
+
+	const Pages: Record<Steps, React.ReactNode> = {
+		[Steps.greeting]: <OnboardingGreetingPage onNext={handleStepIncrement} />,
+		[Steps.sysDesc]: (
+			<OnboardingSysDescPage
+				onNext={handleStepIncrement}
+				onPrevious={handleStepDecrement}
+				onSkip={handleCloseModal}
+			/>
+		),
+		[Steps.redirects]: (
+			<OnboardingRedirectPage
+				onPrevious={handleStepDecrement}
+				onRedirect={handleCloseModal}
+			/>
+		),
 	}
 
 	if (!isOpen) return null
 
 	return (
 		<Dialog open={!!isOpen}>
-			<FullScreenPanel
-				backgroundColor="var(--background-area)"
-				fullScreen={true}
-				overlay={true}
-				closable={false}
-				showCloseButton={false}
-				dir="rtl"
-			>
-				<Header>
-					<Logo src={logoWithText} alt="Vector" />
-				</Header>
-				{step === 0 && <OnboardingGreetingPage onNext={handleStepIncrement} />}
-				{step === 1 && (
-					<OnboardingSysDescPage
-						onNext={handleStepIncrement}
-						onPrevious={handleStepDecrement}
-						onSkip={handleCloseModal}
-					/>
-				)}
-				{step === 2 && (
-					<OnboardingRedirectPage
-						onNext={handleStepIncrement}
-						onPrevious={handleStepDecrement}
-						onRedirect={handleCloseModal}
-					/>
-				)}
+			<FullScreenPanel closable={false} showCloseButton={false}>
+				<ContentWrapper>
+					<Header>
+						<Logo src={logoWithText} alt="Vector" />
+					</Header>
+					{Pages[step]}
+				</ContentWrapper>
 			</FullScreenPanel>
 		</Dialog>
 	)
 }
-
 const FullScreenPanel = styled(DialogContent)`
 	//the svgs have built in shadow that needs accomodating as it takes space
 	--accomodation-padding: 6.5vw;
 
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	gap: 1.5rem;
-
-	width: 100%;
+	width: 100vw;
 	max-width: 100vw;
 	height: 100vh;
 	padding: 5vh 0;
 	border-radius: 0;
 	border: none;
 
+	direction: rtl;
+	
 	background: var(--background-area);
-	scrollbar-gutter: stable;
+`
+
+const ContentWrapper = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 1.5rem;
+
+	position: relative;
+	width: 100%;
+	height: 100%;
 `
 
 const Header = styled.header`

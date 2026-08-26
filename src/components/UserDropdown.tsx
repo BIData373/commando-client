@@ -10,6 +10,7 @@ import {
 	USER_GUIDE_URL,
 } from "src/utils/env-utils"
 import { PERMISSION_LABEL } from "src/utils/permissions-utils"
+import { handleOpenUserGuide } from "src/utils/redirect-utils"
 import { BIHeaderBypass } from "./BIHeaderBypass"
 import {
 	DropdownMenuContent,
@@ -38,10 +39,6 @@ export function UserDropdown({
 				view: TasksView.TABLE,
 			},
 		})
-	}
-
-	function handleOpenUserGuide() {
-		window.open(USER_GUIDE_URL)
 	}
 
 	function handleOpenChat() {

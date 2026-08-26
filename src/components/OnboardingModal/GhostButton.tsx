@@ -1,7 +1,8 @@
 import styled from "@emotion/styled"
+import type React from "react"
+import { GradientText } from "./GradientText"
 
-interface GhostButtonProps {
-	children: string
+interface GhostButtonProps extends React.PropsWithChildren {
 	onClick: () => void
 }
 
@@ -38,11 +39,4 @@ const GradientBorderBtn = styled.button`
     background-clip: padding-box, border-box;
 
     background-clip: padding-box, border-box;
-`
-
-const GradientText = styled.span`
-    background: var(--default-linear);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;    
 `

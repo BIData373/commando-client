@@ -11,7 +11,11 @@ import {
 import { UserDropdown } from "../UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu"
 
-export function InfoFooter({ className }: { className?: string }) {
+interface RootPageFooterProps {
+	className?: string
+}
+
+export function RootPageFooter({ className }: RootPageFooterProps) {
 	function handleOpenUserGuide() {
 		window.open(USER_GUIDE_URL, "_blank")
 	}

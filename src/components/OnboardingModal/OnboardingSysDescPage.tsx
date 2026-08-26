@@ -1,7 +1,8 @@
 import styled from "@emotion/styled"
+import systemDesc from "../../assets/systemDesc.svg"
 import { PrimaryButton } from "../shared/PrimaryButton"
-import { ButtonGroup as ButtonGroupPrimitive } from "./shared/ButtonGroup"
-import { GhostButton } from "./shared/GhostButton"
+import { ButtonGroup as ButtonGroupPrimitive } from "../ui/button-group"
+import { GhostButton } from "./GhostButton"
 
 interface OnboardingGreetingPageProps {
 	onNext: () => void
@@ -16,7 +17,7 @@ export function OnboardingSysDescPage({
 }: OnboardingGreetingPageProps) {
 	return (
 		<>
-			<Main src="../../public/systemDesc.svg"></Main>
+			<Main src={systemDesc}></Main>
 			<Footer>
 				<SkipBtn onClick={onSkip}>דלג</SkipBtn>
 				<ButtonGroup>
@@ -34,6 +35,9 @@ const Main = styled.img`
     padding: 0 var(--accomodation-padding) 0 4.5vw;
 `
 const Footer = styled.footer`
+    position: sticky;
+    bottom: -48vh;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -42,7 +46,7 @@ const Footer = styled.footer`
 `
 
 const PrimaryBtn = styled(PrimaryButton)`
-    padding: 0.5rem 1rem;
+    padding: 8px 16px;
 
     font-size: var(--fs-base);
 `
@@ -51,7 +55,7 @@ const SkipBtn = styled.button`
     display: flex;
     align-items: center;
 
-    padding: 0.5rem 1rem;
+    padding: 8px 16px;
     border-radius: 8px;
     border: var(--card-border) 1px solid;
 
@@ -63,5 +67,6 @@ const SkipBtn = styled.button`
 `
 
 const ButtonGroup = styled(ButtonGroupPrimitive)`
+    gap: 1rem;
     margin-bottom: -2px;
 `

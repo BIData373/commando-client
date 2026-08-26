@@ -1,7 +1,9 @@
 import styled from "@emotion/styled"
 import { ArrowLeft } from "lucide-react"
-import { InfoFooter } from "../shared/InfoFooter"
+import systemPreview from "../../assets/systemPreview.svg"
 import { PrimaryButton } from "../shared/PrimaryButton"
+import { RootPageFooter } from "../shared/RootPageFooter"
+import { GradientText } from "./GradientText"
 
 interface OnboardingGreetingPageProps {
 	onNext: () => void
@@ -38,7 +40,7 @@ export function OnboardingGreetingPage({
 						הצטרפו ל200+ מפקדים שכבר מנהלים את ההנחיות שלהם במערכת
 					</Invite>
 				</Greeting>
-				<SystemPreview src="../../public/systemPreview.svg" />
+				<SystemPreview src={systemPreview} />
 			</Main>
 			<Footer />
 		</>
@@ -51,10 +53,10 @@ const Description = styled.p`
 	margin-bottom: 0.5rem;
 
 	color: var(--Colors-Base-Geekblue-10);
-    font-size: clamp(1.25rem, 2vw, 2.25rem);
+    font-size: clamp(8px, 2vw, 36px);
 `
 const Invite = styled.p`
-	font-size: clamp(0.5rem, 1vw, 1rem);
+	font-size: var(--fs-base);
 	font-weight: 400;
     color: var(--text-color-400);
 `
@@ -75,7 +77,7 @@ const Greeting = styled.section`
 	align-items: flex-start;
 	gap: 1rem;
 
-	max-width: clamp(30rem, 50vw, 60rem);
+	max-width: clamp(200px, 55vw, 900px);
 	padding: 10vh var(--accomodation-padding) 7.5vh 0;
 `
 
@@ -83,28 +85,24 @@ const Title = styled.h1`
 	margin-bottom: 0.5rem;
 
 	line-height: 1.2;
-    font-size: clamp(3rem, 5vw, 6rem);
+    font-size: clamp(32px, 4.5vw, 96px);
 	color: var(--Colors-Base-Geekblue-10);
-`
-
-const GradientText = styled.span`
-    background: var(--default-linear);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;    
 `
 
 const BoldText = styled.span`
     font-weight: 600;
 `
 
-const Footer = styled(InfoFooter)`
+const Footer = styled(RootPageFooter)`
+	position: sticky;
+	bottom: -48vh;
+	
     margin-top: auto;
     padding: 0 var(--accomodation-padding);
 `
 
 const PrimaryBtn = styled(PrimaryButton)`
-	padding: 0.5em 1em;
+	padding: 8px 16px;
 
-	font-size: clamp(0.75rem, 1.5vw, 1.5rem);
+	font-size: var(--fs-heading-3);
 `

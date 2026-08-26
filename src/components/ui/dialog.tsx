@@ -62,27 +62,23 @@ function DialogContent({
   showCloseButton = true,
   overlay = true,
   closable = true,
-  fullScreen = false,
-  backgroundColor,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
   overlay?: boolean
   closable?: boolean
-  fullScreen?: boolean
-  backgroundColor?: string
 }) {
   function preventClose(e: { preventDefault(): void }) {
     e.preventDefault()
   }
 
-  const content = (
-      
+  return (
+    <DialogPortal>
+      {overlay && <DialogOverlay />}
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          !fullScreen ? "fixed top-1/2 start-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 rtl:translate-x-1/2 rtl:translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-background p-4 text-sm ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95" :
-          "relative min-h-screen w-full bg-background outline-none duration-100 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+          "fixed top-1/2 start-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 rtl:translate-x-1/2 rtl:translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-background p-4 text-sm ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className
         )}
         onEscapeKeyDown={closable ? undefined : preventClose}
@@ -104,11 +100,6 @@ function DialogContent({
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>
-    )
-
-  return (
-    <DialogPortal>
-      {overlay ? <DialogOverlay style={fullScreen ? {direction: "ltr", overflowY: "auto", display: "block", backgroundColor: `${backgroundColor}`} : {}}>{content}</DialogOverlay> : content}
     </DialogPortal>
   )
 }

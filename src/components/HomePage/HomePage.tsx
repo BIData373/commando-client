@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import backgroundImage from "src/assets/Background-home-page.png"
 import logoWithText from "src/assets/logo-with-text-dark.png"
 import SpacesContainer from "src/components/SpacesContainer/SpacesContainer"
-import { InfoFooter as HomeFooter } from "../shared/InfoFooter"
+import { RootPageFooter } from "../shared/RootPageFooter"
 import PersonalAreaCard from "./PersonalAreaCard"
 
 export default function HomePage() {
@@ -19,7 +19,7 @@ export default function HomePage() {
 				<PersonalAreaCard />
 				<SpacesContainer />
 			</ContentWrapper>
-			<HomeFooter />
+			<RootPageFooter />
 		</PageRoot>
 	)
 }

@@ -1,13 +1,14 @@
 import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import { USER_GUIDE_URL } from "src/utils/env-utils"
+import { handleOpenUserGuide } from "src/utils/redirect-utils"
+import createWorkspace from "../../assets/createWorkspace.svg"
+import toPersonalSpace from "../../assets/toPersonalSpace.svg"
 import { PrimaryButton } from "../shared/PrimaryButton"
-import { ButtonGroup } from "./shared/ButtonGroup"
-import { GhostButton } from "./shared/GhostButton"
+import { ButtonGroup as ButtonGroupPrimitive } from "../ui/button-group"
+import { GhostButton } from "./GhostButton"
 
 interface OnboardingRedirectPageProps {
-	onNext: () => void
 	onPrevious: () => void
 	onRedirect: () => void
 }
@@ -16,9 +17,6 @@ export function OnboardingRedirectPage({
 	onPrevious,
 	onRedirect,
 }: OnboardingRedirectPageProps) {
-	function handleOpenUserGuide() {
-		window.open(USER_GUIDE_URL, "_blank")
-	}
 	return (
 		<>
 			<Main>
@@ -32,10 +30,10 @@ export function OnboardingRedirectPage({
 						search={{ view: TasksView.TABLE }}
 						onClick={onRedirect}
 					>
-						<Card src="../../public/toPersonalSpace.svg" />
+						<Card src={toPersonalSpace} />
 					</Link>
 					<Link to="/new-workspace" onClick={onRedirect}>
-						<Card src="../../public/createWorkspace.svg" />
+						<Card src={createWorkspace} />
 					</Link>
 				</CardGroup>
 			</Main>
@@ -69,16 +67,19 @@ const Main = styled.main`
 
 const Title = styled.h1`
     line-height: 1.2;
-    font-size: clamp(1.75rem, 2.5vw, 3rem);
+    font-size: var(--fs-heading-h1);
     font-weight: 600;
     color: var(--Colors-Base-Geekblue-10);
 `
 
 const SubTitle = styled.p`
-    font-size: clamp(1rem, 2vw, 2.25rem);
+    font-size: var(--fs-heading-2);
     color: var(--Colors-Base-Geekblue-10);
 `
 const Footer = styled.footer`
+	position: sticky;
+	bottom: -48vh;
+
     display: flex;
     align-items:  center;
     justify-content: space-between;
@@ -86,12 +87,17 @@ const Footer = styled.footer`
     padding: 0 var(--accomodation-padding);
 `
 
-const CardGroup = styled(ButtonGroup)`
+const CardGroup = styled(ButtonGroupPrimitive)`
+	align-self: center;
 	flex: 1;
     gap: 3rem;
 `
+const ButtonGroup = styled(ButtonGroupPrimitive)`
+	gap: 1rem;
+`
+
 const PrimaryBtn = styled(PrimaryButton)`
-    padding: 0.5em 1em;
+    padding: 8px 16px;
 
     font-size: var(--fs-base);
 `
@@ -101,13 +107,13 @@ const Notice = styled.section`
     justify-content: center;
     align-items: center;
 
-    font-size: clamp(0.5rem, 1vw, 1.25rem);
+    font-size: clamp(8px, 1vw, 20px);
     font-weight: 400;
     color: var(--text-color-400);
 `
 
 const Help = styled.p`
-    font-size: clamp(0.5rem, 1vw, 1.25rem);
+    font-size: clamp(8px, 1vw, 20px);
 `
 
 const GuideLink = styled.a`
@@ -119,12 +125,12 @@ cursor: pointer;
   }
 
   &:visited {
-    color: #0958D9;
+    color: var(--link-visited);
   }
 `
 
 const Card = styled.img`
-	height: 40vh;
+	height: 30vh;
     cursor: pointer;
     transition: box-shadow 0.4s;
 
