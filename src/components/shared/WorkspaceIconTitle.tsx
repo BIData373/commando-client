@@ -6,6 +6,7 @@ import EllipsisTooltip from "./EllipsisTooltip"
 interface WorkspaceIconTitleProps extends PropsWithChildren {
 	icon?: string | null
 	title: string
+	creatorLabel?: string
 	iconSize?: number
 	rounded?: boolean
 	className?: string
@@ -14,6 +15,7 @@ interface WorkspaceIconTitleProps extends PropsWithChildren {
 export default function WorkspaceIconTitle({
 	icon,
 	title,
+	creatorLabel,
 	children,
 	iconSize = 20,
 	rounded = false,
@@ -30,7 +32,9 @@ export default function WorkspaceIconTitle({
 				/>
 			)}
 
-			<EllipsisTooltip tooltip={title}>{children ?? title}</EllipsisTooltip>
+			<EllipsisTooltip tooltip={title} extra={creatorLabel}>
+				{children ?? title}
+			</EllipsisTooltip>
 		</Wrapper>
 	)
 }
