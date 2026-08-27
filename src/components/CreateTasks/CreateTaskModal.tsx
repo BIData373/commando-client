@@ -21,12 +21,13 @@ import {
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { invalidateQueries } from "src/queryClient"
 import { getImmediateReferenceDate } from "src/utils/deadline-utils"
-import { getChangedFields } from "src/utils/form-utils"
+import { getChangedFields, NOTES_MAX_LENGTH } from "src/utils/form-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { CancelButton } from "../shared/CancelButton"
 import FlagIcon from "../shared/FlagIcon"
 import { FormField } from "../shared/FormField"
 import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
+import InputWithCount from "../shared/InputWithCount"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import TagField from "../TagField/TagField"
@@ -34,7 +35,6 @@ import { Checkbox } from "../ui/checkbox"
 import { Dialog } from "../ui/dialog"
 import AssigneeField from "./AssigneeField"
 import DeadlineField from "./DeadlineField"
-import NotesField from "./NotesField"
 import SourceField from "./SourceField"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -407,10 +407,14 @@ function CreateTaskModal({
 							<AdditionalDetailsWrapper>
 								<AdditionalDetails>
 									{/* Notes */}
-									<NotesField
-										notes={values.notes ?? ""}
-										onNotesChange={handleNotesChange}
-									/>
+									<LabelText>הערה</LabelText>
+									<InputWithCount
+										text={values.notes ?? ""}
+										onChange={handleNotesChange}
+										maxLength={NOTES_MAX_LENGTH}
+										isTextArea={true}
+										placeholder="הערה"
+									></InputWithCount>
 
 									{/* Tag field */}
 									<TagField
@@ -465,6 +469,12 @@ function CreateTaskModal({
 export default CreateTaskModal
 
 // ─── Modal Shell ─────────────────────────────────────────────────────────────
+
+const LabelText = styled.span`
+  font-weight: 400;
+  font-size: var(--fs-btn);
+  color: var(--text-color-2);
+`
 
 const ModalCard = styled(ModalContent)`
   width: 100%;
