@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { createLink, Link, type LinkProps } from "@tanstack/react-router"
+import { Link, type LinkProps } from "@tanstack/react-router"
 import { ChevronDown } from "lucide-react"
 import {
 	DropdownMenu,
@@ -8,6 +8,7 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
 import { NavigationMenuItem } from "../ui/navigation-menu"
+import { HeaderNavTab } from "./HeaderNavTab"
 
 export enum DropdownSection {
 	TASKS = "tasks",
@@ -40,9 +41,9 @@ export const ArchiveDropdown = ({
 	return (
 		<NavigationMenuItem>
 			<SectionButton $active={isActive}>
-				<SectionLink {...routeByKey[section]}>
-					{DROPDOWN_ITEMS[section]}
-				</SectionLink>
+				<HeaderNavTab asChild>
+					<Link {...routeByKey[section]}>{DROPDOWN_ITEMS[section]}</Link>
+				</HeaderNavTab>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<ChevronButton>
@@ -67,35 +68,14 @@ const SectionButton = styled.div<{ $active: boolean }>`
   align-items: center;
   direction: rtl;
   background: ${({ $active }) => ($active ? "var(--Menu-Tab-Active)" : "transparent")};
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
 
   &:hover {
     background: var(--Menu-Tab-Hover);
     color: var(--Menu-Tab-Text);
   }
 `
-
-const SectionLinkBase = styled.a`
-  && {
-    display: flex;
-    align-items: center;
-    padding: 8px 8px;
-    color: var(--Menu-Tab-Text);
-    font-size: var(--fs-btn);
-    font-weight: 400;
-    border-start-start-radius: 6px;
-    border-end-start-radius: 6px;
-    white-space: nowrap;
-    text-decoration: none;
-    cursor: pointer;
-
-    &:hover {
-      background: var(--Menu-Tab-Hover);
-    }
-  }
-`
-
-const SectionLink = createLink(SectionLinkBase)
 
 const ChevronButton = styled.button`
   display: flex;
@@ -104,8 +84,6 @@ const ChevronButton = styled.button`
   align-self: stretch;
   padding-inline: 8px;
   border: none;
-  border-start-end-radius: 6px;
-  border-end-end-radius: 6px;
   background: transparent;
   color: var(--Menu-Tab-Text);
   cursor: pointer;
@@ -120,7 +98,7 @@ const SectionDropdownContent = styled(DropdownMenuContent)`
     direction: rtl;
     min-width: 80px;
     padding: 4px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     background: var(--header-bg);
     border: 1px solid var(--Menu-Tab-Hover);
     box-shadow: var(--dropdown-shadow);
