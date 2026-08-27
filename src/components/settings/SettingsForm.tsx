@@ -17,9 +17,9 @@ import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
 import { isWorkspaceExist } from "src/utils/error-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
-import { DATA_COUNTER_CLASS, NAME_MAX_LENGTH } from "src/utils/workspace-utils"
+import { NAME_MAX_LENGTH } from "src/utils/workspace-utils"
 import { FormField } from "../shared/FormField"
-import { Input } from "../ui/input"
+import InputWithCount from "../shared/InputWithCount"
 import { IconDropdown } from "./IconDropdown"
 import { SelectCommand } from "./SelectCommand"
 
@@ -85,8 +85,8 @@ export function SettingsForm() {
 		debouncedSubmit()
 	}, [values, debouncedSubmit])
 
-	function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
-		const next = e.target.value.slice(0, NAME_MAX_LENGTH)
+	function handleTitleChange(value: string) {
+		const next = value.slice(0, NAME_MAX_LENGTH)
 		if (!next.trim()) {
 			toast.error("שם סביבה הוא שדה חובה", {
 				closeButton: true,
@@ -122,20 +122,12 @@ export function SettingsForm() {
 	return (
 		<FormRoot>
 			<FormField label="שם סביבה">
-				<InputWrapper>
-					<StyledInput
-						value={values.title ?? ""}
-						onChange={handleTitleChange}
-						placeholder="הזן שם סביבה"
-						maxLength={NAME_MAX_LENGTH}
-					/>
-					<CharCounter
-						$atLimit={(values.title ?? "").length >= NAME_MAX_LENGTH}
-						className={DATA_COUNTER_CLASS}
-					>
-						{(values.title ?? "").length}/{NAME_MAX_LENGTH}
-					</CharCounter>
-				</InputWrapper>
+				<InputWithCount
+					text={values.title ?? ""}
+					onChange={handleTitleChange}
+					maxLength={NAME_MAX_LENGTH}
+					placeholder="הזן שם סביבה"
+				/>
 			</FormField>
 
 			<FormField label="שיוך פיקודי ארגוני">
@@ -179,32 +171,6 @@ const FormRoot = styled.div`
   gap: 16px;
   width: 400px;
   direction: rtl;
-`
-
-const CharCounter = styled.span<{ $atLimit: boolean }>`
-  font-size: var(--fs-sm);
-  color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger)" : "var(--sea-ink-soft)")};
-  text-align: end;
-  opacity: 0;
-  transition: opacity 0.15s;
-`
-
-const InputWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
-
-  &:hover .${DATA_COUNTER_CLASS},
-  &:focus-within .${DATA_COUNTER_CLASS} {
-	opacity: 1;
-  }
-
-
-`
-
-const StyledInput = styled(Input)`
-  background: var(--background);
 `
 
 const IconPreview = styled.div`
