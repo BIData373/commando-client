@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import type { TaskRowDto } from "src/api/model"
 import {
+	DEFAULT_COLUMN_ORDER,
 	DISABLED_CLICK_COLUMNS,
 	toHiddenColumns,
 } from "src/utils/task-table-utils"
@@ -23,6 +24,7 @@ export function TaskPreviewTable({
 	emptyState,
 }: TaskPreviewTableProps) {
 	const { columns } = useTaskColumns<TaskRowDto>({
+		columnOrder: DEFAULT_COLUMN_ORDER,
 		onUpdateStatusSuccess,
 		hiddenColumns: toHiddenColumns(visibleColumns),
 		showMenuColumn: false,

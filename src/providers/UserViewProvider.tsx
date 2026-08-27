@@ -16,75 +16,19 @@ import {
 } from "src/api/user-view/user-view"
 
 import { Spinner } from "src/components/ui/spinner"
-import {
-	DEFAULT_COLUMN_ORDER,
-	TASK_COLUMN_ID,
-} from "src/utils/task-table-utils"
 
 export interface UserViewContext {
 	view: UserViewDto
 	updateView(nextView: UserViewDto): Promise<void>
+	defaultColumnOrder: (keyof TaskRowWithWorkspaceDto)[]
 }
 
 const UserViewContext = createContext<UserViewContext | null>(null)
 
-const PERSONAL_DEFAULT_COLUMN_ORDER = [
-	TASK_COLUMN_ID.title,
-	TASK_COLUMN_ID.status,
-	TASK_COLUMN_ID.assignee,
-	TASK_COLUMN_ID.deadlineType,
-	TASK_COLUMN_ID.source,
-	TASK_COLUMN_ID.tags,
-	TASK_COLUMN_ID.workspace,
-	TASK_COLUMN_ID.createdAt,
-	TASK_COLUMN_ID.updatedAt,
-]
-
-const PERSONAL_DEFAULT_HIDDEN = [
-	TASK_COLUMN_ID.notes,
-	TASK_COLUMN_ID.tags,
-	TASK_COLUMN_ID.updatedAt,
-]
-
-const WORKSPACE_DEFAULT_HIDDEN = [
-	TASK_COLUMN_ID.notes,
-	TASK_COLUMN_ID.updatedAt,
-]
-
-function getDefaultView(
-	workspaceId: number | null,
-	defaultColumnOrder?: (keyof TaskRowWithWorkspaceDto)[],
-	defaultHiddenColumns?: Set<keyof TaskRowWithWorkspaceDto>,
-): UserViewDto {
-	return {
-		table: {
-			sorting: [],
-			columnFilters: [],
-			quickFilter: [],
-			columnVisibility: {
-				columnOrder: [
-					...(defaultColumnOrder ??
-						(workspaceId
-							? DEFAULT_COLUMN_ORDER
-							: PERSONAL_DEFAULT_COLUMN_ORDER)),
-				],
-				hiddenColumns: [
-					...(defaultHiddenColumns ??
-						(workspaceId ? WORKSPACE_DEFAULT_HIDDEN : PERSONAL_DEFAULT_HIDDEN)),
-				],
-			},
-		},
-		dashboard: {
-			distributionTab: DistributionTab.load,
-			focusedInstructionsTab: QuickFilter.flagged,
-		},
-	}
-}
-
 interface UserViewProviderProps extends PropsWithChildren {
 	workspaceId?: number
-	defaultColumnOrder?: (keyof TaskRowWithWorkspaceDto)[]
-	defaultHiddenColumns?: Set<keyof TaskRowWithWorkspaceDto>
+	defaultColumnOrder: (keyof TaskRowWithWorkspaceDto)[]
+	defaultHiddenColumns: Set<keyof TaskRowWithWorkspaceDto>
 }
 
 export function UserViewProvider({
@@ -94,11 +38,21 @@ export function UserViewProvider({
 	defaultHiddenColumns,
 }: UserViewProviderProps) {
 	const queryClient = useQueryClient()
-	const defaultView = getDefaultView(
-		workspaceId ?? null,
-		defaultColumnOrder,
-		defaultHiddenColumns,
-	)
+	const defaultView = {
+		table: {
+			sorting: [],
+			columnFilters: [],
+			quickFilter: [],
+			columnVisibility: {
+				columnOrder: [...defaultColumnOrder],
+				hiddenColumns: [...defaultHiddenColumns],
+			},
+		},
+		dashboard: {
+			distributionTab: DistributionTab.load,
+			focusedInstructionsTab: QuickFilter.flagged,
+		},
+	}
 
 	const { data, isLoading } = useGetUserView(
 		{ workspaceId },
@@ -145,6 +99,7 @@ export function UserViewProvider({
 			value={{
 				view,
 				updateView,
+				defaultColumnOrder,
 			}}
 		>
 			{children}

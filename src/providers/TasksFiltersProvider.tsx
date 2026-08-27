@@ -23,10 +23,7 @@ import {
 	dashboardFilterDataTypeKey,
 	dashboardFilterRangeKey,
 } from "src/utils/filter-utils"
-import {
-	DEFAULT_COLUMN_ORDER,
-	reconcileColumnOrder,
-} from "src/utils/task-table-utils"
+import { reconcileColumnOrder } from "src/utils/task-table-utils"
 import { useUserView } from "./UserViewProvider"
 
 interface TasksFiltersContextValue {
@@ -69,7 +66,7 @@ export function TasksFiltersProvider({
 	initialQuickFilters,
 	children,
 }: TasksFiltersProviderProps) {
-	const { view, updateView } = useUserView()
+	const { view, updateView, defaultColumnOrder } = useUserView()
 	const [localQuickFilters, setLocalQuickFilters] = useState<
 		Set<QuickFilter> | undefined
 	>(initialQuickFilters)
@@ -111,8 +108,8 @@ export function TasksFiltersProvider({
 	})
 
 	const knownColumnIds: (keyof TaskRowWithWorkspaceDto)[] = useMemo(
-		() => ["id", ...new Set([...DEFAULT_COLUMN_ORDER, ...columnOrderRaw])],
-		[columnOrderRaw],
+		() => ["id", ...new Set([...defaultColumnOrder, ...columnOrderRaw])],
+		[defaultColumnOrder, columnOrderRaw],
 	)
 
 	const activeQuickFilters = useMemo(

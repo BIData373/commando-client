@@ -1,17 +1,18 @@
-import { createFileRoute, useSearch } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import { PermissionType } from "src/api/model"
 import { useTaskDetail } from "src/hooks/useTaskDetail"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AuthorizationWrapper } from "src/wrappers/AuthorizationWrapper"
 import TaskEditModal from "../../../../../components/CreateTasks/TaskEditModal"
 
-export const Route = createFileRoute("/workspace/$urlName/tasks/$taskId/edit")({
-	component: TaskEdit,
+export const Route = createFileRoute(
+	"/workspace/$urlName/dashboard/$taskId/edit",
+)({
+	component: DashboardTaskEdit,
 })
 
-function TaskEdit() {
+function DashboardTaskEdit() {
 	const { urlName, taskId } = Route.useParams()
-	const { view } = useSearch({ from: "/workspace/$urlName/tasks" })
 	const { workspace } = useWorkspace()
 
 	const { task } = useTaskDetail(taskId)
@@ -23,15 +24,10 @@ function TaskEdit() {
 		>
 			<TaskEditModal
 				task={task}
-				closeTo={{
-					to: "/workspace/$urlName/tasks",
-					params: { urlName },
-					search: { view },
-				}}
+				closeTo={{ to: "/workspace/$urlName/dashboard", params: { urlName } }}
 				viewTo={{
-					to: "/workspace/$urlName/tasks/$taskId",
+					to: "/workspace/$urlName/dashboard/$taskId",
 					params: { urlName, taskId },
-					search: { view },
 				}}
 			/>
 		</AuthorizationWrapper>

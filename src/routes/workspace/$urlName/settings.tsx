@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router"
 import { PermissionType } from "src/api/model"
 import { WorkspaceTabs } from "src/components/WorkspaceTabs"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { SETTINGS_TABS, SettingTabPath } from "src/utils/settings-utils"
 import { Tabs, TabsList, TabsTrigger } from "../../../components/ui/tabs"
 import { AuthorizationWrapper } from "../../../wrappers/AuthorizationWrapper"
@@ -25,6 +26,7 @@ function SettingsLayout() {
 	const navigate = useNavigate()
 	const { location } = useRouterState()
 	const { urlName } = Route.useParams()
+	const { workspace } = useWorkspace()
 
 	const activeTab =
 		Object.values(SettingTabPath).find((t) => location.pathname.endsWith(t)) ??
@@ -36,7 +38,10 @@ function SettingsLayout() {
 	}
 
 	return (
-		<AuthorizationWrapper type={PermissionType.MANAGER}>
+		<AuthorizationWrapper
+			type={PermissionType.MANAGER}
+			workspaceId={workspace.id}
+		>
 			<WorkspaceTabs isActive={false} />
 			<SettingsRoot>
 				<Tabs value={activeTab} onValueChange={handleTabChange}>
