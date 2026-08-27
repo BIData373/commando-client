@@ -17,7 +17,11 @@ import {
 	TooltipTrigger,
 } from "../ui/tooltip"
 
-export default function HomeFooter() {
+interface RootPageFooterProps {
+	className?: string
+}
+
+export function RootPageFooter({ className }: RootPageFooterProps) {
 	function handleOpenUserGuide() {
 		window.open(USER_GUIDE_URL, "_blank")
 	}
@@ -31,7 +35,7 @@ export default function HomeFooter() {
 	}
 
 	return (
-		<FooterRoot>
+		<FooterRoot className={className}>
 			<FooterLeft>
 				<FooterIcon src={BIDataIcon} alt="BI DATA" />
 				<FooterText>2026©</FooterText>
