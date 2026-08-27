@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
-import type { AssigneeStatusDto } from "src/api/model"
+import type { AssigneeStatusDto, WorkspaceStatusDto } from "src/api/model"
 import {
 	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
@@ -46,10 +46,10 @@ export const AssigneeContainer = ({
 	function handleUpdateAssigneeStatus(
 		taskId: number,
 		assigneeId: number,
-		statusId: number,
+		status: WorkspaceStatusDto,
 	) {
 		upsertAssigneeTaskStatus({
-			data: { taskId, assigneeId, statusId },
+			data: { taskId, assigneeId, statusId: status.id },
 		})
 	}
 

@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import type { QueryKey } from "@tanstack/react-query"
 import type {
 	ColumnDef,
 	ColumnFiltersState,
@@ -7,7 +8,6 @@ import type {
 import { uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import type {
 	DeadlineType,
 	TaskRowDto,
@@ -18,6 +18,7 @@ import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { buildFilterOptionsMap } from "src/functions/filter-utils"
 import { type TaskArchiveEntry, useTaskColumns } from "src/hooks/useTaskColumns"
+import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { getEmptyState } from "src/utils/empty-state-utils"
 import {
@@ -32,6 +33,7 @@ import { RowContextMenu } from "./RowContextMenu"
 
 interface TaskTableProps<TTask extends TaskRowDto> {
 	tasks: TTask[]
+	queryKey: QueryKey
 	getPermissionType(task?: TTask): PermissionType | null | undefined
 	columnOrder: (keyof TTask)[]
 	hiddenColumns: Set<keyof TTask>
@@ -58,6 +60,7 @@ interface TaskTableProps<TTask extends TaskRowDto> {
 
 function TaskTable<TTask extends TaskRowDto>({
 	tasks,
+	queryKey,
 	getPermissionType,
 	columnOrder,
 	hiddenColumns,
@@ -94,9 +97,10 @@ function TaskTable<TTask extends TaskRowDto>({
 		mutation: { onSuccess: onChangeSuccess },
 	})
 
-	const { mutate: upsertStatus } = useUpsertAssigneeTaskStatus({
-		mutation: { onSuccess: onChangeSuccess },
-	})
+	const { mutate: mutateStatus } = useUpdateTaskStatus<TTask>(
+		queryKey,
+		onChangeSuccess,
+	)
 
 	const [selectMode, setSelectMode] = useState(false)
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
@@ -234,14 +238,7 @@ function TaskTable<TTask extends TaskRowDto>({
 			if (!task || !task.assignee) {
 				return
 			}
-
-			upsertStatus({
-				data: {
-					taskId: task.id,
-					assigneeId: task.assignee.id,
-					statusId: status.id,
-				},
-			})
+			mutateStatus({ taskId: task.id, assigneeId: task.assignee.id, status })
 		})
 	}
 
@@ -251,7 +248,8 @@ function TaskTable<TTask extends TaskRowDto>({
 		columnOrder,
 		hiddenColumns,
 		extraColumns,
-		onUpdateStatusSuccess: onChangeSuccess,
+		onUpdateStatus: (taskId, assigneeId, status) =>
+			mutateStatus({ taskId, assigneeId, status }),
 		searchQuery,
 		filterOptionsMap,
 		statuses,

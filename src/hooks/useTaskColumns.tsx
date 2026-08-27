@@ -1,9 +1,8 @@
 import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import {
 	DeadlineType,
 	PermissionType,
@@ -11,9 +10,7 @@ import {
 	type WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
-import { getGetTaskQueryKey } from "src/api/task/task"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
-import { invalidateQueries } from "src/queryClient"
 import {
 	COLUMN_LABELS,
 	TASK_COLUMN_DEFINITIONS,
@@ -70,7 +67,11 @@ interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	actions?: ActionsConfig
 	showMenuColumn?: boolean
 	statuses?: WorkspaceStatusDto[]
-	onUpdateStatusSuccess?(): void
+	onUpdateStatus?(
+		taskId: number,
+		assigneeId: number,
+		status: WorkspaceStatusDto,
+	): void
 	onTitleDoubleClick?: (taskId: number) => void
 	getPermissionType?(task?: TTask): PermissionType | null | undefined
 }
@@ -85,25 +86,9 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 	actions,
 	showMenuColumn = true,
 	statuses,
-	onUpdateStatusSuccess,
+	onUpdateStatus,
 	getPermissionType,
 }: UseTaskColumnsOptions<TTask>) {
-	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
-		mutation: {
-			onSuccess: ({ task: { id } }) => {
-				invalidateQueries([getGetTaskQueryKey({ id })])
-				onUpdateStatusSuccess?.()
-			},
-		},
-	})
-
-	const handleUpdateStatus = useCallback(
-		(taskId: number, assigneeId: number, statusId: number) => {
-			upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } })
-		},
-		[upsertAssigneeTaskStatus],
-	)
-
 	const columns = useMemo<ColumnDef<TTask>[]>(() => {
 		// TODO Move all constant fields to task-table-utils
 
@@ -269,14 +254,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				...TASK_COLUMN_DEFINITIONS.status,
 				cell: ({
 					row: {
-						original: {
-							id,
-							status,
-							assignee,
-							workspaceId,
-							editable,
-							archivedAt,
-						},
+						original: { id, status, assignee, workspaceId, editable },
 					},
 				}) =>
 					status && (
@@ -287,7 +265,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							assigneeId={assignee?.id}
 							editable={editable}
 							taskId={id}
-							onUpdate={handleUpdateStatus}
+							onUpdate={onUpdateStatus}
 						/>
 					),
 			},
@@ -579,7 +557,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 		actions,
 		showMenuColumn,
 		statuses,
-		handleUpdateStatus,
+		onUpdateStatus,
 		getPermissionType,
 	])
 

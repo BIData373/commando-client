@@ -9,6 +9,7 @@ import {
 	type GetTaskAssigneeDto,
 	type SourceDto,
 	type TaskWithWorkspaceDto,
+	type WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
 import { getListSourcesQueryKey, useCreateSource } from "src/api/source/source"
@@ -262,12 +263,12 @@ function CreateTaskModal({
 	function handleAssigneeStatusChange(
 		_taskId: number,
 		assigneeId: number,
-		statusId: number,
+		status: WorkspaceStatusDto,
 	) {
 		form.setFieldValue(
 			"assignees",
 			(values.assignees ?? []).map((a) =>
-				a.id === assigneeId ? { ...a, statusId } : a,
+				a.id === assigneeId ? { ...a, statusId: status.id } : a,
 			),
 		)
 	}

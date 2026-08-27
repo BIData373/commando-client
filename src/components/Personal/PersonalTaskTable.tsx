@@ -204,6 +204,7 @@ function PersonalTaskTable({
 				/>
 				<TaskTable<TaskRowWithWorkspaceDto>
 					tasks={filteredTaskRows}
+					queryKey={queryKey}
 					isLoading={isLoading}
 					hideStatusAction
 					showActionsColumn={true}

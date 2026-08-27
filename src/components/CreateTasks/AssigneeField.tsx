@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import { useListAssignees } from "src/api/assignee/assignee"
+import type { WorkspaceStatusDto } from "src/api/model"
 import AssigneePicker from "../shared/AssigneePicker"
 import type { AssigneeExtra } from "../shared/AssigneeRow"
 import AssigneeRowList from "../shared/AssigneeRow"
@@ -18,7 +19,7 @@ interface AssigneeFieldProps {
 	onStatusChange?: (
 		taskId: number,
 		assigneeId: number,
-		statusId: number,
+		status: WorkspaceStatusDto,
 	) => void
 	taskId?: number
 }

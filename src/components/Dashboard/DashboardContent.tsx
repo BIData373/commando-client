@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { PermissionType, type TaskRowDto } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
-import { useListTaskRows } from "src/api/task/task"
+import { getListTaskRowsQueryKey, useListTaskRows } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -25,7 +25,7 @@ export function DashboardContent() {
 
 	const { assigneeFilter, setAssigneeFilter } = useTasksFilters()
 
-	const { data: taskRows = [], queryKey } = useListTaskRows({
+	const { data: taskRows = [] } = useListTaskRows({
 		workspaceId: id,
 		isArchived: false,
 	})
@@ -55,7 +55,9 @@ export function DashboardContent() {
 	}
 
 	function handleUpdateSuccess() {
-		invalidateQueries([queryKey])
+		invalidateQueries([
+			getListTaskRowsQueryKey({ workspaceId: id, isArchived: false }),
+		])
 	}
 
 	function handleOpenTask(taskId: number) {

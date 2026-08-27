@@ -172,6 +172,7 @@ function WorkspaceTaskTable({
 						<TaskTable
 							onChangeSuccess={handleChangeSuccess}
 							tasks={filteredTaskRows}
+							queryKey={queryKey}
 							statuses={Object.values(statuses)}
 							onEdit={onEdit}
 							statusFilter={statusFilter}

@@ -1,11 +1,14 @@
 import type { ReactNode } from "react"
-import type { TaskRowDto } from "src/api/model"
+import type { TaskRowDto, WorkspaceStatusDto } from "src/api/model"
+import { getListTaskRowsQueryKey } from "src/api/task/task"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import {
 	DEFAULT_COLUMN_ORDER,
 	DISABLED_CLICK_COLUMNS,
 	toHiddenColumns,
 } from "src/utils/task-table-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
+import { useUpdateTaskStatus } from "../../hooks/useUpdateTaskStatus"
 import { DataTable } from "../ui/data-table"
 
 interface TaskPreviewTableProps {
@@ -23,9 +26,21 @@ export function TaskPreviewTable({
 	onClick,
 	emptyState,
 }: TaskPreviewTableProps) {
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+
+	const queryKey = getListTaskRowsQueryKey({ workspaceId, isArchived: false })
+
+	const { mutate: mutateStatus } = useUpdateTaskStatus<TaskRowDto>(
+		queryKey,
+		onUpdateStatusSuccess,
+	)
+
 	const { columns } = useTaskColumns<TaskRowDto>({
 		columnOrder: DEFAULT_COLUMN_ORDER,
-		onUpdateStatusSuccess,
+		onUpdateStatus: (taskId, assigneeId, status) =>
+			mutateStatus({ taskId, assigneeId, status }),
 		hiddenColumns: toHiddenColumns(visibleColumns),
 		showMenuColumn: false,
 	})

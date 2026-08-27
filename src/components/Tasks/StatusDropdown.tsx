@@ -19,7 +19,11 @@ interface StatusDropdownProps {
 	taskId: number
 	assigneeId?: number
 	editable?: boolean
-	onUpdate: (taskId: number, assigneeId: number, statusId: number) => void
+	onUpdate?: (
+		taskId: number,
+		assigneeId: number,
+		status: WorkspaceStatusDto,
+	) => void
 }
 
 export const StatusDropdown = memo(
@@ -48,9 +52,9 @@ export const StatusDropdown = memo(
 		const statuses = providedStatuses ?? fetchedStatuses
 		const statusesReady = statuses !== undefined && !isFetchingStatuses
 
-		function handleSelectStatus(newStatusId: number) {
-			if (newStatusId !== status.id && assigneeId) {
-				onUpdate(taskId, assigneeId, newStatusId)
+		function handleSelectStatus(newStatus: WorkspaceStatusDto) {
+			if (newStatus.id !== status.id && assigneeId) {
+				onUpdate?.(taskId, assigneeId, newStatus)
 			}
 		}
 
@@ -77,7 +81,7 @@ export const StatusDropdown = memo(
 									key={s.id}
 									$selected={s.id === status.id}
 									$hasAssignee={!!assigneeId}
-									onSelect={() => handleSelectStatus(s.id)}
+									onSelect={() => handleSelectStatus(s)}
 								>
 									<StatusTag status={s} interactive editable={editable} />
 								</StatusDropdownItem>
