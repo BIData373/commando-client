@@ -5,7 +5,7 @@ import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { AuthorizationWrapper } from "src/wrappers/AuthorizationWrapper"
 import TaskEditModal from "../../../../components/CreateTasks/TaskEditModal"
 
-export const Route = createFileRoute("/personal/task/$taskId/edit")({
+export const Route = createFileRoute("/personal/tasks/$taskId/edit")({
 	component: PersonalTaskEdit,
 })
 
@@ -23,9 +23,9 @@ function PersonalTaskEdit() {
 		>
 			<TaskEditModal
 				task={task}
-				closeTo={{ to: "/personal", search: { view: TasksView.TABLE } }}
+				closeTo={{ to: "/personal/tasks", search: { view: TasksView.TABLE } }}
 				viewTo={{
-					to: "/personal/task/$taskId",
+					to: "/personal/tasks/$taskId",
 					params: { taskId },
 					search: { view: TasksView.TABLE },
 				}}

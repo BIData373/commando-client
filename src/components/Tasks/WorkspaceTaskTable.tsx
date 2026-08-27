@@ -105,6 +105,8 @@ function WorkspaceTaskTable({
 		[hiddenColumns],
 	)
 
+	const isManager = myPermission?.type === PermissionType.MANAGER
+
 	const filteredTaskRows = useFilteredTasks(tasks)
 
 	function handleChangeSuccess() {
@@ -129,8 +131,8 @@ function WorkspaceTaskTable({
 		handleToggleArchive(entries)
 	}
 
-	const onArchive = !isArchived ? handleArchive : undefined
-	const onUnarchive = isArchived ? handleUnarchive : undefined
+	const onArchive = isManager && !isArchived ? handleArchive : undefined
+	const onUnarchive = isManager && isArchived ? handleUnarchive : undefined
 
 	return (
 		<TooltipProvider>
@@ -153,7 +155,7 @@ function WorkspaceTaskTable({
 					extraColumnsMeta={extraColumnsMeta}
 					extraButtons={
 						!isArchived &&
-						myPermission?.type === PermissionType.MANAGER && (
+						isManager && (
 							<ButtonGroup>
 								<FilterSeparator />
 
@@ -181,10 +183,11 @@ function WorkspaceTaskTable({
 							columnOrder={noWorkspaceColumnOrder}
 							hiddenColumns={noWorkspaceHiddenColumns}
 							extraColumns={extraColumns}
-							// hideStatusAction={isArchived}
-							// showActionsColumn={isArchived}
+							allowDelete={isManager}
 							onArchive={onArchive}
 							onUnarchive={onUnarchive}
+							// hideStatusAction={isArchived}
+							// showActionsColumn={isArchived}
 						/>
 					)}
 				</ContentArea>

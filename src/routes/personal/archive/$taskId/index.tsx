@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useTaskDetail } from "src/hooks/useTaskDetail"
-import TaskDetailView from "../../../../../components/TaskDetail/TaskDetailView"
+import TaskDetailView from "../../../../components/TaskDetail/TaskDetailView"
 
-export const Route = createFileRoute("/personal/archive/task/$taskId/")({
+export const Route = createFileRoute("/personal/archive/$taskId/")({
 	component: PersonalArchiveTaskDetail,
 })
 

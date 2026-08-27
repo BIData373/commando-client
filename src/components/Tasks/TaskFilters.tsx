@@ -128,7 +128,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					$active={activeQuickFilters.has(QuickFilter.flagged)}
 					onClick={() => toggleQuickFilter(QuickFilter.flagged)}
 				>
-					חשובות{flaggedCount > 0 && ` (${flaggedCount})`}
+					במיקוד{flaggedCount > 0 && ` (${flaggedCount})`}
 				</FilterPill>
 			),
 			[QuickFilter.approaching]: (

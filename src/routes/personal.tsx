@@ -9,7 +9,7 @@ export const Route = createFileRoute("/personal")({
 })
 
 function PersonalPage() {
-	useRenderInHeader("center", "אזור אישי")
+	useRenderInHeader("center", "אזור אישי - הנחיות שקיבלתי")
 
 	return (
 		<PageShell>

@@ -95,7 +95,7 @@ export const DASHBOARD_EMPTY_STATES: Record<
 	[QuickFilter.flagged]: {
 		imgSrc: noResultsFound,
 		title: "לא נמצאו הנחיות במיקוד",
-		description: "לאחר שהנחיות יוגדרו כחשובות,\nההנחיות האחרונות יופיעו כאן",
+		description: "לאחר שהנחיות יוגדרו במיקוד,\nההנחיות האחרונות יופיעו כאן",
 	},
 	[QuickFilter.approaching]: {
 		imgSrc: noResultsFound,
