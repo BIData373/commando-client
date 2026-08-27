@@ -260,7 +260,6 @@ function TaskDetailPanel({
 							taskId={id}
 							workspaceId={workspaceId}
 							assigneeStatuses={assigneeStatuses}
-							isArchived={isArchived}
 						/>
 					) : (
 						status && (

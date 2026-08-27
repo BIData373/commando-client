@@ -10,6 +10,7 @@ import {
 	WorkspaceStatusType,
 } from "src/api/model"
 import {
+	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	useListPersonalTaskRows,
 } from "src/api/task/task"
@@ -37,7 +38,7 @@ import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
 
-export const WORKSPACE_COLUMN: ColumnDef<TaskRowWithWorkspaceDto> = {
+const WORKSPACE_COLUMN_DEFINITION: ColumnDef<TaskRowWithWorkspaceDto> = {
 	id: TASK_COLUMN_ID.workspace,
 	header: ({ column }) => (
 		<ColumnHeaderWithActions label={COLUMN_LABELS.workspace} column={column} />
@@ -50,17 +51,6 @@ export const WORKSPACE_COLUMN: ColumnDef<TaskRowWithWorkspaceDto> = {
 		return a.localeCompare(b, "he")
 	},
 	accessorFn: (row) => row.workspace?.title,
-	cell: ({
-		row: {
-			original: { workspace },
-		},
-	}) => <WorkspaceCell workspace={workspace} />,
-}
-
-function getPersonalTaskSearchValues(
-	task: TaskRowWithWorkspaceDto,
-): Array<string | number | null | undefined> {
-	return [task.workspace?.title]
 }
 
 interface PersonalTaskTableProps {
@@ -105,12 +95,12 @@ function PersonalTaskTable({
 	)
 
 	const baseFilteredTaskRows = useFilteredTasks(tasks, {
-		additionalSearchValues: getPersonalTaskSearchValues,
+		additionalSearchValues: (task) => [task.workspace?.title],
 	})
 
 	const workspaceColumn = useMemo<ColumnDef<TaskRowWithWorkspaceDto>>(
 		() => ({
-			...WORKSPACE_COLUMN,
+			...WORKSPACE_COLUMN_DEFINITION,
 			cell: ({
 				row: {
 					original: { workspace },
@@ -151,7 +141,14 @@ function PersonalTaskTable({
 	function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
 		entries.forEach(({ id, assigneeId }) => {
 			if (assigneeId) {
-				toggleArchive({ pathParams: { id }, params: { assigneeId } })
+				toggleArchive(
+					{ pathParams: { id }, params: { assigneeId } },
+					{
+						onSuccess: () => {
+							invalidateQueries([getGetTaskQueryKey({ id })])
+						},
+					},
+				)
 			}
 		})
 	}
@@ -228,7 +225,6 @@ function PersonalTaskTable({
 					extraColumns={[workspaceColumn, ...(extraColumns ?? [])]}
 					onArchive={onArchive}
 					onUnarchive={onUnarchive}
-					allowDelete={false}
 				/>
 			</PageRoot>
 			<Outlet />

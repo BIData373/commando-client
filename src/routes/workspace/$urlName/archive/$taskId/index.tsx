@@ -1,11 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useTaskDetail } from "src/hooks/useTaskDetail"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import TaskDetailView from "../../../../../../components/TaskDetail/TaskDetailView"
+import TaskDetailView from "../../../../../components/TaskDetail/TaskDetailView"
 
-export const Route = createFileRoute(
-	"/workspace/$urlName/archive/task/$taskId/",
-)({
+export const Route = createFileRoute("/workspace/$urlName/archive/$taskId/")({
 	component: WorkspaceArchiveTaskDetail,
 })
 

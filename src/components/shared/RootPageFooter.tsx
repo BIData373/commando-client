@@ -10,8 +10,18 @@ import {
 } from "src/utils/env-utils"
 import { UserDropdown } from "../UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "../ui/tooltip"
 
-export default function HomeFooter() {
+interface RootPageFooterProps {
+	className?: string
+}
+
+export function RootPageFooter({ className }: RootPageFooterProps) {
 	function handleOpenUserGuide() {
 		window.open(USER_GUIDE_URL, "_blank")
 	}
@@ -25,7 +35,7 @@ export default function HomeFooter() {
 	}
 
 	return (
-		<FooterRoot>
+		<FooterRoot className={className}>
 			<FooterLeft>
 				<FooterIcon src={BIDataIcon} alt="BI DATA" />
 				<FooterText>2026©</FooterText>
@@ -38,13 +48,27 @@ export default function HomeFooter() {
 					<GradientBookIcon size={18} />
 				</OutlineGradientButton>
 
-				<IconButton onClick={handleOpenPortalCatalog}>
-					<TbGridDots size={18} />
-				</IconButton>
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<IconButton onClick={handleOpenPortalCatalog}>
+								<TbGridDots size={18} />
+							</IconButton>
+						</TooltipTrigger>
+						<TooltipContent side="top">עוד מאיתנו</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
 
-				<IconButton onClick={handleOpenChatChannel}>
-					<TbMessage size={18} />
-				</IconButton>
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<IconButton onClick={handleOpenChatChannel}>
+								<TbMessage size={18} />
+							</IconButton>
+						</TooltipTrigger>
+						<TooltipContent side="top">צור קשר</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
 
 				{STATIC_TOKEN && (
 					<DropdownMenu>

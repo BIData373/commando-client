@@ -44,7 +44,7 @@ function PersonalTasksPage() {
 
 	function handleOpenTask(taskId: number) {
 		navigate({
-			to: "/personal/tasks/task/$taskId",
+			to: "/personal/tasks/$taskId",
 			params: { taskId: String(taskId) },
 			search: { view: TasksView.TABLE },
 		})
@@ -52,7 +52,7 @@ function PersonalTasksPage() {
 
 	function handleEdit(taskId: number) {
 		navigate({
-			to: "/personal/tasks/task/$taskId/edit",
+			to: "/personal/tasks/$taskId/edit",
 			params: { taskId: String(taskId) },
 			search: { view: TasksView.TABLE },
 		})
@@ -60,7 +60,7 @@ function PersonalTasksPage() {
 
 	function handleAddComment(taskId: number) {
 		navigate({
-			to: "/personal/tasks/task/$taskId",
+			to: "/personal/tasks/$taskId",
 			params: { taskId: String(taskId) },
 			search: { view: TasksView.TABLE, focusComment: true },
 		})

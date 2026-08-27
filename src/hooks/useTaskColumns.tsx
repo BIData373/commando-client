@@ -5,6 +5,7 @@ import { useMemo } from "react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import {
 	DeadlineType,
+	PermissionType,
 	type TaskRowDto,
 	type WorkspaceStatusDto,
 	WorkspaceStatusType,
@@ -13,10 +14,10 @@ import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import {
 	COLUMN_LABELS,
-	DEFAULT_COLUMN_ORDER,
 	TASK_COLUMN_DEFINITIONS,
 	TASK_COLUMN_ID,
 } from "src/utils/task-table-utils"
+import { DateText } from "../components/shared/DateText"
 import { DeadlineTypeTag } from "../components/shared/DeadlineTypeTag"
 import EllipsisTooltip from "../components/shared/EllipsisTooltip"
 import FlagIcon from "../components/shared/FlagIcon"
@@ -58,7 +59,7 @@ interface ActionsConfig {
 }
 
 interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
-	columnOrder?: (keyof TTask)[]
+	columnOrder: (keyof TTask)[]
 	hiddenColumns?: Set<keyof TTask>
 	extraColumns?: ColumnDef<TTask>[]
 	searchQuery?: string
@@ -69,10 +70,11 @@ interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	statuses?: WorkspaceStatusDto[]
 	onUpdateStatusSuccess?(): void
 	onTitleDoubleClick?: (taskId: number) => void
+	getPermissionType?(task?: TTask): PermissionType | null | undefined
 }
 
 export function useTaskColumns<TTask extends TaskRowDto>({
-	columnOrder = DEFAULT_COLUMN_ORDER as (keyof TTask)[],
+	columnOrder,
 	hiddenColumns = new Set<keyof TTask>(),
 	extraColumns = [],
 	searchQuery,
@@ -82,6 +84,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 	showMenuColumn = true,
 	statuses,
 	onUpdateStatusSuccess,
+	getPermissionType,
 }: UseTaskColumnsOptions<TTask>) {
 	const handleUpdateStatus = useUpdateTaskStatus({
 		onSuccess: onUpdateStatusSuccess,
@@ -148,40 +151,39 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						size: 45,
 						enableSorting: false,
 						enableColumnFilter: false,
-						cell: ({
-							row: {
-								original: { id, workspaceId, rowKey, assignee },
-							},
-						}) => {
-							const handleEdit = actions.onEdit
-								? () => actions.onEdit?.(id)
-								: undefined
-							const handleAddComment = actions.onAddComment
-								? () => actions.onAddComment?.(id)
-								: undefined
-							const handleArchive = actions.onArchive
-								? () => actions.onArchive?.([{ id, assigneeId: assignee?.id }])
-								: undefined
-							const handleUnarchive = actions.onUnarchive
-								? () =>
-										actions.onUnarchive?.([{ id, assigneeId: assignee?.id }])
-								: undefined
-							const handleEnterSelect = () =>
-								actions.onEnterSelectMode?.(rowKey)
-							const handleDelete = actions.onDelete
-								? () => actions.onDelete?.([id])
-								: undefined
+						cell: ({ row: { original } }) => {
+							const { id, workspaceId, rowKey, assignee } = original
+							const isManager =
+								getPermissionType?.(original) === PermissionType.MANAGER
 
 							return (
 								<RowActionsMenu
 									workspaceId={workspaceId}
 									actions={{
-										onEdit: handleEdit,
-										onAddComment: handleAddComment,
-										onArchive: handleArchive,
-										onUnarchive: handleUnarchive,
-										onEnterSelect: handleEnterSelect,
-										onDelete: handleDelete,
+										onEdit:
+											actions.onEdit && isManager
+												? () => actions.onEdit?.(id)
+												: undefined,
+										onAddComment:
+											actions.onAddComment &&
+											(() => actions.onAddComment?.(id)),
+										onArchive:
+											actions.onArchive &&
+											(() =>
+												actions.onArchive?.([
+													{ id, assigneeId: assignee?.id },
+												])),
+										onUnarchive:
+											actions.onUnarchive &&
+											(() =>
+												actions.onUnarchive?.([
+													{ id, assigneeId: assignee?.id },
+												])),
+										onEnterSelect: () => actions.onEnterSelectMode?.(rowKey),
+										onDelete:
+											actions.onDelete && isManager
+												? () => actions.onDelete?.([id])
+												: undefined,
 									}}
 								/>
 							)
@@ -485,6 +487,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				accessorKey: TASK_COLUMN_ID.notes,
 				header: COLUMN_LABELS.notes,
 				size: 100,
+				minSize: 100,
 				enableSorting: false,
 				enableColumnFilter: false,
 				meta: { grow: true },
@@ -556,6 +559,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 		showMenuColumn,
 		statuses,
 		handleUpdateStatus,
+		getPermissionType,
 	])
 
 	return { columns }
@@ -607,13 +611,9 @@ const TitlePart = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 50%;
-  flex-shrink: 0;
-
-  &:only-child {
-    max-width: 100%;
-    flex: 1;
-  }
+  flex: 1 1 50%;
+  max-width: max-content;
+  min-width: 0;
 `
 
 const TitleSeparator = styled.span`
@@ -626,7 +626,8 @@ const DetailsPart = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 1;
+  flex: 1 1 50%;
+  max-width: max-content;
   min-width: 0;
 `
 
@@ -732,9 +733,5 @@ const NotesText = styled(EllipsisTooltip)`
   font-size: var(--fs-btn);
   line-height: 20px;
   color: var(--sea-ink-soft);
-`
-
-const DateText = styled.span`
-  font-size: var(--fs-btn);
-  color: var(--sea-ink-soft);
+  text-align: right;
 `

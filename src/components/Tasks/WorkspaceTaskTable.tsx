@@ -12,6 +12,7 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import {
+	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 	useListTaskRows,
@@ -105,6 +106,8 @@ function WorkspaceTaskTable({
 		[hiddenColumns],
 	)
 
+	const isManager = myPermission?.type === PermissionType.MANAGER
+
 	const filteredTaskRows = useFilteredTasks(tasks)
 
 	function handleChangeSuccess() {
@@ -117,7 +120,14 @@ function WorkspaceTaskTable({
 
 	function handleToggleArchive(entries: TaskArchiveEntry[]) {
 		entries.forEach(({ id, assigneeId }) => {
-			toggleArchive({ pathParams: { id }, params: { assigneeId } })
+			toggleArchive(
+				{ pathParams: { id }, params: { assigneeId } },
+				{
+					onSuccess: () => {
+						invalidateQueries([getGetTaskQueryKey({ id })])
+					},
+				},
+			)
 		})
 	}
 
@@ -129,8 +139,8 @@ function WorkspaceTaskTable({
 		handleToggleArchive(entries)
 	}
 
-	const onArchive = !isArchived ? handleArchive : undefined
-	const onUnarchive = isArchived ? handleUnarchive : undefined
+	const onArchive = isManager && !isArchived ? handleArchive : undefined
+	const onUnarchive = isManager && isArchived ? handleUnarchive : undefined
 
 	return (
 		<TooltipProvider>
@@ -153,7 +163,7 @@ function WorkspaceTaskTable({
 					extraColumnsMeta={extraColumnsMeta}
 					extraButtons={
 						!isArchived &&
-						myPermission?.type === PermissionType.MANAGER && (
+						isManager && (
 							<ButtonGroup>
 								<FilterSeparator />
 
@@ -181,10 +191,11 @@ function WorkspaceTaskTable({
 							columnOrder={noWorkspaceColumnOrder}
 							hiddenColumns={noWorkspaceHiddenColumns}
 							extraColumns={extraColumns}
-							// hideStatusAction={isArchived}
-							// showActionsColumn={isArchived}
+							allowDelete={isManager}
 							onArchive={onArchive}
 							onUnarchive={onUnarchive}
+							// hideStatusAction={isArchived}
+							// showActionsColumn={isArchived}
 						/>
 					)}
 				</ContentArea>

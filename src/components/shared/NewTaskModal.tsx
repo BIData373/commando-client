@@ -29,7 +29,10 @@ export function NewTaskModal({ mode, onClose, sourceId }: NewTaskModalProps) {
 	} = useWorkspace()
 
 	return (
-		<AuthorizationWrapper type={PermissionType.MANAGER}>
+		<AuthorizationWrapper
+			type={PermissionType.MANAGER}
+			workspaceId={workspaceId}
+		>
 			{mode === NewTaskMode.DISCUSSION ? (
 				<CreateDiscussionModal onClose={onClose} sourceId={sourceId} />
 			) : (

@@ -1,7 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 
-export const Route = createFileRoute(
-	"/workspace/$urlName/archive/task/$taskId",
-)({
+export const Route = createFileRoute("/personal/archive/$taskId")({
 	component: () => <Outlet />,
 })
