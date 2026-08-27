@@ -10,6 +10,7 @@ import {
 	WorkspaceStatusType,
 } from "src/api/model"
 import {
+	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	useListPersonalTaskRows,
 } from "src/api/task/task"
@@ -140,7 +141,14 @@ function PersonalTaskTable({
 	function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
 		entries.forEach(({ id, assigneeId }) => {
 			if (assigneeId) {
-				toggleArchive({ pathParams: { id }, params: { assigneeId } })
+				toggleArchive(
+					{ pathParams: { id }, params: { assigneeId } },
+					{
+						onSuccess: () => {
+							invalidateQueries([getGetTaskQueryKey({ id })])
+						},
+					},
+				)
 			}
 		})
 	}

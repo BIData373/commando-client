@@ -610,13 +610,9 @@ const TitlePart = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 50%;
-  flex-shrink: 0;
-
-  &:only-child {
-    max-width: 100%;
-    flex: 1;
-  }
+  flex: 1 1 50%;
+  max-width: max-content;
+  min-width: 0;
 `
 
 const TitleSeparator = styled.span`
@@ -629,7 +625,8 @@ const DetailsPart = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 1;
+  flex: 1 1 50%;
+  max-width: max-content;
   min-width: 0;
 `
 
@@ -735,4 +732,5 @@ const NotesText = styled(EllipsisTooltip)`
   font-size: var(--fs-btn);
   line-height: 20px;
   color: var(--sea-ink-soft);
+  text-align: right;
 `

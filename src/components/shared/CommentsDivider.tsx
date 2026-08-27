@@ -8,15 +8,14 @@ interface CommentsDividerProps {
 }
 
 export function CommentsDivider({ taskId, dividerRef }: CommentsDividerProps) {
-	const { data: messageCount = 0 } = useGetTask(
-		{ id: taskId },
-		{ query: { select: ({ messageCount }) => messageCount } },
-	)
+	const { data: task } = useGetTask({ id: taskId })
+
+	const count = task?.messageCount
 
 	return (
 		<Row ref={dividerRef}>
 			<Line />
-			<Label>{messageCount > 0 ? `תגובות (${messageCount})` : "תגובות"}</Label>
+			<Label>{count && count > 0 ? `תגובות (${count})` : "תגובות"}</Label>
 			<Line />
 		</Row>
 	)
