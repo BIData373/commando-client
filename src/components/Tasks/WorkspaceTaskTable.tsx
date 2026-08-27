@@ -12,6 +12,7 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import {
+	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 	useListTaskRows,
@@ -119,7 +120,14 @@ function WorkspaceTaskTable({
 
 	function handleToggleArchive(entries: TaskArchiveEntry[]) {
 		entries.forEach(({ id, assigneeId }) => {
-			toggleArchive({ pathParams: { id }, params: { assigneeId } })
+			toggleArchive(
+				{ pathParams: { id }, params: { assigneeId } },
+				{
+					onSuccess: () => {
+						invalidateQueries([getGetTaskQueryKey({ id })])
+					},
+				},
+			)
 		})
 	}
 
