@@ -36,17 +36,17 @@ export interface TaskRowWithWorkspaceDto {
 	/** @nullable */
 	notes: string | null
 	workspaceId: number
+	status: WorkspaceStatusDto
 	/** @nullable */
 	source: SourceDto | null
 	tags: TagDto[]
 	lastMessage: MessageDto
 	messageCount: number
-	rowKey: string
-	assignee?: AssigneeDto
-	status: WorkspaceStatusDto
 	editable: boolean
-	otherAssignees: AssigneeStatusDto[]
 	/** @nullable */
 	archivedAt: Date | null
+	rowKey: string
+	assignee?: AssigneeDto
+	otherAssignees: AssigneeStatusDto[]
 	workspace: WorkspaceWithPermissionDto
 }

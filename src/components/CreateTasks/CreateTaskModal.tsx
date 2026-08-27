@@ -261,7 +261,7 @@ function CreateTaskModal({
 
 	function handleAssigneeStatusChange(
 		_taskId: number,
-		assigneeId: number,
+		assigneeId: number | undefined,
 		statusId: number,
 	) {
 		form.setFieldValue(
