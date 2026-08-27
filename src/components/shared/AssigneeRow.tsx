@@ -26,7 +26,7 @@ interface AssigneeRowListProps {
 	onStatusChange?: (
 		taskId: number,
 		assigneeId: number | undefined,
-		statusId: number,
+		status: WorkspaceStatusDto,
 	) => void
 	taskId?: number
 }
@@ -105,6 +105,7 @@ function AssigneeRowList({
 								<StatusDropdown
 									status={assigneeExtras[assignee.id].status!}
 									statuses={statuses}
+									workspaceId={workspaceId}
 									taskId={taskId}
 									assigneeId={assignee.id}
 									editable={assigneeExtras[assignee.id].editable}

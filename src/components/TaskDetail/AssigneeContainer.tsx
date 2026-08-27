@@ -23,7 +23,7 @@ export const AssigneeContainer = ({
 }: AssigneeContainerProps) => {
 	const { data: statuses = [] } = useListWorkspaceStatuses({ workspaceId })
 
-	const handleUpdateAssigneeStatus = useUpdateTaskStatus({ workspaceId })
+	const handleUpdateAssigneeStatus = useUpdateTaskStatus()
 
 	return (
 		<AssigneeRowContainer $enabled={editable && !isAdmin}>
@@ -41,6 +41,7 @@ export const AssigneeContainer = ({
 					<StatusDropdown
 						status={status}
 						statuses={statuses}
+						workspaceId={workspaceId}
 						taskId={taskId}
 						assigneeId={assignee.id}
 						editable={editable}

@@ -128,7 +128,7 @@ function TaskDetailPanel({
 		mutation: { onSettled: handleSettled },
 	})
 
-	const handleUpdateTaskStatus = useUpdateTaskStatus({ workspaceId })
+	const handleUpdateTaskStatus = useUpdateTaskStatus()
 
 	const displayDate = getDeadlineDisplayDate(
 		deadlineType,

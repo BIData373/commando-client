@@ -1,58 +1,142 @@
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
+import type { QueryKey } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { upsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
+import type {
+	TaskRowDto,
+	TaskWithWorkspaceDto,
+	WorkspaceStatusDto,
+} from "src/api/model"
 import {
 	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
-	useUpdateTask,
+	updateTask,
 } from "src/api/task/task"
+import {
+	updateTaskDetailStatus,
+	updateTaskRowsStatus,
+} from "src/functions/task-status-utils"
 import { invalidateQueries } from "src/queryClient"
 
 interface UseUpdateTaskStatusOptions {
-	workspaceId?: number
 	onSuccess?(): void
 }
 
+interface UpdateStatusVariables {
+	taskId: number
+	assigneeId: number | undefined
+	status: WorkspaceStatusDto
+	workspaceId: number
+}
+
+type PreviousQueriesData = [QueryKey, unknown][]
+
 export function useUpdateTaskStatus({
-	workspaceId,
 	onSuccess,
 }: UseUpdateTaskStatusOptions = {}) {
-	function handleSettled(taskId: number) {
-		const keys = [
+	const queryClient = useQueryClient()
+
+	function getAffectedQueryKeys(
+		taskId: number,
+		workspaceId: number,
+	): QueryKey[] {
+		return [
 			getGetTaskQueryKey({ id: taskId }),
 			getListPersonalTaskRowsQueryKey(),
-			...(workspaceId ? [getListTaskRowsQueryKey({ workspaceId })] : []),
+			getListTaskRowsQueryKey({ workspaceId }),
 		]
-		invalidateQueries(keys)
 	}
 
-	function handleSuccess() {
-		onSuccess?.()
+	// Row lists are cached per filter combination (e.g. isArchived), so an
+	// exact key like getListTaskRowsQueryKey({ workspaceId }) won't match the
+	// actual cache entry. Match by key prefix instead to update every variant.
+	function updateRowQueries(
+		baseQueryKey: QueryKey,
+		taskId: number,
+		assigneeId: number | undefined,
+		status: WorkspaceStatusDto,
+		previousQueriesData: PreviousQueriesData,
+	) {
+		queryClient
+			.getQueriesData<TaskRowDto[]>({ queryKey: baseQueryKey, exact: false })
+			.forEach(([queryKey, rows]) => {
+				previousQueriesData.push([queryKey, rows])
+				queryClient.setQueryData(
+					queryKey,
+					updateTaskRowsStatus(rows, taskId, assigneeId, status),
+				)
+			})
 	}
 
-	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
-		mutation: {
-			onSuccess: handleSuccess,
-			onSettled: (data) => data && handleSettled(data.task.id),
-		},
-	})
+	function handleMutate({
+		taskId,
+		assigneeId,
+		status,
+		workspaceId,
+	}: UpdateStatusVariables) {
+		const taskQueryKey = getGetTaskQueryKey({ id: taskId })
+		const previousQueriesData: PreviousQueriesData = [
+			[taskQueryKey, queryClient.getQueryData(taskQueryKey)],
+		]
 
-	const { mutate: updateTask } = useUpdateTask({
-		mutation: {
-			onSuccess: handleSuccess,
-			onSettled: (data) => data && handleSettled(data.id),
-		},
+		queryClient.setQueryData(taskQueryKey, (task?: TaskWithWorkspaceDto) =>
+			updateTaskDetailStatus(task, taskId, assigneeId, status),
+		)
+
+		updateRowQueries(
+			getListPersonalTaskRowsQueryKey(),
+			taskId,
+			assigneeId,
+			status,
+			previousQueriesData,
+		)
+		updateRowQueries(
+			getListTaskRowsQueryKey({ workspaceId }),
+			taskId,
+			assigneeId,
+			status,
+			previousQueriesData,
+		)
+
+		return { previousQueriesData }
+	}
+
+	function handleError(
+		_error: Error,
+		_variables: UpdateStatusVariables,
+		context?: { previousQueriesData: PreviousQueriesData },
+	) {
+		context?.previousQueriesData.forEach(([queryKey, data]) => {
+			queryClient.setQueryData(queryKey, data)
+		})
+	}
+
+	function handleSettled(
+		_data: unknown,
+		_error: Error | null,
+		{ taskId, workspaceId }: UpdateStatusVariables,
+	) {
+		invalidateQueries(getAffectedQueryKeys(taskId, workspaceId))
+	}
+
+	const { mutate } = useMutation({
+		mutationFn: ({ taskId, assigneeId, status }: UpdateStatusVariables) =>
+			assigneeId !== undefined
+				? upsertAssigneeTaskStatus({ taskId, assigneeId, statusId: status.id })
+				: updateTask({ id: taskId }, { statusId: status.id }),
+		onMutate: handleMutate,
+		onError: handleError,
+		onSuccess,
+		onSettled: handleSettled,
 	})
 
 	function updateTaskStatus(
 		taskId: number,
 		assigneeId: number | undefined,
-		statusId: number,
+		status: WorkspaceStatusDto,
+		workspaceId: number,
 	) {
-		if (assigneeId) {
-			upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } })
-		} else {
-			updateTask({ pathParams: { id: taskId }, data: { statusId } })
-		}
+		mutate({ taskId, assigneeId, status, workspaceId })
 	}
 
 	return updateTaskStatus

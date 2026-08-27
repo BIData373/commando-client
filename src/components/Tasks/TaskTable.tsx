@@ -234,7 +234,7 @@ function TaskTable<TTask extends TaskRowDto>({
 				return
 			}
 
-			updateStatus(task.id, task.assignee?.id, status.id)
+			updateStatus(task.id, task.assignee?.id, status, task.workspaceId)
 		})
 	}
 
