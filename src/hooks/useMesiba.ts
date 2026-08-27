@@ -12,16 +12,20 @@ const delay = (ms = 200) => new Promise((r) => setTimeout(r, ms))
 
 const mockIcon = "/logo.svg"
 const mockIcon2 = "/shield-3086.svg"
+const mockIcon4 = "/dva-spray.png"
+const mockIcon6 = "/the-trader.jpeg"
+const mockIcon7 = "/bombardino.jpeg"
+const mockIcon8 = "/sword.png"
 
 const mockMesibaIcons: IMesibaIcon[] = [
 	{ id: 1, iconName: mockIcon2, heb_name: "פיקוד צפון" },
 	{ id: 2, iconName: mockIcon, heb_name: "פיקוד מרכז" },
 	{ id: 3, iconName: mockIcon, heb_name: "פיקוד דרום" },
-	{ id: 4, iconName: mockIcon, heb_name: "פיקוד העורף" },
+	{ id: 4, iconName: mockIcon4, heb_name: "פיקוד העורף" },
 	{ id: 5, iconName: mockIcon, heb_name: "מטכ״ל" },
-	{ id: 6, iconName: mockIcon, heb_name: "חיל האוויר" },
-	{ id: 7, iconName: mockIcon, heb_name: "חיל הים" },
-	{ id: 8, iconName: mockIcon, heb_name: "חיל השריון" },
+	{ id: 6, iconName: mockIcon7, heb_name: "חיל האוויר" },
+	{ id: 7, iconName: mockIcon6, heb_name: "חיל הים" },
+	{ id: 8, iconName: mockIcon8, heb_name: "חיל השריון" },
 	{ id: 9, iconName: mockIcon, heb_name: "חיל הרגלים" },
 	{ id: 10, iconName: mockIcon, heb_name: "חיל ההנדסה" },
 	{ id: 11, iconName: mockIcon, heb_name: "חיל הקשר" },
