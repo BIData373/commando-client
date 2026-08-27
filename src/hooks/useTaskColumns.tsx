@@ -253,14 +253,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				...TASK_COLUMN_DEFINITIONS.status,
 				cell: ({
 					row: {
-						original: {
-							id,
-							status,
-							assignee,
-							workspaceId,
-							editable,
-							archivedAt,
-						},
+						original: { id, status, assignee, workspaceId, editable },
 					},
 				}) =>
 					status && (
@@ -269,7 +262,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							statuses={statuses}
 							workspaceId={workspaceId}
 							assigneeId={assignee?.id}
-							editable={!archivedAt && editable}
+							editable={editable}
 							taskId={id}
 							onUpdate={handleUpdateStatus}
 						/>
