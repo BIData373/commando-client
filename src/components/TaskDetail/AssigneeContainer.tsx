@@ -41,7 +41,6 @@ export const AssigneeContainer = ({
 					<StatusDropdown
 						status={status}
 						statuses={statuses}
-						workspaceId={workspaceId}
 						taskId={taskId}
 						assigneeId={assignee.id}
 						editable={editable}

@@ -105,7 +105,6 @@ function AssigneeRowList({
 								<StatusDropdown
 									status={assigneeExtras[assignee.id].status!}
 									statuses={statuses}
-									workspaceId={workspaceId}
 									taskId={taskId}
 									assigneeId={assignee.id}
 									editable={assigneeExtras[assignee.id].editable}

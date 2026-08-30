@@ -14,7 +14,6 @@ import {
 interface StatusDropdownProps {
 	status: WorkspaceStatusDto
 	statuses?: WorkspaceStatusDto[]
-	workspaceId: number
 	taskId: number
 	assigneeId?: number
 	editable?: boolean
@@ -30,7 +29,6 @@ export const StatusDropdown = memo(
 	({
 		status,
 		statuses: providedStatuses,
-		workspaceId,
 		taskId,
 		assigneeId,
 		editable = false,
@@ -40,7 +38,7 @@ export const StatusDropdown = memo(
 
 		const { data: fetchedStatuses = [], isLoading: isFetchingStatuses } =
 			useListWorkspaceStatuses(
-				{ workspaceId },
+				{ workspaceId: status.workspaceId },
 				{ query: { enabled: providedStatuses === undefined } },
 			)
 
@@ -49,7 +47,7 @@ export const StatusDropdown = memo(
 
 		function handleSelectStatus(newStatus: WorkspaceStatusDto) {
 			if (newStatus.id !== status.id) {
-				onUpdate(taskId, assigneeId, newStatus, workspaceId)
+				onUpdate(taskId, assigneeId, newStatus, status.workspaceId)
 			}
 		}
 

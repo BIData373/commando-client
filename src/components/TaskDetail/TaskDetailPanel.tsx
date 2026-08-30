@@ -266,7 +266,6 @@ function TaskDetailPanel({
 							<StatusTagContainer>
 								<StatusDropdown
 									status={status}
-									workspaceId={workspaceId}
 									taskId={id}
 									editable={editable}
 									onUpdate={handleUpdateTaskStatus}
