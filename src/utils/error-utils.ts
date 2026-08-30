@@ -1,3 +1,4 @@
+import type { ErrorDto } from "src/api/model"
 import type { ErrorType } from "src/axios"
 
 export enum ErrorCode {
@@ -10,18 +11,11 @@ export enum ErrorCode {
 export const isErrorCode = (code: number) =>
 	Object.values(ErrorCode).includes(code)
 
-const titleExistError = "title-exists"
-type ApiError = ErrorType<{ message: string | string[] }>
-
-function getMessages(error: ErrorType<unknown>) {
-	const messages = (error as ApiError)?.response?.data?.message
-	return Array.isArray(messages) ? messages : [messages]
-}
-
-export function isWorkspaceExist(error: ErrorType<unknown>) {
-	return getMessages(error).includes(titleExistError)
-}
-
-export function isUrlNameExist(error: ErrorType<unknown>) {
-	return getMessages(error).includes("url-name-exists")
+export function hasError<T extends ErrorDto>(
+	error: ErrorType<T>,
+	code: T["message"],
+) {
+	const message = error.response?.data?.message
+	const messages = Array.isArray(message) ? message : [message]
+	return messages.includes(code)
 }
