@@ -88,8 +88,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				invalidateQueries([getGetTaskQueryKey({ id })])
 				onUpdateStatusSuccess?.()
 				toast.success("הסטטוס עודכן בהצלחה", {
-					description: "השינוי נשמר ויופיע בכל האזורים הרלוונטיים",
-					closeButton: true,
+					subtitle: "השינוי נשמר ויופיע בכל האזורים הרלוונטיים",
 				})
 			},
 			onError: () => {

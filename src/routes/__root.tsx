@@ -24,7 +24,7 @@ function RootComponent() {
 			<TooltipProvider>
 				<HeaderProvider>
 					<AppShell>
-						<Toaster />
+						<Toaster location="middle" />
 						<PageContainer>
 							<Outlet />
 						</PageContainer>
