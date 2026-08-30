@@ -32,6 +32,7 @@ import type {
 	UpdateWorkspaceDto,
 	UpdateWorkspacePathParameters,
 	WorkspaceDto,
+	WorkspaceErrorDto,
 	WorkspaceWithPermissionDto,
 } from "../model"
 
@@ -67,7 +68,7 @@ export const createWorkspace = (
 }
 
 export const getCreateWorkspaceMutationOptions = <
-	TError = ErrorType<unknown>,
+	TError = ErrorType<WorkspaceErrorDto>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -107,10 +108,10 @@ export type CreateWorkspaceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createWorkspace>>
 >
 export type CreateWorkspaceMutationBody = CreateWorkspaceDto
-export type CreateWorkspaceMutationError = ErrorType<unknown>
+export type CreateWorkspaceMutationError = ErrorType<WorkspaceErrorDto>
 
 export const useCreateWorkspace = <
-	TError = ErrorType<unknown>,
+	TError = ErrorType<WorkspaceErrorDto>,
 	TContext = unknown,
 >(
 	options?: {
@@ -548,7 +549,7 @@ export const updateWorkspace = (
 }
 
 export const getUpdateWorkspaceMutationOptions = <
-	TError = ErrorType<unknown>,
+	TError = ErrorType<WorkspaceErrorDto>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -588,10 +589,10 @@ export type UpdateWorkspaceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateWorkspace>>
 >
 export type UpdateWorkspaceMutationBody = UpdateWorkspaceDto
-export type UpdateWorkspaceMutationError = ErrorType<unknown>
+export type UpdateWorkspaceMutationError = ErrorType<WorkspaceErrorDto>
 
 export const useUpdateWorkspace = <
-	TError = ErrorType<unknown>,
+	TError = ErrorType<WorkspaceErrorDto>,
 	TContext = unknown,
 >(
 	options?: {

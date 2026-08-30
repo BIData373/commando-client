@@ -10,7 +10,11 @@ import {
 import { Dialog } from "src/components/ui/dialog"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { invalidateQueries } from "src/queryClient"
-import { isUrlNameExist, isWorkspaceExist } from "src/utils/error-utils"
+import {
+	isPikudNotFound,
+	isTitleExists,
+	isUrlNameExists,
+} from "src/utils/error-utils"
 import type { WorkspaceDetailsErrors } from "src/utils/workspace-utils"
 import logoWithText from "../../assets/logo-with-text-dark.png"
 import quickPage from "../../assets/quick_page.svg"
@@ -86,9 +90,11 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 			{
 				onError: (error) => {
 					setServerErrors({
-						title: isWorkspaceExist(error) ? "שם סביבה זה כבר קיים" : undefined,
-						urlName: isUrlNameExist(error) ? "הנתיב הזה כבר קיים" : undefined,
+						title: isTitleExists(error) ? "שם סביבה זה כבר קיים" : undefined,
+						urlName: isUrlNameExists(error) ? "הנתיב הזה כבר קיים" : undefined,
+						pikudId: isPikudNotFound(error) ? "הפיקוד לא נמצא" : undefined,
 					})
+					setShowErrors(true)
 					setStep(Steps.Details)
 				},
 				onSuccess: (data) => {

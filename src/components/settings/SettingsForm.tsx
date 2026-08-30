@@ -15,7 +15,7 @@ import {
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
-import { isWorkspaceExist } from "src/utils/error-utils"
+import { isTitleExists } from "src/utils/error-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import { NAME_MAX_LENGTH } from "src/utils/workspace-utils"
 import { FormField } from "../shared/FormField"
@@ -57,7 +57,7 @@ export function SettingsForm() {
 				},
 				{
 					onError: (error) => {
-						if (isWorkspaceExist(error)) {
+						if (isTitleExists(error)) {
 							toast.error("שם סביבה זה כבר קיים, אנא נסו שוב", {
 								closeButton: true,
 							})
