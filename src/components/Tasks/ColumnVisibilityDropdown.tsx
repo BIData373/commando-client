@@ -19,8 +19,8 @@ import {
 } from "@dnd-kit/sortable"
 import styled from "@emotion/styled"
 import { Columns3 } from "lucide-react"
-import { useState } from "react"
-import type { TaskRowDto } from "src/api/model"
+import { useEffect, useState } from "react"
+import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import {
 	CONFIGURABLE_COLUMNS,
@@ -41,6 +41,15 @@ function ColumnVisibilityDropdown({
 
 	const [open, setOpen] = useState(false)
 
+	// Optimistic order shown during/after drag, kept in sync with the persisted
+	// `columnOrder` so the item doesn't snap back while the update round-trips.
+	const [displayOrder, setDisplayOrder] =
+		useState<(keyof TaskRowWithWorkspaceDto)[]>(columnOrder)
+
+	useEffect(() => {
+		setDisplayOrder(columnOrder)
+	}, [columnOrder])
+
 	const allColumns = extraColumnsMeta
 		? [...CONFIGURABLE_COLUMNS, ...extraColumnsMeta]
 		: CONFIGURABLE_COLUMNS
@@ -55,13 +64,19 @@ function ColumnVisibilityDropdown({
 	function handleDragEnd(event: DragEndEvent) {
 		const { active, over } = event
 		if (over && active.id !== over.id) {
-			const oldIndex = columnOrder.indexOf(active.id as keyof TaskRowDto)
-			const newIndex = columnOrder.indexOf(over.id as keyof TaskRowDto)
-			setColumnOrder(arrayMove(columnOrder, oldIndex, newIndex))
+			const oldIndex = displayOrder.indexOf(
+				active.id as keyof TaskRowWithWorkspaceDto,
+			)
+			const newIndex = displayOrder.indexOf(
+				over.id as keyof TaskRowWithWorkspaceDto,
+			)
+			const nextOrder = arrayMove(displayOrder, oldIndex, newIndex)
+			setColumnOrder(nextOrder)
+			setDisplayOrder(nextOrder)
 		}
 	}
 
-	const orderedColumns = columnOrder
+	const orderedColumns = displayOrder
 		.map((id) => allColumns.find((c) => c.id === id))
 		.filter((c) => c != null)
 

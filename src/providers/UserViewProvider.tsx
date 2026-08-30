@@ -21,6 +21,7 @@ export interface UserViewContext {
 	view: UserViewDto
 	updateView(nextView: UserViewDto): Promise<void>
 	defaultColumnOrder: (keyof TaskRowWithWorkspaceDto)[]
+	workspaceId?: number
 }
 
 const UserViewContext = createContext<UserViewContext | null>(null)
@@ -100,6 +101,7 @@ export function UserViewProvider({
 				view,
 				updateView,
 				defaultColumnOrder,
+				workspaceId,
 			}}
 		>
 			{children}
