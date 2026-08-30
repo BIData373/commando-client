@@ -21,7 +21,6 @@ interface StatusDropdownProps {
 		taskId: number,
 		assigneeId: number | undefined,
 		status: WorkspaceStatusDto,
-		workspaceId: number,
 	) => void
 }
 
@@ -47,7 +46,7 @@ export const StatusDropdown = memo(
 
 		function handleSelectStatus(newStatus: WorkspaceStatusDto) {
 			if (newStatus.id !== status.id) {
-				onUpdate(taskId, assigneeId, newStatus, status.workspaceId)
+				onUpdate(taskId, assigneeId, newStatus)
 			}
 		}
 

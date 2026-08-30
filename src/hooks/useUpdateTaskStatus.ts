@@ -24,120 +24,9 @@ interface UpdateStatusVariables {
 	taskId: number
 	assigneeId: number | undefined
 	status: WorkspaceStatusDto
-	workspaceId: number
 }
 
 type PreviousQueriesData = [QueryKey, unknown][]
-
-export function useUpdateTaskStatus({
-	onSuccess,
-}: UseUpdateTaskStatusOptions = {}) {
-	const queryClient = useQueryClient()
-
-	function getAffectedQueryKeys(
-		taskId: number,
-		workspaceId: number,
-	): QueryKey[] {
-		return [
-			getGetTaskQueryKey({ id: taskId }),
-			getListPersonalTaskRowsQueryKey(),
-			getListTaskRowsQueryKey({ workspaceId }),
-		]
-	}
-
-	// Row lists are cached per filter combination (e.g. isArchived), so an
-	// exact key like getListTaskRowsQueryKey({ workspaceId }) won't match the
-	// actual cache entry. Match by key prefix instead to update every variant.
-	function updateRowQueries(
-		baseQueryKey: QueryKey,
-		taskId: number,
-		assigneeId: number | undefined,
-		status: WorkspaceStatusDto,
-		previousQueriesData: PreviousQueriesData,
-	) {
-		queryClient
-			.getQueriesData<TaskRowDto[]>({ queryKey: baseQueryKey, exact: false })
-			.forEach(([queryKey, rows]) => {
-				previousQueriesData.push([queryKey, rows])
-				queryClient.setQueryData(
-					queryKey,
-					updateTaskRowsStatus(rows, taskId, assigneeId, status),
-				)
-			})
-	}
-
-	function handleMutate({
-		taskId,
-		assigneeId,
-		status,
-		workspaceId,
-	}: UpdateStatusVariables) {
-		const taskQueryKey = getGetTaskQueryKey({ id: taskId })
-		const previousQueriesData: PreviousQueriesData = [
-			[taskQueryKey, queryClient.getQueryData(taskQueryKey)],
-		]
-
-		queryClient.setQueryData(taskQueryKey, (task?: TaskWithWorkspaceDto) =>
-			updateTaskDetailStatus(task, taskId, assigneeId, status),
-		)
-
-		updateRowQueries(
-			getListPersonalTaskRowsQueryKey(),
-			taskId,
-			assigneeId,
-			status,
-			previousQueriesData,
-		)
-		updateRowQueries(
-			getListTaskRowsQueryKey({ workspaceId }),
-			taskId,
-			assigneeId,
-			status,
-			previousQueriesData,
-		)
-
-		return { previousQueriesData }
-	}
-
-	function handleError(
-		_error: Error,
-		_variables: UpdateStatusVariables,
-		context?: { previousQueriesData: PreviousQueriesData },
-	) {
-		context?.previousQueriesData.forEach(([queryKey, data]) => {
-			queryClient.setQueryData(queryKey, data)
-		})
-	}
-
-	function handleSettled(
-		_data: unknown,
-		_error: Error | null,
-		{ taskId, workspaceId }: UpdateStatusVariables,
-	) {
-		invalidateQueries(getAffectedQueryKeys(taskId, workspaceId))
-	}
-
-	const { mutate } = useMutation({
-		mutationFn: ({ taskId, assigneeId, status }: UpdateStatusVariables) =>
-			assigneeId !== undefined
-				? upsertAssigneeTaskStatus({ taskId, assigneeId, statusId: status.id })
-				: updateTask({ id: taskId }, { statusId: status.id }),
-		onMutate: handleMutate,
-		onError: handleError,
-		onSuccess,
-		onSettled: handleSettled,
-	})
-
-	function updateTaskStatus(
-		taskId: number,
-		assigneeId: number | undefined,
-		status: WorkspaceStatusDto,
-	) {
-		mutate({ taskId, assigneeId, status, workspaceId: status.id })
-	}
-
-	return updateTaskStatus
-}
 
 function updateTaskRowsStatus<TRow extends TaskRowDto>(
 	rows: TRow[] | undefined,
@@ -174,4 +63,107 @@ function updateTaskDetailStatus<TTask extends TaskDto>(
 				: assigneeStatus,
 		),
 	}
+}
+
+export function useUpdateTaskStatus({
+	onSuccess,
+}: UseUpdateTaskStatusOptions = {}) {
+	const queryClient = useQueryClient()
+
+	function getAffectedQueryKeys(
+		taskId: number,
+		status: WorkspaceStatusDto,
+	): QueryKey[] {
+		return [
+			getGetTaskQueryKey({ id: taskId }),
+			getListPersonalTaskRowsQueryKey(),
+			getListTaskRowsQueryKey({ workspaceId: status.workspaceId }),
+		]
+	}
+
+	// Row lists are cached per filter combination (e.g. isArchived), so an
+	// exact key like getListTaskRowsQueryKey({ workspaceId }) won't match the
+	// actual cache entry. Match by key prefix instead to update every variant.
+	function updateRowQueries(
+		baseQueryKey: QueryKey,
+		taskId: number,
+		assigneeId: number | undefined,
+		status: WorkspaceStatusDto,
+		previousQueriesData: PreviousQueriesData,
+	) {
+		queryClient
+			.getQueriesData<TaskRowDto[]>({ queryKey: baseQueryKey, exact: false })
+			.forEach(([queryKey, rows]) => {
+				previousQueriesData.push([queryKey, rows])
+				queryClient.setQueryData(
+					queryKey,
+					updateTaskRowsStatus(rows, taskId, assigneeId, status),
+				)
+			})
+	}
+
+	function handleMutate({ taskId, assigneeId, status }: UpdateStatusVariables) {
+		const taskQueryKey = getGetTaskQueryKey({ id: taskId })
+		const previousQueriesData: PreviousQueriesData = [
+			[taskQueryKey, queryClient.getQueryData(taskQueryKey)],
+		]
+
+		queryClient.setQueryData(taskQueryKey, (task?: TaskWithWorkspaceDto) =>
+			updateTaskDetailStatus(task, taskId, assigneeId, status),
+		)
+
+		;[
+			getListPersonalTaskRowsQueryKey(),
+			getListTaskRowsQueryKey({ workspaceId: status.workspaceId }),
+		].forEach((queryKey) => {
+			updateRowQueries(
+				queryKey,
+				taskId,
+				assigneeId,
+				status,
+				previousQueriesData,
+			)
+		})
+
+		return { previousQueriesData }
+	}
+
+	function handleError(
+		_error: Error,
+		_variables: UpdateStatusVariables,
+		context?: { previousQueriesData: PreviousQueriesData },
+	) {
+		context?.previousQueriesData.forEach(([queryKey, data]) => {
+			queryClient.setQueryData(queryKey, data)
+		})
+	}
+
+	function handleSettled(
+		_data: unknown,
+		_error: Error | null,
+		{ taskId, status }: UpdateStatusVariables,
+	) {
+		invalidateQueries(getAffectedQueryKeys(taskId, status))
+	}
+
+	const { mutate } = useMutation({
+		mutationFn: ({ taskId, assigneeId, status }: UpdateStatusVariables) =>
+			assigneeId !== undefined
+				? upsertAssigneeTaskStatus({ taskId, assigneeId, statusId: status.id })
+				: updateTask({ id: taskId }, { statusId: status.id }),
+		onMutate: handleMutate,
+		onError: handleError,
+		onSuccess,
+		onSettled: handleSettled,
+	})
+
+	function updateTaskStatus(
+		taskId: number,
+		assigneeId: number | undefined,
+		status: WorkspaceStatusDto,
+	) {
+		mutate({ taskId, assigneeId, status })
+	}
+
+	return updateTaskStatus
 }
