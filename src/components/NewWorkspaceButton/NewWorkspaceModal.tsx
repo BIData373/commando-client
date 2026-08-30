@@ -11,7 +11,7 @@ import {
 import { Dialog } from "src/components/ui/dialog"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { invalidateQueries } from "src/queryClient"
-import { isWorkspaceRequestError } from "src/utils/error-utils"
+import { hasError } from "src/utils/error-utils"
 import type { WorkspaceDetailsErrors } from "src/utils/workspace-utils"
 import logoWithText from "../../assets/logo-with-text-dark.png"
 import quickPage from "../../assets/quick_page.svg"
@@ -107,7 +107,7 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 					setServerErrors(
 						Object.fromEntries(
 							Object.entries(REQUEST_ERROR_MESSAGES)
-								.filter(([, { code }]) => isWorkspaceRequestError(error, code))
+								.filter(([, { code }]) => hasError(error, code))
 								.map(([field, { message }]) => [field, message]),
 						),
 					)

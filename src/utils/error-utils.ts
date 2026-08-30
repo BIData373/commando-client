@@ -1,9 +1,4 @@
-import type {
-	CreateWorkspaceRequestErrorDto,
-	CreateWorkspaceRequestErrorDtoMessage,
-	UpdateWorkspaceErrorDto,
-	UpdateWorkspaceErrorDtoMessage,
-} from "src/api/model"
+import type { ErrorDto } from "src/api/model"
 import type { ErrorType } from "src/axios"
 
 export enum ErrorCode {
@@ -16,18 +11,9 @@ export enum ErrorCode {
 export const isErrorCode = (code: number) =>
 	Object.values(ErrorCode).includes(code)
 
-export function isWorkspaceError(
-	error: ErrorType<UpdateWorkspaceErrorDto>,
-	code: UpdateWorkspaceErrorDtoMessage,
-) {
-	const message = error.response?.data?.message
-	const messages = Array.isArray(message) ? message : [message]
-	return messages.includes(code)
-}
-
-export function isWorkspaceRequestError(
-	error: ErrorType<CreateWorkspaceRequestErrorDto>,
-	code: CreateWorkspaceRequestErrorDtoMessage,
+export function hasError<T extends ErrorDto>(
+	error: ErrorType<T>,
+	code: T["message"],
 ) {
 	const message = error.response?.data?.message
 	const messages = Array.isArray(message) ? message : [message]
