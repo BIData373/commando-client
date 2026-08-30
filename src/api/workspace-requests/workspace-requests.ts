@@ -26,12 +26,14 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import type {
 	CreateWorkspaceRequestDto,
+	CreateWorkspaceRequestErrorDto,
 	DeleteWorkspaceRequestPathParameters,
 	GetWorkspaceRequestPathParameters,
 	UpdateWorkspaceRequestDto,
+	UpdateWorkspaceRequestErrorDto,
 	UpdateWorkspaceRequestPathParameters,
 	WorkspaceRequestDto,
-	WorkspaceRequestErrorDto,
+	WorkspaceRequestNotFoundErrorDto,
 } from "../model"
 
 const withQueryKey = <T extends object, K>(
@@ -66,7 +68,7 @@ export const createWorkspaceRequest = (
 }
 
 export const getCreateWorkspaceRequestMutationOptions = <
-	TError = ErrorType<WorkspaceRequestErrorDto>,
+	TError = ErrorType<CreateWorkspaceRequestErrorDto>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -107,10 +109,10 @@ export type CreateWorkspaceRequestMutationResult = NonNullable<
 >
 export type CreateWorkspaceRequestMutationBody = CreateWorkspaceRequestDto
 export type CreateWorkspaceRequestMutationError =
-	ErrorType<WorkspaceRequestErrorDto>
+	ErrorType<CreateWorkspaceRequestErrorDto>
 
 export const useCreateWorkspaceRequest = <
-	TError = ErrorType<WorkspaceRequestErrorDto>,
+	TError = ErrorType<CreateWorkspaceRequestErrorDto>,
 	TContext = unknown,
 >(
 	options?: {
@@ -291,7 +293,7 @@ export const getGetWorkspaceRequestQueryKey = ({
 
 export const getGetWorkspaceRequestQueryOptions = <
 	TData = Awaited<ReturnType<typeof getWorkspaceRequest>>,
-	TError = ErrorType<WorkspaceRequestErrorDto>,
+	TError = ErrorType<WorkspaceRequestNotFoundErrorDto>,
 >(
 	{ id }: GetWorkspaceRequestPathParameters,
 	options?: {
@@ -328,11 +330,12 @@ export const getGetWorkspaceRequestQueryOptions = <
 export type GetWorkspaceRequestQueryResult = NonNullable<
 	Awaited<ReturnType<typeof getWorkspaceRequest>>
 >
-export type GetWorkspaceRequestQueryError = ErrorType<WorkspaceRequestErrorDto>
+export type GetWorkspaceRequestQueryError =
+	ErrorType<WorkspaceRequestNotFoundErrorDto>
 
 export function useGetWorkspaceRequest<
 	TData = Awaited<ReturnType<typeof getWorkspaceRequest>>,
-	TError = ErrorType<WorkspaceRequestErrorDto>,
+	TError = ErrorType<WorkspaceRequestNotFoundErrorDto>,
 >(
 	pathParams: GetWorkspaceRequestPathParameters,
 	options: {
@@ -358,7 +361,7 @@ export function useGetWorkspaceRequest<
 }
 export function useGetWorkspaceRequest<
 	TData = Awaited<ReturnType<typeof getWorkspaceRequest>>,
-	TError = ErrorType<WorkspaceRequestErrorDto>,
+	TError = ErrorType<WorkspaceRequestNotFoundErrorDto>,
 >(
 	pathParams: GetWorkspaceRequestPathParameters,
 	options?: {
@@ -384,7 +387,7 @@ export function useGetWorkspaceRequest<
 }
 export function useGetWorkspaceRequest<
 	TData = Awaited<ReturnType<typeof getWorkspaceRequest>>,
-	TError = ErrorType<WorkspaceRequestErrorDto>,
+	TError = ErrorType<WorkspaceRequestNotFoundErrorDto>,
 >(
 	pathParams: GetWorkspaceRequestPathParameters,
 	options?: {
@@ -403,7 +406,7 @@ export function useGetWorkspaceRequest<
 
 export function useGetWorkspaceRequest<
 	TData = Awaited<ReturnType<typeof getWorkspaceRequest>>,
-	TError = ErrorType<WorkspaceRequestErrorDto>,
+	TError = ErrorType<WorkspaceRequestNotFoundErrorDto>,
 >(
 	{ id }: GetWorkspaceRequestPathParameters,
 	options?: {
@@ -444,7 +447,7 @@ export const updateWorkspaceRequest = (
 }
 
 export const getUpdateWorkspaceRequestMutationOptions = <
-	TError = ErrorType<WorkspaceRequestErrorDto>,
+	TError = ErrorType<UpdateWorkspaceRequestErrorDto>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -494,10 +497,10 @@ export type UpdateWorkspaceRequestMutationResult = NonNullable<
 >
 export type UpdateWorkspaceRequestMutationBody = UpdateWorkspaceRequestDto
 export type UpdateWorkspaceRequestMutationError =
-	ErrorType<WorkspaceRequestErrorDto>
+	ErrorType<UpdateWorkspaceRequestErrorDto>
 
 export const useUpdateWorkspaceRequest = <
-	TError = ErrorType<WorkspaceRequestErrorDto>,
+	TError = ErrorType<UpdateWorkspaceRequestErrorDto>,
 	TContext = unknown,
 >(
 	options?: {
@@ -538,7 +541,7 @@ export const deleteWorkspaceRequest = (
 }
 
 export const getDeleteWorkspaceRequestMutationOptions = <
-	TError = ErrorType<WorkspaceRequestErrorDto>,
+	TError = ErrorType<WorkspaceRequestNotFoundErrorDto>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -579,10 +582,10 @@ export type DeleteWorkspaceRequestMutationResult = NonNullable<
 >
 
 export type DeleteWorkspaceRequestMutationError =
-	ErrorType<WorkspaceRequestErrorDto>
+	ErrorType<WorkspaceRequestNotFoundErrorDto>
 
 export const useDeleteWorkspaceRequest = <
-	TError = ErrorType<WorkspaceRequestErrorDto>,
+	TError = ErrorType<WorkspaceRequestNotFoundErrorDto>,
 	TContext = unknown,
 >(
 	options?: {

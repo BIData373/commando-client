@@ -5,11 +5,11 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { WorkspaceRequestErrorDtoMessage } from "./workspace-request-error-dto-message"
+import type { UpdateWorkspaceErrorDtoMessage } from "./update-workspace-error-dto-message"
 
-export interface WorkspaceRequestErrorDto {
+export interface UpdateWorkspaceErrorDto {
 	statusCode: number
 	/** Specific error code key */
-	message: WorkspaceRequestErrorDtoMessage
+	message: UpdateWorkspaceErrorDtoMessage
 	error?: string
 }

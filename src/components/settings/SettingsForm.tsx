@@ -6,6 +6,7 @@ import { X } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import type { UpdateWorkspaceDto } from "src/api/model"
+import { UpdateWorkspaceErrorDtoMessage } from "src/api/model"
 import { getListPersonalTaskRowsQueryKey } from "src/api/task/task"
 import {
 	getGetPermittedWorkspacesQueryKey,
@@ -15,7 +16,7 @@ import {
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
-import { isTitleExists } from "src/utils/error-utils"
+import { isWorkspaceError } from "src/utils/error-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import { NAME_MAX_LENGTH } from "src/utils/workspace-utils"
 import { FormField } from "../shared/FormField"
@@ -57,7 +58,12 @@ export function SettingsForm() {
 				},
 				{
 					onError: (error) => {
-						if (isTitleExists(error)) {
+						if (
+							isWorkspaceError(
+								error,
+								UpdateWorkspaceErrorDtoMessage["title-exists"],
+							)
+						) {
 							toast.error("שם סביבה זה כבר קיים, אנא נסו שוב", {
 								closeButton: true,
 							})

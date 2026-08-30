@@ -3,6 +3,7 @@ import { useForm, useStore } from "@tanstack/react-form"
 import { Check } from "lucide-react"
 import React, { type ReactNode, useEffect, useState } from "react"
 import type { CreateWorkspaceRequestDto, MirageUserDto } from "src/api/model"
+import { CreateWorkspaceRequestErrorDtoMessage } from "src/api/model"
 import {
 	getListWorkspaceRequestsQueryKey,
 	useCreateWorkspaceRequest,
@@ -10,11 +11,7 @@ import {
 import { Dialog } from "src/components/ui/dialog"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { invalidateQueries } from "src/queryClient"
-import {
-	isPikudNotFound,
-	isTitleExists,
-	isUrlNameExists,
-} from "src/utils/error-utils"
+import { isWorkspaceRequestError } from "src/utils/error-utils"
 import type { WorkspaceDetailsErrors } from "src/utils/workspace-utils"
 import logoWithText from "../../assets/logo-with-text-dark.png"
 import quickPage from "../../assets/quick_page.svg"
@@ -39,6 +36,24 @@ const VISIBLE_STEPS: StepConfig[] = [
 	{ key: Steps.Details, label: "פרטי הסביבה" },
 	{ key: Steps.Managers, label: "הגדרות מנהלים" },
 ]
+
+const REQUEST_ERROR_MESSAGES: Record<
+	keyof WorkspaceDetailsErrors,
+	{ code: CreateWorkspaceRequestErrorDtoMessage; message: string }
+> = {
+	title: {
+		code: CreateWorkspaceRequestErrorDtoMessage["title-exists"],
+		message: "שם סביבה זה כבר קיים",
+	},
+	urlName: {
+		code: CreateWorkspaceRequestErrorDtoMessage["urlname-exists"],
+		message: "הנתיב הזה כבר קיים",
+	},
+	pikudId: {
+		code: CreateWorkspaceRequestErrorDtoMessage["pikud-not-found"],
+		message: "הפיקוד לא נמצא",
+	},
+}
 
 interface NewWorkspaceModalProps {
 	onClose(): void
@@ -89,11 +104,13 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 			},
 			{
 				onError: (error) => {
-					setServerErrors({
-						title: isTitleExists(error) ? "שם סביבה זה כבר קיים" : undefined,
-						urlName: isUrlNameExists(error) ? "הנתיב הזה כבר קיים" : undefined,
-						pikudId: isPikudNotFound(error) ? "הפיקוד לא נמצא" : undefined,
-					})
+					setServerErrors(
+						Object.fromEntries(
+							Object.entries(REQUEST_ERROR_MESSAGES)
+								.filter(([, { code }]) => isWorkspaceRequestError(error, code))
+								.map(([field, { message }]) => [field, message]),
+						),
+					)
 					setShowErrors(true)
 					setStep(Steps.Details)
 				},

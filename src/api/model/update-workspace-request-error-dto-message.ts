@@ -9,12 +9,12 @@
 /**
  * Specific error code key
  */
-export type WorkspaceErrorDtoMessage =
-	(typeof WorkspaceErrorDtoMessage)[keyof typeof WorkspaceErrorDtoMessage]
+export type UpdateWorkspaceRequestErrorDtoMessage =
+	(typeof UpdateWorkspaceRequestErrorDtoMessage)[keyof typeof UpdateWorkspaceRequestErrorDtoMessage]
 
-export const WorkspaceErrorDtoMessage = {
+export const UpdateWorkspaceRequestErrorDtoMessage = {
+	"workspace-request-not-found": "workspace-request-not-found",
 	"urlname-exists": "urlname-exists",
 	"title-exists": "title-exists",
 	"pikud-not-found": "pikud-not-found",
-	"workspace-request-not-found": "workspace-request-not-found",
 } as const

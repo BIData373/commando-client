@@ -1,7 +1,8 @@
-import {
-	type WorkspaceErrorDto,
-	WorkspaceErrorDtoMessage,
-	type WorkspaceRequestErrorDto,
+import type {
+	CreateWorkspaceRequestErrorDto,
+	CreateWorkspaceRequestErrorDtoMessage,
+	UpdateWorkspaceErrorDto,
+	UpdateWorkspaceErrorDtoMessage,
 } from "src/api/model"
 import type { ErrorType } from "src/axios"
 
@@ -15,23 +16,20 @@ export enum ErrorCode {
 export const isErrorCode = (code: number) =>
 	Object.values(ErrorCode).includes(code)
 
-type WorkspaceError = ErrorType<WorkspaceErrorDto | WorkspaceRequestErrorDto>
-
-function getMessages(error: WorkspaceError) {
+export function isWorkspaceError(
+	error: ErrorType<UpdateWorkspaceErrorDto>,
+	code: UpdateWorkspaceErrorDtoMessage,
+) {
 	const message = error.response?.data?.message
-	return Array.isArray(message) ? message : [message]
+	const messages = Array.isArray(message) ? message : [message]
+	return messages.includes(code)
 }
 
-export function isTitleExists(error: WorkspaceError) {
-	return getMessages(error).includes(WorkspaceErrorDtoMessage["title-exists"])
-}
-
-export function isUrlNameExists(error: WorkspaceError) {
-	return getMessages(error).includes(WorkspaceErrorDtoMessage["urlname-exists"])
-}
-
-export function isPikudNotFound(error: WorkspaceError) {
-	return getMessages(error).includes(
-		WorkspaceErrorDtoMessage["pikud-not-found"],
-	)
+export function isWorkspaceRequestError(
+	error: ErrorType<CreateWorkspaceRequestErrorDto>,
+	code: CreateWorkspaceRequestErrorDtoMessage,
+) {
+	const message = error.response?.data?.message
+	const messages = Array.isArray(message) ? message : [message]
+	return messages.includes(code)
 }
