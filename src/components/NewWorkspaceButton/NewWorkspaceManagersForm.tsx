@@ -65,7 +65,7 @@ export function NewWorkspaceManagersForm({
 					<SectionLabel>הגדירו את מנהלי הסביבה</SectionLabel>
 				</LabelRow>
 				<Description>
-					מנהל סביבה יוצר הנחיות, מגדיר אחראיים ומבצע בקרה ומעקב אחר סטטוס
+					מנהל סביבה יוצר הנחיות, מגדיר אחראים ומבצע בקרה ומעקב אחר סטטוס
 					ההנחיות בסביבה
 				</Description>
 				<DropdownUsers

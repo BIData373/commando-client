@@ -51,7 +51,7 @@ export function NewWorkspaceDetailsForm({
 	const errors: WorkspaceDetailsErrors = {
 		title: !values.title.trim() ? REQUIRED_ERROR_MESSAGE : serverErrors.title,
 		urlName: !values.urlName ? REQUIRED_ERROR_MESSAGE : serverErrors.urlName,
-		pikudId: !values.pikudId ? REQUIRED_ERROR_MESSAGE : undefined,
+		pikudId: !values.pikudId ? REQUIRED_ERROR_MESSAGE : serverErrors.pikudId,
 	}
 
 	function updateField(...[key, value]: Parameters<typeof form.setFieldValue>) {
@@ -89,6 +89,15 @@ export function NewWorkspaceDetailsForm({
 		setIconSearch("")
 	}
 
+	function handleClearForm() {
+		form.setFieldValue("title", "")
+		form.setFieldValue("urlName", "")
+		form.setFieldValue("pikudId", 0)
+		form.setFieldValue("icon", null)
+		setIconSearch("")
+		onClear()
+	}
+
 	function handleImageNotFound(e: React.SyntheticEvent<HTMLImageElement>) {
 		e.currentTarget.onerror = null
 		e.currentTarget.src = "/workspace-icon.png"
@@ -96,11 +105,7 @@ export function NewWorkspaceDetailsForm({
 
 	return (
 		<Root>
-			<FormField
-				label="שם הסביבה"
-				required
-				error={showErrors ? errors.title : undefined}
-			>
+			<FormField label="שם הסביבה" required>
 				<InputWrapper>
 					<StyledInput
 						value={values.title}
@@ -108,12 +113,17 @@ export function NewWorkspaceDetailsForm({
 						placeholder="למשל 'לשכת אלוף פד&quot;ם'"
 						maxLength={NAME_MAX_LENGTH}
 					/>
-					<CharCounter
-						$atLimit={values.title.length >= NAME_MAX_LENGTH}
-						className={DATA_COUNTER_CLASS}
-					>
-						{values.title.length}/{NAME_MAX_LENGTH}
-					</CharCounter>
+					<CounterRow>
+						{showErrors && errors.title && (
+							<ErrorText>{errors.title}</ErrorText>
+						)}
+						<CharCounter
+							$atLimit={values.title.length >= NAME_MAX_LENGTH}
+							className={DATA_COUNTER_CLASS}
+						>
+							{values.title.length}/{NAME_MAX_LENGTH}
+						</CharCounter>
+					</CounterRow>
 				</InputWrapper>
 			</FormField>
 
@@ -193,7 +203,7 @@ export function NewWorkspaceDetailsForm({
 				primaryLabel="המשך"
 				onPrimary={onNext}
 				secondaryLabel="נקה טופס"
-				onSecondary={onClear}
+				onSecondary={handleClearForm}
 			/>
 		</Root>
 	)
@@ -225,7 +235,15 @@ const StyledInput = styled(Input)`
   width: 100%;
 `
 
+const CounterRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-inline-start: 10px;
+`
+
 const CharCounter = styled.span<{ $atLimit: boolean }>`
+  margin-inline-start: auto;
   font-size: var(--fs-sm);
   color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger)" : "var(--sea-ink-soft)")};
   text-align: end;

@@ -58,7 +58,7 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 		defaultValues: {
 			title: "",
 			urlName: "",
-			pikudId: -1,
+			pikudId: 0,
 			icon: null,
 		} as CreateWorkspaceRequestDto,
 	})
@@ -107,7 +107,7 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 	}
 
 	function handleNext() {
-		if (!values.title.trim() || !values.urlName || values.pikudId <= 0) {
+		if (!values.title.trim() || !values.urlName || !values.pikudId) {
 			setShowErrors(true)
 			return
 		}
