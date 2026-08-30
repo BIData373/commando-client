@@ -255,7 +255,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				...TASK_COLUMN_DEFINITIONS.status,
 				cell: ({
 					row: {
-						original: { id, status, assignee, workspaceId, editable },
+						original: { id, status, assignee, editable },
 					},
 				}) =>
 					status && (

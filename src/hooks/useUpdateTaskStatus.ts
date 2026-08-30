@@ -2,6 +2,7 @@ import type { QueryKey } from "@tanstack/react-query"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { upsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import type {
+	TaskDto,
 	TaskRowDto,
 	TaskWithWorkspaceDto,
 	WorkspaceStatusDto,
@@ -12,10 +13,7 @@ import {
 	getListTaskRowsQueryKey,
 	updateTask,
 } from "src/api/task/task"
-import {
-	updateTaskDetailStatus,
-	updateTaskRowsStatus,
-} from "src/functions/task-status-utils"
+
 import { invalidateQueries } from "src/queryClient"
 
 interface UseUpdateTaskStatusOptions {
@@ -134,10 +132,46 @@ export function useUpdateTaskStatus({
 		taskId: number,
 		assigneeId: number | undefined,
 		status: WorkspaceStatusDto,
-		workspaceId: number,
 	) {
-		mutate({ taskId, assigneeId, status, workspaceId })
+		mutate({ taskId, assigneeId, status, workspaceId: status.id })
 	}
 
 	return updateTaskStatus
+}
+
+function updateTaskRowsStatus<TRow extends TaskRowDto>(
+	rows: TRow[] | undefined,
+	taskId: number,
+	assigneeId: number | undefined,
+	status: WorkspaceStatusDto,
+): TRow[] | undefined {
+	return rows?.map((row) =>
+		row.id === taskId && row.assignee?.id === assigneeId
+			? { ...row, status }
+			: row,
+	)
+}
+
+function updateTaskDetailStatus<TTask extends TaskDto>(
+	task: TTask | undefined,
+	taskId: number,
+	assigneeId: number | undefined,
+	status: WorkspaceStatusDto,
+): TTask | undefined {
+	if (!task || task.id !== taskId) {
+		return task
+	}
+
+	if (assigneeId === undefined) {
+		return { ...task, status }
+	}
+
+	return {
+		...task,
+		assigneeStatuses: task.assigneeStatuses.map((assigneeStatus) =>
+			assigneeStatus.assignee.id === assigneeId
+				? { ...assigneeStatus, status }
+				: assigneeStatus,
+		),
+	}
 }
