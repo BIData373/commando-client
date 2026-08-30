@@ -26,10 +26,12 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import type {
 	CreateWorkspaceDto,
+	CreateWorkspaceErrorDto,
 	DeleteWorkspacePathParameters,
 	GetWorkspacePathParameters,
 	ListWorkspacesParams,
 	UpdateWorkspaceDto,
+	UpdateWorkspaceErrorDto,
 	UpdateWorkspacePathParameters,
 	WorkspaceDto,
 	WorkspaceWithPermissionDto,
@@ -67,7 +69,7 @@ export const createWorkspace = (
 }
 
 export const getCreateWorkspaceMutationOptions = <
-	TError = ErrorType<unknown>,
+	TError = ErrorType<CreateWorkspaceErrorDto>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -107,10 +109,10 @@ export type CreateWorkspaceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof createWorkspace>>
 >
 export type CreateWorkspaceMutationBody = CreateWorkspaceDto
-export type CreateWorkspaceMutationError = ErrorType<unknown>
+export type CreateWorkspaceMutationError = ErrorType<CreateWorkspaceErrorDto>
 
 export const useCreateWorkspace = <
-	TError = ErrorType<unknown>,
+	TError = ErrorType<CreateWorkspaceErrorDto>,
 	TContext = unknown,
 >(
 	options?: {
@@ -548,7 +550,7 @@ export const updateWorkspace = (
 }
 
 export const getUpdateWorkspaceMutationOptions = <
-	TError = ErrorType<unknown>,
+	TError = ErrorType<UpdateWorkspaceErrorDto>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
@@ -588,10 +590,10 @@ export type UpdateWorkspaceMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateWorkspace>>
 >
 export type UpdateWorkspaceMutationBody = UpdateWorkspaceDto
-export type UpdateWorkspaceMutationError = ErrorType<unknown>
+export type UpdateWorkspaceMutationError = ErrorType<UpdateWorkspaceErrorDto>
 
 export const useUpdateWorkspace = <
-	TError = ErrorType<unknown>,
+	TError = ErrorType<UpdateWorkspaceErrorDto>,
 	TContext = unknown,
 >(
 	options?: {

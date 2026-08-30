@@ -51,7 +51,7 @@ export function NewWorkspaceDetailsForm({
 	const errors: WorkspaceDetailsErrors = {
 		title: !values.title.trim() ? REQUIRED_ERROR_MESSAGE : serverErrors.title,
 		urlName: !values.urlName ? REQUIRED_ERROR_MESSAGE : serverErrors.urlName,
-		pikudId: !values.pikudId ? REQUIRED_ERROR_MESSAGE : undefined,
+		pikudId: !values.pikudId ? REQUIRED_ERROR_MESSAGE : serverErrors.pikudId,
 	}
 
 	function updateField(...[key, value]: Parameters<typeof form.setFieldValue>) {
