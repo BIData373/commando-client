@@ -28,7 +28,10 @@ interface NewWorkspaceDetailsProps {
 	serverErrors: WorkspaceDetailsErrors
 	showErrors: boolean
 	initialValues: CreateWorkspaceRequestDto
-	setFormValues(values: CreateWorkspaceRequestDto): void
+	setFormValues(
+		values: CreateWorkspaceRequestDto,
+		changedField?: keyof WorkspaceDetailsErrors,
+	): void
 	onNext(): void
 	onClear(): void
 }
@@ -56,7 +59,10 @@ export function NewWorkspaceDetailsForm({
 
 	function updateField(...[key, value]: Parameters<typeof form.setFieldValue>) {
 		form.setFieldValue(key, value)
-		setFormValues({ ...values, [key]: value })
+		setFormValues(
+			{ ...values, [key]: value },
+			key as keyof WorkspaceDetailsErrors,
+		)
 	}
 
 	function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -127,35 +133,36 @@ export function NewWorkspaceDetailsForm({
 				</InputWrapper>
 			</FormField>
 
-			<UrlNameField>
-				<UrlNameLabelRow>
-					<RequiredMark>*</RequiredMark>
-					<LabelText>שם לתצוגה בדפדפן-באנגלית ללא רווחים</LabelText>
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<InfoButton type="button">
-									<CircleHelp size={16} />
-								</InfoButton>
-							</TooltipTrigger>
-							<TooltipContent side="top">
-								<p>
-									שם זה ישמש כזיהוי ייחודי בכתובת ה-URL. השתמש באותיות ומספרים
-									בלבד, ללא רווחים.
-								</p>
-							</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
-				</UrlNameLabelRow>
+			<FormField
+				label={
+					<UrlNameLabel>
+						שם לתצוגה בדפדפן-באנגלית ללא רווחים
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<InfoButton type="button">
+										<CircleHelp size={16} />
+									</InfoButton>
+								</TooltipTrigger>
+								<TooltipContent side="top">
+									<p>
+										שם זה ישמש כזיהוי ייחודי בכתובת ה-URL. השתמש באותיות ומספרים
+										בלבד, ללא רווחים.
+									</p>
+								</TooltipContent>
+							</Tooltip>
+						</TooltipProvider>
+					</UrlNameLabel>
+				}
+				required
+				error={showErrors ? errors.urlName : undefined}
+			>
 				<StyledInput
 					value={values.urlName}
 					onChange={handleUrlNameChange}
 					placeholder='למשל "lishkat_padam"'
 				/>
-				{showErrors && errors.urlName && (
-					<ErrorText>{errors.urlName}</ErrorText>
-				)}
-			</UrlNameField>
+			</FormField>
 
 			<FormField
 				label="שיוך פיקודי"
@@ -251,30 +258,10 @@ const CharCounter = styled.span<{ $atLimit: boolean }>`
   transition: opacity 0.15s;
 `
 
-const UrlNameField = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-  direction: rtl;
-  align-items: flex-start;
-`
-
-const UrlNameLabelRow = styled.div`
+const UrlNameLabel = styled.span`
   display: flex;
   align-items: center;
   gap: 4px;
-`
-
-const RequiredMark = styled.span`
-  color: var(--Components-Form-Component-labelRequiredMarkColor);
-  font-size: var(--fs-btn);
-`
-
-const LabelText = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
 `
 
 const InfoButton = styled.button`
