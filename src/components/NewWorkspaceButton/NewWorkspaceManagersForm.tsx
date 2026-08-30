@@ -75,6 +75,9 @@ export function NewWorkspaceManagersForm({
 					onClear={handleSearchClear}
 					onAdd={handleAdd}
 					selectedUser={selectedUser}
+					isAddDisabled={
+						!!selectedUser && managers.some((m) => m.upn === selectedUser.upn)
+					}
 					showAddButton
 					placeholder="חפש שם/ תפקיד/ מספר אישי"
 				/>
