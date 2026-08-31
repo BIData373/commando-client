@@ -197,6 +197,10 @@ export const getGetSourceResponseMock = (
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
+		archivedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 		status: {
 			id: faker.number.float({ fractionDigits: 2 }),
@@ -319,10 +323,6 @@ export const getGetSourceResponseMock = (
 		},
 		messageCount: faker.number.float({ fractionDigits: 2 }),
 		editable: faker.datatype.boolean(),
-		archivedAt: faker.helpers.arrayElement([
-			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
-			null,
-		]),
 		assigneeStatuses: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
@@ -628,6 +628,10 @@ export const getAiExtractionCallbackResponseMock = (
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
+		archivedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
 		status: {
 			id: faker.number.float({ fractionDigits: 2 }),
@@ -750,10 +754,6 @@ export const getAiExtractionCallbackResponseMock = (
 		},
 		messageCount: faker.number.float({ fractionDigits: 2 }),
 		editable: faker.datatype.boolean(),
-		archivedAt: faker.helpers.arrayElement([
-			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
-			null,
-		]),
 		assigneeStatuses: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,

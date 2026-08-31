@@ -7,5 +7,6 @@
  */
 
 export type ToggleWorkspaceTaskArchiveParams = {
+	taskId: number
 	assigneeId?: number
 }

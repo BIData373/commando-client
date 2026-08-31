@@ -142,7 +142,7 @@ function PersonalTaskTable({
 		entries.forEach(({ id, assigneeId }) => {
 			if (assigneeId) {
 				toggleArchive(
-					{ pathParams: { id }, params: { assigneeId } },
+					{ params: { taskId: id, assigneeId } },
 					{
 						onSuccess: () => {
 							invalidateQueries([getGetTaskQueryKey({ id })])

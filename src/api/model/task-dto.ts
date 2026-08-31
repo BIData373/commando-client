@@ -33,6 +33,8 @@ export interface TaskDto {
 	dueDate: Date | null
 	/** @nullable */
 	notes: string | null
+	/** @nullable */
+	archivedAt: Date | null
 	workspaceId: number
 	status: WorkspaceStatusDto
 	/** @nullable */
@@ -41,7 +43,5 @@ export interface TaskDto {
 	lastMessage: MessageDto
 	messageCount: number
 	editable: boolean
-	/** @nullable */
-	archivedAt: Date | null
 	assigneeStatuses: AssigneeStatusDto[]
 }
