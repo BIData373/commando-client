@@ -414,7 +414,7 @@ function CreateTaskModal({
 										maxLength={NOTES_MAX_LENGTH}
 										isTextArea={true}
 										placeholder="הערה"
-									></InputWithCount>
+									/>
 
 									{/* Tag field */}
 									<TagField
@@ -426,6 +426,7 @@ function CreateTaskModal({
 									/>
 
 									{/* Source + Date row */}
+
 									<form.Field
 										name="sourceDate"
 										validators={{ onSubmit: validateSourceDate }}
@@ -479,7 +480,7 @@ const LabelText = styled.span`
 const ModalCard = styled(ModalContent)`
   width: 100%;
   max-width: 900px;
-  max-height: 82vh;
+  max-height: 85vh;
   min-height: 850px;
   overflow: hidden;
 `
