@@ -22,6 +22,7 @@ import { Columns3 } from "lucide-react"
 import { useEffect, useState } from "react"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
+import { useUserView } from "src/providers/UserViewProvider"
 import {
 	CONFIGURABLE_COLUMNS,
 	type TaskColumnMeta,
@@ -36,18 +37,18 @@ interface ColumnVisibilityDropdownProps {
 function ColumnVisibilityDropdown({
 	extraColumnsMeta,
 }: ColumnVisibilityDropdownProps) {
-	const { columnOrder, setColumnOrder, hiddenColumns, toggleColumn } =
-		useTasksFilters()
+	const { columnOrder, hiddenColumns, toggleColumn } = useTasksFilters()
+	const { setColumnOrder } = useUserView()
 
 	const [open, setOpen] = useState(false)
 
 	// Optimistic order shown during/after drag, kept in sync with the persisted
 	// `columnOrder` so the item doesn't snap back while the update round-trips.
-	const [displayOrder, setDisplayOrder] =
+	const [localColumnOrder, setLocalColumnOrder] =
 		useState<(keyof TaskRowWithWorkspaceDto)[]>(columnOrder)
 
 	useEffect(() => {
-		setDisplayOrder(columnOrder)
+		setLocalColumnOrder(columnOrder)
 	}, [columnOrder])
 
 	const allColumns = extraColumnsMeta
@@ -64,19 +65,19 @@ function ColumnVisibilityDropdown({
 	function handleDragEnd(event: DragEndEvent) {
 		const { active, over } = event
 		if (over && active.id !== over.id) {
-			const oldIndex = displayOrder.indexOf(
+			const oldIndex = localColumnOrder.indexOf(
 				active.id as keyof TaskRowWithWorkspaceDto,
 			)
-			const newIndex = displayOrder.indexOf(
+			const newIndex = localColumnOrder.indexOf(
 				over.id as keyof TaskRowWithWorkspaceDto,
 			)
-			const nextOrder = arrayMove(displayOrder, oldIndex, newIndex)
+			const nextOrder = arrayMove(localColumnOrder, oldIndex, newIndex)
 			setColumnOrder(nextOrder)
-			setDisplayOrder(nextOrder)
+			setLocalColumnOrder(nextOrder)
 		}
 	}
 
-	const orderedColumns = displayOrder
+	const orderedColumns = localColumnOrder
 		.map((id) => allColumns.find((c) => c.id === id))
 		.filter((c) => c != null)
 

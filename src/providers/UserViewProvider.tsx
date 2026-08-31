@@ -13,6 +13,7 @@ import {
 	getGetUserViewQueryKey,
 	upsertUserView,
 	useGetUserView,
+	useUpsertUserView,
 } from "src/api/user-view/user-view"
 
 import { Spinner } from "src/components/ui/spinner"
@@ -22,6 +23,7 @@ export interface UserViewContext {
 	updateView(nextView: UserViewDto): Promise<void>
 	defaultColumnOrder: (keyof TaskRowWithWorkspaceDto)[]
 	workspaceId?: number
+	setColumnOrder: (order: (keyof TaskRowWithWorkspaceDto)[]) => void
 }
 
 const UserViewContext = createContext<UserViewContext | null>(null)
@@ -90,6 +92,43 @@ export function UserViewProvider({
 			queryClient.invalidateQueries({ queryKey })
 		}
 	}
+	const { columnVisibility } = view.table
+
+	const userViewQueryKey = getGetUserViewQueryKey({ workspaceId })
+
+	const { mutate: mutateColumnOrder } = useUpsertUserView({
+		mutation: {
+			networkMode: "always",
+			onMutate: ({ data }) => {
+				const previousView =
+					queryClient.getQueryData<UserViewDto>(userViewQueryKey)
+
+				queryClient.setQueryData<UserViewDto>(userViewQueryKey, data.view)
+
+				return { previousView }
+			},
+			onError: (_error, _variables, context) => {
+				if (context?.previousView) {
+					queryClient.setQueryData(userViewQueryKey, context.previousView)
+				}
+			},
+		},
+	})
+
+	function setColumnOrder(order: (keyof TaskRowWithWorkspaceDto)[]) {
+		const nextView: UserViewDto = {
+			...view,
+			table: {
+				...view.table,
+				columnVisibility: {
+					...columnVisibility,
+					columnOrder: order,
+				},
+			},
+		}
+
+		mutateColumnOrder({ data: { workspaceId, view: nextView } })
+	}
 
 	return isLoading ? (
 		<LoadingContainer>
@@ -102,6 +141,7 @@ export function UserViewProvider({
 				updateView,
 				defaultColumnOrder,
 				workspaceId,
+				setColumnOrder,
 			}}
 		>
 			{children}

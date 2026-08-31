@@ -18,10 +18,6 @@ import type {
 	TaskRowWithWorkspaceDto,
 	UserViewDto,
 } from "src/api/model"
-import {
-	getGetUserViewQueryKey,
-	useUpsertUserView,
-} from "src/api/user-view/user-view"
 import { DATE_TYPE } from "src/utils/date-utils"
 import {
 	dashboardFilterAssigneeKey,
@@ -41,7 +37,6 @@ interface TasksFiltersContextValue {
 
 	columnOrder: (keyof TaskRowWithWorkspaceDto)[]
 	hiddenColumns: Set<keyof TaskRowWithWorkspaceDto>
-	setColumnOrder: (order: (keyof TaskRowWithWorkspaceDto)[]) => void
 	toggleColumn: (columnId: keyof TaskRowWithWorkspaceDto) => void
 
 	dateType: DATE_TYPE
@@ -71,9 +66,7 @@ export function TasksFiltersProvider({
 	initialQuickFilters,
 	children,
 }: TasksFiltersProviderProps) {
-	const { view, updateView, defaultColumnOrder, workspaceId } = useUserView()
-	const queryClient = useQueryClient()
-	const userViewQueryKey = getGetUserViewQueryKey({ workspaceId })
+	const { view, updateView, defaultColumnOrder } = useUserView()
 	const [localQuickFilters, setLocalQuickFilters] = useState<
 		Set<QuickFilter> | undefined
 	>(initialQuickFilters)
@@ -197,40 +190,6 @@ export function TasksFiltersProvider({
 		})
 	}
 
-	const { mutate: mutateColumnOrder } = useUpsertUserView({
-		mutation: {
-			networkMode: "always",
-			onMutate: ({ data }) => {
-				const previousView =
-					queryClient.getQueryData<UserViewDto>(userViewQueryKey)
-
-				queryClient.setQueryData<UserViewDto>(userViewQueryKey, data.view)
-
-				return { previousView }
-			},
-			onError: (_error, _variables, context) => {
-				if (context?.previousView) {
-					queryClient.setQueryData(userViewQueryKey, context.previousView)
-				}
-			},
-		},
-	})
-
-	function setColumnOrder(order: (keyof TaskRowWithWorkspaceDto)[]) {
-		const nextView: UserViewDto = {
-			...view,
-			table: {
-				...view.table,
-				columnVisibility: {
-					...columnVisibility,
-					columnOrder: order,
-				},
-			},
-		}
-
-		mutateColumnOrder({ data: { workspaceId, view: nextView } })
-	}
-
 	function toggleColumn(columnId: keyof TaskRowWithWorkspaceDto) {
 		const nextHiddenColumns = new Set(hiddenColumns)
 
@@ -256,7 +215,6 @@ export function TasksFiltersProvider({
 				toggleQuickFilter,
 				clearQuickFilters,
 				columnOrder,
-				setColumnOrder,
 				hiddenColumns,
 				toggleColumn,
 				dateType,
