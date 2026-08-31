@@ -58,14 +58,14 @@ const TitleGroup = styled.div`
 `
 
 const MainTitle = styled.span`
-  font-size: clamp(32px, 2.5vw, 58px);
+  font-size: clamp(40px, 3.3vw, 64px);
   font-weight: 500;
   line-height: clamp(24px, 4.3vh, 46px);
   white-space: nowrap;
 `
 
 const Subtitle = styled.span`
-  font-size: clamp(20px, 1.5vw, 32px);
+  font-size: clamp(20px, 1.8vw, 32px);
   font-weight: 400;
   line-height: clamp(24px, 4.3vh, 46px);
   white-space: nowrap;

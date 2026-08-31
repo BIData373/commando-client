@@ -46,7 +46,7 @@ export default function SpacesContainer() {
 			<TopSection>
 				<HeaderRow>
 					<ActionsRow>
-						<NewWorkspace />
+						<NewWorkspaceButton />
 
 						<SearchWrapper>
 							<SearchInput
@@ -251,16 +251,11 @@ const ScrollContainer = styled.div`
 const WorkspacesContainer = styled.div`
   direction: rtl;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); 
-  grid-auto-rows: minmax(119px, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+  grid-auto-rows: minmax(140px, 1fr); 
   gap: 12px;
   padding-inline-end: 4px;
   padding-bottom: 8px;
-
-  @media (max-height: 1080px) {
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); 
-    grid-auto-rows: minmax(100px, 1fr); 
-  }
 `
 
 const EmptySpace = styled.div`
@@ -274,8 +269,4 @@ const LoadingSpace = styled.div`
   flex: 1;
   width: 100%;
   min-height: 0;
-`
-
-const NewWorkspace = styled(NewWorkspaceButton)`
-  font-size: var(--fs-btn);
 `
