@@ -7,6 +7,7 @@ interface InputWithCountProps {
 	placeholder?: string
 	isTextArea?: boolean
 	error?: string
+	showError?: boolean
 }
 
 function InputWithCount({
@@ -16,6 +17,7 @@ function InputWithCount({
 	placeholder,
 	isTextArea,
 	error,
+	showError = true,
 }: InputWithCountProps) {
 	const inputProps = {
 		value: text,
@@ -38,7 +40,7 @@ function InputWithCount({
 					{text.length}/{maxLength}
 				</CharCount>
 			</InputWrapper>
-			<ErrorRow $visible={!!error}>{error}&nbsp;</ErrorRow>
+			{showError && <ErrorRow $visible={!!error}>{error}&nbsp;</ErrorRow>}
 		</FormItem>
 	)
 }

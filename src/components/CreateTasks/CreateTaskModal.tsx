@@ -414,7 +414,8 @@ function CreateTaskModal({
 										maxLength={NOTES_MAX_LENGTH}
 										isTextArea={true}
 										placeholder="הערה"
-									></InputWithCount>
+										showError={false}
+									/>
 
 									{/* Tag field */}
 									<TagField
@@ -479,7 +480,7 @@ const LabelText = styled.span`
 const ModalCard = styled(ModalContent)`
   width: 100%;
   max-width: 900px;
-  max-height: 82vh;
+  max-height: 85vh;
   min-height: 850px;
   overflow: hidden;
 `
