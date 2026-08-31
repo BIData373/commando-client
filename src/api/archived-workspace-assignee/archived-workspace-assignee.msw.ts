@@ -18,7 +18,7 @@ export const getToggleWorkspaceTaskArchiveMockHandler = (
 	options?: RequestHandlerOptions,
 ) => {
 	return http.patch(
-		"*/archived-workspace-assignee-task/:id",
+		"*/archived-workspace-assignee-task",
 		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
 			if (typeof overrideResponse === "function") {
 				await overrideResponse(info)

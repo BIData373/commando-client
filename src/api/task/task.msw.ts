@@ -9,7 +9,6 @@ import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 import type {
-	TaskDetailsDto,
 	TaskDto,
 	TaskRowDto,
 	TaskRowWithWorkspaceDto,
@@ -55,7 +54,18 @@ export const getCreateTaskResponseMock = (
 		faker.string.alpha({ length: { min: 10, max: 20 } }),
 		null,
 	]),
+	archivedAt: faker.helpers.arrayElement([
+		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		null,
+	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	status: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+		workspaceId: faker.number.float({ fractionDigits: 2 }),
+	},
 	source: faker.helpers.arrayElement([
 		{
 			...{
@@ -165,6 +175,7 @@ export const getCreateTaskResponseMock = (
 		taskId: faker.number.float({ fractionDigits: 2 }),
 	},
 	messageCount: faker.number.float({ fractionDigits: 2 }),
+	editable: faker.datatype.boolean(),
 	assigneeStatuses: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -302,7 +313,18 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
+		archivedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -416,6 +438,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 			taskId: faker.number.float({ fractionDigits: 2 }),
 		},
 		messageCount: faker.number.float({ fractionDigits: 2 }),
+		editable: faker.datatype.boolean(),
 		assigneeStatuses: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
@@ -523,7 +546,18 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
+		archivedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -637,6 +671,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 			taskId: faker.number.float({ fractionDigits: 2 }),
 		},
 		messageCount: faker.number.float({ fractionDigits: 2 }),
+		editable: faker.datatype.boolean(),
 		rowKey: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		assignee: faker.helpers.arrayElement([
 			{
@@ -694,14 +729,6 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 			},
 			undefined,
 		]),
-		status: {
-			id: faker.number.float({ fractionDigits: 2 }),
-			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
-			workspaceId: faker.number.float({ fractionDigits: 2 }),
-		},
-		editable: faker.datatype.boolean(),
 		otherAssignees: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
@@ -773,10 +800,6 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 			]),
 			editable: faker.datatype.boolean(),
 		})),
-		archivedAt: faker.helpers.arrayElement([
-			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
-			null,
-		]),
 	}))
 
 export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
@@ -813,7 +836,18 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
+		archivedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -927,6 +961,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 			taskId: faker.number.float({ fractionDigits: 2 }),
 		},
 		messageCount: faker.number.float({ fractionDigits: 2 }),
+		editable: faker.datatype.boolean(),
 		assigneeStatuses: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
@@ -1064,7 +1099,18 @@ export const getListPersonalTaskRowsResponseMock =
 				faker.string.alpha({ length: { min: 10, max: 20 } }),
 				null,
 			]),
+			archivedAt: faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
+			status: {
+				id: faker.number.float({ fractionDigits: 2 }),
+				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+				workspaceId: faker.number.float({ fractionDigits: 2 }),
+			},
 			source: faker.helpers.arrayElement([
 				{
 					...{
@@ -1178,6 +1224,7 @@ export const getListPersonalTaskRowsResponseMock =
 				taskId: faker.number.float({ fractionDigits: 2 }),
 			},
 			messageCount: faker.number.float({ fractionDigits: 2 }),
+			editable: faker.datatype.boolean(),
 			rowKey: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			assignee: faker.helpers.arrayElement([
 				{
@@ -1239,14 +1286,6 @@ export const getListPersonalTaskRowsResponseMock =
 				},
 				undefined,
 			]),
-			status: {
-				id: faker.number.float({ fractionDigits: 2 }),
-				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
-				workspaceId: faker.number.float({ fractionDigits: 2 }),
-			},
-			editable: faker.datatype.boolean(),
 			otherAssignees: Array.from(
 				{ length: faker.number.int({ min: 1, max: 10 }) },
 				(_, i) => i + 1,
@@ -1322,10 +1361,6 @@ export const getListPersonalTaskRowsResponseMock =
 				]),
 				editable: faker.datatype.boolean(),
 			})),
-			archivedAt: faker.helpers.arrayElement([
-				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
-				null,
-			]),
 			workspace: {
 				createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				createdBy: faker.number.float({ fractionDigits: 2 }),
@@ -1358,8 +1393,8 @@ export const getListPersonalTaskRowsResponseMock =
 		}))
 
 export const getGetTaskResponseMock = (
-	overrideResponse: Partial<Extract<TaskDetailsDto, object>> = {},
-): TaskDetailsDto => ({
+	overrideResponse: Partial<Extract<TaskWithWorkspaceDto, object>> = {},
+): TaskWithWorkspaceDto => ({
 	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	createdBy: faker.number.float({ fractionDigits: 2 }),
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1389,7 +1424,18 @@ export const getGetTaskResponseMock = (
 		faker.string.alpha({ length: { min: 10, max: 20 } }),
 		null,
 	]),
+	archivedAt: faker.helpers.arrayElement([
+		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		null,
+	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	status: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+		workspaceId: faker.number.float({ fractionDigits: 2 }),
+	},
 	source: faker.helpers.arrayElement([
 		{
 			...{
@@ -1499,6 +1545,7 @@ export const getGetTaskResponseMock = (
 		taskId: faker.number.float({ fractionDigits: 2 }),
 	},
 	messageCount: faker.number.float({ fractionDigits: 2 }),
+	editable: faker.datatype.boolean(),
 	assigneeStatuses: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -1599,16 +1646,6 @@ export const getGetTaskResponseMock = (
 			null,
 		]),
 	},
-	status: faker.helpers.arrayElement([
-		{
-			id: faker.number.float({ fractionDigits: 2 }),
-			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
-			workspaceId: faker.number.float({ fractionDigits: 2 }),
-		},
-		undefined,
-	]),
 	...overrideResponse,
 })
 
@@ -1644,7 +1681,18 @@ export const getUpdateTaskResponseMock = (
 		faker.string.alpha({ length: { min: 10, max: 20 } }),
 		null,
 	]),
+	archivedAt: faker.helpers.arrayElement([
+		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		null,
+	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	status: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+		workspaceId: faker.number.float({ fractionDigits: 2 }),
+	},
 	source: faker.helpers.arrayElement([
 		{
 			...{
@@ -1754,6 +1802,7 @@ export const getUpdateTaskResponseMock = (
 		taskId: faker.number.float({ fractionDigits: 2 }),
 	},
 	messageCount: faker.number.float({ fractionDigits: 2 }),
+	editable: faker.datatype.boolean(),
 	assigneeStatuses: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -1889,7 +1938,18 @@ export const getDeleteTaskResponseMock = (
 		faker.string.alpha({ length: { min: 10, max: 20 } }),
 		null,
 	]),
+	archivedAt: faker.helpers.arrayElement([
+		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		null,
+	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	status: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+		workspaceId: faker.number.float({ fractionDigits: 2 }),
+	},
 	source: faker.helpers.arrayElement([
 		{
 			...{
@@ -1999,6 +2059,7 @@ export const getDeleteTaskResponseMock = (
 		taskId: faker.number.float({ fractionDigits: 2 }),
 	},
 	messageCount: faker.number.float({ fractionDigits: 2 }),
+	editable: faker.datatype.boolean(),
 	assigneeStatuses: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -2224,10 +2285,10 @@ export const getListPersonalTaskRowsMockHandler = (
 
 export const getGetTaskMockHandler = (
 	overrideResponse?:
-		| TaskDetailsDto
+		| TaskWithWorkspaceDto
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0],
-		  ) => Promise<TaskDetailsDto> | TaskDetailsDto),
+		  ) => Promise<TaskWithWorkspaceDto> | TaskWithWorkspaceDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(

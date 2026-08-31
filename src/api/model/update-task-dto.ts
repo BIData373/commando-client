@@ -22,4 +22,5 @@ export interface UpdateTaskDto {
 	/** @nullable */
 	sourceId?: number | null
 	assignees?: GetTaskAssigneeDto[]
+	statusId?: number
 }

@@ -3,6 +3,7 @@ import { useForm, useStore } from "@tanstack/react-form"
 import { Check } from "lucide-react"
 import React, { type ReactNode, useEffect, useState } from "react"
 import type { CreateWorkspaceRequestDto, MirageUserDto } from "src/api/model"
+import { CreateWorkspaceRequestErrorDtoMessage } from "src/api/model"
 import {
 	getListWorkspaceRequestsQueryKey,
 	useCreateWorkspaceRequest,
@@ -10,7 +11,7 @@ import {
 import { Dialog } from "src/components/ui/dialog"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { invalidateQueries } from "src/queryClient"
-import { isUrlNameExist, isWorkspaceExist } from "src/utils/error-utils"
+import { hasError } from "src/utils/error-utils"
 import type { WorkspaceDetailsErrors } from "src/utils/workspace-utils"
 import logoWithText from "../../assets/logo-with-text-dark.png"
 import quickPage from "../../assets/quick_page.svg"
@@ -36,6 +37,24 @@ const VISIBLE_STEPS: StepConfig[] = [
 	{ key: Steps.Managers, label: "הגדרות מנהלים" },
 ]
 
+const REQUEST_ERROR_MESSAGES: Record<
+	keyof WorkspaceDetailsErrors,
+	{ code: CreateWorkspaceRequestErrorDtoMessage; message: string }
+> = {
+	title: {
+		code: CreateWorkspaceRequestErrorDtoMessage["title-exists"],
+		message: "שם סביבה זה כבר קיים",
+	},
+	urlName: {
+		code: CreateWorkspaceRequestErrorDtoMessage["urlname-exists"],
+		message: "נתיב זה כבר קיים",
+	},
+	pikudId: {
+		code: CreateWorkspaceRequestErrorDtoMessage["pikud-not-found"],
+		message: "הפיקוד לא נמצא",
+	},
+}
+
 interface NewWorkspaceModalProps {
 	onClose(): void
 }
@@ -58,17 +77,23 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 		defaultValues: {
 			title: "",
 			urlName: "",
-			pikudId: -1,
+			pikudId: 0,
 			icon: null,
 		} as CreateWorkspaceRequestDto,
 	})
 	const values = useStore(form.store, (s) => s.values)
 
-	function setFormValues(values: CreateWorkspaceRequestDto) {
+	function setFormValues(
+		values: CreateWorkspaceRequestDto,
+		changedField?: keyof WorkspaceDetailsErrors,
+	) {
 		form.setFieldValue("title", values.title)
 		form.setFieldValue("urlName", values.urlName)
 		form.setFieldValue("pikudId", values.pikudId)
 		form.setFieldValue("icon", values.icon)
+		if (changedField && serverErrors[changedField]) {
+			setServerErrors((prev) => ({ ...prev, [changedField]: undefined }))
+		}
 	}
 
 	async function handleStep2Submit(managers: MirageUserDto[]) {
@@ -85,10 +110,14 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 			},
 			{
 				onError: (error) => {
-					setServerErrors({
-						title: isWorkspaceExist(error) ? "שם סביבה זה כבר קיים" : undefined,
-						urlName: isUrlNameExist(error) ? "הנתיב הזה כבר קיים" : undefined,
-					})
+					setServerErrors(
+						Object.fromEntries(
+							Object.entries(REQUEST_ERROR_MESSAGES)
+								.filter(([, { code }]) => hasError(error, code))
+								.map(([field, { message }]) => [field, message]),
+						),
+					)
+					setShowErrors(true)
 					setStep(Steps.Details)
 				},
 				onSuccess: (data) => {
@@ -107,7 +136,13 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 	}
 
 	function handleNext() {
-		if (!values.title.trim() || !values.urlName || values.pikudId <= 0) {
+		const hasServerErrors = Object.values(serverErrors).some(Boolean)
+		if (
+			!values.title.trim() ||
+			!values.urlName ||
+			!values.pikudId ||
+			hasServerErrors
+		) {
 			setShowErrors(true)
 			return
 		}

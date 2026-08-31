@@ -18,7 +18,7 @@ export const getToggleUserTaskArchiveMockHandler = (
 	options?: RequestHandlerOptions,
 ) => {
 	return http.patch(
-		"*/archived-user-assignee-task/:id",
+		"*/archived-user-assignee-task",
 		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
 			if (typeof overrideResponse === "function") {
 				await overrideResponse(info)

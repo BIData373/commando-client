@@ -7,7 +7,7 @@ import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assign
 import {
 	DeadlineType,
 	PermissionType,
-	type TaskDetailsDto,
+	type TaskWithWorkspaceDto,
 } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import {
@@ -19,6 +19,7 @@ import {
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { useAttachmentDownload } from "src/hooks/useAttachmentDownload"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
+import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { invalidateQueries } from "src/queryClient"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
@@ -28,16 +29,16 @@ import { DeadlineTypeTag } from "../shared/DeadlineTypeTag"
 import FlagIcon from "../shared/FlagIcon"
 import { ModalContent } from "../shared/ModalContent"
 import { SpinIcon } from "../shared/SpinIcon"
-import { StatusTag } from "../shared/StatusTag"
 import WorkspaceCell from "../shared/WorkspaceCell"
 import { RowActionsMenu } from "../Tasks/RowActionsMenu"
+import { StatusDropdown } from "../Tasks/StatusDropdown"
 import { Dialog } from "../ui/dialog"
 import { AssigneeSection } from "./AssigneeSection"
 import TaskCommentsSection from "./TaskCommentsSection"
 import TaskHistoryPanel from "./TaskHistoryPanel"
 
 interface TaskDetailPanelProps {
-	task: TaskDetailsDto
+	task: TaskWithWorkspaceDto
 	onClose: () => void
 	onEdit?: () => void
 	showWorkspace?: boolean
@@ -59,6 +60,7 @@ function TaskDetailPanel({
 		tags,
 		assigneeStatuses,
 		status,
+		editable,
 		workspace,
 		workspace: { id: workspaceId, permissionType },
 	},
@@ -126,6 +128,8 @@ function TaskDetailPanel({
 		mutation: { onSettled: handleSettled },
 	})
 
+	const handleUpdateTaskStatus = useUpdateTaskStatus()
+
 	const displayDate = getDeadlineDisplayDate(
 		deadlineType,
 		dueDate,
@@ -177,12 +181,11 @@ function TaskDetailPanel({
 		if (isPersonal) {
 			if (myAssigneeId) {
 				toggleUserArchive({
-					pathParams: { id },
-					params: { assigneeId: myAssigneeId },
+					params: { taskId: id, assigneeId: myAssigneeId },
 				})
 			}
 		} else {
-			toggleWorkspaceArchive({ pathParams: { id } })
+			toggleWorkspaceArchive({ params: { taskId: id } })
 		}
 	}
 
@@ -260,7 +263,12 @@ function TaskDetailPanel({
 					) : (
 						status && (
 							<StatusTagContainer>
-								<StatusTag status={status} />
+								<StatusDropdown
+									status={status}
+									taskId={id}
+									editable={editable}
+									onUpdate={handleUpdateTaskStatus}
+								/>
 							</StatusTagContainer>
 						)
 					)}
@@ -491,6 +499,7 @@ const MetaText = styled.span`
 `
 
 const StatusTagContainer = styled.div`
+  display: flex;
   width: 100%;
 `
 // ─── Additional info ───────────────────────────────────────────────────────────

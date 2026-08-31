@@ -197,7 +197,18 @@ export const getGetSourceResponseMock = (
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
+		archivedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -311,6 +322,7 @@ export const getGetSourceResponseMock = (
 			taskId: faker.number.float({ fractionDigits: 2 }),
 		},
 		messageCount: faker.number.float({ fractionDigits: 2 }),
+		editable: faker.datatype.boolean(),
 		assigneeStatuses: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
@@ -616,7 +628,18 @@ export const getAiExtractionCallbackResponseMock = (
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
+		archivedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		status: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
+			workspaceId: faker.number.float({ fractionDigits: 2 }),
+		},
 		source: faker.helpers.arrayElement([
 			{
 				...{
@@ -730,6 +753,7 @@ export const getAiExtractionCallbackResponseMock = (
 			taskId: faker.number.float({ fractionDigits: 2 }),
 		},
 		messageCount: faker.number.float({ fractionDigits: 2 }),
+		editable: faker.datatype.boolean(),
 		assigneeStatuses: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,

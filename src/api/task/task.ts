@@ -33,7 +33,6 @@ import type {
 	ListPersonalTasksParams,
 	ListTaskRowsParams,
 	ListTasksParams,
-	TaskDetailsDto,
 	TaskDto,
 	TaskRowDto,
 	TaskRowWithWorkspaceDto,
@@ -697,7 +696,7 @@ export const getTask = (
 	params?: GetTaskParams,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskDetailsDto>({
+	return sendRequest<TaskWithWorkspaceDto>({
 		url: `/task/${id}`,
 		method: "GET",
 		params,

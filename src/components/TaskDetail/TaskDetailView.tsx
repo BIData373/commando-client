@@ -1,13 +1,13 @@
 import type { NavigateOptions, RegisteredRouter } from "@tanstack/react-router"
 import { useNavigate } from "@tanstack/react-router"
-import type { TaskDetailsDto } from "src/api/model"
+import type { TaskWithWorkspaceDto } from "src/api/model"
 import TaskDetailPanel from "./TaskDetailPanel"
 
 interface TaskDetailViewProps<
 	TCloseTo extends string | undefined,
 	TEditTo extends string | undefined,
 > {
-	task?: TaskDetailsDto
+	task?: TaskWithWorkspaceDto
 	showWorkspace?: boolean
 	closeTo: NavigateOptions<RegisteredRouter, string, TCloseTo>
 	editTo?: NavigateOptions<RegisteredRouter, string, TEditTo>

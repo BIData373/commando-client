@@ -25,8 +25,8 @@ interface AssigneeRowListProps {
 	onRemove: (id: number) => void
 	onStatusChange?: (
 		taskId: number,
-		assigneeId: number,
-		statusId: number,
+		assigneeId: number | undefined,
+		status: WorkspaceStatusDto,
 	) => void
 	taskId?: number
 }

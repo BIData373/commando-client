@@ -34,17 +34,17 @@ export interface TaskRowDto {
 	dueDate: Date | null
 	/** @nullable */
 	notes: string | null
+	/** @nullable */
+	archivedAt: Date | null
 	workspaceId: number
+	status: WorkspaceStatusDto
 	/** @nullable */
 	source: SourceDto | null
 	tags: TagDto[]
 	lastMessage: MessageDto
 	messageCount: number
+	editable: boolean
 	rowKey: string
 	assignee?: AssigneeDto
-	status: WorkspaceStatusDto
-	editable: boolean
 	otherAssignees: AssigneeStatusDto[]
-	/** @nullable */
-	archivedAt: Date | null
 }

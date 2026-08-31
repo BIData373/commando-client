@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0
  */
 
-export type ToggleUserTaskArchivePathParameters = {
-	id: number
+export interface ErrorDto {
+	statusCode: number
+	/** Specific error code key */
+	message: string
+	error?: string
 }
