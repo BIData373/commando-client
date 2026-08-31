@@ -1,29 +1,21 @@
 import styled from "@emotion/styled"
 import { useQueryClient } from "@tanstack/react-query"
-import {
-	createContext,
-	type PropsWithChildren,
-	useContext,
-	useRef,
-} from "react"
+import { createContext, type PropsWithChildren, useContext } from "react"
 import type { TaskRowWithWorkspaceDto, UserViewDto } from "src/api/model"
 import { DistributionTab } from "src/api/model/distribution-tab"
 import { QuickFilter } from "src/api/model/quick-filter"
 import {
 	getGetUserViewQueryKey,
-	upsertUserView,
 	useGetUserView,
-	useUpsertUserView,
+	useUpsertUserView as useMutateUserView,
 } from "src/api/user-view/user-view"
-
 import { Spinner } from "src/components/ui/spinner"
 
 export interface UserViewContext {
 	view: UserViewDto
-	updateView(nextView: UserViewDto): Promise<void>
+	updateView(nextView: UserViewDto): void
 	defaultColumnOrder: (keyof TaskRowWithWorkspaceDto)[]
 	workspaceId?: number
-	setColumnOrder: (order: (keyof TaskRowWithWorkspaceDto)[]) => void
 }
 
 const UserViewContext = createContext<UserViewContext | null>(null)
@@ -41,6 +33,7 @@ export function UserViewProvider({
 	defaultHiddenColumns,
 }: UserViewProviderProps) {
 	const queryClient = useQueryClient()
+	const userViewQueryKey = getGetUserViewQueryKey({ workspaceId })
 	const defaultView = {
 		table: {
 			sorting: [],
@@ -71,32 +64,7 @@ export function UserViewProvider({
 
 	const view = data ?? defaultView
 
-	const latestViewRef = useRef<UserViewDto | null>(null)
-
-	const updateView = async (nextView: UserViewDto) => {
-		const queryKey = getGetUserViewQueryKey({ workspaceId })
-
-		latestViewRef.current = nextView
-
-		await queryClient.cancelQueries({ queryKey })
-		if (latestViewRef.current !== nextView) return
-
-		queryClient.setQueryData(queryKey, nextView)
-
-		await upsertUserView({
-			workspaceId,
-			view: nextView,
-		})
-
-		if (latestViewRef.current === nextView) {
-			queryClient.invalidateQueries({ queryKey })
-		}
-	}
-	const { columnVisibility } = view.table
-
-	const userViewQueryKey = getGetUserViewQueryKey({ workspaceId })
-
-	const { mutate: mutateColumnOrder } = useUpsertUserView({
+	const { mutate: mutateUserView } = useMutateUserView({
 		mutation: {
 			networkMode: "always",
 			onMutate: ({ data }) => {
@@ -115,19 +83,8 @@ export function UserViewProvider({
 		},
 	})
 
-	function setColumnOrder(order: (keyof TaskRowWithWorkspaceDto)[]) {
-		const nextView: UserViewDto = {
-			...view,
-			table: {
-				...view.table,
-				columnVisibility: {
-					...columnVisibility,
-					columnOrder: order,
-				},
-			},
-		}
-
-		mutateColumnOrder({ data: { workspaceId, view: nextView } })
+	function updateView(nextView: UserViewDto) {
+		mutateUserView({ data: { workspaceId, view: nextView } })
 	}
 
 	return isLoading ? (
@@ -141,7 +98,6 @@ export function UserViewProvider({
 				updateView,
 				defaultColumnOrder,
 				workspaceId,
-				setColumnOrder,
 			}}
 		>
 			{children}

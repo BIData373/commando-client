@@ -22,7 +22,6 @@ import { Columns3 } from "lucide-react"
 import { useEffect, useState } from "react"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
-import { useUserView } from "src/providers/UserViewProvider"
 import {
 	CONFIGURABLE_COLUMNS,
 	type TaskColumnMeta,
@@ -37,8 +36,8 @@ interface ColumnVisibilityDropdownProps {
 function ColumnVisibilityDropdown({
 	extraColumnsMeta,
 }: ColumnVisibilityDropdownProps) {
-	const { columnOrder, hiddenColumns, toggleColumn } = useTasksFilters()
-	const { setColumnOrder } = useUserView()
+	const { columnOrder, hiddenColumns, toggleColumn, setColumnOrder } =
+		useTasksFilters()
 
 	const [open, setOpen] = useState(false)
 

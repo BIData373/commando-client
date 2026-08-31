@@ -1,5 +1,4 @@
 import { useDebouncedCallback, useLocalStorage } from "@mantine/hooks"
-import { useQueryClient } from "@tanstack/react-query"
 import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
 import {
 	createContext,
@@ -52,6 +51,8 @@ interface TasksFiltersContextValue {
 
 	sorting: SortingState
 	setSorting: Dispatch<SetStateAction<SortingState>>
+
+	setColumnOrder: (order: (keyof TaskRowWithWorkspaceDto)[]) => void
 }
 
 const TasksFiltersContext = createContext<TasksFiltersContextValue | null>(null)
@@ -199,13 +200,35 @@ export function TasksFiltersProvider({
 			nextHiddenColumns.add(columnId)
 		}
 
-		updateTableView({
-			columnVisibility: {
-				...columnVisibility,
-				hiddenColumns: [...nextHiddenColumns],
+		const nextView: UserViewDto = {
+			...view,
+			table: {
+				...view.table,
+				columnVisibility: {
+					...columnVisibility,
+					hiddenColumns: [...nextHiddenColumns],
+				},
 			},
-		})
+		}
+
+		updateView(nextView)
 	}
+
+	function setColumnOrder(order: (keyof TaskRowWithWorkspaceDto)[]) {
+		const nextView: UserViewDto = {
+			...view,
+			table: {
+				...view.table,
+				columnVisibility: {
+					...columnVisibility,
+					columnOrder: order,
+				},
+			},
+		}
+
+		updateView(nextView)
+	}
+
 	return (
 		<TasksFiltersContext.Provider
 			value={{
@@ -227,6 +250,7 @@ export function TasksFiltersProvider({
 				setColumnsFilters,
 				sorting: sorting,
 				setSorting,
+				setColumnOrder,
 			}}
 		>
 			{children}
