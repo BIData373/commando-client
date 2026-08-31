@@ -14,6 +14,7 @@ interface DropdownUsersProps extends PropsWithChildren {
 	onClear(): void
 	onAdd?: () => void
 	selectedUser?: MirageUserDto | null
+	isAddDisabled?: boolean
 	showAddButton?: boolean
 	placeholder?: string
 }
@@ -25,6 +26,7 @@ export function DropdownUsers({
 	onClear,
 	onAdd,
 	selectedUser,
+	isAddDisabled,
 	placeholder,
 	showAddButton,
 	children,
@@ -61,8 +63,8 @@ export function DropdownUsers({
 			{onAdd && showAddButton && (
 				<AddButton
 					type="button"
-					$active={!!selectedUser}
-					disabled={!selectedUser}
+					$active={!!selectedUser && !isAddDisabled}
+					disabled={!selectedUser || isAddDisabled}
 					onClick={onAdd}
 				>
 					<UserPlus size={16} />

@@ -1,10 +1,11 @@
 import styled from "@emotion/styled"
 import type { AnyFieldApi } from "@tanstack/form-core"
+import type { ReactNode } from "react"
 
 interface FormFieldProps {
-	label?: string
+	label?: ReactNode
 	required?: boolean
-	children: React.ReactNode
+	children: ReactNode
 	field?: AnyFieldApi
 	error?: string
 }
@@ -29,7 +30,11 @@ export function FormField({
 				</LabelRow>
 			)}
 			{children}
-			{showError && <ErrorText>{String(errors[0])}</ErrorText>}
+			{(field || error !== undefined) && (
+				<ErrorText $error={showError}>
+					{showError && String(errors[0])}
+				</ErrorText>
+			)}
 		</Wrapper>
 	)
 }
@@ -56,12 +61,16 @@ const LabelText = styled.span`
 `
 
 const RequiredMark = styled.span`
-  color: #ff4d4f;
+  color: var(--Error-color-error);
   font-size: var(--fs-btn);
 `
 
-const ErrorText = styled.span`
-  font-size: 13px;
-  color: var(--color-error, #ef4444);
+const ErrorText = styled.span<{ $error?: boolean }>`
+  font-size: var(--fs-sm);
+  color: var(--Error-color-error);
   line-height: 18px;
+  min-height: 18px;
+  padding-inline-start: 10px;
+  align-self: flex-start;
+  visibility: ${({ $error }) => ($error ? "visible" : "hidden")}
 `

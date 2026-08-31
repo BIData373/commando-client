@@ -6,14 +6,13 @@ import type { CreateWorkspaceRequestDto } from "src/api/model"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import {
-	DATA_COUNTER_CLASS,
 	NAME_MAX_LENGTH,
 	type WorkspaceDetailsErrors,
 } from "src/utils/workspace-utils"
 import { IconDropdown } from "../settings/IconDropdown"
 import { SelectCommand } from "../settings/SelectCommand"
 import { FormField } from "../shared/FormField"
-import { Input } from "../ui/input"
+import InputWithCount from "../shared/InputWithCount"
 import {
 	Tooltip,
 	TooltipContent,
@@ -28,7 +27,10 @@ interface NewWorkspaceDetailsProps {
 	serverErrors: WorkspaceDetailsErrors
 	showErrors: boolean
 	initialValues: CreateWorkspaceRequestDto
-	setFormValues(values: CreateWorkspaceRequestDto): void
+	setFormValues(
+		values: CreateWorkspaceRequestDto,
+		changedField?: keyof WorkspaceDetailsErrors,
+	): void
 	onNext(): void
 	onClear(): void
 }
@@ -56,15 +58,18 @@ export function NewWorkspaceDetailsForm({
 
 	function updateField(...[key, value]: Parameters<typeof form.setFieldValue>) {
 		form.setFieldValue(key, value)
-		setFormValues({ ...values, [key]: value })
+		setFormValues(
+			{ ...values, [key]: value },
+			key as keyof WorkspaceDetailsErrors,
+		)
 	}
 
-	function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
-		updateField("title", e.target.value.slice(0, NAME_MAX_LENGTH))
+	function handleTitleChange(value: string) {
+		updateField("title", value.slice(0, NAME_MAX_LENGTH))
 	}
 
-	function handleUrlNameChange(e: React.ChangeEvent<HTMLInputElement>) {
-		updateField("urlName", e.target.value.replace(/[^a-zA-Z0-9_]/g, ""))
+	function handleUrlNameChange(value: string) {
+		updateField("urlName", value.replace(/[^a-zA-Z0-9_]/g, ""))
 	}
 
 	function handlePikudChange(value: number) {
@@ -89,6 +94,12 @@ export function NewWorkspaceDetailsForm({
 		setIconSearch("")
 	}
 
+	function handleClearForm() {
+		form.reset()
+		setIconSearch("")
+		onClear()
+	}
+
 	function handleImageNotFound(e: React.SyntheticEvent<HTMLImageElement>) {
 		e.currentTarget.onerror = null
 		e.currentTarget.src = "/workspace-icon.png"
@@ -96,61 +107,52 @@ export function NewWorkspaceDetailsForm({
 
 	return (
 		<Root>
-			<FormField
-				label="שם הסביבה"
-				required
-				error={showErrors ? errors.title : undefined}
-			>
-				<InputWrapper>
-					<StyledInput
-						value={values.title}
-						onChange={handleTitleChange}
-						placeholder="למשל 'לשכת אלוף פד&quot;ם'"
-						maxLength={NAME_MAX_LENGTH}
-					/>
-					<CharCounter
-						$atLimit={values.title.length >= NAME_MAX_LENGTH}
-						className={DATA_COUNTER_CLASS}
-					>
-						{values.title.length}/{NAME_MAX_LENGTH}
-					</CharCounter>
-				</InputWrapper>
+			<FormField label="שם הסביבה" required>
+				<InputWithCount
+					text={values.title}
+					onChange={handleTitleChange}
+					maxLength={NAME_MAX_LENGTH}
+					placeholder="למשל 'לשכת אלוף פד&quot;ם'"
+					error={showErrors ? errors.title : ""}
+				/>
 			</FormField>
 
-			<UrlNameField>
-				<UrlNameLabelRow>
-					<RequiredMark>*</RequiredMark>
-					<LabelText>שם לתצוגה בדפדפן-באנגלית ללא רווחים</LabelText>
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<InfoButton type="button">
-									<CircleHelp size={16} />
-								</InfoButton>
-							</TooltipTrigger>
-							<TooltipContent side="top">
-								<p>
-									שם זה ישמש כזיהוי ייחודי בכתובת ה-URL. השתמש באותיות ומספרים
-									בלבד, ללא רווחים.
-								</p>
-							</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
-				</UrlNameLabelRow>
-				<StyledInput
-					value={values.urlName}
+			<FormField
+				label={
+					<UrlNameLabel>
+						שם לתצוגה בדפדפן-באנגלית ללא רווחים
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<InfoButton type="button">
+										<CircleHelp size={16} />
+									</InfoButton>
+								</TooltipTrigger>
+								<TooltipContent side="top">
+									<p>
+										שם זה ישמש כזיהוי ייחודי בכתובת ה-URL. השתמש באותיות ומספרים
+										בלבד, ללא רווחים.
+									</p>
+								</TooltipContent>
+							</Tooltip>
+						</TooltipProvider>
+					</UrlNameLabel>
+				}
+				required
+			>
+				<InputWithCount
+					text={values.urlName}
 					onChange={handleUrlNameChange}
+					maxLength={NAME_MAX_LENGTH}
 					placeholder='למשל "lishkat_padam"'
+					error={showErrors ? errors.urlName : ""}
 				/>
-				{showErrors && errors.urlName && (
-					<ErrorText>{errors.urlName}</ErrorText>
-				)}
-			</UrlNameField>
+			</FormField>
 
 			<FormField
 				label="שיוך פיקודי"
 				required
-				error={showErrors ? errors.pikudId : undefined}
+				error={showErrors ? (errors.pikudId ?? "") : ""}
 			>
 				<SelectCommand
 					value={values.pikudId}
@@ -193,7 +195,7 @@ export function NewWorkspaceDetailsForm({
 				primaryLabel="המשך"
 				onPrimary={onNext}
 				secondaryLabel="נקה טופס"
-				onSecondary={onClear}
+				onSecondary={handleClearForm}
 			/>
 		</Root>
 	)
@@ -204,59 +206,13 @@ const Root = styled.div`
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  gap: 16px;
   width: 100%;
 `
 
-const InputWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
-
-  &:hover .${DATA_COUNTER_CLASS},
-  &:focus-within .${DATA_COUNTER_CLASS} {
-    opacity: 1;
-  }
-`
-
-const StyledInput = styled(Input)`
-  background: var(--background);
-  width: 100%;
-`
-
-const CharCounter = styled.span<{ $atLimit: boolean }>`
-  font-size: var(--fs-sm);
-  color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger)" : "var(--sea-ink-soft)")};
-  text-align: end;
-  opacity: 0;
-  transition: opacity 0.15s;
-`
-
-const UrlNameField = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-  direction: rtl;
-  align-items: flex-start;
-`
-
-const UrlNameLabelRow = styled.div`
+const UrlNameLabel = styled.span`
   display: flex;
   align-items: center;
   gap: 4px;
-`
-
-const RequiredMark = styled.span`
-  color: var(--Components-Form-Component-labelRequiredMarkColor);
-  font-size: var(--fs-btn);
-`
-
-const LabelText = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
 `
 
 const InfoButton = styled.button`
@@ -270,12 +226,6 @@ const InfoButton = styled.button`
   &:hover {
     color: var(--sea-ink);
   }
-`
-
-const ErrorText = styled.span`
-  font-size: 13px;
-  color: var(--Error-color-error);
-  line-height: 18px;
 `
 
 const IconPreview = styled.div`

@@ -6,6 +6,7 @@ interface InputWithCountProps {
 	maxLength: number
 	placeholder?: string
 	isTextArea?: boolean
+	error?: string
 }
 
 function InputWithCount({
@@ -14,6 +15,7 @@ function InputWithCount({
 	maxLength,
 	placeholder,
 	isTextArea,
+	error,
 }: InputWithCountProps) {
 	const inputProps = {
 		value: text,
@@ -26,7 +28,7 @@ function InputWithCount({
 
 	return (
 		<FormItem>
-			<InputWrapper>
+			<InputWrapper $hasError={!!error}>
 				{isTextArea ? (
 					<Textarea {...inputProps} rows={1} />
 				) : (
@@ -36,6 +38,7 @@ function InputWithCount({
 					{text.length}/{maxLength}
 				</CharCount>
 			</InputWrapper>
+			<ErrorRow $visible={!!error}>{error}&nbsp;</ErrorRow>
 		</FormItem>
 	)
 }
@@ -48,7 +51,7 @@ const FormItem = styled.div`
   align-items: flex-end;
   width: 100%;
 `
-const InputWrapper = styled.div`
+const InputWrapper = styled.div<{ $hasError: boolean }>`
   position: relative;
   width: 100%;
   border: 1px solid var(--card-border);
@@ -62,6 +65,15 @@ const InputWrapper = styled.div`
   }
 `
 
+const ErrorRow = styled.span<{ $visible: boolean }>`
+  font-size: var(--fs-sm);
+  color: var(--Error-color-error);
+  line-height: 18px;
+  padding-inline-start: 10px;
+  align-self: flex-start;
+  visibility: ${({ $visible }) => ($visible ? "visible" : "hidden")};
+`
+
 const Textarea = styled.textarea`
   width: 100%;
   display: flex;
@@ -69,9 +81,9 @@ const Textarea = styled.textarea`
   border: none;
   border-radius: 8px;
   background: transparent;
-  font-size: var(--fs-base);
+  font-size: var(--fs-btn);
   font-weight: 400;
-  line-height: 24px;
+  line-height: 22px;
   color: var(--text-color-2);
   outline: none;
   box-sizing: border-box;
