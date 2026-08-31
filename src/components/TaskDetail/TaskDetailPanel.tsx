@@ -181,12 +181,11 @@ function TaskDetailPanel({
 		if (isPersonal) {
 			if (myAssigneeId) {
 				toggleUserArchive({
-					pathParams: { id },
-					params: { assigneeId: myAssigneeId },
+					params: { taskId: id, assigneeId: myAssigneeId },
 				})
 			}
 		} else {
-			toggleWorkspaceArchive({ pathParams: { id } })
+			toggleWorkspaceArchive({ params: { taskId: id } })
 		}
 	}
 

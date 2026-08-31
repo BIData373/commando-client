@@ -7,5 +7,6 @@
  */
 
 export type ToggleUserTaskArchiveParams = {
+	taskId: number
 	assigneeId: number
 }

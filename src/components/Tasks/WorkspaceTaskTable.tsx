@@ -121,7 +121,7 @@ function WorkspaceTaskTable({
 	function handleToggleArchive(entries: TaskArchiveEntry[]) {
 		entries.forEach(({ id, assigneeId }) => {
 			toggleArchive(
-				{ pathParams: { id }, params: { assigneeId } },
+				{ params: { taskId: id, assigneeId } },
 				{
 					onSuccess: () => {
 						invalidateQueries([getGetTaskQueryKey({ id })])
