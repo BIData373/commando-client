@@ -31,8 +31,8 @@ export function FormField({
 			)}
 			{children}
 			{(field || error !== undefined) && (
-				<ErrorText style={{ visibility: showError ? "visible" : "hidden" }}>
-					{showError ? String(errors[0]) : "\u00A0"}
+				<ErrorText $error={showError}>
+					{showError && String(errors[0])}
 				</ErrorText>
 			)}
 		</Wrapper>
@@ -65,10 +65,12 @@ const RequiredMark = styled.span`
   font-size: var(--fs-btn);
 `
 
-const ErrorText = styled.span`
+const ErrorText = styled.span<{ $error?: boolean }>`
   font-size: var(--fs-sm);
   color: var(--Error-color-error);
   line-height: 18px;
+  min-height: 18px;
   padding-inline-start: 10px;
   align-self: flex-start;
+  visibility: ${({ $error }) => ($error ? "visible" : "hidden")}
 `
