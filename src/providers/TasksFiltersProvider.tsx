@@ -200,33 +200,23 @@ export function TasksFiltersProvider({
 			nextHiddenColumns.add(columnId)
 		}
 
-		const nextView: UserViewDto = {
-			...view,
-			table: {
-				...view.table,
-				columnVisibility: {
-					...columnVisibility,
-					hiddenColumns: [...nextHiddenColumns],
-				},
+		updateTableView({
+			...view.table,
+			columnVisibility: {
+				...columnVisibility,
+				hiddenColumns: [...nextHiddenColumns],
 			},
-		}
-
-		updateView(nextView)
+		})
 	}
 
 	function setColumnOrder(order: (keyof TaskRowWithWorkspaceDto)[]) {
-		const nextView: UserViewDto = {
-			...view,
-			table: {
-				...view.table,
-				columnVisibility: {
-					...columnVisibility,
-					columnOrder: order,
-				},
+		updateTableView({
+			...view.table,
+			columnVisibility: {
+				...columnVisibility,
+				columnOrder: order,
 			},
-		}
-
-		updateView(nextView)
+		})
 	}
 
 	return (
