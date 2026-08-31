@@ -34,7 +34,7 @@ interface SourceFieldProps {
 	linkedSource: SourceDto | null
 	onSourceSelect: (name: string, discussion?: SourceDto | null) => void
 	onDateSelect: (date: Date | undefined) => void
-	label: string
+	label?: string
 	uniqueNames?: boolean
 	fields?: SourceFieldValidation
 	required?: boolean
@@ -112,126 +112,122 @@ export default function SourceField({
 	}
 
 	return (
-		<>
-			<LabelText>{label}</LabelText>
-
-			<SourceDateRow>
-				<SourceFormItem>
-					<FormField required={required} field={fields?.name}>
-						<Popover
-							open={
-								isDropdownOpen &&
-								(!!sourceQuery || filteredDiscussions.length > 0)
-							}
-						>
-							<PopoverAnchor asChild>
-								<SourceInputBox
-									onClick={openDropdown}
-									$error={!!fields?.name?.state.meta.errors.length}
-								>
-									<SourceChevron size={16} />
-									<SourceInputField
-										value={sourceQuery}
-										onChange={handleInputChange}
-										onFocus={openDropdown}
-										onBlur={handleInputBlur}
-										placeholder='לדוגמה: חתמ"צ שבועי'
-										dir="rtl"
-									/>
-									{linkedSource && !!linkedSource?.attachmentKey && (
-										<Paperclip size={16} />
-									)}
-								</SourceInputBox>
-							</PopoverAnchor>
-							<SourceDropdown
-								sideOffset={4}
-								align="start"
-								onOpenAutoFocus={(e) => e.preventDefault()}
-								onWheel={(e) => e.stopPropagation()}
-							>
-								{filteredDiscussions.length > 0 && (
-									<>
-										<DropdownGroupTitle>מקורות קיימים</DropdownGroupTitle>
-										{filteredDiscussions.map((d) => (
-											<SourceOption
-												key={uniqueNames ? d.name : d.id}
-												onMouseDown={(e) => handleOptionMouseDown(e, d)}
-											>
-												{!uniqueNames && d.date && (
-													<SourceOptionDate>
-														{formatDateShort(d.date)}
-													</SourceOptionDate>
-												)}
-												<SourceOptionName>
-													{sourceQuery ? (
-														<HighlightMatch text={d.name} query={sourceQuery} />
-													) : (
-														d.name
-													)}
-												</SourceOptionName>
-											</SourceOption>
-										))}
-									</>
-								)}
-								{sourceQuery && (
-									<>
-										<DropdownDivider />
-										<CreateNewOption onMouseDown={handleCreateNewMouseDown}>
-											<CreateNewText>
-												<HighlightedText>{sourceQuery}</HighlightedText>
-												{" (חדש)"}
-											</CreateNewText>
-										</CreateNewOption>
-									</>
-								)}
-							</SourceDropdown>
-						</Popover>
-					</FormField>
-				</SourceFormItem>
-				<DateFormItem $alignEnd={hideDateLabel}>
-					<FormField
-						field={fields?.date}
-						label={hideDateLabel ? "" : "תאריך"}
-						required={required}
+		<SourceDateRow>
+			<SourceFormItem>
+				<FormField required={required} field={fields?.name} label={label}>
+					<Popover
+						open={
+							isDropdownOpen &&
+							(!!sourceQuery || filteredDiscussions.length > 0)
+						}
 					>
-						<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
-							<TooltipProvider>
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<PopoverTrigger asChild>
-											<DatePickerButton
-												$disabled={isSourceLinked}
-												$error={!!fields?.date?.state.meta.errors.length}
-											>
-												<CalendarIcon size={18} />
-												<DatePickerText $hasValue={!!sourceDate}>
-													{sourceDate ? formatDate(sourceDate) : "בחר תאריך"}
-												</DatePickerText>
-											</DatePickerButton>
-										</PopoverTrigger>
-									</TooltipTrigger>
-									{isSourceLinked && (
-										<TooltipContent side="top" sideOffset={8}>
-											לא ניתן לשנות תאריך של מקור קיים
-										</TooltipContent>
-									)}
-								</Tooltip>
-							</TooltipProvider>
-							{!isSourceLinked && (
-								<DatePopoverContent align="start" sideOffset={4}>
-									<DatePicker
-										mode={CalendarMode.Single}
-										selected={selectedDate}
-										onSelect={handleDateSelect}
-										showWeekNumber={false}
-									/>
-								</DatePopoverContent>
+						<PopoverAnchor asChild>
+							<SourceInputBox
+								onClick={openDropdown}
+								$error={!!fields?.name?.state.meta.errors.length}
+							>
+								<SourceChevron size={16} />
+								<SourceInputField
+									value={sourceQuery}
+									onChange={handleInputChange}
+									onFocus={openDropdown}
+									onBlur={handleInputBlur}
+									placeholder='לדוגמה: חתמ"צ שבועי'
+									dir="rtl"
+								/>
+								{linkedSource && !!linkedSource?.attachmentKey && (
+									<Paperclip size={16} />
+								)}
+							</SourceInputBox>
+						</PopoverAnchor>
+						<SourceDropdown
+							sideOffset={4}
+							align="start"
+							onOpenAutoFocus={(e) => e.preventDefault()}
+							onWheel={(e) => e.stopPropagation()}
+						>
+							{filteredDiscussions.length > 0 && (
+								<>
+									<DropdownGroupTitle>מקורות קיימים</DropdownGroupTitle>
+									{filteredDiscussions.map((d) => (
+										<SourceOption
+											key={uniqueNames ? d.name : d.id}
+											onMouseDown={(e) => handleOptionMouseDown(e, d)}
+										>
+											{!uniqueNames && d.date && (
+												<SourceOptionDate>
+													{formatDateShort(d.date)}
+												</SourceOptionDate>
+											)}
+											<SourceOptionName>
+												{sourceQuery ? (
+													<HighlightMatch text={d.name} query={sourceQuery} />
+												) : (
+													d.name
+												)}
+											</SourceOptionName>
+										</SourceOption>
+									))}
+								</>
 							)}
-						</Popover>
-					</FormField>
-				</DateFormItem>
-			</SourceDateRow>
-		</>
+							{sourceQuery && (
+								<>
+									<DropdownDivider />
+									<CreateNewOption onMouseDown={handleCreateNewMouseDown}>
+										<CreateNewText>
+											<HighlightedText>{sourceQuery}</HighlightedText>
+											{" (חדש)"}
+										</CreateNewText>
+									</CreateNewOption>
+								</>
+							)}
+						</SourceDropdown>
+					</Popover>
+				</FormField>
+			</SourceFormItem>
+			<DateFormItem $alignEnd={hideDateLabel}>
+				<FormField
+					field={fields?.date}
+					label={hideDateLabel ? "" : "תאריך"}
+					required={required}
+				>
+					<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<PopoverTrigger asChild>
+										<DatePickerButton
+											$disabled={isSourceLinked}
+											$error={!!fields?.date?.state.meta.errors.length}
+										>
+											<CalendarIcon size={18} />
+											<DatePickerText $hasValue={!!sourceDate}>
+												{sourceDate ? formatDate(sourceDate) : "בחר תאריך"}
+											</DatePickerText>
+										</DatePickerButton>
+									</PopoverTrigger>
+								</TooltipTrigger>
+								{isSourceLinked && (
+									<TooltipContent side="top" sideOffset={8}>
+										לא ניתן לשנות תאריך של מקור קיים
+									</TooltipContent>
+								)}
+							</Tooltip>
+						</TooltipProvider>
+						{!isSourceLinked && (
+							<DatePopoverContent align="start" sideOffset={4}>
+								<DatePicker
+									mode={CalendarMode.Single}
+									selected={selectedDate}
+									onSelect={handleDateSelect}
+									showWeekNumber={false}
+								/>
+							</DatePopoverContent>
+						)}
+					</Popover>
+				</FormField>
+			</DateFormItem>
+		</SourceDateRow>
 	)
 }
 
@@ -256,6 +252,7 @@ const SourceFormItem = styled.div`
   align-items: flex-end;
   flex: 1;
   min-width: 0;
+  align-self: flex-end;
 `
 
 const DateFormItem = styled.div<{ $alignEnd?: boolean }>`

@@ -23,18 +23,14 @@ export function FormField({
 
 	return (
 		<Wrapper>
-			{label && (
+			{label !== undefined && (
 				<LabelRow>
 					{required && <RequiredMark>*</RequiredMark>}
 					<LabelText>{label}</LabelText>
 				</LabelRow>
 			)}
 			{children}
-			{(field || error !== undefined) && (
-				<ErrorText $error={showError}>
-					{showError && String(errors[0])}
-				</ErrorText>
-			)}
+			<ErrorText $error={showError}>{showError && String(errors[0])}</ErrorText>
 		</Wrapper>
 	)
 }

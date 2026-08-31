@@ -414,7 +414,6 @@ function CreateTaskModal({
 										maxLength={NOTES_MAX_LENGTH}
 										isTextArea={true}
 										placeholder="הערה"
-										showError={false}
 									/>
 
 									{/* Tag field */}
@@ -427,6 +426,7 @@ function CreateTaskModal({
 									/>
 
 									{/* Source + Date row */}
+
 									<form.Field
 										name="sourceDate"
 										validators={{ onSubmit: validateSourceDate }}
