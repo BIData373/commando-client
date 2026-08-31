@@ -73,13 +73,11 @@ function compareByDeadlineDate(a: TaskRowDto, b: TaskRowDto): number {
 
 interface FocusedInstructionProps {
 	taskRows: TaskRowDto[]
-	onUpdateStatusSuccess?(): void
 	onClick?(taskId: number): void
 }
 
 export default function FocusedInstructions({
 	taskRows,
-	onUpdateStatusSuccess,
 	onClick,
 }: FocusedInstructionProps) {
 	const { view, updateView } = useUserView()
@@ -149,7 +147,6 @@ export default function FocusedInstructions({
 			<TaskPreviewTable
 				tasks={filteredTasks}
 				visibleColumns={VISIBLE_COLUMNS}
-				onUpdateStatusSuccess={onUpdateStatusSuccess}
 				onClick={onClick}
 				emptyState={<EmptyCardState {...DASHBOARD_EMPTY_STATES[activeTab]} />}
 			/>

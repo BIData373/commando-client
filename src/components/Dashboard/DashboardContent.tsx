@@ -7,7 +7,6 @@ import { useListTaskRows } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries } from "src/queryClient"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import { AssigneeFilterDropdown } from "./AssigneeFilterDropdown/AssigneeFilterDropdown"
@@ -25,7 +24,7 @@ export function DashboardContent() {
 
 	const { assigneeFilter, setAssigneeFilter } = useTasksFilters()
 
-	const { data: taskRows = [], queryKey } = useListTaskRows({
+	const { data: taskRows = [] } = useListTaskRows({
 		workspaceId: id,
 		isArchived: false,
 	})
@@ -52,10 +51,6 @@ export function DashboardContent() {
 			to: "/workspace/$urlName/settings/assignees",
 			params: { urlName },
 		})
-	}
-
-	function handleUpdateSuccess() {
-		invalidateQueries([queryKey])
 	}
 
 	function handleOpenTask(taskId: number) {
@@ -100,17 +95,9 @@ export function DashboardContent() {
 			</ButtonGroup>
 
 			<GridLayout>
-				<FocusedInstructions
-					onUpdateStatusSuccess={handleUpdateSuccess}
-					onClick={handleOpenTask}
-					taskRows={tasks}
-				/>
+				<FocusedInstructions onClick={handleOpenTask} taskRows={tasks} />
 				<StatusCard tasks={tasks} />
-				<RecentlyCompleted
-					onUpdateStatusSuccess={handleUpdateSuccess}
-					onClick={handleOpenTask}
-					tasks={tasks}
-				/>
+				<RecentlyCompleted onClick={handleOpenTask} tasks={tasks} />
 				<SystemDistribution onSetAssignees={handleSetAssignees} tasks={tasks} />
 			</GridLayout>
 		</ContentArea>

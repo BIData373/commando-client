@@ -16,10 +16,6 @@ import {
 
 import { invalidateQueries } from "src/queryClient"
 
-interface UseUpdateTaskStatusOptions {
-	onSuccess?(): void
-}
-
 interface UpdateStatusVariables {
 	taskId: number
 	assigneeId: number | undefined
@@ -65,70 +61,62 @@ function updateTaskDetailStatus<TTask extends TaskDto>(
 	}
 }
 
-export function useUpdateTaskStatus({
-	onSuccess,
-}: UseUpdateTaskStatusOptions = {}) {
+export function useUpdateTaskStatus() {
 	const queryClient = useQueryClient()
 
 	function getAffectedQueryKeys(taskId: number, status: WorkspaceStatusDto) {
-		return {
-			task: [getGetTaskQueryKey({ id: taskId })],
-			rows: [
-				getListPersonalTaskRowsQueryKey(),
-				getListTaskRowsQueryKey({ workspaceId: status.workspaceId }),
-			],
-		}
-	}
+		const task: QueryKey = getGetTaskQueryKey({ id: taskId })
+		const rows: QueryKey[] = [
+			getListPersonalTaskRowsQueryKey(),
+			getListTaskRowsQueryKey({ workspaceId: status.workspaceId }),
+		]
 
-	function handleMutate({ taskId, assigneeId, status }: UpdateStatusVariables) {
-		const { task, rows } = getAffectedQueryKeys(taskId, status)
-
-		const previousQueriesData: PreviousQueriesData = [...task, ...rows].map(
-			(queryKey) => [queryKey, queryClient.getQueryData(queryKey)],
-		)
-
-		queryClient.setQueryData(task, (data?: TaskWithWorkspaceDto) =>
-			updateTaskDetailStatus(data, taskId, assigneeId, status),
-		)
-
-		rows.forEach((queryKey) => {
-			queryClient.setQueryData(queryKey, (data: TaskRowDto[]) =>
-				updateTaskRowsStatus(data, taskId, assigneeId, status),
-			)
-		})
-
-		return { previousQueriesData }
-	}
-
-	function handleError(
-		_error: Error,
-		_variables: UpdateStatusVariables,
-		context?: { previousQueriesData: PreviousQueriesData },
-	) {
-		context?.previousQueriesData.forEach(([queryKey, data]) => {
-			queryClient.setQueryData(queryKey, data)
-		})
-	}
-
-	function handleSettled(
-		_data: unknown,
-		_error: Error | null,
-		{ taskId, status }: UpdateStatusVariables,
-	) {
-		invalidateQueries(
-			Object.values(getAffectedQueryKeys(taskId, status)).flat(),
-		)
+		return { task, rows, all: [task, ...rows] }
 	}
 
 	const { mutate } = useMutation({
+		networkMode: "always",
 		mutationFn: ({ taskId, assigneeId, status }: UpdateStatusVariables) =>
 			assigneeId !== undefined
 				? upsertAssigneeTaskStatus({ taskId, assigneeId, statusId: status.id })
 				: updateTask({ id: taskId }, { statusId: status.id }),
-		onMutate: handleMutate,
-		onError: handleError,
-		onSuccess,
-		onSettled: handleSettled,
+		onMutate: ({ assigneeId, status, taskId }) => {
+			const { task, rows, all } = getAffectedQueryKeys(taskId, status)
+
+			const previousQueriesData: PreviousQueriesData = all.flatMap((queryKey) =>
+				queryClient.getQueriesData({ queryKey }),
+			)
+
+			queryClient.setQueriesData(
+				{ queryKey: task },
+				(data?: TaskWithWorkspaceDto) =>
+					updateTaskDetailStatus(data, taskId, assigneeId, status),
+			)
+
+			rows.forEach((queryKey) => {
+				queryClient.setQueriesData({ queryKey }, (data?: TaskRowDto[]) =>
+					updateTaskRowsStatus(data, taskId, assigneeId, status),
+				)
+			})
+
+			return { previousQueriesData }
+		},
+		onError: (
+			_error: Error,
+			_variables: UpdateStatusVariables,
+			context?: { previousQueriesData: PreviousQueriesData },
+		) => {
+			context?.previousQueriesData.forEach(([queryKey, data]) => {
+				queryClient.setQueryData(queryKey, data)
+			})
+		},
+		onSettled: (
+			_data: unknown,
+			_error: Error | null,
+			{ taskId, status }: UpdateStatusVariables,
+		) => {
+			invalidateQueries(getAffectedQueryKeys(taskId, status).all)
+		},
 	})
 
 	function updateTaskStatus(
