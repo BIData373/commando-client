@@ -6,14 +6,13 @@ import type { CreateWorkspaceRequestDto } from "src/api/model"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import {
-	DATA_COUNTER_CLASS,
 	NAME_MAX_LENGTH,
 	type WorkspaceDetailsErrors,
 } from "src/utils/workspace-utils"
 import { IconDropdown } from "../settings/IconDropdown"
 import { SelectCommand } from "../settings/SelectCommand"
 import { FormField } from "../shared/FormField"
-import { Input } from "../ui/input"
+import InputWithCount from "../shared/InputWithCount"
 import {
 	Tooltip,
 	TooltipContent,
@@ -65,12 +64,12 @@ export function NewWorkspaceDetailsForm({
 		)
 	}
 
-	function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
-		updateField("title", e.target.value.slice(0, NAME_MAX_LENGTH))
+	function handleTitleChange(value: string) {
+		updateField("title", value.slice(0, NAME_MAX_LENGTH))
 	}
 
-	function handleUrlNameChange(e: React.ChangeEvent<HTMLInputElement>) {
-		updateField("urlName", e.target.value.replace(/[^a-zA-Z0-9_]/g, ""))
+	function handleUrlNameChange(value: string) {
+		updateField("urlName", value.replace(/[^a-zA-Z0-9_]/g, ""))
 	}
 
 	function handlePikudChange(value: number) {
@@ -96,10 +95,7 @@ export function NewWorkspaceDetailsForm({
 	}
 
 	function handleClearForm() {
-		form.setFieldValue("title", "")
-		form.setFieldValue("urlName", "")
-		form.setFieldValue("pikudId", 0)
-		form.setFieldValue("icon", null)
+		form.reset()
 		setIconSearch("")
 		onClear()
 	}
@@ -112,25 +108,13 @@ export function NewWorkspaceDetailsForm({
 	return (
 		<Root>
 			<FormField label="שם הסביבה" required>
-				<InputWrapper>
-					<StyledInput
-						value={values.title}
-						onChange={handleTitleChange}
-						placeholder="למשל 'לשכת אלוף פד&quot;ם'"
-						maxLength={NAME_MAX_LENGTH}
-					/>
-					<CounterRow>
-						{showErrors && errors.title && (
-							<ErrorText>{errors.title}</ErrorText>
-						)}
-						<CharCounter
-							$atLimit={values.title.length >= NAME_MAX_LENGTH}
-							className={DATA_COUNTER_CLASS}
-						>
-							{values.title.length}/{NAME_MAX_LENGTH}
-						</CharCounter>
-					</CounterRow>
-				</InputWrapper>
+				<InputWithCount
+					text={values.title}
+					onChange={handleTitleChange}
+					maxLength={NAME_MAX_LENGTH}
+					placeholder="למשל 'לשכת אלוף פד&quot;ם'"
+					error={showErrors ? errors.title : undefined}
+				/>
 			</FormField>
 
 			<FormField
@@ -155,12 +139,13 @@ export function NewWorkspaceDetailsForm({
 					</UrlNameLabel>
 				}
 				required
-				error={showErrors ? errors.urlName : undefined}
 			>
-				<StyledInput
-					value={values.urlName}
+				<InputWithCount
+					text={values.urlName}
 					onChange={handleUrlNameChange}
+					maxLength={NAME_MAX_LENGTH}
 					placeholder='למשל "lishkat_padam"'
+					error={showErrors ? errors.urlName : undefined}
 				/>
 			</FormField>
 
@@ -225,39 +210,6 @@ const Root = styled.div`
   width: 100%;
 `
 
-const InputWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
-
-  &:hover .${DATA_COUNTER_CLASS},
-  &:focus-within .${DATA_COUNTER_CLASS} {
-    opacity: 1;
-  }
-`
-
-const StyledInput = styled(Input)`
-  background: var(--background);
-  width: 100%;
-`
-
-const CounterRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-inline-start: 10px;
-`
-
-const CharCounter = styled.span<{ $atLimit: boolean }>`
-  margin-inline-start: auto;
-  font-size: var(--fs-sm);
-  color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger)" : "var(--sea-ink-soft)")};
-  text-align: end;
-  opacity: 0;
-  transition: opacity 0.15s;
-`
-
 const UrlNameLabel = styled.span`
   display: flex;
   align-items: center;
@@ -275,12 +227,6 @@ const InfoButton = styled.button`
   &:hover {
     color: var(--sea-ink);
   }
-`
-
-const ErrorText = styled.span`
-  font-size: 13px;
-  color: var(--Error-color-error);
-  line-height: 18px;
 `
 
 const IconPreview = styled.div`

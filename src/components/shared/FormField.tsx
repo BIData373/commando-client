@@ -62,8 +62,9 @@ const RequiredMark = styled.span`
 `
 
 const ErrorText = styled.span`
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--Error-color-error);
   line-height: 18px;
   padding-inline-start: 10px;
+  align-self: flex-start;
 `
