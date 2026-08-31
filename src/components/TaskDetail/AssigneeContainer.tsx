@@ -1,13 +1,7 @@
 import styled from "@emotion/styled"
-import { toast } from "sonner"
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import type { AssigneeStatusDto } from "src/api/model"
-import {
-	getGetTaskQueryKey,
-	getListPersonalTaskRowsQueryKey,
-	getListTaskRowsQueryKey,
-} from "src/api/task/task"
-import { invalidateQueries } from "src/queryClient"
+import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
+import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { AssigneeDetailPopover } from "../shared/AssigneeDetailPopover"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
@@ -27,34 +21,9 @@ export const AssigneeContainer = ({
 	isAdmin,
 	editable,
 }: AssigneeContainerProps) => {
-	const { mutateAsync: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus(
-		{
-			mutation: {
-				networkMode: "always",
-				onSuccess: () => {
-					invalidateQueries([
-						getGetTaskQueryKey({ id: taskId }),
-						getListTaskRowsQueryKey({ workspaceId }),
-						getListPersonalTaskRowsQueryKey(),
-					])
-					toast.success("הסטטוס עודכן בהצלחה")
-				},
-				onError: () => {
-					toast.error("שגיאה - סטטוס לא עודכן")
-				},
-			},
-		},
-	)
+	const { data: statuses = [] } = useListWorkspaceStatuses({ workspaceId })
 
-	function handleUpdateAssigneeStatus(
-		taskId: number,
-		assigneeId: number,
-		statusId: number,
-	) {
-		void upsertAssigneeTaskStatus({
-			data: { taskId, assigneeId, statusId },
-		}).catch(() => {})
-	}
+	const handleUpdateAssigneeStatus = useUpdateTaskStatus()
 
 	return (
 		<AssigneeRowContainer $enabled={editable && !isAdmin}>
@@ -71,10 +40,10 @@ export const AssigneeContainer = ({
 				{status && (
 					<StatusDropdown
 						status={status}
+						statuses={statuses}
 						taskId={taskId}
 						assigneeId={assignee.id}
 						editable={editable}
-						workspaceId={workspaceId}
 						onUpdate={handleUpdateAssigneeStatus}
 					/>
 				)}
@@ -91,8 +60,8 @@ const AssigneeRowContainer = styled.div<{ $enabled?: boolean }>`
   justify-content: flex-start;
   gap: 24px;
   padding: 7px 12px;
-  background: ${({ $enabled }) => ($enabled ? "var(--background)" : "var(--background-assignee)")};
-  border: 0.5px solid var(--line);
+  background: ${({ $enabled }) => ($enabled ? "var(--background)" : "var(--background-area)")};
+  border: 0.8px solid var(--line);
   border-radius: 8px;
   width: 100%;
 `

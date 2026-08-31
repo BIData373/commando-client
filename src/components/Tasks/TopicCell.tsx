@@ -1,130 +1,36 @@
 import styled from "@emotion/styled"
-import { useCallback, useLayoutEffect, useRef, useState } from "react"
+import HighlightMatch from "../shared/HighlightMatch"
+import { OverflowRow } from "../shared/OverflowRow"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card"
 
 interface TopicCellProps {
 	tags: string[]
+	searchQuery?: string
 }
 
-const GAP = 4
-
-export function TopicCell({ tags }: TopicCellProps) {
-	const containerRef = useRef<HTMLDivElement>(null)
-	const measureRef = useRef<HTMLDivElement>(null)
-	const [visibleCount, setVisibleCount] = useState(tags.length)
-
-	const calculateVisibleTags = useCallback(() => {
-		const container = containerRef.current
-		const measure = measureRef.current
-
-		if (!container || !measure || tags.length === 0) {
-			setVisibleCount(tags.length)
-			return
-		}
-
-		const budget = container.offsetWidth
-		const children = Array.from(measure.children) as HTMLElement[]
-		const overflowWidth = children[children.length - 1].offsetWidth
-
-		let used = 0
-		let fits = 0
-		let i = 0
-		let canFit = true
-
-		while (i < tags.length && canFit) {
-			const tagWidth = children[i].offsetWidth
-			const addition = i === 0 ? tagWidth : GAP + tagWidth
-			const isLast = i === tags.length - 1
-
-			const budgetNeeded = isLast
-				? used + addition
-				: used + addition + GAP + overflowWidth
-
-			if (budgetNeeded <= budget) {
-				used += addition
-				fits = i + 1
-				i++
-			} else {
-				canFit = false
-			}
-		}
-
-		setVisibleCount(fits)
-	}, [tags.length])
-
-	useLayoutEffect(() => {
-		const container = containerRef.current
-		if (!container) return
-
-		const observer = new ResizeObserver(() => {
-			calculateVisibleTags()
-		})
-
-		observer.observe(container)
-
-		return () => observer.disconnect()
-	}, [calculateVisibleTags])
-
-	useLayoutEffect(() => {
-		calculateVisibleTags()
-	}, [tags, calculateVisibleTags])
-
-	const hiddenTags = tags.slice(visibleCount)
-
+export function TopicCell({ tags, searchQuery }: TopicCellProps) {
 	return (
-		<CellRoot ref={containerRef}>
-			<MeasureLayer ref={measureRef} aria-hidden="true">
-				{tags.map((tag) => (
-					<Tag key={tag}>{tag}</Tag>
-				))}
-				<Tag>+99</Tag>
-			</MeasureLayer>
-
-			{tags.slice(0, visibleCount).map((tag) => (
-				<Tag key={tag}>{tag}</Tag>
+		<OverflowRow
+			preserveOrder
+			gap={4}
+			items={tags.map((tag) => (
+				<Tag key={tag}>
+					<HighlightMatch text={tag} query={searchQuery ?? ""} variant="mark" />
+				</Tag>
 			))}
-
-			{/* Overflow tags shown via Radix HoverCard (replaces manual onMouseEnter/onMouseLeave + Popover) */}
-			{hiddenTags.length > 0 && (
+			renderOverflow={(remaining, hiddenTags) => (
 				<HoverCard openDelay={200} closeDelay={100}>
 					<HoverCardTrigger asChild>
-						<OverflowTag>{hiddenTags.length}+</OverflowTag>
+						<OverflowTag>{remaining}+</OverflowTag>
 					</HoverCardTrigger>
 					<StyledHoverCardContent side="top" sideOffset={6}>
-						<OverflowList>
-							{hiddenTags.map((tag) => (
-								<Tag key={tag}>{tag}</Tag>
-							))}
-						</OverflowList>
+						<OverflowList>{hiddenTags}</OverflowList>
 					</StyledHoverCardContent>
 				</HoverCard>
 			)}
-		</CellRoot>
+		/>
 	)
 }
-
-const CellRoot = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: ${GAP}px;
-  flex-wrap: nowrap;
-  overflow: hidden;
-  width: 100%;
-`
-
-const MeasureLayer = styled.div`
-  position: absolute;
-  visibility: hidden;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  gap: ${GAP}px;
-  flex-wrap: nowrap;
-  white-space: nowrap;
-  top: 0;
-  inset-inline-start: 0;
-`
 
 const Tag = styled.span`
   display: inline-flex;
@@ -163,5 +69,5 @@ const StyledHoverCardContent = styled(HoverCardContent)`
 const OverflowList = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: ${GAP}px;
+  gap: 4px;
 `

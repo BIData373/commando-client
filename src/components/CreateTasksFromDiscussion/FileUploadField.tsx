@@ -1,9 +1,8 @@
-import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
-import { FileText, Inbox, Loader2, Trash2 } from "lucide-react"
+import { FileText, Inbox, Trash2 } from "lucide-react"
 import { useRef, useState } from "react"
-import { getAttachmentSignedUrl } from "../../api/s3/s3"
-import { downloadFromUrl } from "../../functions/download-utils"
+import { useAttachmentDownload } from "../../hooks/useAttachmentDownload"
+import { SpinIcon } from "../shared/SpinIcon"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -37,21 +36,10 @@ function FileUploadField({
 	const [fileError, setFileError] = useState("")
 
 	const showExisting = file === undefined && !!existingAttachmentKey
-	const [isDownloading, setIsDownloading] = useState(false)
+	const { isDownloading, download } = useAttachmentDownload()
 
-	async function handleDownload() {
-		if (!existingAttachmentKey || !existingAttachmentName || isDownloading)
-			return
-		setIsDownloading(true)
-		try {
-			const { url } = await getAttachmentSignedUrl({
-				key: existingAttachmentKey,
-				filename: existingAttachmentName,
-			})
-			if (url) await downloadFromUrl(url, existingAttachmentName)
-		} finally {
-			setIsDownloading(false)
-		}
+	function handleDownload() {
+		download(existingAttachmentKey, existingAttachmentName)
 	}
 
 	function validateFile(f: File): string | null {
@@ -279,16 +267,6 @@ const FileName = styled.span`
   white-space: nowrap;
   text-align: start;
   padding-inline: 8px;
-`
-
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`
-
-const SpinIcon = styled(Loader2)`
-  flex-shrink: 0;
-  animation: ${spin} 0.8s linear infinite;
 `
 
 const FileDownloadButton = styled.button`

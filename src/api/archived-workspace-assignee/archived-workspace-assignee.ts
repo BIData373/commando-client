@@ -16,18 +16,14 @@ import { useMutation } from "@tanstack/react-query"
 import type { ErrorType } from "../../axios"
 
 import { sendRequest } from "../../axios"
-import type {
-	ToggleWorkspaceTaskArchiveParams,
-	ToggleWorkspaceTaskArchivePathParameters,
-} from "../model"
+import type { ToggleWorkspaceTaskArchiveParams } from "../model"
 
 export const toggleWorkspaceTaskArchive = (
-	{ id }: ToggleWorkspaceTaskArchivePathParameters,
-	params?: ToggleWorkspaceTaskArchiveParams,
+	params: ToggleWorkspaceTaskArchiveParams,
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<void>({
-		url: `/archived-workspace-assignee-task/${id}`,
+		url: `/archived-workspace-assignee-task`,
 		method: "PATCH",
 		params,
 		signal,
@@ -41,19 +37,13 @@ export const getToggleWorkspaceTaskArchiveMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
 		TError,
-		{
-			pathParams: ToggleWorkspaceTaskArchivePathParameters
-			params?: ToggleWorkspaceTaskArchiveParams
-		},
+		{ params: ToggleWorkspaceTaskArchiveParams },
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
 	TError,
-	{
-		pathParams: ToggleWorkspaceTaskArchivePathParameters
-		params?: ToggleWorkspaceTaskArchiveParams
-	},
+	{ params: ToggleWorkspaceTaskArchiveParams },
 	TContext
 > => {
 	const mutationKey = ["toggleWorkspaceTaskArchive"]
@@ -67,14 +57,11 @@ export const getToggleWorkspaceTaskArchiveMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
-		{
-			pathParams: ToggleWorkspaceTaskArchivePathParameters
-			params?: ToggleWorkspaceTaskArchiveParams
-		}
+		{ params: ToggleWorkspaceTaskArchiveParams }
 	> = (props) => {
-		const { pathParams, params } = props ?? {}
+		const { params } = props ?? {}
 
-		return toggleWorkspaceTaskArchive(pathParams, params)
+		return toggleWorkspaceTaskArchive(params)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -94,10 +81,7 @@ export const useToggleWorkspaceTaskArchive = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
 			TError,
-			{
-				pathParams: ToggleWorkspaceTaskArchivePathParameters
-				params?: ToggleWorkspaceTaskArchiveParams
-			},
+			{ params: ToggleWorkspaceTaskArchiveParams },
 			TContext
 		>
 	},
@@ -105,10 +89,7 @@ export const useToggleWorkspaceTaskArchive = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
 	TError,
-	{
-		pathParams: ToggleWorkspaceTaskArchivePathParameters
-		params?: ToggleWorkspaceTaskArchiveParams
-	},
+	{ params: ToggleWorkspaceTaskArchiveParams },
 	TContext
 > => {
 	return useMutation(

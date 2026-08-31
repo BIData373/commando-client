@@ -1,6 +1,8 @@
 import type { AnyFormApi } from "@tanstack/form-core"
 import { isEqual } from "lodash"
 
+export const NOTES_MAX_LENGTH = 150
+
 export function getChangedFields<T extends object>(
 	form: AnyFormApi,
 ): Partial<T> {

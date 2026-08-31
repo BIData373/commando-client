@@ -6,6 +6,7 @@ import type { DatePickerValue } from "src/utils/date-utils"
 import { formatDateShort } from "../../functions/date-utils"
 import { CalendarMode } from "../shared/DatePicker"
 import DatePickerPopover from "../shared/DatePickerPopover"
+import { DateText } from "../shared/DateText"
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
@@ -168,14 +169,6 @@ const DisplayRow = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-`
-
-const DateText = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color);
-  white-space: nowrap;
 `
 
 const DeadlineDropdownContent = styled(PopoverContent)`

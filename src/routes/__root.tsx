@@ -6,6 +6,7 @@ import { StrictMode } from "react"
 import { NotFoundComponent } from "src/components/Error/NotFoundComponent"
 import { RootErrorComponent } from "src/components/Error/RootErrorComponent"
 import { ErrorModal } from "../components/ErrorModal"
+import { OnboardingModal } from "../components/OnboardingModal/OnboardingModal"
 import { Toaster } from "../components/ui/sonner"
 import { TooltipProvider } from "../components/ui/tooltip"
 import { HeaderProvider } from "../providers/HeaderProvider"
@@ -26,6 +27,7 @@ function RootComponent() {
 					<AppShell>
 						<Toaster location="middle" />
 						<PageContainer>
+							<OnboardingModal />
 							<Outlet />
 						</PageContainer>
 					</AppShell>

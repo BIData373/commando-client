@@ -1,15 +1,15 @@
 import styled from "@emotion/styled"
-import { createLink } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 import { useLayoutEffect } from "react"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { ArchiveDropdown, type DropdownSection } from "./shared/ArchiveDropdown"
+import { HeaderNavTab } from "./shared/HeaderNavTab"
 import {
 	NavigationMenu,
 	NavigationMenuItem,
-	NavigationMenuLink,
 	NavigationMenuList,
 } from "./ui/navigation-menu"
 
@@ -44,12 +44,9 @@ export function WorkspaceTabs({
 				{isManager && (
 					<NavigationMenuItem>
 						<NavMenuLink asChild>
-							<StyledLink
-								to="/workspace/$urlName/settings"
-								params={{ urlName }}
-							>
+							<Link to="/workspace/$urlName/settings" params={{ urlName }}>
 								הגדרות סביבה
-							</StyledLink>
+							</Link>
 						</NavMenuLink>
 					</NavigationMenuItem>
 				)}
@@ -64,9 +61,9 @@ export function WorkspaceTabs({
 				/>
 				<NavigationMenuItem>
 					<NavMenuLink asChild>
-						<StyledLink to="/workspace/$urlName/dashboard" params={{ urlName }}>
+						<Link to="/workspace/$urlName/dashboard" params={{ urlName }}>
 							מסך המפקד
-						</StyledLink>
+						</Link>
 					</NavMenuLink>
 				</NavigationMenuItem>
 			</NavigationMenuList>
@@ -77,29 +74,12 @@ export function WorkspaceTabs({
 	return null
 }
 
-const NavMenuLink = styled(NavigationMenuLink)`
+const NavMenuLink = styled(HeaderNavTab)`
   && {
-    padding: 10px 8px;
-    color: var(--Menu-Tab-Text);
-    font-weight: 400;
-    font-size: var(--fs-btn);
-    background: transparent;
-    border-radius: 6px;
-
-    &:hover {
-      color: var(--Menu-Tab-Text);
-      background: var(--Menu-Tab-Hover);
-    }
+    border-radius: var(--radius-sm);
 
     &[data-status='active'] {
-      color: var(--Menu-Tab-Text);
       background: var(--Menu-Tab-Hover);
     }
   }
 `
-
-const StyledLinkBase = styled.a`
-  white-space: nowrap;
-`
-
-const StyledLink = createLink(StyledLinkBase)

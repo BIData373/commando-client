@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { memo, useMemo } from "react"
 
 interface HighlightMatchProps {
 	text: string
@@ -6,24 +7,38 @@ interface HighlightMatchProps {
 	variant?: "mark" | "bold"
 }
 
-const HighlightMatch = ({
-	text,
-	query,
-	variant = "bold",
-}: HighlightMatchProps) => {
-	const index = text.indexOf(query)
-	if (!query || index === -1) return <>{text}</>
+const HighlightMatch = memo(
+	({ text, query, variant = "bold" }: HighlightMatchProps) => {
+		const normalizedQuery = query.trim()
 
-	const Highlight = variant === "mark" ? HighlightMark : HighlightBold
+		const content = useMemo(() => {
+			if (!normalizedQuery) return text
 
-	return (
-		<>
-			{text.slice(0, index)}
-			<Highlight>{text.slice(index, index + query.length)}</Highlight>
-			{text.slice(index + query.length)}
-		</>
-	)
-}
+			const escapedQuery = normalizedQuery.replace(
+				/[.*+?^${}()|[\]\\]/g,
+				"\\$&",
+			)
+			const regex = new RegExp(`(${escapedQuery})`, "gi")
+			const parts = text.split(regex)
+
+			const Highlight = variant === "mark" ? HighlightMark : HighlightBold
+			const normalizedQueryLowerCase = normalizedQuery.toLowerCase()
+
+			return parts.map((part, index) => {
+				const isMatch = part.toLowerCase() === normalizedQueryLowerCase
+				const key = `${part}-${index}`
+
+				return isMatch ? (
+					<Highlight key={`match-${key}`}>{part}</Highlight>
+				) : (
+					<span key={`text-${key}`}>{part}</span>
+				)
+			})
+		}, [normalizedQuery, text, variant])
+
+		return <span>{content}</span>
+	},
+)
 
 export default HighlightMatch
 

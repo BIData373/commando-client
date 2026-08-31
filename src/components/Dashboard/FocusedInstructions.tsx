@@ -31,7 +31,7 @@ interface TabConfig {
 }
 
 const TAB_LABELS: Pick<TabConfig, "id" | "label" | "weekDelta">[] = [
-	{ id: QuickFilter.flagged, label: "הנחיות חשובות", weekDelta: 0 },
+	{ id: QuickFilter.flagged, label: "הנחיות במיקוד", weekDelta: 0 },
 	{ id: QuickFilter.approaching, label: "הנחיות לביצוע מיידי", weekDelta: 0 },
 	{ id: QuickFilter.overdue, label: 'חריגות מתג"ב', weekDelta: 0 },
 ]
@@ -43,8 +43,7 @@ const TAB_FILTERS: Partial<Record<QuickFilter, (task: TaskRowDto) => boolean>> =
 		[QuickFilter.approaching]: (task) =>
 			task.deadlineType === DeadlineType.IMMEDIATE,
 		[QuickFilter.overdue]: (task) =>
-			matchesQuickFilter(task, QuickFilter.overdue) ||
-			task.deadlineType === DeadlineType.IMMEDIATE,
+			matchesQuickFilter(task, QuickFilter.overdue),
 	}
 
 function getTabFilter(tab: QuickFilter): (task: TaskRowDto) => boolean {
@@ -74,13 +73,11 @@ function compareByDeadlineDate(a: TaskRowDto, b: TaskRowDto): number {
 
 interface FocusedInstructionProps {
 	taskRows: TaskRowDto[]
-	onUpdateStatusSuccess?(): void
 	onClick?(taskId: number): void
 }
 
 export default function FocusedInstructions({
 	taskRows,
-	onUpdateStatusSuccess,
 	onClick,
 }: FocusedInstructionProps) {
 	const { view, updateView } = useUserView()
@@ -150,7 +147,6 @@ export default function FocusedInstructions({
 			<TaskPreviewTable
 				tasks={filteredTasks}
 				visibleColumns={VISIBLE_COLUMNS}
-				onUpdateStatusSuccess={onUpdateStatusSuccess}
 				onClick={onClick}
 				emptyState={<EmptyCardState {...DASHBOARD_EMPTY_STATES[activeTab]} />}
 			/>

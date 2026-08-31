@@ -7,6 +7,8 @@ import { TrashButton } from "../shared/TrashButton"
 import { Checkbox } from "../ui/checkbox"
 import AssigneeTableCell from "./AssigneeTableCell"
 import DeadlineCell from "./DeadlineCell"
+import NotesCell from "./NotesCell"
+import TagsTableCell from "./TagsTableCell"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -30,13 +32,14 @@ export interface TaskTableMeta {
 	toggleRowExpansion: (id: number) => void
 	deleteRow: (id: number) => void
 	isLastRow: (index: number) => boolean
+	lockedTags: string[]
 }
 
 // ─── Cell Handlers ─────────────────────────────────────────────────────────
 
-const MAX_HEIGHT = 40
+export const MAX_HEIGHT = 40
 
-function handleTextareaChange(
+export function handleTextareaChange(
 	e: React.ChangeEvent<HTMLTextAreaElement>,
 	id: number,
 	field: TaskColumnId,
@@ -61,7 +64,7 @@ function handleDelete(id: number, deleteRow: TaskTableMeta["deleteRow"]) {
 	deleteRow(id)
 }
 
-function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+export function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
 	const target = e.target as HTMLElement
 	const row = Number(target.dataset.row)
 	const col = Number(target.dataset.col)
@@ -95,7 +98,7 @@ function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
 const columns: ColumnDef<NewTaskRow>[] = [
 	{
 		id: "title",
-		size: 655,
+		size: 583,
 		header: () => (
 			<HeaderLabelGroup>
 				<RequiredMark>*</RequiredMark>
@@ -150,7 +153,7 @@ const columns: ColumnDef<NewTaskRow>[] = [
 	},
 	{
 		id: "assignee",
-		size: 206,
+		size: 170,
 		header: () => <HeaderLabel>אחראי</HeaderLabel>,
 		cell: ({ row, table }) => (
 			<AssigneeTableCell
@@ -161,27 +164,22 @@ const columns: ColumnDef<NewTaskRow>[] = [
 	},
 	{
 		id: "notes",
-		size: 350,
-		header: () => <HeaderLabel>הערות הנחיה</HeaderLabel>,
-		cell: ({ row, table }) => {
-			const { id, notes } = row.original
-			const { updateRow } = table.options.meta as TaskTableMeta
-			return (
-				<TextareaCellWrapper>
-					<CellTextarea
-						data-row={row.index}
-						data-col={1}
-						value={notes ?? ""}
-						onChange={(e) =>
-							handleTextareaChange(e, id, TaskColumnId.Notes, updateRow)
-						}
-						onKeyDown={handleCellKeyDown}
-						placeholder=""
-						rows={1}
-					/>
-				</TextareaCellWrapper>
-			)
-		},
+		size: 274,
+		header: () => <HeaderLabel>הערה</HeaderLabel>,
+		cell: ({ row, table }) => (
+			<NotesCell row={row} meta={table.options.meta as TaskTableMeta} />
+		),
+	},
+	{
+		id: "tags",
+		size: 224,
+		header: () => <HeaderLabel>תגיות</HeaderLabel>,
+		cell: ({ row, table }) => (
+			<TagsTableCell
+				row={row.original}
+				meta={table.options.meta as TaskTableMeta}
+			/>
+		),
 	},
 	{
 		id: "important",

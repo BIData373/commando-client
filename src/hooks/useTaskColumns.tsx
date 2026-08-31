@@ -1,25 +1,25 @@
 import styled from "@emotion/styled"
 import type { ColumnDef } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
-import { concat, map, uniq } from "lodash"
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import {
 	DeadlineType,
+	PermissionType,
 	type TaskRowDto,
+	type WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
-import { getGetTaskQueryKey } from "src/api/task/task"
-import { toast } from "src/components/ui/sonner"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
-import { invalidateQueries } from "src/queryClient"
+import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import {
 	COLUMN_LABELS,
-	DEFAULT_COLUMN_ORDER,
 	TASK_COLUMN_DEFINITIONS,
+	TASK_COLUMN_ID,
 } from "src/utils/task-table-utils"
+import { DateText } from "../components/shared/DateText"
 import { DeadlineTypeTag } from "../components/shared/DeadlineTypeTag"
+import EllipsisTooltip from "../components/shared/EllipsisTooltip"
 import FlagIcon from "../components/shared/FlagIcon"
 import HighlightMatch from "../components/shared/HighlightMatch"
 import { AssigneeCell } from "../components/Tasks/AssigneeCell"
@@ -51,6 +51,7 @@ export interface TaskArchiveEntry {
 
 interface ActionsConfig {
 	onEdit?: (taskId: number) => void
+	onAddComment?: (taskId: number) => void
 	onArchive?(tasks: TaskArchiveEntry[]): void
 	onUnarchive?(tasks: TaskArchiveEntry[]): void
 	onDelete?(taskIds: number[]): void
@@ -58,7 +59,7 @@ interface ActionsConfig {
 }
 
 interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
-	columnOrder?: (keyof TTask)[]
+	columnOrder: (keyof TTask)[]
 	hiddenColumns?: Set<keyof TTask>
 	extraColumns?: ColumnDef<TTask>[]
 	searchQuery?: string
@@ -66,12 +67,13 @@ interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	selectMode?: SelectModeConfig<TTask>
 	actions?: ActionsConfig
 	showMenuColumn?: boolean
-	onUpdateStatusSuccess?(): void
+	statuses?: WorkspaceStatusDto[]
 	onTitleDoubleClick?: (taskId: number) => void
+	getPermissionType?(task?: TTask): PermissionType | null | undefined
 }
 
 export function useTaskColumns<TTask extends TaskRowDto>({
-	columnOrder = DEFAULT_COLUMN_ORDER as (keyof TTask)[],
+	columnOrder,
 	hiddenColumns = new Set<keyof TTask>(),
 	extraColumns = [],
 	searchQuery,
@@ -79,39 +81,19 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 	selectMode,
 	actions,
 	showMenuColumn = true,
-	onUpdateStatusSuccess,
+	statuses,
+	getPermissionType,
 }: UseTaskColumnsOptions<TTask>) {
-	const { mutate: upsertAssigneeTaskStatus } = useUpsertAssigneeTaskStatus({
-		mutation: {
-			networkMode: "always",
-			onSuccess: ({ task: { id } }) => {
-				invalidateQueries([getGetTaskQueryKey({ id })])
-				onUpdateStatusSuccess?.()
-				toast.success("הסטטוס עודכן בהצלחה", {
-					subtitle: "השינוי נשמר ויופיע בכל האזורים הרלוונטיים",
-				})
-			},
-			onError: () => {
-				toast.error("שגיאה - סטטוס לא עודכן", {
-					banner: true,
-					bannerAlign: "center",
-				})
-			},
-		},
-	})
-
-	const handleUpdateStatus = useCallback(
-		(taskId: number, assigneeId: number, statusId: number) => {
-			upsertAssigneeTaskStatus({ data: { taskId, assigneeId, statusId } })
-		},
-		[upsertAssigneeTaskStatus],
-	)
+	const handleUpdateStatus = useUpdateTaskStatus()
 
 	const columns = useMemo<ColumnDef<TTask>[]>(() => {
 		// TODO Move all constant fields to task-table-utils
+
+		const today = startOfToday()
+
 		const pinnedStartColumn: ColumnDef<TTask> = selectMode?.enabled
 			? {
-					id: "select",
+					id: TASK_COLUMN_ID.select,
 					size: 61,
 					enableSorting: false,
 					enableColumnFilter: false,
@@ -136,8 +118,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					),
 				}
 			: {
-					id: "id",
-					accessorKey: "id",
+					id: TASK_COLUMN_ID.id,
+					accessorKey: TASK_COLUMN_ID.id,
 					header: ({ column }) => (
 						<ColumnHeaderWithActions label={COLUMN_LABELS.id} column={column} />
 					),
@@ -147,45 +129,58 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						row: {
 							original: { id },
 						},
-					}) => <IdCell>{id}</IdCell>,
+					}) => (
+						<IdCell>
+							<HighlightMatch
+								text={String(id)}
+								query={searchQuery ?? ""}
+								variant="mark"
+							/>
+						</IdCell>
+					),
 				}
 
 		const pinnedEndColumn: ColumnDef<TTask> | undefined =
 			showMenuColumn && actions
 				? {
-						id: "actions",
+						id: TASK_COLUMN_ID.actions,
 						size: 45,
 						enableSorting: false,
 						enableColumnFilter: false,
-						cell: ({
-							row: {
-								original: { id, workspaceId, rowKey, assignee },
-							},
-						}) => {
-							const handleEdit = actions.onEdit
-								? () => actions.onEdit?.(id)
-								: undefined
-							const handleArchive = actions.onArchive
-								? () => actions.onArchive?.([{ id, assigneeId: assignee?.id }])
-								: undefined
-							const handleUnarchive = actions.onUnarchive
-								? () =>
-										actions.onUnarchive?.([{ id, assigneeId: assignee?.id }])
-								: undefined
-							const handleEnterSelect = () =>
-								actions.onEnterSelectMode?.(rowKey)
-							const handleDelete = actions.onDelete
-								? () => actions.onDelete?.([id])
-								: undefined
+						cell: ({ row: { original } }) => {
+							const { id, workspaceId, rowKey, assignee } = original
+							const isManager =
+								getPermissionType?.(original) === PermissionType.MANAGER
 
 							return (
 								<RowActionsMenu
 									workspaceId={workspaceId}
-									onEdit={handleEdit}
-									onArchive={handleArchive}
-									onUnarchive={handleUnarchive}
-									onEnterSelect={handleEnterSelect}
-									onDelete={handleDelete}
+									actions={{
+										onEdit:
+											actions.onEdit && isManager
+												? () => actions.onEdit?.(id)
+												: undefined,
+										onAddComment:
+											actions.onAddComment &&
+											(() => actions.onAddComment?.(id)),
+										onArchive:
+											actions.onArchive &&
+											(() =>
+												actions.onArchive?.([
+													{ id, assigneeId: assignee?.id },
+												])),
+										onUnarchive:
+											actions.onUnarchive &&
+											(() =>
+												actions.onUnarchive?.([
+													{ id, assigneeId: assignee?.id },
+												])),
+										onEnterSelect: () => actions.onEnterSelectMode?.(rowKey),
+										onDelete:
+											actions.onDelete && isManager
+												? () => actions.onDelete?.([id])
+												: undefined,
+									}}
 								/>
 							)
 						},
@@ -194,10 +189,11 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 
 		const middleColumns = [
 			{
-				id: "title",
-				accessorKey: "title",
+				id: TASK_COLUMN_ID.title,
+				accessorKey: TASK_COLUMN_ID.title,
 				header: COLUMN_LABELS.title,
 				size: 300,
+				minSize: 160,
 				meta: { grow: true },
 				enableSorting: false,
 				enableColumnFilter: false,
@@ -208,34 +204,10 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				}) => (
 					<TitleCell>
 						{flagged && <FlagIcon />}
-						{description ? (
-							<>
-								<TitlePart>
-									{searchQuery ? (
-										<HighlightMatch
-											text={title}
-											query={searchQuery}
-											variant="mark"
-										/>
-									) : (
-										title
-									)}
-								</TitlePart>
-								<TitleSeparator> - </TitleSeparator>
-								<DetailsPart>
-									{searchQuery ? (
-										<HighlightMatch
-											text={description}
-											query={searchQuery}
-											variant="mark"
-										/>
-									) : (
-										description
-									)}
-								</DetailsPart>
-							</>
-						) : (
-							<TitleFull>
+						<TitleContent
+							tooltip={`${title}${description ? ` - ${description}` : ""}`}
+						>
+							<TitlePart>
 								{searchQuery ? (
 									<HighlightMatch
 										text={title}
@@ -245,13 +217,29 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 								) : (
 									title
 								)}
-							</TitleFull>
-						)}
+							</TitlePart>
+							{description && (
+								<>
+									<TitleSeparator> - </TitleSeparator>
+									<DetailsPart>
+										{searchQuery ? (
+											<HighlightMatch
+												text={description}
+												query={searchQuery}
+												variant="mark"
+											/>
+										) : (
+											description
+										)}
+									</DetailsPart>
+								</>
+							)}
+						</TitleContent>
 					</TitleCell>
 				),
 			},
 			{
-				id: "status",
+				id: TASK_COLUMN_ID.status,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.status}
@@ -263,29 +251,22 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				...TASK_COLUMN_DEFINITIONS.status,
 				cell: ({
 					row: {
-						original: {
-							id,
-							status,
-							assignee,
-							workspaceId,
-							editable,
-							archivedAt,
-						},
+						original: { id, status, assignee, editable },
 					},
 				}) =>
 					status && (
 						<StatusDropdown
 							status={status}
+							statuses={statuses}
 							assigneeId={assignee?.id}
-							editable={!archivedAt && editable}
+							editable={editable}
 							taskId={id}
-							workspaceId={workspaceId}
 							onUpdate={handleUpdateStatus}
 						/>
 					),
 			},
 			{
-				id: "assignee",
+				id: TASK_COLUMN_ID.assignee,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.assignee}
@@ -302,17 +283,14 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				}) =>
 					assignee && (
 						<AssigneeCell
-							responsible={assignee}
-							relatedDirectives={(otherAssignees ?? []).map((s) => ({
-								assignee: s.assignee,
-								status: s.status,
-							}))}
+							assignee={assignee}
+							otherAssignees={otherAssignees ?? []}
 						/>
 					),
 			},
 			{
-				id: "deadlineType",
-				accessorKey: "deadlineType",
+				id: TASK_COLUMN_ID.deadlineType,
+				accessorKey: TASK_COLUMN_ID.deadlineType,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.deadlineType}
@@ -334,7 +312,6 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					},
 				}) => {
 					const deadlineType = rawDeadlineType
-					const today = startOfToday()
 					const daysUntil = dueDate
 						? differenceInDays(new Date(dueDate), today)
 						: null
@@ -377,7 +354,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 													$isOverdue={isOverdue}
 													$isApproaching={isApproaching}
 												>
-													{formatDateShort(new Date(displayDate))}
+													{formatDateShort(displayDate)}
 												</DeadlineDateText>
 											</TooltipTrigger>
 
@@ -389,7 +366,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 										$isOverdue={isOverdue}
 										$isApproaching={isApproaching}
 									>
-										{formatDateShort(new Date(displayDate))}
+										{formatDateShort(displayDate)}
 									</DeadlineDateText>
 								))}
 						</DeadlineCell>
@@ -397,7 +374,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				},
 			},
 			{
-				id: "source",
+				id: TASK_COLUMN_ID.source,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.source}
@@ -416,21 +393,74 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						return null
 					}
 
-					const parts = [
+					const sourceText = [
 						source.name,
 						...(source.date ? [formatDateShort(source.date)] : []),
-					].filter(Boolean)
+					]
+						.filter(Boolean)
+						.join(" | ")
 
 					return (
 						<SourceCell>
 							{source.attachmentKey && <SourceAttachmentIcon size={18} />}
-							{parts.length > 0 && <SourceText>{parts.join(" | ")}</SourceText>}
+
+							{sourceText && (
+								<SourceText>
+									<HighlightMatch
+										text={sourceText}
+										query={searchQuery ?? ""}
+										variant="mark"
+									/>
+								</SourceText>
+							)}
 						</SourceCell>
 					)
 				},
 			},
 			{
-				id: "tags",
+				id: TASK_COLUMN_ID.lastMessage,
+				header: ({ column }) => (
+					<ColumnHeaderWithActions
+						label={COLUMN_LABELS.lastMessage}
+						column={column}
+					/>
+				),
+				size: 100,
+				minSize: 70,
+				meta: { grow: true },
+				enableSorting: false,
+				enableColumnFilter: false,
+				cell: ({
+					row: {
+						original: { lastMessage, messageCount },
+					},
+				}) => {
+					const userName =
+						lastMessage?.user?.info?.displayName ??
+						lastMessage?.user?.info?.name
+					const text = userName
+						? `${userName}: ${lastMessage.content}`
+						: (lastMessage?.content ?? "")
+
+					return (
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<CommentCell>
+										<CommentText>{text}</CommentText>
+										{messageCount > 1 && (
+											<CommentCount>({messageCount})</CommentCount>
+										)}
+									</CommentCell>
+								</TooltipTrigger>
+								{text && <CommentTooltip>{text}</CommentTooltip>}
+							</Tooltip>
+						</TooltipProvider>
+					)
+				},
+			},
+			{
+				id: TASK_COLUMN_ID.tags,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.tags}
@@ -439,37 +469,31 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					/>
 				),
 				size: 100,
+				minSize: 70,
 				enableSorting: false,
 				...TASK_COLUMN_DEFINITIONS.tags,
 				meta: { grow: true },
-				cell: ({
-					row: {
-						original: { tags, source },
-					},
-				}) => {
-					const allNames = uniq(map(concat(tags, source?.tags ?? []), "name"))
-
-					return <TopicCell tags={allNames} />
-				},
+				cell: ({ getValue }) => (
+					<TopicCell tags={getValue<string[]>()} searchQuery={searchQuery} />
+				),
 			},
 			{
-				id: "notes",
-				accessorKey: "notes",
+				id: TASK_COLUMN_ID.notes,
+				accessorKey: TASK_COLUMN_ID.notes,
 				header: COLUMN_LABELS.notes,
 				size: 100,
+				minSize: 100,
 				enableSorting: false,
 				enableColumnFilter: false,
 				meta: { grow: true },
 				cell: ({ getValue }) => {
 					const notes = getValue<string>()
-					return notes ? (
-						<NotesText dangerouslySetInnerHTML={{ __html: notes }} />
-					) : null
+					return notes && <NotesText tooltip={notes}>{notes}</NotesText>
 				},
 			},
 			{
-				id: "createdAt",
-				accessorKey: "createdAt",
+				id: TASK_COLUMN_ID.createdAt,
+				accessorKey: TASK_COLUMN_ID.createdAt,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.createdAt}
@@ -484,8 +508,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				),
 			},
 			{
-				id: "updatedAt",
-				accessorKey: "updatedAt",
+				id: TASK_COLUMN_ID.updatedAt,
+				accessorKey: TASK_COLUMN_ID.updatedAt,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.updatedAt}
@@ -528,7 +552,9 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 		selectMode,
 		actions,
 		showMenuColumn,
+		statuses,
 		handleUpdateStatus,
+		getPermissionType,
 	])
 
 	return { columns }
@@ -547,7 +573,7 @@ const IdCell = styled.span`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 24px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   width: 100%;
   height: 100%;
   cursor: pointer;
@@ -567,13 +593,22 @@ const TitleCell = styled.div<{ $clickable?: boolean }>`
   cursor: pointer;
 `
 
+const TitleContent = styled(EllipsisTooltip)`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+`
+
 const TitlePart = styled.span`
   font-weight: 400;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 50%;
-  flex-shrink: 0;
+  flex: 1 1 50%;
+  max-width: max-content;
+  min-width: 0;
 `
 
 const TitleSeparator = styled.span`
@@ -586,14 +621,9 @@ const DetailsPart = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 1;
+  flex: 1 1 50%;
+  max-width: max-content;
   min-width: 0;
-`
-
-const TitleFull = styled.span`
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 `
 
 const DeadlineCell = styled.div`
@@ -633,7 +663,7 @@ const SourceCell = styled.div`
 
 const SourceAttachmentIcon = styled(Paperclip)`
   flex-shrink: 0;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
 `
 
 const SourceText = styled.span`
@@ -643,45 +673,60 @@ const SourceText = styled.span`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
 `
 
-const NotesText = styled.div`
+const CommentCell = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
   overflow: hidden;
-  max-height: 40px;
+  width: 100%;
+  height: 100%;
+`
 
+const CommentCount = styled.span`
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--text-color-400);
+  flex-shrink: 0;
+  opacity: 0;
+
+  ${CommentCell}:hover & {
+    opacity: 1;
+  }
+`
+
+const CommentTooltip = styled(TooltipContent)`
+  background: var(--Components-Tooltip-Global-colorBgSpotlight);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--background);
+  text-align: start;
+  max-width: 300px;
+`
+
+const CommentText = styled.span`
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--text-color-2);
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+`
+
+const NotesText = styled(EllipsisTooltip)`
   font-size: var(--fs-btn);
   line-height: 20px;
   color: var(--sea-ink-soft);
-
-  p {
-    margin: 0;
-  }
-
-  ol {
-    margin: 0;
-    padding-inline-start: 20px;
-    list-style-type: decimal;
-  }
-
-  li {
-    margin: 0;
-  }
-
-  li p {
-    display: inline;
-  }
-
-  strong {
-    font-weight: 600;
-  }
-
-  u {
-    text-decoration: underline;
-  }
-`
-
-const DateText = styled.span`
-  font-size: var(--fs-btn);
-  color: var(--sea-ink-soft);
+  text-align: right;
 `

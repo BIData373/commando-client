@@ -9,7 +9,12 @@ import { formatDate, formatDateShort } from "../../functions/date-utils"
 import DatePicker, { CalendarMode } from "../shared/DatePicker"
 import { FormField } from "../shared/FormField"
 import HighlightMatch from "../shared/HighlightMatch"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import {
+	Popover,
+	PopoverAnchor,
+	PopoverContent,
+	PopoverTrigger,
+} from "../ui/popover"
 import {
 	Tooltip,
 	TooltipContent,
@@ -33,6 +38,7 @@ interface SourceFieldProps {
 	uniqueNames?: boolean
 	fields?: SourceFieldValidation
 	required?: boolean
+	hideDateLabel?: boolean
 }
 
 export default function SourceField({
@@ -46,6 +52,7 @@ export default function SourceField({
 	uniqueNames = false,
 	fields,
 	required = false,
+	hideDateLabel = false,
 }: SourceFieldProps) {
 	const [sourceQuery, setSourceQuery] = useState(source)
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -58,8 +65,8 @@ export default function SourceField({
 		const value = e.target.value
 		setSourceQuery(value)
 		onSourceSelect(value, null)
+		if (!isDropdownOpen) setIsDropdownOpen(true)
 	}
-
 	function handleSelect(discussion: SourceDto) {
 		setSourceQuery(discussion.name)
 		setIsDropdownOpen(false)
@@ -108,72 +115,82 @@ export default function SourceField({
 		<SourceDateRow>
 			<SourceFormItem>
 				<FormField label={label} required={required} field={fields?.name}>
-					<SourceFieldWrapper>
-						<SourceInputBox
-							onFocus={openDropdown}
-							$error={!!fields?.name?.state.meta.errors.length}
+					<Popover
+						open={
+							isDropdownOpen &&
+							(!!sourceQuery || filteredDiscussions.length > 0)
+						}
+					>
+						<PopoverAnchor asChild>
+							<SourceInputBox
+								onClick={openDropdown}
+								$error={!!fields?.name?.state.meta.errors.length}
+							>
+								<SourceChevron size={16} />
+								<SourceInputField
+									value={sourceQuery}
+									onChange={handleInputChange}
+									onFocus={openDropdown}
+									onBlur={handleInputBlur}
+									placeholder='לדוגמה: חתמ"צ שבועי'
+									dir="rtl"
+								/>
+								{linkedSource && !!linkedSource?.attachmentKey && (
+									<Paperclip size={16} />
+								)}
+							</SourceInputBox>
+						</PopoverAnchor>
+						<SourceDropdown
+							sideOffset={4}
+							align="start"
+							onOpenAutoFocus={(e) => e.preventDefault()}
+							onWheel={(e) => e.stopPropagation()}
 						>
-							<SourceChevron size={16} />
-							<SourceInputField
-								value={sourceQuery}
-								onChange={handleInputChange}
-								onFocus={openDropdown}
-								onBlur={handleInputBlur}
-								placeholder='לדוגמה: חתמ"צ שבועי'
-								dir="rtl"
-							/>
-							{linkedSource && !!linkedSource?.attachmentKey && (
-								<Paperclip size={16} />
+							{filteredDiscussions.length > 0 && (
+								<>
+									<DropdownGroupTitle>מקורות קיימים</DropdownGroupTitle>
+									{filteredDiscussions.map((d) => (
+										<SourceOption
+											key={uniqueNames ? d.name : d.id}
+											onMouseDown={(e) => handleOptionMouseDown(e, d)}
+										>
+											{!uniqueNames && d.date && (
+												<SourceOptionDate>
+													{formatDateShort(d.date)}
+												</SourceOptionDate>
+											)}
+											<SourceOptionName>
+												{sourceQuery ? (
+													<HighlightMatch text={d.name} query={sourceQuery} />
+												) : (
+													d.name
+												)}
+											</SourceOptionName>
+										</SourceOption>
+									))}
+								</>
 							)}
-						</SourceInputBox>
-						{isDropdownOpen &&
-							(sourceQuery || filteredDiscussions.length > 0) && (
-								<DropdownMenu>
-									{filteredDiscussions.length > 0 && (
-										<>
-											<DropdownGroupTitle>מקורות קיימים</DropdownGroupTitle>
-											{filteredDiscussions.map((d) => (
-												<SourceOption
-													key={uniqueNames ? d.name : d.id}
-													onMouseDown={(e) => handleOptionMouseDown(e, d)}
-												>
-													{!uniqueNames && d.date && (
-														<SourceOptionDate>
-															{formatDateShort(d.date)}
-														</SourceOptionDate>
-													)}
-													<SourceOptionName>
-														{sourceQuery ? (
-															<HighlightMatch
-																text={d.name}
-																query={sourceQuery}
-															/>
-														) : (
-															d.name
-														)}
-													</SourceOptionName>
-												</SourceOption>
-											))}
-										</>
-									)}
-									{sourceQuery && (
-										<>
-											<DropdownDivider />
-											<CreateNewOption onMouseDown={handleCreateNewMouseDown}>
-												<CreateNewText>
-													<HighlightedText>{sourceQuery}</HighlightedText>
-													{" (חדש)"}
-												</CreateNewText>
-											</CreateNewOption>
-										</>
-									)}
-								</DropdownMenu>
+							{sourceQuery && (
+								<>
+									<DropdownDivider />
+									<CreateNewOption onMouseDown={handleCreateNewMouseDown}>
+										<CreateNewText>
+											<HighlightedText>{sourceQuery}</HighlightedText>
+											{" (חדש)"}
+										</CreateNewText>
+									</CreateNewOption>
+								</>
 							)}
-					</SourceFieldWrapper>
+						</SourceDropdown>
+					</Popover>
 				</FormField>
 			</SourceFormItem>
-			<DateFormItem>
-				<FormField field={fields?.date} label="תאריך" required={required}>
+			<DateFormItem $alignEnd={hideDateLabel}>
+				<FormField
+					field={fields?.date}
+					label={hideDateLabel ? "" : "תאריך"}
+					required={required}
+				>
 					<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
 						<TooltipProvider>
 							<Tooltip>
@@ -231,19 +248,14 @@ const SourceFormItem = styled.div`
   min-width: 0;
 `
 
-const DateFormItem = styled.div`
+const DateFormItem = styled.div<{ $alignEnd?: boolean }>`
   direction: ltr;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  align-self: ${({ $alignEnd }) => ($alignEnd ? "flex-end" : "flex-start")};
   width: 160px;
   flex-shrink: 0;
-`
-
-const SourceFieldWrapper = styled.div`
-  direction: ltr;
-  position: relative;
-  width: 100%;
 `
 
 const SourceInputBox = styled.div<{ $error?: boolean }>`
@@ -252,11 +264,12 @@ const SourceInputBox = styled.div<{ $error?: boolean }>`
   width: 100%;
   height: 40px;
   padding-inline: 11px;
-  background: white;
+  background: var(--background);
   border: 1px solid ${({ $error }) => ($error ? "var(--Components-Form-Component-labelRequiredMarkColor)" : "var(--card-border)")};
   border-radius: 8px;
   gap: 4px;
   cursor: text;
+  direction: ltr;
 
   &:focus-within {
     border-color: ${({ $error }) => ($error ? "var(--Components-Form-Component-labelRequiredMarkColor)" : "var(--button-color-hover)")};
@@ -265,7 +278,7 @@ const SourceInputBox = styled.div<{ $error?: boolean }>`
 `
 
 const SourceChevron = styled(ChevronDown)`
-  color: rgba(0, 0, 0, 0.25);
+  color: var(--Text-color-text-placeholder);
   flex-shrink: 0;
 `
 
@@ -277,29 +290,23 @@ const SourceInputField = styled.input`
   font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   min-width: 0;
 
   &::placeholder {
-    color: rgba(0, 0, 0, 0.25);
+    color: var(--Text-color-text-placeholder);
   }
 `
 
-const DropdownMenu = styled.div`
-  position: absolute;
-  inset-block-start: calc(100% + 4px);
-  inset-inline: 0;
-  z-index: 40;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow:
-    0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px rgba(0, 0, 0, 0.12),
-    0px 9px 28px rgba(0, 0, 0, 0.05);
+const SourceDropdown = styled(PopoverContent)`
+  width: var(--radix-popover-trigger-width);
+  z-index: var(--z-dropdown);
   max-height: 176px;
   overflow-y: auto;
   padding: 4px;
+  border-radius: 8px;
+  animation: none !important;
+  gap: 0;
 `
 
 const DropdownGroupTitle = styled.div`
@@ -307,13 +314,13 @@ const DropdownGroupTitle = styled.div`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.45);
-  text-align: end;
+  color: var(--text-color-400);
+  text-align: start;
 `
 
 const DropdownDivider = styled.div`
   height: 1px;
-  background: #f0f0f0;
+  background: var(--line);
   margin-block: 4px;
 `
 
@@ -329,9 +336,10 @@ const SourceOption = styled.button`
   background: transparent;
   cursor: pointer;
   border-radius: 4px;
+  direction: ltr;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.04);
+    background: var(--link-bg-hover);
   }
 `
 
@@ -339,7 +347,7 @@ const SourceOptionName = styled.span`
   flex: 1;
   font-size: var(--fs-btn);
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   text-align: end;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -354,13 +362,13 @@ const SourceOptionDate = styled.span`
   flex-shrink: 0;
   font-size: var(--fs-sm);
   line-height: 20px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
 `
 
 const CreateNewOption = styled.button`
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   width: 100%;
   height: 32px;
   padding-inline: 12px;
@@ -370,10 +378,10 @@ const CreateNewOption = styled.button`
   cursor: pointer;
   border-radius: 4px;
   font-size: var(--fs-btn);
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
 
   &:hover {
-    background: rgba(0, 0, 0, 0.04);
+    background: var(--link-bg-hover);
   }
 `
 
@@ -382,7 +390,7 @@ const CreateNewText = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-align: end;
+  text-align: start;
 `
 
 const DatePickerButton = styled.button<{
@@ -396,16 +404,16 @@ const DatePickerButton = styled.button<{
   width: 160px;
   height: 40px;
   padding-inline: 12px;
-  background: white;
-  border: 1px solid ${({ $error }) => ($error ? "#ff4d4f" : "#d9d9d9")};
+  background: var(--background);
+  border: 1px solid ${({ $error }) => ($error ? "var(--Components-Form-Component-labelRequiredMarkColor)" : "var(--card-border)")};
   border-radius: 6px;
   cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
   opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
   flex-shrink: 0;
 
   &:hover {
-    border-color: ${({ $disabled, $error }) => ($disabled ? "#d9d9d9" : $error ? "#ff4d4f" : "#4096ff")};
+    border-color: ${({ $disabled, $error }) => ($disabled ? "var(--card-border)" : $error ? "var(--Components-Form-Component-labelRequiredMarkColor)" : "var(--button-color-hover)")};
   }
 `
 
@@ -415,7 +423,7 @@ const DatePickerText = styled.span<{ $hasValue: boolean }>`
   font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
-  color: ${({ $hasValue }) => ($hasValue ? "rgba(0, 0, 0, 0.88)" : "rgba(0, 0, 0, 0.25)")};
+  color: ${({ $hasValue }) => ($hasValue ? "var(--text-color-2)" : "var(--Text-color-text-placeholder)")};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

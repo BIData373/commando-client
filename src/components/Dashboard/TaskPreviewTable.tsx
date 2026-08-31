@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import type { TaskRowDto } from "src/api/model"
 import {
+	DEFAULT_COLUMN_ORDER,
 	DISABLED_CLICK_COLUMNS,
 	toHiddenColumns,
 } from "src/utils/task-table-utils"
@@ -10,7 +11,6 @@ import { DataTable } from "../ui/data-table"
 interface TaskPreviewTableProps {
 	tasks: TaskRowDto[]
 	visibleColumns: (keyof TaskRowDto)[]
-	onUpdateStatusSuccess?(): void
 	onClick?(taskId: number): void
 	emptyState: ReactNode
 }
@@ -18,12 +18,11 @@ interface TaskPreviewTableProps {
 export function TaskPreviewTable({
 	tasks,
 	visibleColumns,
-	onUpdateStatusSuccess,
 	onClick,
 	emptyState,
 }: TaskPreviewTableProps) {
 	const { columns } = useTaskColumns<TaskRowDto>({
-		onUpdateStatusSuccess,
+		columnOrder: DEFAULT_COLUMN_ORDER,
 		hiddenColumns: toHiddenColumns(visibleColumns),
 		showMenuColumn: false,
 	})

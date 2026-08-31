@@ -7,9 +7,11 @@
  */
 import type { AssigneeStatusDto } from "./assignee-status-dto"
 import type { DeadlineType } from "./deadline-type"
+import type { MessageDto } from "./message-dto"
 import type { SourceDto } from "./source-dto"
 import type { TagDto } from "./tag-dto"
 import type { TaskCreationType } from "./task-creation-type"
+import type { WorkspaceStatusDto } from "./workspace-status-dto"
 import type { WorkspaceWithPermissionDto } from "./workspace-with-permission-dto"
 
 export interface TaskWithWorkspaceDto {
@@ -32,10 +34,16 @@ export interface TaskWithWorkspaceDto {
 	dueDate: Date | null
 	/** @nullable */
 	notes: string | null
+	/** @nullable */
+	archivedAt: Date | null
 	workspaceId: number
+	status: WorkspaceStatusDto
 	/** @nullable */
 	source: SourceDto | null
 	tags: TagDto[]
+	lastMessage: MessageDto
+	messageCount: number
+	editable: boolean
 	assigneeStatuses: AssigneeStatusDto[]
 	workspace: WorkspaceWithPermissionDto
 }

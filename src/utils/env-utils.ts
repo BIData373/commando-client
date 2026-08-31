@@ -24,3 +24,5 @@ export const MATOMO_ENABLED = import.meta.env.VITE_MATOMO_ENABLED === "true"
 export const MATOMO_SITE_ID = import.meta.env.VITE_MATOMO_SITE_ID
 
 export const AI_ENABLED = import.meta.env.VITE_AI_ENABLED === "true"
+
+export const SOCKET_ENABLED = import.meta.env.VITE_SOCKET_ENABLED === "true"

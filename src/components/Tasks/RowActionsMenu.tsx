@@ -2,25 +2,15 @@ import styled from "@emotion/styled"
 import { MoreVertical } from "lucide-react"
 import { type ReactNode, useState } from "react"
 import { RowMenu } from "./RowMenu"
+import type { RowMenuActions } from "./RowMenuItems"
 
 interface RowActionsMenuProps {
 	trigger?: ReactNode
 	workspaceId: number
-	onEdit?: () => void
-	onEnterSelect?: () => void
-	onDelete?: () => void
-	onArchive?(): void
-	onUnarchive?(): void
+	actions?: RowMenuActions
 }
 
-export function RowActionsMenu({
-	trigger,
-	onEdit,
-	onEnterSelect,
-	onDelete,
-	onArchive,
-	onUnarchive,
-}: RowActionsMenuProps) {
+export function RowActionsMenu({ trigger, actions }: RowActionsMenuProps) {
 	const [open, setOpen] = useState(false)
 
 	return (
@@ -34,11 +24,7 @@ export function RowActionsMenu({
 			}
 			open={open}
 			onOpenChange={setOpen}
-			onEdit={onEdit}
-			onEnterSelect={onEnterSelect}
-			onDelete={onDelete}
-			onArchive={onArchive}
-			onUnarchive={onUnarchive}
+			actions={actions}
 		/>
 	)
 }

@@ -4,13 +4,14 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
-import { toast } from "sonner"
 import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
 import {
 	type TaskRowWithWorkspaceDto,
+	type ToggleUserTaskArchiveParams,
 	WorkspaceStatusType,
 } from "src/api/model"
 import {
+	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	useListPersonalTaskRows,
 } from "src/api/task/task"
@@ -23,20 +24,26 @@ import {
 	ARCHIVE_QUICK_FILTERS,
 } from "src/utils/filter-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
-import type { TaskColumnMeta } from "src/utils/task-table-utils"
+import {
+	COLUMN_LABELS,
+	TASK_COLUMN_ID,
+	type TaskColumnMeta,
+	WORKSPACE_COLUMN_META,
+} from "src/utils/task-table-utils"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import WorkspaceCell from "../shared/WorkspaceCell"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
+import { toast } from "../Toast/toast-api"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
 
-export const WORKSPACE_COLUMN: ColumnDef<TaskRowWithWorkspaceDto> = {
-	id: "workspace",
+const WORKSPACE_COLUMN_DEFINITION: ColumnDef<TaskRowWithWorkspaceDto> = {
+	id: TASK_COLUMN_ID.workspace,
 	header: ({ column }) => (
-		<ColumnHeaderWithActions label="מפקד מנחה" column={column} />
+		<ColumnHeaderWithActions label={COLUMN_LABELS.workspace} column={column} />
 	),
 	size: 170,
 	enableColumnFilter: false,
@@ -46,11 +53,6 @@ export const WORKSPACE_COLUMN: ColumnDef<TaskRowWithWorkspaceDto> = {
 		return a.localeCompare(b, "he")
 	},
 	accessorFn: (row) => row.workspace?.title,
-	cell: ({
-		row: {
-			original: { workspace },
-		},
-	}) => <WorkspaceCell workspace={workspace} />,
 }
 
 interface PersonalTaskTableProps {
@@ -58,6 +60,7 @@ interface PersonalTaskTableProps {
 	extraColumnsMeta?: TaskColumnMeta[]
 	extraColumns?: ColumnDef<TaskRowWithWorkspaceDto>[]
 	onEdit?(taskId: number): void
+	onAddComment?(taskId: number): void
 	onOpenTask(taskId: number): void
 	showMetricsBar?: boolean
 	filePrefix: string
@@ -68,11 +71,12 @@ function PersonalTaskTable({
 	extraColumnsMeta,
 	extraColumns,
 	onEdit,
+	onAddComment,
 	onOpenTask,
 	showMetricsBar = false,
 	filePrefix,
 }: PersonalTaskTableProps) {
-	const { columnOrder, hiddenColumns } = useTasksFilters()
+	const { columnOrder, hiddenColumns, searchQuery } = useTasksFilters()
 
 	const {
 		data: tasks = [],
@@ -80,8 +84,20 @@ function PersonalTaskTable({
 		queryKey,
 	} = useListPersonalTaskRows({ isArchived })
 
+	function handleChangeSuccess() {
+		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
+	}
+
+	function handleToggleSuccess(
+		_: void,
+		{ params: { taskId } }: { params: ToggleUserTaskArchiveParams },
+	) {
+		handleChangeSuccess()
+		invalidateQueries([getGetTaskQueryKey({ id: taskId })])
+	}
+
 	const { mutateAsync: toggleArchive } = useToggleUserTaskArchive({
-		mutation: { onSuccess: handleChangeSuccess },
+		mutation: { onSuccess: handleToggleSuccess },
 	})
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
@@ -92,7 +108,21 @@ function PersonalTaskTable({
 		({ workspace }) => workspace,
 	)
 
-	const baseFilteredTaskRows = useFilteredTasks(tasks)
+	const baseFilteredTaskRows = useFilteredTasks(tasks, {
+		additionalSearchValues: (task) => [task.workspace?.title],
+	})
+
+	const workspaceColumn = useMemo<ColumnDef<TaskRowWithWorkspaceDto>>(
+		() => ({
+			...WORKSPACE_COLUMN_DEFINITION,
+			cell: ({
+				row: {
+					original: { workspace },
+				},
+			}) => <WorkspaceCell workspace={workspace} searchQuery={searchQuery} />,
+		}),
+		[searchQuery],
+	)
 
 	const filteredTaskRows = useMemo(
 		() =>
@@ -118,18 +148,14 @@ function PersonalTaskTable({
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
 	).length
 
-	function handleChangeSuccess() {
-		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
-	}
-
 	async function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
-		const requests = entries.flatMap(({ id, assigneeId }) =>
-			assigneeId
-				? [toggleArchive({ pathParams: { id }, params: { assigneeId } })]
-				: [],
+		await Promise.all(
+			entries.map(async ({ id, assigneeId }) => {
+				if (assigneeId) {
+					await toggleArchive({ params: { taskId: id, assigneeId } })
+				}
+			}),
 		)
-
-		await Promise.all(requests)
 	}
 
 	async function handleArchive(entries: TaskArchiveEntry[]) {
@@ -140,10 +166,11 @@ function PersonalTaskTable({
 					? "הנחיה הועברה לארכיון בהצלחה"
 					: "ההנחיות הועברו לארכיון בהצלחה",
 				{
-					action: {
+					actions: {
+						variant: "cancel",
 						label: "ביטול",
 						onClick: () => {
-							void toggleArchiveEntries(entries).catch(() =>
+							toggleArchiveEntries(entries).catch(() =>
 								toast.error("ביטול ההעברה לארכיון נכשל"),
 							)
 						},
@@ -175,9 +202,9 @@ function PersonalTaskTable({
 					filteredTasks={filteredTaskRows}
 					columnOrder={columnOrder}
 					hiddenColumns={hiddenColumns}
-					extraColumns={[WORKSPACE_COLUMN, ...(extraColumns ?? [])]}
+					extraColumns={[workspaceColumn, ...(extraColumns ?? [])]}
 					extraColumnsMeta={[
-						{ id: "workspace", label: "מפקד מנחה" },
+						WORKSPACE_COLUMN_META,
 						...(extraColumnsMeta ?? []),
 					]}
 					quickFilters={
@@ -219,12 +246,12 @@ function PersonalTaskTable({
 					hiddenColumns={hiddenColumns}
 					onChangeSuccess={handleChangeSuccess}
 					onEdit={onEdit}
+					onAddComment={onAddComment}
 					onClick={onOpenTask}
 					getPermissionType={(task) => task?.workspace?.permissionType}
-					extraColumns={[WORKSPACE_COLUMN, ...(extraColumns ?? [])]}
+					extraColumns={[workspaceColumn, ...(extraColumns ?? [])]}
 					onArchive={onArchive}
 					onUnarchive={onUnarchive}
-					allowDelete={false}
 				/>
 			</PageRoot>
 			<Outlet />

@@ -45,6 +45,7 @@ interface CreateTasksTableProps {
 	onBack: () => void
 	isLoading?: boolean
 	sourceId?: number
+	sourceTags?: string[]
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -55,6 +56,7 @@ function CreateTasksTable({
 	onBack,
 	isLoading,
 	sourceId,
+	sourceTags = [],
 }: CreateTasksTableProps) {
 	const {
 		workspace: { id: workspaceId },
@@ -67,7 +69,7 @@ function CreateTasksTable({
 	const [extractedCount, setExtractedCount] = useState(0)
 
 	const { data: source } = useGetSource(
-		{ id: sourceId ?? 0 },
+		{ id: sourceId ?? -1 },
 		{ query: { enabled: sourceId !== undefined } },
 	)
 
@@ -100,6 +102,7 @@ function CreateTasksTable({
 			dueDate: null,
 			assigneeIds: [],
 			assigneeDetails: {},
+			tags: [],
 			notes: "",
 			flagged: false,
 		}
@@ -120,6 +123,7 @@ function CreateTasksTable({
 			assigneeDetails: Object.fromEntries(
 				task.assigneeStatuses.map((s) => [s.assignee.id, s.description]),
 			),
+			tags: task.tags.map((tag) => tag.name),
 			notes: task.notes ?? "",
 			flagged: task.flagged,
 		}
@@ -217,7 +221,12 @@ function CreateTasksTable({
 	}
 
 	function handleSave() {
-		const filled = rows.filter((r) => r.title.trim())
+		const filled = rows
+			.filter((r) => r.title.trim())
+			.map((r) => ({
+				...r,
+				tags: Array.from(new Set([...sourceTags, ...(r.tags ?? [])])),
+			}))
 		onSave(filled)
 	}
 
@@ -234,6 +243,7 @@ function CreateTasksTable({
 		toggleRowExpansion,
 		deleteRow,
 		isLastRow: (index: number) => index === rows.length - 1,
+		lockedTags: sourceTags,
 	}
 
 	return isExtracting ? (

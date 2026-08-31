@@ -1,6 +1,11 @@
 import styled from "@emotion/styled"
 import { useEffect, useMemo, useState } from "react"
-import { type MirageUserDto, PermissionType, type UserDto } from "src/api/model"
+import {
+	type MirageUserDto,
+	type PermissionDto,
+	PermissionType,
+	type UserDto,
+} from "src/api/model"
 import {
 	getListPermissionsQueryKey,
 	useDeletePermission,
@@ -44,6 +49,10 @@ export function PermissionsContent() {
 	} = useWorkspace()
 
 	const currentUser = useCurrentUser()
+
+	function isCurrentUserPermitted(user: UserDto) {
+		return user.upn !== currentUser.upn || !!currentUser?.info?.isBI
+	}
 
 	const [search, setSearch] = useState("")
 	const [activeTab, setActiveTab] = useState(PermissionsTab.ALL)
@@ -219,10 +228,16 @@ export function PermissionsContent() {
 						) : (
 							<UserListScrollArea>
 								<UserListInner>
-									<UserPermissionList
-										permissions={currentTabUsers}
-										onDelete={handleDeletePermissionUser}
-										onTypeChange={handleTypeChangePermissionUser}
+									<UserPermissionList<PermissionDto>
+										items={currentTabUsers}
+										getUser={(p) => p.user}
+										getType={(p) => p.type}
+										onDelete={(p) => handleDeletePermissionUser(p.user)}
+										onTypeChange={(p, type) =>
+											handleTypeChangePermissionUser(p.user, type)
+										}
+										canDelete={(p) => isCurrentUserPermitted(p.user)}
+										canChangeType={(p) => isCurrentUserPermitted(p.user)}
 									/>
 								</UserListInner>
 							</UserListScrollArea>

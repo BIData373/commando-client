@@ -19,13 +19,11 @@ import type {
 } from "src/api/model"
 import { DATE_TYPE } from "src/utils/date-utils"
 import {
+	dashboardFilterAssigneeKey,
 	dashboardFilterDataTypeKey,
 	dashboardFilterRangeKey,
 } from "src/utils/filter-utils"
-import {
-	DEFAULT_COLUMN_ORDER,
-	reconcileColumnOrder,
-} from "src/utils/task-table-utils"
+import { reconcileColumnOrder } from "src/utils/task-table-utils"
 import { useUserView } from "./UserViewProvider"
 
 interface TasksFiltersContextValue {
@@ -46,6 +44,9 @@ interface TasksFiltersContextValue {
 	dateRange: DateRange | undefined
 	setDateRange: (range: DateRange | undefined) => void
 
+	assigneeFilter: string[]
+	setAssigneeFilter: (assigneeFilter: string[]) => void
+
 	columnsFilters: ColumnFiltersState
 	setColumnsFilters(columnsFilters: ColumnFiltersState): void
 
@@ -65,7 +66,7 @@ export function TasksFiltersProvider({
 	initialQuickFilters,
 	children,
 }: TasksFiltersProviderProps) {
-	const { view, updateView } = useUserView()
+	const { view, updateView, defaultColumnOrder } = useUserView()
 	const [localQuickFilters, setLocalQuickFilters] = useState<
 		Set<QuickFilter> | undefined
 	>(initialQuickFilters)
@@ -101,9 +102,14 @@ export function TasksFiltersProvider({
 		},
 	})
 
+	const [assigneeFilter, setAssigneeFilter] = useLocalStorage<string[]>({
+		key: dashboardFilterAssigneeKey,
+		defaultValue: [],
+	})
+
 	const knownColumnIds: (keyof TaskRowWithWorkspaceDto)[] = useMemo(
-		() => ["id", ...new Set([...DEFAULT_COLUMN_ORDER, ...columnOrderRaw])],
-		[columnOrderRaw],
+		() => ["id", ...new Set([...defaultColumnOrder, ...columnOrderRaw])],
+		[defaultColumnOrder, columnOrderRaw],
 	)
 
 	const activeQuickFilters = useMemo(
@@ -225,6 +231,8 @@ export function TasksFiltersProvider({
 				setDateType,
 				dateRange,
 				setDateRange,
+				assigneeFilter,
+				setAssigneeFilter,
 				columnsFilters: columnFilters,
 				setColumnsFilters,
 				sorting: sorting,

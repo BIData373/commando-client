@@ -13,6 +13,7 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import {
+	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 	useListTaskRows,
@@ -26,7 +27,7 @@ import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
 } from "src/utils/filter-utils"
-import type { TaskColumnMeta } from "src/utils/task-table-utils"
+import { TASK_COLUMN_ID, type TaskColumnMeta } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
@@ -55,7 +56,7 @@ function WorkspaceTaskTable({
 	view = TasksView.TABLE,
 	statusFilter = [],
 	deadlineTypeFilter = [],
-	isArchived,
+	isArchived = false,
 	extraColumns,
 	extraColumnsMeta,
 	onOpenTask,
@@ -63,7 +64,7 @@ function WorkspaceTaskTable({
 	clearColumnFilters,
 	onColumnFilterChange,
 }: WorkspaceTaskTableProps) {
-	const { columnOrder, hiddenColumns } = useTasksFilters()
+	const { columnOrder, hiddenColumns, assigneeFilter } = useTasksFilters()
 
 	const {
 		workspace: { id: workspaceId, title: workspaceTitle },
@@ -87,17 +88,26 @@ function WorkspaceTaskTable({
 		...(deadlineTypeFilter.length
 			? [{ id: "deadlineType", value: deadlineTypeFilter }]
 			: []),
+		...(assigneeFilter.length
+			? [{ id: "assignee", value: assigneeFilter }]
+			: []),
 	]
 
 	const noWorkspaceColumnOrder = useMemo(
-		() => without(columnOrder, "workspace") as (keyof TaskRowDto)[],
+		() =>
+			without(columnOrder, TASK_COLUMN_ID.workspace) as (keyof TaskRowDto)[],
 		[columnOrder],
 	)
 
 	const noWorkspaceHiddenColumns = useMemo(
-		() => new Set([...hiddenColumns].filter((item) => item !== "workspace")),
+		() =>
+			new Set(
+				[...hiddenColumns].filter((item) => item !== TASK_COLUMN_ID.workspace),
+			),
 		[hiddenColumns],
 	)
+
+	const isManager = myPermission?.type === PermissionType.MANAGER
 
 	const filteredTaskRows = useFilteredTasks(tasks)
 
@@ -109,17 +119,35 @@ function WorkspaceTaskTable({
 		])
 	}
 
-	async function handleToggleArchive(entries: TaskArchiveEntry[]) {
-		await Promise.all(
-			entries.map(({ id, assigneeId }) =>
-				toggleArchive({ pathParams: { id }, params: { assigneeId } }),
-			),
-		)
+	function handleToggleArchive(entries: TaskArchiveEntry[]) {
+		entries.forEach(({ id, assigneeId }) => {
+			toggleArchive(
+				{ params: { taskId: id, assigneeId } },
+				{
+					onSuccess: () => {
+						invalidateQueries([getGetTaskQueryKey({ id })])
+					},
+				},
+			)
+		})
+	}
+
+	function handleArchiveError(e: unknown) {
+		console.error(e)
+		toast.error("ביטול ההעברה לארכיון נכשל")
+	}
+
+	function handleCancelArchive(entries: TaskArchiveEntry[]) {
+		try {
+			handleToggleArchive(entries)
+		} catch (e) {
+			handleArchiveError(e)
+		}
 	}
 
 	async function handleArchive(entries: TaskArchiveEntry[]) {
 		try {
-			await handleToggleArchive(entries)
+			handleToggleArchive(entries)
 			toast.success(
 				entries.length === 1
 					? "ההנחיה הועברו לארכיון בהצלחה"
@@ -127,23 +155,21 @@ function WorkspaceTaskTable({
 				{
 					action: {
 						label: "ביטול",
-						onClick: () => {
-							void handleToggleArchive(entries).catch(() =>
-								toast.error("ביטול ההעברה לארכיון נכשל"),
-							)
-						},
+						onClick: () => handleCancelArchive(entries),
 					},
 				},
 			)
-		} catch {}
+		} catch (e) {
+			handleArchiveError(e)
+		}
 	}
 
 	function handleUnarchive(entries: TaskArchiveEntry[]) {
-		void handleToggleArchive(entries)
+		handleToggleArchive(entries)
 	}
 
-	const onArchive = !isArchived ? handleArchive : undefined
-	const onUnarchive = isArchived ? handleUnarchive : undefined
+	const onArchive = isManager && !isArchived ? handleArchive : undefined
+	const onUnarchive = isManager && isArchived ? handleUnarchive : undefined
 
 	return (
 		<TooltipProvider>
@@ -166,7 +192,7 @@ function WorkspaceTaskTable({
 					extraColumnsMeta={extraColumnsMeta}
 					extraButtons={
 						!isArchived &&
-						myPermission?.type === PermissionType.MANAGER && (
+						isManager && (
 							<ButtonGroup>
 								<FilterSeparator />
 
@@ -194,10 +220,11 @@ function WorkspaceTaskTable({
 							columnOrder={noWorkspaceColumnOrder}
 							hiddenColumns={noWorkspaceHiddenColumns}
 							extraColumns={extraColumns}
-							// hideStatusAction={isArchived}
-							// showActionsColumn={isArchived}
+							allowDelete={isManager}
 							onArchive={onArchive}
 							onUnarchive={onUnarchive}
+							// hideStatusAction={isArchived}
+							// showActionsColumn={isArchived}
 						/>
 					)}
 				</ContentArea>

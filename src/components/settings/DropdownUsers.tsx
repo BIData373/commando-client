@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
-import { debounce } from "lodash"
+import { useDebouncedValue } from "@mantine/hooks"
 import { UserPlus } from "lucide-react"
-import { type PropsWithChildren, useEffect, useMemo, useState } from "react"
+import type { PropsWithChildren } from "react"
 import type { MirageUserDto } from "src/api/model"
 import { useSearchUsers } from "src/api/user/user"
 import { SearchDropdown } from "./SearchDropdown"
@@ -14,6 +14,7 @@ interface DropdownUsersProps extends PropsWithChildren {
 	onClear(): void
 	onAdd?: () => void
 	selectedUser?: MirageUserDto | null
+	isAddDisabled?: boolean
 	showAddButton?: boolean
 	placeholder?: string
 }
@@ -25,29 +26,23 @@ export function DropdownUsers({
 	onClear,
 	onAdd,
 	selectedUser,
+	isAddDisabled,
 	placeholder,
 	showAddButton,
 	children,
 }: DropdownUsersProps) {
-	const [localValue, setLocalValue] = useState(value)
+	const [search] = useDebouncedValue(value, 300)
 
 	const { data: rawUsers = [], isLoading } = useSearchUsers(
-		{ search: value },
-		{ query: { enabled: value.length > 0 } },
+		{ search },
+		{ query: { enabled: search.length > 0 } },
 	)
 
-	const onChangeDebounced = useMemo(() => debounce(onChange, 300), [onChange])
-
-	useEffect(() => {
-		setLocalValue(value)
-	}, [value])
-
 	function handleChange(value: string) {
-		setLocalValue(value)
 		if (value.length === 0) {
 			onClear()
 		} else {
-			onChangeDebounced(value)
+			onChange(value)
 		}
 	}
 
@@ -55,7 +50,7 @@ export function DropdownUsers({
 		<Row>
 			<SearchDropdown<MirageUserDto>
 				items={rawUsers}
-				value={localValue}
+				value={value}
 				onChange={handleChange}
 				onSelect={onSelect}
 				onClear={onClear}
@@ -68,8 +63,8 @@ export function DropdownUsers({
 			{onAdd && showAddButton && (
 				<AddButton
 					type="button"
-					$active={!!selectedUser}
-					disabled={!selectedUser}
+					$active={!!selectedUser && !isAddDisabled}
+					disabled={!selectedUser || isAddDisabled}
 					onClick={onAdd}
 				>
 					<UserPlus size={16} />

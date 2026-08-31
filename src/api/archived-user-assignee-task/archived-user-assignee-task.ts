@@ -16,18 +16,14 @@ import { useMutation } from "@tanstack/react-query"
 import type { ErrorType } from "../../axios"
 
 import { sendRequest } from "../../axios"
-import type {
-	ToggleUserTaskArchiveParams,
-	ToggleUserTaskArchivePathParameters,
-} from "../model"
+import type { ToggleUserTaskArchiveParams } from "../model"
 
 export const toggleUserTaskArchive = (
-	{ id }: ToggleUserTaskArchivePathParameters,
 	params: ToggleUserTaskArchiveParams,
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<void>({
-		url: `/archived-user-assignee-task/${id}`,
+		url: `/archived-user-assignee-task`,
 		method: "PATCH",
 		params,
 		signal,
@@ -41,19 +37,13 @@ export const getToggleUserTaskArchiveMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof toggleUserTaskArchive>>,
 		TError,
-		{
-			pathParams: ToggleUserTaskArchivePathParameters
-			params: ToggleUserTaskArchiveParams
-		},
+		{ params: ToggleUserTaskArchiveParams },
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof toggleUserTaskArchive>>,
 	TError,
-	{
-		pathParams: ToggleUserTaskArchivePathParameters
-		params: ToggleUserTaskArchiveParams
-	},
+	{ params: ToggleUserTaskArchiveParams },
 	TContext
 > => {
 	const mutationKey = ["toggleUserTaskArchive"]
@@ -67,14 +57,11 @@ export const getToggleUserTaskArchiveMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof toggleUserTaskArchive>>,
-		{
-			pathParams: ToggleUserTaskArchivePathParameters
-			params: ToggleUserTaskArchiveParams
-		}
+		{ params: ToggleUserTaskArchiveParams }
 	> = (props) => {
-		const { pathParams, params } = props ?? {}
+		const { params } = props ?? {}
 
-		return toggleUserTaskArchive(pathParams, params)
+		return toggleUserTaskArchive(params)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -94,10 +81,7 @@ export const useToggleUserTaskArchive = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof toggleUserTaskArchive>>,
 			TError,
-			{
-				pathParams: ToggleUserTaskArchivePathParameters
-				params: ToggleUserTaskArchiveParams
-			},
+			{ params: ToggleUserTaskArchiveParams },
 			TContext
 		>
 	},
@@ -105,10 +89,7 @@ export const useToggleUserTaskArchive = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof toggleUserTaskArchive>>,
 	TError,
-	{
-		pathParams: ToggleUserTaskArchivePathParameters
-		params: ToggleUserTaskArchiveParams
-	},
+	{ params: ToggleUserTaskArchiveParams },
 	TContext
 > => {
 	return useMutation(

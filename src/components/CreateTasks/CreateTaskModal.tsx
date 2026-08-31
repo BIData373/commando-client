@@ -2,7 +2,6 @@ import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
 import { omit, uniq } from "lodash"
-import { ChevronDown, ChevronUp } from "lucide-react"
 import { useRef, useState } from "react"
 import {
 	type CreateTaskDto,
@@ -22,21 +21,21 @@ import {
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { invalidateQueries } from "src/queryClient"
 import { getImmediateReferenceDate } from "src/utils/deadline-utils"
-import { getChangedFields } from "src/utils/form-utils"
+import { getChangedFields, NOTES_MAX_LENGTH } from "src/utils/form-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { CancelButton } from "../shared/CancelButton"
 import FlagIcon from "../shared/FlagIcon"
 import { FormField } from "../shared/FormField"
 import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
+import InputWithCount from "../shared/InputWithCount"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
+import TagField from "../TagField/TagField"
 import { Checkbox } from "../ui/checkbox"
 import { Dialog } from "../ui/dialog"
 import AssigneeField from "./AssigneeField"
 import DeadlineField from "./DeadlineField"
-import NotesField from "./NotesField"
 import SourceField from "./SourceField"
-import TagField from "./TagField"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -84,13 +83,11 @@ function CreateTaskModal({
 			},
 		},
 	})
-	const { mutateAsync: updateTask } = useUpdateTask({
+	const { mutateAsync: updateTask, isPending: isUpdatingTask } = useUpdateTask({
 		mutation: {
 			onSuccess: handleUpdateSuccess,
 		},
 	})
-
-	const [isDetailsExpanded, setIsDetailsExpanded] = useState(isEditMode)
 
 	function handleUpdateSuccess() {
 		invalidateQueries([
@@ -258,17 +255,13 @@ function CreateTaskModal({
 		)
 	}
 
-	function handleToggleDetails() {
-		setIsDetailsExpanded((prev) => !prev)
-	}
-
 	function handleNotesChange(value: string) {
 		form.setFieldValue("notes", value)
 	}
 
 	function handleAssigneeStatusChange(
 		_taskId: number,
-		assigneeId: number,
+		assigneeId: number | undefined,
 		statusId: number,
 	) {
 		form.setFieldValue(
@@ -323,7 +316,6 @@ function CreateTaskModal({
 	function validateSourceDate({ value }: { value: Date | null }) {
 		const { source, linkedSource } = form.state.values
 		if (source.trim() && !linkedSource && !value) {
-			setIsDetailsExpanded(true)
 			return "יש לבחור תאריך למקור חדש"
 		}
 		return undefined
@@ -399,7 +391,7 @@ function CreateTaskModal({
 										<ImportantFlagTooltip side="left" />
 										<FlagIcon />
 										<CheckboxRow>
-											<CheckboxLabelText>הגדר כהנחיה חשובה</CheckboxLabelText>
+											<CheckboxLabelText>הגדר כהנחיה במיקוד</CheckboxLabelText>
 											<Checkbox
 												checked={field.state.value}
 												onCheckedChange={(checked) =>
@@ -411,46 +403,18 @@ function CreateTaskModal({
 								)}
 							</form.Field>
 
-							{/* ─── Expand / Collapse Divider ──────────────────────────── */}
-							<DividerRow>
-								<DividerLine />
-								<ExpandButton onClick={handleToggleDetails}>
-									{isDetailsExpanded ? (
-										<ChevronUp size={16} />
-									) : (
-										<ChevronDown size={16} />
-									)}
-									<ExpandButtonText $expanded={isDetailsExpanded}>
-										פרטים נוספים
-									</ExpandButtonText>
-								</ExpandButton>
-								<DividerLine />
-							</DividerRow>
-
 							{/* ─── Additional Details ─────────────────────────────────── */}
-							<AdditionalDetailsWrapper
-								$expanded={isDetailsExpanded}
-								aria-hidden={!isDetailsExpanded}
-							>
+							<AdditionalDetailsWrapper>
 								<AdditionalDetails>
-									{/* Source + Date row */}
-									<form.Field
-										name="sourceDate"
-										validators={{ onSubmit: validateSourceDate }}
-									>
-										{(field) => (
-											<SourceField
-												workspaceId={workspaceId}
-												label="מקור הנחיה"
-												source={values.source}
-												sourceDate={values.sourceDate}
-												linkedSource={values.linkedSource}
-												onSourceSelect={handleSourceSelect}
-												onDateSelect={handleSourceDateSelect}
-												fields={{ date: field }}
-											/>
-										)}
-									</form.Field>
+									{/* Notes */}
+									<LabelText>הערה</LabelText>
+									<InputWithCount
+										text={values.notes ?? ""}
+										onChange={handleNotesChange}
+										maxLength={NOTES_MAX_LENGTH}
+										isTextArea={true}
+										placeholder="הערה"
+									></InputWithCount>
 
 									{/* Tag field */}
 									<TagField
@@ -461,11 +425,25 @@ function CreateTaskModal({
 										onTagRemove={handleTagRemove}
 									/>
 
-									{/* Notes */}
-									<NotesField
-										notes={values.notes ?? ""}
-										onNotesChange={handleNotesChange}
-									/>
+									{/* Source + Date row */}
+									<form.Field
+										name="sourceDate"
+										validators={{ onSubmit: validateSourceDate }}
+									>
+										{(field) => (
+											<SourceField
+												workspaceId={workspaceId}
+												label="שייך למקור"
+												source={values.source}
+												sourceDate={values.sourceDate}
+												linkedSource={values.linkedSource}
+												onSourceSelect={handleSourceSelect}
+												onDateSelect={handleSourceDateSelect}
+												fields={{ date: field }}
+												hideDateLabel
+											/>
+										)}
+									</form.Field>
 								</AdditionalDetails>
 							</AdditionalDetailsWrapper>
 						</FormContainer>
@@ -477,7 +455,7 @@ function CreateTaskModal({
 							title="שמור"
 							onClick={form.handleSubmit}
 							disabled={!values.title.trim() || (isEditMode && !hasChanges)}
-							loading={isPending}
+							loading={isPending || isUpdatingTask}
 							width={133}
 						/>
 						<CancelButton title="ביטול" onClick={onCancel} />
@@ -492,11 +470,17 @@ export default CreateTaskModal
 
 // ─── Modal Shell ─────────────────────────────────────────────────────────────
 
+const LabelText = styled.span`
+  font-weight: 400;
+  font-size: var(--fs-btn);
+  color: var(--text-color-2);
+`
+
 const ModalCard = styled(ModalContent)`
   width: 100%;
   max-width: 900px;
   max-height: 82vh;
-  min-height: 800px;
+  min-height: 850px;
   overflow: hidden;
 `
 
@@ -519,7 +503,7 @@ const ModalHeader = styled.div<{ $shadow: boolean }>`
   position: relative;
   z-index: 1;
   clip-path: inset(0 0 -20px 0);
-  box-shadow: ${({ $shadow }) => ($shadow ? "0px 10px 20px 0px rgba(0, 0, 0, 0.06)" : "none")};
+  box-shadow: ${({ $shadow }) => ($shadow ? "var(--shadow-modal-header)" : "none")};
 `
 
 const ScrollableContent = styled.div`
@@ -542,7 +526,7 @@ const ModalTitle = styled.h1`
   font-weight: 600;
   font-size: var(--fs-heading-h1);
   line-height: 50px;
-  color: black;
+  color: var(--text-color-2);
   margin: 0;
 `
 
@@ -552,13 +536,13 @@ const DirectiveTextarea = styled.textarea`
   width: 100%;
   height: 60px;
   padding: 4px 11px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--card-border);
   border-radius: 8px;
-  background: white;
+  background: var(--background);
   font-size: var(--fs-base);
   font-weight: 400;
   line-height: 24px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   resize: none;
   outline: none;
   box-sizing: border-box;
@@ -569,8 +553,8 @@ const DirectiveTextarea = styled.textarea`
   }
 
   &:focus {
-    border-color: #4096ff;
-    box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+    border-color: var(--button-color-hover);
+    box-shadow: var(--shadow-textarea-focus);
   }
 `
 
@@ -594,63 +578,15 @@ const CheckboxLabelText = styled.span`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--text-color-2);
   white-space: nowrap;
   cursor: pointer;
-`
-
-// ─── Divider ─────────────────────────────────────────────────────────────────
-
-const DividerRow = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-`
-
-const DividerLine = styled.div`
-  flex: 1;
-  height: 1px;
-  background: #d9d9d9;
-`
-
-const ExpandButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 32px;
-  padding-inline: 15px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  border-radius: 6px;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.04);
-  }
-`
-
-const ExpandButtonText = styled.span<{ $expanded: boolean }>`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: ${({ $expanded }) => ($expanded ? "rgba(0, 0, 0, 0.25)" : "#1677ff")};
-  white-space: nowrap;
 `
 
 // ─── Additional Details ──────────────────────────────────────────────────────
 
-const AdditionalDetailsWrapper = styled.div<{ $expanded: boolean }>`
-  display: grid;
+const AdditionalDetailsWrapper = styled.div`
   width: 100%;
-  grid-template-rows: ${({ $expanded }) => ($expanded ? "1fr" : "0fr")};
-  opacity: ${({ $expanded }) => ($expanded ? 1 : 0)};
-  transition: grid-template-rows 280ms ease, opacity 220ms ease;
-
-  & > * {
-    min-height: 0;
-    overflow: ${({ $expanded }) => ($expanded ? "visible" : "hidden")};
-  }
 `
 
 const AdditionalDetails = styled.div`

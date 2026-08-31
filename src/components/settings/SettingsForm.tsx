@@ -5,34 +5,26 @@ import { debounce } from "lodash"
 import { X } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
-import { getListAssigneesQueryKey } from "src/api/assignee/assignee"
 import type { UpdateWorkspaceDto } from "src/api/model"
-import {
-	getListPersonalTaskRowsQueryKey,
-	getListTaskRowsQueryKey,
-} from "src/api/task/task"
+import { UpdateWorkspaceErrorDtoMessage } from "src/api/model"
+import { getListPersonalTaskRowsQueryKey } from "src/api/task/task"
 import {
 	getGetPermittedWorkspacesQueryKey,
 	getListWorkspacesQueryKey,
 	useUpdateWorkspace,
 } from "src/api/workspace/workspace"
-import type { ErrorType } from "src/axios"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/queryClient"
+import { hasError } from "src/utils/error-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
+import { NAME_MAX_LENGTH } from "src/utils/workspace-utils"
 import { FormField } from "../shared/FormField"
-import { Input } from "../ui/input"
+import InputWithCount from "../shared/InputWithCount"
 import { IconDropdown } from "./IconDropdown"
 import { SelectCommand } from "./SelectCommand"
 
-const titleExistsError = "title-exists"
-const DATA_COUNTER_CLASS = "data-char-counter"
-
-const NAME_MAX_LENGTH = 50
 const DEBOUNCE_MS = 300
-
-type ApiError = ErrorType<{ message: string | string[] }>
 
 export function SettingsForm() {
 	const {
@@ -66,10 +58,9 @@ export function SettingsForm() {
 				},
 				{
 					onError: (error) => {
-						const messages = (error as ApiError)?.response?.data?.message
-						const messageList = Array.isArray(messages) ? messages : [messages]
-
-						if (messageList.includes(titleExistsError)) {
+						if (
+							hasError(error, UpdateWorkspaceErrorDtoMessage["title-exists"])
+						) {
 							toast.error("שם סביבה זה כבר קיים, אנא נסו שוב", {
 								closeButton: true,
 							})
@@ -97,8 +88,8 @@ export function SettingsForm() {
 		debouncedSubmit()
 	}, [values, debouncedSubmit])
 
-	function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
-		const next = e.target.value.slice(0, NAME_MAX_LENGTH)
+	function handleTitleChange(value: string) {
+		const next = value.slice(0, NAME_MAX_LENGTH)
 		if (!next.trim()) {
 			toast.error("שם סביבה הוא שדה חובה", {
 				closeButton: true,
@@ -134,20 +125,12 @@ export function SettingsForm() {
 	return (
 		<FormRoot>
 			<FormField label="שם סביבה">
-				<InputWrapper>
-					<StyledInput
-						value={values.title ?? ""}
-						onChange={handleTitleChange}
-						placeholder="הזן שם סביבה"
-						maxLength={NAME_MAX_LENGTH}
-					/>
-					<CharCounter
-						$atLimit={(values.title ?? "").length >= NAME_MAX_LENGTH}
-						className={DATA_COUNTER_CLASS}
-					>
-						{(values.title ?? "").length}/{NAME_MAX_LENGTH}
-					</CharCounter>
-				</InputWrapper>
+				<InputWithCount
+					text={values.title ?? ""}
+					onChange={handleTitleChange}
+					maxLength={NAME_MAX_LENGTH}
+					placeholder="הזן שם סביבה"
+				/>
 			</FormField>
 
 			<FormField label="שיוך פיקודי ארגוני">
@@ -191,32 +174,6 @@ const FormRoot = styled.div`
   gap: 16px;
   width: 400px;
   direction: rtl;
-`
-
-const CharCounter = styled.span<{ $atLimit: boolean }>`
-  font-size: var(--fs-sm);
-  color: ${({ $atLimit }) => ($atLimit ? "var(--color-danger)" : "var(--sea-ink-soft)")};
-  text-align: end;
-  opacity: 0;
-  transition: opacity 0.15s;
-`
-
-const InputWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
-
-  &:hover .${DATA_COUNTER_CLASS},
-  &:focus-within .${DATA_COUNTER_CLASS} {
-	opacity: 1;
-  }
-
-
-`
-
-const StyledInput = styled(Input)`
-  background: var(--background);
 `
 
 const IconPreview = styled.div`

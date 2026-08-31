@@ -3,7 +3,7 @@ import type { CreateSourceDto, UpdateSourceDto } from "src/api/model"
 import SourceField, {
 	type SourceFieldValidation,
 } from "../CreateTasks/SourceField"
-import TagField from "../CreateTasks/TagField"
+import TagField from "../TagField/TagField"
 import FileUploadField from "./FileUploadField"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -56,6 +56,7 @@ function DiscussionForm({
 				lockedTags={[]}
 				onTagSelect={onTagSelect}
 				onTagRemove={onTagRemove}
+				caption="תגיות אלו ישויכו לכלל ההנחיות מתוך דיון זה."
 			/>
 
 			<FileUploadField

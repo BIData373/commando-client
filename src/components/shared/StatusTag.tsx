@@ -2,6 +2,7 @@ import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import { TbChevronDown } from "react-icons/tb"
 import type { WorkspaceStatusDto } from "src/api/model"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface StatusTagProps {
 	status: Pick<WorkspaceStatusDto, "name" | "color">
@@ -18,16 +19,29 @@ export function StatusTag({
 	withArrow = false,
 	open = false,
 }: StatusTagProps) {
-	return (
+	const tag = (
 		<Tag
 			$fontColor={color}
 			$backgroundColor={color}
 			$interactive={interactive}
 			$editable={editable}
+			$withArrow={withArrow}
 		>
-			{name}
 			{withArrow && <Arrow size={12} $open={open} />}
+			<Label $withArrow={withArrow}>
+				<Text>{name}</Text>
+			</Label>
+			{withArrow && <Reserve />}
 		</Tag>
+	)
+
+	return editable ? (
+		tag
+	) : (
+		<Tooltip>
+			<TooltipTrigger asChild>{tag}</TooltipTrigger>
+			<TooltipContent>לא קיימות הרשאות עריכה</TooltipContent>
+		</Tooltip>
 	)
 }
 
@@ -38,18 +52,51 @@ const Arrow = styled(TbChevronDown)<{ $open: boolean }>`
   transform: ${({ $open }) => ($open ? "rotate(180deg)" : "rotate(0deg)")};
 `
 
+const Reserve = styled.span`
+  flex-shrink: 1;
+  flex-basis: 14px;
+  min-width: 0;
+`
+
+const Label = styled.span<{ $withArrow: boolean }>`
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  ${({ $withArrow }) =>
+		$withArrow
+			? css`
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: auto;
+  max-width: 48px;
+  `
+			: css`
+  flex: 1;
+  min-width: 0;
+  `}
+`
+
+const Text = styled.span`
+  direction: rtl;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
 const Tag = styled.span<{
 	$fontColor: string
 	$backgroundColor: string
 	$interactive?: boolean
 	$editable?: boolean
+	$withArrow?: boolean
 }>`
+  direction: ltr;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 4px;
+  gap: 2px;
   width: 76px;
-  padding: 1px 8px;
+  padding: ${({ $withArrow }) => ($withArrow ? "1px 0 1px 8px" : "1px 8px")};
   border-radius: 999px;
   font-size: var(--fs-sm);
   line-height: 20px;

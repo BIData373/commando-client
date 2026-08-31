@@ -11,13 +11,11 @@ const VISIBLE_COLUMNS: (keyof TaskRowDto)[] = ["title", "status", "assignee"]
 
 interface RecentlyCompletedProps {
 	tasks: TaskRowDto[]
-	onUpdateStatusSuccess?(): void
 	onClick?(taskId: number): void
 }
 
 export default function RecentlyCompleted({
 	tasks,
-	onUpdateStatusSuccess,
 	onClick,
 }: RecentlyCompletedProps) {
 	const completedTasks = useMemo(
@@ -38,7 +36,6 @@ export default function RecentlyCompleted({
 			<TaskPreviewTable
 				tasks={completedTasks}
 				visibleColumns={VISIBLE_COLUMNS}
-				onUpdateStatusSuccess={onUpdateStatusSuccess}
 				onClick={onClick}
 				emptyState={<EmptyCardState {...DASHBOARD_EMPTY_STATES.completed} />}
 			/>

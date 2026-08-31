@@ -45,7 +45,7 @@ export default function WorkspaceCard({
 			</PermissionRow>
 
 			<AvatarWrapper>
-				<BigAvatarImage src={formatMesibaIcon(icon)} alt={title} />
+				<MesibaAvatarImage src={formatMesibaIcon(icon)} alt={title} />
 				<WorkspaceInitials>{getInitials(title)}</WorkspaceInitials>
 			</AvatarWrapper>
 
@@ -80,7 +80,7 @@ const CardRoot = styled.div`
 const PermissionRow = styled.div`
   display: flex;
   align-items: flex-start;
-  justify-content: flex-end;
+  justify-content: flex-start;
   width: 100%;
   min-height: 16px;
 `
@@ -89,6 +89,7 @@ const PermissionBadge = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
+  direction: ltr;
 `
 
 const PermissionText = styled.span`
@@ -106,16 +107,23 @@ const PermissionDot = styled.div`
 `
 
 const AvatarWrapper = styled(MesibaAvatarRoot)`
-  width: 85px;
-  height: 119px;
-`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0 1rem;
+  flex: 1;
 
-const BigAvatarImage = styled(MesibaAvatarImage)`
-  object-fit: contain;
+  &::after  {
+    border: none;
+  }
 `
 
 const WorkspaceInitials = styled(MesibaAvatarFallback)`
   font-size: var(--fs-heading-1);
+  width: 85px;
+  height: 119px;
+  border: 1px solid var(--ring);
 `
 
 const TitleText = styled.span`

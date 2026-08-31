@@ -1,13 +1,17 @@
-import styled from "@emotion/styled"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
-import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithActions"
-import { formatDateShort } from "src/functions/date-utils"
+import { ARCHIVED_AT_COLUMN } from "src/components/Tasks/ArchivedAtColumn"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
+import {
+	ARCHIVE_DEFAULT_COLUMN_ORDER,
+	ARCHIVE_DEFAULT_HIDDEN,
+	COLUMN_LABELS,
+	TASK_COLUMN_ID,
+} from "src/utils/task-table-utils"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../providers/UserViewProvider"
 
@@ -21,51 +25,26 @@ export const Route = createFileRoute("/personal/archive")({
 	},
 })
 
-const ARCHIVE_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
-	"title",
-	"status",
-	"assignee",
-	"deadlineType",
-	"source",
-	"workspace",
-	"archivedAt",
-	"createdAt",
-	"tags",
-	"notes",
-	"updatedAt",
-]
-
-const ARCHIVE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
-	"tags",
-	"notes",
-	"updatedAt",
-])
-
-const ARCHIVE_EXTRA_COLUMNS: ColumnDef<TaskRowWithWorkspaceDto>[] = [
-	{
-		id: "archivedAt",
-		header: ({ column }) => (
-			<ColumnHeaderWithActions label="הועבר לארכיון" column={column} />
-		),
-		size: 140,
-		enableColumnFilter: false,
-		accessorFn: (row) => row.archivedAt,
-		cell: ({
-			row: {
-				original: { archivedAt },
-			},
-		}) => <DateCell>{archivedAt && formatDateShort(archivedAt)}</DateCell>,
-	},
-]
+const ARCHIVE_EXTRA_COLUMNS = [
+	ARCHIVED_AT_COLUMN,
+] as ColumnDef<TaskRowWithWorkspaceDto>[]
 
 function PersonalArchivePage() {
 	const navigate = useNavigate()
 
 	function handleOpenTask(taskId: number) {
 		navigate({
-			to: "/personal/archive/task/$taskId",
+			to: "/personal/archive/$taskId",
 			params: { taskId: String(taskId) },
 			search: { view: TasksView.TABLE },
+		})
+	}
+
+	function handleAddComment(taskId: number) {
+		navigate({
+			to: "/personal/archive/$taskId",
+			params: { taskId: String(taskId) },
+			search: { view: TasksView.TABLE, focusComment: true },
 		})
 	}
 
@@ -80,16 +59,13 @@ function PersonalArchivePage() {
 					filePrefix="ארכיון אישי"
 					onOpenTask={handleOpenTask}
 					isArchived={true}
-					extraColumnsMeta={[{ id: "archivedAt", label: "הועבר לארכיון" }]}
+					extraColumnsMeta={[
+						{ id: TASK_COLUMN_ID.archivedAt, label: COLUMN_LABELS.archivedAt },
+					]}
 					extraColumns={ARCHIVE_EXTRA_COLUMNS}
+					onAddComment={handleAddComment}
 				/>
 			</TasksFiltersProvider>
 		</UserViewProvider>
 	)
 }
-
-const DateCell = styled.span`
-  font-size: var(--fs-sm);
-  color: var(--sea-ink-soft);
-  padding-inline: 6px;
-`

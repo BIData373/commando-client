@@ -8,7 +8,6 @@ import { uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
-import { useUpsertAssigneeTaskStatus } from "src/api/assignee-task-status/assignee-task-status"
 import type {
 	DeadlineType,
 	TaskRowDto,
@@ -19,11 +18,11 @@ import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { buildFilterOptionsMap } from "src/functions/filter-utils"
 import { type TaskArchiveEntry, useTaskColumns } from "src/hooks/useTaskColumns"
+import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { getEmptyState } from "src/utils/empty-state-utils"
 import {
 	DISABLED_CLICK_COLUMNS,
-	HAS_ASSIGNEE_DATA_ATTR,
 	TASK_ROW_ID_SEPARATOR,
 } from "src/utils/task-table-utils"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -38,6 +37,7 @@ interface TaskTableProps<TTask extends TaskRowDto> {
 	hiddenColumns: Set<keyof TTask>
 	statuses?: WorkspaceStatusDto[]
 	onEdit?: (taskId: number) => void
+	onAddComment?: (taskId: number) => void
 	onClick?: (taskId: number) => void
 	extraColumns?: ColumnDef<TTask>[]
 	showHeader?: boolean
@@ -63,6 +63,7 @@ function TaskTable<TTask extends TaskRowDto>({
 	hiddenColumns,
 	statuses,
 	onEdit,
+	onAddComment,
 	onClick,
 	extraColumns = [],
 	showHeader = true,
@@ -85,15 +86,15 @@ function TaskTable<TTask extends TaskRowDto>({
 		setSorting,
 		columnsFilters,
 		setColumnsFilters,
+		assigneeFilter,
+		setAssigneeFilter,
 	} = useTasksFilters()
 
 	const { mutate: deleteTaskMutate } = useDeleteTask({
 		mutation: { onSuccess: onChangeSuccess },
 	})
 
-	const { mutateAsync: upsertStatus } = useUpsertAssigneeTaskStatus({
-		mutation: { networkMode: "always", onSuccess: onChangeSuccess },
-	})
+	const updateStatus = useUpdateTaskStatus()
 
 	const [selectMode, setSelectMode] = useState(false)
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
@@ -109,8 +110,11 @@ function TaskTable<TTask extends TaskRowDto>({
 			...(deadlineTypeFilter.length
 				? [{ id: "deadlineType", value: deadlineTypeFilter }]
 				: []),
+			...(assigneeFilter.length
+				? [{ id: "assignee", value: assigneeFilter }]
+				: []),
 		],
-		[statusFilter, deadlineTypeFilter],
+		[statusFilter, deadlineTypeFilter, assigneeFilter],
 	)
 
 	const columnFilters: ColumnFiltersState = useMemo(() => {
@@ -137,7 +141,13 @@ function TaskTable<TTask extends TaskRowDto>({
 			"deadlineType",
 		) as DeadlineType[]
 
+		const tableAssigneeColumnValue = getColumnFilter(
+			newFilters,
+			"assignee",
+		) as string[]
+
 		setColumnsFilters(newFilters)
+		setAssigneeFilter(tableAssigneeColumnValue)
 		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
 	}
 
@@ -220,23 +230,14 @@ function TaskTable<TTask extends TaskRowDto>({
 		rowKeys: string[],
 		status: WorkspaceStatusDto,
 	) {
-		const requests = rowKeys.flatMap((rowKey) => {
-			const task = tasks.find((t) => t.rowKey === rowKey)
-			return task?.assignee
-				? [
-						upsertStatus({
-							data: {
-								taskId: task.id,
-								assigneeId: task.assignee.id,
-								statusId: status.id,
-							},
-						}),
-					]
-				: []
-		})
-
 		try {
-			await Promise.all(requests)
+			rowKeys.forEach((rowKey) => {
+				const task = tasks.find((t) => t.rowKey === rowKey)
+				if (task) {
+					updateStatus(task.id, task.assignee?.id, status)
+				}
+			})
+
 			toast.success("הסטטוס עודכן בהצלחה")
 		} catch {
 			toast.error("שגיאה - סטטוס לא עודכן")
@@ -249,9 +250,9 @@ function TaskTable<TTask extends TaskRowDto>({
 		columnOrder,
 		hiddenColumns,
 		extraColumns,
-		onUpdateStatusSuccess: onChangeSuccess,
 		searchQuery,
 		filterOptionsMap,
+		statuses,
 		selectMode: {
 			enabled: selectMode,
 			tasks,
@@ -259,8 +260,10 @@ function TaskTable<TTask extends TaskRowDto>({
 			onSelectAll: handleSelectAll,
 		},
 		showMenuColumn: showActionsColumn,
+		getPermissionType,
 		actions: {
 			onEdit,
+			onAddComment,
 			onArchive,
 			onUnarchive,
 			onDelete: allowDelete ? removeTasks : undefined,
@@ -325,12 +328,46 @@ function TaskTable<TTask extends TaskRowDto>({
 				/>
 			</TableWrapper>
 			<RowContextMenu
-				task={contextMenu?.task ?? null}
 				position={contextMenu ? { x: contextMenu.x, y: contextMenu.y } : null}
 				onOpenChange={handleContextMenuOpenChange}
-				onEdit={onEdit}
-				onEnterSelect={handleEnterSelectMode}
-				onDelete={(id) => removeTasks([id])}
+				actions={
+					contextMenu
+						? {
+								onEdit:
+									onEdit &&
+									getPermissionType(contextMenu.task) === PermissionType.MANAGER
+										? () => onEdit(contextMenu.task.id)
+										: undefined,
+								onAddComment:
+									onAddComment && (() => onAddComment(contextMenu.task.id)),
+								onArchive:
+									onArchive &&
+									(() =>
+										onArchive([
+											{
+												id: contextMenu.task.id,
+												assigneeId: contextMenu.task.assignee?.id,
+											},
+										])),
+								onUnarchive:
+									onUnarchive &&
+									(() =>
+										onUnarchive([
+											{
+												id: contextMenu.task.id,
+												assigneeId: contextMenu.task.assignee?.id,
+											},
+										])),
+								onEnterSelect: () =>
+									handleEnterSelectMode(contextMenu.task.rowKey),
+								onDelete:
+									allowDelete &&
+									getPermissionType(contextMenu.task) === PermissionType.MANAGER
+										? () => removeTasks([contextMenu.task.id])
+										: undefined,
+							}
+						: {}
+				}
 			/>
 			<BulkActionsBar
 				isVisible={selectMode}
@@ -368,6 +405,7 @@ const TableWrapper = styled.div`
     overflow: auto;
     max-height: 100%;
     direction: ltr;
+    overscroll-behavior: contain;
   }
 
   table {
@@ -377,14 +415,12 @@ const TableWrapper = styled.div`
   }
 
   tr {
+    border-bottom: none;
+
     &:hover,
     &[data-highlighted],
     &:has([data-slot="dropdown-menu-trigger"][data-state="open"]) {
       background: var(--table-rows-bg-hover);
-    }
-
-    &:last-of-type td {
-      border-bottom: none;
     }
   }
 
@@ -397,11 +433,11 @@ const TableWrapper = styled.div`
     line-height: 24px;
     color: var(--text-color);
     height: 48px;
-    white-space: nowrap;
+    white-space: normal;
     background: var(--background);
     border-right: 0.5px solid var(--Background-color-bg-text-active);
     box-shadow: inset 0 -0.5px 0 0 var(--Background-color-bg-text-active);
-	cursor: default;
+    cursor: default;
 
     &:first-of-type {
       border-right: none;
@@ -410,14 +446,17 @@ const TableWrapper = styled.div`
 
   td {
     position: relative;
+    vertical-align: middle;
+    cursor: default;
+  }
+
+  td:not([data-virtual-spacer]) {
     padding: 0 6px;
     height: 43px;
     max-height: 43px;
-    vertical-align: middle;
     overflow: hidden;
     border: 0.5px solid var(--Background-color-bg-text-active);
-	cursor: default;
-	
+
     &:first-of-type {
       border-right: none;
     }
@@ -426,13 +465,19 @@ const TableWrapper = styled.div`
       border-left: none;
     }
 
-    /* Status cell is interactive (opens dropdown) only when the row has an assignee */
-    &[data-column-id="status"]:has([${HAS_ASSIGNEE_DATA_ATTR}]) {
+    &[data-column-id="status"] {
       cursor: pointer;
 
       &:hover {
         background: var(--status-cell-bg-hover);
       }
     }
+  }
+
+  td[data-virtual-spacer] {
+    padding: 0;
+    border: none;
+    max-height: none;
+    overflow: visible;
   }
 `

@@ -6,12 +6,7 @@ import { useHeader } from "../providers/HeaderProvider"
 import { UserDropdown } from "./UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Separator } from "./ui/separator"
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "./ui/tooltip"
+import { TooltipProvider } from "./ui/tooltip"
 
 export default function Header() {
 	const {
@@ -26,14 +21,7 @@ export default function Header() {
 
 					<CenterSection>
 						<TooltipProvider>
-							<Tooltip>
-								<TooltipTrigger>
-									<TooltipTrigger asChild>
-										<CenterTitle>{center}</CenterTitle>
-									</TooltipTrigger>
-									<TooltipContent>{center}</TooltipContent>
-								</TooltipTrigger>
-							</Tooltip>
+							<CenterTitle>{center}</CenterTitle>
 						</TooltipProvider>
 					</CenterSection>
 
@@ -78,26 +66,29 @@ const HeaderRoot = styled.header`
 
 const HeaderInner = styled.div`
   display: grid;
-  grid-template-columns: 1fr minmax(0, auto) 1fr;
+  grid-template-columns: minmax(240px, auto) 1fr minmax(240px, auto);
   align-items: center;
-  padding: 8px 0;
+  height: 56px;
 `
 
 const StartSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  justify-content: flex-start;
+  min-width: 0;
 `
 
 const CenterSection = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   min-width: 0;
   overflow: hidden;
 `
 
-const CenterTitle = styled.p`
+const CenterTitle = styled.div`
   margin: 0;
   font-size: var(--fs-heading-3);
   font-weight: 500;
@@ -105,6 +96,8 @@ const CenterTitle = styled.p`
   color: var(--colors-base-neutral-11);
   min-width: 0;
   overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -114,6 +107,7 @@ const EndSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  min-width: 0;
 `
 
 const EndSectionSeparator = styled(Separator)`
@@ -160,4 +154,5 @@ const BiData = styled.span`
   font-size: var(--fs-btn);
   align-self: flex-start;
   line-height: 40px;
+  white-space: nowrap;
 `
