@@ -14,14 +14,13 @@ import {
 interface StatusDropdownProps {
 	status: WorkspaceStatusDto
 	statuses?: WorkspaceStatusDto[]
-	workspaceId?: number
 	taskId: number
 	assigneeId?: number
 	editable?: boolean
 	onUpdate: (
 		taskId: number,
 		assigneeId: number | undefined,
-		statusId: number,
+		status: WorkspaceStatusDto,
 	) => void
 }
 
@@ -29,7 +28,6 @@ export const StatusDropdown = memo(
 	({
 		status,
 		statuses: providedStatuses,
-		workspaceId,
 		taskId,
 		assigneeId,
 		editable = false,
@@ -39,21 +37,16 @@ export const StatusDropdown = memo(
 
 		const { data: fetchedStatuses = [], isLoading: isFetchingStatuses } =
 			useListWorkspaceStatuses(
-				{ workspaceId: workspaceId ?? -1 },
-				{
-					query: {
-						enabled:
-							providedStatuses === undefined && workspaceId !== undefined,
-					},
-				},
+				{ workspaceId: status.workspaceId },
+				{ query: { enabled: providedStatuses === undefined } },
 			)
 
 		const statuses = providedStatuses ?? fetchedStatuses
 		const statusesReady = statuses !== undefined && !isFetchingStatuses
 
-		function handleSelectStatus(newStatusId: number) {
-			if (newStatusId !== status.id) {
-				onUpdate(taskId, assigneeId, newStatusId)
+		function handleSelectStatus(newStatus: WorkspaceStatusDto) {
+			if (newStatus.id !== status.id) {
+				onUpdate(taskId, assigneeId, newStatus)
 			}
 		}
 
@@ -77,7 +70,7 @@ export const StatusDropdown = memo(
 								<StatusDropdownItem
 									key={s.id}
 									$selected={s.id === status.id}
-									onSelect={() => handleSelectStatus(s.id)}
+									onSelect={() => handleSelectStatus(s)}
 								>
 									<StatusTag status={s} interactive editable={editable} />
 								</StatusDropdownItem>

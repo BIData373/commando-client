@@ -68,7 +68,6 @@ interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	actions?: ActionsConfig
 	showMenuColumn?: boolean
 	statuses?: WorkspaceStatusDto[]
-	onUpdateStatusSuccess?(): void
 	onTitleDoubleClick?: (taskId: number) => void
 	getPermissionType?(task?: TTask): PermissionType | null | undefined
 }
@@ -83,12 +82,9 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 	actions,
 	showMenuColumn = true,
 	statuses,
-	onUpdateStatusSuccess,
 	getPermissionType,
 }: UseTaskColumnsOptions<TTask>) {
-	const handleUpdateStatus = useUpdateTaskStatus({
-		onSuccess: onUpdateStatusSuccess,
-	})
+	const handleUpdateStatus = useUpdateTaskStatus()
 
 	const columns = useMemo<ColumnDef<TTask>[]>(() => {
 		// TODO Move all constant fields to task-table-utils
@@ -255,14 +251,13 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				...TASK_COLUMN_DEFINITIONS.status,
 				cell: ({
 					row: {
-						original: { id, status, assignee, workspaceId, editable },
+						original: { id, status, assignee, editable },
 					},
 				}) =>
 					status && (
 						<StatusDropdown
 							status={status}
 							statuses={statuses}
-							workspaceId={workspaceId}
 							assigneeId={assignee?.id}
 							editable={editable}
 							taskId={id}

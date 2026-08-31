@@ -23,7 +23,7 @@ export const AssigneeContainer = ({
 }: AssigneeContainerProps) => {
 	const { data: statuses = [] } = useListWorkspaceStatuses({ workspaceId })
 
-	const handleUpdateAssigneeStatus = useUpdateTaskStatus({ workspaceId })
+	const handleUpdateAssigneeStatus = useUpdateTaskStatus()
 
 	return (
 		<AssigneeRowContainer $enabled={editable && !isAdmin}>

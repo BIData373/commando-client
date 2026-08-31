@@ -93,9 +93,7 @@ function TaskTable<TTask extends TaskRowDto>({
 		mutation: { onSuccess: onChangeSuccess },
 	})
 
-	const updateStatus = useUpdateTaskStatus({
-		onSuccess: onChangeSuccess,
-	})
+	const updateStatus = useUpdateTaskStatus()
 
 	const [selectMode, setSelectMode] = useState(false)
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
@@ -234,7 +232,7 @@ function TaskTable<TTask extends TaskRowDto>({
 				return
 			}
 
-			updateStatus(task.id, task.assignee?.id, status.id)
+			updateStatus(task.id, task.assignee?.id, status)
 		})
 	}
 
@@ -244,7 +242,6 @@ function TaskTable<TTask extends TaskRowDto>({
 		columnOrder,
 		hiddenColumns,
 		extraColumns,
-		onUpdateStatusSuccess: onChangeSuccess,
 		searchQuery,
 		filterOptionsMap,
 		statuses,

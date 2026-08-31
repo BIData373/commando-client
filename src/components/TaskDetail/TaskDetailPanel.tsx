@@ -128,7 +128,7 @@ function TaskDetailPanel({
 		mutation: { onSettled: handleSettled },
 	})
 
-	const handleUpdateTaskStatus = useUpdateTaskStatus({ workspaceId })
+	const handleUpdateTaskStatus = useUpdateTaskStatus()
 
 	const displayDate = getDeadlineDisplayDate(
 		deadlineType,
@@ -266,7 +266,6 @@ function TaskDetailPanel({
 							<StatusTagContainer>
 								<StatusDropdown
 									status={status}
-									workspaceId={workspaceId}
 									taskId={id}
 									editable={editable}
 									onUpdate={handleUpdateTaskStatus}
