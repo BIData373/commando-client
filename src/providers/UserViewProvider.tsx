@@ -1,25 +1,19 @@
 import styled from "@emotion/styled"
 import { useQueryClient } from "@tanstack/react-query"
-import {
-	createContext,
-	type PropsWithChildren,
-	useContext,
-	useRef,
-} from "react"
+import { createContext, type PropsWithChildren, useContext } from "react"
 import type { TaskRowWithWorkspaceDto, UserViewDto } from "src/api/model"
 import { DistributionTab } from "src/api/model/distribution-tab"
 import { QuickFilter } from "src/api/model/quick-filter"
 import {
 	getGetUserViewQueryKey,
-	upsertUserView,
 	useGetUserView,
+	useUpsertUserView as useMutateUserView,
 } from "src/api/user-view/user-view"
-
 import { Spinner } from "src/components/ui/spinner"
 
 export interface UserViewContext {
 	view: UserViewDto
-	updateView(nextView: UserViewDto): Promise<void>
+	updateView(nextView: UserViewDto): void
 	defaultColumnOrder: (keyof TaskRowWithWorkspaceDto)[]
 }
 
@@ -38,6 +32,7 @@ export function UserViewProvider({
 	defaultHiddenColumns,
 }: UserViewProviderProps) {
 	const queryClient = useQueryClient()
+	const userViewQueryKey = getGetUserViewQueryKey({ workspaceId })
 	const defaultView = {
 		table: {
 			sorting: [],
@@ -68,26 +63,27 @@ export function UserViewProvider({
 
 	const view = data ?? defaultView
 
-	const latestViewRef = useRef<UserViewDto | null>(null)
+	const { mutate: mutateUserView } = useMutateUserView({
+		mutation: {
+			networkMode: "always",
+			onMutate: ({ data }) => {
+				const previousView =
+					queryClient.getQueryData<UserViewDto>(userViewQueryKey)
 
-	const updateView = async (nextView: UserViewDto) => {
-		const queryKey = getGetUserViewQueryKey({ workspaceId })
+				queryClient.setQueryData<UserViewDto>(userViewQueryKey, data.view)
 
-		latestViewRef.current = nextView
+				return { previousView }
+			},
+			onError: (_error, _variables, context) => {
+				if (context?.previousView) {
+					queryClient.setQueryData(userViewQueryKey, context.previousView)
+				}
+			},
+		},
+	})
 
-		await queryClient.cancelQueries({ queryKey })
-		if (latestViewRef.current !== nextView) return
-
-		queryClient.setQueryData(queryKey, nextView)
-
-		await upsertUserView({
-			workspaceId,
-			view: nextView,
-		})
-
-		if (latestViewRef.current === nextView) {
-			queryClient.invalidateQueries({ queryKey })
-		}
+	function updateView(nextView: UserViewDto) {
+		mutateUserView({ data: { workspaceId, view: nextView } })
 	}
 
 	return isLoading ? (
