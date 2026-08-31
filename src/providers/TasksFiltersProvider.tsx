@@ -201,7 +201,6 @@ export function TasksFiltersProvider({
 		}
 
 		updateTableView({
-			...view.table,
 			columnVisibility: {
 				...columnVisibility,
 				hiddenColumns: [...nextHiddenColumns],
