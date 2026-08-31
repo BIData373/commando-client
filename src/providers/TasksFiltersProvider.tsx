@@ -210,7 +210,6 @@ export function TasksFiltersProvider({
 
 	function setColumnOrder(order: (keyof TaskRowWithWorkspaceDto)[]) {
 		updateTableView({
-			...view.table,
 			columnVisibility: {
 				...columnVisibility,
 				columnOrder: order,
