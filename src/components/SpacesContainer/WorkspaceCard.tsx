@@ -17,9 +17,11 @@ import { PERMISSION_LABEL } from "src/utils/permissions-utils"
 
 interface WorkspaceCardProps {
 	workspace: WorkspaceWithPermissionDto
+	className?: string
 }
 
 export default function WorkspaceCard({
+	className,
 	workspace: { title, urlName, icon, permissionType },
 }: WorkspaceCardProps) {
 	const navigate = useNavigate()
@@ -32,7 +34,7 @@ export default function WorkspaceCard({
 	}
 
 	return (
-		<CardRoot onClick={handleWorkspaceClick}>
+		<CardRoot onClick={handleWorkspaceClick} className={className}>
 			<PermissionRow>
 				{permissionType && (
 					<PermissionBadge>
@@ -61,10 +63,10 @@ export default function WorkspaceCard({
 
 const CardRoot = styled.div`
   display: flex;
-  width: 205px;
-  height: 219px;
-  padding: 16px;
   flex-direction: column;
+  aspect-ratio: 205 / 219;
+  width: 100%;
+  padding: 16px;
   align-items: center;
   gap: 12px;
   border-radius: 8px;
@@ -113,6 +115,7 @@ const AvatarWrapper = styled(MesibaAvatarRoot)`
   width: 100%;
   padding: 0 1rem;
   flex: 1;
+  min-height: 0;
 
   &::after  {
     border: none;
@@ -121,8 +124,8 @@ const AvatarWrapper = styled(MesibaAvatarRoot)`
 
 const WorkspaceInitials = styled(MesibaAvatarFallback)`
   font-size: var(--fs-heading-1);
-  width: 85px;
-  height: 119px;
+  height: clamp(60px, 100%, 119px);
+  max-width: 85px;
   border: 1px solid var(--ring);
 `
 

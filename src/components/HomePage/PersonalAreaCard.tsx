@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { ArrowLeft } from "lucide-react"
 import { WorkspaceStatusType } from "src/api/model"
 import { useListPersonalTaskRows } from "src/api/task/task"
-import { PrimaryButton } from "src/components/shared/PrimaryButton"
+import { PrimaryButton as PrimaryButtonPrimitive } from "src/components/shared/PrimaryButton"
 import { STATUS_DEFAULTS } from "src/functions/status-defaults"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
@@ -132,7 +132,7 @@ const TitleRow = styled.div`
 
 const Title = styled.span`
   color: var(--Color-Subtitle);
-  font-size: clamp(22px, 1.8vw, 34px);
+  font-size: clamp(22px, 1.6vw, 30px);
   font-weight: 400;
   line-height: clamp(30px, 4.3vh, 46px);
 `
@@ -185,7 +185,7 @@ const StatItem = styled.div`
 `
 
 const StatNumber = styled.span`
-  font-size: 24px;
+  font-size: var(--fs-xl);
   font-weight: 400;
   line-height: 32px;
   color: var(--text-color-2);
@@ -193,7 +193,7 @@ const StatNumber = styled.span`
 `
 
 const EmptyText = styled.span`
-  font-size: 20px;
+  font-size: var(--fs-base);
   font-weight: 400;
   line-height: 28px;
   color: var(--text-color-2);
@@ -210,8 +210,11 @@ const StatTag = styled.span<{ $color: string }>`
   border-radius: 35px;
   background: rgb(from ${({ $color }) => $color} r g b / 0.1);
   color: ${({ $color }) => $color};
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 400;
   line-height: 22px;
   white-space: nowrap;
+`
+const PrimaryButton = styled(PrimaryButtonPrimitive)`
+	font-size: var(--fs-btn);
 `
