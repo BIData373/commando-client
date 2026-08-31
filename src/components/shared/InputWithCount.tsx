@@ -38,7 +38,7 @@ function InputWithCount({
 					{text.length}/{maxLength}
 				</CharCount>
 			</InputWrapper>
-			{error && <ErrorRow>{error}</ErrorRow>}
+			<ErrorRow $visible={!!error}>{error}&nbsp;</ErrorRow>
 		</FormItem>
 	)
 }
@@ -65,12 +65,13 @@ const InputWrapper = styled.div<{ $hasError: boolean }>`
   }
 `
 
-const ErrorRow = styled.span`
+const ErrorRow = styled.span<{ $visible: boolean }>`
   font-size: var(--fs-sm);
   color: var(--Error-color-error);
   line-height: 18px;
   padding-inline-start: 10px;
   align-self: flex-start;
+  visibility: ${({ $visible }) => ($visible ? "visible" : "hidden")};
 `
 
 const Textarea = styled.textarea`

@@ -30,7 +30,11 @@ export function FormField({
 				</LabelRow>
 			)}
 			{children}
-			{showError && <ErrorText>{String(errors[0])}</ErrorText>}
+			{(field || error !== undefined) && (
+				<ErrorText style={{ visibility: showError ? "visible" : "hidden" }}>
+					{showError ? String(errors[0]) : "\u00A0"}
+				</ErrorText>
+			)}
 		</Wrapper>
 	)
 }

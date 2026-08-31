@@ -113,7 +113,7 @@ export function NewWorkspaceDetailsForm({
 					onChange={handleTitleChange}
 					maxLength={NAME_MAX_LENGTH}
 					placeholder="למשל 'לשכת אלוף פד&quot;ם'"
-					error={showErrors ? errors.title : undefined}
+					error={showErrors ? errors.title : ""}
 				/>
 			</FormField>
 
@@ -145,14 +145,14 @@ export function NewWorkspaceDetailsForm({
 					onChange={handleUrlNameChange}
 					maxLength={NAME_MAX_LENGTH}
 					placeholder='למשל "lishkat_padam"'
-					error={showErrors ? errors.urlName : undefined}
+					error={showErrors ? errors.urlName : ""}
 				/>
 			</FormField>
 
 			<FormField
 				label="שיוך פיקודי"
 				required
-				error={showErrors ? errors.pikudId : undefined}
+				error={showErrors ? (errors.pikudId ?? "") : ""}
 			>
 				<SelectCommand
 					value={values.pikudId}
@@ -206,7 +206,6 @@ const Root = styled.div`
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  gap: 16px;
   width: 100%;
 `
 
