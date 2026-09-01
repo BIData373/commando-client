@@ -146,7 +146,7 @@ const columns: ColumnDef<NewTaskRow>[] = [
 					onDeadlineTypeChange={(type) =>
 						updateRow(id, { deadlineType: type, dueDate: undefined })
 					}
-					onDateChange={(date) => date && updateRow(id, { dueDate: date })}
+					onDateChange={(date) => updateRow(id, { dueDate: date })}
 				/>
 			)
 		},
