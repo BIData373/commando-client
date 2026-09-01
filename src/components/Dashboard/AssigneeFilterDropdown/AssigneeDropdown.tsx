@@ -68,7 +68,9 @@ const AssigneeOptionRow = styled.div`
   direction: rtl;
   display: flex;
   align-items: center;
+  align-self: flex-end;
   gap: 8px;
+  width: 100%;
 `
 
 const AssigneeName = styled.span`
