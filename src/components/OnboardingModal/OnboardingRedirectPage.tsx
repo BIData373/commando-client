@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import { handleOpenUserGuide } from "src/utils/redirect-utils"
+import { openUserGuide } from "src/utils/redirect-utils"
 import createWorkspace from "../../assets/createWorkspace.svg"
 import toPersonalSpace from "../../assets/toPersonalSpace.svg"
 import { PrimaryButton } from "../shared/PrimaryButton"
@@ -44,7 +44,7 @@ export function OnboardingRedirectPage({
 			<Footer>
 				<Help>
 					עדיין לא הבנתם? לא לדאוג יש לנו מארז הדרכה{" "}
-					<GuideLink onClick={handleOpenUserGuide}>למארז ההדרכה</GuideLink>
+					<GuideLink onClick={openUserGuide}>למארז ההדרכה</GuideLink>
 				</Help>
 				<ButtonGroup>
 					<GhostButton onClick={onPrevious}>חזור</GhostButton>
