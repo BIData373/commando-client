@@ -37,19 +37,13 @@ export interface TaskTableMeta {
 
 // ─── Cell Handlers ─────────────────────────────────────────────────────────
 
-export const MAX_HEIGHT = 40
-
 export function handleTextareaChange(
 	e: React.ChangeEvent<HTMLTextAreaElement>,
 	id: number,
 	field: TaskColumnId,
 	updateRow: TaskTableMeta["updateRow"],
 ) {
-	const textarea = e.target
-	// Reset height to recalculate scrollHeight, then set to actual content height
-	textarea.style.height = "auto"
-	textarea.style.height = `${Math.min(textarea.scrollHeight, MAX_HEIGHT)}px`
-	updateRow(id, { [field]: textarea.value })
+	updateRow(id, { [field]: e.target.value })
 }
 
 function handleImportantChange(
@@ -271,6 +265,9 @@ const CellTextarea = styled.textarea<{ $color?: string }>`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 18px;
+  /* Auto-grows with content, capped at two lines */
+  field-sizing: content;
+  max-height: 2lh;
   color: ${({ $color }) => $color ?? "var(--text-color)"};
   text-align: right;
   outline: none;
