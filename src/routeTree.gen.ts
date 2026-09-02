@@ -44,6 +44,7 @@ import { Route as WorkspaceUrlNameArchiveTaskIdIndexRouteImport } from './routes
 import { Route as WorkspaceUrlNameDashboardTaskIdIndexRouteImport } from './routes/workspace/$urlName/dashboard/$taskId/index'
 import { Route as WorkspaceUrlNameDashboardTaskIdEditRouteImport } from './routes/workspace/$urlName/dashboard/$taskId/edit'
 import { Route as WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteImport } from './routes/workspace/$urlName/settings/assignees/$assigneeId'
+import { Route as WorkspaceUrlNameSettingsAssigneesHelpRouteImport } from './routes/workspace/$urlName/settings/assignees/help'
 import { Route as WorkspaceUrlNameSettingsAssigneesNewRouteImport } from './routes/workspace/$urlName/settings/assignees/new'
 import { Route as WorkspaceUrlNameTasksTaskIdIndexRouteImport } from './routes/workspace/$urlName/tasks/$taskId/index'
 import { Route as WorkspaceUrlNameTasksTaskIdEditRouteImport } from './routes/workspace/$urlName/tasks/$taskId/edit'
@@ -241,6 +242,12 @@ const WorkspaceUrlNameSettingsAssigneesAssigneeIdRoute =
     path: '/$assigneeId',
     getParentRoute: () => WorkspaceUrlNameSettingsAssigneesRoute,
   } as any)
+const WorkspaceUrlNameSettingsAssigneesHelpRoute =
+  WorkspaceUrlNameSettingsAssigneesHelpRouteImport.update({
+    id: '/help',
+    path: '/help',
+    getParentRoute: () => WorkspaceUrlNameSettingsAssigneesRoute,
+  } as any)
 const WorkspaceUrlNameSettingsAssigneesNewRoute =
   WorkspaceUrlNameSettingsAssigneesNewRouteImport.update({
     id: '/new',
@@ -299,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/workspace/$urlName/tasks/': typeof WorkspaceUrlNameTasksIndexRoute
   '/workspace/$urlName/dashboard/$taskId/edit': typeof WorkspaceUrlNameDashboardTaskIdEditRoute
   '/workspace/$urlName/settings/assignees/$assigneeId': typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteWithChildren
+  '/workspace/$urlName/settings/assignees/help': typeof WorkspaceUrlNameSettingsAssigneesHelpRoute
   '/workspace/$urlName/settings/assignees/new': typeof WorkspaceUrlNameSettingsAssigneesNewRoute
   '/workspace/$urlName/tasks/$taskId/edit': typeof WorkspaceUrlNameTasksTaskIdEditRoute
   '/workspace/$urlName/archive/$taskId/': typeof WorkspaceUrlNameArchiveTaskIdIndexRoute
@@ -328,6 +336,7 @@ export interface FileRoutesByTo {
   '/workspace/$urlName/settings': typeof WorkspaceUrlNameSettingsIndexRoute
   '/workspace/$urlName/tasks': typeof WorkspaceUrlNameTasksIndexRoute
   '/workspace/$urlName/dashboard/$taskId/edit': typeof WorkspaceUrlNameDashboardTaskIdEditRoute
+  '/workspace/$urlName/settings/assignees/help': typeof WorkspaceUrlNameSettingsAssigneesHelpRoute
   '/workspace/$urlName/settings/assignees/new': typeof WorkspaceUrlNameSettingsAssigneesNewRoute
   '/workspace/$urlName/tasks/$taskId/edit': typeof WorkspaceUrlNameTasksTaskIdEditRoute
   '/workspace/$urlName/archive/$taskId': typeof WorkspaceUrlNameArchiveTaskIdIndexRoute
@@ -370,6 +379,7 @@ export interface FileRoutesById {
   '/workspace/$urlName/tasks/': typeof WorkspaceUrlNameTasksIndexRoute
   '/workspace/$urlName/dashboard/$taskId/edit': typeof WorkspaceUrlNameDashboardTaskIdEditRoute
   '/workspace/$urlName/settings/assignees/$assigneeId': typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteWithChildren
+  '/workspace/$urlName/settings/assignees/help': typeof WorkspaceUrlNameSettingsAssigneesHelpRoute
   '/workspace/$urlName/settings/assignees/new': typeof WorkspaceUrlNameSettingsAssigneesNewRoute
   '/workspace/$urlName/tasks/$taskId/edit': typeof WorkspaceUrlNameTasksTaskIdEditRoute
   '/workspace/$urlName/archive/$taskId/': typeof WorkspaceUrlNameArchiveTaskIdIndexRoute
@@ -412,6 +422,7 @@ export interface FileRouteTypes {
     | '/workspace/$urlName/tasks/'
     | '/workspace/$urlName/dashboard/$taskId/edit'
     | '/workspace/$urlName/settings/assignees/$assigneeId'
+    | '/workspace/$urlName/settings/assignees/help'
     | '/workspace/$urlName/settings/assignees/new'
     | '/workspace/$urlName/tasks/$taskId/edit'
     | '/workspace/$urlName/archive/$taskId/'
@@ -441,6 +452,7 @@ export interface FileRouteTypes {
     | '/workspace/$urlName/settings'
     | '/workspace/$urlName/tasks'
     | '/workspace/$urlName/dashboard/$taskId/edit'
+    | '/workspace/$urlName/settings/assignees/help'
     | '/workspace/$urlName/settings/assignees/new'
     | '/workspace/$urlName/tasks/$taskId/edit'
     | '/workspace/$urlName/archive/$taskId'
@@ -482,6 +494,7 @@ export interface FileRouteTypes {
     | '/workspace/$urlName/tasks/'
     | '/workspace/$urlName/dashboard/$taskId/edit'
     | '/workspace/$urlName/settings/assignees/$assigneeId'
+    | '/workspace/$urlName/settings/assignees/help'
     | '/workspace/$urlName/settings/assignees/new'
     | '/workspace/$urlName/tasks/$taskId/edit'
     | '/workspace/$urlName/archive/$taskId/'
@@ -743,6 +756,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteImport
       parentRoute: typeof WorkspaceUrlNameSettingsAssigneesRoute
     }
+    '/workspace/$urlName/settings/assignees/help': {
+      id: '/workspace/$urlName/settings/assignees/help'
+      path: '/help'
+      fullPath: '/workspace/$urlName/settings/assignees/help'
+      preLoaderRoute: typeof WorkspaceUrlNameSettingsAssigneesHelpRouteImport
+      parentRoute: typeof WorkspaceUrlNameSettingsAssigneesRoute
+    }
     '/workspace/$urlName/settings/assignees/new': {
       id: '/workspace/$urlName/settings/assignees/new'
       path: '/new'
@@ -949,6 +969,7 @@ const WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteWithChildren =
 
 interface WorkspaceUrlNameSettingsAssigneesRouteChildren {
   WorkspaceUrlNameSettingsAssigneesAssigneeIdRoute: typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteWithChildren
+  WorkspaceUrlNameSettingsAssigneesHelpRoute: typeof WorkspaceUrlNameSettingsAssigneesHelpRoute
   WorkspaceUrlNameSettingsAssigneesNewRoute: typeof WorkspaceUrlNameSettingsAssigneesNewRoute
 }
 
@@ -956,6 +977,8 @@ const WorkspaceUrlNameSettingsAssigneesRouteChildren: WorkspaceUrlNameSettingsAs
   {
     WorkspaceUrlNameSettingsAssigneesAssigneeIdRoute:
       WorkspaceUrlNameSettingsAssigneesAssigneeIdRouteWithChildren,
+    WorkspaceUrlNameSettingsAssigneesHelpRoute:
+      WorkspaceUrlNameSettingsAssigneesHelpRoute,
     WorkspaceUrlNameSettingsAssigneesNewRoute:
       WorkspaceUrlNameSettingsAssigneesNewRoute,
   }
