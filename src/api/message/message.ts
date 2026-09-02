@@ -130,7 +130,7 @@ export const useCreateMessage = <
 	return useMutation(getCreateMessageMutationOptions(options), queryClient)
 }
 export const listMessages = (
-	params: ListMessagesParams,
+	params?: ListMessagesParams,
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<MessageDto[]>({
@@ -149,7 +149,7 @@ export const getListMessagesQueryOptions = <
 	TData = Awaited<ReturnType<typeof listMessages>>,
 	TError = ErrorType<unknown>,
 >(
-	params: ListMessagesParams,
+	params?: ListMessagesParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listMessages>>, TError, TData>
@@ -180,7 +180,7 @@ export function useListMessages<
 	TData = Awaited<ReturnType<typeof listMessages>>,
 	TError = ErrorType<unknown>,
 >(
-	params: ListMessagesParams,
+	params: undefined | ListMessagesParams,
 	options: {
 		query: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listMessages>>, TError, TData>
@@ -202,7 +202,7 @@ export function useListMessages<
 	TData = Awaited<ReturnType<typeof listMessages>>,
 	TError = ErrorType<unknown>,
 >(
-	params: ListMessagesParams,
+	params?: ListMessagesParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listMessages>>, TError, TData>
@@ -224,7 +224,7 @@ export function useListMessages<
 	TData = Awaited<ReturnType<typeof listMessages>>,
 	TError = ErrorType<unknown>,
 >(
-	params: ListMessagesParams,
+	params?: ListMessagesParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listMessages>>, TError, TData>
@@ -239,7 +239,7 @@ export function useListMessages<
 	TData = Awaited<ReturnType<typeof listMessages>>,
 	TError = ErrorType<unknown>,
 >(
-	params: ListMessagesParams,
+	params?: ListMessagesParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listMessages>>, TError, TData>

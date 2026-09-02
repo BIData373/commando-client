@@ -7,5 +7,9 @@
  */
 
 export type ListMessagesParams = {
-	taskId: number
+	taskId?: number
+	taskIds?: number[]
+	workspaceId?: number
+	personal?: boolean
+	isArchived?: boolean
 }
