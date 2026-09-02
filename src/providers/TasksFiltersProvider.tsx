@@ -36,7 +36,6 @@ interface TasksFiltersContextValue {
 
 	columnOrder: (keyof TaskRowWithWorkspaceDto)[]
 	hiddenColumns: Set<keyof TaskRowWithWorkspaceDto>
-	setColumnOrder: (order: (keyof TaskRowWithWorkspaceDto)[]) => void
 	toggleColumn: (columnId: keyof TaskRowWithWorkspaceDto) => void
 
 	dateType: DATE_TYPE
@@ -52,6 +51,8 @@ interface TasksFiltersContextValue {
 
 	sorting: SortingState
 	setSorting: Dispatch<SetStateAction<SortingState>>
+
+	setColumnOrder: (order: (keyof TaskRowWithWorkspaceDto)[]) => void
 }
 
 const TasksFiltersContext = createContext<TasksFiltersContextValue | null>(null)
@@ -190,15 +191,6 @@ export function TasksFiltersProvider({
 		})
 	}
 
-	function setColumnOrder(order: (keyof TaskRowWithWorkspaceDto)[]) {
-		updateTableView({
-			columnVisibility: {
-				...columnVisibility,
-				columnOrder: order,
-			},
-		})
-	}
-
 	function toggleColumn(columnId: keyof TaskRowWithWorkspaceDto) {
 		const nextHiddenColumns = new Set(hiddenColumns)
 
@@ -215,6 +207,16 @@ export function TasksFiltersProvider({
 			},
 		})
 	}
+
+	function setColumnOrder(order: (keyof TaskRowWithWorkspaceDto)[]) {
+		updateTableView({
+			columnVisibility: {
+				...columnVisibility,
+				columnOrder: order,
+			},
+		})
+	}
+
 	return (
 		<TasksFiltersContext.Provider
 			value={{
@@ -224,7 +226,6 @@ export function TasksFiltersProvider({
 				toggleQuickFilter,
 				clearQuickFilters,
 				columnOrder,
-				setColumnOrder,
 				hiddenColumns,
 				toggleColumn,
 				dateType,
@@ -237,6 +238,7 @@ export function TasksFiltersProvider({
 				setColumnsFilters,
 				sorting: sorting,
 				setSorting,
+				setColumnOrder,
 			}}
 		>
 			{children}

@@ -344,7 +344,12 @@ function CreateTaskModal({
 								}}
 							>
 								{(field) => (
-									<FormField field={field} label="הנחיה" required>
+									<FormField
+										field={field}
+										label="הנחיה"
+										required
+										renderError={false}
+									>
 										<DirectiveTextarea
 											value={field.state.value}
 											onChange={(e) => field.handleChange(e.target.value)}
@@ -414,7 +419,7 @@ function CreateTaskModal({
 										maxLength={NOTES_MAX_LENGTH}
 										isTextArea={true}
 										placeholder="הערה"
-									></InputWithCount>
+									/>
 
 									{/* Tag field */}
 									<TagField
@@ -426,6 +431,7 @@ function CreateTaskModal({
 									/>
 
 									{/* Source + Date row */}
+
 									<form.Field
 										name="sourceDate"
 										validators={{ onSubmit: validateSourceDate }}
@@ -479,7 +485,7 @@ const LabelText = styled.span`
 const ModalCard = styled(ModalContent)`
   width: 100%;
   max-width: 900px;
-  max-height: 82vh;
+  max-height: 85vh;
   min-height: 850px;
   overflow: hidden;
 `
@@ -488,7 +494,7 @@ const ModalBody = styled.div`
   direction: ltr;
   display: flex;
   flex-direction: column;
-  padding-inline: 48px;
+  padding-inline: 48px 30px;
   padding-block-end: 36px;
   min-height: 0;
   flex: 1;
@@ -511,6 +517,7 @@ const ScrollableContent = styled.div`
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  padding-right: 18px;
 `
 
 // ─── Form Layout ─────────────────────────────────────────────────────────────
@@ -604,6 +611,7 @@ const ActionRow = styled.div<{ $shadow: boolean }>`
   justify-content: space-between;
   flex-shrink: 0;
   padding-block-start: 16px;
+  padding-right: 18px;
   position: relative;
   z-index: 1;
   clip-path: inset(-20px 0 0 0);

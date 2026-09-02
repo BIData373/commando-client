@@ -8,6 +8,7 @@ interface FormFieldProps {
 	children: ReactNode
 	field?: AnyFieldApi
 	error?: string
+	renderError?: boolean
 }
 
 export function FormField({
@@ -16,6 +17,7 @@ export function FormField({
 	children,
 	field,
 	error,
+	renderError = true,
 }: FormFieldProps) {
 	const errors = field ? field.state.meta.errors : error ? [error] : []
 	const isTouched = field ? field.state.meta.isTouched : true
@@ -23,14 +25,14 @@ export function FormField({
 
 	return (
 		<Wrapper>
-			{label && (
+			{label !== undefined && (
 				<LabelRow>
 					{required && <RequiredMark>*</RequiredMark>}
 					<LabelText>{label}</LabelText>
 				</LabelRow>
 			)}
 			{children}
-			{(field || error !== undefined) && (
+			{renderError && (
 				<ErrorText $error={showError}>
 					{showError && String(errors[0])}
 				</ErrorText>

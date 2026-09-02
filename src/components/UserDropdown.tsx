@@ -4,13 +4,12 @@ import { BookOpen, ChevronLeft, Grip, MessageSquareText } from "lucide-react"
 import type { PermissionType } from "src/api/model"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import {
-	CHAT_CHANNEL_URL,
-	PORTAL_CATALOG_URL,
-	USER_GUIDE_URL,
-} from "src/utils/env-utils"
 import { PERMISSION_LABEL } from "src/utils/permissions-utils"
-import { handleOpenUserGuide } from "src/utils/redirect-utils"
+import {
+	openMoreOfUs,
+	openSupportChat,
+	openUserGuide,
+} from "src/utils/redirect-utils"
 import { BIHeaderBypass } from "./BIHeaderBypass"
 import {
 	DropdownMenuContent,
@@ -41,14 +40,6 @@ export function UserDropdown({
 		})
 	}
 
-	function handleOpenChat() {
-		window.open(CHAT_CHANNEL_URL)
-	}
-
-	function handleOpenPortalCatalog() {
-		window.open(PORTAL_CATALOG_URL)
-	}
-
 	return (
 		<UserDropdownContent>
 			<UserInfo>
@@ -76,32 +67,26 @@ export function UserDropdown({
 				</>
 			)}
 
-			{USER_GUIDE_URL && (
-				<UserDropdownItem onSelect={handleOpenUserGuide}>
-					<NavItem>
-						<BookOpen size={16} />
-						מארז הדרכה
-					</NavItem>
-				</UserDropdownItem>
-			)}
+			<UserDropdownItem onSelect={openUserGuide}>
+				<NavItem>
+					<BookOpen size={16} />
+					מארז הדרכה
+				</NavItem>
+			</UserDropdownItem>
 
-			{CHAT_CHANNEL_URL && (
-				<UserDropdownItem onSelect={handleOpenChat}>
-					<NavItem>
-						<MessageSquareText size={16} />
-						צור קשר
-					</NavItem>
-				</UserDropdownItem>
-			)}
+			<UserDropdownItem onSelect={openSupportChat}>
+				<NavItem>
+					<MessageSquareText size={16} />
+					צור קשר
+				</NavItem>
+			</UserDropdownItem>
 
-			{PORTAL_CATALOG_URL && (
-				<UserDropdownItem onSelect={handleOpenPortalCatalog}>
-					<NavItem>
-						<Grip size={16} />
-						עוד מאיתנו
-					</NavItem>
-				</UserDropdownItem>
-			)}
+			<UserDropdownItem onSelect={openMoreOfUs}>
+				<NavItem>
+					<Grip size={16} />
+					עוד מאיתנו
+				</NavItem>
+			</UserDropdownItem>
 
 			<BIHeaderBypass />
 		</UserDropdownContent>
