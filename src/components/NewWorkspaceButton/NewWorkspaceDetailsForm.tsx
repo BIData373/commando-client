@@ -107,13 +107,16 @@ export function NewWorkspaceDetailsForm({
 
 	return (
 		<Root>
-			<FormField label="שם הסביבה" required>
+			<FormField
+				label="שם הסביבה"
+				required
+				error={showErrors ? errors.title : ""}
+			>
 				<InputWithCount
 					text={values.title}
 					onChange={handleTitleChange}
 					maxLength={NAME_MAX_LENGTH}
 					placeholder="למשל 'לשכת אלוף פד&quot;ם'"
-					error={showErrors ? errors.title : ""}
 				/>
 			</FormField>
 
@@ -139,13 +142,13 @@ export function NewWorkspaceDetailsForm({
 					</UrlNameLabel>
 				}
 				required
+				error={showErrors ? errors.urlName : ""}
 			>
 				<InputWithCount
 					text={values.urlName}
 					onChange={handleUrlNameChange}
 					maxLength={NAME_MAX_LENGTH}
 					placeholder='למשל "lishkat_padam"'
-					error={showErrors ? errors.urlName : ""}
 				/>
 			</FormField>
 
@@ -207,6 +210,7 @@ const Root = styled.div`
   flex: 1;
   min-height: 0;
   width: 100%;
+  gap: 2px;
 `
 
 const UrlNameLabel = styled.span`

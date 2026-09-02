@@ -2,12 +2,12 @@ import styled from "@emotion/styled"
 import { User } from "lucide-react"
 import { TbBook, TbGridDots, TbMessage } from "react-icons/tb"
 import BIDataIcon from "src/assets/biData.png"
+import { STATIC_TOKEN } from "src/utils/env-utils"
 import {
-	CHAT_CHANNEL_URL,
-	PORTAL_CATALOG_URL,
-	STATIC_TOKEN,
-	USER_GUIDE_URL,
-} from "src/utils/env-utils"
+	openMoreOfUs,
+	openSupportChat,
+	openUserGuide,
+} from "src/utils/redirect-utils"
 import { UserDropdown } from "../UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import {
@@ -22,18 +22,6 @@ interface RootPageFooterProps {
 }
 
 export function RootPageFooter({ className }: RootPageFooterProps) {
-	function handleOpenUserGuide() {
-		window.open(USER_GUIDE_URL, "_blank")
-	}
-
-	function handleOpenPortalCatalog() {
-		window.open(PORTAL_CATALOG_URL, "_blank")
-	}
-
-	function handleOpenChatChannel() {
-		window.open(CHAT_CHANNEL_URL, "_blank")
-	}
-
 	return (
 		<FooterRoot className={className}>
 			<FooterLeft>
@@ -43,7 +31,7 @@ export function RootPageFooter({ className }: RootPageFooterProps) {
 			</FooterLeft>
 
 			<FooterRight>
-				<OutlineGradientButton onClick={handleOpenUserGuide}>
+				<OutlineGradientButton onClick={openUserGuide}>
 					<GradientText>מארז הדרכה</GradientText>
 					<GradientBookIcon size={18} />
 				</OutlineGradientButton>
@@ -51,7 +39,7 @@ export function RootPageFooter({ className }: RootPageFooterProps) {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<IconButton onClick={handleOpenPortalCatalog}>
+							<IconButton onClick={openMoreOfUs}>
 								<TbGridDots size={18} />
 							</IconButton>
 						</TooltipTrigger>
@@ -62,7 +50,7 @@ export function RootPageFooter({ className }: RootPageFooterProps) {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<IconButton onClick={handleOpenChatChannel}>
+							<IconButton onClick={openSupportChat}>
 								<TbMessage size={18} />
 							</IconButton>
 						</TooltipTrigger>

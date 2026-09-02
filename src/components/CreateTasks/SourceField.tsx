@@ -34,7 +34,7 @@ interface SourceFieldProps {
 	linkedSource: SourceDto | null
 	onSourceSelect: (name: string, discussion?: SourceDto | null) => void
 	onDateSelect: (date: Date | undefined) => void
-	label: string
+	label?: string
 	uniqueNames?: boolean
 	fields?: SourceFieldValidation
 	required?: boolean
@@ -114,7 +114,7 @@ export default function SourceField({
 	return (
 		<SourceDateRow>
 			<SourceFormItem>
-				<FormField label={label} required={required} field={fields?.name}>
+				<FormField required={required} field={fields?.name} label={label}>
 					<Popover
 						open={
 							isDropdownOpen &&
@@ -231,6 +231,12 @@ export default function SourceField({
 	)
 }
 
+const LabelText = styled.span`
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  line-height: 22px;
+`
+
 const SourceDateRow = styled.div`
   direction: rtl;
   display: flex;
@@ -246,6 +252,7 @@ const SourceFormItem = styled.div`
   align-items: flex-end;
   flex: 1;
   min-width: 0;
+  align-self: flex-end;
 `
 
 const DateFormItem = styled.div<{ $alignEnd?: boolean }>`
