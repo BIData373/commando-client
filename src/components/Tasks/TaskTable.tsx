@@ -7,6 +7,7 @@ import type {
 import { uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
+import { toast } from "sonner"
 import type {
 	DeadlineType,
 	TaskRowDto,
@@ -225,15 +226,22 @@ function TaskTable<TTask extends TaskRowDto>({
 		handleExitSelectMode()
 	}
 
-	function bulkUpdateStatus(rowKeys: string[], status: WorkspaceStatusDto) {
-		rowKeys.forEach((rowKey) => {
-			const task = tasks.find((t) => t.rowKey === rowKey)
-			if (!task) {
-				return
-			}
+	async function bulkUpdateStatus(
+		rowKeys: string[],
+		status: WorkspaceStatusDto,
+	) {
+		try {
+			rowKeys.forEach((rowKey) => {
+				const task = tasks.find((t) => t.rowKey === rowKey)
+				if (task) {
+					updateStatus(task.id, task.assignee?.id, status)
+				}
+			})
 
-			updateStatus(task.id, task.assignee?.id, status)
-		})
+			toast.success("הסטטוס עודכן בהצלחה")
+		} catch {
+			toast.error("שגיאה - סטטוס לא עודכן")
+		}
 	}
 
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])

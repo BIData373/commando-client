@@ -13,6 +13,7 @@ import {
 	getListTaskRowsQueryKey,
 	updateTask,
 } from "src/api/task/task"
+import { toast } from "src/components/Toast/toast-api"
 
 import { invalidateQueries } from "src/queryClient"
 
@@ -101,6 +102,9 @@ export function useUpdateTaskStatus() {
 
 			return { previousQueriesData }
 		},
+		onSuccess: () => {
+			toast.success("הסטטוס עודכן בהצלחה")
+		},
 		onError: (
 			_error: Error,
 			_variables: UpdateStatusVariables,
@@ -109,6 +113,7 @@ export function useUpdateTaskStatus() {
 			context?.previousQueriesData.forEach(([queryKey, data]) => {
 				queryClient.setQueryData(queryKey, data)
 			})
+			toast.error("שגיאה - סטטוס לא עודכן")
 		},
 		onSettled: (
 			_data: unknown,

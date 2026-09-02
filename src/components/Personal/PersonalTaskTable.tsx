@@ -7,6 +7,7 @@ import { useMemo, useState } from "react"
 import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
 import {
 	type TaskRowWithWorkspaceDto,
+	type ToggleUserTaskArchiveParams,
 	WorkspaceStatusType,
 } from "src/api/model"
 import {
@@ -35,6 +36,7 @@ import WorkspaceCell from "../shared/WorkspaceCell"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
+import { toast } from "../Toast/toast-api"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
 
@@ -82,8 +84,20 @@ function PersonalTaskTable({
 		queryKey,
 	} = useListPersonalTaskRows({ isArchived })
 
-	const { mutate: toggleArchive } = useToggleUserTaskArchive({
-		mutation: { onSuccess: handleChangeSuccess },
+	function handleChangeSuccess() {
+		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
+	}
+
+	function handleToggleSuccess(
+		_: void,
+		{ params: { taskId } }: { params: ToggleUserTaskArchiveParams },
+	) {
+		handleChangeSuccess()
+		invalidateQueries([getGetTaskQueryKey({ id: taskId })])
+	}
+
+	const { mutateAsync: toggleArchive } = useToggleUserTaskArchive({
+		mutation: { onSuccess: handleToggleSuccess },
 	})
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
@@ -134,26 +148,39 @@ function PersonalTaskTable({
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
 	).length
 
-	function handleChangeSuccess() {
-		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
+	async function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
+		await Promise.all(
+			entries.map(async ({ id, assigneeId }) => {
+				if (assigneeId) {
+					await toggleArchive({ params: { taskId: id, assigneeId } })
+				}
+			}),
+		)
 	}
 
-	function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
-		entries.forEach(({ id, assigneeId }) => {
-			if (assigneeId) {
-				toggleArchive(
-					{ params: { taskId: id, assigneeId } },
-					{
-						onSuccess: () => {
-							invalidateQueries([getGetTaskQueryKey({ id })])
+	async function handleArchive(entries: TaskArchiveEntry[]) {
+		try {
+			await toggleArchiveEntries(entries)
+			toast.success(
+				entries.length === 1
+					? "הנחיה הועברה לארכיון בהצלחה"
+					: "ההנחיות הועברו לארכיון בהצלחה",
+				{
+					actions: {
+						variant: "cancel",
+						label: "ביטול",
+						onClick: () => {
+							toggleArchiveEntries(entries).catch(() =>
+								toast.error("ביטול ההעברה לארכיון נכשל"),
+							)
 						},
 					},
-				)
-			}
-		})
+				},
+			)
+		} catch {}
 	}
 
-	const onArchive = !isArchived ? toggleArchiveEntries : undefined
+	const onArchive = !isArchived ? handleArchive : undefined
 	const onUnarchive = isArchived ? toggleArchiveEntries : undefined
 
 	return (
