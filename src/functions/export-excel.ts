@@ -172,15 +172,18 @@ export async function exportTasksToExcel<TTask extends TaskRowDto>(
 	messagesParams: ListMessagesParams,
 	fileNamePrefix?: string,
 ) {
-	const allMessages = await listMessages(messagesParams)
-	const messagesMap = groupBy(allMessages, "taskId")
-	const enrichedTasks = tasks.map((t) => ({
-		...t,
-		messages: messagesMap[t.id] ?? [],
-	}))
+	const messagesMap = !hiddenColumns.has(
+		TASK_COLUMN_ID.lastMessage as keyof TTask,
+	)
+		? groupBy(await listMessages(messagesParams), "taskId")
+		: null
+
+	const rows = messagesMap
+		? tasks.map((t) => ({ ...t, messages: messagesMap[t.id] ?? [] }))
+		: tasks
 
 	await exportToExcel(
-		enrichedTasks,
+		rows,
 		[
 			{
 				header: COLUMN_LABELS.id,
