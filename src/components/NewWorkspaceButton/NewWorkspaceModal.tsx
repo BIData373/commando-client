@@ -257,11 +257,13 @@ const Panel = styled.div`
   gap: 32px;
   overflow: hidden;
   border-radius: 8px;
+  max-width: 95vw;
+  max-height: 90vh;
 `
 
 const BrandingPanel = styled.div`
   align-self: stretch;
-  flex-shrink: 0;
+  flex-shrink: 1;
   background: var(--background-area);
   display: flex;
   flex-direction: column;
@@ -269,11 +271,14 @@ const BrandingPanel = styled.div`
   justify-content: center;
   gap: 64px;
   padding: 0 48px;
+  overflow: hidden;
+  min-width: 0;
 `
 
 const ScreenshotGroup = styled.div`
   position: relative;
   width: 391px;
+  max-width: 100%;
   height: 285px;
 `
 
@@ -281,7 +286,7 @@ const Rectangle = styled.div`
   position: absolute;
   inset-block-start: 66.78px;
   inset-inline-start: 0;
-  width: 391px;
+  width: 100%;
   height: 218px;
   border-radius: 6.41px;
   border-top: 2.404px solid var(--Rectangle);
@@ -308,7 +313,7 @@ const BrandingSubtitle = styled.span`
 
 const ScreenshotImg = styled.img`
   position: absolute;
-  width: 400px;
+  width: 100%;
   height: 280px;
   border-radius: 4px 4px 0 0;
   object-fit: cover;
