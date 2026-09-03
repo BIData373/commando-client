@@ -188,6 +188,7 @@ const CreateNewButton = styled.button`
   color: rgba(0, 0, 0, 0.65);
   font-size: var(--fs-btn);
   line-height: 32px;
+  white-space: nowrap;
 
   &:hover {
     background: rgba(0, 0, 0, 0.04);
