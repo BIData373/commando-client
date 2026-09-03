@@ -108,9 +108,20 @@ export function TasksFiltersProvider({
 		defaultValue: [],
 	})
 
+	const allowedColumns = useMemo(
+		() => new Set(defaultColumnOrder),
+		[defaultColumnOrder],
+	)
+
 	const knownColumnIds: (keyof TaskRowWithWorkspaceDto)[] = useMemo(
-		() => ["id", ...new Set([...defaultColumnOrder, ...columnOrderRaw])],
-		[defaultColumnOrder, columnOrderRaw],
+		() => [
+			"id",
+			...new Set([
+				...defaultColumnOrder,
+				...columnOrderRaw.filter((id) => allowedColumns.has(id)),
+			]),
+		],
+		[defaultColumnOrder, columnOrderRaw, allowedColumns],
 	)
 
 	const activeQuickFilters = useMemo(
@@ -137,8 +148,8 @@ export function TasksFiltersProvider({
 	)
 
 	const hiddenColumns = useMemo(
-		() => new Set(hiddenColumnsRaw),
-		[hiddenColumnsRaw],
+		() => new Set(hiddenColumnsRaw.filter((id) => allowedColumns.has(id))),
+		[hiddenColumnsRaw, allowedColumns],
 	)
 
 	const updateTableView = (update: Partial<UserViewDto["table"]>) => {
