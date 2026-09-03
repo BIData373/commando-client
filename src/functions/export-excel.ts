@@ -1,7 +1,11 @@
 import { differenceInDays, format, startOfToday } from "date-fns"
 import ExcelJS from "exceljs"
+import { groupBy } from "lodash"
+import { listMessages } from "src/api/message/message"
 import {
 	DeadlineType,
+	type ListMessagesParams,
+	type MessageDto,
 	type TaskRowDto,
 	type TaskRowWithWorkspaceDto,
 } from "src/api/model"
@@ -19,6 +23,7 @@ interface CellValue {
 interface ExportColumn<T> {
 	header: string
 	maxWidth?: number
+	horizontalAlign?: "center" | "right" | "left"
 	accessor: (row: T) => string | CellValue
 }
 
@@ -63,6 +68,16 @@ function getDeadlineDateStyle(task: TaskRowDto): Pick<CellValue, "fontColor"> {
 	if (daysUntil < 0) return { fontColor: "#f5222d" }
 	if (daysUntil < 2) return { fontColor: "#d46b08" }
 	return {}
+}
+
+function formatMessages(messages?: MessageDto[]): string {
+	if (!messages?.length) return ""
+	return messages
+		.map(
+			(m) =>
+				`${formatDate(m.createdAt)} - ${m.user.info?.name ?? m.user.upn}: ${m.content} `,
+		)
+		.join("\n\n")
 }
 
 const COLUMN_DEFS: Partial<
@@ -136,6 +151,13 @@ const COLUMN_DEFS: Partial<
 		header: COLUMN_LABELS.archivedAt,
 		accessor: (t) => (t.archivedAt ? formatDate(t.archivedAt) : ""),
 	},
+	[TASK_COLUMN_ID.lastMessage]: {
+		header: COLUMN_LABELS.lastMessage,
+		maxWidth: 60,
+		horizontalAlign: "right",
+		accessor: (t) =>
+			formatMessages((t as TaskRowDto & { messages?: MessageDto[] }).messages),
+	},
 	[TASK_COLUMN_ID.workspace]: {
 		header: COLUMN_LABELS.workspace,
 		accessor: (t) =>
@@ -147,10 +169,21 @@ export async function exportTasksToExcel<TTask extends TaskRowDto>(
 	tasks: TTask[],
 	columnOrder: (keyof TTask)[],
 	hiddenColumns: Set<keyof TTask>,
+	messagesParams: ListMessagesParams,
 	fileNamePrefix?: string,
 ) {
+	const messagesMap = !hiddenColumns.has(
+		TASK_COLUMN_ID.lastMessage as keyof TTask,
+	)
+		? groupBy(await listMessages(messagesParams), "taskId")
+		: null
+
+	const rows = messagesMap
+		? tasks.map((t) => ({ ...t, messages: messagesMap[t.id] ?? [] }))
+		: tasks
+
 	await exportToExcel(
-		tasks,
+		rows,
 		[
 			{
 				header: COLUMN_LABELS.id,
@@ -212,7 +245,10 @@ async function exportToExcel<T>(
 			const cell = excelRow.getCell(colIdx + 1)
 			const data = isCellValue(raw) ? raw : null
 
-			cell.alignment = { horizontal: "center", readingOrder: "rtl" }
+			cell.alignment = {
+				horizontal: col.horizontalAlign ?? "center",
+				readingOrder: "rtl",
+			}
 			cell.border = THIN_BORDER
 
 			if (data?.fontColor) {

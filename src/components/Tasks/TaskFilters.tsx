@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
 import { FilterX } from "lucide-react"
 import { type ReactNode, useMemo } from "react"
-import type { TaskRowDto } from "src/api/model"
+import type { ListMessagesParams, TaskRowDto } from "src/api/model"
 import { QuickFilter } from "src/api/model/quick-filter"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import {
@@ -28,6 +28,7 @@ interface TaskFiltersProps<TTask extends TaskRowDto> {
 	extraColumnsMeta?: TaskColumnMeta[]
 	startSlot?: ReactNode
 	urlColumnFilters?: ColumnFiltersState
+	baseMessagesParams: ListMessagesParams
 	exportFilePrefix?: string
 	quickFilters: QuickFilter[]
 }
@@ -44,6 +45,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 	startSlot,
 	urlColumnFilters = [],
 	extraButtons,
+	baseMessagesParams,
 	exportFilePrefix,
 	quickFilters,
 }: TaskFiltersProps<TTask>) {
@@ -69,6 +71,13 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		() => [...urlColumnFilters, ...columnsFilters],
 		[urlColumnFilters, columnsFilters],
 	)
+
+	const exportMessagesParams: ListMessagesParams =
+		filteredTasks.length < allTaskRows.length
+			? filteredTasks.length === 1
+				? { taskId: filteredTasks[0].id }
+				: { taskIds: filteredTasks.map((t) => t.id) }
+			: baseMessagesParams
 
 	const countingColumns = useMemo(
 		() => buildCountingColumns(extraColumns),
@@ -188,6 +197,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					columnOrder={columnOrder}
 					hiddenColumns={hiddenColumns}
 					extraColumns={extraColumns}
+					baseMessagesParams={exportMessagesParams}
 					exportFilePrefix={exportFilePrefix}
 				/>
 

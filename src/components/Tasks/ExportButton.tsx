@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
 import { Download } from "lucide-react"
 import { useCallback, useMemo } from "react"
-import type { TaskRowDto } from "src/api/model"
+import type { ListMessagesParams, TaskRowDto } from "src/api/model"
 import { exportTasksToExcel } from "src/functions/export-excel"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { buildCountingColumns } from "src/utils/task-table-utils"
@@ -14,6 +14,7 @@ interface ExportButtonProps<TTask extends TaskRowDto> {
 	columnOrder: (keyof TTask)[]
 	hiddenColumns: Set<keyof TTask>
 	extraColumns?: ColumnDef<TTask>[]
+	baseMessagesParams: ListMessagesParams
 	exportFilePrefix?: string
 }
 
@@ -23,6 +24,7 @@ function ExportButton<TTask extends TaskRowDto>({
 	columnOrder,
 	hiddenColumns,
 	extraColumns = [],
+	baseMessagesParams,
 	exportFilePrefix,
 }: ExportButtonProps<TTask>) {
 	const { sorting } = useTasksFilters()
@@ -44,8 +46,28 @@ function ExportButton<TTask extends TaskRowDto>({
 			.getSortedRowModel()
 			.rows.map((row) => row.original)
 
-		exportTasksToExcel(exportRows, columnOrder, hiddenColumns, exportFilePrefix)
-	}, [exportTable, columnOrder, hiddenColumns, exportFilePrefix])
+		const messagesParams: ListMessagesParams =
+			exportRows.length < tasks.length
+				? exportRows.length === 1
+					? { taskId: exportRows[0].id }
+					: { taskIds: exportRows.map((r) => r.id) }
+				: baseMessagesParams
+
+		exportTasksToExcel(
+			exportRows,
+			columnOrder,
+			hiddenColumns,
+			messagesParams,
+			exportFilePrefix,
+		)
+	}, [
+		exportTable,
+		tasks,
+		columnOrder,
+		hiddenColumns,
+		baseMessagesParams,
+		exportFilePrefix,
+	])
 
 	return (
 		<ActionButton onClick={handleExport}>
