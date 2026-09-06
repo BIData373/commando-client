@@ -15,14 +15,8 @@ import type {
 } from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
-import { toast } from "src/components/Toast/toast-api"
 import { buildFilterOptionsMap } from "src/functions/filter-utils"
-import {
-	MutationFailure,
-	MutationSuccess,
-	showFailureToast,
-	withCount,
-} from "src/functions/toasts"
+import { MutationSuccess, reportBatch, runBatch } from "src/functions/toasts"
 import { type TaskArchiveEntry, useTaskColumns } from "src/hooks/useTaskColumns"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
@@ -207,32 +201,15 @@ function TaskTable<TTask extends TaskRowDto>({
 		}
 	}
 
-	function reportBatchFailure(failed: number) {
-		if (failed === 0) return
-
-		showFailureToast(MutationFailure.TechnicalFailure)
-	}
-
 	async function removeTasks(taskIds: number[]) {
-		const results = await Promise.allSettled(
-			taskIds.map((id) => deleteTaskMutate({ pathParams: { id } })),
+		const deleted = await runBatch(taskIds, (id) =>
+			deleteTaskMutate({ pathParams: { id } }),
 		)
 
-		const deleted = results.filter(
-			({ status }) => status === "fulfilled",
-		).length
-
-		if (deleted > 0) {
-			toast.success(
-				withCount(
-					deleted,
-					MutationSuccess.DeleteGuideline,
-					MutationSuccess.DeleteGuidelines,
-				),
-			)
-		}
-
-		reportBatchFailure(results.length - deleted)
+		reportBatch(deleted, {
+			singular: MutationSuccess.DeleteGuideline,
+			plural: MutationSuccess.DeleteGuidelines,
+		})
 	}
 
 	function getSelectedArchiveEntries() {
@@ -266,25 +243,23 @@ function TaskTable<TTask extends TaskRowDto>({
 			.map((rowKey) => tasks.find((t) => t.rowKey === rowKey))
 			.filter((task) => task !== undefined)
 
+		// `updateStatus` resolves to a success flag rather than rejecting, so the
+		// tally is counted here instead of through `runBatch`.
 		const results = await Promise.all(
 			selectedTasks.map((task) =>
 				updateStatus(task.id, task.assignee?.id, status),
 			),
 		)
 
-		const updated = results.filter(Boolean).length
+		const succeeded = results.filter(Boolean).length
 
-		if (updated > 0) {
-			toast.success(
-				withCount(
-					updated,
-					MutationSuccess.UpdateStatus,
-					MutationSuccess.UpdateStatuses,
-				),
-			)
-		}
-
-		reportBatchFailure(results.length - updated)
+		reportBatch(
+			{ succeeded, failed: results.length - succeeded },
+			{
+				singular: MutationSuccess.UpdateStatus,
+				plural: MutationSuccess.UpdateStatuses,
+			},
+		)
 	}
 
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])

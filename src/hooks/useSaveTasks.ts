@@ -1,11 +1,11 @@
 import { type CreateTaskDto, DeadlineType } from "src/api/model"
-import { toast } from "src/components/Toast/toast-api"
-import type { AppMutationMeta } from "src/functions/toasts"
 import {
 	MutationFailure,
 	MutationSuccess,
+	reportBatch,
+	runBatch,
+	SILENT_MUTATION_META,
 	showFailureToast,
-	withCount,
 } from "src/functions/toasts"
 import { invalidateQueries } from "src/query-client"
 import { getListTagsQueryKey } from "../api/tag/tag"
@@ -21,12 +21,50 @@ interface TaskInput extends CreateTaskDto {
 	taskId?: number
 }
 
+interface TaskUpdate extends TaskInput {
+	taskId: number
+}
+
+function isUpdate(input: TaskInput): input is TaskUpdate {
+	return input.taskId !== undefined
+}
+
+function toTaskData({ deadlineType, title, taskId, ...input }: TaskInput) {
+	return {
+		title: title.trim(),
+		deadlineType: deadlineType ?? DeadlineType.ROLLING,
+		dueDate: input.dueDate ?? null,
+		...input,
+	}
+}
+
 export function useSaveTasks(workspaceId: number, onDone?: () => void) {
-	// Each row is saved with its own mutation, so per-row toasts are suppressed
-	// and the batch reports one aggregated result below.
-	const mutationCallbacks = {
-		meta: { toast: { success: false, error: false } } satisfies AppMutationMeta,
-		onSuccess: () => {
+	// Each row is saved with its own mutation; `saveTasks` reports the batch.
+	const { mutateAsync: createTask, isPending: isCreating } = useCreateTask({
+		mutation: { meta: SILENT_MUTATION_META },
+	})
+
+	const { mutateAsync: updateTask, isPending: isUpdating } = useUpdateTask({
+		mutation: { meta: SILENT_MUTATION_META },
+	})
+
+	async function saveTasks(inputs: TaskInput[]) {
+		const [created, updated] = await Promise.all([
+			runBatch(
+				inputs.filter((input) => !isUpdate(input)),
+				(input) => createTask({ data: toTaskData(input) }),
+			),
+			runBatch(inputs.filter(isUpdate), ({ taskId, ...input }) =>
+				updateTask({
+					pathParams: { id: taskId },
+					data: toTaskData(input as TaskInput),
+				}),
+			),
+		])
+
+		// Invalidate once for the whole batch rather than once per row, which
+		// would cancel and restart the same three refetches N times over.
+		if (created.succeeded + updated.succeeded > 0) {
 			invalidateQueries([
 				getListTaskRowsQueryKey({ workspaceId }),
 				getListPersonalTaskRowsQueryKey(),
@@ -34,61 +72,21 @@ export function useSaveTasks(workspaceId: number, onDone?: () => void) {
 			])
 
 			onDone?.()
-		},
-	}
-
-	const { mutateAsync: createTask, isPending: isCreating } = useCreateTask({
-		mutation: mutationCallbacks,
-	})
-
-	const { mutateAsync: updateTask, isPending: isUpdating } = useUpdateTask({
-		mutation: mutationCallbacks,
-	})
-
-	async function saveTasks(inputs: TaskInput[]) {
-		const saved = { created: 0, updated: 0 }
-
-		const results = await Promise.allSettled(
-			inputs.map(async ({ deadlineType, title, taskId, ...input }) => {
-				const data = {
-					title: title.trim(),
-					deadlineType: deadlineType ?? DeadlineType.ROLLING,
-					dueDate: input.dueDate ?? null,
-					...input,
-				}
-
-				if (taskId !== undefined) {
-					await updateTask({ pathParams: { id: taskId }, data })
-					saved.updated += 1
-					return
-				}
-
-				await createTask({ data })
-				saved.created += 1
-			}),
-		)
-
-		if (saved.created > 0) {
-			toast.success(
-				withCount(
-					saved.created,
-					MutationSuccess.CreateGuideline,
-					MutationSuccess.CreateGuidelines,
-				),
-			)
 		}
 
-		if (saved.updated > 0) {
-			toast.success(
-				withCount(
-					saved.updated,
-					MutationSuccess.UpdateGuideline,
-					MutationSuccess.UpdateGuidelines,
-				),
-			)
-		}
+		// Both batches share one failure toast, so neither raises its own.
+		reportBatch(created, {
+			singular: MutationSuccess.CreateGuideline,
+			plural: MutationSuccess.CreateGuidelines,
+			failure: false,
+		})
+		reportBatch(updated, {
+			singular: MutationSuccess.UpdateGuideline,
+			plural: MutationSuccess.UpdateGuidelines,
+			failure: false,
+		})
 
-		if (results.some(({ status }) => status === "rejected")) {
+		if (created.failed + updated.failed > 0) {
 			showFailureToast(MutationFailure.TechnicalFailure)
 		}
 	}

@@ -18,9 +18,10 @@ import {
 import {
 	MutationFailure,
 	MutationSuccess,
+	reportBatch,
+	runBatch,
 	showFailureToast,
 	UNDO_LABEL,
-	withCount,
 } from "src/functions/toasts"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
@@ -43,7 +44,6 @@ import WorkspaceCell from "../shared/WorkspaceCell"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
-import { toast } from "../Toast/toast-api"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
 
@@ -160,22 +160,17 @@ function PersonalTaskTable({
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
 	).length
 
-	/** Resolves to how many of the entries were toggled successfully. */
 	async function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
-		const results = await Promise.allSettled(
-			entries.map(async ({ id, assigneeId }) => {
-				if (!assigneeId) return
-				await toggleArchive({ params: { taskId: id, assigneeId } })
-			}),
-		)
-
-		return results.filter(({ status }) => status === "fulfilled").length
+		return runBatch(entries, async ({ id, assigneeId }) => {
+			if (!assigneeId) return
+			await toggleArchive({ params: { taskId: id, assigneeId } })
+		})
 	}
 
 	async function handleCancelArchive(entries: TaskArchiveEntry[]) {
 		const restored = await toggleArchiveEntries(entries)
 
-		if (restored < entries.length) {
+		if (restored.failed > 0) {
 			showFailureToast(MutationFailure.UndoArchiveFailed)
 		}
 	}
@@ -183,46 +178,30 @@ function PersonalTaskTable({
 	async function handleArchive(entries: TaskArchiveEntry[]) {
 		const archived = await toggleArchiveEntries(entries)
 
-		if (archived > 0) {
-			toast.success(
-				withCount(
-					archived,
-					MutationSuccess.ArchiveGuideline,
-					MutationSuccess.ArchiveGuidelines,
-				),
-				{
-					actions: {
-						variant: "cancel",
-						label: UNDO_LABEL,
-						onClick: () => {
-							handleCancelArchive(entries)
-						},
+		reportBatch(archived, {
+			singular: MutationSuccess.ArchiveGuideline,
+			plural: MutationSuccess.ArchiveGuidelines,
+			failure: MutationFailure.ArchiveFailed,
+			options: {
+				actions: {
+					variant: "cancel",
+					label: UNDO_LABEL,
+					onClick: () => {
+						handleCancelArchive(entries)
 					},
 				},
-			)
-		}
-
-		if (archived < entries.length) {
-			showFailureToast(MutationFailure.ArchiveFailed)
-		}
+			},
+		})
 	}
 
 	async function handleUnarchive(entries: TaskArchiveEntry[]) {
 		const restored = await toggleArchiveEntries(entries)
 
-		if (restored > 0) {
-			toast.success(
-				withCount(
-					restored,
-					MutationSuccess.UnarchiveGuideline,
-					MutationSuccess.UnarchiveGuidelines,
-				),
-			)
-		}
-
-		if (restored < entries.length) {
-			showFailureToast(MutationFailure.UndoArchiveFailed)
-		}
+		reportBatch(restored, {
+			singular: MutationSuccess.UnarchiveGuideline,
+			plural: MutationSuccess.UnarchiveGuidelines,
+			failure: MutationFailure.UndoArchiveFailed,
+		})
 	}
 
 	const onArchive = !isArchived ? handleArchive : undefined
