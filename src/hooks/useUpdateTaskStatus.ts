@@ -13,9 +13,8 @@ import {
 	getListTaskRowsQueryKey,
 	updateTask,
 } from "src/api/task/task"
-import { toast } from "src/components/Toast/toast-api"
-
-import { invalidateQueries } from "src/queryClient"
+import { MutationOperation } from "src/functions/toasts"
+import { invalidateQueries } from "src/query-client"
 
 interface UpdateStatusVariables {
 	taskId: number
@@ -62,7 +61,18 @@ function updateTaskDetailStatus<TTask extends TaskDto>(
 	}
 }
 
-export function useUpdateTaskStatus() {
+interface UpdateTaskStatusOptions {
+	/**
+	 * Reports each update through a toast. Off by default so a caller updating
+	 * several tasks at once reports one aggregated result rather than one toast
+	 * per task; single-task callers opt in.
+	 */
+	notify?: boolean
+}
+
+export function useUpdateTaskStatus({
+	notify = false,
+}: UpdateTaskStatusOptions = {}) {
 	const queryClient = useQueryClient()
 
 	function getAffectedQueryKeys(taskId: number, status: WorkspaceStatusDto) {
@@ -75,7 +85,9 @@ export function useUpdateTaskStatus() {
 		return { task, rows, all: [task, ...rows] }
 	}
 
-	const { mutate } = useMutation({
+	const { mutateAsync } = useMutation({
+		mutationKey: [MutationOperation.UpdateTaskStatus],
+		meta: { toast: { success: notify, error: notify } },
 		networkMode: "always",
 		mutationFn: ({ taskId, assigneeId, status }: UpdateStatusVariables) =>
 			assigneeId !== undefined
@@ -102,9 +114,6 @@ export function useUpdateTaskStatus() {
 
 			return { previousQueriesData }
 		},
-		onSuccess: () => {
-			toast.success("הסטטוס עודכן בהצלחה")
-		},
 		onError: (
 			_error: Error,
 			_variables: UpdateStatusVariables,
@@ -113,7 +122,6 @@ export function useUpdateTaskStatus() {
 			context?.previousQueriesData.forEach(([queryKey, data]) => {
 				queryClient.setQueryData(queryKey, data)
 			})
-			toast.error("שגיאה - סטטוס לא עודכן")
 		},
 		onSettled: (
 			_data: unknown,
@@ -124,12 +132,22 @@ export function useUpdateTaskStatus() {
 		},
 	})
 
-	function updateTaskStatus(
+	/**
+	 * Resolves to whether the update succeeded rather than rejecting, so
+	 * fire-and-forget callers cannot produce an unhandled rejection while bulk
+	 * callers can still count the failures.
+	 */
+	async function updateTaskStatus(
 		taskId: number,
 		assigneeId: number | undefined,
 		status: WorkspaceStatusDto,
 	) {
-		mutate({ taskId, assigneeId, status })
+		try {
+			await mutateAsync({ taskId, assigneeId, status })
+			return true
+		} catch {
+			return false
+		}
 	}
 
 	return updateTaskStatus

@@ -28,7 +28,7 @@ import {
 } from "src/components/ui/tabs"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries } from "src/query-client"
 import { concatName } from "src/utils/user-utils"
 
 enum PermissionsTab {

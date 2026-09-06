@@ -17,10 +17,11 @@ import {
 	useDeleteTask,
 } from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
+import { MutationSuccess } from "src/functions/toasts"
 import { useAttachmentDownload } from "src/hooks/useAttachmentDownload"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries } from "src/query-client"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
@@ -120,15 +121,26 @@ function TaskDetailPanel({
 		mutation: { onSuccess: handleSettledDelete, onError: handleSettled },
 	})
 
+	const archiveToast = {
+		meta: {
+			toast: {
+				success: isArchived
+					? MutationSuccess.UnarchiveGuideline
+					: MutationSuccess.ArchiveGuideline,
+			},
+		},
+		onSettled: handleSettled,
+	}
+
 	const { mutate: toggleWorkspaceArchive } = useToggleWorkspaceTaskArchive({
-		mutation: { onSettled: handleSettled },
+		mutation: archiveToast,
 	})
 
 	const { mutate: toggleUserArchive } = useToggleUserTaskArchive({
-		mutation: { onSettled: handleSettled },
+		mutation: archiveToast,
 	})
 
-	const handleUpdateTaskStatus = useUpdateTaskStatus()
+	const handleUpdateTaskStatus = useUpdateTaskStatus({ notify: true })
 
 	const displayDate = getDeadlineDisplayDate(
 		deadlineType,

@@ -4,6 +4,8 @@ import { useNavigate } from "@tanstack/react-router"
 import { useStore } from "@tanstack/react-store"
 import { Check, Paperclip, Sparkles } from "lucide-react"
 import { useEffect, useState } from "react"
+import { toast } from "src/components/Toast/toast-api"
+import { MutationSuccess, withCount } from "src/functions/toasts"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AI_ENABLED } from "src/utils/env-utils"
 import {
@@ -25,7 +27,7 @@ import {
 } from "../../api/task/task"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
-import { invalidateQueries } from "../../queryClient"
+import { invalidateQueries } from "../../query-client"
 import { ModalContent } from "../shared/ModalContent"
 import { Dialog } from "../ui/dialog"
 import {
@@ -70,14 +72,21 @@ function CreateDiscussionModal({
 			},
 		})
 	const { mutateAsync: updateSource, isPending: isUpdateSource } =
+		// Used to advance a wizard step and to publish the draft; neither is the
+		// "discussion details updated" edit that the registry message describes.
 		useUpdateSource({
 			mutation: {
+				meta: { toast: { success: false } },
 				onSuccess: () => {
 					invalidateQueries([getListSourcesQueryKey({ workspaceId })])
 				},
 			},
 		})
-	const { mutate: deleteTask } = useDeleteTask()
+	// Removes a draft row mid-edit, which is not the user-facing "guideline
+	// deleted" action the registry message describes.
+	const { mutate: deleteTask } = useDeleteTask({
+		mutation: { meta: { toast: { success: false } } },
+	})
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
@@ -241,6 +250,14 @@ function CreateDiscussionModal({
 					),
 				},
 			})
+
+			toast.success(
+				withCount(
+					taskRows.length,
+					MutationSuccess.CreateGuideline,
+					MutationSuccess.CreateGuidelines,
+				),
+			)
 
 			onClose()
 		} else {

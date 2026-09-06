@@ -8,7 +8,7 @@ import {
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries } from "src/query-client"
 import { ConfirmPopover } from "../shared/ConfirmPopover"
 import { TrashButton } from "../shared/TrashButton"
 

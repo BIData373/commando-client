@@ -18,7 +18,7 @@ import {
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
-import { invalidateQueries, queryClient } from "src/queryClient"
+import { invalidateQueries, queryClient } from "src/query-client"
 import { CancelButton } from "../shared/CancelButton"
 import { FormField } from "../shared/FormField"
 import { ModalContent } from "../shared/ModalContent"

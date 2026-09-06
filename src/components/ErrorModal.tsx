@@ -11,6 +11,10 @@ import error500 from "src/assets/error_500.svg"
 import logoSvg from "src/assets/logo-with-text.svg"
 import { ModalContent } from "src/components/shared/ModalContent"
 import { Dialog } from "src/components/ui/dialog"
+import {
+	MutationFailure,
+	TECHNICAL_FAILURE_SUBTITLE,
+} from "src/functions/toasts"
 import { useErrorModal } from "src/providers/ErrorModalProvider"
 import { ErrorCode, isErrorCode } from "src/utils/error-utils"
 import { openSupportChat, openUserChat } from "src/utils/redirect-utils"
@@ -23,9 +27,8 @@ interface ErrorContent {
 
 const ERROR_CONTENT: Record<ErrorCode, ErrorContent> = {
 	[ErrorCode.BAD_REQUEST]: {
-		title: "משהו השתבש בתקשורת",
-		description:
-			"כדאי לנסות שוב בעוד מספר רגעים אם הבעיה נמשכת, פנו אלינו לעזרה",
+		title: MutationFailure.TechnicalFailure,
+		description: TECHNICAL_FAILURE_SUBTITLE,
 		errorImage: error500,
 	},
 	[ErrorCode.UNAUTHORIZED]: {
@@ -39,9 +42,8 @@ const ERROR_CONTENT: Record<ErrorCode, ErrorContent> = {
 		errorImage: error404,
 	},
 	[ErrorCode.SERVER_ERROR]: {
-		title: "משהו השתבש בתקשורת",
-		description:
-			"כדאי לנסות שוב בעוד מספר רגעים אם הבעיה נמשכת, פנו אלינו לעזרה",
+		title: MutationFailure.TechnicalFailure,
+		description: TECHNICAL_FAILURE_SUBTITLE,
 		errorImage: error500,
 	},
 }

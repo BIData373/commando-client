@@ -4,7 +4,7 @@ import { useStore } from "@tanstack/react-store"
 import { AlertCircle } from "lucide-react"
 import { Popover as PopoverPrimitive } from "radix-ui"
 import { useState } from "react"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries } from "src/query-client"
 import type { UpdateSourceDto } from "../../api/model"
 import {
 	getGetSourceQueryKey,

@@ -17,7 +17,7 @@ import {
 import aiLoadingSvg from "src/assets/icons/ai-loading.svg"
 import { useSocketHandler } from "src/hooks/useSocketHandler"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries } from "src/query-client"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { DataTable } from "../ui/data-table"
 import AIExtractionAlert from "./AIExtractionAlert"

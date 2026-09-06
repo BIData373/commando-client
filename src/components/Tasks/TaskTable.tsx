@@ -7,7 +7,6 @@ import type {
 import { uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
-import { toast } from "sonner"
 import type {
 	DeadlineType,
 	TaskRowDto,
@@ -16,7 +15,14 @@ import type {
 } from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
+import { toast } from "src/components/Toast/toast-api"
 import { buildFilterOptionsMap } from "src/functions/filter-utils"
+import {
+	MutationFailure,
+	MutationSuccess,
+	showFailureToast,
+	withCount,
+} from "src/functions/toasts"
 import { type TaskArchiveEntry, useTaskColumns } from "src/hooks/useTaskColumns"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
@@ -90,8 +96,13 @@ function TaskTable<TTask extends TaskRowDto>({
 		setAssigneeFilter,
 	} = useTasksFilters()
 
-	const { mutate: deleteTaskMutate } = useDeleteTask({
-		mutation: { onSuccess: onChangeSuccess },
+	// Deletes and status changes both run one mutation per task, so their
+	// toasts are suppressed here and reported once for the whole batch.
+	const { mutateAsync: deleteTaskMutate } = useDeleteTask({
+		mutation: {
+			onSuccess: onChangeSuccess,
+			meta: { toast: { success: false, error: false } },
+		},
 	})
 
 	const updateStatus = useUpdateTaskStatus()
@@ -196,11 +207,32 @@ function TaskTable<TTask extends TaskRowDto>({
 		}
 	}
 
-	function removeTasks(taskIds: number[]) {
-		// TODO - maybe await Promise.all
-		taskIds.forEach((id) => {
-			deleteTaskMutate({ pathParams: { id } })
-		})
+	function reportBatchFailure(failed: number) {
+		if (failed === 0) return
+
+		showFailureToast(MutationFailure.TechnicalFailure)
+	}
+
+	async function removeTasks(taskIds: number[]) {
+		const results = await Promise.allSettled(
+			taskIds.map((id) => deleteTaskMutate({ pathParams: { id } })),
+		)
+
+		const deleted = results.filter(
+			({ status }) => status === "fulfilled",
+		).length
+
+		if (deleted > 0) {
+			toast.success(
+				withCount(
+					deleted,
+					MutationSuccess.DeleteGuideline,
+					MutationSuccess.DeleteGuidelines,
+				),
+			)
+		}
+
+		reportBatchFailure(results.length - deleted)
 	}
 
 	function getSelectedArchiveEntries() {
@@ -230,18 +262,29 @@ function TaskTable<TTask extends TaskRowDto>({
 		rowKeys: string[],
 		status: WorkspaceStatusDto,
 	) {
-		try {
-			rowKeys.forEach((rowKey) => {
-				const task = tasks.find((t) => t.rowKey === rowKey)
-				if (task) {
-					updateStatus(task.id, task.assignee?.id, status)
-				}
-			})
+		const selectedTasks = rowKeys
+			.map((rowKey) => tasks.find((t) => t.rowKey === rowKey))
+			.filter((task) => task !== undefined)
 
-			toast.success("הסטטוס עודכן בהצלחה")
-		} catch {
-			toast.error("שגיאה - סטטוס לא עודכן")
+		const results = await Promise.all(
+			selectedTasks.map((task) =>
+				updateStatus(task.id, task.assignee?.id, status),
+			),
+		)
+
+		const updated = results.filter(Boolean).length
+
+		if (updated > 0) {
+			toast.success(
+				withCount(
+					updated,
+					MutationSuccess.UpdateStatus,
+					MutationSuccess.UpdateStatuses,
+				),
+			)
 		}
+
+		reportBatchFailure(results.length - updated)
 	}
 
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])

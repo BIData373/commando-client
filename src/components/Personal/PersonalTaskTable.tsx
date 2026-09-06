@@ -15,10 +15,17 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	useListPersonalTaskRows,
 } from "src/api/task/task"
+import {
+	MutationFailure,
+	MutationSuccess,
+	showFailureToast,
+	UNDO_LABEL,
+	withCount,
+} from "src/functions/toasts"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries } from "src/query-client"
 import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
@@ -96,8 +103,13 @@ function PersonalTaskTable({
 		invalidateQueries([getGetTaskQueryKey({ id: taskId })])
 	}
 
+	// Archiving runs one mutation per task, so the per-task toasts are
+	// suppressed and the batch reports its own aggregated result.
 	const { mutateAsync: toggleArchive } = useToggleUserTaskArchive({
-		mutation: { onSuccess: handleToggleSuccess },
+		mutation: {
+			onSuccess: handleToggleSuccess,
+			meta: { toast: { success: false, error: false } },
+		},
 	})
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
@@ -148,40 +160,73 @@ function PersonalTaskTable({
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
 	).length
 
+	/** Resolves to how many of the entries were toggled successfully. */
 	async function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
-		await Promise.all(
+		const results = await Promise.allSettled(
 			entries.map(async ({ id, assigneeId }) => {
-				if (assigneeId) {
-					await toggleArchive({ params: { taskId: id, assigneeId } })
-				}
+				if (!assigneeId) return
+				await toggleArchive({ params: { taskId: id, assigneeId } })
 			}),
 		)
+
+		return results.filter(({ status }) => status === "fulfilled").length
+	}
+
+	async function handleCancelArchive(entries: TaskArchiveEntry[]) {
+		const restored = await toggleArchiveEntries(entries)
+
+		if (restored < entries.length) {
+			showFailureToast(MutationFailure.UndoArchiveFailed)
+		}
 	}
 
 	async function handleArchive(entries: TaskArchiveEntry[]) {
-		try {
-			await toggleArchiveEntries(entries)
+		const archived = await toggleArchiveEntries(entries)
+
+		if (archived > 0) {
 			toast.success(
-				entries.length === 1
-					? "הנחיה הועברה לארכיון בהצלחה"
-					: "ההנחיות הועברו לארכיון בהצלחה",
+				withCount(
+					archived,
+					MutationSuccess.ArchiveGuideline,
+					MutationSuccess.ArchiveGuidelines,
+				),
 				{
 					actions: {
 						variant: "cancel",
-						label: "ביטול",
+						label: UNDO_LABEL,
 						onClick: () => {
-							toggleArchiveEntries(entries).catch(() =>
-								toast.error("ביטול ההעברה לארכיון נכשל"),
-							)
+							handleCancelArchive(entries)
 						},
 					},
 				},
 			)
-		} catch {}
+		}
+
+		if (archived < entries.length) {
+			showFailureToast(MutationFailure.ArchiveFailed)
+		}
+	}
+
+	async function handleUnarchive(entries: TaskArchiveEntry[]) {
+		const restored = await toggleArchiveEntries(entries)
+
+		if (restored > 0) {
+			toast.success(
+				withCount(
+					restored,
+					MutationSuccess.UnarchiveGuideline,
+					MutationSuccess.UnarchiveGuidelines,
+				),
+			)
+		}
+
+		if (restored < entries.length) {
+			showFailureToast(MutationFailure.UndoArchiveFailed)
+		}
 	}
 
 	const onArchive = !isArchived ? handleArchive : undefined
-	const onUnarchive = isArchived ? toggleArchiveEntries : undefined
+	const onUnarchive = isArchived ? handleUnarchive : undefined
 
 	return (
 		<TooltipProvider>

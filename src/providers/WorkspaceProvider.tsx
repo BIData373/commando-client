@@ -9,7 +9,7 @@ import {
 import type { UpdateWorkspaceDto, WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
-import { queryClient } from "src/queryClient"
+import { queryClient } from "src/query-client"
 import type { WorkspaceDto } from "../api/model/workspace-dto"
 import { useListWorkspaces } from "../api/workspace/workspace"
 import { Spinner } from "../components/ui/spinner"

@@ -3,7 +3,6 @@ import { Outlet } from "@tanstack/react-router"
 import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
 import { without } from "lodash"
 import { useMemo } from "react"
-import { toast } from "sonner"
 import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assignee/archived-workspace-assignee"
 import type {
 	DeadlineType,
@@ -18,10 +17,18 @@ import {
 	getListTaskRowsQueryKey,
 	useListTaskRows,
 } from "src/api/task/task"
+import { toast } from "src/components/Toast/toast-api"
+import {
+	MutationFailure,
+	MutationSuccess,
+	showFailureToast,
+	UNDO_LABEL,
+	withCount,
+} from "src/functions/toasts"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries } from "src/query-client"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import {
 	ACTIVE_QUICK_FILTERS,
@@ -79,8 +86,13 @@ function WorkspaceTaskTable({
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
+	// Archiving runs one mutation per task, so the per-task toasts are
+	// suppressed and the batch reports its own aggregated result.
 	const { mutateAsync: toggleArchive } = useToggleWorkspaceTaskArchive({
-		mutation: { onSuccess: handleChangeSuccess },
+		mutation: {
+			onSuccess: handleChangeSuccess,
+			meta: { toast: { success: false, error: false } },
+		},
 	})
 
 	const urlColumnFilters: ColumnFiltersState = [
@@ -119,53 +131,75 @@ function WorkspaceTaskTable({
 		])
 	}
 
-	function handleToggleArchive(entries: TaskArchiveEntry[]) {
-		entries.forEach(({ id, assigneeId }) => {
-			toggleArchive(
-				{ params: { taskId: id, assigneeId } },
-				{
-					onSuccess: () => {
-						invalidateQueries([getGetTaskQueryKey({ id })])
+	/** Resolves to how many of the entries were toggled successfully. */
+	async function handleToggleArchive(entries: TaskArchiveEntry[]) {
+		const results = await Promise.allSettled(
+			entries.map(({ id, assigneeId }) =>
+				toggleArchive(
+					{ params: { taskId: id, assigneeId } },
+					{
+						onSuccess: () => {
+							invalidateQueries([getGetTaskQueryKey({ id })])
+						},
 					},
-				},
-			)
-		})
+				),
+			),
+		)
+
+		return results.filter(({ status }) => status === "fulfilled").length
 	}
 
-	function handleArchiveError(e: unknown) {
-		console.error(e)
-		toast.error("ביטול ההעברה לארכיון נכשל")
-	}
+	async function handleCancelArchive(entries: TaskArchiveEntry[]) {
+		const restored = await handleToggleArchive(entries)
 
-	function handleCancelArchive(entries: TaskArchiveEntry[]) {
-		try {
-			handleToggleArchive(entries)
-		} catch (e) {
-			handleArchiveError(e)
+		if (restored < entries.length) {
+			showFailureToast(MutationFailure.UndoArchiveFailed)
 		}
 	}
 
 	async function handleArchive(entries: TaskArchiveEntry[]) {
-		try {
-			handleToggleArchive(entries)
+		const archived = await handleToggleArchive(entries)
+
+		if (archived > 0) {
 			toast.success(
-				entries.length === 1
-					? "ההנחיה הועברו לארכיון בהצלחה"
-					: "ההנחיות הועברו לארכיון בהצלחה",
+				withCount(
+					archived,
+					MutationSuccess.ArchiveGuideline,
+					MutationSuccess.ArchiveGuidelines,
+				),
 				{
-					action: {
-						label: "ביטול",
-						onClick: () => handleCancelArchive(entries),
+					actions: {
+						label: UNDO_LABEL,
+						variant: "cancel",
+						onClick: () => {
+							handleCancelArchive(entries)
+						},
 					},
 				},
 			)
-		} catch (e) {
-			handleArchiveError(e)
+		}
+
+		if (archived < entries.length) {
+			showFailureToast(MutationFailure.ArchiveFailed)
 		}
 	}
 
-	function handleUnarchive(entries: TaskArchiveEntry[]) {
-		handleToggleArchive(entries)
+	async function handleUnarchive(entries: TaskArchiveEntry[]) {
+		const restored = await handleToggleArchive(entries)
+
+		if (restored > 0) {
+			toast.success(
+				withCount(
+					restored,
+					MutationSuccess.UnarchiveGuideline,
+					MutationSuccess.UnarchiveGuidelines,
+				),
+			)
+		}
+
+		if (restored < entries.length) {
+			showFailureToast(MutationFailure.UndoArchiveFailed)
+		}
 	}
 
 	const onArchive = isManager && !isArchived ? handleArchive : undefined
