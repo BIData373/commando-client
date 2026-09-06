@@ -1,36 +1,48 @@
 import styled from "@emotion/styled"
 import { useLocalStorage } from "@mantine/hooks"
-import { useState } from "react"
+import { useNavigate, useSearch } from "@tanstack/react-router"
 import logoWithText from "src/assets/logo-with-text-dark.png"
+import { unsubscribeFromOnboarding } from "src/router"
+import { OnboardingSteps as Steps } from "src/routes/onboarding"
 import { Dialog, DialogContent } from "../ui/dialog"
 import { OnboardingGreetingPage } from "./OnboardingGreetingPage"
 import { OnboardingRedirectPage } from "./OnboardingRedirectPage"
 import { OnboardingSysDescPage } from "./OnboardingSysDescPage"
 
-enum Steps {
-	greeting,
-	sysDesc,
-	redirects,
-}
+const STEP_ORDER: Steps[] = [Steps.greeting, Steps.sysDesc, Steps.redirects]
 
 export function OnboardingModal() {
+	const navigate = useNavigate({ from: "/onboarding" })
+	const { step = Steps.greeting } = useSearch({ from: "/onboarding" })
+
 	const [isOpen, setIsOpen] = useLocalStorage({
 		key: "onboardingRequired",
 		defaultValue: true,
 	})
 
-	const [step, setStep] = useState(Steps.greeting)
+	const currentStepIndex = STEP_ORDER.indexOf(step)
+
+	const setStep = (newStep: Steps) => {
+		navigate({
+			search: { step: newStep },
+		})
+	}
 
 	const handleStepIncrement = () => {
-		setStep((prevStep) => prevStep + 1)
+		if (currentStepIndex < 2) {
+			setStep(STEP_ORDER[currentStepIndex + 1])
+		}
 	}
 
 	const handleStepDecrement = () => {
-		setStep((prevStep) => prevStep - 1)
+		if (currentStepIndex > 0) {
+			setStep(STEP_ORDER[currentStepIndex - 1])
+		}
 	}
 
 	const handleCloseModal = () => {
 		setIsOpen(false)
+		unsubscribeFromOnboarding()
 	}
 
 	const pages: Record<Steps, React.ReactNode> = {
