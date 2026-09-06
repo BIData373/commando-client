@@ -34,13 +34,23 @@ const CONFIGURABLE_COLUMNS_META = toColumnsMeta({
 	updatedAt: "עודכן ב",
 })
 
-export const EXTRA_COLUMNS_META = toColumnsMeta({
+export const WORKSPACE_COLUMN_META = toColumnsMeta({
 	workspace: "מפקד מנחה",
-	archivedAt: "הועבר לארכיון",
 })
 
-export const [WORKSPACE_COLUMN_META, ARCHIVED_AT_COLUMN_META] =
-	EXTRA_COLUMNS_META
+export const PERSONAL_ARCHIVED_COLUMN_META = toColumnsMeta({
+	personalArchivedAt: "הועבר לארכיון",
+})
+
+export const WORKSPACE_ARCHIVED_COLUMN_META = toColumnsMeta({
+	workspaceArchivedAt: "הועבר לארכיון",
+})
+
+export const EXTRA_COLUMNS_META = [
+	...WORKSPACE_COLUMN_META,
+	...PERSONAL_ARCHIVED_COLUMN_META,
+	...WORKSPACE_ARCHIVED_COLUMN_META,
+]
 
 const TASK_COLUMN_IDS = [
 	...CONFIGURABLE_COLUMNS_META.map((c) => c.id),
@@ -174,23 +184,6 @@ export const WORKSPACE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 	TASK_COLUMN_ID.notes,
 	TASK_COLUMN_ID.updatedAt,
 ])
-
-// ─── Archive ────────────────────────────────────────────────────────────────
-
-export const ARCHIVE_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
-	TASK_COLUMN_ID.title,
-	TASK_COLUMN_ID.status,
-	TASK_COLUMN_ID.assignee,
-	TASK_COLUMN_ID.deadlineType,
-	TASK_COLUMN_ID.source,
-	TASK_COLUMN_ID.workspace,
-	TASK_COLUMN_ID.archivedAt,
-	TASK_COLUMN_ID.lastMessage,
-	TASK_COLUMN_ID.createdAt,
-	TASK_COLUMN_ID.tags,
-	TASK_COLUMN_ID.notes,
-	TASK_COLUMN_ID.updatedAt,
-]
 
 export const ARCHIVE_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 	TASK_COLUMN_ID.tags,

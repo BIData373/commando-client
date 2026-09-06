@@ -54,7 +54,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 					faker.string.alpha({ length: { min: 10, max: 20 } }),
 					null,
 				]),
-				archivedAt: faker.helpers.arrayElement([
+				workspaceArchivedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 					null,
 				]),
@@ -362,7 +362,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
-		archivedAt: faker.helpers.arrayElement([
+		workspaceArchivedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
@@ -657,7 +657,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
-		archivedAt: faker.helpers.arrayElement([
+		workspaceArchivedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
