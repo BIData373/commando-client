@@ -16,7 +16,6 @@ interface ColumnFilterDropdownProps {
 	activeValues: Set<string>
 	onApply: (values: Set<string>) => void
 	isActive: boolean
-	open: boolean
 	onOpenChange: (open: boolean) => void
 }
 
@@ -25,7 +24,6 @@ function ColumnFilterDropdown({
 	activeValues,
 	onApply,
 	isActive,
-	open,
 	onOpenChange,
 }: ColumnFilterDropdownProps) {
 	const [selectedValues, setSelectedValues] = useState<Set<string>>(
@@ -61,15 +59,10 @@ function ColumnFilterDropdown({
 		onOpenChange(false)
 	}
 
-	function handlePointerDownOutside(e: Event) {
-		e.preventDefault()
-		onOpenChange(false)
-	}
-
 	return (
-		<Popover open={open} onOpenChange={handleOpenChange}>
+		<Popover onOpenChange={handleOpenChange}>
 			<PopoverTrigger asChild>
-				<IconButton $active={isActive} onClick={(e) => e.stopPropagation()}>
+				<IconButton $active={isActive}>
 					<TbFilter size={16} />
 					{isActive && <ActiveBadge />}
 				</IconButton>
@@ -78,7 +71,7 @@ function ColumnFilterDropdown({
 				align="start"
 				sideOffset={8}
 				asChild
-				onPointerDownOutside={handlePointerDownOutside}
+				onFocusOutside={(e) => e.preventDefault()}
 			>
 				<DropdownPanel>
 					<ItemList>
