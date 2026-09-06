@@ -107,8 +107,7 @@ export const TASK_COLUMN_DEFINITIONS: Partial<
 	},
 	[TASK_COLUMN_ID.source]: {
 		sortingFn: "text",
-		accessorFn: (row) =>
-			row.source ? formatSourceLabel(row.source) : undefined,
+		accessorFn: (row) => row.source && formatSourceLabel(row.source),
 		filterFn: multiSelectColumnFilter,
 	},
 	[TASK_COLUMN_ID.createdAt]: { sortingFn: "datetime" },
