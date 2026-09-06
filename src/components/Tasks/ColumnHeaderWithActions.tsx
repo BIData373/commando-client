@@ -38,6 +38,7 @@ function ColumnHeaderWithActions<TData>({
 						activeValues={new Set(filterValue)}
 						onApply={handleApplyFilter}
 						isActive={isFilterActive}
+						open={filterOpen}
 						onOpenChange={setFilterOpen}
 					/>
 				)}
