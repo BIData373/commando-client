@@ -24,6 +24,7 @@ export interface TaskWithWorkspaceDto {
 	/** @nullable */
 	deletedBy: number | null
 	id: number
+	serialId: number
 	title: string
 	/** @nullable */
 	description: string | null
