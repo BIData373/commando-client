@@ -4,7 +4,7 @@ import type { TaskRowDto } from "src/api/model"
 import { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { QuickFilter } from "src/api/model/quick-filter"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
-import { formatDateShort } from "./date-utils"
+import { formatSourceLabel } from "./source-utils"
 
 // TODO Move to utils/filter-utils
 // ─── Shared Types ────────────────────────────────────────────────────────────
@@ -75,9 +75,7 @@ export function buildFilterOptionsMap(
 		}
 
 		if (t.source) {
-			sourceSet.add(
-				`${t.source.name} | ${formatDateShort(t.source.date as Date)}`,
-			)
+			sourceSet.add(formatSourceLabel(t.source))
 		}
 
 		t.tags.forEach((tag) => {
