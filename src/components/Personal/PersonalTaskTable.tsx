@@ -174,7 +174,7 @@ function PersonalTaskTable({
 					hiddenColumns={hiddenColumns}
 					extraColumns={[workspaceColumn, ...(extraColumns ?? [])]}
 					extraColumnsMeta={[
-						WORKSPACE_COLUMN_META,
+						...WORKSPACE_COLUMN_META,
 						...(extraColumnsMeta ?? []),
 					]}
 					quickFilters={
