@@ -1,5 +1,6 @@
 import { useDebouncedCallback, useLocalStorage } from "@mantine/hooks"
 import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
+import { intersection } from "lodash"
 import {
 	createContext,
 	type Dispatch,
@@ -148,7 +149,7 @@ export function TasksFiltersProvider({
 	)
 
 	const hiddenColumns = useMemo(
-		() => new Set(hiddenColumnsRaw.filter((id) => allowedColumns.has(id))),
+		() => new Set(intersection(hiddenColumnsRaw, [...allowedColumns])),
 		[hiddenColumnsRaw, allowedColumns],
 	)
 
