@@ -1,73 +1,40 @@
 import styled from "@emotion/styled"
-import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
 import { Download } from "lucide-react"
-import { useCallback, useMemo } from "react"
+import { listMessages } from "src/api/message/message"
 import type { ListMessagesParams, TaskRowDto } from "src/api/model"
 import { exportTasksToExcel } from "src/functions/export-excel"
-import { useTasksFilters } from "src/providers/TasksFiltersProvider"
-import { buildCountingColumns } from "src/utils/task-table-utils"
-import { useHeadlessTable } from "../../hooks/useHeadlessTable"
+import { TASK_COLUMN_ID } from "src/utils/task-table-utils"
 
 interface ExportButtonProps<TTask extends TaskRowDto> {
-	tasks: TTask[]
-	allColumnFilters: ColumnFiltersState
+	exportRows: TTask[]
 	columnOrder: (keyof TTask)[]
 	hiddenColumns: Set<keyof TTask>
-	extraColumns?: ColumnDef<TTask>[]
-	baseMessagesParams: ListMessagesParams
+	messagesParams: ListMessagesParams
 	exportFilePrefix?: string
 }
 
 function ExportButton<TTask extends TaskRowDto>({
-	tasks,
-	allColumnFilters,
+	exportRows,
 	columnOrder,
 	hiddenColumns,
-	extraColumns = [],
-	baseMessagesParams,
+	messagesParams,
 	exportFilePrefix,
 }: ExportButtonProps<TTask>) {
-	const { sorting } = useTasksFilters()
-
-	const countingColumns = useMemo(
-		() => buildCountingColumns(extraColumns),
-		[extraColumns],
-	)
-
-	const exportTable = useHeadlessTable({
-		data: tasks,
-		columns: countingColumns,
-		columnFilters: allColumnFilters,
-		sorting,
-	})
-
-	const handleExport = useCallback(() => {
-		const exportRows = exportTable
-			.getSortedRowModel()
-			.rows.map((row) => row.original)
-
-		const messagesParams: ListMessagesParams =
-			exportRows.length < tasks.length
-				? exportRows.length === 1
-					? { taskId: exportRows[0].id }
-					: { taskIds: exportRows.map((r) => r.id) }
-				: baseMessagesParams
+	async function handleExport() {
+		const messages = !hiddenColumns.has(
+			TASK_COLUMN_ID.lastMessage as keyof TTask,
+		)
+			? await listMessages(messagesParams)
+			: []
 
 		exportTasksToExcel(
 			exportRows,
 			columnOrder,
 			hiddenColumns,
-			messagesParams,
+			messages,
 			exportFilePrefix,
 		)
-	}, [
-		exportTable,
-		tasks,
-		columnOrder,
-		hiddenColumns,
-		baseMessagesParams,
-		exportFilePrefix,
-	])
+	}
 
 	return (
 		<ActionButton onClick={handleExport}>

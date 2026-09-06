@@ -1,10 +1,8 @@
 import { differenceInDays, format, startOfToday } from "date-fns"
 import ExcelJS from "exceljs"
 import { groupBy } from "lodash"
-import { listMessages } from "src/api/message/message"
 import {
 	DeadlineType,
-	type ListMessagesParams,
 	type MessageDto,
 	type TaskRowDto,
 	type TaskRowWithWorkspaceDto,
@@ -80,8 +78,10 @@ function formatMessages(messages?: MessageDto[]): string {
 		.join("\n\n")
 }
 
+type ExportTaskRow = TaskRowDto & { messages?: MessageDto[] }
+
 const COLUMN_DEFS: Partial<
-	Partial<Record<keyof TaskRowWithWorkspaceDto, ExportColumn<TaskRowDto>>>
+	Record<keyof TaskRowWithWorkspaceDto, ExportColumn<ExportTaskRow>>
 > = {
 	[TASK_COLUMN_ID.title]: {
 		header: COLUMN_LABELS.title,
@@ -155,8 +155,7 @@ const COLUMN_DEFS: Partial<
 		header: COLUMN_LABELS.lastMessage,
 		maxWidth: 60,
 		horizontalAlign: "right",
-		accessor: (t) =>
-			formatMessages((t as TaskRowDto & { messages?: MessageDto[] }).messages),
+		accessor: (t) => formatMessages(t.messages),
 	},
 	[TASK_COLUMN_ID.workspace]: {
 		header: COLUMN_LABELS.workspace,
@@ -169,14 +168,10 @@ export async function exportTasksToExcel<TTask extends TaskRowDto>(
 	tasks: TTask[],
 	columnOrder: (keyof TTask)[],
 	hiddenColumns: Set<keyof TTask>,
-	messagesParams: ListMessagesParams,
+	messages: MessageDto[],
 	fileNamePrefix?: string,
 ) {
-	const messagesMap = !hiddenColumns.has(
-		TASK_COLUMN_ID.lastMessage as keyof TTask,
-	)
-		? groupBy(await listMessages(messagesParams), "taskId")
-		: null
+	const messagesMap = messages.length > 0 ? groupBy(messages, "taskId") : null
 
 	const rows = messagesMap
 		? tasks.map((t) => ({ ...t, messages: messagesMap[t.id] ?? [] }))

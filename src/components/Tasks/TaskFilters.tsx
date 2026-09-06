@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
+import { uniq } from "lodash"
 import { FilterX } from "lucide-react"
 import { type ReactNode, useMemo } from "react"
 import type { ListMessagesParams, TaskRowDto } from "src/api/model"
@@ -56,6 +57,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		columnsFilters,
 		setColumnsFilters,
 		setAssigneeFilter,
+		sorting,
 	} = useTasksFilters()
 
 	const hasActiveColumnFilters =
@@ -72,13 +74,6 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		[urlColumnFilters, columnsFilters],
 	)
 
-	const exportMessagesParams: ListMessagesParams =
-		filteredTasks.length < allTaskRows.length
-			? filteredTasks.length === 1
-				? { taskId: filteredTasks[0].id }
-				: { taskIds: filteredTasks.map((t) => t.id) }
-			: baseMessagesParams
-
 	const countingColumns = useMemo(
 		() => buildCountingColumns(extraColumns),
 		[extraColumns],
@@ -89,6 +84,24 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		columns: countingColumns,
 		columnFilters: allColumnFilters,
 	})
+
+	const exportTable = useHeadlessTable({
+		data: filteredTasks,
+		columns: countingColumns,
+		columnFilters: allColumnFilters,
+		sorting,
+	})
+
+	const exportRows = exportTable
+		.getSortedRowModel()
+		.rows.map((row) => row.original)
+
+	const exportMessagesParams: ListMessagesParams =
+		exportRows.length < allTaskRows.length
+			? exportRows.length === 1
+				? { taskId: exportRows[0].id }
+				: { taskIds: uniq(exportRows.map((r) => r.id)) }
+			: baseMessagesParams
 
 	const filteredRowsForCounts = countingTable.getFilteredRowModel().rows
 
@@ -192,12 +205,10 @@ export function TaskFilters<TTask extends TaskRowDto>({
 				<ColumnVisibilityDropdown extraColumnsMeta={extraColumnsMeta} />
 
 				<ExportButton
-					tasks={filteredTasks}
-					allColumnFilters={allColumnFilters}
+					exportRows={exportRows}
 					columnOrder={columnOrder}
 					hiddenColumns={hiddenColumns}
-					extraColumns={extraColumns}
-					baseMessagesParams={exportMessagesParams}
+					messagesParams={exportMessagesParams}
 					exportFilePrefix={exportFilePrefix}
 				/>
 
