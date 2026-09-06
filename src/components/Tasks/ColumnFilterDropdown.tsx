@@ -62,12 +62,17 @@ function ColumnFilterDropdown({
 	return (
 		<Popover onOpenChange={handleOpenChange}>
 			<PopoverTrigger asChild>
-				<IconButton $active={isActive} onClick={(e) => e.stopPropagation()}>
+				<IconButton $active={isActive}>
 					<TbFilter size={16} />
 					{isActive && <ActiveBadge />}
 				</IconButton>
 			</PopoverTrigger>
-			<PopoverContent align="start" sideOffset={8} asChild>
+			<PopoverContent
+				align="start"
+				sideOffset={8}
+				asChild
+				onFocusOutside={(e) => e.preventDefault()}
+			>
 				<DropdownPanel>
 					<ItemList>
 						{options.map((option) => (
