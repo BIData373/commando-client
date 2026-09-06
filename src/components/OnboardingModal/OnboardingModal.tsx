@@ -2,7 +2,6 @@ import styled from "@emotion/styled"
 import { useLocalStorage } from "@mantine/hooks"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 import logoWithText from "src/assets/logo-with-text-dark.png"
-import { unsubscribeFromOnboarding } from "src/router"
 import { OnboardingSteps as Steps } from "src/routes/onboarding"
 import { Dialog, DialogContent } from "../ui/dialog"
 import { OnboardingGreetingPage } from "./OnboardingGreetingPage"
@@ -42,7 +41,6 @@ export function OnboardingModal() {
 
 	const handleCloseModal = () => {
 		setIsOpen(false)
-		unsubscribeFromOnboarding()
 	}
 
 	const pages: Record<Steps, React.ReactNode> = {

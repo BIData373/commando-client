@@ -10,6 +10,7 @@ import { Toaster } from "../components/ui/sonner"
 import { TooltipProvider } from "../components/ui/tooltip"
 import { HeaderProvider } from "../providers/HeaderProvider"
 import "../styles.css"
+import { OnboardingGuard } from "src/components/OnboardingModal/OnboardingGuard"
 import { IS_DEV } from "../utils/env-utils"
 
 export const Route = createRootRoute({
@@ -25,6 +26,7 @@ function RootComponent() {
 				<HeaderProvider>
 					<AppShell>
 						<PageContainer>
+							<OnboardingGuard />
 							<Outlet />
 						</PageContainer>
 					</AppShell>
