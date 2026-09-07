@@ -134,26 +134,6 @@ const UserScrollArea = styled.div`
   direction: ltr;
   overflow-y: auto;
   max-height: 110px;
-
-  scrollbar-width: thin;
-  scrollbar-color: var(--line) transparent;
-
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--line);
-    border-radius: 999px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: var(--sea-ink-soft);
-  }
 `
 
 const UserList = styled.div`

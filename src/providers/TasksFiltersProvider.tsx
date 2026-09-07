@@ -1,5 +1,6 @@
 import { useDebouncedCallback, useLocalStorage } from "@mantine/hooks"
 import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
+import { intersection } from "lodash"
 import {
 	createContext,
 	type Dispatch,
@@ -108,9 +109,20 @@ export function TasksFiltersProvider({
 		defaultValue: [],
 	})
 
+	const allowedColumns = useMemo(
+		() => new Set(defaultColumnOrder),
+		[defaultColumnOrder],
+	)
+
 	const knownColumnIds: (keyof TaskRowWithWorkspaceDto)[] = useMemo(
-		() => ["id", ...new Set([...defaultColumnOrder, ...columnOrderRaw])],
-		[defaultColumnOrder, columnOrderRaw],
+		() => [
+			"id",
+			...new Set([
+				...defaultColumnOrder,
+				...columnOrderRaw.filter((id) => allowedColumns.has(id)),
+			]),
+		],
+		[defaultColumnOrder, columnOrderRaw, allowedColumns],
 	)
 
 	const activeQuickFilters = useMemo(
@@ -137,8 +149,8 @@ export function TasksFiltersProvider({
 	)
 
 	const hiddenColumns = useMemo(
-		() => new Set(hiddenColumnsRaw),
-		[hiddenColumnsRaw],
+		() => new Set(intersection(hiddenColumnsRaw, [...allowedColumns])),
+		[hiddenColumnsRaw, allowedColumns],
 	)
 
 	const updateTableView = (update: Partial<UserViewDto["table"]>) => {

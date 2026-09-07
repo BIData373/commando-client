@@ -80,7 +80,6 @@ function PersonalTaskTable({
 	onEdit,
 	onAddComment,
 	onOpenTask,
-	showMetricsBar = false,
 	filePrefix,
 }: PersonalTaskTableProps) {
 	const { columnOrder, hiddenColumns, searchQuery } = useTasksFilters()
@@ -212,14 +211,12 @@ function PersonalTaskTable({
 			<PageRoot>
 				{isArchived && <ArchiveHeader>ארכיון</ArchiveHeader>}
 
-				{showMetricsBar && (
-					<MetricsBar
-						totalCount={totalCount}
-						notStartedCount={notStartedCount}
-						inProgressCount={inProgressCount}
-						weeklyNew={weeklyNew}
-					/>
-				)}
+				<MetricsBar
+					totalCount={totalCount}
+					notStartedCount={notStartedCount}
+					inProgressCount={inProgressCount}
+					weeklyNew={weeklyNew}
+				/>
 
 				<TaskFilters
 					allTaskRows={tasks}
@@ -228,7 +225,7 @@ function PersonalTaskTable({
 					hiddenColumns={hiddenColumns}
 					extraColumns={[workspaceColumn, ...(extraColumns ?? [])]}
 					extraColumnsMeta={[
-						WORKSPACE_COLUMN_META,
+						...WORKSPACE_COLUMN_META,
 						...(extraColumnsMeta ?? []),
 					]}
 					quickFilters={
@@ -290,6 +287,7 @@ const PageRoot = styled.div`
   flex-direction: column;
   gap: 28px;
   padding-block-end: 24px;
+  padding-block-start: 24px;
   height: 100%;
   overflow: hidden;
 `

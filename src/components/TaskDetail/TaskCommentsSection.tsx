@@ -256,12 +256,12 @@ const DeleteMenuItem = styled(DropdownMenuItem)`
 
 const CommentContent = styled.p`
   flex: 1;
+  direction: rtl;
   min-width: 0;
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   color: var(--sea-ink);
-  text-align: end;
   width: 100%;
   white-space: pre-wrap;
   overflow-wrap: break-word;
