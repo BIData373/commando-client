@@ -35,7 +35,7 @@ export interface TaskWithWorkspaceDto {
 	/** @nullable */
 	notes: string | null
 	/** @nullable */
-	archivedAt: Date | null
+	workspaceArchivedAt: Date | null
 	workspaceId: number
 	status: WorkspaceStatusDto
 	/** @nullable */

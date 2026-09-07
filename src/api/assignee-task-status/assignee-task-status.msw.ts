@@ -54,7 +54,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 					faker.string.alpha({ length: { min: 10, max: 20 } }),
 					null,
 				]),
-				archivedAt: faker.helpers.arrayElement([
+				workspaceArchivedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 					null,
 				]),
@@ -262,7 +262,11 @@ export const getListAssigneeTaskStatusesResponseMock =
 						workspaceId: faker.number.float({ fractionDigits: 2 }),
 					},
 					description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					archivedAt: faker.helpers.arrayElement([
+					personalArchivedAt: faker.helpers.arrayElement([
+						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+						null,
+					]),
+					workspaceArchivedAt: faker.helpers.arrayElement([
 						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 						null,
 					]),
@@ -365,7 +369,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
-		archivedAt: faker.helpers.arrayElement([
+		workspaceArchivedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
@@ -559,7 +563,11 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			archivedAt: faker.helpers.arrayElement([
+			personalArchivedAt: faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
+			workspaceArchivedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				null,
 			]),
@@ -663,7 +671,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
-		archivedAt: faker.helpers.arrayElement([
+		workspaceArchivedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
@@ -857,7 +865,11 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			archivedAt: faker.helpers.arrayElement([
+			personalArchivedAt: faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
+			workspaceArchivedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				null,
 			]),

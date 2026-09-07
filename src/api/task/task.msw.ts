@@ -54,7 +54,7 @@ export const getCreateTaskResponseMock = (
 		faker.string.alpha({ length: { min: 10, max: 20 } }),
 		null,
 	]),
-	archivedAt: faker.helpers.arrayElement([
+	workspaceArchivedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		null,
 	]),
@@ -244,7 +244,11 @@ export const getCreateTaskResponseMock = (
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		},
 		description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		archivedAt: faker.helpers.arrayElement([
+		personalArchivedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
+		workspaceArchivedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
@@ -316,7 +320,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
-		archivedAt: faker.helpers.arrayElement([
+		workspaceArchivedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
@@ -510,7 +514,11 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			archivedAt: faker.helpers.arrayElement([
+			personalArchivedAt: faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
+			workspaceArchivedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				null,
 			]),
@@ -552,7 +560,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
-		archivedAt: faker.helpers.arrayElement([
+		workspaceArchivedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
@@ -803,12 +811,20 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			archivedAt: faker.helpers.arrayElement([
+			personalArchivedAt: faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
+			workspaceArchivedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				null,
 			]),
 			editable: faker.datatype.boolean(),
 		})),
+		personalArchivedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
 	}))
 
 export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
@@ -845,7 +861,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
 			null,
 		]),
-		archivedAt: faker.helpers.arrayElement([
+		workspaceArchivedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
@@ -1039,7 +1055,11 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			archivedAt: faker.helpers.arrayElement([
+			personalArchivedAt: faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
+			workspaceArchivedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				null,
 			]),
@@ -1111,7 +1131,7 @@ export const getListPersonalTaskRowsResponseMock =
 				faker.string.alpha({ length: { min: 10, max: 20 } }),
 				null,
 			]),
-			archivedAt: faker.helpers.arrayElement([
+			workspaceArchivedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				null,
 			]),
@@ -1370,12 +1390,20 @@ export const getListPersonalTaskRowsResponseMock =
 					workspaceId: faker.number.float({ fractionDigits: 2 }),
 				},
 				description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				archivedAt: faker.helpers.arrayElement([
+				personalArchivedAt: faker.helpers.arrayElement([
+					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+					null,
+				]),
+				workspaceArchivedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 					null,
 				]),
 				editable: faker.datatype.boolean(),
 			})),
+			personalArchivedAt: faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
 			workspace: {
 				createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				createdBy: faker.number.float({ fractionDigits: 2 }),
@@ -1439,7 +1467,7 @@ export const getGetTaskResponseMock = (
 		faker.string.alpha({ length: { min: 10, max: 20 } }),
 		null,
 	]),
-	archivedAt: faker.helpers.arrayElement([
+	workspaceArchivedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		null,
 	]),
@@ -1629,7 +1657,11 @@ export const getGetTaskResponseMock = (
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		},
 		description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		archivedAt: faker.helpers.arrayElement([
+		personalArchivedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
+		workspaceArchivedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
@@ -1699,7 +1731,7 @@ export const getUpdateTaskResponseMock = (
 		faker.string.alpha({ length: { min: 10, max: 20 } }),
 		null,
 	]),
-	archivedAt: faker.helpers.arrayElement([
+	workspaceArchivedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		null,
 	]),
@@ -1889,7 +1921,11 @@ export const getUpdateTaskResponseMock = (
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		},
 		description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		archivedAt: faker.helpers.arrayElement([
+		personalArchivedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
+		workspaceArchivedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
@@ -1959,7 +1995,7 @@ export const getDeleteTaskResponseMock = (
 		faker.string.alpha({ length: { min: 10, max: 20 } }),
 		null,
 	]),
-	archivedAt: faker.helpers.arrayElement([
+	workspaceArchivedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		null,
 	]),
@@ -2149,7 +2185,11 @@ export const getDeleteTaskResponseMock = (
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
 		},
 		description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		archivedAt: faker.helpers.arrayElement([
+		personalArchivedAt: faker.helpers.arrayElement([
+			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			null,
+		]),
+		workspaceArchivedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
