@@ -76,8 +76,6 @@ function CreateTaskModal({
 
 	const { saveTasks, isPending } = useSaveTasks(workspaceId, onClose)
 
-	// Created implicitly while saving the task; `createSource` reports failures
-	// only, so there is nothing to suppress here.
 	const { mutateAsync: createSource } = useCreateSource({
 		mutation: {
 			onSuccess: () => {

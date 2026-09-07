@@ -72,8 +72,6 @@ function CreateDiscussionModal({
 			},
 		})
 	const { mutateAsync: updateSource, isPending: isUpdateSource } =
-		// Used to advance a wizard step and to publish the draft; neither is the
-		// "discussion details updated" edit that the registry message describes.
 		useUpdateSource({
 			mutation: {
 				meta: { toast: { success: false } },
