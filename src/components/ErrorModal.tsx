@@ -12,9 +12,8 @@ import logoSvg from "src/assets/logo-with-text.svg"
 import { ModalContent } from "src/components/shared/ModalContent"
 import { Dialog } from "src/components/ui/dialog"
 import { useErrorModal } from "src/providers/ErrorModalProvider"
-import { CHAT_CHANNEL_URL } from "src/utils/env-utils"
 import { ErrorCode, isErrorCode } from "src/utils/error-utils"
-import { navigateToUserChat } from "src/utils/user-utils"
+import { openSupportChat, openUserChat } from "src/utils/redirect-utils"
 
 interface ErrorContent {
 	title: string
@@ -77,10 +76,6 @@ export function ErrorModal() {
 		setErrorCode(null)
 	}
 
-	function navigateToChat() {
-		window.open(CHAT_CHANNEL_URL)
-	}
-
 	const content = errorCode
 		? ERROR_CONTENT[
 				isErrorCode(errorCode)
@@ -110,9 +105,7 @@ export function ErrorModal() {
 								<AdminContactsList>
 									{admins.map(({ user }, index) => (
 										<AdminContactRow key={user.id}>
-											<AdminContactLink
-												onClick={() => navigateToUserChat(user)}
-											>
+											<AdminContactLink onClick={() => openUserChat(user)}>
 												{user.info?.name} {user.info?.upn}{" "}
 												{index + 1 < admins.length && "|"}
 											</AdminContactLink>
@@ -122,7 +115,7 @@ export function ErrorModal() {
 							</AdminContactsContent>
 						)}
 						<ButtonsRow>
-							<SecondaryButton onClick={navigateToChat}>
+							<SecondaryButton onClick={openSupportChat}>
 								לערוץ תמיכה
 							</SecondaryButton>
 							<PrimaryButton onClick={navigateToHomePage}>

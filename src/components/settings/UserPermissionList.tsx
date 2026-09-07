@@ -1,10 +1,6 @@
 import styled from "@emotion/styled"
-import {
-	type MirageUserDto,
-	PermissionType,
-	type UserInfoDto,
-} from "src/api/model"
-import { navigateToUserChat } from "src/utils/user-utils"
+import { type MirageUserDto, PermissionType } from "src/api/model"
+import { openUserChat } from "src/utils/redirect-utils"
 import noUsersFound from "../../assets/empty-states/no-users-found.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { TrashButton } from "../shared/TrashButton"
@@ -37,7 +33,7 @@ export function UserPermissionList<T>({
 }: UserPermissionListProps<T>) {
 	function handleClickUserInfo(item: T, type: PermissionType) {
 		if (type === PermissionType.MANAGER) {
-			navigateToUserChat(getUser(item))
+			openUserChat(getUser(item))
 		}
 	}
 

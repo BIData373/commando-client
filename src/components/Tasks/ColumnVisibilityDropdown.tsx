@@ -19,7 +19,7 @@ import {
 } from "@dnd-kit/sortable"
 import styled from "@emotion/styled"
 import { Columns3 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import {
@@ -80,6 +80,13 @@ function ColumnVisibilityDropdown({
 		.map((id) => allColumns.find((c) => c.id === id))
 		.filter((c) => c != null)
 
+	// `items` must change in the same commit as the rendered rows, otherwise
+	// dnd-kit animates the transform reset on drop and the row overshoots.
+	const sortableIds = useMemo(
+		() => orderedColumns.map((c) => c.id),
+		[orderedColumns],
+	)
+
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
@@ -95,7 +102,7 @@ function ColumnVisibilityDropdown({
 					modifiers={[restrictToParentElement, restrictToVerticalAxis]}
 				>
 					<SortableContext
-						items={columnOrder}
+						items={sortableIds}
 						strategy={verticalListSortingStrategy}
 					>
 						{orderedColumns.map((col) => (

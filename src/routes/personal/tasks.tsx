@@ -29,6 +29,7 @@ const PERSONAL_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] = [
 	TASK_COLUMN_ID.tags,
 	TASK_COLUMN_ID.notes,
 	TASK_COLUMN_ID.workspace,
+	TASK_COLUMN_ID.lastMessage,
 	TASK_COLUMN_ID.createdAt,
 	TASK_COLUMN_ID.updatedAt,
 ]
