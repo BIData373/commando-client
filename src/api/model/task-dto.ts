@@ -43,5 +43,7 @@ export interface TaskDto {
 	lastMessage: MessageDto
 	messageCount: number
 	editable: boolean
+	viewedInTable: boolean
+	viewedMessages: boolean
 	assigneeStatuses: AssigneeStatusDto[]
 }

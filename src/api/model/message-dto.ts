@@ -20,4 +20,5 @@ export interface MessageDto {
 	content: string
 	user: UserDto
 	taskId: number
+	viewed: boolean
 }
