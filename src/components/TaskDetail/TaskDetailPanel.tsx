@@ -62,6 +62,7 @@ function TaskDetailPanel({
 		status,
 		editable,
 		workspace,
+		workspaceArchivedAt,
 		workspace: { id: workspaceId, permissionType },
 	},
 	showWorkspace = false,
@@ -268,6 +269,7 @@ function TaskDetailPanel({
 									taskId={id}
 									editable={editable}
 									onUpdate={handleUpdateTaskStatus}
+									isArchived={!!workspaceArchivedAt}
 								/>
 							</StatusTagContainer>
 						)
