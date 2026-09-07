@@ -251,7 +251,14 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				...TASK_COLUMN_DEFINITIONS.status,
 				cell: ({
 					row: {
-						original: { id, status, assignee, editable },
+						original: {
+							id,
+							status,
+							assignee,
+							editable,
+							personalArchivedAt,
+							workspaceArchivedAt,
+						},
 					},
 				}) =>
 					status && (
@@ -261,6 +268,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							assigneeId={assignee?.id}
 							editable={editable}
 							taskId={id}
+							isArchived={!!personalArchivedAt || !!workspaceArchivedAt}
 							onUpdate={handleUpdateStatus}
 						/>
 					),
@@ -436,8 +444,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					},
 				}) => {
 					const userName =
-						lastMessage?.user?.info?.displayName ??
-						lastMessage?.user?.info?.name
+						lastMessage?.user?.info?.name ?? lastMessage?.user?.info?.upn
 					const text = userName
 						? `${userName}: ${lastMessage.content}`
 						: (lastMessage?.content ?? "")

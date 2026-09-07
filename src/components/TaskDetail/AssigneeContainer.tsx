@@ -10,16 +10,21 @@ interface AssigneeContainerProps {
 	taskId: number
 	workspaceId: number
 	isAdmin: boolean
-	editable: boolean
 	assignee: AssigneeStatusDto
 }
 
 export const AssigneeContainer = ({
 	taskId,
 	workspaceId,
-	assignee: { assignee, status, description },
+	assignee: {
+		assignee,
+		status,
+		description,
+		editable,
+		personalArchivedAt,
+		workspaceArchivedAt,
+	},
 	isAdmin,
-	editable,
 }: AssigneeContainerProps) => {
 	const { data: statuses = [] } = useListWorkspaceStatuses({ workspaceId })
 
@@ -44,6 +49,7 @@ export const AssigneeContainer = ({
 						taskId={taskId}
 						assigneeId={assignee.id}
 						editable={editable}
+						isArchived={!!personalArchivedAt || !!workspaceArchivedAt}
 						onUpdate={handleUpdateAssigneeStatus}
 					/>
 				)}

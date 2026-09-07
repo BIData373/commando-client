@@ -9,6 +9,7 @@ import {
 	type GetTaskAssigneeDto,
 	type SourceDto,
 	type TaskWithWorkspaceDto,
+	type WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
 import { getListSourcesQueryKey, useCreateSource } from "src/api/source/source"
@@ -111,11 +112,11 @@ function CreateTaskModal({
 			notes: task?.notes ?? "",
 			sourceId: task?.source?.id ?? null,
 			assignees:
-				task?.assigneeStatuses.map((as) => ({
-					id: as.assignee.id,
-					description: as.description || undefined,
-					statusId: as.status.id,
-					editable: as.editable,
+				task?.assigneeStatuses.map((assigneeStatus) => ({
+					...assigneeStatus,
+					id: assigneeStatus.assignee.id,
+					description: assigneeStatus.description || undefined,
+					statusId: assigneeStatus.status.id,
 				})) ?? [],
 			linkedSource: task?.source ?? null,
 		} as FormState,
@@ -262,12 +263,12 @@ function CreateTaskModal({
 	function handleAssigneeStatusChange(
 		_taskId: number,
 		assigneeId: number | undefined,
-		statusId: number,
+		status: WorkspaceStatusDto,
 	) {
 		form.setFieldValue(
 			"assignees",
 			(values.assignees ?? []).map((a) =>
-				a.id === assigneeId ? { ...a, statusId } : a,
+				a.id === assigneeId ? { ...a, statusId: status.id } : a,
 			),
 		)
 	}
@@ -302,12 +303,15 @@ function CreateTaskModal({
 
 	const assigneeExtras = isEditMode
 		? Object.fromEntries(
-				(values.assignees ?? []).map((a) => [
-					a.id,
+				(values.assignees ?? []).map((assignee) => [
+					assignee.id,
 					{
-						status: a.statusId != null ? statusById[a.statusId] : undefined,
-						description: a.description,
-						editable: a.editable ?? false,
+						...assignee,
+						status:
+							assignee.statusId != null
+								? statusById[assignee.statusId]
+								: undefined,
+						editable: assignee.editable ?? false,
 					},
 				]),
 			)

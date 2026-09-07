@@ -10,6 +10,7 @@ interface StatusTagProps {
 	editable?: boolean
 	withArrow?: boolean
 	open?: boolean
+	tooltip?: string
 }
 
 export function StatusTag({
@@ -18,6 +19,7 @@ export function StatusTag({
 	editable,
 	withArrow = false,
 	open = false,
+	tooltip = "לא קיימות הרשאות עריכה",
 }: StatusTagProps) {
 	const tag = (
 		<Tag
@@ -40,7 +42,7 @@ export function StatusTag({
 	) : (
 		<Tooltip>
 			<TooltipTrigger asChild>{tag}</TooltipTrigger>
-			<TooltipContent>לא קיימות הרשאות עריכה</TooltipContent>
+			<TooltipContent>{tooltip}</TooltipContent>
 		</Tooltip>
 	)
 }
