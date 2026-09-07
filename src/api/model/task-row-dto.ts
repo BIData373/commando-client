@@ -35,7 +35,7 @@ export interface TaskRowDto {
 	/** @nullable */
 	notes: string | null
 	/** @nullable */
-	archivedAt: Date | null
+	workspaceArchivedAt: Date | null
 	workspaceId: number
 	status: WorkspaceStatusDto
 	/** @nullable */
@@ -47,4 +47,6 @@ export interface TaskRowDto {
 	rowKey: string
 	assignee?: AssigneeDto
 	otherAssignees: AssigneeStatusDto[]
+	/** @nullable */
+	personalArchivedAt: Date | null
 }
