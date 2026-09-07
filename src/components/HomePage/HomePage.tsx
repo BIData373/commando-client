@@ -33,7 +33,7 @@ const PageRoot = styled.div`
   padding: clamp(32px, 5.5vh, 100px) clamp(32px, 7.8vw, 150px);
   background: url(${backgroundImage}) no-repeat bottom left;
   background-size: contain;
-  overflow: hidden;  
+  overflow: hidden;
 `
 
 const TopBar = styled.div`
