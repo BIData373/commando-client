@@ -1,7 +1,8 @@
 import styled from "@emotion/styled"
 import { Download } from "lucide-react"
-import { listMessages } from "src/api/message/message"
+import { useListMessages } from "src/api/message/message"
 import type { ListMessagesParams, TaskRowDto } from "src/api/model"
+import { SpinIcon } from "src/components/shared/SpinIcon"
 import { exportTasksToExcel } from "src/functions/export-excel"
 import { TASK_COLUMN_ID } from "src/utils/task-table-utils"
 
@@ -20,12 +21,16 @@ function ExportButton<TTask extends TaskRowDto>({
 	messagesParams,
 	exportFilePrefix,
 }: ExportButtonProps<TTask>) {
+	const needsMessages = !hiddenColumns.has(
+		TASK_COLUMN_ID.lastMessage as keyof TTask,
+	)
+
+	const { refetch, isFetching } = useListMessages(messagesParams, {
+		query: { enabled: false },
+	})
+
 	async function handleExport() {
-		const messages = !hiddenColumns.has(
-			TASK_COLUMN_ID.lastMessage as keyof TTask,
-		)
-			? await listMessages(messagesParams)
-			: []
+		const messages = needsMessages ? ((await refetch()).data ?? []) : []
 
 		exportTasksToExcel(
 			exportRows,
@@ -37,8 +42,8 @@ function ExportButton<TTask extends TaskRowDto>({
 	}
 
 	return (
-		<ActionButton onClick={handleExport}>
-			<Download size={18} />
+		<ActionButton onClick={handleExport} disabled={isFetching}>
+			{isFetching ? <SpinIcon size={18} /> : <Download size={18} />}
 		</ActionButton>
 	)
 }

@@ -1,5 +1,5 @@
 import { differenceInDays, format, startOfToday } from "date-fns"
-import ExcelJS from "exceljs"
+import ExcelJS, { type Alignment } from "exceljs"
 import { groupBy } from "lodash"
 import {
 	DeadlineType,
@@ -21,7 +21,7 @@ interface CellValue {
 interface ExportColumn<T> {
 	header: string
 	maxWidth?: number
-	horizontalAlign?: "center" | "right" | "left"
+	horizontalAlign?: Alignment["horizontal"]
 	accessor: (row: T) => string | CellValue
 }
 
@@ -69,7 +69,9 @@ function getDeadlineDateStyle(task: TaskRowDto): Pick<CellValue, "fontColor"> {
 }
 
 function formatMessages(messages?: MessageDto[]): string {
-	if (!messages?.length) return ""
+	if (!messages?.length) {
+		return ""
+	}
 	return messages
 		.map(
 			(m) =>
@@ -171,11 +173,9 @@ export async function exportTasksToExcel<TTask extends TaskRowDto>(
 	messages: MessageDto[],
 	fileNamePrefix?: string,
 ) {
-	const messagesMap = messages.length > 0 ? groupBy(messages, "taskId") : null
+	const messagesMap = groupBy(messages, "taskId")
 
-	const rows = messagesMap
-		? tasks.map((t) => ({ ...t, messages: messagesMap[t.id] ?? [] }))
-		: tasks
+	const rows = tasks.map((t) => ({ ...t, messages: messagesMap[t.id] ?? [] }))
 
 	await exportToExcel(
 		rows,

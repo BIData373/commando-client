@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
-import { uniq } from "lodash"
+import { map, uniq } from "lodash"
 import { FilterX } from "lucide-react"
 import { type ReactNode, useMemo } from "react"
 import type { ListMessagesParams, TaskRowDto } from "src/api/model"
@@ -98,9 +98,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 
 	const exportMessagesParams: ListMessagesParams =
 		exportRows.length < allTaskRows.length
-			? exportRows.length === 1
-				? { taskId: exportRows[0].id }
-				: { taskIds: uniq(exportRows.map((r) => r.id)) }
+			? { taskIds: uniq(map(exportRows, "id")) }
 			: baseMessagesParams
 
 	const filteredRowsForCounts = countingTable.getFilteredRowModel().rows
