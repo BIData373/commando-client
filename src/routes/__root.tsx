@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { TanStackDevtools } from "@tanstack/react-devtools"
-import { createRootRoute, Outlet } from "@tanstack/react-router"
+import { createRootRoute, Outlet, redirect } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { StrictMode } from "react"
 import { NotFoundComponent } from "src/components/Error/NotFoundComponent"
@@ -10,13 +10,20 @@ import { Toaster } from "../components/ui/sonner"
 import { TooltipProvider } from "../components/ui/tooltip"
 import { HeaderProvider } from "../providers/HeaderProvider"
 import "../styles.css"
-import { OnboardingGuard } from "src/components/OnboardingModal/OnboardingGuard"
+import { checkForOnboarding } from "src/utils/redirect-utils"
 import { IS_DEV } from "../utils/env-utils"
 
 export const Route = createRootRoute({
 	component: RootComponent,
 	notFoundComponent: NotFoundComponent,
 	errorComponent: RootErrorComponent,
+	beforeLoad: ({ location }) => {
+		if (checkForOnboarding(location.href)) {
+			throw redirect({
+				to: "/onboarding",
+			})
+		}
+	},
 })
 
 function RootComponent() {
@@ -26,7 +33,6 @@ function RootComponent() {
 				<HeaderProvider>
 					<AppShell>
 						<PageContainer>
-							<OnboardingGuard />
 							<Outlet />
 						</PageContainer>
 					</AppShell>
