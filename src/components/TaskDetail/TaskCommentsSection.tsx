@@ -67,6 +67,7 @@ function TaskCommentsSection({
 	const { mutate: createMessage, isPending: isSendingComment } =
 		useCreateMessage({
 			mutation: {
+				meta: { toast: { error: true } },
 				onSettled: handleSettled,
 				onSuccess() {
 					setCommentValue("")
@@ -74,7 +75,10 @@ function TaskCommentsSection({
 			},
 		})
 	const { mutate: deleteMessage } = useDeleteMessage({
-		mutation: { onSettled: handleSettled },
+		mutation: {
+			meta: { toast: { error: true } },
+			onSettled: handleSettled,
+		},
 	})
 
 	function handleCommentInput(e: React.ChangeEvent<HTMLTextAreaElement>) {

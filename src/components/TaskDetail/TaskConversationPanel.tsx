@@ -63,7 +63,9 @@ function TaskConversationPanel({
 	const currentUser = useCurrentUser()
 
 	const { data: messages = [], queryKey } = useListMessages({ taskId })
-	const { mutateAsync: createMessage } = useCreateMessage()
+	const { mutateAsync: createMessage } = useCreateMessage({
+		mutation: { meta: { toast: { error: true } } },
+	})
 
 	const [inputValue, setInputValue] = useState("")
 	const messagesAreaRef = useRef<HTMLDivElement>(null)

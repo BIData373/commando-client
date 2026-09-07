@@ -74,7 +74,7 @@ function CreateTasksTable({
 	)
 
 	const { mutateAsync: extractSource, isPending: isRetrying } =
-		useExtractSource()
+		useExtractSource({ mutation: { meta: { toast: { error: true } } } })
 
 	const isExtracting =
 		sourceId !== undefined &&

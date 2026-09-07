@@ -4,7 +4,10 @@ import { useStore } from "@tanstack/react-store"
 import { debounce } from "lodash"
 import { X } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
-import type { UpdateWorkspaceDto } from "src/api/model"
+import {
+	type UpdateWorkspaceDto,
+	UpdateWorkspaceErrorDtoMessage,
+} from "src/api/model"
 import { getListPersonalTaskRowsQueryKey } from "src/api/task/task"
 import {
 	getGetPermittedWorkspacesQueryKey,
@@ -12,7 +15,11 @@ import {
 	useUpdateWorkspace,
 } from "src/api/workspace/workspace"
 import { toast } from "src/components/Toast/toast-api"
-import { MutationFailure } from "src/functions/toasts"
+import {
+	DUPLICATE_ENVIRONMENT_NAME,
+	REQUIRED_ENVIRONMENT_NAME,
+	updateEnvironmentMessage,
+} from "src/functions/toasts"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"
@@ -33,6 +40,17 @@ export function SettingsForm() {
 
 	const { mutateAsync: updateSettings } = useUpdateWorkspace({
 		mutation: {
+			meta: {
+				toast: {
+					success: updateEnvironmentMessage.one,
+					error: {
+						[UpdateWorkspaceErrorDtoMessage["title-exists"]]:
+							DUPLICATE_ENVIRONMENT_NAME,
+						[UpdateWorkspaceErrorDtoMessage["urlname-exists"]]:
+							DUPLICATE_ENVIRONMENT_NAME,
+					},
+				},
+			},
 			onSuccess(data) {
 				invalidateQueries([
 					getListWorkspacesQueryKey(),
@@ -56,8 +74,6 @@ export function SettingsForm() {
 					data: value,
 				},
 				{
-					// The duplicate-name message comes from the toast registry's
-					// server-code map for `updateWorkspace`.
 					onError: () => {
 						formApi.reset()
 					},
@@ -84,7 +100,7 @@ export function SettingsForm() {
 	function handleTitleChange(value: string) {
 		const next = value.slice(0, NAME_MAX_LENGTH)
 		if (!next.trim()) {
-			toast.error(MutationFailure.RequiredEnvironmentName)
+			toast.error(REQUIRED_ENVIRONMENT_NAME)
 			return
 		}
 

@@ -16,12 +16,14 @@ import {
 	useListPersonalTaskRows,
 } from "src/api/task/task"
 import {
-	MutationFailure,
-	MutationSuccess,
+	ARCHIVE_FAILED,
+	archiveTaskMessage,
 	reportBatch,
 	runBatch,
 	showFailureToast,
+	UNDO_ARCHIVE_FAILED,
 	UNDO_LABEL,
+	unarchiveTaskMessage,
 } from "src/functions/toasts"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
@@ -102,13 +104,8 @@ function PersonalTaskTable({
 		invalidateQueries([getGetTaskQueryKey({ id: taskId })])
 	}
 
-	// Archiving runs one mutation per task, so the per-task toasts are
-	// suppressed and the batch reports its own aggregated result.
 	const { mutateAsync: toggleArchive } = useToggleUserTaskArchive({
-		mutation: {
-			onSuccess: handleToggleSuccess,
-			meta: { toast: { success: false, error: false } },
-		},
+		mutation: { onSuccess: handleToggleSuccess },
 	})
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
@@ -170,7 +167,7 @@ function PersonalTaskTable({
 		const restored = await toggleArchiveEntries(entries)
 
 		if (restored.failed > 0) {
-			showFailureToast(MutationFailure.UndoArchiveFailed)
+			showFailureToast(UNDO_ARCHIVE_FAILED)
 		}
 	}
 
@@ -178,9 +175,8 @@ function PersonalTaskTable({
 		const archived = await toggleArchiveEntries(entries)
 
 		reportBatch(archived, {
-			singular: MutationSuccess.ArchiveGuideline,
-			plural: MutationSuccess.ArchiveGuidelines,
-			failure: MutationFailure.ArchiveFailed,
+			message: archiveTaskMessage,
+			failure: ARCHIVE_FAILED,
 			options: {
 				actions: {
 					variant: "cancel",
@@ -197,9 +193,8 @@ function PersonalTaskTable({
 		const restored = await toggleArchiveEntries(entries)
 
 		reportBatch(restored, {
-			singular: MutationSuccess.UnarchiveGuideline,
-			plural: MutationSuccess.UnarchiveGuidelines,
-			failure: MutationFailure.UndoArchiveFailed,
+			message: unarchiveTaskMessage,
+			failure: UNDO_ARCHIVE_FAILED,
 		})
 	}
 

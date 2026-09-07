@@ -17,7 +17,12 @@ import {
 	useDeleteTask,
 } from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
-import { MutationSuccess } from "src/functions/toasts"
+import {
+	type AppMutationMeta,
+	archiveTaskMessage,
+	deleteTaskMessage,
+	unarchiveTaskMessage,
+} from "src/functions/toasts"
 import { useAttachmentDownload } from "src/hooks/useAttachmentDownload"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
@@ -118,19 +123,21 @@ function TaskDetailPanel({
 	}
 
 	const { mutate: deleteTaskMutate } = useDeleteTask({
-		mutation: { onSuccess: handleSettledDelete, onError: handleSettled },
+		mutation: {
+			onSuccess: handleSettledDelete,
+			onError: handleSettled,
+			meta: { toast: { success: deleteTaskMessage.one, error: true } },
+		},
 	})
 
-	const archiveToast = {
-		meta: {
-			toast: {
-				success: isArchived
-					? MutationSuccess.UnarchiveGuideline
-					: MutationSuccess.ArchiveGuideline,
-			},
+	const archiveMeta: AppMutationMeta = {
+		toast: {
+			success: isArchived ? unarchiveTaskMessage.one : archiveTaskMessage.one,
+			error: true,
 		},
-		onSettled: handleSettled,
 	}
+
+	const archiveToast = { meta: archiveMeta, onSettled: handleSettled }
 
 	const { mutate: toggleWorkspaceArchive } = useToggleWorkspaceTaskArchive({
 		mutation: archiveToast,

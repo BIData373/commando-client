@@ -13,7 +13,7 @@ import {
 	getListTaskRowsQueryKey,
 	updateTask,
 } from "src/api/task/task"
-import { MutationOperation } from "src/functions/toasts"
+import { updateStatusMessage } from "src/functions/toasts"
 import { invalidateQueries } from "src/query-client"
 
 interface UpdateStatusVariables {
@@ -62,11 +62,6 @@ function updateTaskDetailStatus<TTask extends TaskDto>(
 }
 
 interface UpdateTaskStatusOptions {
-	/**
-	 * Reports each update through a toast. Off by default so a caller updating
-	 * several tasks at once reports one aggregated result rather than one toast
-	 * per task; single-task callers opt in.
-	 */
 	notify?: boolean
 }
 
@@ -86,8 +81,9 @@ export function useUpdateTaskStatus({
 	}
 
 	const { mutateAsync } = useMutation({
-		mutationKey: [MutationOperation.UpdateTaskStatus],
-		meta: { toast: { success: notify, error: notify } },
+		meta: notify
+			? { toast: { success: updateStatusMessage.one, error: true } }
+			: undefined,
 		networkMode: "always",
 		mutationFn: ({ taskId, assigneeId, status }: UpdateStatusVariables) =>
 			assigneeId !== undefined
@@ -132,11 +128,6 @@ export function useUpdateTaskStatus({
 		},
 	})
 
-	/**
-	 * Resolves to whether the update succeeded rather than rejecting, so
-	 * fire-and-forget callers cannot produce an unhandled rejection while bulk
-	 * callers can still count the failures.
-	 */
 	async function updateTaskStatus(
 		taskId: number,
 		assigneeId: number | undefined,

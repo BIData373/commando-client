@@ -12,7 +12,7 @@ import logoSvg from "src/assets/logo-with-text.svg"
 import { ModalContent } from "src/components/shared/ModalContent"
 import { Dialog } from "src/components/ui/dialog"
 import {
-	MutationFailure,
+	TECHNICAL_FAILURE,
 	TECHNICAL_FAILURE_SUBTITLE,
 } from "src/functions/toasts"
 import { useErrorModal } from "src/providers/ErrorModalProvider"
@@ -27,7 +27,7 @@ interface ErrorContent {
 
 const ERROR_CONTENT: Record<ErrorCode, ErrorContent> = {
 	[ErrorCode.BAD_REQUEST]: {
-		title: MutationFailure.TechnicalFailure,
+		title: TECHNICAL_FAILURE,
 		description: TECHNICAL_FAILURE_SUBTITLE,
 		errorImage: error500,
 	},
@@ -42,7 +42,7 @@ const ERROR_CONTENT: Record<ErrorCode, ErrorContent> = {
 		errorImage: error404,
 	},
 	[ErrorCode.SERVER_ERROR]: {
-		title: MutationFailure.TechnicalFailure,
+		title: TECHNICAL_FAILURE,
 		description: TECHNICAL_FAILURE_SUBTITLE,
 		errorImage: error500,
 	},

@@ -5,7 +5,7 @@ import { useStore } from "@tanstack/react-store"
 import { Check, Paperclip, Sparkles } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "src/components/Toast/toast-api"
-import { MutationSuccess, withCount } from "src/functions/toasts"
+import { count, createTaskMessage } from "src/functions/toasts"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AI_ENABLED } from "src/utils/env-utils"
 import {
@@ -62,6 +62,7 @@ function CreateDiscussionModal({
 	const { mutateAsync: createSource, isPending: isCreateSource } =
 		useCreateSource({
 			mutation: {
+				meta: { toast: { error: true } },
 				onSuccess: () => {
 					invalidateQueries([
 						getListTaskRowsQueryKey({ workspaceId }),
@@ -74,16 +75,14 @@ function CreateDiscussionModal({
 	const { mutateAsync: updateSource, isPending: isUpdateSource } =
 		useUpdateSource({
 			mutation: {
-				meta: { toast: { success: false } },
+				meta: { toast: { error: true } },
 				onSuccess: () => {
 					invalidateQueries([getListSourcesQueryKey({ workspaceId })])
 				},
 			},
 		})
-	// Removes a draft row mid-edit, which is not the user-facing "guideline
-	// deleted" action the registry message describes.
 	const { mutate: deleteTask } = useDeleteTask({
-		mutation: { meta: { toast: { success: false } } },
+		mutation: { meta: { toast: { error: true } } },
 	})
 	const {
 		workspace: { id: workspaceId },
@@ -249,13 +248,7 @@ function CreateDiscussionModal({
 				},
 			})
 
-			toast.success(
-				withCount(
-					taskRows.length,
-					MutationSuccess.CreateGuideline,
-					MutationSuccess.CreateGuidelines,
-				),
-			)
+			toast.success(count(createTaskMessage, taskRows.length))
 
 			onClose()
 		} else {

@@ -26,6 +26,10 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "src/components/ui/tabs"
+import {
+	type AppMutationMeta,
+	updatePermissionsMessage,
+} from "src/functions/toasts"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"
@@ -41,6 +45,10 @@ const PermissionTabNames: Record<PermissionsTab, string> = {
 	[PermissionsTab.ALL]: "כולם",
 	[PermissionsTab.MANAGERS]: "מנהלים",
 	[PermissionsTab.VIEWERS]: "צופים",
+}
+
+const permissionMutationMeta: AppMutationMeta = {
+	toast: { success: updatePermissionsMessage.one, error: true },
 }
 
 export function PermissionsContent() {
@@ -73,12 +81,14 @@ export function PermissionsContent() {
 
 	const { mutate: upsertPermission } = useUpsertPermission({
 		mutation: {
+			meta: permissionMutationMeta,
 			onSuccess: handleSuccess,
 		},
 	})
 
 	const { mutate: deletePermission } = useDeletePermission({
 		mutation: {
+			meta: permissionMutationMeta,
 			onSuccess: handleSuccess,
 		},
 	})

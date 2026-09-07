@@ -9,7 +9,7 @@ import {
 	useCreateWorkspaceRequest,
 } from "src/api/workspace-requests/workspace-requests"
 import { Dialog } from "src/components/ui/dialog"
-import { MutationFailure, showFailureToast } from "src/functions/toasts"
+import { showFailureToast, TECHNICAL_FAILURE } from "src/functions/toasts"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { invalidateQueries } from "src/query-client"
 import { hasError } from "src/utils/error-utils"
@@ -115,11 +115,8 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 						.filter(([, { code }]) => hasError(error, code))
 						.map(([field, { message }]) => [field, message] as const)
 
-					// Known validation codes render inline on the details step. Anything
-					// else has no field to attach to, so it is reported as a toast rather
-					// than bouncing the user back with nothing to fix.
 					if (fieldErrors.length === 0) {
-						showFailureToast(MutationFailure.TechnicalFailure)
+						showFailureToast(TECHNICAL_FAILURE)
 						return
 					}
 

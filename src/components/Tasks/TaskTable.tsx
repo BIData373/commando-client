@@ -16,7 +16,12 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { buildFilterOptionsMap } from "src/functions/filter-utils"
-import { MutationSuccess, reportBatch, runBatch } from "src/functions/toasts"
+import {
+	deleteTaskMessage,
+	reportBatch,
+	runBatch,
+	updateStatusMessage,
+} from "src/functions/toasts"
 import { type TaskArchiveEntry, useTaskColumns } from "src/hooks/useTaskColumns"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
@@ -90,13 +95,8 @@ function TaskTable<TTask extends TaskRowDto>({
 		setAssigneeFilter,
 	} = useTasksFilters()
 
-	// Deletes and status changes both run one mutation per task, so their
-	// toasts are suppressed here and reported once for the whole batch.
 	const { mutateAsync: deleteTaskMutate } = useDeleteTask({
-		mutation: {
-			onSuccess: onChangeSuccess,
-			meta: { toast: { success: false, error: false } },
-		},
+		mutation: { onSuccess: onChangeSuccess },
 	})
 
 	const updateStatus = useUpdateTaskStatus()
@@ -206,10 +206,7 @@ function TaskTable<TTask extends TaskRowDto>({
 			deleteTaskMutate({ pathParams: { id } }),
 		)
 
-		reportBatch(deleted, {
-			singular: MutationSuccess.DeleteGuideline,
-			plural: MutationSuccess.DeleteGuidelines,
-		})
+		reportBatch(deleted, { message: deleteTaskMessage })
 	}
 
 	function getSelectedArchiveEntries() {
@@ -243,8 +240,6 @@ function TaskTable<TTask extends TaskRowDto>({
 			.map((rowKey) => tasks.find((t) => t.rowKey === rowKey))
 			.filter((task) => task !== undefined)
 
-		// `updateStatus` resolves to a success flag rather than rejecting, so the
-		// tally is counted here instead of through `runBatch`.
 		const results = await Promise.all(
 			selectedTasks.map((task) =>
 				updateStatus(task.id, task.assignee?.id, status),
@@ -255,10 +250,7 @@ function TaskTable<TTask extends TaskRowDto>({
 
 		reportBatch(
 			{ succeeded, failed: results.length - succeeded },
-			{
-				singular: MutationSuccess.UpdateStatus,
-				plural: MutationSuccess.UpdateStatuses,
-			},
+			{ message: updateStatusMessage },
 		)
 	}
 
