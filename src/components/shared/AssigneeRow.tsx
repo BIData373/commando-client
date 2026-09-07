@@ -1,24 +1,20 @@
 import styled from "@emotion/styled"
 import { X } from "lucide-react"
 import { useRef } from "react"
-import type { AssigneesDto, WorkspaceStatusDto } from "src/api/model"
+import type {
+	AssigneeStatusDto,
+	AssigneesDto,
+	WorkspaceStatusDto,
+} from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
 import { AssigneeAvatar } from "./AssigneeAvatar"
-
-// ─── Types ──────────────────────────────────────────────────────────────────
-
-export interface AssigneeExtra {
-	status?: WorkspaceStatusDto
-	description?: string
-	editable?: boolean
-}
 
 interface AssigneeRowListProps {
 	assignees: AssigneesDto[]
 	directiveTitle: string
 	workspaceId: number
-	assigneeExtras?: Record<number, AssigneeExtra>
+	assigneeExtras?: Record<number, Partial<AssigneeStatusDto>>
 	showDetail?: boolean
 	detailPlaceholder?: string
 	onDetailChange: (id: number, value: string) => void
@@ -73,53 +69,59 @@ function AssigneeRowList({
 
 	return (
 		<RowsList>
-			{assignees.map((assignee) => (
-				<RowItem key={assignee.id}>
-					<RemoveButton onClick={() => onRemove(assignee.id)}>
-						<X size={14} />
-					</RemoveButton>
+			{assignees.map((assignee) => {
+				const { status, editable, personalArchivedAt, workspaceArchivedAt } =
+					assigneeExtras?.[assignee.id] || {}
 
-					<RowContainer>
-						{showDetail && (
-							<TextareaWrapper onClick={() => handleWrapperClick(assignee.id)}>
-								{directiveTitle && (
-									<DirectiveTitleText>
-										{directiveTitle} -&nbsp;
-									</DirectiveTitleText>
-								)}
+				return (
+					<RowItem key={assignee.id}>
+						<RemoveButton onClick={() => onRemove(assignee.id)}>
+							<X size={14} />
+						</RemoveButton>
 
-								<DetailEditable
-									ref={(el) => handleDetailRef(assignee.id, el)}
-									contentEditable
-									suppressContentEditableWarning
-									onInput={(e) => handleDetailInput(assignee.id, e)}
-									onKeyDown={handleDetailKeyDown}
-									data-placeholder={detailPlaceholder}
-								/>
-							</TextareaWrapper>
-						)}
+						<RowContainer>
+							{showDetail && (
+								<TextareaWrapper
+									onClick={() => handleWrapperClick(assignee.id)}
+								>
+									{directiveTitle && (
+										<DirectiveTitleText>
+											{directiveTitle} -&nbsp;
+										</DirectiveTitleText>
+									)}
 
-						{assigneeExtras?.[assignee.id]?.status &&
-							onStatusChange &&
-							taskId != null && (
+									<DetailEditable
+										ref={(el) => handleDetailRef(assignee.id, el)}
+										contentEditable
+										suppressContentEditableWarning
+										onInput={(e) => handleDetailInput(assignee.id, e)}
+										onKeyDown={handleDetailKeyDown}
+										data-placeholder={detailPlaceholder}
+									/>
+								</TextareaWrapper>
+							)}
+
+							{status && onStatusChange && taskId != null && (
 								<StatusDropdown
-									status={assigneeExtras[assignee.id].status!}
+									status={status}
 									statuses={statuses}
 									taskId={taskId}
 									assigneeId={assignee.id}
-									editable={assigneeExtras[assignee.id].editable}
+									editable={editable}
+									isArchived={!!personalArchivedAt || !!workspaceArchivedAt}
 									onUpdate={onStatusChange}
 								/>
 							)}
 
-						<InfoBlock>
-							<RoleText>{assignee.name}</RoleText>
+							<InfoBlock>
+								<RoleText>{assignee.name}</RoleText>
 
-							<AssigneeAvatar assignee={assignee} />
-						</InfoBlock>
-					</RowContainer>
-				</RowItem>
-			))}
+								<AssigneeAvatar assignee={assignee} />
+							</InfoBlock>
+						</RowContainer>
+					</RowItem>
+				)
+			})}
 		</RowsList>
 	)
 }

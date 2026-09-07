@@ -149,9 +149,15 @@ const COLUMN_DEFS: Partial<
 		header: COLUMN_LABELS.updatedAt,
 		accessor: (t) => formatDate(t.updatedAt),
 	},
-	[TASK_COLUMN_ID.archivedAt]: {
-		header: COLUMN_LABELS.archivedAt,
-		accessor: (t) => (t.archivedAt ? formatDate(t.archivedAt) : ""),
+	[TASK_COLUMN_ID.workspaceArchivedAt]: {
+		header: COLUMN_LABELS.workspaceArchivedAt,
+		accessor: (t) =>
+			t.workspaceArchivedAt ? formatDate(t.workspaceArchivedAt) : "",
+	},
+	[TASK_COLUMN_ID.personalArchivedAt]: {
+		header: COLUMN_LABELS.personalArchivedAt,
+		accessor: (t) =>
+			t.personalArchivedAt ? formatDate(t.personalArchivedAt) : "",
 	},
 	[TASK_COLUMN_ID.lastMessage]: {
 		header: COLUMN_LABELS.lastMessage,
