@@ -45,6 +45,7 @@ export const AssigneeSection = ({
 						: "אחראי לביצוע"
 					: "אחריותך לבצע"}
 			</SectionLabel>
+
 			{currentUserAssigneStatuses.length === 0 ? (
 				<SectionValue>לא הוגדר</SectionValue>
 			) : (
@@ -57,12 +58,12 @@ export const AssigneeSection = ({
 								workspaceId={workspaceId}
 								assignee={item}
 								isAdmin={isAdmin}
-								editable={item.editable}
 							/>
 						))}
 					</AssigneeRowsList>
 				</AssigneesContainer>
 			)}
+
 			{!isAdmin && otherUsersAssigneeStatuses.length > 0 && (
 				<>
 					<SectionLabel>אחראים נוספים לביצוע</SectionLabel>
@@ -75,7 +76,6 @@ export const AssigneeSection = ({
 									workspaceId={workspaceId}
 									assignee={item}
 									isAdmin={isAdmin}
-									editable={item.editable}
 								/>
 							))}
 						</AssigneeRowsList>
