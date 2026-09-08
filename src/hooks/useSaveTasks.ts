@@ -49,10 +49,10 @@ export function useSaveTasks(workspaceId: number, onDone?: () => void) {
 				inputs.filter((input) => !isUpdate(input)),
 				(input) => createTask({ data: toTaskData(input) }),
 			),
-			runBatch(inputs.filter(isUpdate), ({ taskId, ...input }) =>
+			runBatch(inputs.filter(isUpdate), (input) =>
 				updateTask({
-					pathParams: { id: taskId },
-					data: toTaskData(input as TaskInput),
+					pathParams: { id: input.taskId },
+					data: toTaskData(input),
 				}),
 			),
 		])

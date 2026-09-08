@@ -51,8 +51,6 @@ export const unarchiveTaskMessage: ToastCopy = {
 	many: (amount) => `${amount} הנחיות הוחזרו מהארכיון בהצלחה`,
 }
 
-export const createDiscussionMessage: ToastCopy = { one: "הדיון נוצר בהצלחה" }
-
 export const updateDiscussionMessage: ToastCopy = {
 	one: "פרטי הדיון עודכנו בהצלחה",
 }
@@ -77,11 +75,10 @@ export const updatePermissionsMessage: ToastCopy = {
 	one: "הרשאות המשתמש עודכנו בהצלחה",
 }
 
-export const NO_PERMISSION = "אין לך הרשאה לבצע פעולה זו"
+const NO_PERMISSION = "אין לך הרשאה לבצע פעולה זו"
 export const DUPLICATE_ENVIRONMENT_NAME =
 	"קיימת כבר סביבה בשם זה, נא לבחור שם אחר"
-export const MISSING_REQUIRED_FIELD =
-	"לא ניתן לשמור, אנא מלא את כל השדות הנדרשים"
+const MISSING_REQUIRED_FIELD = "לא ניתן לשמור, אנא מלא את כל השדות הנדרשים"
 export const REQUIRED_ENVIRONMENT_NAME = "שם סביבה הוא שדה חובה"
 export const ARCHIVE_FAILED = "ההעברה לארכיון נכשלה"
 export const UNDO_ARCHIVE_FAILED = "ביטול ההעברה לארכיון נכשל"
@@ -105,7 +102,7 @@ export function showFailureToast(message: string) {
 	})
 }
 
-export interface BatchResult {
+interface BatchResult {
 	succeeded: number
 	failed: number
 }
@@ -145,7 +142,7 @@ export function reportBatch(
 // ─── Mutation meta ──────────────────────────────────────────────────────────
 
 /** Both channels are opt-in: a mutation that declares nothing says nothing. */
-export type MutationToastConfig = {
+type MutationToastConfig = {
 	success?: string | ((data: unknown, variables: unknown) => string)
 	/**
 	 * `true` derives the message from the response, a string forces copy, and a
