@@ -42,7 +42,7 @@ export function SettingsForm() {
 		mutation: {
 			meta: {
 				toast: {
-					success: updateEnvironmentMessage.one,
+					success: updateEnvironmentMessage,
 					error: {
 						[UpdateWorkspaceErrorDtoMessage["title-exists"]]:
 							DUPLICATE_ENVIRONMENT_NAME,

@@ -82,7 +82,7 @@ export function useUpdateTaskStatus({
 
 	const { mutateAsync } = useMutation({
 		meta: notify
-			? { toast: { success: updateStatusMessage.one, error: true } }
+			? { toast: { success: updateStatusMessage, error: true } }
 			: undefined,
 		networkMode: "always",
 		mutationFn: ({ taskId, assigneeId, status }: UpdateStatusVariables) =>

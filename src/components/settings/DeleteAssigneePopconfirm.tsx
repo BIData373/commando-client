@@ -28,7 +28,7 @@ export function DeleteAssigneePopconfirm({
 	const { isPending, mutate: deleteAssignee } = useDeleteAssignee({
 		mutation: {
 			meta: {
-				toast: { success: removeResponsibleMessage.one, error: true },
+				toast: { success: removeResponsibleMessage, error: true },
 			},
 			onSuccess: () => {
 				invalidateQueries([

@@ -4,11 +4,16 @@ import type { ErrorDto } from "src/api/model"
 import type { ErrorType } from "src/axios"
 import { toast } from "src/components/Toast/toast-api"
 import type { ErrorCode } from "src/utils/error-utils"
-import { FAILURE_BY_STATUS, TECHNICAL_FAILURE } from "./toast-messages"
+import {
+	count,
+	FAILURE_BY_STATUS,
+	TECHNICAL_FAILURE,
+	type ToastCopy,
+} from "./toast-messages"
 
 /** Both channels are opt-in: a mutation that declares nothing says nothing. */
 type MutationToastConfig = {
-	success?: string | ((data: unknown, variables: unknown) => string)
+	success?: ToastCopy | ((data: unknown, variables: unknown) => string)
 	/**
 	 * `true` derives the message from the response, a string forces copy, and a
 	 * record maps server `ErrorDto.message` codes with the derived fallback.
@@ -41,8 +46,10 @@ function resolveSuccessMessage(
 ) {
 	const { success } = mutation.meta?.toast ?? {}
 	if (success === undefined) return undefined
+	if (typeof success === "function") return success(data, variables)
 
-	return typeof success === "function" ? success(data, variables) : success
+	// A mutation settles one item, so plural copy always resolves to its singular.
+	return count(success, 1)
 }
 
 function resolveFailureMessage(mutation: AnyMutation, error: unknown) {

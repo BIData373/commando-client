@@ -105,7 +105,7 @@ export function AssigneeDialog({
 	const { mutateAsync: createAssignee } = useCreateAssignee({
 		mutation: {
 			meta: {
-				toast: { success: addResponsibleMessage.one, error: true },
+				toast: { success: addResponsibleMessage, error: true },
 			},
 			onSuccess: handleSubmitSuccess,
 		},
@@ -113,7 +113,7 @@ export function AssigneeDialog({
 	const { mutateAsync: updateAssignee } = useUpdateAssignee({
 		mutation: {
 			meta: {
-				toast: { success: updateResponsibleMessage.one, error: true },
+				toast: { success: updateResponsibleMessage, error: true },
 			},
 			onSuccess: handleSubmitSuccess,
 		},

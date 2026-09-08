@@ -46,7 +46,7 @@ const PermissionTabNames: Record<PermissionsTab, string> = {
 }
 
 const permissionMutationMeta: AppMutationMeta = {
-	toast: { success: updatePermissionsMessage.one, error: true },
+	toast: { success: updatePermissionsMessage, error: true },
 }
 
 export function PermissionsContent() {

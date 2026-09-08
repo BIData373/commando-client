@@ -1,14 +1,13 @@
 import { ErrorCode } from "src/utils/error-utils"
 
-export interface ToastCopy {
-	one: string
-	many?: (amount: number) => string
-}
+/** A bare string when the copy never varies, or singular plus a plural form. */
+export type ToastCopy =
+	| string
+	| { one: string; many: (amount: number) => string }
 
 export function count(copy: ToastCopy, amount: number): string {
-	if (amount === 1 || !copy.many) {
-		return copy.one
-	}
+	if (typeof copy === "string") return copy
+	if (amount === 1) return copy.one
 
 	return copy.many(amount)
 }
@@ -43,29 +42,19 @@ export const unarchiveTaskMessage: ToastCopy = {
 	many: (amount) => `${amount} הנחיות הוחזרו מהארכיון בהצלחה`,
 }
 
-export const updateDiscussionMessage: ToastCopy = {
-	one: "פרטי הדיון עודכנו בהצלחה",
-}
+export const updateDiscussionMessage = "פרטי הדיון עודכנו בהצלחה"
 
-export const createEnvironmentMessage: ToastCopy = {
-	one: "הסביבה נוצרה בהצלחה",
-}
+export const createEnvironmentMessage = "הסביבה נוצרה בהצלחה"
 
-export const updateEnvironmentMessage: ToastCopy = {
-	one: "פרטי הסביבה עודכנו בהצלחה",
-}
+export const updateEnvironmentMessage = "פרטי הסביבה עודכנו בהצלחה"
 
-export const addResponsibleMessage: ToastCopy = { one: "האחראי נוסף בהצלחה" }
+export const addResponsibleMessage = "האחראי נוסף בהצלחה"
 
-export const updateResponsibleMessage: ToastCopy = {
-	one: "פרטי האחראי עודכנו בהצלחה",
-}
+export const updateResponsibleMessage = "פרטי האחראי עודכנו בהצלחה"
 
-export const removeResponsibleMessage: ToastCopy = { one: "האחראי הוסר בהצלחה" }
+export const removeResponsibleMessage = "האחראי הוסר בהצלחה"
 
-export const updatePermissionsMessage: ToastCopy = {
-	one: "הרשאות המשתמש עודכנו בהצלחה",
-}
+export const updatePermissionsMessage = "הרשאות המשתמש עודכנו בהצלחה"
 
 const NO_PERMISSION = "אין לך הרשאה לבצע פעולה זו"
 export const DUPLICATE_ENVIRONMENT_NAME =

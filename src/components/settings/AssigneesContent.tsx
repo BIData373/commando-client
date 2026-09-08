@@ -37,7 +37,7 @@ export function AssigneesContent() {
 	const { mutateAsync: updateSettings } = useUpdateWorkspace({
 		mutation: {
 			meta: {
-				toast: { success: updateEnvironmentMessage.one, error: true },
+				toast: { success: updateEnvironmentMessage, error: true },
 			},
 			onSuccess(data) {
 				setWorkspace(data)

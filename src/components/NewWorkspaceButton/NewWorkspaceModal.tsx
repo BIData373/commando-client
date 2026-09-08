@@ -133,6 +133,7 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 			},
 		)
 	}
+
 	function handleClear() {
 		form.reset()
 		setServerErrors({})

@@ -126,13 +126,13 @@ function TaskDetailPanel({
 		mutation: {
 			onSuccess: handleSettledDelete,
 			onError: handleSettled,
-			meta: { toast: { success: deleteTaskMessage.one, error: true } },
+			meta: { toast: { success: deleteTaskMessage, error: true } },
 		},
 	})
 
 	const archiveMeta: AppMutationMeta = {
 		toast: {
-			success: isArchived ? unarchiveTaskMessage.one : archiveTaskMessage.one,
+			success: isArchived ? unarchiveTaskMessage : archiveTaskMessage,
 			error: true,
 		},
 	}

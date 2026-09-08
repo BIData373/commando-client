@@ -87,7 +87,7 @@ function CreateTaskModal({
 	})
 	const { mutateAsync: updateTask, isPending: isUpdatingTask } = useUpdateTask({
 		mutation: {
-			meta: { toast: { success: updateTaskMessage.one, error: true } },
+			meta: { toast: { success: updateTaskMessage, error: true } },
 			onSuccess: handleUpdateSuccess,
 		},
 	})

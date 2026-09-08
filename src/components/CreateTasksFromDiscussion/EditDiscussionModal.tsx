@@ -37,7 +37,7 @@ function EditDiscussionModal({
 
 	const { mutateAsync: updateSource } = useUpdateSource({
 		mutation: {
-			meta: { toast: { success: updateDiscussionMessage.one, error: true } },
+			meta: { toast: { success: updateDiscussionMessage, error: true } },
 		},
 	})
 	const [showConfirmation, setShowConfirmation] = useState(false)
