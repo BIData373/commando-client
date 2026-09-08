@@ -8,8 +8,9 @@ import {
 	getListWorkspaceRequestsQueryKey,
 	useCreateWorkspaceRequest,
 } from "src/api/workspace-requests/workspace-requests"
+import { toast } from "src/components/Toast/toast-api"
 import { Dialog } from "src/components/ui/dialog"
-import { showFailureToast, TECHNICAL_FAILURE } from "src/functions/toasts"
+import { TECHNICAL_FAILURE } from "src/functions/toast-messages"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { invalidateQueries } from "src/query-client"
 import { hasError } from "src/utils/error-utils"
@@ -116,7 +117,7 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 						.map(([field, { message }]) => [field, message] as const)
 
 					if (fieldErrors.length === 0) {
-						showFailureToast(TECHNICAL_FAILURE)
+						toast.failure(TECHNICAL_FAILURE)
 						return
 					}
 

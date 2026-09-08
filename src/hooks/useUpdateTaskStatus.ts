@@ -13,7 +13,7 @@ import {
 	getListTaskRowsQueryKey,
 	updateTask,
 } from "src/api/task/task"
-import { updateStatusMessage } from "src/functions/toasts"
+import { updateStatusMessage } from "src/functions/toast-messages"
 import { invalidateQueries } from "src/query-client"
 
 interface UpdateStatusVariables {

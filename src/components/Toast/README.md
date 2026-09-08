@@ -9,14 +9,17 @@ Design source: [🧩 Vector — טוסטים](https://www.figma.com/design/mny5B
 
 ## Files
 
-| File                                 | Purpose                                                      |
-| ------------------------------------ | ------------------------------------------------------------ |
-| `../ui/sonner.tsx`                   | `Toaster` shell — theme, position, icons, styled composition |
-| `toast-api.tsx`                      | `showToast` + the exported `toast` object                    |
-| `toast-types.ts`                     | `AppToastOptions`, `ToastAction`                             |
-| `ToastActions.tsx`                   | The actions slot: custom buttons and/or close text           |
-| `toaster-styles.ts`                  | Named `css` blocks composed into `StyledSonner`              |
-| `../../functions/toast-constants.ts` | Duration, close text, class names, positions                 |
+| File                                      | Purpose                                                              |
+| ----------------------------------------- | -------------------------------------------------------------------- |
+| `../ui/sonner.tsx`                        | `Toaster` shell — theme, position, icons, styled composition         |
+| `toast-api.tsx`                           | `showToast` + the exported `toast` object, incl. `failure` / `batch` |
+| `toast-types.ts`                          | `AppToastOptions`, `ToastAction`                                     |
+| `ToastActions.tsx`                        | The actions slot: custom buttons and/or close text                   |
+| `toaster-styles.ts`                       | Named `css` blocks composed into `StyledSonner`                      |
+| `../../functions/toast-constants.ts`      | Duration, close text, class names, positions                         |
+| `../../functions/toast-messages.ts`       | Hebrew strings, `ToastCopy`, and `count` pluralization               |
+| `../../functions/mutation-toast-cache.ts` | `meta.toast` wiring for every TanStack mutation                      |
+| `../../utils/batch-utils.ts`              | `runBatch` — counts settled promises, no toast of its own            |
 
 ## Usage
 

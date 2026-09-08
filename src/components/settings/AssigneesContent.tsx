@@ -12,7 +12,7 @@ import {
 	InputGroupAddon,
 	InputGroupInput,
 } from "src/components/ui/input-group"
-import { updateEnvironmentMessage } from "src/functions/toasts"
+import { updateEnvironmentMessage } from "src/functions/toast-messages"
 import { useFilteredAssignees } from "src/hooks/useFilteredAssignees"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import noResultsFound from "../../assets/empty-states/no-results-found.svg"

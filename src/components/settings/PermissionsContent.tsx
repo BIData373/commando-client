@@ -26,10 +26,8 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "src/components/ui/tabs"
-import {
-	type AppMutationMeta,
-	updatePermissionsMessage,
-} from "src/functions/toasts"
+import type { AppMutationMeta } from "src/functions/mutation-toast-cache"
+import { updatePermissionsMessage } from "src/functions/toast-messages"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"

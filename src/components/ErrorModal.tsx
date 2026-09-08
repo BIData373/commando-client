@@ -14,7 +14,7 @@ import { Dialog } from "src/components/ui/dialog"
 import {
 	TECHNICAL_FAILURE,
 	TECHNICAL_FAILURE_SUBTITLE,
-} from "src/functions/toasts"
+} from "src/functions/toast-messages"
 import { useErrorModal } from "src/providers/ErrorModalProvider"
 import { ErrorCode, isErrorCode } from "src/utils/error-utils"
 import { openSupportChat, openUserChat } from "src/utils/redirect-utils"

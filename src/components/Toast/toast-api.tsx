@@ -5,6 +5,13 @@ import {
 	TOAST_CLASS,
 	TOAST_DURATION_MS,
 } from "../../functions/toast-constants"
+import {
+	count,
+	TECHNICAL_FAILURE,
+	TECHNICAL_FAILURE_SUBTITLE,
+	type ToastCopy,
+} from "../../functions/toast-messages"
+import type { BatchResult } from "../../utils/batch-utils"
 import { ToastActions } from "./ToastActions"
 import type {
 	AppToastOptions,
@@ -152,6 +159,33 @@ function showToast(
 	return toastId
 }
 
+interface BatchToast {
+	message: ToastCopy
+	/** `false` when the caller reports failures itself, e.g. across two batches. */
+	failure?: string | false
+	options?: AppToastOptions
+}
+
+function showFailure(message: string) {
+	return showToast("error", message, {
+		subtitle:
+			message === TECHNICAL_FAILURE ? TECHNICAL_FAILURE_SUBTITLE : undefined,
+	})
+}
+
+function showBatch(
+	{ succeeded, failed }: BatchResult,
+	{ message, failure = TECHNICAL_FAILURE, options }: BatchToast,
+) {
+	if (succeeded > 0) {
+		showToast("success", count(message, succeeded), options)
+	}
+
+	if (failed > 0 && failure !== false) {
+		showFailure(failure)
+	}
+}
+
 export const toast = {
 	success: (message: ToastMessage, options?: AppToastOptions) =>
 		showToast("success", message, options),
@@ -161,5 +195,9 @@ export const toast = {
 		showToast("info", message, options),
 	warning: (message: ToastMessage, options?: AppToastOptions) =>
 		showToast("warning", message, options),
+	/** `error` carrying the shared subtitle when the copy is a technical failure. */
+	failure: showFailure,
+	/** Success and failure copy for a `runBatch` outcome, pluralized by count. */
+	batch: showBatch,
 	dismiss: (id?: string | number) => sonnerToast.dismiss(id),
 }

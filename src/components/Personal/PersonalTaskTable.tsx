@@ -15,20 +15,19 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	useListPersonalTaskRows,
 } from "src/api/task/task"
+import { toast } from "src/components/Toast/toast-api"
 import {
 	ARCHIVE_FAILED,
 	archiveTaskMessage,
-	reportBatch,
-	runBatch,
-	showFailureToast,
 	UNDO_ARCHIVE_FAILED,
 	UNDO_LABEL,
 	unarchiveTaskMessage,
-} from "src/functions/toasts"
+} from "src/functions/toast-messages"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/query-client"
+import { runBatch } from "src/utils/batch-utils"
 import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
@@ -167,14 +166,14 @@ function PersonalTaskTable({
 		const restored = await toggleArchiveEntries(entries)
 
 		if (restored.failed > 0) {
-			showFailureToast(UNDO_ARCHIVE_FAILED)
+			toast.failure(UNDO_ARCHIVE_FAILED)
 		}
 	}
 
 	async function handleArchive(entries: TaskArchiveEntry[]) {
 		const archived = await toggleArchiveEntries(entries)
 
-		reportBatch(archived, {
+		toast.batch(archived, {
 			message: archiveTaskMessage,
 			failure: ARCHIVE_FAILED,
 			options: {
@@ -192,7 +191,7 @@ function PersonalTaskTable({
 	async function handleUnarchive(entries: TaskArchiveEntry[]) {
 		const restored = await toggleArchiveEntries(entries)
 
-		reportBatch(restored, {
+		toast.batch(restored, {
 			message: unarchiveTaskMessage,
 			failure: UNDO_ARCHIVE_FAILED,
 		})

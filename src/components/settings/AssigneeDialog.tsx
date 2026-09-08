@@ -20,7 +20,7 @@ import {
 import {
 	addResponsibleMessage,
 	updateResponsibleMessage,
-} from "src/functions/toasts"
+} from "src/functions/toast-messages"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { invalidateQueries, queryClient } from "src/query-client"
 import { CancelButton } from "../shared/CancelButton"

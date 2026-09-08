@@ -4,7 +4,7 @@ import { useStore } from "@tanstack/react-store"
 import { AlertCircle } from "lucide-react"
 import { Popover as PopoverPrimitive } from "radix-ui"
 import { useState } from "react"
-import { updateDiscussionMessage } from "src/functions/toasts"
+import { updateDiscussionMessage } from "src/functions/toast-messages"
 import { invalidateQueries } from "src/query-client"
 import type { UpdateSourceDto } from "../../api/model"
 import {

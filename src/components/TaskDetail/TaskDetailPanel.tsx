@@ -17,12 +17,12 @@ import {
 	useDeleteTask,
 } from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
+import type { AppMutationMeta } from "src/functions/mutation-toast-cache"
 import {
-	type AppMutationMeta,
 	archiveTaskMessage,
 	deleteTaskMessage,
 	unarchiveTaskMessage,
-} from "src/functions/toasts"
+} from "src/functions/toast-messages"
 import { useAttachmentDownload } from "src/hooks/useAttachmentDownload"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"

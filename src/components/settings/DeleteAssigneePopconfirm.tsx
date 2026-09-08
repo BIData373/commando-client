@@ -7,7 +7,7 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
-import { removeResponsibleMessage } from "src/functions/toasts"
+import { removeResponsibleMessage } from "src/functions/toast-messages"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"
 import { ConfirmPopover } from "../shared/ConfirmPopover"

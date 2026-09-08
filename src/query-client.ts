@@ -4,7 +4,7 @@ import type {
 	UseQueryOptions,
 } from "@tanstack/react-query"
 import { QueryClient } from "@tanstack/react-query"
-import { createMutationToastCache } from "./functions/toasts"
+import { createMutationToastCache } from "./functions/mutation-toast-cache"
 
 export type QueryOptions<TData> = Omit<
 	UseQueryOptions<TData>,

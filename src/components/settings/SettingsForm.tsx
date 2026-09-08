@@ -19,7 +19,7 @@ import {
 	DUPLICATE_ENVIRONMENT_NAME,
 	REQUIRED_ENVIRONMENT_NAME,
 	updateEnvironmentMessage,
-} from "src/functions/toasts"
+} from "src/functions/toast-messages"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"

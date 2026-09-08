@@ -15,16 +15,16 @@ import type {
 } from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
+import { toast } from "src/components/Toast/toast-api"
 import { buildFilterOptionsMap } from "src/functions/filter-utils"
 import {
 	deleteTaskMessage,
-	reportBatch,
-	runBatch,
 	updateStatusMessage,
-} from "src/functions/toasts"
+} from "src/functions/toast-messages"
 import { type TaskArchiveEntry, useTaskColumns } from "src/hooks/useTaskColumns"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
+import { runBatch } from "src/utils/batch-utils"
 import { getEmptyState } from "src/utils/empty-state-utils"
 import {
 	DISABLED_CLICK_COLUMNS,
@@ -206,7 +206,7 @@ function TaskTable<TTask extends TaskRowDto>({
 			deleteTaskMutate({ pathParams: { id } }),
 		)
 
-		reportBatch(deleted, { message: deleteTaskMessage })
+		toast.batch(deleted, { message: deleteTaskMessage })
 	}
 
 	function getSelectedArchiveEntries() {
@@ -248,7 +248,7 @@ function TaskTable<TTask extends TaskRowDto>({
 
 		const succeeded = results.filter(Boolean).length
 
-		reportBatch(
+		toast.batch(
 			{ succeeded, failed: results.length - succeeded },
 			{ message: updateStatusMessage },
 		)

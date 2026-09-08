@@ -17,21 +17,20 @@ import {
 	getListTaskRowsQueryKey,
 	useListTaskRows,
 } from "src/api/task/task"
+import { toast } from "src/components/Toast/toast-api"
 import {
 	ARCHIVE_FAILED,
 	archiveTaskMessage,
-	reportBatch,
-	runBatch,
-	showFailureToast,
 	UNDO_ARCHIVE_FAILED,
 	UNDO_LABEL,
 	unarchiveTaskMessage,
-} from "src/functions/toasts"
+} from "src/functions/toast-messages"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
+import { runBatch } from "src/utils/batch-utils"
 import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
@@ -145,14 +144,14 @@ function WorkspaceTaskTable({
 		const restored = await handleToggleArchive(entries)
 
 		if (restored.failed > 0) {
-			showFailureToast(UNDO_ARCHIVE_FAILED)
+			toast.failure(UNDO_ARCHIVE_FAILED)
 		}
 	}
 
 	async function handleArchive(entries: TaskArchiveEntry[]) {
 		const archived = await handleToggleArchive(entries)
 
-		reportBatch(archived, {
+		toast.batch(archived, {
 			message: archiveTaskMessage,
 			failure: ARCHIVE_FAILED,
 			options: {
@@ -170,7 +169,7 @@ function WorkspaceTaskTable({
 	async function handleUnarchive(entries: TaskArchiveEntry[]) {
 		const restored = await handleToggleArchive(entries)
 
-		reportBatch(restored, {
+		toast.batch(restored, {
 			message: unarchiveTaskMessage,
 			failure: UNDO_ARCHIVE_FAILED,
 		})

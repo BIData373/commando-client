@@ -5,7 +5,7 @@ import { useStore } from "@tanstack/react-store"
 import { Check, Paperclip, Sparkles } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "src/components/Toast/toast-api"
-import { count, createTaskMessage } from "src/functions/toasts"
+import { count, createTaskMessage } from "src/functions/toast-messages"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AI_ENABLED } from "src/utils/env-utils"
 import {
