@@ -388,7 +388,11 @@ export const getGetSourceResponseMock = (
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			archivedAt: faker.helpers.arrayElement([
+			personalArchivedAt: faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
+			workspaceArchivedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				null,
 			]),
@@ -819,7 +823,11 @@ export const getAiExtractionCallbackResponseMock = (
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
 			},
 			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			archivedAt: faker.helpers.arrayElement([
+			personalArchivedAt: faker.helpers.arrayElement([
+				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				null,
+			]),
+			workspaceArchivedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				null,
 			]),
