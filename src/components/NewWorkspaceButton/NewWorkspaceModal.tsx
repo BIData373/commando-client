@@ -113,7 +113,7 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 			{
 				onError: (error) => {
 					const fieldErrors = Object.entries(REQUEST_ERROR_MESSAGES)
-						.filter(([, { code }]) => hasError(error, code))
+						.filter(([_, { code }]) => hasError(error, code))
 						.map(([field, { message }]) => [field, message] as const)
 
 					if (fieldErrors.length === 0) {
