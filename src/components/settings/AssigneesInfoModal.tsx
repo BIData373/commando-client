@@ -31,8 +31,8 @@ const StyledModalContent = styled(ModalContent)`
     gap: 16px;
     width: 1300px;
     height: 600px;
-	max-width: calc(100vw - 2rem);
-	max-height: calc(100vh - 4rem);
+	max-width: 95vw;
+	max-height: 95vh;
     padding: 32px 48px;
 `
 
