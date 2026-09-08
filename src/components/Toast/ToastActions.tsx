@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { TOAST_CLASS } from "./toast-constants"
+import { TOAST_CLASS } from "./toast-api"
 
 export interface ToastAction {
 	label: ReactNode

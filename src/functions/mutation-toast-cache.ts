@@ -45,8 +45,13 @@ function resolveSuccessMessage(
 	variables: unknown,
 ) {
 	const { success } = mutation.meta?.toast ?? {}
-	if (success === undefined) return undefined
-	if (typeof success === "function") return success(data, variables)
+	if (success === undefined) {
+		return undefined
+	}
+
+	if (typeof success === "function") {
+		return success(data, variables)
+	}
 
 	// A mutation settles one item, so plural copy always resolves to its singular.
 	return count(success, 1)
@@ -54,11 +59,18 @@ function resolveSuccessMessage(
 
 function resolveFailureMessage(mutation: AnyMutation, error: unknown) {
 	const { error: config } = mutation.meta?.toast ?? {}
-	if (config === undefined) return undefined
-	if (typeof config === "string") return config
+	if (config === undefined) {
+		return undefined
+	}
+
+	if (typeof config === "string") {
+		return config
+	}
 
 	const response = (error as ErrorType<ErrorDto>)?.response
-	if (!response) return TECHNICAL_FAILURE
+	if (!response) {
+		return TECHNICAL_FAILURE
+	}
 
 	if (typeof config === "object") {
 		const { message } = response.data ?? {}
@@ -67,7 +79,9 @@ function resolveFailureMessage(mutation: AnyMutation, error: unknown) {
 			.map((code) => config[code])
 			.find((match) => match !== undefined)
 
-		if (mapped !== undefined) return mapped
+		if (mapped !== undefined) {
+			return mapped
+		}
 	}
 
 	return FAILURE_BY_STATUS[response.status as ErrorCode] ?? TECHNICAL_FAILURE

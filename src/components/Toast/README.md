@@ -11,11 +11,9 @@ Design source: [🧩 Vector — טוסטים](https://www.figma.com/design/mny5B
 
 | File                                      | Purpose                                                      |
 | ----------------------------------------- | ------------------------------------------------------------ |
-| `../ui/sonner.tsx`                        | `Toaster` shell — theme, position, icons, styled composition |
-| `toast-api.tsx`                           | `showToast`, the `toast` object, and `AppToastOptions`       |
+| `../ui/sonner.tsx`                        | `Toaster` shell — theme, position, icons, and all the CSS    |
+| `toast-api.tsx`                           | `showToast`, the `toast` object, `AppToastOptions`, consts   |
 | `ToastActions.tsx`                        | The actions slot, and the `ToastAction` shape it renders     |
-| `toaster-styles.ts`                       | Named `css` blocks composed into `StyledSonner`              |
-| `toast-constants.ts`                      | Default duration and the variant class names                 |
 | `../../functions/toast-messages.ts`       | Hebrew strings, `ToastCopy`, and `count` pluralization       |
 | `../../functions/mutation-toast-cache.ts` | `meta.toast` wiring for every TanStack mutation              |
 | `../../utils/batch-utils.ts`              | `runBatch` — counts settled promises, no toast of its own    |
@@ -53,8 +51,14 @@ toast.success("הסטטוס עודכן בהצלחה", {
 | `border`           | `true`     |                                                                  |
 | `icon`             | `true`     | `false` hides it, or pass a custom node                          |
 | `progressBar`      | `true`     |                                                                  |
+| `duration`         | `3000`     | ms before auto-dismiss. `Infinity` keeps it open                 |
 
-Sonner's own options (`duration`, `id`, `position`, `onAutoClose`, …) pass through.
+Sonner's own options (`id`, `position`, `onAutoClose`, …) pass through.
+
+`duration` defaults to `TOAST_DURATION_MS` (3000), exported from `toast-api.tsx`
+and also set on `<Toaster />` so sonner's own calls match ours. Pass `duration`
+in the options to override it per toast; `Infinity` keeps the toast up until it
+is dismissed and drops the progress bar.
 
 Every toast is `top-center`. Position is not configurable — not on `<Toaster />`
 and not per toast, where `position` is omitted from `AppToastOptions`. If that
@@ -87,6 +91,11 @@ overhang that covers the border; banners set it to `0`.
 **CSS animations ignore tab blur, sonner's timers don't.** A backgrounded tab
 will desync the bar. Not handled — would need a `visibilitychange` listener
 setting a data attribute on the `Toaster`.
+
+**All the CSS lives in `StyledSonner`** at the bottom of `../ui/sonner.tsx`.
+Sonner renders its own markup, so the card is styled through its `data-*`
+attributes from the toaster root — there is nothing of ours to attach a styled
+component to.
 
 **Two density variants**, keyed off `:has([data-description])`: with a subtitle
 it's `20px 24px` padding with a 24px icon and a 16px title; without, it's

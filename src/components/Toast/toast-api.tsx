@@ -9,7 +9,20 @@ import {
 } from "../../functions/toast-messages"
 import type { BatchResult } from "../../utils/batch-utils"
 import { type ToastAction, ToastActions } from "./ToastActions"
-import { TOAST_CLASS, TOAST_DURATION_MS } from "./toast-constants"
+
+/** Milliseconds a toast stays up before auto-dismissing. Override per toast
+ * with `duration`, or `Infinity` to keep it open. */
+export const TOAST_DURATION_MS = 3000
+
+export const TOAST_CLASS = {
+	actionsRow: "toast-actions-row",
+	banner: "toast-banner",
+	bannerRight: "toast-banner-right",
+	borderless: "toast-borderless",
+	closeText: "toast-close-text",
+	customActions: "toast-custom-actions",
+	noProgress: "toast-no-progress",
+} as const
 
 type ToastMessage = ReactNode | (() => ReactNode)
 
