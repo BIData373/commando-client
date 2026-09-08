@@ -1,6 +1,13 @@
 import type { ReactNode } from "react"
-import { TOAST_CLASS } from "../../functions/toast-constants"
-import type { ToastAction } from "./toast-types"
+import { TOAST_CLASS } from "./toast-constants"
+
+export interface ToastAction {
+	label: ReactNode
+	onClick(): void
+	variant: "primary" | "cancel" | "danger"
+	/** Dismiss the toast after the handler runs. Defaults to `true`. */
+	dismissOnClick?: boolean
+}
 
 interface ToastActionsProps {
 	actions: ToastAction[]

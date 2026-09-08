@@ -1,10 +1,6 @@
-import type { CSSProperties } from "react"
+import type { CSSProperties, ReactNode } from "react"
+import type { ExternalToast } from "sonner"
 import { toast as sonnerToast } from "sonner"
-import {
-	CLOSE_TEXT,
-	TOAST_CLASS,
-	TOAST_DURATION_MS,
-} from "../../functions/toast-constants"
 import {
 	count,
 	TECHNICAL_FAILURE,
@@ -12,13 +8,30 @@ import {
 	type ToastCopy,
 } from "../../functions/toast-messages"
 import type { BatchResult } from "../../utils/batch-utils"
-import { ToastActions } from "./ToastActions"
-import type {
-	AppToastOptions,
-	ToastAction,
-	ToastMessage,
-	ToastType,
-} from "./toast-types"
+import { type ToastAction, ToastActions } from "./ToastActions"
+import { TOAST_CLASS, TOAST_DURATION_MS } from "./toast-constants"
+
+type ToastMessage = ReactNode | (() => ReactNode)
+
+/** Sonner's options minus what we own, plus our presentation flags. */
+export type AppToastOptions = Omit<
+	ExternalToast,
+	"action" | "className" | "closeButton" | "icon" | "position"
+> & {
+	actions?: ToastAction | ToastAction[]
+	actionsDirection?: "row" | "column"
+	banner?: boolean
+	bannerAlign?: "center" | "right"
+	border?: boolean
+	closeable?: boolean
+	closeText?: boolean | ReactNode
+	icon?: boolean | ReactNode
+	onCancel?(): void
+	progressBar?: boolean
+	subtitle?: ReactNode
+}
+
+const CLOSE_TEXT = "סגור"
 
 interface ToastClassNameOptions {
 	banner?: boolean
@@ -55,7 +68,7 @@ function resolveIcon(icon: AppToastOptions["icon"]) {
 }
 
 function showToast(
-	type: ToastType,
+	type: "success" | "error" | "info" | "warning",
 	message: ToastMessage,
 	{
 		actions,
@@ -114,7 +127,6 @@ function showToast(
 		id: toastId,
 		duration,
 		description: subtitle ?? description,
-		position: banner ? (options.position ?? "top-center") : options.position,
 		className:
 			getToastClassName({
 				banner,

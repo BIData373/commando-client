@@ -9,10 +9,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Toaster as Sonner } from "sonner";
-import {
-  TOAST_DURATION_MS,
-  TOAST_POSITIONS,
-} from "../../functions/toast-constants";
+import { TOAST_DURATION_MS } from "../Toast/toast-constants";
 import { toast } from "../Toast/toast-api";
 import {
   toastActions,
@@ -26,14 +23,6 @@ import {
 } from "../Toast/toaster-styles";
 import type { CSSProperties } from "react";
 import type { ToasterProps } from "sonner";
-
-export type {
-  AppToastOptions,
-  ToastAction,
-  ToastActionVariant,
-} from "../Toast/toast-types";
-
-export type ToastLocation = keyof typeof TOAST_POSITIONS;
 
 const TOAST_ICONS: ToasterProps["icons"] = {
   success: <CircleCheckIcon size={16} />,
@@ -51,17 +40,9 @@ const TOASTER_STYLE = {
   "--border-radius": "var(--radius)",
 } as CSSProperties;
 
-const TOAST_OPTIONS: ToasterProps["toastOptions"] = {
-  classNames: {
-    toast: "cn-toast",
-  },
-};
+type AppToasterProps = Omit<ToasterProps, "position">;
 
-interface AppToasterProps extends Omit<ToasterProps, "position"> {
-  location?: ToastLocation;
-}
-
-const Toaster = ({ location = "middle", ...props }: AppToasterProps) => {
+const Toaster = (props: AppToasterProps) => {
   const { theme = "system" } = useTheme();
 
   return (
@@ -69,10 +50,9 @@ const Toaster = ({ location = "middle", ...props }: AppToasterProps) => {
       theme={theme as ToasterProps["theme"]}
       dir="rtl"
       duration={TOAST_DURATION_MS}
-      position={TOAST_POSITIONS[location]}
+      position="top-center"
       icons={TOAST_ICONS}
       style={TOASTER_STYLE}
-      toastOptions={TOAST_OPTIONS}
       {...props}
     />
   );

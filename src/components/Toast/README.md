@@ -9,17 +9,16 @@ Design source: [🧩 Vector — טוסטים](https://www.figma.com/design/mny5B
 
 ## Files
 
-| File                                      | Purpose                                                              |
-| ----------------------------------------- | -------------------------------------------------------------------- |
-| `../ui/sonner.tsx`                        | `Toaster` shell — theme, position, icons, styled composition         |
-| `toast-api.tsx`                           | `showToast` + the exported `toast` object, incl. `failure` / `batch` |
-| `toast-types.ts`                          | `AppToastOptions`, `ToastAction`                                     |
-| `ToastActions.tsx`                        | The actions slot: custom buttons and/or close text                   |
-| `toaster-styles.ts`                       | Named `css` blocks composed into `StyledSonner`                      |
-| `../../functions/toast-constants.ts`      | Duration, close text, class names, positions                         |
-| `../../functions/toast-messages.ts`       | Hebrew strings, `ToastCopy`, and `count` pluralization               |
-| `../../functions/mutation-toast-cache.ts` | `meta.toast` wiring for every TanStack mutation                      |
-| `../../utils/batch-utils.ts`              | `runBatch` — counts settled promises, no toast of its own            |
+| File                                      | Purpose                                                      |
+| ----------------------------------------- | ------------------------------------------------------------ |
+| `../ui/sonner.tsx`                        | `Toaster` shell — theme, position, icons, styled composition |
+| `toast-api.tsx`                           | `showToast`, the `toast` object, and `AppToastOptions`       |
+| `ToastActions.tsx`                        | The actions slot, and the `ToastAction` shape it renders     |
+| `toaster-styles.ts`                       | Named `css` blocks composed into `StyledSonner`              |
+| `toast-constants.ts`                      | Default duration and the variant class names                 |
+| `../../functions/toast-messages.ts`       | Hebrew strings, `ToastCopy`, and `count` pluralization       |
+| `../../functions/mutation-toast-cache.ts` | `meta.toast` wiring for every TanStack mutation              |
+| `../../utils/batch-utils.ts`              | `runBatch` — counts settled promises, no toast of its own    |
 
 ## Usage
 
@@ -57,9 +56,9 @@ toast.success("הסטטוס עודכן בהצלחה", {
 
 Sonner's own options (`duration`, `id`, `position`, `onAutoClose`, …) pass through.
 
-`<Toaster />` takes a `location` of `middle` (default), `right`, or `left`, which
-maps to `top-center` / `top-right` / `top-left` in `TOAST_POSITIONS`. Toasts sit
-at the top; `banner` forces `top-center` regardless.
+Every toast is `top-center`. Position is not configurable — not on `<Toaster />`
+and not per toast, where `position` is omitted from `AppToastOptions`. If that
+ever changes, sonner still supports the other eight positions natively.
 
 ## Things that will bite you
 

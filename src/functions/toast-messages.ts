@@ -6,8 +6,13 @@ export type ToastCopy =
 	| { one: string; many: (amount: number) => string }
 
 export function count(copy: ToastCopy, amount: number): string {
-	if (typeof copy === "string") return copy
-	if (amount === 1) return copy.one
+	if (typeof copy === "string") {
+		return copy
+	}
+
+	if (amount === 1) {
+		return copy.one
+	}
 
 	return copy.many(amount)
 }

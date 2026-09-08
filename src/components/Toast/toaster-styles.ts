@@ -1,7 +1,7 @@
 import { css } from "@emotion/react"
-import { TOAST_CLASS, TOAST_DURATION_MS } from "../../functions/toast-constants"
+import { TOAST_CLASS, TOAST_DURATION_MS } from "./toast-constants"
 
-/** Card box, widths, and per-position offsets. */
+/** Card box and widths. Every toast is top-center, so there is no x-axis case. */
 export const toastLayout = css`
   [data-sonner-toast][data-styled="true"] {
     width: max-content;
@@ -18,15 +18,7 @@ export const toastLayout = css`
     overflow: hidden;
   }
 
-  &[data-x-position="right"] [data-sonner-toast] {
-    right: 0;
-  }
-
-  &[data-x-position="left"] [data-sonner-toast] {
-    left: 0;
-  }
-
-  &[data-x-position="center"] [data-sonner-toast] {
+  [data-sonner-toast] {
     left: calc((var(--width) - 360px) / 2);
   }
 
@@ -109,8 +101,6 @@ export const toastStatus = css`
     )
     [data-icon]
     svg {
-    width: 16px;
-    height: 16px;
     color: var(--Text-color-text);
     fill: var(--toast-accent);
   }
@@ -374,7 +364,7 @@ export const toastResponsive = css`
       width: var(--width);
     }
 
-    &[data-x-position="center"] [data-sonner-toast] {
+    [data-sonner-toast] {
       left: 0;
     }
   }

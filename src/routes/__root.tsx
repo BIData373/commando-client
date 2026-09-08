@@ -25,7 +25,7 @@ function RootComponent() {
 			<TooltipProvider>
 				<HeaderProvider>
 					<AppShell>
-						<Toaster location="middle" />
+						<Toaster />
 						<PageContainer>
 							<OnboardingModal />
 							<Outlet />
