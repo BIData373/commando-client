@@ -1,17 +1,10 @@
 import styled from "@emotion/styled"
-import { chain, compact, countBy, flatMap, get } from "lodash"
+import { chain, identity, isEmpty, map } from "lodash"
 import { Users } from "lucide-react"
 import { useMemo } from "react"
 import { TbHelpCircle } from "react-icons/tb"
-import { useListAssignees } from "src/api/assignee/assignee"
-import {
-	DistributionTab,
-	type TaskRowDto,
-	type UserViewDto,
-} from "src/api/model"
-import { useListTags } from "src/api/tag/tag"
+import { DistributionTab, type TaskRowDto } from "src/api/model"
 import { useUserView } from "src/providers/UserViewProvider"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
 import addAssignee from "../../assets/icons/add-person.svg"
 import subject from "../../assets/icons/subjects.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -26,11 +19,6 @@ import {
 interface DistributionTabConfig {
 	id: DistributionTab
 	label: string
-}
-
-interface SystemDistributionProps {
-	onSetAssignees?: () => void
-	tasks: TaskRowDto[]
 }
 
 const TABS: DistributionTabConfig[] = [
@@ -56,28 +44,33 @@ const HEADER_LABELS = {
 	[DistributionTab.attention]: { name: "תגיות", count: "כמות הנחיות" },
 }
 
-type NamedEntity = { name: string }
-
-type DistributionKey = "assignee" | "tags" | "source.tags"
-
-function buildDistribution<T extends NamedEntity>(
-	sourceList: T[],
-	keys: DistributionKey | DistributionKey[],
+function buildDistribution(
 	tasks: TaskRowDto[],
-): { name: string; count: number }[] {
-	const keyList = Array.isArray(keys) ? keys : [keys]
-	const counts = countBy(
-		flatMap(tasks, (task) =>
-			compact(flatMap(keyList, (key) => [get(task, key)].flat())),
-		),
-		"name",
-	)
+	extractor: (item: TaskRowDto) => string | undefined | (string | undefined)[],
+) {
+	const counts = tasks.reduce<Record<string, number>>((acc, task) => {
+		const raw = extractor(task)
+		if (!raw) {
+			return acc
+		}
 
-	return chain(sourceList)
-		.map((s) => ({ name: s.name, count: counts[s.name] ?? 0 }))
-		.filter(({ count }) => count > 0)
-		.orderBy("count", "desc")
-		.value()
+		const items = Array.isArray(raw) ? Array.from(new Set(raw)) : [raw]
+
+		items.forEach((item) => {
+			if (item) {
+				acc[item] = (acc[item] ?? 0) + 1
+			}
+		})
+
+		return acc
+	}, {})
+
+	return Object.entries(counts).sort(([, a], [, b]) => b - a)
+}
+
+interface SystemDistributionProps {
+	onSetAssignees?: () => void
+	tasks: TaskRowDto[]
 }
 
 export default function SystemDistribution({
@@ -88,20 +81,17 @@ export default function SystemDistribution({
 
 	const activeTab = view.dashboard.distributionTab
 
-	const {
-		workspace: { id: workspaceId },
-	} = useWorkspace()
-	const { data: assignees = [] } = useListAssignees({ workspaceId })
-	const { data: tags = [] } = useListTags({ workspaceId })
-
 	const assigneeDistribution = useMemo(
-		() => buildDistribution(assignees, "assignee", tasks),
-		[tasks, assignees],
+		() => buildDistribution(tasks, ({ assignee }) => assignee?.name),
+		[tasks],
 	)
 
 	const tagDistribution = useMemo(
-		() => buildDistribution(tags, ["tags", "source.tags"], tasks),
-		[tasks, tags],
+		() =>
+			buildDistribution(tasks, ({ tags, source }) =>
+				map([...tags, ...(source?.tags ?? [])], "name"),
+			),
+		[tasks],
 	)
 
 	const activeData =
@@ -109,23 +99,23 @@ export default function SystemDistribution({
 
 	const tabDescription = TabsDescription[activeTab]
 
-	const hasData = !!(activeData && activeData.length > 0)
+	const hasData = !isEmpty(activeData)
 
 	const maxCount =
-		hasData && activeData ? Math.max(...activeData.map((d) => d.count), 1) : 1
+		hasData && activeData
+			? Math.max(...activeData.map(([_, count]) => count), 1)
+			: 1
 
 	const headerLabels = HEADER_LABELS[activeTab]
 
-	async function handleTabClick(distributionTab: DistributionTab) {
-		const nextView: UserViewDto = {
+	function handleTabClick(distributionTab: DistributionTab) {
+		updateView({
 			...view,
 			dashboard: {
 				...view.dashboard,
 				distributionTab,
 			},
-		}
-
-		await updateView(nextView)
+		})
 	}
 
 	return (
@@ -161,20 +151,20 @@ export default function SystemDistribution({
 								<HeaderLabel>{headerLabels.count}</HeaderLabel>
 							</ChartHeader>
 							<BarList>
-								{activeData?.map((item) => (
-									<BarRow key={item.name}>
+								{activeData.map(([name, count]) => (
+									<BarRow key={name}>
 										<TooltipProvider>
 											<Tooltip>
 												<TooltipTrigger asChild>
-													<AssigneeName>{item.name}</AssigneeName>
+													<AssigneeName>{name}</AssigneeName>
 												</TooltipTrigger>
-												<TooltipContent>{item.name}</TooltipContent>
+												<TooltipContent>{name}</TooltipContent>
 											</Tooltip>
 										</TooltipProvider>
 										<BarTrack>
-											<BarFill $pct={(item.count / maxCount) * 100} />
+											<BarFill $pct={(count / maxCount) * 100} />
 										</BarTrack>
-										<CountLabel>{item.count}</CountLabel>
+										<CountLabel>{count}</CountLabel>
 									</BarRow>
 								))}
 							</BarList>
@@ -301,12 +291,14 @@ const BarList = styled.div`
   max-height: 324px;
   padding: 5px 15px;
   overflow-y: auto;
+  direction: ltr;
 `
 
 const BarRow = styled.div`
   display: flex;
   align-items: center;
   gap: 18px;
+  direction: rtl;
 `
 
 const AssigneeName = styled.span`
