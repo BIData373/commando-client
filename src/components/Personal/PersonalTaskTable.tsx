@@ -181,6 +181,10 @@ function PersonalTaskTable({
 						isArchived ? ARCHIVE_QUICK_FILTERS : ACTIVE_QUICK_FILTERS
 					}
 					startSlot={<TasksDatePicker />}
+					baseMessagesParams={{
+						personal: true,
+						isArchived: isArchived || undefined,
+					}}
 					exportFilePrefix={filePrefix}
 					extraFilters={
 						<MultiSelectFilterDropdown
