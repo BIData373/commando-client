@@ -1,7 +1,9 @@
 import { differenceInDays, format, startOfToday } from "date-fns"
-import ExcelJS from "exceljs"
+import ExcelJS, { type Alignment } from "exceljs"
+import { groupBy } from "lodash"
 import {
 	DeadlineType,
+	type MessageDto,
 	type TaskRowDto,
 	type TaskRowWithWorkspaceDto,
 } from "src/api/model"
@@ -19,6 +21,7 @@ interface CellValue {
 interface ExportColumn<T> {
 	header: string
 	maxWidth?: number
+	horizontalAlign?: Alignment["horizontal"]
 	accessor: (row: T) => string | CellValue
 }
 
@@ -65,8 +68,22 @@ function getDeadlineDateStyle(task: TaskRowDto): Pick<CellValue, "fontColor"> {
 	return {}
 }
 
+function formatMessages(messages?: MessageDto[]): string {
+	if (!messages?.length) {
+		return ""
+	}
+	return messages
+		.map(
+			(m) =>
+				`${formatDate(m.createdAt)} - ${m.user.info?.name ?? m.user.upn}: ${m.content} `,
+		)
+		.join("\n\n")
+}
+
+type ExportTaskRow = TaskRowDto & { messages?: MessageDto[] }
+
 const COLUMN_DEFS: Partial<
-	Partial<Record<keyof TaskRowWithWorkspaceDto, ExportColumn<TaskRowDto>>>
+	Record<keyof TaskRowWithWorkspaceDto, ExportColumn<ExportTaskRow>>
 > = {
 	[TASK_COLUMN_ID.title]: {
 		header: COLUMN_LABELS.title,
@@ -142,6 +159,12 @@ const COLUMN_DEFS: Partial<
 		accessor: (t) =>
 			t.personalArchivedAt ? formatDate(t.personalArchivedAt) : "",
 	},
+	[TASK_COLUMN_ID.lastMessage]: {
+		header: COLUMN_LABELS.lastMessage,
+		maxWidth: 60,
+		horizontalAlign: "right",
+		accessor: (t) => formatMessages(t.messages),
+	},
 	[TASK_COLUMN_ID.workspace]: {
 		header: COLUMN_LABELS.workspace,
 		accessor: (t) =>
@@ -153,10 +176,15 @@ export async function exportTasksToExcel<TTask extends TaskRowDto>(
 	tasks: TTask[],
 	columnOrder: (keyof TTask)[],
 	hiddenColumns: Set<keyof TTask>,
+	messages: MessageDto[],
 	fileNamePrefix?: string,
 ) {
+	const messagesMap = groupBy(messages, "taskId")
+
+	const rows = tasks.map((t) => ({ ...t, messages: messagesMap[t.id] ?? [] }))
+
 	await exportToExcel(
-		tasks,
+		rows,
 		[
 			{
 				header: COLUMN_LABELS.id,
@@ -218,7 +246,10 @@ async function exportToExcel<T>(
 			const cell = excelRow.getCell(colIdx + 1)
 			const data = isCellValue(raw) ? raw : null
 
-			cell.alignment = { horizontal: "center", readingOrder: "rtl" }
+			cell.alignment = {
+				horizontal: col.horizontalAlign ?? "center",
+				readingOrder: "rtl",
+			}
 			cell.border = THIN_BORDER
 
 			if (data?.fontColor) {
