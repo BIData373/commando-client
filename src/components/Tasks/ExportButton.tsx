@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { Download } from "lucide-react"
 import { useListMessages } from "src/api/message/message"
-import type { ListMessagesParams, TaskRowDto } from "src/api/model"
+import type { ListMessagesParams, MessageDto, TaskRowDto } from "src/api/model"
 import { SpinIcon } from "src/components/shared/SpinIcon"
 import { exportTasksToExcel } from "src/functions/export-excel"
 import { TASK_COLUMN_ID } from "src/utils/task-table-utils"
@@ -30,7 +30,11 @@ function ExportButton<TTask extends TaskRowDto>({
 	})
 
 	async function handleExport() {
-		const messages = needsMessages ? ((await refetch()).data ?? []) : []
+		let messages: MessageDto[] = []
+		if (needsMessages) {
+			const { data = [] } = await refetch()
+			messages = data
+		}
 
 		exportTasksToExcel(
 			exportRows,
