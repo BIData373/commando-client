@@ -120,21 +120,24 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					),
 				}
 			: {
-					id: TASK_COLUMN_ID.id,
-					accessorKey: TASK_COLUMN_ID.id,
+					id: TASK_COLUMN_ID.serialId,
+					accessorKey: TASK_COLUMN_ID.serialId,
 					header: ({ column }) => (
-						<ColumnHeaderWithActions label={COLUMN_LABELS.id} column={column} />
+						<ColumnHeaderWithActions
+							label={COLUMN_LABELS.serialId}
+							column={column}
+						/>
 					),
 					size: 70,
 					enableColumnFilter: false,
 					cell: ({
 						row: {
-							original: { id },
+							original: { serialId },
 						},
 					}) => (
 						<IdCell>
 							<HighlightMatch
-								text={String(id)}
+								text={String(serialId)}
 								query={searchQuery ?? ""}
 								variant="mark"
 							/>
