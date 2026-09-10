@@ -21,7 +21,7 @@ function toColumnsMeta<
 }
 
 const CONFIGURABLE_COLUMNS_META = toColumnsMeta({
-	id: 'מס"ד',
+	serialId: 'מס"ד',
 	title: "ההנחיה",
 	status: "סטטוס",
 	assignee: "אחראי",
@@ -126,7 +126,7 @@ export function buildCountingColumns<TTask extends TaskRowDto>(
 }
 
 export const CONFIGURABLE_COLUMNS = CONFIGURABLE_COLUMNS_META.filter(
-	(c) => c.id !== TASK_COLUMN_ID.id,
+	(c) => c.id !== TASK_COLUMN_ID.serialId,
 )
 
 export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id)

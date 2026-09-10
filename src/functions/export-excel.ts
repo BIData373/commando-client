@@ -153,8 +153,8 @@ export async function exportTasksToExcel<TTask extends TaskRowDto>(
 		tasks,
 		[
 			{
-				header: COLUMN_LABELS.id,
-				accessor: (t) => String(t.id),
+				header: COLUMN_LABELS.serialId,
+				accessor: (t) => String(t.serialId),
 			},
 			...columnOrder
 				.filter((id) => !hiddenColumns.has(id) && id in COLUMN_DEFS)
