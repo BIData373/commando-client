@@ -31,17 +31,24 @@ const TOASTER_STYLE = {
 
 type AppToasterProps = Omit<ToasterProps, "position">;
 
-const Toaster = (props: AppToasterProps) => {
+const Toaster = ({ duration = TOAST_DURATION_MS, ...props }: AppToasterProps) => {
   const { theme = "system" } = useTheme();
+
+  // The countdown bar reads the same duration sonner's timer does. Toasts with
+  // their own duration override the var inline; the rest inherit this one.
+  const style = {
+    ...TOASTER_STYLE,
+    "--toast-duration": `${duration}ms`,
+  } as CSSProperties;
 
   return (
     <StyledSonner
       theme={theme as ToasterProps["theme"]}
       dir="rtl"
-      duration={TOAST_DURATION_MS}
+      duration={duration}
       position="top-center"
       icons={TOAST_ICONS}
-      style={TOASTER_STYLE}
+      style={style}
       {...props}
     />
   );
@@ -295,8 +302,7 @@ const StyledSonner = styled(Sonner)`
   /* Fill drains from the inline-start edge, staying anchored at inline-end. */
   [data-sonner-toast][data-styled="true"]::after {
     background: var(--toast-accent, var(--sea-ink-soft));
-    animation: toast-countdown var(--toast-duration, ${TOAST_DURATION_MS}ms)
-      linear forwards;
+    animation: toast-countdown var(--toast-duration) linear forwards;
   }
 
   [data-sonner-toast].${TOAST_CLASS.noProgress}::before,

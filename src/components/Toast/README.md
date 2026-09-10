@@ -43,7 +43,7 @@ toast.success("הסטטוס עודכן בהצלחה", {
 | `subtitle`         | —          | Secondary line. Maps to sonner's `description`                   |
 | `closeable`        | `true`     | Whether _any_ close affordance renders                           |
 | `closeText`        | —          | `true` → `סגור`, or a node. **Replaces** the × icon              |
-| `actions`          | —          | One action or an array. `variant`: `primary \| cancel \| danger` |
+| `actions`          | —          | One action or an array. `variant`: `primary \| cancel \| danger`. Suppresses the × |
 | `actionsDirection` | `"column"` | Use `"row"` for banners                                          |
 | `onCancel`         | —          | Fires on user-initiated dismissal, not auto-close                |
 | `banner`           | `false`    | Full-width, pinned top, no radius/shadow                         |
@@ -56,9 +56,11 @@ toast.success("הסטטוס עודכן בהצלחה", {
 Sonner's own options (`id`, `position`, `onAutoClose`, …) pass through.
 
 `duration` defaults to `TOAST_DURATION_MS` (3000), exported from `toast-api.tsx`
-and also set on `<Toaster />` so sonner's own calls match ours. Pass `duration`
-in the options to override it per toast; `Infinity` keeps the toast up until it
-is dismissed and drops the progress bar.
+and applied by `<Toaster />`. `showToast` deliberately does **not** re-apply that
+default — it leaves `duration` undefined so sonner falls back to the toaster's
+value, which keeps the timer and the countdown bar reading the same number.
+Pass `duration` in the options to override it per toast; `Infinity` keeps the
+toast up until it is dismissed and drops the progress bar.
 
 Every toast is `top-center`. Position is not configurable — not on `<Toaster />`
 and not per toast, where `position` is omitted from `AppToastOptions`. If that
@@ -68,8 +70,11 @@ ever changes, sonner still supports the other eight positions natively.
 
 **The close icon, close text, and custom actions share one slot.** In Figma
 they're all children of a single `Actions` frame in the card head — that's why
-`closeText` replaces the × rather than sitting beside it, and why `ToastActions`
-renders the close text as its last child instead of it being a separate element.
+`closeText` and `actions` each replace the × rather than sitting beside it, and
+why `ToastActions` renders the close text as its last child instead of it being a
+separate element. A toast with actions has no ×; to give it an explicit dismiss,
+pass `closeText` (rendered inside the actions group) or a `cancel`-variant
+action.
 
 **`onDismiss` fires for programmatic dismissals too.** Including the ones our own
 action buttons trigger. `showToast` keeps a `dismissal.isCancel` flag so clicking
@@ -83,8 +88,10 @@ stacked toasts drain and disappear early.
 
 **The progress bar is a track + fill**, rendered as `::before` (track, border
 color) and `::after` (fill, accent). It drains from the inline-start edge, and
-its duration comes from the toast's real `duration` via the `--toast-duration`
-CSS var — never hardcode it, or a custom `duration` desyncs from the timer.
+its duration comes from the `--toast-duration` CSS var — never hardcode it, or a
+custom `duration` desyncs from the timer. The var is set once on the toaster from
+the same value passed to sonner's `duration` prop, and inherits down; only a toast
+with its own `duration` overrides it inline.
 `duration: Infinity` drops the bar entirely. `--toast-bleed` controls the -1px
 overhang that covers the border; banners set it to `0`.
 

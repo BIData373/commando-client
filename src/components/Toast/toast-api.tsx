@@ -103,15 +103,19 @@ function showToast(
 ) {
 	const toastActions = normalizeActions(actions)
 	// The close icon, the close text, and custom actions share one slot in the
-	// design, so text replaces the icon rather than sitting beside it.
+	// design, so both text and actions replace the icon rather than sitting
+	// beside it.
 	const closeLabel = closeText === true ? CLOSE_TEXT : closeText
-	const showCloseText = closeable && Boolean(closeLabel)
-	const showCloseIcon = closeable && !showCloseText
 	const hasActions = toastActions.length > 0
+	const showCloseText = closeable && Boolean(closeLabel)
+	const showCloseIcon = closeable && !showCloseText && !hasActions
 	const toastId = options.id ?? crypto.randomUUID()
-	const duration = options.duration ?? TOAST_DURATION_MS
-	// A bar that never drains is misleading, so persistent toasts drop it.
-	const showProgress = progressBar && Number.isFinite(duration)
+	// Left undefined, sonner applies the Toaster's duration and the bar inherits
+	// its --toast-duration. A bar that never drains is misleading, so persistent
+	// toasts drop it.
+	const { duration } = options
+	const showProgress =
+		progressBar && (duration === undefined || Number.isFinite(duration))
 
 	// Sonner reports every dismissal through onDismiss, including the ones we
 	// trigger from an action button. Only user-initiated closes are cancels.
@@ -137,7 +141,6 @@ function showToast(
 	sonnerToast[type](message, {
 		...options,
 		id: toastId,
-		duration,
 		description: subtitle ?? description,
 		className:
 			getToastClassName({
@@ -155,9 +158,10 @@ function showToast(
 							.join(" "),
 					}
 				: classNames,
-		style: showProgress
-			? ({ ...style, "--toast-duration": `${duration}ms` } as CSSProperties)
-			: style,
+		style:
+			showProgress && duration !== undefined
+				? ({ ...style, "--toast-duration": `${duration}ms` } as CSSProperties)
+				: style,
 		closeButton: showCloseIcon,
 		icon: resolveIcon(icon),
 		onDismiss: (dismissedToast) => {
