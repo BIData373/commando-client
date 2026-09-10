@@ -11,6 +11,7 @@ import { DEADLINE_LABELS } from "src/components/shared/DeadlineTag"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { COLUMN_LABELS, TASK_COLUMN_ID } from "src/utils/task-table-utils"
 import { formatDate } from "./date-utils"
+import { formatSourceLabel } from "./source-utils"
 
 interface CellValue {
 	value: string
@@ -128,8 +129,7 @@ const COLUMN_DEFS: Partial<
 				return ""
 			}
 
-			const dateString = t.source.date ? formatDate(t.source.date) : ""
-			return dateString ? `${t.source.name} | ${dateString}` : t.source.name
+			return formatSourceLabel(t.source, false)
 		},
 	},
 	[TASK_COLUMN_ID.tags]: {
