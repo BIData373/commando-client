@@ -14,13 +14,12 @@ import { type ToastAction, ToastActions } from "./ToastActions"
  * with `duration`, or `Infinity` to keep it open. */
 export const TOAST_DURATION_MS = 3000
 
+/** Hooks for the parts of the card sonner renders, not us. */
 export const TOAST_CLASS = {
-	actionsRow: "toast-actions-row",
 	banner: "toast-banner",
 	bannerRight: "toast-banner-right",
 	borderless: "toast-borderless",
 	closeText: "toast-close-text",
-	customActions: "toast-custom-actions",
 	noProgress: "toast-no-progress",
 } as const
 

@@ -190,7 +190,7 @@ const StyledSonner = styled(Sonner)`
     border-color: transparent;
   }
 
-  /* Action buttons and the close-text link. */
+  /* Sonner's own action button, used for close text when we render no actions. */
 
   [data-sonner-toast] [data-button] {
     height: auto;
@@ -220,90 +220,10 @@ const StyledSonner = styled(Sonner)`
     }
   }
 
-  [data-sonner-toast] .${TOAST_CLASS.customActions} {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    flex-shrink: 0;
-  }
-
-  [data-sonner-toast] .${TOAST_CLASS.customActions}.${TOAST_CLASS.actionsRow} {
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-  }
-
-  [data-sonner-toast] .toast-action {
-    min-width: 56px;
-    height: 30px;
-    padding-inline: 10px;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    font-size: var(--fs-btn);
-    font-weight: 400;
-    line-height: 1;
-    cursor: pointer;
-    transition:
-      background 150ms ease,
-      border-color 150ms ease,
-      opacity 150ms ease;
-
-    &:hover {
-      opacity: 0.85;
-    }
-  }
-
-  [data-sonner-toast] .toast-action-primary {
-    color: var(--background);
-    background: var(--Components-Upload-Global-colorPrimary);
-  }
-
-  [data-sonner-toast] .toast-action-cancel {
-    min-width: auto;
-    height: auto;
-    padding: 0;
-    color: var(--Components-Upload-Global-colorPrimary);
-    background: transparent;
-    border: 0;
-
-    &:hover,
-    &:active {
-      color: var(--button-color-hover);
-      background: transparent;
-      opacity: 1;
-    }
-  }
-
-  [data-sonner-toast] .toast-action-danger {
-    color: var(--alert-error-global-error);
-    background: var(--background);
-    border-color: var(--alert-error-global-error);
-  }
-
-  [data-sonner-toast]
-    .${TOAST_CLASS.customActions}
-    > .${TOAST_CLASS.closeText} {
-    padding: 0;
-    color: var(--text-color-400);
-    background: transparent;
-    border: 0;
-    cursor: pointer;
-
-    &:hover,
-    &:active {
-      color: var(--text-color-2);
-    }
-  }
-
   [data-sonner-toast]:has([data-description])
     [data-button].${TOAST_CLASS.closeText} {
     align-self: flex-start;
     margin-top: 2px;
-  }
-
-  [data-sonner-toast]:has([data-description]) .${TOAST_CLASS.customActions} {
-    align-self: flex-start;
   }
 
   /* Full-width banner variant pinned to the top of the layout. */

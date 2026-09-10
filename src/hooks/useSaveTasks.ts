@@ -1,10 +1,6 @@
 import { type CreateTaskDto, DeadlineType } from "src/api/model"
 import { toast } from "src/components/Toast/toast-api"
-import {
-	createTaskMessage,
-	TECHNICAL_FAILURE,
-	updateTaskMessage,
-} from "src/functions/toast-messages"
+import { saveTaskMessage } from "src/functions/toast-messages"
 import { invalidateQueries } from "src/query-client"
 import { runBatch } from "src/utils/batch-utils"
 import { getListTagsQueryKey } from "../api/tag/tag"
@@ -56,7 +52,12 @@ export function useSaveTasks(workspaceId: number, onDone?: () => void) {
 			),
 		])
 
-		if (created.succeeded + updated.succeeded > 0) {
+		const saved = {
+			succeeded: created.succeeded + updated.succeeded,
+			failed: created.failed + updated.failed,
+		}
+
+		if (saved.succeeded > 0) {
 			invalidateQueries([
 				getListTaskRowsQueryKey({ workspaceId }),
 				getListPersonalTaskRowsQueryKey(),
@@ -66,12 +67,7 @@ export function useSaveTasks(workspaceId: number, onDone?: () => void) {
 			onDone?.()
 		}
 
-		toast.batch(created, { message: createTaskMessage, failure: false })
-		toast.batch(updated, { message: updateTaskMessage, failure: false })
-
-		if (created.failed + updated.failed > 0) {
-			toast.failure(TECHNICAL_FAILURE)
-		}
+		toast.batch(saved, { message: saveTaskMessage })
 	}
 
 	return { saveTasks, isPending: isCreating || isUpdating }

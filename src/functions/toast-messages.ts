@@ -27,6 +27,12 @@ export const updateTaskMessage: ToastCopy = {
 	many: (amount) => `${amount} הנחיות עודכנו בהצלחה`,
 }
 
+/** Mixed create-and-update saves report one outcome, not one per verb. */
+export const saveTaskMessage: ToastCopy = {
+	one: "ההנחיה נשמרה בהצלחה",
+	many: (amount) => `${amount} הנחיות נשמרו בהצלחה`,
+}
+
 export const deleteTaskMessage: ToastCopy = {
 	one: "ההנחיה נמחקה בהצלחה",
 	many: (amount) => `${amount} הנחיות נמחקו בהצלחה`,

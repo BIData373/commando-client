@@ -13,7 +13,7 @@ Design source: [🧩 Vector — טוסטים](https://www.figma.com/design/mny5B
 | ----------------------------------------- | ------------------------------------------------------------ |
 | `../ui/sonner.tsx`                        | `Toaster` shell — theme, position, icons, and all the CSS    |
 | `toast-api.tsx`                           | `showToast`, the `toast` object, `AppToastOptions`, consts   |
-| `ToastActions.tsx`                        | The actions slot, and the `ToastAction` shape it renders     |
+| `ToastActions.tsx`                        | The actions slot, its styled buttons, and `ToastAction`      |
 | `../../functions/toast-messages.ts`       | Hebrew strings, `ToastCopy`, and `count` pluralization       |
 | `../../functions/mutation-toast-cache.ts` | `meta.toast` wiring for every TanStack mutation              |
 | `../../utils/batch-utils.ts`              | `runBatch` — counts settled promises, no toast of its own    |
@@ -92,10 +92,12 @@ overhang that covers the border; banners set it to `0`.
 will desync the bar. Not handled — would need a `visibilitychange` listener
 setting a data attribute on the `Toaster`.
 
-**All the CSS lives in `StyledSonner`** at the bottom of `../ui/sonner.tsx`.
-Sonner renders its own markup, so the card is styled through its `data-*`
-attributes from the toaster root — there is nothing of ours to attach a styled
-component to.
+**The CSS is split by who renders the DOM.** Sonner renders the card, the ×
+button, and its own `[data-button]`, so those are styled from `StyledSonner` at
+the bottom of `../ui/sonner.tsx` through `data-*` attributes and the `TOAST_CLASS`
+flags — there is nothing of ours to attach a styled component to. `ToastActions`
+renders its own markup, so it uses plain styled components with `$direction` and
+`$variant` transient props like everywhere else in the app.
 
 **Two density variants**, keyed off `:has([data-description])`: with a subtitle
 it's `20px 24px` padding with a 24px icon and a 16px title; without, it's
