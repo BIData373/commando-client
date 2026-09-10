@@ -4,6 +4,7 @@ import { Calendar, Paperclip, Pencil } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
 import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assignee/archived-workspace-assignee"
+import { getListMessagesQueryKey } from "src/api/message/message"
 import {
 	DeadlineType,
 	PermissionType,
@@ -17,6 +18,7 @@ import {
 	useDeleteTask,
 } from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
+import { setTaskViewed } from "src/functions/setTaskViewed"
 import { useAttachmentDownload } from "src/hooks/useAttachmentDownload"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
@@ -165,7 +167,11 @@ function TaskDetailPanel({
 	}
 
 	function handleOpenChange(open: boolean) {
-		if (!open) onClose()
+		if (!open) {
+			setTaskViewed(id, workspace.id)
+			invalidateQueries([getListMessagesQueryKey({ taskId: id })])
+			onClose()
+		}
 	}
 
 	function handleEdit() {

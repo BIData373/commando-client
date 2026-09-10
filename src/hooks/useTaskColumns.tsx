@@ -70,6 +70,7 @@ interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	statuses?: WorkspaceStatusDto[]
 	onTitleDoubleClick?: (taskId: number) => void
 	getPermissionType?(task?: TTask): PermissionType | null | undefined
+	showUnreadDot?: boolean
 }
 
 export function useTaskColumns<TTask extends TaskRowDto>({
@@ -83,6 +84,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 	showMenuColumn = true,
 	statuses,
 	getPermissionType,
+	showUnreadDot = false,
 }: UseTaskColumnsOptions<TTask>) {
 	const handleUpdateStatus = useUpdateTaskStatus()
 
@@ -127,10 +129,13 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					enableColumnFilter: false,
 					cell: ({
 						row: {
-							original: { id },
+							original: { id, viewedInTable },
 						},
 					}) => (
 						<IdCell>
+							{showUnreadDot && !viewedInTable && (
+								<UnreadDot $right="6.5px" $top="18.5px" />
+							)}
 							<HighlightMatch
 								text={String(id)}
 								query={searchQuery ?? ""}
@@ -440,7 +445,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				enableColumnFilter: false,
 				cell: ({
 					row: {
-						original: { lastMessage, messageCount },
+						original: { lastMessage, messageCount, viewedMessages },
 					},
 				}) => {
 					const userName =
@@ -454,6 +459,9 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<CommentCell>
+										{!viewedMessages && (
+											<UnreadDot $right="4px" $top="10.5px" />
+										)}
 										<CommentText>{text}</CommentText>
 										{messageCount > 1 && (
 											<CommentCount>({messageCount})</CommentCount>
@@ -584,6 +592,18 @@ const IdCell = styled.span`
   width: 100%;
   height: 100%;
   cursor: pointer;
+  position: relative;
+`
+
+const UnreadDot = styled.span<{ $right: string; $top: string }>`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  position: absolute;
+  right: ${({ $right }) => $right};
+  top: ${({ $top }) => $top};
+  background-color: var(--active-color);
+  flex-shrink: 0;
 `
 
 const TitleCell = styled.div<{ $clickable?: boolean }>`
@@ -691,6 +711,7 @@ const CommentCell = styled.div`
   overflow: hidden;
   width: 100%;
   height: 100%;
+  position: relative;
 `
 
 const CommentCount = styled.span`

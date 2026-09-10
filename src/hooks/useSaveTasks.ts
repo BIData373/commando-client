@@ -1,4 +1,10 @@
-import { type CreateTaskDto, DeadlineType } from "src/api/model"
+import {
+	type CreateTaskDto,
+	DeadlineType,
+	type TaskWithWorkspaceDto,
+} from "src/api/model"
+import { viewTasks } from "src/api/user-viewed-tasks/user-viewed-tasks"
+import { setTaskViewed } from "src/functions/setTaskViewed"
 import { invalidateQueries } from "src/queryClient"
 import { getListTagsQueryKey } from "../api/tag/tag"
 import {
@@ -15,7 +21,8 @@ interface TaskInput extends CreateTaskDto {
 
 export function useSaveTasks(workspaceId: number, onDone?: () => void) {
 	const mutationCallbacks = {
-		onSuccess: () => {
+		onSuccess: async ({ id }: TaskWithWorkspaceDto) => {
+			await viewTasks({ taskId: id })
 			invalidateQueries([
 				getListTaskRowsQueryKey({ workspaceId }),
 				getListPersonalTaskRowsQueryKey(),

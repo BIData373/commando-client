@@ -1,12 +1,9 @@
-import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router"
-import { useEffect } from "react"
+import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { PermissionType } from "src/api/model"
-import { updateUserEntrie } from "src/api/user-workspace-entries/user-workspace-entries"
 import { ContentScrollArea } from "src/components/shared/ContentScrollArea"
 import { PageShell } from "src/components/shared/PageShell"
 import { WorkspaceTitle } from "src/components/WorkspaceTitle"
 import { WorkspaceUserDropdown } from "src/components/WorkspaceUserDropdown"
-import { useUserWorkspaceEntrie } from "src/hooks/useUserWorkspaceExit"
 import { UserViewProvider } from "src/providers/UserViewProvider"
 import {
 	useWorkspace,
@@ -32,16 +29,7 @@ function RouteComponent() {
 }
 
 function WorkspaceContent() {
-	const location = useLocation()
 	const { workspace } = useWorkspace()
-
-	useUserWorkspaceEntrie({ workspaceId: workspace.id })
-
-	useEffect(() => {
-		if (!location.pathname.includes(workspace.urlName)) {
-			updateUserEntrie({ workspaceId: workspace.id })
-		}
-	}, [location.pathname])
 
 	return (
 		<UserViewProvider

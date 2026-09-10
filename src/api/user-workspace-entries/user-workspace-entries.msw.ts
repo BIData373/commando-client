@@ -9,7 +9,7 @@
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 
-export const getUpdateUserEntrieMockHandler = (
+export const getUpsertUserWorkspaceVisitMockHandler = (
 	overrideResponse?:
 		| void
 		| ((
@@ -30,5 +30,5 @@ export const getUpdateUserEntrieMockHandler = (
 	)
 }
 export const getUserWorkspaceEntriesMock = () => [
-	getUpdateUserEntrieMockHandler(),
+	getUpsertUserWorkspaceVisitMockHandler(),
 ]

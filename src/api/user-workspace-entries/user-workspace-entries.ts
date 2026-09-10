@@ -16,10 +16,10 @@ import { useMutation } from "@tanstack/react-query"
 import type { ErrorType } from "../../axios"
 
 import { sendRequest } from "../../axios"
-import type { UpdateUserEntrieParams } from "../model"
+import type { UpsertUserWorkspaceVisitParams } from "../model"
 
-export const updateUserEntrie = (
-	params?: UpdateUserEntrieParams,
+export const upsertUserWorkspaceVisit = (
+	params?: UpsertUserWorkspaceVisitParams,
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<void>({
@@ -30,23 +30,23 @@ export const updateUserEntrie = (
 	})
 }
 
-export const getUpdateUserEntrieMutationOptions = <
+export const getUpsertUserWorkspaceVisitMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof updateUserEntrie>>,
+		Awaited<ReturnType<typeof upsertUserWorkspaceVisit>>,
 		TError,
-		{ params?: UpdateUserEntrieParams },
+		{ params?: UpsertUserWorkspaceVisitParams },
 		TContext
 	>
 }): UseMutationOptions<
-	Awaited<ReturnType<typeof updateUserEntrie>>,
+	Awaited<ReturnType<typeof upsertUserWorkspaceVisit>>,
 	TError,
-	{ params?: UpdateUserEntrieParams },
+	{ params?: UpsertUserWorkspaceVisitParams },
 	TContext
 > => {
-	const mutationKey = ["updateUserEntrie"]
+	const mutationKey = ["upsertUserWorkspaceVisit"]
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -56,41 +56,44 @@ export const getUpdateUserEntrieMutationOptions = <
 		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof updateUserEntrie>>,
-		{ params?: UpdateUserEntrieParams }
+		Awaited<ReturnType<typeof upsertUserWorkspaceVisit>>,
+		{ params?: UpsertUserWorkspaceVisitParams }
 	> = (props) => {
 		const { params } = props ?? {}
 
-		return updateUserEntrie(params)
+		return upsertUserWorkspaceVisit(params)
 	}
 
 	return { mutationFn, ...mutationOptions }
 }
 
-export type UpdateUserEntrieMutationResult = NonNullable<
-	Awaited<ReturnType<typeof updateUserEntrie>>
+export type UpsertUserWorkspaceVisitMutationResult = NonNullable<
+	Awaited<ReturnType<typeof upsertUserWorkspaceVisit>>
 >
 
-export type UpdateUserEntrieMutationError = ErrorType<unknown>
+export type UpsertUserWorkspaceVisitMutationError = ErrorType<unknown>
 
-export const useUpdateUserEntrie = <
+export const useUpsertUserWorkspaceVisit = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(
 	options?: {
 		mutation?: UseMutationOptions<
-			Awaited<ReturnType<typeof updateUserEntrie>>,
+			Awaited<ReturnType<typeof upsertUserWorkspaceVisit>>,
 			TError,
-			{ params?: UpdateUserEntrieParams },
+			{ params?: UpsertUserWorkspaceVisitParams },
 			TContext
 		>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
-	Awaited<ReturnType<typeof updateUserEntrie>>,
+	Awaited<ReturnType<typeof upsertUserWorkspaceVisit>>,
 	TError,
-	{ params?: UpdateUserEntrieParams },
+	{ params?: UpsertUserWorkspaceVisitParams },
 	TContext
 > => {
-	return useMutation(getUpdateUserEntrieMutationOptions(options), queryClient)
+	return useMutation(
+		getUpsertUserWorkspaceVisitMutationOptions(options),
+		queryClient,
+	)
 }

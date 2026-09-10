@@ -6,6 +6,6 @@
  * OpenAPI spec version: 1.0
  */
 
-export type UpdateUserEntrieParams = {
+export type UpsertUserWorkspaceVisitParams = {
 	workspaceId?: number
 }

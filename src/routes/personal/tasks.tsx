@@ -1,8 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
+import { getListPersonalTaskRowsQueryKey } from "src/api/task/task"
+import { upsertUserWorkspaceVisit } from "src/api/user-workspace-entries/user-workspace-entries"
 import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
+import { invalidateQueries } from "src/queryClient"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../providers/UserViewProvider"
 import { TASK_COLUMN_ID } from "../../utils/task-table-utils"
@@ -10,6 +13,10 @@ import { TasksView } from "../workspace/$urlName/tasks"
 
 export const Route = createFileRoute("/personal/tasks")({
 	component: PersonalTasksPage,
+	onLeave: async () => {
+		await upsertUserWorkspaceVisit()
+		invalidateQueries([getListPersonalTaskRowsQueryKey()])
+	},
 	validateSearch: (
 		search: Record<string, unknown>,
 	): { view: TasksView; focusComment?: boolean } => ({
