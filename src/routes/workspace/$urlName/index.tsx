@@ -4,7 +4,8 @@ export const Route = createFileRoute("/workspace/$urlName/")({
 	beforeLoad: ({ params }) => {
 		throw redirect({
 			to: "/workspace/$urlName/dashboard",
-			params,
+			params: { urlName: params.urlName },
+			replace: true,
 		})
 	},
 })
