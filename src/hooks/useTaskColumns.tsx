@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import type { ColumnDef } from "@tanstack/react-table"
+import type { ColumnDef, Row } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
 import { useMemo } from "react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
@@ -41,7 +41,7 @@ interface SelectModeConfig<TTask extends TaskRowDto> {
 	enabled: boolean
 	tasks: TTask[]
 	selectedTaskIds: number[]
-	onSelectAll: (checked: boolean) => void
+	onSelectAll: (rows: Row<TTask>[], checked: boolean) => void
 }
 
 export interface TaskArchiveEntry {
@@ -97,14 +97,16 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					size: 61,
 					enableSorting: false,
 					enableColumnFilter: false,
-					header: () => (
+					header: ({ table }) => (
 						<CheckboxCenter>
 							<Checkbox
-								checked={
-									selectMode.tasks.length > 0 &&
-									selectMode.selectedTaskIds.length === selectMode.tasks.length
+								checked={table.getIsAllRowsSelected()}
+								onCheckedChange={(checked) =>
+									selectMode.onSelectAll(
+										table.getFilteredRowModel().rows,
+										!!checked,
+									)
 								}
-								onCheckedChange={(checked) => selectMode.onSelectAll(!!checked)}
 							/>
 						</CheckboxCenter>
 					),

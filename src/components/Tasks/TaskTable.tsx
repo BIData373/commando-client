@@ -2,9 +2,10 @@ import styled from "@emotion/styled"
 import type {
 	ColumnDef,
 	ColumnFiltersState,
+	Row,
 	RowSelectionState,
 } from "@tanstack/react-table"
-import { uniqBy } from "lodash"
+import { chain, uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
 import type {
@@ -183,16 +184,15 @@ function TaskTable<TTask extends TaskRowDto>({
 		setRowSelection({})
 	}
 
-	function handleSelectAll(checked: boolean) {
-		if (checked) {
-			const all: RowSelectionState = {}
-			tasks.forEach((t) => {
-				all[t.rowKey] = true
-			})
-			setRowSelection(all)
-		} else {
-			setRowSelection({})
-		}
+	function handleSelectAll(rows: Row<TTask>[], checked: boolean) {
+		setRowSelection(
+			checked
+				? chain(rows)
+						.keyBy("original.rowKey")
+						.mapValues(() => true)
+						.value()
+				: {},
+		)
 	}
 
 	function removeTasks(taskIds: number[]) {
