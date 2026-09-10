@@ -2,7 +2,13 @@ import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { Plus } from "lucide-react"
 
-export default function NewWorkspaceButton() {
+interface NewWorkspaceButtonProps {
+	className?: string
+}
+
+export default function NewWorkspaceButton({
+	className,
+}: NewWorkspaceButtonProps) {
 	const navigate = useNavigate()
 
 	function handleClick() {
@@ -11,7 +17,7 @@ export default function NewWorkspaceButton() {
 
 	return (
 		<ButtonRoot onClick={handleClick}>
-			<ButtonText>בקשה לסביבה חדשה</ButtonText>
+			<ButtonText className={className}>בקשה לסביבה חדשה</ButtonText>
 			<ButtonIcon size={18} />
 		</ButtonRoot>
 	)

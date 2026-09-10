@@ -139,7 +139,7 @@ const HeaderRow = styled.div`
 
 const SectionTitle = styled.h2`
   margin: 0;
-  font-size: clamp(22px, 1.8vw, 34px);
+  font-size: clamp(20px, 1.5vw, 32px);
   font-weight: 400;
   line-height: clamp(30px, 4.3vh, 46px);
   color: var(--Color-Subtitle);
@@ -169,7 +169,7 @@ const SearchInput = styled.input`
   border: 1px solid var(--card-border);
   border-radius: 8px;
   background: var(--background);
-  font-size: var(--fs-lg);
+  font-size: var(--fs-base);
   color: var(--sea-ink);
   outline: none;
   text-align: start;
@@ -250,12 +250,12 @@ const ScrollContainer = styled.div`
 
 const WorkspacesContainer = styled.div`
   direction: rtl;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+  grid-auto-rows: minmax(140px, 1fr); 
   gap: 12px;
-  justify-content: flex-start;
   padding-inline-end: 4px;
-  padding-bottom: 16px;
+  padding-bottom: 8px;
 `
 
 const EmptySpace = styled.div`
