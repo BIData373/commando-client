@@ -7,7 +7,6 @@ import { useMemo, useState } from "react"
 import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
 import {
 	type TaskRowWithWorkspaceDto,
-	type ToggleUserTaskArchiveParams,
 	WorkspaceStatusType,
 } from "src/api/model"
 import {

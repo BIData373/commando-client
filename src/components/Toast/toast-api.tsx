@@ -1,3 +1,4 @@
+import { clsx } from "clsx"
 import type { CSSProperties, ReactNode } from "react"
 import type { ExternalToast } from "sonner"
 import { toast as sonnerToast } from "sonner"
@@ -47,29 +48,6 @@ const CLOSE_TEXT = "סגור"
 /** Close text with no custom actions is sonner's own button, so it is styled
  * through sonner's classNames rather than by us. */
 const CLOSE_TEXT_CLASS_NAMES = { actionButton: TOAST_CLASS.closeText }
-
-interface ToastClassNameOptions {
-	banner?: boolean
-	bannerAlign?: AppToastOptions["bannerAlign"]
-	border?: boolean
-	showProgress: boolean
-}
-
-function getToastClassName({
-	banner,
-	bannerAlign,
-	border,
-	showProgress,
-}: ToastClassNameOptions) {
-	return [
-		banner && TOAST_CLASS.banner,
-		banner && bannerAlign === "right" && TOAST_CLASS.bannerRight,
-		!border && TOAST_CLASS.borderless,
-		!showProgress && TOAST_CLASS.noProgress,
-	]
-		.filter(Boolean)
-		.join(" ")
-}
 
 function normalizeActions(actions?: ToastAction | ToastAction[]) {
 	if (!actions) return []
@@ -144,12 +122,12 @@ function showToast(
 		...options,
 		id: toastId,
 		className:
-			getToastClassName({
-				banner,
-				bannerAlign,
-				border,
-				showProgress,
-			}) || undefined,
+			clsx(
+				banner && TOAST_CLASS.banner,
+				banner && bannerAlign === "right" && TOAST_CLASS.bannerRight,
+				!border && TOAST_CLASS.borderless,
+				!showProgress && TOAST_CLASS.noProgress,
+			) || undefined,
 		classNames:
 			showCloseText && !hasActions ? CLOSE_TEXT_CLASS_NAMES : undefined,
 		style:
