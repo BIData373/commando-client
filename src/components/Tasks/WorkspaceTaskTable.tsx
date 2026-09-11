@@ -136,6 +136,10 @@ function WorkspaceTaskTable({
 					}
 					urlColumnFilters={urlColumnFilters ?? []}
 					startSlot={<TasksDatePicker />}
+					baseMessagesParams={{
+						workspaceId,
+						isArchived: isArchived || undefined,
+					}}
 					exportFilePrefix={`${isArchived ? "ארכיון " : ""}${workspaceTitle}`}
 					extraColumns={extraColumns}
 					extraColumnsMeta={extraColumnsMeta}

@@ -55,6 +55,7 @@ interface TaskDetailPanelProps {
 function TaskDetailPanel({
 	task: {
 		id,
+		serialId,
 		title,
 		flagged,
 		deadlineType,
@@ -68,6 +69,7 @@ function TaskDetailPanel({
 		status,
 		editable,
 		workspace,
+		workspaceArchivedAt,
 		workspace: { id: workspaceId, permissionType },
 	},
 	showWorkspace = false,
@@ -213,7 +215,7 @@ function TaskDetailPanel({
 			<Panel
 				headerActions={
 					<>
-						<TaskIdLabel>#{id}</TaskIdLabel>
+						<TaskIdLabel>#{serialId}</TaskIdLabel>
 						<RowActionsMenu
 							workspaceId={workspaceId}
 							actions={{
@@ -287,6 +289,7 @@ function TaskDetailPanel({
 									taskId={id}
 									editable={editable}
 									onUpdate={handleUpdateTaskStatus}
+									isArchived={!!workspaceArchivedAt}
 								/>
 							</StatusTagContainer>
 						)

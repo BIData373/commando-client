@@ -1,8 +1,9 @@
 import styled from "@emotion/styled"
 import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
+import { map, uniq } from "lodash"
 import { FilterX } from "lucide-react"
 import { type ReactNode, useMemo } from "react"
-import type { TaskRowDto } from "src/api/model"
+import type { ListMessagesParams, TaskRowDto } from "src/api/model"
 import { QuickFilter } from "src/api/model/quick-filter"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import {
@@ -28,6 +29,7 @@ interface TaskFiltersProps<TTask extends TaskRowDto> {
 	extraColumnsMeta?: TaskColumnMeta[]
 	startSlot?: ReactNode
 	urlColumnFilters?: ColumnFiltersState
+	baseMessagesParams: ListMessagesParams
 	exportFilePrefix?: string
 	quickFilters: QuickFilter[]
 }
@@ -44,6 +46,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 	startSlot,
 	urlColumnFilters = [],
 	extraButtons,
+	baseMessagesParams,
 	exportFilePrefix,
 	quickFilters,
 }: TaskFiltersProps<TTask>) {
@@ -54,6 +57,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		columnsFilters,
 		setColumnsFilters,
 		setAssigneeFilter,
+		sorting,
 	} = useTasksFilters()
 
 	const hasActiveColumnFilters =
@@ -80,6 +84,22 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		columns: countingColumns,
 		columnFilters: allColumnFilters,
 	})
+
+	const exportTable = useHeadlessTable({
+		data: filteredTasks,
+		columns: countingColumns,
+		columnFilters: allColumnFilters,
+		sorting,
+	})
+
+	const exportRows = exportTable
+		.getSortedRowModel()
+		.rows.map((row) => row.original)
+
+	const exportMessagesParams: ListMessagesParams =
+		exportRows.length < allTaskRows.length
+			? { taskIds: uniq(map(exportRows, "id")) }
+			: baseMessagesParams
 
 	const filteredRowsForCounts = countingTable.getFilteredRowModel().rows
 
@@ -183,11 +203,10 @@ export function TaskFilters<TTask extends TaskRowDto>({
 				<ColumnVisibilityDropdown extraColumnsMeta={extraColumnsMeta} />
 
 				<ExportButton
-					tasks={filteredTasks}
-					allColumnFilters={allColumnFilters}
+					exportRows={exportRows}
 					columnOrder={columnOrder}
 					hiddenColumns={hiddenColumns}
-					extraColumns={extraColumns}
+					messagesParams={exportMessagesParams}
 					exportFilePrefix={exportFilePrefix}
 				/>
 

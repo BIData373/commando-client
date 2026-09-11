@@ -1,6 +1,7 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios"
 import createAuthRefreshInterceptor from "axios-auth-refresh"
 import { parseISO } from "date-fns"
+import qs from "qs"
 import { AUTH_ENABLED, authenticate } from "./utils/auth-utils"
 import {
 	API_BASE_URL,
@@ -24,6 +25,7 @@ export const axiosInstance = axios.create({
 		"Content-Type": "application/json",
 		...(STATIC_TOKEN && { [STATIC_TOKEN_HEADER]: STATIC_TOKEN }),
 	},
+	paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
 })
 
 if (STATIC_TOKEN) {

@@ -62,7 +62,9 @@ function TaskConversationPanel({
 }: TaskConversationPanelProps) {
 	const currentUser = useCurrentUser()
 
-	const { data: messages = [], queryKey } = useListMessages({ taskId })
+	const { data: messages = [], queryKey } = useListMessages({
+		taskIds: [taskId],
+	})
 	const { mutateAsync: createMessage } = useCreateMessage({
 		mutation: { meta: { toast: { error: true } } },
 	})

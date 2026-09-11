@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import type { ColumnDef } from "@tanstack/react-table"
+import type { ColumnDef, Row } from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
 import { useMemo } from "react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
@@ -41,7 +41,7 @@ interface SelectModeConfig<TTask extends TaskRowDto> {
 	enabled: boolean
 	tasks: TTask[]
 	selectedTaskIds: number[]
-	onSelectAll: (checked: boolean) => void
+	onSelectAll: (rows: Row<TTask>[], checked: boolean) => void
 }
 
 export interface TaskArchiveEntry {
@@ -97,14 +97,16 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					size: 61,
 					enableSorting: false,
 					enableColumnFilter: false,
-					header: () => (
+					header: ({ table }) => (
 						<CheckboxCenter>
 							<Checkbox
-								checked={
-									selectMode.tasks.length > 0 &&
-									selectMode.selectedTaskIds.length === selectMode.tasks.length
+								checked={table.getIsAllRowsSelected()}
+								onCheckedChange={(checked) =>
+									selectMode.onSelectAll(
+										table.getFilteredRowModel().rows,
+										!!checked,
+									)
 								}
-								onCheckedChange={(checked) => selectMode.onSelectAll(!!checked)}
 							/>
 						</CheckboxCenter>
 					),
@@ -118,21 +120,24 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					),
 				}
 			: {
-					id: TASK_COLUMN_ID.id,
-					accessorKey: TASK_COLUMN_ID.id,
+					id: TASK_COLUMN_ID.serialId,
+					accessorKey: TASK_COLUMN_ID.serialId,
 					header: ({ column }) => (
-						<ColumnHeaderWithActions label={COLUMN_LABELS.id} column={column} />
+						<ColumnHeaderWithActions
+							label={COLUMN_LABELS.serialId}
+							column={column}
+						/>
 					),
 					size: 70,
 					enableColumnFilter: false,
 					cell: ({
 						row: {
-							original: { id },
+							original: { serialId },
 						},
 					}) => (
 						<IdCell>
 							<HighlightMatch
-								text={String(id)}
+								text={String(serialId)}
 								query={searchQuery ?? ""}
 								variant="mark"
 							/>
@@ -251,7 +256,14 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				...TASK_COLUMN_DEFINITIONS.status,
 				cell: ({
 					row: {
-						original: { id, status, assignee, editable },
+						original: {
+							id,
+							status,
+							assignee,
+							editable,
+							personalArchivedAt,
+							workspaceArchivedAt,
+						},
 					},
 				}) =>
 					status && (
@@ -261,6 +273,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							assigneeId={assignee?.id}
 							editable={editable}
 							taskId={id}
+							isArchived={!!personalArchivedAt || !!workspaceArchivedAt}
 							onUpdate={handleUpdateStatus}
 						/>
 					),

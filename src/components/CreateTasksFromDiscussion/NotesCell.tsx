@@ -69,6 +69,7 @@ const NotesCellWrapper = styled.div`
   align-items: center;
   height: 100%;
   cursor: text;
+  width: 100%;
 
   &:focus-within ${NotesCharCount} {
     display: block;
