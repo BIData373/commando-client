@@ -153,7 +153,10 @@ function PersonalTaskTable({
 
 	async function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
 		return runBatch(entries, async ({ id, assigneeId }) => {
-			if (!assigneeId) return
+			if (!assigneeId) {
+				return
+			}
+
 			await toggleArchive({ params: { taskId: id, assigneeId } })
 		})
 	}
