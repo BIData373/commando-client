@@ -95,16 +95,13 @@ function PersonalTaskTable({
 		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
 	}
 
-	function handleToggleSuccess(
-		_: void,
-		{ params: { taskId } }: { params: ToggleUserTaskArchiveParams },
-	) {
-		handleChangeSuccess()
-		invalidateQueries([getGetTaskQueryKey({ id: taskId })])
-	}
-
 	const { mutateAsync: toggleArchive } = useToggleUserTaskArchive({
-		mutation: { onSuccess: handleToggleSuccess },
+		mutation: {
+			onSuccess: (_, { params: { taskId } }) => {
+				handleChangeSuccess()
+				invalidateQueries([getGetTaskQueryKey({ id: taskId })])
+			},
+		},
 	})
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
