@@ -28,7 +28,7 @@ type ToastMessage = ReactNode | (() => ReactNode)
 /** Sonner's options minus what we own, plus our presentation flags. */
 export type AppToastOptions = Omit<
 	ExternalToast,
-	"action" | "className" | "closeButton" | "icon" | "position"
+	"action" | "className" | "classNames" | "closeButton" | "icon" | "position"
 > & {
 	actions?: ToastAction | ToastAction[]
 	actionsDirection?: "row" | "column"
@@ -43,6 +43,10 @@ export type AppToastOptions = Omit<
 }
 
 const CLOSE_TEXT = "סגור"
+
+/** Close text with no custom actions is sonner's own button, so it is styled
+ * through sonner's classNames rather than by us. */
+const CLOSE_TEXT_CLASS_NAMES = { actionButton: TOAST_CLASS.closeText }
 
 interface ToastClassNameOptions {
 	banner?: boolean
@@ -94,7 +98,6 @@ function showToast(
 		onDismiss,
 		progressBar = true,
 		style,
-		classNames,
 		...options
 	}: AppToastOptions = {},
 ) {
@@ -129,7 +132,9 @@ function showToast(
 
 	function handleAction(action: ToastAction) {
 		action.onClick()
-		if (action.dismissOnClick === false) return
+		if (action.dismissOnClick === false) {
+			return
+		}
 
 		dismissal.isCancel = action.variant === "cancel"
 		dismissToast()
@@ -146,14 +151,7 @@ function showToast(
 				showProgress,
 			}) || undefined,
 		classNames:
-			showCloseText && !hasActions
-				? {
-						...classNames,
-						actionButton: [classNames?.actionButton, TOAST_CLASS.closeText]
-							.filter(Boolean)
-							.join(" "),
-					}
-				: classNames,
+			showCloseText && !hasActions ? CLOSE_TEXT_CLASS_NAMES : undefined,
 		style:
 			showProgress && duration !== undefined
 				? ({ ...style, "--toast-duration": `${duration}ms` } as CSSProperties)
@@ -161,7 +159,10 @@ function showToast(
 		closeButton: showCloseIcon,
 		icon: resolveIcon(icon),
 		onDismiss: (dismissedToast) => {
-			if (dismissal.isCancel) onCancel?.()
+			if (dismissal.isCancel) {
+				onCancel?.()
+			}
+
 			onDismiss?.(dismissedToast)
 		},
 		action: hasActions ? (
