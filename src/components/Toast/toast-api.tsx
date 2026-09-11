@@ -40,7 +40,6 @@ export type AppToastOptions = Omit<
 	icon?: boolean | ReactNode
 	onCancel?(): void
 	progressBar?: boolean
-	subtitle?: ReactNode
 }
 
 const CLOSE_TEXT = "סגור"
@@ -90,13 +89,11 @@ function showToast(
 		border = true,
 		closeable = true,
 		closeText,
-		description,
 		icon = true,
 		onCancel,
 		onDismiss,
 		progressBar = true,
 		style,
-		subtitle,
 		classNames,
 		...options
 	}: AppToastOptions = {},
@@ -141,7 +138,6 @@ function showToast(
 	sonnerToast[type](message, {
 		...options,
 		id: toastId,
-		description: subtitle ?? description,
 		className:
 			getToastClassName({
 				banner,
@@ -196,7 +192,7 @@ interface BatchToast {
 
 function showFailure(message: string) {
 	return showToast("error", message, {
-		subtitle:
+		description:
 			message === TECHNICAL_FAILURE ? TECHNICAL_FAILURE_SUBTITLE : undefined,
 	})
 }
@@ -223,7 +219,7 @@ export const toast = {
 		showToast("info", message, options),
 	warning: (message: ToastMessage, options?: AppToastOptions) =>
 		showToast("warning", message, options),
-	/** `error` carrying the shared subtitle when the copy is a technical failure. */
+	/** `error` carrying the shared description when the copy is a technical failure. */
 	failure: showFailure,
 	/** Success and failure copy for a `runBatch` outcome, pluralized by count. */
 	batch: showBatch,

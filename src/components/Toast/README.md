@@ -24,7 +24,7 @@ Design source: [🧩 Vector — טוסטים](https://www.figma.com/design/mny5B
 import { toast } from "src/components/ui/sonner";
 
 toast.success("הסטטוס עודכן בהצלחה", {
-  subtitle: "השינוי נשמר ויופיע בכל האזורים הרלוונטיים",
+  description: "השינוי נשמר ויופיע בכל האזורים הרלוונטיים",
   onCancel: () => revertStatus(),
   actions: [
     { label: "בטל", onClick: revertStatus, variant: "cancel" },
@@ -40,7 +40,6 @@ toast.success("הסטטוס עודכן בהצלחה", {
 
 | Option             | Default    | Notes                                                            |
 | ------------------ | ---------- | ---------------------------------------------------------------- |
-| `subtitle`         | —          | Secondary line. Maps to sonner's `description`                   |
 | `closeable`        | `true`     | Whether _any_ close affordance renders                           |
 | `closeText`        | —          | `true` → `סגור`, or a node. **Replaces** the × icon              |
 | `actions`          | —          | One action or an array. `variant`: `primary \| cancel \| danger`. Suppresses the × |
@@ -53,7 +52,8 @@ toast.success("הסטטוס עודכן בהצלחה", {
 | `progressBar`      | `true`     |                                                                  |
 | `duration`         | `3000`     | ms before auto-dismiss. `Infinity` keeps it open                 |
 
-Sonner's own options (`id`, `position`, `onAutoClose`, …) pass through.
+Sonner's own options (`description`, `id`, `position`, `onAutoClose`, …) pass
+through. The secondary line is sonner's `description` — we add no alias for it.
 
 `duration` defaults to `TOAST_DURATION_MS` (3000), exported from `toast-api.tsx`
 and applied by `<Toaster />`. `showToast` deliberately does **not** re-apply that
@@ -106,6 +106,6 @@ flags — there is nothing of ours to attach a styled component to. `ToastAction
 renders its own markup, so it uses plain styled components with `$direction` and
 `$variant` transient props like everywhere else in the app.
 
-**Two density variants**, keyed off `:has([data-description])`: with a subtitle
+**Two density variants**, keyed off `:has([data-description])`: with a description
 it's `20px 24px` padding with a 24px icon and a 16px title; without, it's
 `8px 12px` with a 16px icon and a 14px title.

@@ -89,7 +89,7 @@ const StyledSonner = styled(Sonner)`
     width: 350px;
   }
 
-  /* Title and subtitle typography. */
+  /* Title and description typography. */
 
   [data-sonner-toast]:has([data-description]) [data-icon] svg {
     width: 24px;
