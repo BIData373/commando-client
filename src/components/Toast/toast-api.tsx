@@ -24,8 +24,6 @@ export const TOAST_CLASS = {
 	noProgress: "toast-no-progress",
 } as const
 
-type ToastMessage = ReactNode | (() => ReactNode)
-
 /** Sonner's options minus what we own, plus our presentation flags. */
 export type AppToastOptions = Omit<
 	ExternalToast,
@@ -62,7 +60,7 @@ function resolveIcon(icon: AppToastOptions["icon"]) {
 
 function showToast(
 	type: "success" | "error" | "info" | "warning",
-	message: ToastMessage,
+	message: ReactNode,
 	{
 		actions,
 		actionsDirection = "column",
@@ -190,13 +188,13 @@ function showBatch(
 }
 
 export const toast = {
-	success: (message: ToastMessage, options?: AppToastOptions) =>
+	success: (message: ReactNode, options?: AppToastOptions) =>
 		showToast("success", message, options),
-	error: (message: ToastMessage, options?: AppToastOptions) =>
+	error: (message: ReactNode, options?: AppToastOptions) =>
 		showToast("error", message, options),
-	info: (message: ToastMessage, options?: AppToastOptions) =>
+	info: (message: ReactNode, options?: AppToastOptions) =>
 		showToast("info", message, options),
-	warning: (message: ToastMessage, options?: AppToastOptions) =>
+	warning: (message: ReactNode, options?: AppToastOptions) =>
 		showToast("warning", message, options),
 	/** `error` carrying the shared description when the copy is a technical failure. */
 	failure: showFailure,
