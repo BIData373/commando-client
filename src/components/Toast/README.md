@@ -55,7 +55,7 @@ toast.success("הסטטוס עודכן בהצלחה", {
 Sonner's own options (`description`, `id`, `position`, `onAutoClose`, …) pass
 through. The secondary line is sonner's `description` — we add no alias for it.
 
-`duration` defaults to `TOAST_DURATION_MS` (3000), exported from `toast-api.tsx`
+`duration` defaults to `DEFAULT_TOAST_DURATION_MS` (3000), exported from `toast-api.tsx`
 and applied by `<Toaster />`. `showToast` deliberately does **not** re-apply that
 default — it leaves `duration` undefined so sonner falls back to the toaster's
 value, which keeps the timer and the countdown bar reading the same number.

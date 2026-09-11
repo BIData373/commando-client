@@ -12,7 +12,7 @@ import { type ToastAction, ToastActions } from "./ToastActions"
 
 /** Milliseconds a toast stays up before auto-dismissing. Override per toast
  * with `duration`, or `Infinity` to keep it open. */
-export const TOAST_DURATION_MS = 3000
+export const DEFAULT_TOAST_DURATION_MS = 3000
 
 /** Hooks for the parts of the card sonner renders, not us. */
 export const TOAST_CLASS = {

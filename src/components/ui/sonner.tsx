@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Toaster as Sonner } from "sonner";
-import { TOAST_CLASS, TOAST_DURATION_MS, toast } from "../Toast/toast-api";
+import { TOAST_CLASS, DEFAULT_TOAST_DURATION_MS, toast } from "../Toast/toast-api";
 import type { CSSProperties } from "react";
 import type { ToasterProps } from "sonner";
 
@@ -31,7 +31,7 @@ const TOASTER_STYLE = {
 
 type AppToasterProps = Omit<ToasterProps, "position">;
 
-const Toaster = ({ duration = TOAST_DURATION_MS, ...props }: AppToasterProps) => {
+const Toaster = ({ duration = DEFAULT_TOAST_DURATION_MS, ...props }: AppToasterProps) => {
   const { theme = "system" } = useTheme();
 
   // The countdown bar reads the same duration sonner's timer does. Toasts with
