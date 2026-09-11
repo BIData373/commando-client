@@ -4,7 +4,8 @@ import { useStore } from "@tanstack/react-store"
 import { AlertCircle } from "lucide-react"
 import { Popover as PopoverPrimitive } from "radix-ui"
 import { useState } from "react"
-import { invalidateQueries } from "src/queryClient"
+import { updateDiscussionMessage } from "src/functions/toast-messages"
+import { invalidateQueries } from "src/query-client"
 import type { UpdateSourceDto } from "../../api/model"
 import {
 	getGetSourceQueryKey,
@@ -34,7 +35,11 @@ function EditDiscussionModal({
 }: EditDiscussionModalProps) {
 	const { data: source } = useGetSource({ id: sourceId })
 
-	const { mutateAsync: updateSource } = useUpdateSource()
+	const { mutateAsync: updateSource } = useUpdateSource({
+		mutation: {
+			meta: { toast: { success: updateDiscussionMessage, error: true } },
+		},
+	})
 	const [showConfirmation, setShowConfirmation] = useState(false)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 

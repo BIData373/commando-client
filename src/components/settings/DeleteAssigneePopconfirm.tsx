@@ -7,8 +7,9 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
+import { removeResponsibleMessage } from "src/functions/toast-messages"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries } from "src/query-client"
 import { ConfirmPopover } from "../shared/ConfirmPopover"
 import { TrashButton } from "../shared/TrashButton"
 
@@ -26,6 +27,9 @@ export function DeleteAssigneePopconfirm({
 	} = useWorkspace()
 	const { isPending, mutate: deleteAssignee } = useDeleteAssignee({
 		mutation: {
+			meta: {
+				toast: { success: removeResponsibleMessage, error: true },
+			},
 			onSuccess: () => {
 				invalidateQueries([
 					getListAssigneesQueryKey({ workspaceId }),

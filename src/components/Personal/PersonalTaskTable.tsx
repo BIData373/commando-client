@@ -4,20 +4,18 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
-import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
 import {
 	type TaskRowWithWorkspaceDto,
 	WorkspaceStatusType,
 } from "src/api/model"
 import {
-	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	useListPersonalTaskRows,
 } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
-import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
+import { useTaskArchive } from "src/hooks/useTaskArchive"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries } from "src/query-client"
 import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
@@ -81,9 +79,11 @@ function PersonalTaskTable({
 		queryKey,
 	} = useListPersonalTaskRows({ isArchived })
 
-	const { mutate: toggleArchive } = useToggleUserTaskArchive({
-		mutation: { onSuccess: handleChangeSuccess },
-	})
+	function handleChangeSuccess() {
+		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
+	}
+
+	const { archive, unarchive } = useTaskArchive({ listQueryKey: queryKey })
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
@@ -133,27 +133,8 @@ function PersonalTaskTable({
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
 	).length
 
-	function handleChangeSuccess() {
-		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
-	}
-
-	function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
-		entries.forEach(({ id, assigneeId }) => {
-			if (assigneeId) {
-				toggleArchive(
-					{ params: { taskId: id, assigneeId } },
-					{
-						onSuccess: () => {
-							invalidateQueries([getGetTaskQueryKey({ id })])
-						},
-					},
-				)
-			}
-		})
-	}
-
-	const onArchive = !isArchived ? toggleArchiveEntries : undefined
-	const onUnarchive = isArchived ? toggleArchiveEntries : undefined
+	const onArchive = !isArchived ? archive : undefined
+	const onUnarchive = isArchived ? unarchive : undefined
 
 	return (
 		<TooltipProvider>

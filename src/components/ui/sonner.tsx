@@ -1,47 +1,341 @@
-import { useTheme } from "next-themes"
-import { Toaster as Sonner, type ToasterProps } from "sonner"
-import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
+import styled from "@emotion/styled";
+import {
+  CircleCheckIcon,
+  CircleXIcon,
+  InfoIcon,
+  Loader2Icon,
+  TriangleAlertIcon,
+  XIcon,
+} from "lucide-react";
+import { useTheme } from "next-themes";
+import { Toaster as Sonner } from "sonner";
+import { TOAST_CLASS, DEFAULT_TOAST_DURATION_MS, toast } from "../Toast/toast-api";
+import type { CSSProperties } from "react";
+import type { ToasterProps } from "sonner";
 
-const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+const TOAST_ICONS: ToasterProps["icons"] = {
+  success: <CircleCheckIcon size={16} />,
+  error: <CircleXIcon size={16} />,
+  info: <InfoIcon size={16} />,
+  warning: <TriangleAlertIcon size={16} />,
+  loading: <Loader2Icon size={16} className="animate-spin" />,
+  close: <XIcon size={16} />,
+};
+
+const TOASTER_STYLE = {
+  "--normal-bg": "var(--popover)",
+  "--normal-text": "var(--popover-foreground)",
+  "--normal-border": "var(--border)",
+  "--border-radius": "var(--radius)",
+} as CSSProperties;
+
+type AppToasterProps = Omit<ToasterProps, "position">;
+
+const Toaster = ({ duration = DEFAULT_TOAST_DURATION_MS, ...props }: AppToasterProps) => {
+  const { theme = "system" } = useTheme();
+
+  // The countdown bar reads the same duration sonner's timer does. Toasts with
+  // their own duration override the var inline; the rest inherit this one.
+  const style = {
+    ...TOASTER_STYLE,
+    "--toast-duration": `${duration}ms`,
+  } as CSSProperties;
 
   return (
-    <Sonner
+    <StyledSonner
       theme={theme as ToasterProps["theme"]}
-      className="toaster group"
-      icons={{
-        success: (
-          <CircleCheckIcon className="size-4" />
-        ),
-        info: (
-          <InfoIcon className="size-4" />
-        ),
-        warning: (
-          <TriangleAlertIcon className="size-4" />
-        ),
-        error: (
-          <OctagonXIcon className="size-4" />
-        ),
-        loading: (
-          <Loader2Icon className="size-4 animate-spin" />
-        ),
-      }}
-      style={
-        {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
-        } as React.CSSProperties
-      }
-      toastOptions={{
-        classNames: {
-          toast: "cn-toast",
-        },
-      }}
+      dir="rtl"
+      duration={duration}
+      position="top-center"
+      icons={TOAST_ICONS}
+      style={style}
       {...props}
     />
-  )
-}
+  );
+};
 
-export { Toaster }
+const StyledSonner = styled(Sonner)`
+  --width: 506px;
+  font-family: var(--font-sans);
+
+  /* Card box and widths. Every toast is top-center, so there is no x-axis case. */
+
+  [data-sonner-toast][data-styled="true"] {
+    width: max-content;
+    min-width: 244px;
+    max-width: 640px;
+    min-height: 56px;
+    padding: 8px 12px;
+    gap: 8px;
+    align-items: center;
+    border-radius: 8px;
+    color: var(--text-color-2);
+    font-size: var(--fs-base);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+  }
+
+  [data-sonner-toast] {
+    left: calc((var(--width) - 360px) / 2);
+  }
+
+  [data-sonner-toast][data-styled="true"]:has([data-description]) {
+    padding: 20px 24px;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  [data-sonner-toast]:has([data-button]) {
+    width: 350px;
+  }
+
+  /* Title and description typography. */
+
+  [data-sonner-toast]:has([data-description]) [data-icon] svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  [data-sonner-toast] [data-title] {
+    font-weight: 400;
+    line-height: 22px;
+  }
+
+  [data-sonner-toast]:has([data-description]) [data-title] {
+    font-size: var(--fs-lg);
+    line-height: 24px;
+  }
+
+  [data-sonner-toast] [data-description] {
+    color: var(--text-color-400);
+    font-size: var(--fs-sm);
+    line-height: 20px;
+  }
+
+  /* Status accents driven by the sonner data-type attribute. */
+
+  [data-sonner-toast][data-type="success"] {
+    --toast-background: var(--alert-success-bg);
+    --toast-border: var(--alert-success-border);
+    --toast-accent: var(--alert-success-global-success);
+  }
+
+  [data-sonner-toast][data-type="error"] {
+    --toast-background: var(--alert-error-bg);
+    --toast-border: var(--alert-error-border);
+    --toast-accent: var(--alert-error-global-error);
+  }
+
+  [data-sonner-toast][data-type="info"] {
+    --toast-background: var(--alert-info-bg);
+    --toast-border: var(--alert-info-border);
+    --toast-accent: var(--alert-info-global-info);
+  }
+
+  [data-sonner-toast][data-type="warning"] {
+    --toast-background: var(--alert-warning-bg);
+    --toast-border: var(--alert-warning-border);
+    --toast-accent: var(--alert-warning-global-warning);
+  }
+
+  [data-sonner-toast]:is(
+    [data-type="success"],
+    [data-type="error"],
+    [data-type="info"],
+    [data-type="warning"]
+  ) {
+    background: var(--toast-background);
+    border-color: var(--toast-border);
+  }
+
+  [data-sonner-toast]:is(
+      [data-type="success"],
+      [data-type="error"],
+      [data-type="info"],
+      [data-type="warning"]
+    )
+    [data-icon]
+    svg {
+    color: var(--Text-color-text);
+    fill: var(--toast-accent);
+  }
+
+  /* Dismiss icon in the inline-end corner. */
+
+  [data-sonner-toast][data-styled="true"]:has([data-close-button]) {
+    padding-inline-end: 42px;
+  }
+
+  [data-sonner-toast][data-styled="true"] [data-close-button] {
+    top: 50%;
+    inset-inline-start: auto;
+    inset-inline-end: 18px;
+    width: 16px;
+    height: 16px;
+    color: var(--text-color-400);
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    transform: translateY(-50%);
+
+    svg {
+      width: 12px;
+      height: 12px;
+      stroke-width: 1.5;
+    }
+  }
+
+  [data-sonner-toast][data-styled="true"]:has([data-description])
+    [data-close-button] {
+    top: 12px;
+    transform: none;
+  }
+
+  [data-sonner-toast][data-styled="true"]:hover [data-close-button]:hover {
+    color: var(--text-color-2);
+    background: transparent;
+    border-color: transparent;
+  }
+
+  /* Sonner's own action button, used for close text when we render no actions. */
+
+  [data-sonner-toast] [data-button] {
+    height: auto;
+    padding: 0;
+    background: transparent;
+    color: var(--Components-Upload-Global-colorPrimary);
+    font-size: var(--fs-btn);
+    font-weight: 400;
+
+    &:hover {
+      color: var(--button-color-hover);
+      background: transparent;
+    }
+
+    &:active {
+      color: var(--active-color-button);
+      background: transparent;
+    }
+  }
+
+  [data-sonner-toast] [data-button].${TOAST_CLASS.closeText} {
+    color: var(--text-color-400);
+
+    &:hover,
+    &:active {
+      color: var(--text-color-2);
+    }
+  }
+
+  [data-sonner-toast]:has([data-description])
+    [data-button].${TOAST_CLASS.closeText} {
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  /* Full-width banner variant pinned to the top of the layout. */
+
+  [data-sonner-toast].${TOAST_CLASS.banner} {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: none;
+    justify-content: center;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  [data-sonner-toast].${TOAST_CLASS.banner} [data-content] {
+    flex: 0 1 auto;
+    text-align: center;
+  }
+
+  [data-sonner-toast].${TOAST_CLASS.bannerRight} {
+    justify-content: flex-start;
+  }
+
+  [data-sonner-toast].${TOAST_CLASS.bannerRight} [data-content] {
+    text-align: start;
+  }
+
+  [data-sonner-toast].${TOAST_CLASS.borderless} {
+    border: none;
+  }
+
+  [data-sonner-toast].${TOAST_CLASS.borderless}::before,
+    [data-sonner-toast].${TOAST_CLASS.borderless}::after {
+    inset-inline-start: 0;
+  }
+
+  &:has([data-sonner-toast].${TOAST_CLASS.banner}) {
+    position: relative;
+    top: 0;
+    right: 0;
+    bottom: auto;
+    left: 0;
+    width: 100%;
+    flex-shrink: 0;
+    transform: none;
+  }
+
+  /*
+  * Countdown bar. The duration comes from the toast's own --toast-duration so it
+  * tracks the real timer, and the pause is scoped to the toaster because sonner
+  * pauses every timer while any toast is hovered.
+  */
+
+  /* Track: sits behind the fill and bleeds over the 1px border, as in the design. */
+  [data-sonner-toast][data-styled="true"]::before,
+  [data-sonner-toast][data-styled="true"]::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    inset-inline: var(--toast-bleed, -1px);
+    height: 4px;
+  }
+
+  [data-sonner-toast][data-styled="true"]::before {
+    background: var(--toast-border, var(--line));
+  }
+
+  /* Fill drains from the inline-start edge, staying anchored at inline-end. */
+  [data-sonner-toast][data-styled="true"]::after {
+    background: var(--toast-accent, var(--sea-ink-soft));
+    animation: toast-countdown var(--toast-duration) linear forwards;
+  }
+
+  [data-sonner-toast].${TOAST_CLASS.noProgress}::before,
+    [data-sonner-toast].${TOAST_CLASS.noProgress}::after {
+    display: none;
+  }
+
+  /* Sonner pauses every timer while the toaster is hovered, not just the one. */
+  &:hover [data-sonner-toast]::after {
+    animation-play-state: paused;
+  }
+
+  @keyframes toast-countdown {
+    from {
+      inset-inline-start: var(--toast-bleed, -1px);
+    }
+    to {
+      inset-inline-start: 100%;
+    }
+  }
+
+  @media (max-width: 600px) {
+    --width: calc(100vw - 32px);
+
+    [data-sonner-toast][data-styled="true"],
+    [data-sonner-toast]:has([data-button]) {
+      width: var(--width);
+    }
+
+    [data-sonner-toast] {
+      left: 0;
+    }
+  }
+`;
+
+export { toast, Toaster };

@@ -23,7 +23,13 @@
 		"indentWidth": 2,
 		"lineEnding": "lf"
 	},
-	"assist": { "actions": { "source": { "organizeImports": "on" } } },
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -38,6 +44,9 @@
 						"reportUnnecessaryDependencies": false
 					}
 				}
+			},
+			"suspicious": {
+				"noArrayIndexKey": "warn"
 			},
 			"security": {
 				"noDangerouslySetInnerHtml": "warn"

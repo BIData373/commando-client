@@ -4,19 +4,25 @@ import { useStore } from "@tanstack/react-store"
 import { debounce } from "lodash"
 import { X } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { toast } from "sonner"
-import type { UpdateWorkspaceDto } from "src/api/model"
-import { UpdateWorkspaceErrorDtoMessage } from "src/api/model"
+import {
+	type UpdateWorkspaceDto,
+	UpdateWorkspaceErrorDtoMessage,
+} from "src/api/model"
 import { getListPersonalTaskRowsQueryKey } from "src/api/task/task"
 import {
 	getGetPermittedWorkspacesQueryKey,
 	getListWorkspacesQueryKey,
 	useUpdateWorkspace,
 } from "src/api/workspace/workspace"
+import { toast } from "src/components/Toast/toast-api"
+import {
+	DUPLICATE_ENVIRONMENT_NAME,
+	REQUIRED_ENVIRONMENT_NAME,
+	updateEnvironmentMessage,
+} from "src/functions/toast-messages"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries } from "src/queryClient"
-import { hasError } from "src/utils/error-utils"
+import { invalidateQueries } from "src/query-client"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import { NAME_MAX_LENGTH } from "src/utils/workspace-utils"
 import { FormField } from "../shared/FormField"
@@ -34,6 +40,17 @@ export function SettingsForm() {
 
 	const { mutateAsync: updateSettings } = useUpdateWorkspace({
 		mutation: {
+			meta: {
+				toast: {
+					success: updateEnvironmentMessage,
+					error: {
+						[UpdateWorkspaceErrorDtoMessage["title-exists"]]:
+							DUPLICATE_ENVIRONMENT_NAME,
+						[UpdateWorkspaceErrorDtoMessage["urlname-exists"]]:
+							DUPLICATE_ENVIRONMENT_NAME,
+					},
+				},
+			},
 			onSuccess(data) {
 				invalidateQueries([
 					getListWorkspacesQueryKey(),
@@ -57,15 +74,7 @@ export function SettingsForm() {
 					data: value,
 				},
 				{
-					onError: (error) => {
-						if (
-							hasError(error, UpdateWorkspaceErrorDtoMessage["title-exists"])
-						) {
-							toast.error("שם סביבה זה כבר קיים, אנא נסו שוב", {
-								closeButton: true,
-							})
-						}
-
+					onError: () => {
 						formApi.reset()
 					},
 				},
@@ -91,9 +100,7 @@ export function SettingsForm() {
 	function handleTitleChange(value: string) {
 		const next = value.slice(0, NAME_MAX_LENGTH)
 		if (!next.trim()) {
-			toast.error("שם סביבה הוא שדה חובה", {
-				closeButton: true,
-			})
+			toast.error(REQUIRED_ENVIRONMENT_NAME)
 			return
 		}
 

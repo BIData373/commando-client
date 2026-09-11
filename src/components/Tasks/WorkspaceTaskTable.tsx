@@ -3,7 +3,6 @@ import { Outlet } from "@tanstack/react-router"
 import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
 import { without } from "lodash"
 import { useMemo } from "react"
-import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assignee/archived-workspace-assignee"
 import type {
 	DeadlineType,
 	TaskRowDto,
@@ -12,15 +11,14 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import {
-	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 	useListTaskRows,
 } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
-import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
+import { useTaskArchive } from "src/hooks/useTaskArchive"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries } from "src/query-client"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import {
 	ACTIVE_QUICK_FILTERS,
@@ -78,8 +76,9 @@ function WorkspaceTaskTable({
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
-	const { mutate: toggleArchive } = useToggleWorkspaceTaskArchive({
-		mutation: { onSuccess: handleChangeSuccess },
+	const { archive, unarchive } = useTaskArchive({
+		listQueryKey: queryKey,
+		workspaceId,
 	})
 
 	const urlColumnFilters: ColumnFiltersState = [
@@ -118,29 +117,8 @@ function WorkspaceTaskTable({
 		])
 	}
 
-	function handleToggleArchive(entries: TaskArchiveEntry[]) {
-		entries.forEach(({ id, assigneeId }) => {
-			toggleArchive(
-				{ params: { taskId: id, assigneeId } },
-				{
-					onSuccess: () => {
-						invalidateQueries([getGetTaskQueryKey({ id })])
-					},
-				},
-			)
-		})
-	}
-
-	function handleArchive(entries: TaskArchiveEntry[]) {
-		handleToggleArchive(entries)
-	}
-
-	function handleUnarchive(entries: TaskArchiveEntry[]) {
-		handleToggleArchive(entries)
-	}
-
-	const onArchive = isManager && !isArchived ? handleArchive : undefined
-	const onUnarchive = isManager && isArchived ? handleUnarchive : undefined
+	const onArchive = isManager && !isArchived ? archive : undefined
+	const onUnarchive = isManager && isArchived ? unarchive : undefined
 
 	return (
 		<TooltipProvider>

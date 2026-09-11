@@ -17,8 +17,12 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
+import {
+	addResponsibleMessage,
+	updateResponsibleMessage,
+} from "src/functions/toast-messages"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
-import { invalidateQueries, queryClient } from "src/queryClient"
+import { invalidateQueries, queryClient } from "src/query-client"
 import { CancelButton } from "../shared/CancelButton"
 import { FormField } from "../shared/FormField"
 import { ModalContent } from "../shared/ModalContent"
@@ -100,11 +104,17 @@ export function AssigneeDialog({
 
 	const { mutateAsync: createAssignee } = useCreateAssignee({
 		mutation: {
+			meta: {
+				toast: { success: addResponsibleMessage, error: true },
+			},
 			onSuccess: handleSubmitSuccess,
 		},
 	})
 	const { mutateAsync: updateAssignee } = useUpdateAssignee({
 		mutation: {
+			meta: {
+				toast: { success: updateResponsibleMessage, error: true },
+			},
 			onSuccess: handleSubmitSuccess,
 		},
 	})
