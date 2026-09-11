@@ -4,29 +4,18 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
-import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
 import {
 	type TaskRowWithWorkspaceDto,
 	WorkspaceStatusType,
 } from "src/api/model"
 import {
-	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	useListPersonalTaskRows,
 } from "src/api/task/task"
-import { toast } from "src/components/Toast/toast-api"
-import {
-	ARCHIVE_FAILED,
-	archiveTaskMessage,
-	UNDO_ARCHIVE_FAILED,
-	UNDO_LABEL,
-	unarchiveTaskMessage,
-} from "src/functions/toast-messages"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
-import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
+import { useTaskArchive } from "src/hooks/useTaskArchive"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { invalidateQueries } from "src/query-client"
-import { runBatch } from "src/utils/batch-utils"
 import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
@@ -94,14 +83,7 @@ function PersonalTaskTable({
 		invalidateQueries([queryKey, getListPersonalTaskRowsQueryKey()])
 	}
 
-	const { mutateAsync: toggleArchive } = useToggleUserTaskArchive({
-		mutation: {
-			onSuccess: (_, { params: { taskId } }) => {
-				handleChangeSuccess()
-				invalidateQueries([getGetTaskQueryKey({ id: taskId })])
-			},
-		},
-	})
+	const { archive, unarchive } = useTaskArchive({ listQueryKey: queryKey })
 
 	const [activeWorkspaceFilters, setActiveWorkspaceFilters] = useState<
 		Set<number>
@@ -151,53 +133,8 @@ function PersonalTaskTable({
 		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
 	).length
 
-	async function toggleArchiveEntries(entries: TaskArchiveEntry[]) {
-		return runBatch(entries, async ({ id, assigneeId }) => {
-			if (!assigneeId) {
-				return
-			}
-
-			await toggleArchive({ params: { taskId: id, assigneeId } })
-		})
-	}
-
-	async function handleCancelArchive(entries: TaskArchiveEntry[]) {
-		const restored = await toggleArchiveEntries(entries)
-
-		if (restored.failed > 0) {
-			toast.failure(UNDO_ARCHIVE_FAILED)
-		}
-	}
-
-	async function handleArchive(entries: TaskArchiveEntry[]) {
-		const archived = await toggleArchiveEntries(entries)
-
-		toast.batch(archived, {
-			message: archiveTaskMessage,
-			failure: ARCHIVE_FAILED,
-			options: {
-				actions: {
-					variant: "cancel",
-					label: UNDO_LABEL,
-					onClick: () => {
-						handleCancelArchive(entries)
-					},
-				},
-			},
-		})
-	}
-
-	async function handleUnarchive(entries: TaskArchiveEntry[]) {
-		const restored = await toggleArchiveEntries(entries)
-
-		toast.batch(restored, {
-			message: unarchiveTaskMessage,
-			failure: UNDO_ARCHIVE_FAILED,
-		})
-	}
-
-	const onArchive = !isArchived ? handleArchive : undefined
-	const onUnarchive = isArchived ? handleUnarchive : undefined
+	const onArchive = !isArchived ? archive : undefined
+	const onUnarchive = isArchived ? unarchive : undefined
 
 	return (
 		<TooltipProvider>

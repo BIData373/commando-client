@@ -3,7 +3,6 @@ import { Outlet } from "@tanstack/react-router"
 import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
 import { without } from "lodash"
 import { useMemo } from "react"
-import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assignee/archived-workspace-assignee"
 import type {
 	DeadlineType,
 	TaskRowDto,
@@ -12,25 +11,15 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import {
-	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 	useListTaskRows,
 } from "src/api/task/task"
-import { toast } from "src/components/Toast/toast-api"
-import {
-	ARCHIVE_FAILED,
-	archiveTaskMessage,
-	UNDO_ARCHIVE_FAILED,
-	UNDO_LABEL,
-	unarchiveTaskMessage,
-} from "src/functions/toast-messages"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
-import type { TaskArchiveEntry } from "src/hooks/useTaskColumns"
+import { useTaskArchive } from "src/hooks/useTaskArchive"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import { runBatch } from "src/utils/batch-utils"
 import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
@@ -87,8 +76,9 @@ function WorkspaceTaskTable({
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
-	const { mutateAsync: toggleArchive } = useToggleWorkspaceTaskArchive({
-		mutation: { onSuccess: handleChangeSuccess },
+	const { archive, unarchive } = useTaskArchive({
+		listQueryKey: queryKey,
+		workspaceId,
 	})
 
 	const urlColumnFilters: ColumnFiltersState = [
@@ -127,56 +117,8 @@ function WorkspaceTaskTable({
 		])
 	}
 
-	async function handleToggleArchive(entries: TaskArchiveEntry[]) {
-		return runBatch(entries, ({ id, assigneeId }) =>
-			toggleArchive(
-				{ params: { taskId: id, assigneeId } },
-				{
-					onSuccess: () => {
-						invalidateQueries([getGetTaskQueryKey({ id })])
-					},
-				},
-			),
-		)
-	}
-
-	async function handleCancelArchive(entries: TaskArchiveEntry[]) {
-		const restored = await handleToggleArchive(entries)
-
-		if (restored.failed > 0) {
-			toast.failure(UNDO_ARCHIVE_FAILED)
-		}
-	}
-
-	async function handleArchive(entries: TaskArchiveEntry[]) {
-		const archived = await handleToggleArchive(entries)
-
-		toast.batch(archived, {
-			message: archiveTaskMessage,
-			failure: ARCHIVE_FAILED,
-			options: {
-				actions: {
-					variant: "cancel",
-					label: UNDO_LABEL,
-					onClick: () => {
-						handleCancelArchive(entries)
-					},
-				},
-			},
-		})
-	}
-
-	async function handleUnarchive(entries: TaskArchiveEntry[]) {
-		const restored = await handleToggleArchive(entries)
-
-		toast.batch(restored, {
-			message: unarchiveTaskMessage,
-			failure: UNDO_ARCHIVE_FAILED,
-		})
-	}
-
-	const onArchive = isManager && !isArchived ? handleArchive : undefined
-	const onUnarchive = isManager && isArchived ? handleUnarchive : undefined
+	const onArchive = isManager && !isArchived ? archive : undefined
+	const onUnarchive = isManager && isArchived ? unarchive : undefined
 
 	return (
 		<TooltipProvider>
