@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as HomeRouteImport } from './routes/_home'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PersonalRouteImport } from './routes/personal'
 import { Route as HomeIndexRouteImport } from './routes/_home/index'
 import { Route as HomeNewWorkspaceRouteImport } from './routes/_home/new-workspace'
@@ -51,6 +52,11 @@ import { Route as WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRouteImport } 
 
 const HomeRoute = HomeRouteImport.update({
   id: '/_home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PersonalRoute = PersonalRouteImport.update({
@@ -268,6 +274,7 @@ const WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof HomeIndexRoute
+  '/onboarding': typeof OnboardingRoute
   '/personal': typeof PersonalRouteWithChildren
   '/workspace/$urlName': typeof WorkspaceUrlNameRouteRouteWithChildren
   '/new-workspace': typeof HomeNewWorkspaceRoute
@@ -307,6 +314,7 @@ export interface FileRoutesByFullPath {
   '/workspace/$urlName/settings/assignees/$assigneeId/': typeof WorkspaceUrlNameSettingsAssigneesAssigneeIdIndexRoute
 }
 export interface FileRoutesByTo {
+  '/onboarding': typeof OnboardingRoute
   '/new-workspace': typeof HomeNewWorkspaceRoute
   '/personal/archive': typeof PersonalArchiveRouteWithChildren
   '/personal/tasks': typeof PersonalTasksRouteWithChildren
@@ -338,6 +346,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_home': typeof HomeRouteWithChildren
+  '/onboarding': typeof OnboardingRoute
   '/personal': typeof PersonalRouteWithChildren
   '/workspace/$urlName': typeof WorkspaceUrlNameRouteRouteWithChildren
   '/_home/new-workspace': typeof HomeNewWorkspaceRoute
@@ -381,6 +390,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/onboarding'
     | '/personal'
     | '/workspace/$urlName'
     | '/new-workspace'
@@ -420,6 +430,7 @@ export interface FileRouteTypes {
     | '/workspace/$urlName/settings/assignees/$assigneeId/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/onboarding'
     | '/new-workspace'
     | '/personal/archive'
     | '/personal/tasks'
@@ -450,6 +461,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_home'
+    | '/onboarding'
     | '/personal'
     | '/workspace/$urlName'
     | '/_home/new-workspace'
@@ -492,6 +504,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   HomeRoute: typeof HomeRouteWithChildren
+  OnboardingRoute: typeof OnboardingRoute
   PersonalRoute: typeof PersonalRouteWithChildren
   WorkspaceUrlNameRouteRoute: typeof WorkspaceUrlNameRouteRouteWithChildren
 }
@@ -503,6 +516,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/personal': {
@@ -1045,6 +1065,7 @@ const WorkspaceUrlNameRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRouteWithChildren,
+  OnboardingRoute: OnboardingRoute,
   PersonalRoute: PersonalRouteWithChildren,
   WorkspaceUrlNameRouteRoute: WorkspaceUrlNameRouteRouteWithChildren,
 }

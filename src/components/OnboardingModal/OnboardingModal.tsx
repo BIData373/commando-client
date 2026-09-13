@@ -1,48 +1,64 @@
 import styled from "@emotion/styled"
 import { useLocalStorage } from "@mantine/hooks"
-import { useState } from "react"
+import { useNavigate, useSearch } from "@tanstack/react-router"
 import logoWithText from "src/assets/logo-with-text-dark.png"
+import { OnboardingSteps } from "src/routes/onboarding"
 import { Dialog, DialogContent } from "../ui/dialog"
 import { OnboardingGreetingPage } from "./OnboardingGreetingPage"
 import { OnboardingRedirectPage } from "./OnboardingRedirectPage"
 import { OnboardingSysDescPage } from "./OnboardingSysDescPage"
 
-enum Steps {
-	greeting,
-	sysDesc,
-	redirects,
-}
+export const ONBOARDING_STEP_ORDER: OnboardingSteps[] = [
+	OnboardingSteps.Greeting,
+	OnboardingSteps.SystemDescription,
+	OnboardingSteps.Redirects,
+]
 
 export function OnboardingModal() {
+	const navigate = useNavigate({ from: "/onboarding" })
+	const { step = OnboardingSteps.Greeting } = useSearch({ from: "/onboarding" })
+
 	const [isOpen, setIsOpen] = useLocalStorage({
 		key: "onboardingRequired",
 		defaultValue: true,
 	})
 
-	const [step, setStep] = useState(Steps.greeting)
+	const currentStepIndex = ONBOARDING_STEP_ORDER.indexOf(step)
+
+	const setStep = (newStep: OnboardingSteps) => {
+		navigate({
+			search: { step: newStep },
+		})
+	}
 
 	const handleStepIncrement = () => {
-		setStep((prevStep) => prevStep + 1)
+		if (currentStepIndex < 2) {
+			setStep(ONBOARDING_STEP_ORDER[currentStepIndex + 1])
+		}
 	}
 
 	const handleStepDecrement = () => {
-		setStep((prevStep) => prevStep - 1)
+		if (currentStepIndex > 0) {
+			setStep(ONBOARDING_STEP_ORDER[currentStepIndex - 1])
+		}
 	}
 
 	const handleCloseModal = () => {
 		setIsOpen(false)
 	}
 
-	const pages: Record<Steps, React.ReactNode> = {
-		[Steps.greeting]: <OnboardingGreetingPage onNext={handleStepIncrement} />,
-		[Steps.sysDesc]: (
+	const pages: Record<OnboardingSteps, React.ReactNode> = {
+		[OnboardingSteps.Greeting]: (
+			<OnboardingGreetingPage onNext={handleStepIncrement} />
+		),
+		[OnboardingSteps.SystemDescription]: (
 			<OnboardingSysDescPage
 				onNext={handleStepIncrement}
 				onPrevious={handleStepDecrement}
 				onSkip={handleCloseModal}
 			/>
 		),
-		[Steps.redirects]: (
+		[OnboardingSteps.Redirects]: (
 			<OnboardingRedirectPage
 				onPrevious={handleStepDecrement}
 				onRedirect={handleCloseModal}
