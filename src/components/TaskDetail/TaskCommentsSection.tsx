@@ -61,8 +61,14 @@ function TaskCommentsSection({
 			await viewTasks({ taskId })
 		}
 
-		if (!isLoading) {
-			markTaskView(taskId)
+		const timer = setTimeout(() => {
+			if (!isLoading) {
+				markTaskView(taskId)
+			}
+		}, 100)
+
+		return () => {
+			clearTimeout(timer)
 		}
 	}, [taskId, isLoading])
 

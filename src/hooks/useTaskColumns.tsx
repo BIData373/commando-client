@@ -459,9 +459,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<CommentCell>
-										{!viewedMessages && (
-											<UnreadDot $right="4px" $top="10.5px" />
-										)}
+										{!viewedMessages && <UnreadDot $right="0px" $top="5px" />}
 										<CommentText>{text}</CommentText>
 										{messageCount > 1 && (
 											<CommentCount>({messageCount})</CommentCount>

@@ -4,7 +4,6 @@ import {
 	type TaskWithWorkspaceDto,
 } from "src/api/model"
 import { viewTasks } from "src/api/user-viewed-tasks/user-viewed-tasks"
-import { setTaskViewed } from "src/functions/setTaskViewed"
 import { invalidateQueries } from "src/queryClient"
 import { getListTagsQueryKey } from "../api/tag/tag"
 import {
