@@ -54,7 +54,9 @@ function TaskCommentsSection({
 
 	const currentUser = useCurrentUser()
 
-	const { data: messages = [], isLoading } = useListMessages({ taskId })
+	const { data: messages = [], isLoading } = useListMessages({
+		taskIds: [taskId],
+	})
 
 	useEffect(() => {
 		async function markTaskView(taskId: number) {
@@ -74,7 +76,7 @@ function TaskCommentsSection({
 
 	function handleSettled() {
 		invalidateQueries([
-			getListMessagesQueryKey({ taskId }),
+			getListMessagesQueryKey({ taskIds: [taskId] }),
 			getGetTaskQueryKey({ id: taskId }),
 			getListTaskRowsQueryKey(),
 			getListPersonalTaskRowsQueryKey(),

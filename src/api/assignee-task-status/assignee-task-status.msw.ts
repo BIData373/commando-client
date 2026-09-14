@@ -36,6 +36,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 					null,
 				]),
 				id: faker.number.float({ fractionDigits: 2 }),
+				serialId: faker.number.float({ fractionDigits: 2 }),
 				title: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				description: faker.helpers.arrayElement([
 					faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -353,6 +354,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 			null,
 		]),
 		id: faker.number.float({ fractionDigits: 2 }),
+		serialId: faker.number.float({ fractionDigits: 2 }),
 		title: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		description: faker.helpers.arrayElement([
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -655,6 +657,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 			null,
 		]),
 		id: faker.number.float({ fractionDigits: 2 }),
+		serialId: faker.number.float({ fractionDigits: 2 }),
 		title: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		description: faker.helpers.arrayElement([
 			faker.string.alpha({ length: { min: 10, max: 20 } }),

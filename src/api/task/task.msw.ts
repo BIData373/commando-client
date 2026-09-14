@@ -38,6 +38,7 @@ export const getCreateTaskResponseMock = (
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
+	serialId: faker.number.float({ fractionDigits: 2 }),
 	title: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	description: faker.helpers.arrayElement([
 		faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -304,6 +305,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 			null,
 		]),
 		id: faker.number.float({ fractionDigits: 2 }),
+		serialId: faker.number.float({ fractionDigits: 2 }),
 		title: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		description: faker.helpers.arrayElement([
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -544,6 +546,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 			null,
 		]),
 		id: faker.number.float({ fractionDigits: 2 }),
+		serialId: faker.number.float({ fractionDigits: 2 }),
 		title: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		description: faker.helpers.arrayElement([
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -845,6 +848,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 			null,
 		]),
 		id: faker.number.float({ fractionDigits: 2 }),
+		serialId: faker.number.float({ fractionDigits: 2 }),
 		title: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		description: faker.helpers.arrayElement([
 			faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1115,6 +1119,7 @@ export const getListPersonalTaskRowsResponseMock =
 				null,
 			]),
 			id: faker.number.float({ fractionDigits: 2 }),
+			serialId: faker.number.float({ fractionDigits: 2 }),
 			title: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			description: faker.helpers.arrayElement([
 				faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1451,6 +1456,7 @@ export const getGetTaskResponseMock = (
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
+	serialId: faker.number.float({ fractionDigits: 2 }),
 	title: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	description: faker.helpers.arrayElement([
 		faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1715,6 +1721,7 @@ export const getUpdateTaskResponseMock = (
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
+	serialId: faker.number.float({ fractionDigits: 2 }),
 	title: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	description: faker.helpers.arrayElement([
 		faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1979,6 +1986,7 @@ export const getDeleteTaskResponseMock = (
 		null,
 	]),
 	id: faker.number.float({ fractionDigits: 2 }),
+	serialId: faker.number.float({ fractionDigits: 2 }),
 	title: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	description: faker.helpers.arrayElement([
 		faker.string.alpha({ length: { min: 10, max: 20 } }),

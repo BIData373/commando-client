@@ -51,6 +51,7 @@ interface TaskDetailPanelProps {
 function TaskDetailPanel({
 	task: {
 		id,
+		serialId,
 		title,
 		flagged,
 		deadlineType,
@@ -201,7 +202,7 @@ function TaskDetailPanel({
 			<Panel
 				headerActions={
 					<>
-						<TaskIdLabel>#{id}</TaskIdLabel>
+						<TaskIdLabel>#{serialId}</TaskIdLabel>
 						<RowActionsMenu
 							workspaceId={workspaceId}
 							actions={{
