@@ -3,7 +3,7 @@ import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
-import { useUserWorkspaceEntrie } from "src/hooks/useUserWorkspaceExit"
+import { useSaveWorkspaceVisit } from "src/hooks/useUserWorkspaceExit"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../providers/UserViewProvider"
 import { TASK_COLUMN_ID } from "../../utils/task-table-utils"
@@ -44,7 +44,7 @@ const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 function PersonalTasksPage() {
 	const navigate = useNavigate()
 
-	useUserWorkspaceEntrie({ urlName: Route.parentRoute.fullPath })
+	useSaveWorkspaceVisit({ urlName: Route.parentRoute.fullPath })
 
 	function handleOpenTask(taskId: number) {
 		navigate({

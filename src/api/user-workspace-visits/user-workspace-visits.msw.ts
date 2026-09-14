@@ -18,7 +18,7 @@ export const getUpsertUserWorkspaceVisitMockHandler = (
 	options?: RequestHandlerOptions,
 ) => {
 	return http.patch(
-		"*/user-workspace-entries",
+		"*/user-workspace-visits",
 		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
 			if (typeof overrideResponse === "function") {
 				await overrideResponse(info)
@@ -29,6 +29,6 @@ export const getUpsertUserWorkspaceVisitMockHandler = (
 		options,
 	)
 }
-export const getUserWorkspaceEntriesMock = () => [
+export const getUserWorkspaceVisitsMock = () => [
 	getUpsertUserWorkspaceVisitMockHandler(),
 ]

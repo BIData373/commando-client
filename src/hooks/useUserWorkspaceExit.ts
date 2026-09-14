@@ -4,7 +4,7 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
-import { upsertUserWorkspaceVisit } from "src/api/user-workspace-entries/user-workspace-entries"
+import { upsertUserWorkspaceVisit } from "src/api/user-workspace-visits/user-workspace-visits"
 import { invalidateQueries } from "src/queryClient"
 
 interface UpdateUserWorkspaceEntrie {
@@ -12,7 +12,7 @@ interface UpdateUserWorkspaceEntrie {
 	urlName: string
 }
 
-export function useUserWorkspaceEntrie({
+export function useSaveWorkspaceVisit({
 	workspaceId,
 	urlName,
 }: UpdateUserWorkspaceEntrie) {

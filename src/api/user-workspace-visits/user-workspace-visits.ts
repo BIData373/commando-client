@@ -23,7 +23,7 @@ export const upsertUserWorkspaceVisit = (
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<void>({
-		url: `/user-workspace-entries`,
+		url: `/user-workspace-visits`,
 		method: "PATCH",
 		params,
 		signal,

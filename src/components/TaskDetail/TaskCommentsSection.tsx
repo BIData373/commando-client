@@ -19,6 +19,7 @@ import { invalidateQueries } from "src/queryClient"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import { CommentsDivider } from "../shared/CommentsDivider"
 import { SpinIcon } from "../shared/SpinIcon"
+import { UnreadDot } from "../shared/UnreadDot"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -54,9 +55,11 @@ function TaskCommentsSection({
 
 	const currentUser = useCurrentUser()
 
-	const { data: messages = [], isLoading } = useListMessages({
-		taskIds: [taskId],
-	})
+	const { data: messages = [], isLoading: isLoadingMessages } = useListMessages(
+		{
+			taskIds: [taskId],
+		},
+	)
 
 	useEffect(() => {
 		async function markTaskView(taskId: number) {
@@ -64,7 +67,7 @@ function TaskCommentsSection({
 		}
 
 		const timer = setTimeout(() => {
-			if (!isLoading) {
+			if (!isLoadingMessages) {
 				markTaskView(taskId)
 			}
 		}, 100)
@@ -72,7 +75,7 @@ function TaskCommentsSection({
 		return () => {
 			clearTimeout(timer)
 		}
-	}, [taskId, isLoading])
+	}, [taskId, isLoadingMessages])
 
 	function handleSettled() {
 		invalidateQueries([
@@ -131,7 +134,7 @@ function TaskCommentsSection({
 			</TextareaRow>
 			{messages.map((msg) => (
 				<CommentCard key={msg.id}>
-					{!msg.viewed && <UnreadDot />}
+					{!msg.viewed && <UnreadDot right={0} top={6} />}
 					<CommentMainRow>
 						{(isManager || msg.user.upn === currentUser.upn) && (
 							<DropdownMenu>
@@ -179,16 +182,6 @@ function TaskCommentsSection({
 }
 
 export default TaskCommentsSection
-
-const UnreadDot = styled.span`
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  position: absolute;
-  inset-inline-end: 6px;
-  top: 6px;
-  background-color: var(--active-color);
-`
 
 const Wrapper = styled.div`
   display: flex;

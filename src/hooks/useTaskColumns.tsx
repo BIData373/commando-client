@@ -10,6 +10,7 @@ import {
 	type WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
+import { UnreadDot } from "src/components/shared/UnreadDot"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import {
@@ -139,7 +140,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					}) => (
 						<IdCell>
 							{showUnreadDot && !viewedInTable && (
-								<UnreadDot $right="6.5px" $top="18.5px" />
+								<UnreadDot right={6.5} top={18.5} />
 							)}
 							<HighlightMatch
 								text={String(serialId)}
@@ -464,7 +465,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<CommentCell>
-										{!viewedMessages && <UnreadDot $right="0px" $top="5px" />}
+										{!viewedMessages && <UnreadDot right={0} top={4} />}
 										<CommentText>{text}</CommentText>
 										{messageCount > 1 && (
 											<CommentCount>({messageCount})</CommentCount>
@@ -596,17 +597,6 @@ const IdCell = styled.span`
   height: 100%;
   cursor: pointer;
   position: relative;
-`
-
-const UnreadDot = styled.span<{ $right: string; $top: string }>`
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  position: absolute;
-  right: ${({ $right }) => $right};
-  top: ${({ $top }) => $top};
-  background-color: var(--active-color);
-  flex-shrink: 0;
 `
 
 const TitleCell = styled.div<{ $clickable?: boolean }>`
