@@ -53,11 +53,11 @@ function TaskCommentsSection({
 
 	const currentUser = useCurrentUser()
 
-	const { data: messages = [] } = useListMessages({ taskId })
+	const { data: messages = [] } = useListMessages({ taskIds: [taskId] })
 
 	function handleSettled() {
 		invalidateQueries([
-			getListMessagesQueryKey({ taskId }),
+			getListMessagesQueryKey({ taskIds: [taskId] }),
 			getGetTaskQueryKey({ id: taskId }),
 			getListTaskRowsQueryKey(),
 			getListPersonalTaskRowsQueryKey(),

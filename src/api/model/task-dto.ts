@@ -23,6 +23,7 @@ export interface TaskDto {
 	/** @nullable */
 	deletedBy: number | null
 	id: number
+	serialId: number
 	title: string
 	/** @nullable */
 	description: string | null
