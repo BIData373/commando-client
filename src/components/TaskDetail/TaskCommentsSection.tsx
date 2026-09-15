@@ -134,7 +134,7 @@ function TaskCommentsSection({
 			</TextareaRow>
 			{messages.map((msg) => (
 				<CommentCard key={msg.id}>
-					{!msg.viewed && <UnreadDot right={0} top={6} />}
+					{!msg.viewed && <UnreadDot $right={0} $top={6} />}
 					<CommentMainRow>
 						{(isManager || msg.user.upn === currentUser.upn) && (
 							<DropdownMenu>

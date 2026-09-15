@@ -140,7 +140,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					}) => (
 						<IdCell>
 							{showUnreadDot && !viewedInTable && (
-								<UnreadDot right={6.5} top={18.5} />
+								<UnreadDot $right={6.5} $top={18.5} />
 							)}
 							<HighlightMatch
 								text={String(serialId)}
@@ -465,7 +465,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<CommentCell>
-										{!viewedMessages && <UnreadDot right={0} top={4} />}
+										{!viewedMessages && <UnreadDot $right={0} $top={4} />}
 										<CommentText>{text}</CommentText>
 										{messageCount > 1 && (
 											<CommentCount>({messageCount})</CommentCount>
