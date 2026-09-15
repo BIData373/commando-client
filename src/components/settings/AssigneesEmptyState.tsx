@@ -6,8 +6,8 @@ import { PrimaryButton } from "../shared/PrimaryButton"
 import { CircleHelpButton } from "./CircleHelpButton"
 
 interface AssigneesEmptyStateProps {
-	onOpenInfoModal: () => void
-	onOpenCreateDialog: () => void
+	onOpenInfoModal(): void
+	onOpenCreateDialog(): void
 }
 
 export function AssigneesEmptyState({

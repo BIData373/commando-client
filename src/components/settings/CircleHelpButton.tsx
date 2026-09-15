@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { CircleHelp } from "lucide-react"
 
 interface CircleHelpButtonProps {
-	onClick?: () => void
+	onClick?(): void
 }
 
 export function CircleHelpButton({ onClick }: CircleHelpButtonProps) {

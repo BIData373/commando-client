@@ -1,17 +1,14 @@
 import { readLocalStorageValue } from "@mantine/hooks"
 import { useNavigate } from "@tanstack/react-router"
-import type React from "react"
-import { useEffect } from "react"
+import { type PropsWithChildren, useEffect } from "react"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { PageShell } from "../shared/PageShell"
 
-interface WorkspacePageShellProps extends React.PropsWithChildren {
+interface WorkspacePageShellProps extends PropsWithChildren {
 	workspaceId: number
 }
-const LOCAL_STORAGE_KEY = "managerVisitFirstTime"
-if (readLocalStorageValue({ key: LOCAL_STORAGE_KEY }) === undefined)
-	localStorage.setItem(LOCAL_STORAGE_KEY, "true")
+const FIRST_VISIT_STORAGE_KEY = "managerVisitFirstTime"
 
 export function WorkspacePageShell({
 	workspaceId,
@@ -25,17 +22,23 @@ export function WorkspacePageShell({
 	} = useWorkspace()
 	const navigate = useNavigate()
 	const needsAssigneesRedirect = readLocalStorageValue({
-		key: LOCAL_STORAGE_KEY,
+		key: FIRST_VISIT_STORAGE_KEY,
 	})
 
 	useEffect(() => {
-		if (!isFetched || !myPermission) return
+		if (readLocalStorageValue({ key: FIRST_VISIT_STORAGE_KEY }) === undefined) {
+			localStorage.setItem(FIRST_VISIT_STORAGE_KEY, "true")
+		}
+	}, [])
 
-		console.log(myPermission?.type)
+	useEffect(() => {
+		if (!isFetched || !myPermission) {
+			return
+		}
 
 		const isManager = myPermission?.type === "MANAGER"
 		if (needsAssigneesRedirect && isManager) {
-			localStorage.setItem(LOCAL_STORAGE_KEY, "false")
+			localStorage.setItem(FIRST_VISIT_STORAGE_KEY, "false")
 			navigate({
 				to: "/workspace/$urlName/settings/assignees/help",
 				params: { urlName },

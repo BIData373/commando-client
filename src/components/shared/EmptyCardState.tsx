@@ -35,7 +35,7 @@ export const EmptyCardState = ({
 				</EmptyDescription>
 			)}
 
-			{isChildTitleIcon ? null : children}
+			{isChildTitleIcon && children}
 		</EmptyState>
 	)
 }

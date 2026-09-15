@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { ArrowLeft } from "lucide-react"
 import { WorkspaceStatusType } from "src/api/model"
 import { useListPersonalTaskRows } from "src/api/task/task"
-import { PrimaryButton as PrimaryButtonPrimitive } from "src/components/shared/PrimaryButton"
+import { PrimaryButton } from "src/components/shared/PrimaryButton"
 import { STATUS_DEFAULTS } from "src/functions/status-defaults"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
@@ -51,7 +51,7 @@ export default function PersonalAreaCard() {
 			</Header>
 
 			<Footer>
-				<PrimaryButton
+				<StyledPrimaryButton
 					title={
 						<>
 							כניסה לאזור האישי
@@ -215,6 +215,6 @@ const StatTag = styled.span<{ $color: string }>`
   line-height: 22px;
   white-space: nowrap;
 `
-const PrimaryButton = styled(PrimaryButtonPrimitive)`
+const StyledPrimaryButton = styled(PrimaryButton)`
 	font-size: var(--fs-btn);
 `

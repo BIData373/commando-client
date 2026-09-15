@@ -20,11 +20,13 @@ import { Spinner } from "../ui/spinner"
 
 export const assigneeStatusEditableId = "allow-status-update"
 
-interface AssigneesContent {
-	onOpenCreateDialog: () => void
+interface AssigneesContentProps {
+	onOpenCreateDialog(): void
 }
 
-export function AssigneesContent({ onOpenCreateDialog }: AssigneesContent) {
+export function AssigneesContent({
+	onOpenCreateDialog,
+}: AssigneesContentProps) {
 	const {
 		workspace: {
 			id: workspaceId,
