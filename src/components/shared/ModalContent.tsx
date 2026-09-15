@@ -8,6 +8,7 @@ import {
 	DialogOverlay,
 	DialogPortal,
 } from "src/components/ui/dialog"
+import { ModalCloseButton } from "./ModalCloseButton"
 
 interface ModalContentProps
 	extends ComponentProps<typeof DialogContentPrimitive> {
@@ -48,18 +49,10 @@ export function ModalContent({
 						<>
 							{headerActions}
 
-							{showCloseButton && (
-								<CloseButton>
-									<X size={16} />
-								</CloseButton>
-							)}
+							{showCloseButton && <ModalCloseButton />}
 						</>
 					) : (
-						showCloseButton && (
-							<FloatingCloseButton>
-								<X size={16} />
-							</FloatingCloseButton>
-						)
+						showCloseButton && <FloatingCloseButton />
 					)}
 				</ModalHeader>
 
@@ -96,34 +89,7 @@ const ModalHeader = styled.div<{ $padding?: number }>`
   flex-shrink: 0;
 `
 
-const CloseButton = styled(DialogClose)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  flex-shrink: 0;
-  color: var(--sea-ink-soft);
-  cursor: pointer;
-  outline: none;
-
-  transition:
-    background 150ms ease-in-out,
-    color 150ms ease-in-out;
-
-  &:hover {
-    background: var(--button-hover);
-    color: var(--sea-ink);
-  }
-
-  &:active {
-    background: var(--button-active);
-    color: var(--sea-ink);
-  }
-`
-
-const FloatingCloseButton = styled(CloseButton)`
+const FloatingCloseButton = styled(ModalCloseButton)`
   position: absolute;
   inset-block-start: 16px;
   inset-inline-end: 16px;

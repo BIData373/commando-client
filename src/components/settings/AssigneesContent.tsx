@@ -1,5 +1,4 @@
 import styled from "@emotion/styled"
-import { useNavigate, useParams } from "@tanstack/react-router"
 import { Mail, Pencil, Plus, Search } from "lucide-react"
 import { type ChangeEvent, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
@@ -15,14 +14,19 @@ import {
 import { useFilteredAssignees } from "src/hooks/useFilteredAssignees"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import noResultsFound from "../../assets/empty-states/no-results-found.svg"
-import addPerson from "../../assets/icons/add-person.svg"
 import chatIcon from "../../assets/icons/chat.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { Spinner } from "../ui/spinner"
 
 export const assigneeStatusEditableId = "allow-status-update"
 
-export function AssigneesContent() {
+interface AssigneesContentProps {
+	onOpenCreateDialog(): void
+}
+
+export function AssigneesContent({
+	onOpenCreateDialog,
+}: AssigneesContentProps) {
 	const {
 		workspace: {
 			id: workspaceId,
@@ -41,8 +45,6 @@ export function AssigneesContent() {
 		},
 	})
 
-	const { urlName } = useParams({ strict: false })
-	const navigate = useNavigate()
 	const [searchQuery, setSearchQuery] = useState("")
 
 	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
@@ -74,13 +76,6 @@ export function AssigneesContent() {
 		setSearchQuery(e.target.value)
 	}
 
-	function handleOpenCreateDialog() {
-		navigate({
-			to: "/workspace/$urlName/settings/assignees/new",
-			params: { urlName: urlName! },
-		})
-	}
-
 	return (
 		<ContentRoot>
 			<StyledContent>
@@ -97,7 +92,7 @@ export function AssigneesContent() {
 
 					<SettingToggleRow
 						label="שלח התראות בצ'אט למכותבים"
-						tooltip="שליחת התראות בצ'אט למכותבים בעת עדכון הנחיות"
+						tooltip="שליחת התראות בצ'אט למכותבים בעת קבלת הנחיות"
 						icon={<img src={chatIcon} alt="" width={18} height={18} />}
 						checked={chatNotification}
 						onCheckedChange={handleChatNotificationsChange}
@@ -105,7 +100,7 @@ export function AssigneesContent() {
 
 					<SettingToggleRow
 						label="שלח התראות במייל למכותבים"
-						tooltip="שליחת התראות במייל למכותבים בעת עדכון הנחיות"
+						tooltip="שליחת התראות במייל למכותבים בעת קבלת הנחיות"
 						icon={<Mail size={18} />}
 						checked={mailNotification}
 						onCheckedChange={handleMailNotificationsChange}
@@ -125,7 +120,7 @@ export function AssigneesContent() {
 						</StyledInputGroup>
 					</SearchWrapper>
 					<PrimaryButton
-						onClick={handleOpenCreateDialog}
+						onClick={onOpenCreateDialog}
 						height={32}
 						title={
 							<>
@@ -135,20 +130,11 @@ export function AssigneesContent() {
 					/>
 				</ToolbarRow>
 			</StyledContent>
-
 			<CardScroller>
 				{isLoading ? (
 					<LoadingContainer>
 						<Spinner />
 					</LoadingContainer>
-				) : assignees.length === 0 ? (
-					<CenterContainer>
-						<EmptyCardState
-							imgSrc={addPerson}
-							title="טרם הוגדרו אחראים"
-							description="לא נמצאו אחראים כדי להציג נתונים"
-						/>
-					</CenterContainer>
 				) : filteredAssignees.length === 0 ? (
 					<CenterContainer>
 						<EmptyCardState
