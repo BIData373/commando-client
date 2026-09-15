@@ -45,6 +45,8 @@ export interface TaskWithWorkspaceDto {
 	lastMessage: MessageDto
 	messageCount: number
 	editable: boolean
+	viewedInTable: boolean
+	viewedMessages: boolean
 	assigneeStatuses: AssigneeStatusDto[]
 	workspace: WorkspaceWithPermissionDto
 }

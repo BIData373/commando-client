@@ -3,6 +3,8 @@ import { useMemo } from "react"
 import { DeadlineType, QuickFilter, WorkspaceStatusType } from "src/api/model"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { WorkspaceTabs } from "src/components/WorkspaceTabs"
+import { useSaveWorkspaceVisit } from "src/hooks/useSaveWorkspaceVisit"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { z } from "zod"
 import TasksLayout from "../../../components/Tasks/TasksLayout"
 import { TasksFiltersProvider } from "../../../providers/TasksFiltersProvider"
@@ -37,6 +39,11 @@ function TasksPage() {
 		Route.useSearch()
 
 	const { urlName } = Route.useParams()
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+
+	useSaveWorkspaceVisit({ workspaceId, urlName })
 
 	const initialQuickFilters = useMemo(
 		() => (quickFilter ? new Set<QuickFilter>(quickFilter) : undefined),

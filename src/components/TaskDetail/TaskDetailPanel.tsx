@@ -4,9 +4,11 @@ import { Calendar, Paperclip, Pencil } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
 import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assignee/archived-workspace-assignee"
+import { getListMessagesQueryKey } from "src/api/message/message"
 import {
 	DeadlineType,
 	PermissionType,
+	type TaskRowDto,
 	type TaskWithWorkspaceDto,
 } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
@@ -20,7 +22,7 @@ import { useListTaskHistory } from "src/api/task-history/task-history"
 import { useAttachmentDownload } from "src/hooks/useAttachmentDownload"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries, queryClient } from "src/queryClient"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
@@ -166,7 +168,26 @@ function TaskDetailPanel({
 	}
 
 	function handleOpenChange(open: boolean) {
-		if (!open) onClose()
+		if (!open) {
+			const update = (rows: TaskRowDto[] | undefined) =>
+				rows?.map((row) =>
+					row.id === id
+						? { ...row, viewedInTable: true, viewedMessages: true }
+						: row,
+				)
+
+			const workspaceKey = getListTaskRowsQueryKey(
+				...(workspaceId ? [{ workspaceId }] : []),
+			)
+			queryClient.setQueriesData({ queryKey: workspaceKey }, update)
+
+			queryClient.setQueriesData(
+				{ queryKey: getListPersonalTaskRowsQueryKey() },
+				update,
+			)
+			invalidateQueries([getListMessagesQueryKey({ taskIds: [id] })])
+			onClose()
+		}
 	}
 
 	function handleEdit() {

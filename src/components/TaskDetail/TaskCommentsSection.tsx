@@ -13,11 +13,13 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
+import { viewTasks } from "src/api/user-viewed-tasks/user-viewed-tasks"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { invalidateQueries } from "src/queryClient"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import { CommentsDivider } from "../shared/CommentsDivider"
 import { SpinIcon } from "../shared/SpinIcon"
+import { UnreadDot } from "../shared/UnreadDot"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -53,7 +55,27 @@ function TaskCommentsSection({
 
 	const currentUser = useCurrentUser()
 
-	const { data: messages = [] } = useListMessages({ taskIds: [taskId] })
+	const { data: messages = [], isLoading: isLoadingMessages } = useListMessages(
+		{
+			taskIds: [taskId],
+		},
+	)
+
+	useEffect(() => {
+		async function markTaskView(taskId: number) {
+			await viewTasks({ taskId })
+		}
+
+		const timer = setTimeout(() => {
+			if (!isLoadingMessages) {
+				markTaskView(taskId)
+			}
+		}, 100)
+
+		return () => {
+			clearTimeout(timer)
+		}
+	}, [taskId, isLoadingMessages])
 
 	function handleSettled() {
 		invalidateQueries([
@@ -112,6 +134,7 @@ function TaskCommentsSection({
 			</TextareaRow>
 			{messages.map((msg) => (
 				<CommentCard key={msg.id}>
+					{!msg.viewed && <UnreadDot $right={0} $top={6} />}
 					<CommentMainRow>
 						{(isManager || msg.user.upn === currentUser.upn) && (
 							<DropdownMenu>
@@ -219,6 +242,7 @@ const CommentCard = styled.div`
   background: var(--card-background);
   width: 100%;
   direction: ltr;
+  position: relative;
 `
 
 const CommentMainRow = styled.div`
@@ -226,6 +250,7 @@ const CommentMainRow = styled.div`
   gap: 4px;
   align-items: flex-start;
   width: 100%;
+  position: relative;
 `
 
 const CommentMenuButton = styled.button`

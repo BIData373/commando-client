@@ -46,6 +46,8 @@ export interface TaskRowWithWorkspaceDto {
 	lastMessage: MessageDto
 	messageCount: number
 	editable: boolean
+	viewedInTable: boolean
+	viewedMessages: boolean
 	rowKey: string
 	assignee?: AssigneeDto
 	otherAssignees: AssigneeStatusDto[]
