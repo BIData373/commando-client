@@ -89,7 +89,7 @@ const CellTextarea = styled.textarea`
   resize: none;
  
   overflow-x: hidden;
-    line-height: 38px;
+  line-height: 38px;
 
   &::placeholder {
     color: var(--Text-color-text-placeholder);
