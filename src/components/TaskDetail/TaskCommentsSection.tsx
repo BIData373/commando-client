@@ -110,50 +110,51 @@ function TaskCommentsSection({
 				/>
 				{isSendingComment && <SpinIcon size={16} />}
 			</TextareaRow>
-			{messages.map((msg) => (
-				<CommentCard key={msg.id}>
-					<CommentMainRow>
-						{(isManager || msg.user.upn === currentUser.upn) && (
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<CommentMenuButton>
-										<MoreVertical size={14} />
-									</CommentMenuButton>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent align="start" side="bottom">
-									<DeleteMenuItem
-										onClick={() =>
-											deleteMessage({
-												pathParams: { id: msg.id },
-											})
-										}
-									>
-										מחק תגובה
-										<Trash2 size={16} />
-									</DeleteMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
-						)}
-						<CommentContent>{msg.content}</CommentContent>
-					</CommentMainRow>
-					<CommentFooter>
-						<CommentDate>
-							{formatMinutesHours(msg.createdAt)} ·{" "}
-							{formatDateMonthYear(msg.createdAt)}
-						</CommentDate>
-						<CommentUserDetails>
-							<CommentUserMeta>
-								{msg.user.upn}
-								{msg.user.info?.displayName &&
-									` - ${msg.user.info.displayName}`}
-							</CommentUserMeta>
-							<CommentUserName>
-								{msg.user.info?.name ?? msg.user.upn}
-							</CommentUserName>
-						</CommentUserDetails>
-					</CommentFooter>
-				</CommentCard>
-			))}
+			{messages.map((msg) => {
+				const userMeta = msg.user.info?.displayName
+					? `${msg.user.upn} - ${msg.user.info.displayName}`
+					: msg.user.upn
+				const userName = msg.user.info?.name ?? msg.user.upn
+
+				return (
+					<CommentCard key={msg.id}>
+						<CommentMainRow>
+							{(isManager || msg.user.upn === currentUser.upn) && (
+								<DropdownMenu>
+									<DropdownMenuTrigger asChild>
+										<CommentMenuButton>
+											<MoreVertical size={14} />
+										</CommentMenuButton>
+									</DropdownMenuTrigger>
+									<DropdownMenuContent align="start" side="bottom">
+										<DeleteMenuItem
+											onClick={() =>
+												deleteMessage({
+													pathParams: { id: msg.id },
+												})
+											}
+										>
+											מחק תגובה
+											<Trash2 size={16} />
+										</DeleteMenuItem>
+									</DropdownMenuContent>
+								</DropdownMenu>
+							)}
+							<CommentContent>{msg.content}</CommentContent>
+						</CommentMainRow>
+						<CommentFooter>
+							<CommentDate>
+								{formatMinutesHours(msg.createdAt)} ·{" "}
+								{formatDateMonthYear(msg.createdAt)}
+							</CommentDate>
+							<CommentUserDetails>
+								<CommentUserMeta title={userMeta}>{userMeta}</CommentUserMeta>
+								<CommentUserName title={userName}>{userName}</CommentUserName>
+							</CommentUserDetails>
+						</CommentFooter>
+					</CommentCard>
+				)
+			})}
 		</Wrapper>
 	)
 }
@@ -287,15 +288,27 @@ const CommentUserDetails = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+  flex: 1;
   text-align: end;
 `
 
 const CommentUserMeta = styled.span`
+  flex: 0 0 50%;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-weight: 400;
   color: var(--sea-ink-soft);
 `
 
 const CommentUserName = styled.span`
+  flex: 0 0 50%;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-weight: 500;
   color: var(--sea-ink);
 `
