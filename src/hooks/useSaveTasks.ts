@@ -1,5 +1,8 @@
 import { type CreateTaskDto, DeadlineType } from "src/api/model"
-import { invalidateQueries } from "src/queryClient"
+import { toast } from "src/components/Toast/toast-api"
+import { saveTaskMessage } from "src/functions/toast-messages"
+import { invalidateQueries } from "src/query-client"
+import { runBatch } from "src/utils/batch-utils"
 import { getListTagsQueryKey } from "../api/tag/tag"
 import {
 	getListPersonalTaskRowsQueryKey,
@@ -13,9 +16,48 @@ interface TaskInput extends CreateTaskDto {
 	taskId?: number
 }
 
+interface TaskUpdate extends TaskInput {
+	taskId: number
+}
+
+function isUpdate(input: TaskInput): input is TaskUpdate {
+	return input.taskId !== undefined
+}
+
+function toTaskData({ deadlineType, title, taskId, ...input }: TaskInput) {
+	return {
+		title: title.trim(),
+		deadlineType: deadlineType ?? DeadlineType.ROLLING,
+		dueDate: input.dueDate ?? null,
+		...input,
+	}
+}
+
 export function useSaveTasks(workspaceId: number, onDone?: () => void) {
-	const mutationCallbacks = {
-		onSuccess: () => {
+	const { mutateAsync: createTask, isPending: isCreating } = useCreateTask()
+
+	const { mutateAsync: updateTask, isPending: isUpdating } = useUpdateTask()
+
+	async function saveTasks(inputs: TaskInput[]) {
+		const [created, updated] = await Promise.all([
+			runBatch(
+				inputs.filter((input) => !isUpdate(input)),
+				(input) => createTask({ data: toTaskData(input) }),
+			),
+			runBatch(inputs.filter(isUpdate), (input) =>
+				updateTask({
+					pathParams: { id: input.taskId },
+					data: toTaskData(input),
+				}),
+			),
+		])
+
+		const saved = {
+			succeeded: created.succeeded + updated.succeeded,
+			failed: created.failed + updated.failed,
+		}
+
+		if (saved.succeeded > 0) {
 			invalidateQueries([
 				getListTaskRowsQueryKey({ workspaceId }),
 				getListPersonalTaskRowsQueryKey(),
@@ -23,32 +65,9 @@ export function useSaveTasks(workspaceId: number, onDone?: () => void) {
 			])
 
 			onDone?.()
-		},
-	}
-
-	const { mutateAsync: createTask, isPending: isCreating } = useCreateTask({
-		mutation: mutationCallbacks,
-	})
-
-	const { mutateAsync: updateTask, isPending: isUpdating } = useUpdateTask({
-		mutation: mutationCallbacks,
-	})
-
-	function saveTasks(inputs: TaskInput[]) {
-		for (const { deadlineType, title, taskId, ...input } of inputs) {
-			const data = {
-				title: title.trim(),
-				deadlineType: deadlineType ?? DeadlineType.ROLLING,
-				dueDate: input.dueDate ?? null,
-				...input,
-			}
-
-			if (taskId !== undefined) {
-				updateTask({ pathParams: { id: taskId }, data })
-			} else {
-				createTask({ data })
-			}
 		}
+
+		toast.batch(saved, { message: saveTaskMessage })
 	}
 
 	return { saveTasks, isPending: isCreating || isUpdating }

@@ -13,8 +13,8 @@ import {
 	getListTaskRowsQueryKey,
 	updateTask,
 } from "src/api/task/task"
-
-import { invalidateQueries } from "src/queryClient"
+import { updateStatusMessage } from "src/functions/toast-messages"
+import { invalidateQueries } from "src/query-client"
 
 interface UpdateStatusVariables {
 	taskId: number
@@ -61,7 +61,13 @@ function updateTaskDetailStatus<TTask extends TaskDto>(
 	}
 }
 
-export function useUpdateTaskStatus() {
+interface UpdateTaskStatusOptions {
+	notify?: boolean
+}
+
+export function useUpdateTaskStatus({
+	notify = false,
+}: UpdateTaskStatusOptions = {}) {
 	const queryClient = useQueryClient()
 
 	function getAffectedQueryKeys(taskId: number, status: WorkspaceStatusDto) {
@@ -74,7 +80,10 @@ export function useUpdateTaskStatus() {
 		return { task, rows, all: [task, ...rows] }
 	}
 
-	const { mutate } = useMutation({
+	const { mutateAsync } = useMutation({
+		meta: notify
+			? { toast: { success: updateStatusMessage, error: true } }
+			: undefined,
 		networkMode: "always",
 		mutationFn: ({ taskId, assigneeId, status }: UpdateStatusVariables) =>
 			assigneeId !== undefined
@@ -119,12 +128,17 @@ export function useUpdateTaskStatus() {
 		},
 	})
 
-	function updateTaskStatus(
+	async function updateTaskStatus(
 		taskId: number,
 		assigneeId: number | undefined,
 		status: WorkspaceStatusDto,
 	) {
-		mutate({ taskId, assigneeId, status })
+		try {
+			await mutateAsync({ taskId, assigneeId, status })
+			return true
+		} catch {
+			return false
+		}
 	}
 
 	return updateTaskStatus
