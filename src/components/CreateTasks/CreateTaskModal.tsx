@@ -20,7 +20,8 @@ import {
 	useUpdateTask,
 } from "src/api/task/task"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
-import { invalidateQueries } from "src/queryClient"
+import { updateTaskMessage } from "src/functions/toast-messages"
+import { invalidateQueries } from "src/query-client"
 import { getImmediateReferenceDate } from "src/utils/deadline-utils"
 import { getChangedFields, NOTES_MAX_LENGTH } from "src/utils/form-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
@@ -79,6 +80,7 @@ function CreateTaskModal({
 
 	const { mutateAsync: createSource } = useCreateSource({
 		mutation: {
+			meta: { toast: { error: true } },
 			onSuccess: () => {
 				invalidateQueries([getListSourcesQueryKey({ workspaceId })])
 			},
@@ -86,6 +88,7 @@ function CreateTaskModal({
 	})
 	const { mutateAsync: updateTask, isPending: isUpdatingTask } = useUpdateTask({
 		mutation: {
+			meta: { toast: { success: updateTaskMessage, error: true } },
 			onSuccess: handleUpdateSuccess,
 		},
 	})

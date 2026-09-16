@@ -12,6 +12,7 @@ import {
 	InputGroupAddon,
 	InputGroupInput,
 } from "src/components/ui/input-group"
+import { updateEnvironmentMessage } from "src/functions/toast-messages"
 import { useFilteredAssignees } from "src/hooks/useFilteredAssignees"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import noResultsFound from "../../assets/empty-states/no-results-found.svg"
@@ -35,6 +36,9 @@ export function AssigneesContent() {
 
 	const { mutateAsync: updateSettings } = useUpdateWorkspace({
 		mutation: {
+			meta: {
+				toast: { success: updateEnvironmentMessage, error: true },
+			},
 			onSuccess(data) {
 				setWorkspace(data)
 			},
