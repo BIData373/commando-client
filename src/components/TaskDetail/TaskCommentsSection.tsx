@@ -15,7 +15,7 @@ import {
 } from "src/api/task/task"
 import { viewTasks } from "src/api/user-viewed-tasks/user-viewed-tasks"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries } from "src/query-client"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import { CommentsDivider } from "../shared/CommentsDivider"
 import { SpinIcon } from "../shared/SpinIcon"
@@ -89,6 +89,7 @@ function TaskCommentsSection({
 	const { mutate: createMessage, isPending: isSendingComment } =
 		useCreateMessage({
 			mutation: {
+				meta: { toast: { error: true } },
 				onSettled: handleSettled,
 				onSuccess() {
 					setCommentValue("")
@@ -96,7 +97,10 @@ function TaskCommentsSection({
 			},
 		})
 	const { mutate: deleteMessage } = useDeleteMessage({
-		mutation: { onSettled: handleSettled },
+		mutation: {
+			meta: { toast: { error: true } },
+			onSettled: handleSettled,
+		},
 	})
 
 	function handleCommentInput(e: React.ChangeEvent<HTMLTextAreaElement>) {

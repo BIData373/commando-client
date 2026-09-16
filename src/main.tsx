@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client"
 import * as mockHandlers from "src/api/index.msw" // Orval generated MSW handlers
 import { NoConnectionMonitor } from "./components/NoConnectionMonitor"
 import { ErrorModalProvider } from "./providers/ErrorModalProvider"
-import { queryClient } from "./queryClient"
+import { queryClient } from "./query-client"
 import router from "./router"
 import { USE_MOCK_API } from "./utils/env-utils"
 import { AuthenticationWrapper } from "./wrappers/AuthenticationWrapper"

@@ -87,7 +87,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 	getPermissionType,
 	showUnreadDot = false,
 }: UseTaskColumnsOptions<TTask>) {
-	const handleUpdateStatus = useUpdateTaskStatus()
+	const handleUpdateStatus = useUpdateTaskStatus({ notify: true })
 
 	const columns = useMemo<ColumnDef<TTask>[]>(() => {
 		// TODO Move all constant fields to task-table-utils

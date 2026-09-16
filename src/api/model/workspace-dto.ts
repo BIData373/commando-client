@@ -5,16 +5,17 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
+import type { UserDto } from "./user-dto"
 
 export interface WorkspaceDto {
 	createdAt: Date
-	createdBy: number
+	createdBy: UserDto
 	updatedAt: Date
-	updatedBy: number
+	updatedBy: UserDto
 	/** @nullable */
 	deletedAt: Date | null
 	/** @nullable */
-	deletedBy: number | null
+	deletedBy: UserDto | null
 	id: number
 	title: string
 	urlName: string

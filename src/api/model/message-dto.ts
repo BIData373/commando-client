@@ -9,13 +9,13 @@ import type { UserDto } from "./user-dto"
 
 export interface MessageDto {
 	createdAt: Date
-	createdBy: number
+	createdBy: UserDto
 	updatedAt: Date
-	updatedBy: number
+	updatedBy: UserDto
 	/** @nullable */
 	deletedAt: Date | null
 	/** @nullable */
-	deletedBy: number | null
+	deletedBy: UserDto | null
 	id: number
 	content: string
 	user: UserDto
