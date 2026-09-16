@@ -117,7 +117,6 @@ const CreatorTooltip = styled(TooltipContent)`
   display: flex;
   flex-direction: column;
   gap: 2px;
-  background: var(--Components-Tooltip-Global-colorBgSpotlight);
   border-radius: 6px;
   padding: 6px 8px;
   font-size: var(--fs-btn);
