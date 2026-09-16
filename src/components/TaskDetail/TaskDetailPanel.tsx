@@ -62,6 +62,7 @@ function TaskDetailPanel({
 		dueDate,
 		updatedAt,
 		createdAt,
+		createdBy,
 		source,
 		notes,
 		tags,
@@ -236,7 +237,11 @@ function TaskDetailPanel({
 			>
 				<HeaderRow>
 					{showWorkspace && (
-						<WorkspaceCell workspace={workspace} iconSize={20} />
+						<WorkspaceCell
+							workspace={workspace}
+							createdBy={createdBy}
+							iconSize={20}
+						/>
 					)}
 
 					<TitleRow $shadow={scrollShadowTop}>

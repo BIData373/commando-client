@@ -1,6 +1,14 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(rm \"src/components/Personal/WorkspaceCreatorCell.tsx\" && echo removed)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\roi revivo\\Desktop\\WorkProjects\\commando-client\\src\\components\\Personal"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "figma-remote-mcp"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

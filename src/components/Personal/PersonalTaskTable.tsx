@@ -29,12 +29,12 @@ import {
 } from "src/utils/task-table-utils"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
+import WorkspaceCell from "../shared/WorkspaceCell"
 import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
 import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
-import WorkspaceCreatorCell from "./WorkspaceCreatorCell"
 
 const WORKSPACE_COLUMN_DEFINITION: ColumnDef<TaskRowWithWorkspaceDto> = {
 	id: TASK_COLUMN_ID.workspace,
@@ -105,7 +105,7 @@ function PersonalTaskTable({
 					original: { workspace, createdBy },
 				},
 			}) => (
-				<WorkspaceCreatorCell
+				<WorkspaceCell
 					workspace={workspace}
 					createdBy={createdBy}
 					searchQuery={searchQuery}
