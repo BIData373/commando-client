@@ -5,7 +5,7 @@ import {
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
 import { upsertUserWorkspaceVisit } from "src/api/user-workspace-visits/user-workspace-visits"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries } from "src/query-client"
 
 interface SaveWorkspaceVisitProps {
 	workspaceId?: number
