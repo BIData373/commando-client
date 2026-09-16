@@ -49,7 +49,7 @@ export default function Header() {
 }
 
 const HeaderContainer = styled.div`
-  padding: 20px 32px 18px 32px;
+  padding: 20px 32px 0 32px;
 `
 
 const HeaderRoot = styled.header`
