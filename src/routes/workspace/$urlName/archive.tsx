@@ -1,16 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
-import type { TaskRowDto } from "src/api/model"
+import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
-import { ARCHIVED_AT_COLUMN } from "src/components/Tasks/ArchivedAtColumn"
+import { DateText } from "src/components/shared/DateText"
+import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithActions"
 import WorkspaceTaskTable from "src/components/Tasks/WorkspaceTaskTable"
 import { WorkspaceTabs } from "src/components/WorkspaceTabs"
+import { formatDateShort } from "src/functions/date-utils"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import {
-	ARCHIVE_DEFAULT_COLUMN_ORDER,
 	ARCHIVE_DEFAULT_HIDDEN,
 	COLUMN_LABELS,
 	TASK_COLUMN_ID,
+	WORKSPACE_ARCHIVED_COLUMN_META,
 } from "src/utils/task-table-utils"
 import { TasksFiltersProvider } from "../../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../../providers/UserViewProvider"
@@ -25,7 +27,45 @@ export const Route = createFileRoute("/workspace/$urlName/archive")({
 	},
 })
 
-const ARCHIVE_EXTRA_COLUMNS = [ARCHIVED_AT_COLUMN] as ColumnDef<TaskRowDto>[]
+const WORKSPACE_ARCHIVE_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] =
+	[
+		TASK_COLUMN_ID.title,
+		TASK_COLUMN_ID.status,
+		TASK_COLUMN_ID.assignee,
+		TASK_COLUMN_ID.deadlineType,
+		TASK_COLUMN_ID.source,
+		TASK_COLUMN_ID.workspace,
+		TASK_COLUMN_ID.workspaceArchivedAt,
+		TASK_COLUMN_ID.lastMessage,
+		TASK_COLUMN_ID.createdAt,
+		TASK_COLUMN_ID.tags,
+		TASK_COLUMN_ID.notes,
+		TASK_COLUMN_ID.updatedAt,
+	]
+
+const ARCHIVE_EXTRA_COLUMNS = [
+	{
+		id: TASK_COLUMN_ID.workspaceArchivedAt,
+		header: ({ column }) => (
+			<ColumnHeaderWithActions
+				label={COLUMN_LABELS.workspaceArchivedAt}
+				column={column}
+			/>
+		),
+		size: 140,
+		enableColumnFilter: false,
+		accessorFn: (row) => row.workspaceArchivedAt,
+		cell: ({
+			row: {
+				original: { workspaceArchivedAt },
+			},
+		}) => (
+			<DateText>
+				{workspaceArchivedAt && formatDateShort(workspaceArchivedAt)}
+			</DateText>
+		),
+	},
+] as ColumnDef<TaskRowDto>[]
 
 function WorkspaceArchivePage() {
 	const { urlName } = Route.useParams()
@@ -45,7 +85,7 @@ function WorkspaceArchivePage() {
 	return (
 		<UserViewProvider
 			workspaceId={workspaceId}
-			defaultColumnOrder={ARCHIVE_DEFAULT_COLUMN_ORDER}
+			defaultColumnOrder={WORKSPACE_ARCHIVE_DEFAULT_COLUMN_ORDER}
 			defaultHiddenColumns={ARCHIVE_DEFAULT_HIDDEN}
 		>
 			<TasksFiltersProvider>
@@ -54,9 +94,7 @@ function WorkspaceArchivePage() {
 					onOpenTask={handleOpenTask}
 					isArchived={true}
 					extraColumns={ARCHIVE_EXTRA_COLUMNS}
-					extraColumnsMeta={[
-						{ id: TASK_COLUMN_ID.archivedAt, label: COLUMN_LABELS.archivedAt },
-					]}
+					extraColumnsMeta={WORKSPACE_ARCHIVED_COLUMN_META}
 				/>
 			</TasksFiltersProvider>
 		</UserViewProvider>

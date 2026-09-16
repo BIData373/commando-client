@@ -11,19 +11,21 @@ import type { MessageDto } from "./message-dto"
 import type { SourceDto } from "./source-dto"
 import type { TagDto } from "./tag-dto"
 import type { TaskCreationType } from "./task-creation-type"
+import type { UserDto } from "./user-dto"
 import type { WorkspaceStatusDto } from "./workspace-status-dto"
 import type { WorkspaceWithPermissionDto } from "./workspace-with-permission-dto"
 
 export interface TaskWithWorkspaceDto {
 	createdAt: Date
-	createdBy: number
+	createdBy: UserDto
 	updatedAt: Date
-	updatedBy: number
+	updatedBy: UserDto
 	/** @nullable */
 	deletedAt: Date | null
 	/** @nullable */
-	deletedBy: number | null
+	deletedBy: UserDto | null
 	id: number
+	serialId: number
 	title: string
 	/** @nullable */
 	description: string | null
@@ -35,7 +37,7 @@ export interface TaskWithWorkspaceDto {
 	/** @nullable */
 	notes: string | null
 	/** @nullable */
-	archivedAt: Date | null
+	workspaceArchivedAt: Date | null
 	workspaceId: number
 	status: WorkspaceStatusDto
 	/** @nullable */

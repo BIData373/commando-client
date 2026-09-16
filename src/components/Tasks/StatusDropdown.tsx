@@ -17,6 +17,7 @@ interface StatusDropdownProps {
 	taskId: number
 	assigneeId?: number
 	editable?: boolean
+	isArchived?: boolean
 	onUpdate: (
 		taskId: number,
 		assigneeId: number | undefined,
@@ -31,6 +32,7 @@ export const StatusDropdown = memo(
 		taskId,
 		assigneeId,
 		editable = false,
+		isArchived,
 		onUpdate,
 	}: StatusDropdownProps) => {
 		const [isOpen, toggleOpen] = useToggle()
@@ -44,6 +46,9 @@ export const StatusDropdown = memo(
 		const statuses = providedStatuses ?? fetchedStatuses
 		const statusesReady = statuses !== undefined && !isFetchingStatuses
 
+		const statusEditable = editable && !isArchived
+		const tooltip = isArchived ? "לא ניתן לערוך סטטוס הנחיה בארכיון" : undefined
+
 		function handleSelectStatus(newStatus: WorkspaceStatusDto) {
 			if (newStatus.id !== status.id) {
 				onUpdate(taskId, assigneeId, newStatus)
@@ -52,7 +57,7 @@ export const StatusDropdown = memo(
 
 		return (
 			<CellCenter>
-				{editable && statusesReady ? (
+				{statusEditable && statusesReady ? (
 					<DropdownMenu onOpenChange={toggleOpen}>
 						<DropdownMenuTrigger asChild>
 							<TriggerWrapper tabIndex={0}>
@@ -60,25 +65,35 @@ export const StatusDropdown = memo(
 									open={isOpen}
 									status={status}
 									interactive
-									editable
-									withArrow={editable}
+									editable={statusEditable}
+									withArrow={statusEditable}
+									tooltip={tooltip}
 								/>
 							</TriggerWrapper>
 						</DropdownMenuTrigger>
 						<StatusDropdownContent align="center" sideOffset={6}>
-							{statuses.map((s) => (
+							{statuses.map((currentStatus) => (
 								<StatusDropdownItem
-									key={s.id}
-									$selected={s.id === status.id}
-									onSelect={() => handleSelectStatus(s)}
+									key={currentStatus.id}
+									$selected={currentStatus.id === status.id}
+									onSelect={() => handleSelectStatus(currentStatus)}
 								>
-									<StatusTag status={s} interactive editable={editable} />
+									<StatusTag
+										status={currentStatus}
+										interactive
+										editable={statusEditable}
+										tooltip={tooltip}
+									/>
 								</StatusDropdownItem>
 							))}
 						</StatusDropdownContent>
 					</DropdownMenu>
 				) : (
-					<StatusTag status={status} editable={editable} />
+					<StatusTag
+						status={status}
+						editable={statusEditable}
+						tooltip={tooltip}
+					/>
 				)}
 			</CellCenter>
 		)

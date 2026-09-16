@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react"
 import { useCreateMessage, useListMessages } from "src/api/message/message"
 import type { MessageDto } from "src/api/model"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
-import { queryClient } from "src/queryClient"
+import { queryClient } from "src/query-client"
 
 interface DateGroup {
 	dateLabel: string
@@ -62,8 +62,12 @@ function TaskConversationPanel({
 }: TaskConversationPanelProps) {
 	const currentUser = useCurrentUser()
 
-	const { data: messages = [], queryKey } = useListMessages({ taskId })
-	const { mutateAsync: createMessage } = useCreateMessage()
+	const { data: messages = [], queryKey } = useListMessages({
+		taskIds: [taskId],
+	})
+	const { mutateAsync: createMessage } = useCreateMessage({
+		mutation: { meta: { toast: { error: true } } },
+	})
 
 	const [inputValue, setInputValue] = useState("")
 	const messagesAreaRef = useRef<HTMLDivElement>(null)

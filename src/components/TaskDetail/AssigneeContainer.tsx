@@ -10,20 +10,25 @@ interface AssigneeContainerProps {
 	taskId: number
 	workspaceId: number
 	isAdmin: boolean
-	editable: boolean
 	assignee: AssigneeStatusDto
 }
 
 export const AssigneeContainer = ({
 	taskId,
 	workspaceId,
-	assignee: { assignee, status, description },
+	assignee: {
+		assignee,
+		status,
+		description,
+		editable,
+		personalArchivedAt,
+		workspaceArchivedAt,
+	},
 	isAdmin,
-	editable,
 }: AssigneeContainerProps) => {
 	const { data: statuses = [] } = useListWorkspaceStatuses({ workspaceId })
 
-	const handleUpdateAssigneeStatus = useUpdateTaskStatus()
+	const handleUpdateAssigneeStatus = useUpdateTaskStatus({ notify: true })
 
 	return (
 		<AssigneeRowContainer $enabled={editable && !isAdmin}>
@@ -44,6 +49,7 @@ export const AssigneeContainer = ({
 						taskId={taskId}
 						assigneeId={assignee.id}
 						editable={editable}
+						isArchived={!!personalArchivedAt || !!workspaceArchivedAt}
 						onUpdate={handleUpdateAssigneeStatus}
 					/>
 				)}

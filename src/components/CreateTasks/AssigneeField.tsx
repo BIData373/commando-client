@@ -1,8 +1,8 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import { useListAssignees } from "src/api/assignee/assignee"
+import type { AssigneeStatusDto, WorkspaceStatusDto } from "src/api/model"
 import AssigneePicker from "../shared/AssigneePicker"
-import type { AssigneeExtra } from "../shared/AssigneeRow"
 import AssigneeRowList from "../shared/AssigneeRow"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -14,11 +14,11 @@ interface AssigneeFieldProps {
 	onToggle: (id: number) => void
 	onRemove: (id: number) => void
 	onDetailChange: (id: number, value: string) => void
-	assigneeExtras?: Record<number, AssigneeExtra>
+	assigneeExtras?: Record<number, Partial<AssigneeStatusDto>>
 	onStatusChange?: (
 		taskId: number,
-		assigneeId: number,
-		statusId: number,
+		assigneeId: number | undefined,
+		status: WorkspaceStatusDto,
 	) => void
 	taskId?: number
 }
@@ -42,50 +42,48 @@ function AssigneeField({
 	)
 
 	return (
-		<>
-			<AssigneeSection>
-				<FormLabelRow>
-					<LabelText>אחראי</LabelText>
-				</FormLabelRow>
+		<AssigneeSection>
+			<FormLabelRow>
+				<LabelText>אחראי</LabelText>
+			</FormLabelRow>
 
-				<AssigneePicker
-					workspaceId={workspaceId}
-					selectedAssignees={selectedAssignees}
-					onToggle={onToggle}
-					closeOnFirstSelect
-					trigger={({ search, onSearchChange }) => (
-						<SelectTriggerButton type="button">
-							<SelectChevron size={12} />
-							<SearchInput
-								value={search}
-								onChange={onSearchChange}
-								placeholder="בחירה"
-								dir="rtl"
-							/>
-						</SelectTriggerButton>
-					)}
-				/>
-
-				{selectedAssignees.length === 0 ? (
-					<EmptyAssigneesBox>
-						<EmptyText>לא נבחרו אחראים. אנא בחר מהרשימה</EmptyText>
-					</EmptyAssigneesBox>
-				) : (
-					<AssigneeRowList
-						assignees={assignees}
-						directiveTitle={directiveTitle}
-						workspaceId={workspaceId}
-						showDetail={selectedAssignees.length > 1}
-						detailPlaceholder="פירוט נוסף לאחראי"
-						assigneeExtras={assigneeExtras}
-						onDetailChange={onDetailChange}
-						onRemove={onRemove}
-						onStatusChange={onStatusChange}
-						taskId={taskId}
-					/>
+			<AssigneePicker
+				workspaceId={workspaceId}
+				selectedAssignees={selectedAssignees}
+				onToggle={onToggle}
+				closeOnFirstSelect
+				trigger={({ search, onSearchChange }) => (
+					<SelectTriggerButton type="button">
+						<SelectChevron size={12} />
+						<SearchInput
+							value={search}
+							onChange={onSearchChange}
+							placeholder="בחירה"
+							dir="rtl"
+						/>
+					</SelectTriggerButton>
 				)}
-			</AssigneeSection>
-		</>
+			/>
+
+			{selectedAssignees.length === 0 ? (
+				<EmptyAssigneesBox>
+					<EmptyText>לא נבחרו אחראים. אנא בחר מהרשימה</EmptyText>
+				</EmptyAssigneesBox>
+			) : (
+				<AssigneeRowList
+					assignees={assignees}
+					directiveTitle={directiveTitle}
+					workspaceId={workspaceId}
+					showDetail={selectedAssignees.length > 1}
+					detailPlaceholder="פירוט נוסף לאחראי"
+					assigneeExtras={assigneeExtras}
+					onDetailChange={onDetailChange}
+					onRemove={onRemove}
+					onStatusChange={onStatusChange}
+					taskId={taskId}
+				/>
+			)}
+		</AssigneeSection>
 	)
 }
 

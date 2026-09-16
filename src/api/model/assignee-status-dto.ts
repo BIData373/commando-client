@@ -13,6 +13,8 @@ export interface AssigneeStatusDto {
 	status: WorkspaceStatusDto
 	description: string
 	/** @nullable */
-	archivedAt: Date | null
+	personalArchivedAt: Date | null
+	/** @nullable */
+	workspaceArchivedAt: Date | null
 	editable: boolean
 }

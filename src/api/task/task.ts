@@ -27,7 +27,6 @@ import { sendRequest } from "../../axios"
 import type {
 	CreateTaskDto,
 	DeleteTaskPathParameters,
-	GetTaskParams,
 	GetTaskPathParameters,
 	ListPersonalTaskRowsParams,
 	ListPersonalTasksParams,
@@ -693,22 +692,17 @@ export function useListPersonalTaskRows<
 
 export const getTask = (
 	{ id }: GetTaskPathParameters,
-	params?: GetTaskParams,
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<TaskWithWorkspaceDto>({
 		url: `/task/${id}`,
 		method: "GET",
-		params,
 		signal,
 	})
 }
 
-export const getGetTaskQueryKey = (
-	{ id }: GetTaskPathParameters,
-	params?: GetTaskParams,
-) => {
-	return [`/task/${id}`, ...(params ? [params] : [])] as const
+export const getGetTaskQueryKey = ({ id }: GetTaskPathParameters) => {
+	return [`/task/${id}`] as const
 }
 
 export const getGetTaskQueryOptions = <
@@ -716,7 +710,6 @@ export const getGetTaskQueryOptions = <
 	TError = ErrorType<unknown>,
 >(
 	{ id }: GetTaskPathParameters,
-	params?: GetTaskParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTask>>, TError, TData>
@@ -725,11 +718,11 @@ export const getGetTaskQueryOptions = <
 ) => {
 	const { query: queryOptions } = options ?? {}
 
-	const queryKey = queryOptions?.queryKey ?? getGetTaskQueryKey({ id }, params)
+	const queryKey = queryOptions?.queryKey ?? getGetTaskQueryKey({ id })
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getTask>>> = ({
 		signal,
-	}) => getTask({ id }, params, signal)
+	}) => getTask({ id }, signal)
 
 	return {
 		queryKey,
@@ -751,7 +744,6 @@ export function useGetTask<
 	TError = ErrorType<unknown>,
 >(
 	pathParams: GetTaskPathParameters,
-	params: undefined | GetTaskParams,
 	options: {
 		query: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTask>>, TError, TData>
@@ -774,7 +766,6 @@ export function useGetTask<
 	TError = ErrorType<unknown>,
 >(
 	pathParams: GetTaskPathParameters,
-	params?: GetTaskParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTask>>, TError, TData>
@@ -797,7 +788,6 @@ export function useGetTask<
 	TError = ErrorType<unknown>,
 >(
 	pathParams: GetTaskPathParameters,
-	params?: GetTaskParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTask>>, TError, TData>
@@ -813,7 +803,6 @@ export function useGetTask<
 	TError = ErrorType<unknown>,
 >(
 	{ id }: GetTaskPathParameters,
-	params?: GetTaskParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTask>>, TError, TData>
@@ -823,7 +812,7 @@ export function useGetTask<
 ): UseQueryResult<TData, TError> & {
 	queryKey: DataTag<QueryKey, TData, TError>
 } {
-	const queryOptions = getGetTaskQueryOptions({ id }, params, options)
+	const queryOptions = getGetTaskQueryOptions({ id }, options)
 
 	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
 		TData,
