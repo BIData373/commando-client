@@ -32,7 +32,7 @@ export function WorkspacePageShell({
 	}, [])
 
 	useEffect(() => {
-		if (!isFetched || !myPermission) {
+		if (!(isFetched && myPermission)) {
 			return
 		}
 
