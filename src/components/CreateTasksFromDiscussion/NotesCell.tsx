@@ -78,6 +78,7 @@ const NotesCellWrapper = styled.div`
 
 const CellTextarea = styled.textarea`
   width: 100%;
+  height: 100%;
   background: transparent;
   font-size: var(--fs-btn);
   font-weight: 400;
@@ -86,8 +87,9 @@ const CellTextarea = styled.textarea`
   text-align: right;
   outline: none;
   resize: none;
-  overflow-y: auto;
+ 
   overflow-x: hidden;
+  line-height: 38px;
 
   &::placeholder {
     color: var(--Text-color-text-placeholder);
