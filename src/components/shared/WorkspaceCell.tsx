@@ -4,11 +4,10 @@ import { useOverflow } from "src/hooks/useOverflow"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import HighlightMatch from "./HighlightMatch"
-import WorkspaceIconTitle from "./WorkspaceIconTitle"
 
 interface WorkspaceCellProps {
 	workspace?: WorkspaceDto
-	createdBy?: UserDto
+	createdBy: UserDto
 	iconSize?: number
 	searchQuery?: string
 }
@@ -24,65 +23,40 @@ export default function WorkspaceCell({
 		includeDescendants: true,
 	})
 
-	if (!workspace) {
-		return null
-	}
-
-	const creatorName = createdBy?.info?.displayName ?? createdBy?.upn
-
-	if (!creatorName) {
-		return (
-			<StyledWorkspaceIconTitle
-				icon={workspace.icon}
-				title={workspace.title}
-				iconSize={iconSize}
-				rounded
-			>
-				<HighlightMatch
-					text={workspace.title}
-					query={searchQuery ?? ""}
-					variant="mark"
-				/>
-			</StyledWorkspaceIconTitle>
-		)
-	}
+	const creatorName = createdBy.info?.displayName ?? createdBy.upn
 
 	return (
-		<Tooltip>
-			<CellWrapper>
-				{workspace.icon && (
-					<WorkspaceIcon
-						$size={iconSize}
-						src={formatMesibaIcon(workspace.icon)}
-						alt={workspace.title}
-					/>
-				)}
-
-				<TooltipTrigger asChild>
-					<TitleText ref={ref}>
-						<HighlightMatch
-							text={workspace.title}
-							query={searchQuery ?? ""}
-							variant="mark"
+		workspace && (
+			<Tooltip>
+				<CellWrapper>
+					{workspace.icon && (
+						<WorkspaceIcon
+							$size={iconSize}
+							src={formatMesibaIcon(workspace.icon)}
+							alt={workspace.title}
 						/>
-					</TitleText>
-				</TooltipTrigger>
-			</CellWrapper>
+					)}
 
-			<CreatorTooltip side="top">
-				{isOverflowing && <TooltipLine>{workspace.title}</TooltipLine>}
+					<TooltipTrigger asChild>
+						<TitleText ref={ref}>
+							<HighlightMatch
+								text={workspace.title}
+								query={searchQuery ?? ""}
+								variant="mark"
+							/>
+						</TitleText>
+					</TooltipTrigger>
+				</CellWrapper>
 
-				<TooltipLine>{`נוצר ע"י: ${creatorName}`}</TooltipLine>
-			</CreatorTooltip>
-		</Tooltip>
+				<CreatorTooltip side="top">
+					{isOverflowing && <TooltipLine>{workspace.title}</TooltipLine>}
+
+					<TooltipLine>{`נוצר ע"י: ${creatorName}`}</TooltipLine>
+				</CreatorTooltip>
+			</Tooltip>
+		)
 	)
 }
-
-const StyledWorkspaceIconTitle = styled(WorkspaceIconTitle)`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  color: var(--text-color);
-`
 
 const CellWrapper = styled.div`
   display: flex;
