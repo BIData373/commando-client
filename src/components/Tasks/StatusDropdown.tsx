@@ -46,7 +46,7 @@ export const StatusDropdown = memo(
 		const statuses = providedStatuses ?? fetchedStatuses
 		const statusesReady = statuses !== undefined && !isFetchingStatuses
 
-		const statusEditable = editable && !isArchived
+		const statusEditable = editable
 		const tooltip = isArchived ? "לא ניתן לערוך סטטוס הנחיה בארכיון" : undefined
 
 		function handleSelectStatus(newStatus: WorkspaceStatusDto) {
