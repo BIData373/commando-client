@@ -5,12 +5,13 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
+import type { UserDto } from "./user-dto"
 
 export interface TagDto {
 	createdAt: Date
-	createdBy: number
+	createdBy: UserDto
 	updatedAt: Date
-	updatedBy: number
+	updatedBy: UserDto
 	id: number
 	name: string
 	workspaceId: number

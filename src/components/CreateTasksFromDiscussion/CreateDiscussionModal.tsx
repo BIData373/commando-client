@@ -4,6 +4,8 @@ import { useNavigate } from "@tanstack/react-router"
 import { useStore } from "@tanstack/react-store"
 import { Check, Paperclip, Sparkles } from "lucide-react"
 import { useEffect, useState } from "react"
+import { toast } from "src/components/Toast/toast-api"
+import { count, createTaskMessage } from "src/functions/toast-messages"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AI_ENABLED } from "src/utils/env-utils"
 import {
@@ -25,7 +27,7 @@ import {
 } from "../../api/task/task"
 import { formatDate } from "../../functions/date-utils"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
-import { invalidateQueries } from "../../queryClient"
+import { invalidateQueries } from "../../query-client"
 import { ModalContent } from "../shared/ModalContent"
 import { Dialog } from "../ui/dialog"
 import {
@@ -60,6 +62,7 @@ function CreateDiscussionModal({
 	const { mutateAsync: createSource, isPending: isCreateSource } =
 		useCreateSource({
 			mutation: {
+				meta: { toast: { error: true } },
 				onSuccess: () => {
 					invalidateQueries([
 						getListTaskRowsQueryKey({ workspaceId }),
@@ -72,12 +75,15 @@ function CreateDiscussionModal({
 	const { mutateAsync: updateSource, isPending: isUpdateSource } =
 		useUpdateSource({
 			mutation: {
+				meta: { toast: { error: true } },
 				onSuccess: () => {
 					invalidateQueries([getListSourcesQueryKey({ workspaceId })])
 				},
 			},
 		})
-	const { mutate: deleteTask } = useDeleteTask()
+	const { mutate: deleteTask } = useDeleteTask({
+		mutation: { meta: { toast: { error: true } } },
+	})
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
@@ -241,6 +247,8 @@ function CreateDiscussionModal({
 					),
 				},
 			})
+
+			toast.success(count(createTaskMessage, taskRows.length))
 
 			onClose()
 		} else {

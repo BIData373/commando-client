@@ -16,10 +16,16 @@ import type {
 } from "src/api/model"
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
+import { toast } from "src/components/Toast/toast-api"
 import { buildFilterOptionsMap } from "src/functions/filter-utils"
+import {
+	deleteTaskMessage,
+	updateStatusMessage,
+} from "src/functions/toast-messages"
 import { type TaskArchiveEntry, useTaskColumns } from "src/hooks/useTaskColumns"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
+import { runBatch } from "src/utils/batch-utils"
 import { getEmptyState } from "src/utils/empty-state-utils"
 import {
 	DISABLED_CLICK_COLUMNS,
@@ -90,7 +96,7 @@ function TaskTable<TTask extends TaskRowDto>({
 		setAssigneeFilter,
 	} = useTasksFilters()
 
-	const { mutate: deleteTaskMutate } = useDeleteTask({
+	const { mutateAsync: deleteTaskMutate } = useDeleteTask({
 		mutation: { onSuccess: onChangeSuccess },
 	})
 
@@ -195,11 +201,12 @@ function TaskTable<TTask extends TaskRowDto>({
 		)
 	}
 
-	function removeTasks(taskIds: number[]) {
-		// TODO - maybe await Promise.all
-		taskIds.forEach((id) => {
-			deleteTaskMutate({ pathParams: { id } })
-		})
+	async function removeTasks(taskIds: number[]) {
+		const deleted = await runBatch(taskIds, (id) =>
+			deleteTaskMutate({ pathParams: { id } }),
+		)
+
+		toast.batch(deleted, { message: deleteTaskMessage })
 	}
 
 	function getSelectedArchiveEntries() {
@@ -225,15 +232,26 @@ function TaskTable<TTask extends TaskRowDto>({
 		handleExitSelectMode()
 	}
 
-	function bulkUpdateStatus(rowKeys: string[], status: WorkspaceStatusDto) {
-		rowKeys.forEach((rowKey) => {
-			const task = tasks.find((t) => t.rowKey === rowKey)
-			if (!task) {
-				return
-			}
+	async function bulkUpdateStatus(
+		rowKeys: string[],
+		status: WorkspaceStatusDto,
+	) {
+		const selectedTasks = rowKeys
+			.map((rowKey) => tasks.find((t) => t.rowKey === rowKey))
+			.filter((task) => task !== undefined)
 
-			updateStatus(task.id, task.assignee?.id, status)
-		})
+		const results = await Promise.all(
+			selectedTasks.map((task) =>
+				updateStatus(task.id, task.assignee?.id, status),
+			),
+		)
+
+		const succeeded = results.filter(Boolean).length
+
+		toast.batch(
+			{ succeeded, failed: results.length - succeeded },
+			{ message: updateStatusMessage },
+		)
 	}
 
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])

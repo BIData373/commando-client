@@ -5,6 +5,7 @@ import type {
 } from "@tanstack/react-table"
 import { concat, intersection, map, uniq, zipObject } from "lodash"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
+import { formatSourceLabel } from "../functions/source-utils"
 
 export interface TaskColumnMeta {
 	id: keyof TaskRowWithWorkspaceDto
@@ -116,7 +117,7 @@ export const TASK_COLUMN_DEFINITIONS: Partial<
 	},
 	[TASK_COLUMN_ID.source]: {
 		sortingFn: "text",
-		accessorFn: (row) => row.source?.name,
+		accessorFn: (row) => row.source && formatSourceLabel(row.source),
 		filterFn: multiSelectColumnFilter,
 	},
 	[TASK_COLUMN_ID.createdAt]: { sortingFn: "datetime" },

@@ -9,13 +9,13 @@ import type { UserDto } from "./user-dto"
 
 export interface AssigneeDto {
 	createdAt: Date
-	createdBy: number
+	createdBy: UserDto
 	updatedAt: Date
-	updatedBy: number
+	updatedBy: UserDto
 	/** @nullable */
 	deletedAt: Date | null
 	/** @nullable */
-	deletedBy: number | null
+	deletedBy: UserDto | null
 	id: number
 	name: string
 	color: string

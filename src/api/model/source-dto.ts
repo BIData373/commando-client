@@ -7,16 +7,17 @@
  */
 import type { ExtractionStatus } from "./extraction-status"
 import type { TagDto } from "./tag-dto"
+import type { UserDto } from "./user-dto"
 
 export interface SourceDto {
 	createdAt: Date
-	createdBy: number
+	createdBy: UserDto
 	updatedAt: Date
-	updatedBy: number
+	updatedBy: UserDto
 	/** @nullable */
 	deletedAt: Date | null
 	/** @nullable */
-	deletedBy: number | null
+	deletedBy: UserDto | null
 	id: number
 	name: string
 	/** @nullable */

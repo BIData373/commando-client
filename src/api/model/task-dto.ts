@@ -11,17 +11,18 @@ import type { MessageDto } from "./message-dto"
 import type { SourceDto } from "./source-dto"
 import type { TagDto } from "./tag-dto"
 import type { TaskCreationType } from "./task-creation-type"
+import type { UserDto } from "./user-dto"
 import type { WorkspaceStatusDto } from "./workspace-status-dto"
 
 export interface TaskDto {
 	createdAt: Date
-	createdBy: number
+	createdBy: UserDto
 	updatedAt: Date
-	updatedBy: number
+	updatedBy: UserDto
 	/** @nullable */
 	deletedAt: Date | null
 	/** @nullable */
-	deletedBy: number | null
+	deletedBy: UserDto | null
 	id: number
 	serialId: number
 	title: string
