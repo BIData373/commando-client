@@ -264,7 +264,7 @@ const CellTextarea = styled.textarea<{ $color?: string }>`
   background: transparent;
   font-size: var(--fs-btn);
   font-weight: 400;
-  line-height: 18px;
+  line-height: 38px;
   /* Auto-grows with content, capped at two lines */
   field-sizing: content;
   max-height: 2lh;
@@ -274,9 +274,14 @@ const CellTextarea = styled.textarea<{ $color?: string }>`
   resize: none;
   overflow-y: auto;
   overflow-x: hidden;
+  height: 100%;
+  display: flex;
+
+  
 
   &::placeholder {
     color: var(--Text-color-text-placeholder);
+
   }
 `
 

@@ -40,7 +40,7 @@ function buildTaskSearchText<T extends TaskRowDto>(
 	) => Array<string | number | null | undefined>,
 ): string {
 	const values = [
-		String(task.id),
+		String(task.serialId),
 		task.title,
 		task.description,
 		task.source?.name,

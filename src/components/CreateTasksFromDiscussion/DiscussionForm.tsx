@@ -56,7 +56,7 @@ function DiscussionForm({
 				lockedTags={[]}
 				onTagSelect={onTagSelect}
 				onTagRemove={onTagRemove}
-				caption="תגיות אלו ישויכו לכלל ההנחיות מתוך דיון זה."
+				caption="תגיות אלו ישויכו לכלל ההנחיות מתוך דיון זה"
 			/>
 
 			<FileUploadField

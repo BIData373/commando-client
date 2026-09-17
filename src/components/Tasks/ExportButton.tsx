@@ -1,55 +1,61 @@
 import styled from "@emotion/styled"
-import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
 import { Download } from "lucide-react"
-import { useCallback, useMemo } from "react"
-import type { TaskRowDto } from "src/api/model"
+import { useState } from "react"
+import { useListMessages } from "src/api/message/message"
+import type { ListMessagesParams, MessageDto, TaskRowDto } from "src/api/model"
+import { SpinIcon } from "src/components/shared/SpinIcon"
 import { exportTasksToExcel } from "src/functions/export-excel"
-import { useTasksFilters } from "src/providers/TasksFiltersProvider"
-import { buildCountingColumns } from "src/utils/task-table-utils"
-import { useHeadlessTable } from "../../hooks/useHeadlessTable"
+import { TASK_COLUMN_ID } from "src/utils/task-table-utils"
 
 interface ExportButtonProps<TTask extends TaskRowDto> {
-	tasks: TTask[]
-	allColumnFilters: ColumnFiltersState
+	exportRows: TTask[]
 	columnOrder: (keyof TTask)[]
 	hiddenColumns: Set<keyof TTask>
-	extraColumns?: ColumnDef<TTask>[]
+	messagesParams: ListMessagesParams
 	exportFilePrefix?: string
 }
 
 function ExportButton<TTask extends TaskRowDto>({
-	tasks,
-	allColumnFilters,
+	exportRows,
 	columnOrder,
 	hiddenColumns,
-	extraColumns = [],
+	messagesParams,
 	exportFilePrefix,
 }: ExportButtonProps<TTask>) {
-	const { sorting } = useTasksFilters()
+	const [isExporting, setIsExporting] = useState(false)
 
-	const countingColumns = useMemo(
-		() => buildCountingColumns(extraColumns),
-		[extraColumns],
+	const needsMessages = !hiddenColumns.has(
+		TASK_COLUMN_ID.lastMessage as keyof TTask,
 	)
 
-	const exportTable = useHeadlessTable({
-		data: tasks,
-		columns: countingColumns,
-		columnFilters: allColumnFilters,
-		sorting,
+	const { refetch } = useListMessages(messagesParams, {
+		query: { enabled: false },
 	})
 
-	const handleExport = useCallback(() => {
-		const exportRows = exportTable
-			.getSortedRowModel()
-			.rows.map((row) => row.original)
+	async function handleExport() {
+		setIsExporting(true)
+		try {
+			let messages: MessageDto[] = []
+			if (needsMessages) {
+				const { data = [] } = await refetch()
+				messages = data
+			}
 
-		exportTasksToExcel(exportRows, columnOrder, hiddenColumns, exportFilePrefix)
-	}, [exportTable, columnOrder, hiddenColumns, exportFilePrefix])
+			exportTasksToExcel(
+				exportRows,
+				columnOrder,
+				hiddenColumns,
+				messages,
+				exportFilePrefix,
+			)
+		} finally {
+			setIsExporting(false)
+		}
+	}
 
 	return (
-		<ActionButton onClick={handleExport}>
-			<Download size={18} />
+		<ActionButton onClick={handleExport} disabled={isExporting}>
+			{isExporting ? <SpinIcon size={18} /> : <Download size={18} />}
 		</ActionButton>
 	)
 }

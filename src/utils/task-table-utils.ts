@@ -5,6 +5,7 @@ import type {
 } from "@tanstack/react-table"
 import { concat, intersection, map, uniq, zipObject } from "lodash"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
+import { formatSourceLabel } from "../functions/source-utils"
 
 export interface TaskColumnMeta {
 	id: keyof TaskRowWithWorkspaceDto
@@ -21,7 +22,7 @@ function toColumnsMeta<
 }
 
 const CONFIGURABLE_COLUMNS_META = toColumnsMeta({
-	id: 'מס"ד',
+	serialId: 'מס"ד',
 	title: "ההנחיה",
 	status: "סטטוס",
 	assignee: "אחראי",
@@ -116,7 +117,7 @@ export const TASK_COLUMN_DEFINITIONS: Partial<
 	},
 	[TASK_COLUMN_ID.source]: {
 		sortingFn: "text",
-		accessorFn: (row) => row.source?.name,
+		accessorFn: (row) => row.source && formatSourceLabel(row.source),
 		filterFn: multiSelectColumnFilter,
 	},
 	[TASK_COLUMN_ID.createdAt]: { sortingFn: "datetime" },
@@ -136,7 +137,7 @@ export function buildCountingColumns<TTask extends TaskRowDto>(
 }
 
 export const CONFIGURABLE_COLUMNS = CONFIGURABLE_COLUMNS_META.filter(
-	(c) => c.id !== TASK_COLUMN_ID.id,
+	(c) => c.id !== TASK_COLUMN_ID.serialId,
 )
 
 export const DEFAULT_COLUMN_ORDER = CONFIGURABLE_COLUMNS.map((c) => c.id)

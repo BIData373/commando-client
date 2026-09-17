@@ -8,9 +8,11 @@ import {
 	getListWorkspaceRequestsQueryKey,
 	useCreateWorkspaceRequest,
 } from "src/api/workspace-requests/workspace-requests"
+import { toast } from "src/components/Toast/toast-api"
 import { Dialog } from "src/components/ui/dialog"
+import { TECHNICAL_FAILURE } from "src/functions/toast-messages"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
-import { invalidateQueries } from "src/queryClient"
+import { invalidateQueries } from "src/query-client"
 import { hasError } from "src/utils/error-utils"
 import type { WorkspaceDetailsErrors } from "src/utils/workspace-utils"
 import logoWithText from "../../assets/logo-with-text-dark.png"
@@ -110,13 +112,16 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 			},
 			{
 				onError: (error) => {
-					setServerErrors(
-						Object.fromEntries(
-							Object.entries(REQUEST_ERROR_MESSAGES)
-								.filter(([, { code }]) => hasError(error, code))
-								.map(([field, { message }]) => [field, message]),
-						),
-					)
+					const fieldErrors = Object.entries(REQUEST_ERROR_MESSAGES)
+						.filter(([_, { code }]) => hasError(error, code))
+						.map(([field, { message }]) => [field, message] as const)
+
+					if (fieldErrors.length === 0) {
+						toast.failure(TECHNICAL_FAILURE)
+						return
+					}
+
+					setServerErrors(Object.fromEntries(fieldErrors))
 					setShowErrors(true)
 					setStep(Steps.Details)
 				},
@@ -128,6 +133,7 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 			},
 		)
 	}
+
 	function handleClear() {
 		form.reset()
 		setServerErrors({})

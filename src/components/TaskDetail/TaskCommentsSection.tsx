@@ -1,6 +1,5 @@
 import styled from "@emotion/styled"
 import { useSearch } from "@tanstack/react-router"
-import { MoreVertical, Trash2 } from "lucide-react"
 import { type RefObject, useEffect, useRef, useState } from "react"
 import {
 	getListMessagesQueryKey,
@@ -14,16 +13,10 @@ import {
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
-import { invalidateQueries } from "src/queryClient"
-import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
+import { invalidateQueries } from "src/query-client"
 import { CommentsDivider } from "../shared/CommentsDivider"
 import { SpinIcon } from "../shared/SpinIcon"
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
+import TaskComment from "./TaskComment"
 
 interface TaskCommentsSectionProps {
 	taskId: number
@@ -53,11 +46,11 @@ function TaskCommentsSection({
 
 	const currentUser = useCurrentUser()
 
-	const { data: messages = [] } = useListMessages({ taskId })
+	const { data: messages = [] } = useListMessages({ taskIds: [taskId] })
 
 	function handleSettled() {
 		invalidateQueries([
-			getListMessagesQueryKey({ taskId }),
+			getListMessagesQueryKey({ taskIds: [taskId] }),
 			getGetTaskQueryKey({ id: taskId }),
 			getListTaskRowsQueryKey(),
 			getListPersonalTaskRowsQueryKey(),
@@ -67,6 +60,7 @@ function TaskCommentsSection({
 	const { mutate: createMessage, isPending: isSendingComment } =
 		useCreateMessage({
 			mutation: {
+				meta: { toast: { error: true } },
 				onSettled: handleSettled,
 				onSuccess() {
 					setCommentValue("")
@@ -74,8 +68,15 @@ function TaskCommentsSection({
 			},
 		})
 	const { mutate: deleteMessage } = useDeleteMessage({
-		mutation: { onSettled: handleSettled },
+		mutation: {
+			meta: { toast: { error: true } },
+			onSettled: handleSettled,
+		},
 	})
+
+	function handleDeleteComment(id: number) {
+		deleteMessage({ pathParams: { id } })
+	}
 
 	function handleCommentInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
 		setCommentValue(e.target.value)
@@ -111,48 +112,12 @@ function TaskCommentsSection({
 				{isSendingComment && <SpinIcon size={16} />}
 			</TextareaRow>
 			{messages.map((msg) => (
-				<CommentCard key={msg.id}>
-					<CommentMainRow>
-						{(isManager || msg.user.upn === currentUser.upn) && (
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<CommentMenuButton>
-										<MoreVertical size={14} />
-									</CommentMenuButton>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent align="start" side="bottom">
-									<DeleteMenuItem
-										onClick={() =>
-											deleteMessage({
-												pathParams: { id: msg.id },
-											})
-										}
-									>
-										מחק תגובה
-										<Trash2 size={16} />
-									</DeleteMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
-						)}
-						<CommentContent>{msg.content}</CommentContent>
-					</CommentMainRow>
-					<CommentFooter>
-						<CommentDate>
-							{formatMinutesHours(msg.createdAt)} ·{" "}
-							{formatDateMonthYear(msg.createdAt)}
-						</CommentDate>
-						<CommentUserDetails>
-							<CommentUserMeta>
-								{msg.user.upn}
-								{msg.user.info?.displayName &&
-									` - ${msg.user.info.displayName}`}
-							</CommentUserMeta>
-							<CommentUserName>
-								{msg.user.info?.name ?? msg.user.upn}
-							</CommentUserName>
-						</CommentUserDetails>
-					</CommentFooter>
-				</CommentCard>
+				<TaskComment
+					key={msg.id}
+					message={msg}
+					canDelete={isManager || msg.user.upn === currentUser.upn}
+					onDelete={handleDeleteComment}
+				/>
 			))}
 		</Wrapper>
 	)
@@ -207,95 +172,4 @@ const CommentsTextarea = styled.textarea`
     border-color: var(--active-color);
     box-shadow: var(--shadow-textarea-focus);
   }
-`
-
-const CommentCard = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background: var(--card-background);
-  width: 100%;
-  direction: ltr;
-`
-
-const CommentMainRow = styled.div`
-  display: flex;
-  gap: 4px;
-  align-items: flex-start;
-  width: 100%;
-`
-
-const CommentMenuButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  flex-shrink: 0;
-  color: var(--sea-ink-soft);
-  cursor: pointer;
-  outline: none;
-
-  &:hover,
-  &[data-state="open"] {
-    background: var(--Background-color-bg-text-active);
-    color: var(--sea-ink);
-  }
-`
-
-const DeleteMenuItem = styled(DropdownMenuItem)`
-  color: var(--Components-Form-Component-labelRequiredMarkColor);
-  gap: 8px;
-  justify-content: flex-end;
-  cursor: pointer;
-`
-
-const CommentContent = styled.p`
-  flex: 1;
-  direction: rtl;
-  min-width: 0;
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--sea-ink);
-  width: 100%;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  margin: 0;
-`
-
-const CommentFooter = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  font-size: var(--fs-sm);
-  line-height: 20px;
-  white-space: nowrap;
-`
-
-const CommentDate = styled.span`
-  font-weight: 400;
-  color: var(--text-color-400);
-`
-
-const CommentUserDetails = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-align: end;
-`
-
-const CommentUserMeta = styled.span`
-  font-weight: 400;
-  color: var(--sea-ink-soft);
-`
-
-const CommentUserName = styled.span`
-  font-weight: 500;
-  color: var(--sea-ink);
 `

@@ -64,7 +64,7 @@ export default function WorkspaceCard({
 const CardRoot = styled.div`
   display: flex;
   flex-direction: column;
-  aspect-ratio: 205 / 219;
+  aspect-ratio: 1 / 1.1;
   width: 100%;
   padding: 16px;
   align-items: center;
