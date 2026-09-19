@@ -27,9 +27,9 @@ export function openUserChat(user: MirageUserDto) {
 	return window.open(`${CHAT_URL}/direct/${upn}`)
 }
 
-const onboardingPathnames = ONBOARDING_STEP_ORDER.map((step) => {
-	return "/onboarding".concat("?step=", step)
-})
+const onboardingPathnames = ONBOARDING_STEP_ORDER.map(
+	(step) => `/onboarding?step=${step}`,
+)
 
 export function checkForOnboarding(pathname: string) {
 	const needsOnboarding =

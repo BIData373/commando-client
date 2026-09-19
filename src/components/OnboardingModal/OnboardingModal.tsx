@@ -25,9 +25,9 @@ export function OnboardingModal() {
 
 	const currentStepIndex = ONBOARDING_STEP_ORDER.indexOf(step)
 
-	const setStep = (newStep: OnboardingSteps) => {
+	const setStep = (step: OnboardingSteps) => {
 		navigate({
-			search: { step: newStep },
+			search: { step },
 		})
 	}
 
