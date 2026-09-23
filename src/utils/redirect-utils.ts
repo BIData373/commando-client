@@ -1,6 +1,9 @@
 import { readLocalStorageValue } from "@mantine/hooks"
 import type { MirageUserDto } from "src/api/model"
-import { ONBOARDING_STEP_ORDER } from "src/components/OnboardingModal/OnboardingModal"
+import {
+	ONBOARDING_REQUIRED_KEY,
+	ONBOARDING_STEP_ORDER,
+} from "src/components/OnboardingModal/OnboardingModal"
 import {
 	CHAT_CHANNEL_URL,
 	CHAT_URL,
@@ -32,8 +35,10 @@ const onboardingPathnames = ONBOARDING_STEP_ORDER.map(
 )
 
 export function checkForOnboarding(pathname: string) {
-	const needsOnboarding =
-		readLocalStorageValue({ key: "onboardingRequired" }) ?? true
+	const needsOnboarding = readLocalStorageValue({
+		key: ONBOARDING_REQUIRED_KEY,
+		defaultValue: true,
+	})
 	const isAlreadyOnboarding = onboardingPathnames.includes(pathname)
 	return !isAlreadyOnboarding && needsOnboarding
 }

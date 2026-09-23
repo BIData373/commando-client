@@ -14,12 +14,14 @@ export const ONBOARDING_STEP_ORDER: OnboardingSteps[] = [
 	OnboardingSteps.Redirects,
 ]
 
+export const ONBOARDING_REQUIRED_KEY = "onboarding_required"
+
 export function OnboardingModal() {
 	const navigate = useNavigate({ from: "/onboarding" })
 	const { step = OnboardingSteps.Greeting } = useSearch({ from: "/onboarding" })
 
 	const [isOpen, setIsOpen] = useLocalStorage({
-		key: "onboardingRequired",
+		key: ONBOARDING_REQUIRED_KEY,
 		defaultValue: true,
 	})
 
@@ -32,7 +34,7 @@ export function OnboardingModal() {
 	}
 
 	const handleStepIncrement = () => {
-		if (currentStepIndex < 2) {
+		if (currentStepIndex < ONBOARDING_STEP_ORDER.length - 1) {
 			setStep(ONBOARDING_STEP_ORDER[currentStepIndex + 1])
 		}
 	}
