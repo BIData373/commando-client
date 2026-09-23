@@ -1,6 +1,7 @@
 import { readLocalStorageValue } from "@mantine/hooks"
 import { useNavigate } from "@tanstack/react-router"
 import { type PropsWithChildren, useEffect } from "react"
+import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { PageShell } from "../shared/PageShell"
@@ -36,7 +37,7 @@ export function WorkspacePageShell({
 			return
 		}
 
-		const isManager = myPermission?.type === "MANAGER"
+		const isManager = myPermission?.type === PermissionType.MANAGER
 		if (needsAssigneesRedirect && isManager) {
 			localStorage.setItem(FIRST_VISIT_STORAGE_KEY, "false")
 			navigate({
