@@ -1,37 +1,41 @@
 import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
 import { User } from "lucide-react"
-import logoWithText from "../assets/logo-with-text.svg"
+import logoWithText from "../assets/logo-with-text-dark.png"
 import { useHeader } from "../providers/HeaderProvider"
 import { UserDropdown } from "./UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Separator } from "./ui/separator"
 import { TooltipProvider } from "./ui/tooltip"
 
-export default function Header() {
+interface HeaderProps {
+	className?: string
+}
+
+export default function Header({ className }: HeaderProps) {
 	const {
 		elementPlacements: { right, center, user },
 	} = useHeader()
 
 	return (
-		<HeaderContainer>
+		<HeaderContainer className={className}>
 			<HeaderRoot>
 				<HeaderInner>
-					<StartSection>{right}</StartSection>
-
 					<CenterSection>
 						<TooltipProvider>
 							<CenterTitle>{center}</CenterTitle>
 						</TooltipProvider>
 					</CenterSection>
 
+					<StartSection>{right}</StartSection>
+
 					<EndSection>
 						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
+							<StyledDropdownMenuTrigger asChild>
 								<UserMenuButton>
 									<UserMenuIcon />
 								</UserMenuButton>
-							</DropdownMenuTrigger>
+							</StyledDropdownMenuTrigger>
 							{user ?? <UserDropdown showPersonalArea={false} />}
 						</DropdownMenu>
 
@@ -39,7 +43,7 @@ export default function Header() {
 
 						<StyledLink to="/">
 							<BiData>by BI DATA</BiData>
-							<img src={logoWithText} alt="Logo" />
+							<StyledImg src={logoWithText} alt="Logo" />
 						</StyledLink>
 					</EndSection>
 				</HeaderInner>
@@ -55,13 +59,11 @@ const HeaderContainer = styled.div`
 const HeaderRoot = styled.header`
   position: sticky;
   top: 0;
-  background: oklch(0.2077 0.038 275.77);
-  border-bottom: 1px solid var(--line);
+  /* background: oklch(0.2077 0.038 275.77); */
   border-radius: var(--radius-lg);
   padding-inline: 24px;
   z-index: var(--z-dropdown);
-  box-shadow: var(--card-shadow);
-  color: white;
+  color: var(--Background-color-bg-text-active);
 `
 
 const HeaderInner = styled.div`
@@ -93,7 +95,7 @@ const CenterTitle = styled.div`
   font-size: var(--fs-heading-3);
   font-weight: 500;
   line-height: 32px;
-  color: var(--colors-base-neutral-11);
+  color: var(--text-color-2);
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -112,7 +114,7 @@ const EndSection = styled.div`
 
 const EndSectionSeparator = styled(Separator)`
   margin: 0px 4px 0px 12px;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: var(--Background-color-bg-text-active)
 `
 
 const UserMenuButton = styled.button`
@@ -150,9 +152,21 @@ const StyledLink = styled(Link)`
 `
 
 const BiData = styled.span`
-  color: #d2e0fa;
+  color: var(--text-color-2);
   font-size: var(--fs-btn);
   align-self: flex-start;
   line-height: 40px;
   white-space: nowrap;
+`
+
+const StyledImg = styled.img`
+  width: 100%;
+  height: 80%;
+`
+
+const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger)`
+  transition: color 0.3s;
+  &:hover {
+    color: var(--text-color);
+  }
 `
