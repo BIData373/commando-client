@@ -19,7 +19,7 @@ export function StatusTag({
 	editable,
 	withArrow = false,
 	open = false,
-	tooltip = "לא קיימות הרשאות עריכה",
+	tooltip = "לא קיימת הרשאת שינוי סטטוס",
 }: StatusTagProps) {
 	const tag = (
 		<Tag
