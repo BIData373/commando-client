@@ -17,9 +17,22 @@ function ColumnHeaderWithActions<TData>({
 	filterOptions = [],
 }: ColumnHeaderWithActionsProps<TData>) {
 	const [filterOpen, setFilterOpen] = useState(false)
-	const canFilter = column.getCanFilter() && filterOptions.length > 0
 	const canSort = column.getCanSort()
 	const filterValue = (column.getFilterValue() as string[] | undefined) ?? []
+	const activeValues = new Set(filterValue)
+	const isFilterable = column.getCanFilter() && filterOptions.length > 0
+
+	const availableValues = isFilterable
+		? column.getFacetedUniqueValues()
+		: undefined
+
+	const visibleFilterOptions = availableValues
+		? filterOptions.filter(
+				({ value }) => availableValues.has(value) || activeValues.has(value),
+			)
+		: filterOptions
+
+	const canFilter = isFilterable && visibleFilterOptions.length > 0
 	const isFilterActive = filterValue.length > 0
 	const isSortActive = column.getIsSorted() !== false
 	const alwaysShow = isFilterActive || isSortActive || filterOpen
@@ -34,8 +47,8 @@ function ColumnHeaderWithActions<TData>({
 			<ActionsArea data-slot="actions-area" $show={alwaysShow}>
 				{canFilter && (
 					<ColumnFilterDropdown
-						options={filterOptions}
-						activeValues={new Set(filterValue)}
+						options={visibleFilterOptions}
+						activeValues={activeValues}
 						onApply={handleApplyFilter}
 						isActive={isFilterActive}
 						onOpenChange={setFilterOpen}
