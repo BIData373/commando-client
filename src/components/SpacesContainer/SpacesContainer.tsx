@@ -46,7 +46,7 @@ export default function SpacesContainer() {
 			<TopSection>
 				<HeaderRow>
 					<ActionsRow>
-						<NewWorkspace />
+						<WorkspaceRequestButton />
 
 						<SearchWrapper>
 							<SearchInput
@@ -271,6 +271,6 @@ const LoadingSpace = styled.div`
   min-height: 0;
 `
 
-const NewWorkspace = styled(NewWorkspaceButton)`
+const WorkspaceRequestButton = styled(NewWorkspaceButton)`
   font-size: var(--fs-btn);
 `
