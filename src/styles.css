@@ -104,10 +104,18 @@ body,
   --boxShadowSecondary:0px 9px 28px 8px rgba(0, 0, 0, 0.05),
     0px 3px 6px -4px rgba(0, 0, 0, 0.12),
     0px 6px 16px rgba(0, 0, 0, 0.08);
+  --sheet-shadow: 0px -6px 16px rgba(0, 0, 0, 0.08),
+		0px -3px 6px rgba(0, 0, 0, 0.12),
+		0px -9px 28px rgba(0, 0, 0, 0.05);
+  --sheet-footer-shadow: 0px -6px 8px rgba(0, 0, 0, 0.08),
+		0px 3px 3px rgba(0, 0, 0, 0.12),
+		0px 9px 14px rgba(0, 0, 0, 0.05);
 
   --card-border: #d9d9d9;
+  --status-bar-empty: #e6e6e6;
   --background-area: #fafafa;
   --background-assignee: #fcfcfc;
+  --background-mobile: #EDF0F7;
   --selected-item: rgba(230, 244, 255, 1);
   --button-hover: rgba(0, 0, 0, 0.06);
   --button-active: rgba(0, 0, 0, 0.1);
@@ -123,8 +131,8 @@ body,
   --Colors-Base-Geekblue-4: rgba(133, 165, 255, 1);
   --Colors-Base-Geekblue-6: oklch(52.19% 0.23 266.86);
   --Colors-Base-Green-1: oklch(98.84% 0.03 128.91);
-  --Colors-Base-Green-4: rgba(149, 222, 100, 1)
-    --Colors-Base-Green-6: oklch(72.56% 0.22 138.51);
+  --Colors-Base-Green-4: rgba(149, 222, 100, 1);
+  --Colors-Base-Green-6: oklch(72.56% 0.22 138.51);
   --Colors-Base-Red-1: oklch(96.89% 0.02 22.01);
   --Colors-Base-Red-3: oklch(80.61% 0.11 23.14);
   --Colors-Base-Red-6: oklch(62.1% 0.24 26.06);
@@ -133,9 +141,10 @@ body,
   --Colors-Base-Blue-3: oklch(80.61% 0.11 241.5);
   --Colors-Base-Blue-6: oklch(52.19% 0.23 241.5);
 
+  --Colors-Base-Neutral-8: #595959;
+  --Colors-Neutral-Bg-colorBgSolidHover: rgba(0, 0, 0, 0.75);
+
   --Components-Tooltip-Global-colorBgSpotlight: rgba(0, 0, 0, 0.85);
-
-
 
   --Success-color-success-border-hover: #95de64;
   --Color-Subtitle: #1d293d;
