@@ -78,7 +78,7 @@ export function BulkActionsBar({
 						)}
 						{onUnarchive && (
 							<GhostButton onClick={onUnarchive}>
-								הסר מארכיון
+								הוצא מארכיון
 								<ArchiveX size={16} />
 							</GhostButton>
 						)}

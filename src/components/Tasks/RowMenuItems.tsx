@@ -96,7 +96,7 @@ export function RowMenuItems({
 							node: (
 								<MenuItem onSelect={onUnarchive}>
 									<ArchiveX size={16} />
-									הסר מארכיון
+									הוצא מארכיון
 								</MenuItem>
 							),
 						},
