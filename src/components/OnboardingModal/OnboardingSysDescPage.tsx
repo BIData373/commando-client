@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
-import systemDesc from "../../assets/systemDesc.svg"
+import { Link } from "@tanstack/react-router"
+import systemDescription from "../../assets/system-description.svg"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { ButtonGroup as ButtonGroupPrimitive } from "../ui/button-group"
 import { GhostButton } from "./GhostButton"
@@ -17,9 +18,11 @@ export function OnboardingSysDescPage({
 }: OnboardingSysDescPageProps) {
 	return (
 		<>
-			<Main src={systemDesc}></Main>
+			<Main src={systemDescription}></Main>
 			<Footer>
-				<SkipBtn onClick={onSkip}>דלג</SkipBtn>
+				<Link to="/">
+					<SkipBtn onClick={onSkip}>דלג</SkipBtn>
+				</Link>
 				<ButtonGroup>
 					<GhostButton onClick={onPrevious}>חזור</GhostButton>
 					<PrimaryBtn onClick={onNext} title="המשך"></PrimaryBtn>
