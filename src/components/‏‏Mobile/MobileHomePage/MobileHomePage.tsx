@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import logoWithText from "src/assets/logo-with-text-dark.png"
+import { RootPageFooter } from "../shared/RootPageFooter"
 import SpacesContainer from "../shared/SpacesContainer"
 import MobilePersonalAreaCard from "./MobilePersonalAreaCard"
 
@@ -13,6 +14,7 @@ export default function MobileHomePage() {
 			<ContentWrapper>
 				<MobilePersonalAreaCard />
 				<SpacesContainer />
+				<RootPageFooter />
 			</ContentWrapper>
 		</PageRoot>
 	)
