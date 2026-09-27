@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { ChevronRight } from "lucide-react"
 import logoIcon from "src/assets/logo-icon.svg"
-import { formatMesibaIcon } from "src/utils/icon-utils"
+import WorkspaceIconTitle from "src/components/shared/WorkspaceIconTitle"
 
 interface MobileHeaderProps {
 	icon?: string | null
@@ -29,10 +29,12 @@ export default function MobileHeader({
 		</MinimalRoot>
 	) : (
 		<HeaderRoot>
-			<TitleGroup>
-				{icon && <WorkspaceIcon src={formatMesibaIcon(icon)} alt={title} />}
-				<Title dir="auto">{title}</Title>
-			</TitleGroup>
+			<StyledWorkspaceIconTitle
+				icon={icon}
+				title={title}
+				iconSize={28}
+				rounded
+			/>
 
 			<Logo src={logoIcon} alt="Vector" onClick={handleLogoClick} />
 		</HeaderRoot>
@@ -81,27 +83,10 @@ const Logo = styled.img`
 	}
 `
 
-const TitleGroup = styled.div`
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	min-width: 0;
+const StyledWorkspaceIconTitle = styled(WorkspaceIconTitle)`
 	overflow: hidden;
-`
-
-const Title = styled.span`
 	font-size: 20px;
 	font-weight: 500;
 	line-height: 28px;
 	color: var(--background);
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-`
-
-const WorkspaceIcon = styled.img`
-	width: 28px;
-	height: 28px;
-	border-radius: 50%;
-	object-fit: cover;
 `
