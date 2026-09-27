@@ -25,7 +25,7 @@ function TagField({
 	return (
 		<FormItem>
 			<FormLabelRow>
-				<LabelText>תגיות</LabelText>
+				<LabelText>תגיות לדיון</LabelText>
 			</FormLabelRow>
 			<TagFieldInput
 				workspaceId={workspaceId}
