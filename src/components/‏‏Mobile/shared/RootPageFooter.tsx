@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { TbMessage } from "react-icons/tb"
 import BIDataIcon from "src/assets/biData.png"
+import { openSupportChat } from "src/utils/redirect-utils"
 
 interface RootPageFooterProps {
 	className?: string
@@ -9,7 +10,7 @@ interface RootPageFooterProps {
 export function RootPageFooter({ className }: RootPageFooterProps) {
 	return (
 		<FooterRoot className={className}>
-			<ContactButton>
+			<ContactButton onClick={openSupportChat}>
 				<TbMessage size={18} />
 				צור קשר
 			</ContactButton>
