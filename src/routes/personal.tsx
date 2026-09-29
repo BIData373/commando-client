@@ -14,16 +14,10 @@ function PersonalPage() {
 
 	return (
 		<PageShell>
-			<StyledHeader />
+			<Header />
 			<ContentScrollArea>
 				<Outlet />
 			</ContentScrollArea>
 		</PageShell>
 	)
 }
-
-const StyledHeader = styled(Header)`
-	padding-bottom: 24px;
-	border-bottom: 2px var(--active-color-button) solid;
-	border-image: var(--default-linear) 1;
-`

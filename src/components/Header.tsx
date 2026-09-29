@@ -53,7 +53,9 @@ export default function Header({ className }: HeaderProps) {
 }
 
 const HeaderContainer = styled.div`
-  padding: 20px 32px 0 32px;
+  padding: 20px 32px;
+  border-bottom: 2px var(--active-color-button) solid;
+	border-image: var(--default-linear) 1;
 `
 
 const HeaderRoot = styled.header`
@@ -161,11 +163,11 @@ const BiData = styled.span`
 
 const StyledImg = styled.img`
   width: 100%;
-  height: 80%;
+  height: 90%;
 `
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger)`
-  transition: color 0.3s;
+  transition: color 200ms ease-in-out;
   &:hover {
     color: var(--text-color);
   }
