@@ -1,7 +1,8 @@
 import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
 import { User } from "lucide-react"
-import logoWithText from "../assets/logo-with-text-dark.png"
+import logoWithText from "../assets/logo-with-text.svg"
+import logoWithTextDark from "../assets/logo-with-text-dark.png"
 import { useHeader } from "../providers/HeaderProvider"
 import { UserDropdown } from "./UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "./ui/dropdown-menu"
@@ -9,29 +10,39 @@ import { Separator } from "./ui/separator"
 import { TooltipProvider } from "./ui/tooltip"
 
 interface HeaderProps {
-	className?: string
+	variant?: "workspace" | "personal"
 }
 
-export default function Header({ className }: HeaderProps) {
+export default function Header({ variant = "workspace" }: HeaderProps) {
 	const {
 		elementPlacements: { right, center, user },
 	} = useHeader()
 
+	const isWorkspaceHeader = variant === "workspace"
+	const logoSource = isWorkspaceHeader ? logoWithText : logoWithTextDark
+
 	return (
-		<HeaderContainer className={className}>
-			<HeaderRoot>
+		<HeaderContainer $isWorkspaceHeader={isWorkspaceHeader}>
+			<HeaderRoot $isWorkspaceHeader={isWorkspaceHeader}>
 				<HeaderInner>
+					<StartSection $isWorkspaceHeader={isWorkspaceHeader}>
+						{right}
+					</StartSection>
+
 					<CenterSection>
 						<TooltipProvider>
-							<CenterTitle>{center}</CenterTitle>
+							<CenterTitle $isWorkspaceHeader={isWorkspaceHeader}>
+								{center}
+							</CenterTitle>
 						</TooltipProvider>
 					</CenterSection>
 
-					<StartSection>{right}</StartSection>
-
 					<EndSection>
 						<DropdownMenu>
-							<StyledDropdownMenuTrigger asChild>
+							<StyledDropdownMenuTrigger
+								asChild
+								$isWorkspaceHeader={isWorkspaceHeader}
+							>
 								<UserMenuButton>
 									<UserMenuIcon />
 								</UserMenuButton>
@@ -39,11 +50,18 @@ export default function Header({ className }: HeaderProps) {
 							{user ?? <UserDropdown showPersonalArea={false} />}
 						</DropdownMenu>
 
-						<EndSectionSeparator orientation="vertical" />
+						<EndSectionSeparator
+							$isWorkspaceHeader={isWorkspaceHeader}
+							orientation="vertical"
+						/>
 
 						<StyledLink to="/">
-							<BiData>by BI DATA</BiData>
-							<StyledImg src={logoWithText} alt="Logo" />
+							<BiData $isWorkspaceHeader={isWorkspaceHeader}>by BI DATA</BiData>
+							<StyledImg
+								$isWorkspaceHeader={isWorkspaceHeader}
+								src={logoSource}
+								alt="Logo"
+							/>
 						</StyledLink>
 					</EndSection>
 				</HeaderInner>
@@ -52,20 +70,24 @@ export default function Header({ className }: HeaderProps) {
 	)
 }
 
-const HeaderContainer = styled.div`
-  padding: 20px 32px;
-  border-bottom: 2px var(--active-color-button) solid;
-	border-image: var(--default-linear) 1;
+const HeaderContainer = styled.div<{ $isWorkspaceHeader: boolean }>`
+  padding: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "20px 32px 0 32px" : "20px 32px")};
+  border-bottom: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "none" : "2px var(--active-color-button) solid")};
+	border-image: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "none" : "var(--default-linear) 1")};
 `
 
-const HeaderRoot = styled.header`
+const HeaderRoot = styled.header<{
+	$isWorkspaceHeader: boolean
+}>`
   position: sticky;
   top: 0;
-  /* background: oklch(0.2077 0.038 275.77); */
+  background: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "oklch(0.2077 0.038 275.77)" : "none")};
+  border-bottom: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "1px solid var(--line)" : "none")};
   border-radius: var(--radius-lg);
   padding-inline: 24px;
   z-index: var(--z-dropdown);
-  color: var(--Background-color-bg-text-active);
+  box-shadow: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "var(--card-shadow)" : "none")};
+  color: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "white" : "var(--Background-color-bg-text-active)")};
 `
 
 const HeaderInner = styled.div`
@@ -75,12 +97,14 @@ const HeaderInner = styled.div`
   height: 56px;
 `
 
-const StartSection = styled.div`
+const StartSection = styled.div<{ $isWorkspaceHeader: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
   justify-content: flex-start;
   min-width: 0;
+  margin-right: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "none" : "1rem")};
+  order: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "0" : "1")};
 `
 
 const CenterSection = styled.div`
@@ -92,12 +116,12 @@ const CenterSection = styled.div`
   overflow: hidden;
 `
 
-const CenterTitle = styled.div`
+const CenterTitle = styled.div<{ $isWorkspaceHeader: boolean }>`
   margin: 0;
   font-size: var(--fs-heading-3);
   font-weight: 500;
   line-height: 32px;
-  color: var(--text-color-2);
+  color: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "var(--colors-base-neutral-11)" : "var(--text-color-2)")};
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -112,11 +136,14 @@ const EndSection = styled.div`
   align-items: center;
   justify-content: flex-end;
   min-width: 0;
+  order: 2;
 `
 
-const EndSectionSeparator = styled(Separator)`
+const EndSectionSeparator = styled(Separator)<{
+	$isWorkspaceHeader: boolean
+}>`
   margin: 0px 4px 0px 12px;
-  background-color: var(--Background-color-bg-text-active)
+  background-color: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "rgba(255, 255, 255, 0.5)" : "var(--Background-color-bg-text-active)")};
 `
 
 const UserMenuButton = styled.button`
@@ -153,22 +180,31 @@ const StyledLink = styled(Link)`
   height: 32px;
 `
 
-const BiData = styled.span`
-  color: var(--text-color-2);
+const BiData = styled.span<{
+	$isWorkspaceHeader: boolean
+}>`
+  color: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "#d2e0fa" : "var(--text-color-2)")};;
   font-size: var(--fs-btn);
   align-self: flex-start;
   line-height: 40px;
   white-space: nowrap;
 `
 
-const StyledImg = styled.img`
-  width: 100%;
-  height: 90%;
+const StyledImg = styled.img<{
+	$isWorkspaceHeader: boolean
+}>`
+  height: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "auto" : "90%")};
 `
 
-const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger)`
-  transition: color 200ms ease-in-out;
+const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger)<{
+	$isWorkspaceHeader: boolean
+}>`
+  transition: ${({ $isWorkspaceHeader }) =>
+		$isWorkspaceHeader ? "none" : "color 200ms ease-in-out"};
   &:hover {
-    color: var(--text-color);
+    color: ${({ $isWorkspaceHeader }) =>
+			$isWorkspaceHeader
+				? "var(--colors-base-neutral-11)"
+				: "var(--text-color)"};
   }
 `

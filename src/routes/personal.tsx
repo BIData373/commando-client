@@ -14,7 +14,7 @@ function PersonalPage() {
 
 	return (
 		<PageShell>
-			<Header />
+			<Header variant="personal" />
 			<ContentScrollArea>
 				<Outlet />
 			</ContentScrollArea>
