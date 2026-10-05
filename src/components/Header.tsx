@@ -1,3 +1,4 @@
+import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
 import { User } from "lucide-react"
@@ -46,7 +47,7 @@ export default function Header({ variant = "workspace" }: HeaderProps) {
 
 						<StyledLink to="/">
 							<BiData>by BI DATA</BiData>
-							<StyledImg src={logoSource} alt="Logo" />
+							<StyledLogo src={logoSource} alt="Logo" />
 						</StyledLink>
 					</EndSection>
 				</HeaderInner>
@@ -56,14 +57,14 @@ export default function Header({ variant = "workspace" }: HeaderProps) {
 }
 
 export const headerVariants = {
-	workspace: `
+	workspace: css`
       --root-padding: 20px 32px 0 32px;
       --root-border-bottom: none;
       --root-border-image: none;
 
       --container-background: oklch(0.2077 0.038 275.77);
       --container-border-bottom: 1px solid var(--line);
-      --container-box-shaodw: var(--card-shadow);
+      --container-box-shadow: var(--card-shadow);
       --container-icon-color: white;
 
       --header-text-color: var(--colors-base-neutral-11);
@@ -85,15 +86,15 @@ export const headerVariants = {
       --dropdown-item-bg-hover: var(--Menu-Tab-Hover);
       --dropdown-item-text-hover: var(--Menu-Tab-Text);
     `,
-	personal: `
+	personal: css`
       --root-padding: 20px 32px;
       --root-border-bottom: 2px var(--active-color-button) solid;
       --root-border-image: var(--default-linear) 1;
 
       --container-background: none;
       --container-border-bottom: none;
-      --container-box-shaodw: none;
-      --container-icon-color: var(--Background-color-bg-text-active);
+      --container-box-shadow: none;
+      --container-icon-color: var(--Components-Dropdown-Global-colorTextDescription);
 
       --header-text-color: var(--text-color-2);
 
@@ -132,7 +133,7 @@ const HeaderContainer = styled.header`
   border-radius: var(--radius-lg);
   padding-inline: 24px;
   z-index: var(--z-dropdown);
-  box-shadow: var(--container-box-shaodw);
+  box-shadow: var(--container-box-shadow);
   color: var(--header-text-color);
 `
 
@@ -234,6 +235,6 @@ const BiData = styled.span`
   white-space: nowrap;
 `
 
-const StyledImg = styled.img`
+const StyledLogo = styled.img`
   height: var(--logo-height);
 `
