@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { PermissionType } from "src/api/model"
 import { ContentScrollArea } from "src/components/shared/ContentScrollArea"
-import { PageShell } from "src/components/shared/PageShell"
+import { WorkspacePageShell } from "src/components/Workspace/WorkspacePageShell"
 import { WorkspaceTitle } from "src/components/WorkspaceTitle"
 import { WorkspaceUserDropdown } from "src/components/WorkspaceUserDropdown"
 import { UserViewProvider } from "src/providers/UserViewProvider"
@@ -41,7 +41,7 @@ function WorkspaceContent() {
 				type={PermissionType.VIEWER}
 				workspaceId={workspace.id}
 			>
-				<PageShell>
+				<WorkspacePageShell workspaceId={workspace.id}>
 					<Header />
 
 					<WorkspaceUserDropdown />
@@ -50,7 +50,7 @@ function WorkspaceContent() {
 					<ContentScrollArea>
 						<Outlet />
 					</ContentScrollArea>
-				</PageShell>
+				</WorkspacePageShell>
 			</AuthorizationWrapper>
 		</UserViewProvider>
 	)

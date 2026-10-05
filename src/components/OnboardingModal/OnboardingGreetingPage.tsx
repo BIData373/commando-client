@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { ArrowLeft } from "lucide-react"
-import systemPreview from "../../assets/systemPreview.svg"
+import systemPreview from "../../assets/system-preview.svg"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { RootPageFooter } from "../shared/RootPageFooter"
 import { GradientText } from "./GradientText"
