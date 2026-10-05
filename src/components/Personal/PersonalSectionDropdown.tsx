@@ -18,6 +18,7 @@ export function PersonalSectionDropdown({
 		<NavigationMenu viewport={false}>
 			<NavigationMenuList>
 				<ArchiveDropdown
+					variant="personal"
 					tasksRoute={{
 						to: "/personal/tasks",
 						search: { view: TasksView.TABLE },

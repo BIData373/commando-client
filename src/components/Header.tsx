@@ -18,76 +18,122 @@ export default function Header({ variant = "workspace" }: HeaderProps) {
 		elementPlacements: { right, center, user },
 	} = useHeader()
 
-	const isWorkspaceHeader = variant === "workspace"
-	const logoSource = isWorkspaceHeader ? logoWithText : logoWithTextDark
+	const logoSource = variant === "workspace" ? logoWithText : logoWithTextDark
 
 	return (
-		<HeaderContainer $isWorkspaceHeader={isWorkspaceHeader}>
-			<HeaderRoot $isWorkspaceHeader={isWorkspaceHeader}>
+		<HeaderRoot $variant={variant}>
+			<HeaderContainer>
 				<HeaderInner>
-					<StartSection $isWorkspaceHeader={isWorkspaceHeader}>
-						{right}
-					</StartSection>
+					<StartSection>{right}</StartSection>
 
 					<CenterSection>
 						<TooltipProvider>
-							<CenterTitle $isWorkspaceHeader={isWorkspaceHeader}>
-								{center}
-							</CenterTitle>
+							<CenterTitle>{center}</CenterTitle>
 						</TooltipProvider>
 					</CenterSection>
 
 					<EndSection>
 						<DropdownMenu>
-							<StyledDropdownMenuTrigger
-								asChild
-								$isWorkspaceHeader={isWorkspaceHeader}
-							>
+							<DropdownMenuTrigger asChild>
 								<UserMenuButton>
 									<UserMenuIcon />
 								</UserMenuButton>
-							</StyledDropdownMenuTrigger>
+							</DropdownMenuTrigger>
 							{user ?? <UserDropdown showPersonalArea={false} />}
 						</DropdownMenu>
 
-						<EndSectionSeparator
-							$isWorkspaceHeader={isWorkspaceHeader}
-							orientation="vertical"
-						/>
+						<EndSectionSeparator orientation="vertical" />
 
 						<StyledLink to="/">
-							<BiData $isWorkspaceHeader={isWorkspaceHeader}>by BI DATA</BiData>
-							<StyledImg
-								$isWorkspaceHeader={isWorkspaceHeader}
-								src={logoSource}
-								alt="Logo"
-							/>
+							<BiData>by BI DATA</BiData>
+							<StyledImg src={logoSource} alt="Logo" />
 						</StyledLink>
 					</EndSection>
 				</HeaderInner>
-			</HeaderRoot>
-		</HeaderContainer>
+			</HeaderContainer>
+		</HeaderRoot>
 	)
 }
 
-const HeaderContainer = styled.div<{ $isWorkspaceHeader: boolean }>`
-  padding: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "20px 32px 0 32px" : "20px 32px")};
-  border-bottom: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "none" : "2px var(--active-color-button) solid")};
-	border-image: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "none" : "var(--default-linear) 1")};
+export const headerVariants = {
+	workspace: `
+      --root-padding: 20px 32px 0 32px;
+      --root-border-bottom: none;
+      --root-border-image: none;
+
+      --container-background: oklch(0.2077 0.038 275.77);
+      --container-border-bottom: 1px solid var(--line);
+      --container-box-shaodw: var(--card-shadow);
+      --container-icon-color: white;
+
+      --header-text-color: var(--colors-base-neutral-11);
+
+      --seperator-color: rgba(255, 255, 255, 0.5);
+
+      --bi-data-color: #d2e0fa;
+
+      --logo-height: auto;
+
+      --icon-transition: none;
+      --icon-hover-color: var(--colors-base-neutral-11);
+
+      --header-button-hover: var(--Menu-Tab-Hover);
+
+      --archive-section-button-bg-active: var(--Menu-Tab-Active);
+
+      --dropdown-menu-bg: var(--header-bg);
+      --dropdown-item-bg-hover: var(--Menu-Tab-Hover);
+      --dropdown-item-text-hover: var(--Menu-Tab-Text);
+    `,
+	personal: `
+      --root-padding: 20px 32px;
+      --root-border-bottom: 2px var(--active-color-button) solid;
+      --root-border-image: var(--default-linear) 1;
+
+      --container-background: none;
+      --container-border-bottom: none;
+      --container-box-shaodw: none;
+      --container-icon-color: var(--Background-color-bg-text-active);
+
+      --header-text-color: var(--text-color-2);
+
+      --seperator-color: var(--Background-color-bg-text-active);
+
+      --bi-data-color: var(--text-color-2);
+
+      --logo-height: 90%;
+
+      --icon-transition: color 200ms ease-in-out;
+      --icon-hover-color: var(--text-color);
+
+      --header-button-hover: var(--button-hover);
+
+      --archive-section-button-bg-active: var(--Components-Dropdown-Global-controlItemBgHover);
+
+      --dropdown-menu-bg: var(--background-area);
+      --dropdown-item-bg-hover: var(--Components-Dropdown-Global-controlItemBgHover);
+      --dropdown-item-text-hover: var(--text-color-2);
+    `,
+} as const
+
+const HeaderRoot = styled.div<{ $variant: keyof typeof headerVariants }>`
+  ${({ $variant }) => $variant && headerVariants[$variant]}
+
+  padding: var(--root-padding);
+  border-bottom: var(--root-border-bottom);
+	border-image: var(--root-border-image);
 `
 
-const HeaderRoot = styled.header<{
-	$isWorkspaceHeader: boolean
-}>`
+const HeaderContainer = styled.header`
   position: sticky;
   top: 0;
-  background: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "oklch(0.2077 0.038 275.77)" : "none")};
-  border-bottom: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "1px solid var(--line)" : "none")};
+  background: var(--container-background);
+  border-bottom: var(--container-border-bottom);
   border-radius: var(--radius-lg);
   padding-inline: 24px;
   z-index: var(--z-dropdown);
-  box-shadow: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "var(--card-shadow)" : "none")};
-  color: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "white" : "var(--Background-color-bg-text-active)")};
+  box-shadow: var(--container-box-shaodw);
+  color: var(--header-text-color);
 `
 
 const HeaderInner = styled.div`
@@ -97,14 +143,12 @@ const HeaderInner = styled.div`
   height: 56px;
 `
 
-const StartSection = styled.div<{ $isWorkspaceHeader: boolean }>`
+const StartSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
   justify-content: flex-start;
   min-width: 0;
-  margin-right: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "none" : "1rem")};
-  order: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "0" : "1")};
 `
 
 const CenterSection = styled.div`
@@ -116,12 +160,12 @@ const CenterSection = styled.div`
   overflow: hidden;
 `
 
-const CenterTitle = styled.div<{ $isWorkspaceHeader: boolean }>`
+const CenterTitle = styled.div`
   margin: 0;
   font-size: var(--fs-heading-3);
   font-weight: 500;
   line-height: 32px;
-  color: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "var(--colors-base-neutral-11)" : "var(--text-color-2)")};
+  color: var(--header-text-color);
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -136,14 +180,11 @@ const EndSection = styled.div`
   align-items: center;
   justify-content: flex-end;
   min-width: 0;
-  order: 2;
 `
 
-const EndSectionSeparator = styled(Separator)<{
-	$isWorkspaceHeader: boolean
-}>`
+const EndSectionSeparator = styled(Separator)`
   margin: 0px 4px 0px 12px;
-  background-color: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "rgba(255, 255, 255, 0.5)" : "var(--Background-color-bg-text-active)")};
+  background-color: var(--seperator-color);
 `
 
 const UserMenuButton = styled.button`
@@ -171,6 +212,11 @@ const UserMenuButton = styled.button`
 const UserMenuIcon = styled(User)`
   width: 16px;
   cursor: pointer;
+  color: var(--container-icon-color);
+  transition: var(--icon-transition);
+  &:hover {
+    color: var(--icon-hover-color);
+  }
 `
 
 const StyledLink = styled(Link)`
@@ -180,31 +226,14 @@ const StyledLink = styled(Link)`
   height: 32px;
 `
 
-const BiData = styled.span<{
-	$isWorkspaceHeader: boolean
-}>`
-  color: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "#d2e0fa" : "var(--text-color-2)")};;
+const BiData = styled.span`
+  color: var(--bi-data-color);
   font-size: var(--fs-btn);
   align-self: flex-start;
   line-height: 40px;
   white-space: nowrap;
 `
 
-const StyledImg = styled.img<{
-	$isWorkspaceHeader: boolean
-}>`
-  height: ${({ $isWorkspaceHeader }) => ($isWorkspaceHeader ? "auto" : "90%")};
-`
-
-const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger)<{
-	$isWorkspaceHeader: boolean
-}>`
-  transition: ${({ $isWorkspaceHeader }) =>
-		$isWorkspaceHeader ? "none" : "color 200ms ease-in-out"};
-  &:hover {
-    color: ${({ $isWorkspaceHeader }) =>
-			$isWorkspaceHeader
-				? "var(--colors-base-neutral-11)"
-				: "var(--text-color)"};
-  }
+const StyledImg = styled.img`
+  height: var(--logo-height);
 `
