@@ -9,6 +9,7 @@ import { PageShell } from "../shared/PageShell"
 interface WorkspacePageShellProps extends PropsWithChildren {
 	workspaceId: number
 }
+
 const FIRST_VISIT_STORAGE_KEY = "manager_visit_first_time"
 
 export function WorkspacePageShell({
