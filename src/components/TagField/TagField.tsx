@@ -10,6 +10,7 @@ interface TagFieldProps {
 	onTagSelect: (tag: string) => void
 	onTagRemove: (tag: string) => void
 	caption?: string
+	label?: string
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -21,11 +22,12 @@ function TagField({
 	onTagSelect,
 	onTagRemove,
 	caption,
+	label,
 }: TagFieldProps) {
 	return (
 		<FormItem>
 			<FormLabelRow>
-				<LabelText>תגיות לדיון</LabelText>
+				<LabelText>{label ?? "תגיות"}</LabelText>
 			</FormLabelRow>
 			<TagFieldInput
 				workspaceId={workspaceId}
