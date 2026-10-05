@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="27.1125" height="24.2225" viewBox="0 0 27.1125 24.2225" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Logo icon">
+<path id="Subtract" d="M27.1125 15.5443H22.635L17.8979 9.68517L17.936 24.2225H14.4315L14.5081 0L27.1125 15.5443Z" fill="url(#paint0_linear_0_4)"/>
+<path id="Subtract_2" d="M12.6901 24.2222H9.24295L9.18555 15.1864L4.54264 20.7254H0L12.6901 5.53934V24.2222Z" fill="url(#paint1_linear_0_4)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_4" x1="14.4315" y1="0" x2="34.3377" y2="10.4213" gradientUnits="userSpaceOnUse">
+<stop stop-color="#9A99FF"/>
+<stop offset="1" stop-color="#9305FA"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_4" x1="0" y1="5.53934" x2="17.3675" y2="17.336" gradientUnits="userSpaceOnUse">
+<stop stop-color="#9A99FF"/>
+<stop offset="1" stop-color="#9305FA"/>
+</linearGradient>
+</defs>
+</svg>

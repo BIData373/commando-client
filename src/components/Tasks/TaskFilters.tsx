@@ -297,8 +297,10 @@ export const FilterPill = styled.div<{ $active: boolean }>`
   background: #FFF;
   color: ${({ $active }) => ($active ? "rgba(9, 88, 217, 1)" : "var(--sea-ink)")};
 
-  &:hover {
-	background: var(--link-bg-hover);
+  @media (hover: hover) {
+	&:hover {
+		background: var(--link-bg-hover);
+	}
   }
 `
 
