@@ -1,4 +1,4 @@
-import { readLocalStorageValue } from "@mantine/hooks"
+import { useLocalStorage } from "@mantine/hooks"
 import { useNavigate } from "@tanstack/react-router"
 import { type PropsWithChildren, useEffect } from "react"
 import { PermissionType } from "src/api/model"
@@ -9,48 +9,41 @@ import { PageShell } from "../shared/PageShell"
 interface WorkspacePageShellProps extends PropsWithChildren {
 	workspaceId: number
 }
-const FIRST_VISIT_STORAGE_KEY = "managerVisitFirstTime"
+const FIRST_VISIT_STORAGE_KEY = "manager_visit_first_time"
 
 export function WorkspacePageShell({
 	workspaceId,
 	children,
 }: WorkspacePageShellProps) {
-	const { data: myPermission, isFetched } = useGetMyPermission({
-		workspaceId,
+	const [needsAssigneeRedirect, setNeedsAssigneeRedirect] = useLocalStorage({
+		key: FIRST_VISIT_STORAGE_KEY,
+		defaultValue: true,
+		getInitialValueInEffect: false,
 	})
+	const { data: myPermission, isFetched: isPermissionFetched } =
+		useGetMyPermission({
+			workspaceId,
+		})
 	const {
 		workspace: { urlName },
 	} = useWorkspace()
 	const navigate = useNavigate()
-	const needsAssigneesRedirect = readLocalStorageValue({
-		key: FIRST_VISIT_STORAGE_KEY,
-	})
 
 	useEffect(() => {
-		if (readLocalStorageValue({ key: FIRST_VISIT_STORAGE_KEY }) === undefined) {
-			localStorage.setItem(FIRST_VISIT_STORAGE_KEY, "true")
-		}
-	}, [])
-
-	useEffect(() => {
-		if (!(isFetched && myPermission)) {
+		if (!isPermissionFetched) {
 			return
 		}
 
 		const isManager = myPermission?.type === PermissionType.MANAGER
-		if (needsAssigneesRedirect && isManager) {
-			localStorage.setItem(FIRST_VISIT_STORAGE_KEY, "false")
+
+		if (needsAssigneeRedirect && isManager) {
+			setNeedsAssigneeRedirect(false)
 			navigate({
 				to: "/workspace/$urlName/settings/assignees/help",
 				params: { urlName },
 			})
-		} else {
-			navigate({
-				to: "/workspace/$urlName/dashboard",
-				params: { urlName },
-			})
 		}
-	}, [myPermission, isFetched, navigate, urlName, needsAssigneesRedirect])
+	}, [myPermission, isPermissionFetched, navigate, urlName])
 
 	return <PageShell>{children}</PageShell>
 }
