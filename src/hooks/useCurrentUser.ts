@@ -3,10 +3,9 @@ import type { CreateUserDto } from "src/api/model"
 import { getStoredToken } from "src/utils/auth-utils"
 import { STATIC_TOKEN } from "src/utils/env-utils"
 import {
-	COOKIE_NAME,
 	decodeSsoUserJwt,
 	normalizeUpn,
-	onCookieChange,
+	onTokenChange,
 } from "src/utils/user-utils"
 import { useBIBypass } from "./useBIBypass"
 
@@ -40,9 +39,9 @@ export function useCurrentUser() {
 			return
 		}
 
-		async function syncUser() {
-			const cookie = await getStoredToken()
-			const ssoUser = decodeSsoUserJwt(cookie)
+		function syncUser() {
+			const token = getStoredToken()
+			const ssoUser = decodeSsoUserJwt(token ?? undefined)
 
 			const upn = ssoUser?.upn
 			if (!upn) {
@@ -64,7 +63,7 @@ export function useCurrentUser() {
 
 		syncUser()
 
-		return onCookieChange(COOKIE_NAME, syncUser)
+		return onTokenChange(syncUser)
 	}, [username, isBI])
 
 	return user

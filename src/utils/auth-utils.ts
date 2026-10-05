@@ -1,6 +1,8 @@
 import { HttpStatusCode } from "axios"
 import { AUTH_SERVER_URL, USE_MOCK_API, USE_SSO } from "./env-utils"
-import { COOKIE_NAME } from "./user-utils"
+import { dispatchTokenChange, TOKEN_KEY } from "./user-utils"
+
+export const BEARER_PREFIX = "Bearer "
 
 export const AUTH_ENABLED = !USE_MOCK_API && USE_SSO
 
@@ -8,8 +10,18 @@ export const REFRESH_BUFFER_SECONDS = 70
 
 export const SSO_PATH = "sso"
 
-export async function getStoredToken() {
-	return (await cookieStore.get(COOKIE_NAME).catch(() => null))?.value
+export function getStoredToken() {
+	return localStorage.getItem(TOKEN_KEY)
+}
+
+function setStoredToken(token: string) {
+	localStorage.setItem(TOKEN_KEY, token)
+	dispatchTokenChange(token)
+}
+
+function removeStoredToken() {
+	localStorage.removeItem(TOKEN_KEY)
+	dispatchTokenChange(undefined)
 }
 
 export function getTokenExpiry(token: string): number | null {
@@ -47,21 +59,23 @@ const codesForReauthentication = [
 ]
 
 export async function authenticate() {
-	const response = await fetch(new URL("sso/cookies", AUTH_SERVER_URL).href, {
+	const existingToken = getStoredToken()
+	const response = await fetch(new URL("sso/token", AUTH_SERVER_URL).href, {
 		method: "GET",
-		credentials: "include",
+		...(existingToken && {
+			headers: { Authorization: `${BEARER_PREFIX}${existingToken}` },
+		}),
 	})
 
 	if (response.ok) {
-		const data = (await response.json()) as { ssoUser: string }
-		const newToken = data?.ssoUser
+		const data = (await response.json()) as { token: string }
+		const newToken = data?.token
 
-		await cookieStore.set({
-			name: COOKIE_NAME,
-			value: newToken,
-			path: "/",
-			sameSite: "lax",
-		})
+		if (!newToken) {
+			throw new Error("SSO response missing token")
+		}
+
+		setStoredToken(newToken)
 
 		consumeSSOState()
 
@@ -72,7 +86,7 @@ export async function authenticate() {
 		throw new Error("SSO Internal error")
 	}
 
-	await cookieStore.delete(COOKIE_NAME)
+	removeStoredToken()
 
 	if (consumeSSOState()) {
 		throw new Error("Authentication failed after redirect")
@@ -93,7 +107,7 @@ export async function authenticate() {
 }
 
 export async function authenticateOrExisting() {
-	const existing = await getStoredToken()
+	const existing = getStoredToken()
 	if (existing) {
 		const expiry = getTokenExpiry(existing)
 		if (
