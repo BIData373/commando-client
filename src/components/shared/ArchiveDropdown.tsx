@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { Link, type LinkProps } from "@tanstack/react-router"
 import { ChevronDown } from "lucide-react"
+import { headerVariants } from "../Header"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -20,6 +21,7 @@ interface ArchiveDropdownProps {
 	archiveRoute: LinkProps
 	section: DropdownSection
 	isActive: boolean
+	variant: "workspace" | "personal"
 }
 
 const DROPDOWN_ITEMS: Record<DropdownSection, string> = {
@@ -32,6 +34,7 @@ export const ArchiveDropdown = ({
 	archiveRoute,
 	section,
 	isActive,
+	variant,
 }: ArchiveDropdownProps) => {
 	const routeByKey: Record<DropdownSection, LinkProps> = {
 		tasks: tasksRoute,
@@ -47,10 +50,10 @@ export const ArchiveDropdown = ({
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<ChevronButton>
-							<ChevronDown size={14} />
+							<StyledChevronDown size={14} />
 						</ChevronButton>
 					</DropdownMenuTrigger>
-					<SectionDropdownContent side="bottom">
+					<SectionDropdownContent $variant={variant} side="bottom">
 						{Object.values(DropdownSection).map((key) => (
 							<SectionDropdownItem key={key} asChild>
 								<Link {...routeByKey[key]}>{DROPDOWN_ITEMS[key]}</Link>
@@ -67,14 +70,10 @@ const SectionButton = styled.div<{ $active: boolean }>`
   display: flex;
   align-items: center;
   direction: rtl;
-  background: ${({ $active }) => ($active ? "var(--Menu-Tab-Active)" : "transparent")};
+  background: ${({ $active }) => ($active ? "var(--archive-section-button-bg-active)" : "transparent")};
   border-radius: var(--radius-sm);
   overflow: hidden;
-
-  &:hover {
-    background: var(--Menu-Tab-Hover);
-    color: var(--Menu-Tab-Text);
-  }
+  color: var(--header-text-color);
 `
 
 const ChevronButton = styled.button`
@@ -85,21 +84,24 @@ const ChevronButton = styled.button`
   padding-inline: 8px;
   border: none;
   background: transparent;
-  color: var(--Menu-Tab-Text);
   cursor: pointer;
+  outline: none;
 
   &:hover {
-    background: var(--Menu-Tab-Hover);
+    background: var(--header-button-hover);
   }
 `
 
-const SectionDropdownContent = styled(DropdownMenuContent)`
+const SectionDropdownContent = styled(DropdownMenuContent)<{
+	$variant: keyof typeof headerVariants
+}>`
+  ${({ $variant }) => $variant && headerVariants[$variant]}
   && {
     direction: rtl;
     min-width: 80px;
     padding: 4px;
     border-radius: var(--radius-md);
-    background: var(--header-bg);
+    background: var(--dropdown-menu-bg);
     border: 1px solid var(--Menu-Tab-Hover);
     box-shadow: var(--dropdown-shadow);
   }
@@ -115,13 +117,17 @@ const SectionDropdownItem = styled(DropdownMenuItem)`
   border-radius: 4px;
   font-size: var(--fs-btn);
   font-weight: 400;
-  color: var(--Menu-Tab-Text);
+  color: var(--header-text-color);
   cursor: pointer;
 
   &[data-highlighted],
   &:hover {
-    background: var(--Menu-Tab-Hover);
-    color: var(--background);
+    background: var(--dropdown-item-bg-hover);
+    color: var(--dropdown-item-text-hover);
     outline: none;
   }
+`
+
+const StyledChevronDown = styled(ChevronDown)`
+  color: var(--header-text-color);
 `

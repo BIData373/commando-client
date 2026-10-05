@@ -1,21 +1,29 @@
+import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
 import { User } from "lucide-react"
 import logoWithText from "../assets/logo-with-text.svg"
+import logoWithTextDark from "../assets/logo-with-text-dark.png"
 import { useHeader } from "../providers/HeaderProvider"
 import { UserDropdown } from "./UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Separator } from "./ui/separator"
 import { TooltipProvider } from "./ui/tooltip"
 
-export default function Header() {
+interface HeaderProps {
+	variant?: "workspace" | "personal"
+}
+
+export default function Header({ variant = "workspace" }: HeaderProps) {
 	const {
 		elementPlacements: { right, center, user },
 	} = useHeader()
 
+	const logoSource = variant === "workspace" ? logoWithText : logoWithTextDark
+
 	return (
-		<HeaderContainer>
-			<HeaderRoot>
+		<HeaderRoot $variant={variant}>
+			<HeaderContainer>
 				<HeaderInner>
 					<StartSection>{right}</StartSection>
 
@@ -39,29 +47,94 @@ export default function Header() {
 
 						<StyledLink to="/">
 							<BiData>by BI DATA</BiData>
-							<img src={logoWithText} alt="Logo" />
+							<StyledLogo src={logoSource} alt="Logo" />
 						</StyledLink>
 					</EndSection>
 				</HeaderInner>
-			</HeaderRoot>
-		</HeaderContainer>
+			</HeaderContainer>
+		</HeaderRoot>
 	)
 }
 
-const HeaderContainer = styled.div`
-  padding: 20px 32px 0 32px;
+export const headerVariants = {
+	workspace: css`
+      --root-padding: 20px 32px 0 32px;
+      --root-border-bottom: none;
+      --root-border-image: none;
+
+      --container-background: oklch(0.2077 0.038 275.77);
+      --container-border-bottom: 1px solid var(--line);
+      --container-box-shadow: var(--card-shadow);
+      --container-icon-color: white;
+
+      --header-text-color: var(--colors-base-neutral-11);
+
+      --seperator-color: rgba(255, 255, 255, 0.5);
+
+      --bi-data-color: #d2e0fa;
+
+      --logo-height: auto;
+
+      --icon-transition: none;
+      --icon-hover-color: var(--colors-base-neutral-11);
+
+      --header-button-hover: var(--Menu-Tab-Hover);
+
+      --archive-section-button-bg-active: var(--Menu-Tab-Active);
+
+      --dropdown-menu-bg: var(--header-bg);
+      --dropdown-item-bg-hover: var(--Menu-Tab-Hover);
+      --dropdown-item-text-hover: var(--Menu-Tab-Text);
+    `,
+	personal: css`
+      --root-padding: 20px 32px;
+      --root-border-bottom: 2px var(--active-color-button) solid;
+      --root-border-image: var(--default-linear) 1;
+
+      --container-background: none;
+      --container-border-bottom: none;
+      --container-box-shadow: none;
+      --container-icon-color: var(--Components-Dropdown-Global-colorTextDescription);
+
+      --header-text-color: var(--text-color-2);
+
+      --seperator-color: var(--Background-color-bg-text-active);
+
+      --bi-data-color: var(--text-color-2);
+
+      --logo-height: 90%;
+
+      --icon-transition: color 200ms ease-in-out;
+      --icon-hover-color: var(--text-color);
+
+      --header-button-hover: var(--button-hover);
+
+      --archive-section-button-bg-active: var(--Components-Dropdown-Global-controlItemBgHover);
+
+      --dropdown-menu-bg: var(--background-area);
+      --dropdown-item-bg-hover: var(--Components-Dropdown-Global-controlItemBgHover);
+      --dropdown-item-text-hover: var(--text-color-2);
+    `,
+} as const
+
+const HeaderRoot = styled.div<{ $variant: keyof typeof headerVariants }>`
+  ${({ $variant }) => $variant && headerVariants[$variant]}
+
+  padding: var(--root-padding);
+  border-bottom: var(--root-border-bottom);
+	border-image: var(--root-border-image);
 `
 
-const HeaderRoot = styled.header`
+const HeaderContainer = styled.header`
   position: sticky;
   top: 0;
-  background: oklch(0.2077 0.038 275.77);
-  border-bottom: 1px solid var(--line);
+  background: var(--container-background);
+  border-bottom: var(--container-border-bottom);
   border-radius: var(--radius-lg);
   padding-inline: 24px;
   z-index: var(--z-dropdown);
-  box-shadow: var(--card-shadow);
-  color: white;
+  box-shadow: var(--container-box-shadow);
+  color: var(--header-text-color);
 `
 
 const HeaderInner = styled.div`
@@ -93,7 +166,7 @@ const CenterTitle = styled.div`
   font-size: var(--fs-heading-3);
   font-weight: 500;
   line-height: 32px;
-  color: var(--colors-base-neutral-11);
+  color: var(--header-text-color);
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -112,7 +185,7 @@ const EndSection = styled.div`
 
 const EndSectionSeparator = styled(Separator)`
   margin: 0px 4px 0px 12px;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: var(--seperator-color);
 `
 
 const UserMenuButton = styled.button`
@@ -140,6 +213,11 @@ const UserMenuButton = styled.button`
 const UserMenuIcon = styled(User)`
   width: 16px;
   cursor: pointer;
+  color: var(--container-icon-color);
+  transition: var(--icon-transition);
+  &:hover {
+    color: var(--icon-hover-color);
+  }
 `
 
 const StyledLink = styled(Link)`
@@ -150,9 +228,13 @@ const StyledLink = styled(Link)`
 `
 
 const BiData = styled.span`
-  color: #d2e0fa;
+  color: var(--bi-data-color);
   font-size: var(--fs-btn);
   align-self: flex-start;
   line-height: 40px;
   white-space: nowrap;
+`
+
+const StyledLogo = styled.img`
+  height: var(--logo-height);
 `
