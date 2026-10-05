@@ -1,35 +1,18 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
-import { ArrowLeft } from "lucide-react"
-import { WorkspaceStatusType } from "src/api/model"
 import { useListPersonalTaskRows } from "src/api/task/task"
-import { PrimaryButton } from "src/components/shared/PrimaryButton"
-import { STATUS_DEFAULTS } from "src/functions/status-defaults"
-import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
+import PersonalAreaButton from "../shared/PersonalAreaCard/PersonalAreaButton"
+import PersonalAreaHeader from "../shared/PersonalAreaCard/PersonalAreaHeader"
+import PersonalAreaStats from "../shared/PersonalAreaCard/PersonalAreaStats"
 
 export default function PersonalAreaCard() {
 	const navigate = useNavigate()
-	const user = useCurrentUser()
-	const userName = user.info?.name || user.upn
 
 	const { data: allTaskRows = [] } = useListPersonalTaskRows({
 		isArchived: false,
 	})
-
 	const totalCount = allTaskRows.length
-
-	const completedCount = allTaskRows.filter(
-		(t) => t.status?.type === WorkspaceStatusType.COMPLETED,
-	).length
-
-	const inProgressCount = allTaskRows.filter(
-		(t) => t.status?.type === WorkspaceStatusType.IN_PROGRESS,
-	).length
-
-	const notStartedCount = allTaskRows.filter(
-		(t) => t.status?.type === WorkspaceStatusType.NOT_STARTED,
-	).length
 
 	function handleNavigateToPersonal() {
 		navigate({ to: "/personal", search: { view: TasksView.TABLE } })
@@ -37,56 +20,12 @@ export default function PersonalAreaCard() {
 
 	return (
 		<CardRoot onClick={handleNavigateToPersonal}>
-			<Header>
-				<TitleRow>
-					{/* <NewTaskCount>({totalCount} הנחיות חדשות)</NewTaskCount> */}
-					<Title>אזור אישי</Title>
-				</TitleRow>
-				<Greeting>
-					<GreetingBold>שלום {userName}</GreetingBold>
-					<GreetingText>
-						, באזור האישי תוכל לצפות בכל ההנחיות שקיבלת
-					</GreetingText>
-				</Greeting>
-			</Header>
-
+			<PersonalAreaHeader />
 			<Footer>
-				<StyledPrimaryButton
-					title={
-						<>
-							כניסה לאזור האישי
-							<ArrowLeft size={18} />
-						</>
-					}
-					onClick={handleNavigateToPersonal}
-				/>
-
+				<PersonalAreaButton onClick={handleNavigateToPersonal} />
 				{totalCount > 0 ? (
 					<StatsRow>
-						<StatItem>
-							<StatNumber>{completedCount}</StatNumber>
-							<StatTag
-								$color={STATUS_DEFAULTS[WorkspaceStatusType.COMPLETED].color}
-							>
-								{STATUS_DEFAULTS[WorkspaceStatusType.COMPLETED].name}
-							</StatTag>
-						</StatItem>
-						<StatItem>
-							<StatNumber>{inProgressCount}</StatNumber>
-							<StatTag
-								$color={STATUS_DEFAULTS[WorkspaceStatusType.IN_PROGRESS].color}
-							>
-								{STATUS_DEFAULTS[WorkspaceStatusType.IN_PROGRESS].name}
-							</StatTag>
-						</StatItem>
-						<StatItem>
-							<StatNumber>{notStartedCount}</StatNumber>
-							<StatTag
-								$color={STATUS_DEFAULTS[WorkspaceStatusType.NOT_STARTED].color}
-							>
-								{STATUS_DEFAULTS[WorkspaceStatusType.NOT_STARTED].name}
-							</StatTag>
-						</StatItem>
+						<PersonalAreaStats taskRows={allTaskRows} />
 					</StatsRow>
 				) : (
 					<EmptyText>טרם שויכו אליך משימות</EmptyText>
@@ -115,28 +54,6 @@ const CardRoot = styled.div`
   }
 `
 
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 4px;
-`
-
-const TitleRow = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 8px;
-`
-
-const Title = styled.span`
-  color: var(--Color-Subtitle);
-  font-size: clamp(22px, 1.6vw, 30px);
-  font-weight: 400;
-  line-height: clamp(30px, 4.3vh, 46px);
-`
-
 // const NewTaskCount = styled.span`
 //   direction: rtl;
 //   color: rgba(0, 0, 0, 0.45);
@@ -144,25 +61,6 @@ const Title = styled.span`
 //   font-weight: 400;
 //   line-height: clamp(24px, 3.5vh, 38px);
 // `
-
-const Greeting = styled.div`
-  display: flex;
-  direction: rtl;
-`
-
-const GreetingBold = styled.span`
-  color: var(--text-color);
-  font-size: clamp(14px, 1vw, 20px);
-  font-weight: 500;
-  line-height: clamp(20px, 2.6vh, 28px);
-`
-
-const GreetingText = styled.span`
-  color: var(--text-color);
-  font-size: clamp(14px, 1vw, 20px);
-  font-weight: 400;
-  line-height: clamp(20px, 2.6vh, 28px);
-`
 
 const Footer = styled.div`
   display: flex;
@@ -214,7 +112,4 @@ const StatTag = styled.span<{ $color: string }>`
   font-weight: 400;
   line-height: 22px;
   white-space: nowrap;
-`
-const StyledPrimaryButton = styled(PrimaryButton)`
-	font-size: var(--fs-btn);
 `

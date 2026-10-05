@@ -1,96 +1,34 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
-import { ArrowLeft } from "lucide-react"
-import { WorkspaceStatusType } from "src/api/model"
 import { useListPersonalTaskRows } from "src/api/task/task"
-import { PrimaryButton } from "src/components/shared/PrimaryButton"
-import { STATUS_DEFAULTS } from "src/functions/status-defaults"
-import { useCurrentUser } from "src/hooks/useCurrentUser"
+import PersonalAreaButton from "src/components/shared/PersonalAreaCard/PersonalAreaButton"
+import PersonalAreaHeader from "src/components/shared/PersonalAreaCard/PersonalAreaHeader"
+import PersonalAreaStats from "src/components/shared/PersonalAreaCard/PersonalAreaStats"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
 export default function MobilePersonalAreaCard() {
 	const navigate = useNavigate()
-	const user = useCurrentUser()
-	const userName = user.info?.name || user.upn
-
-	const { data: allTaskRows = [] } = useListPersonalTaskRows({
-		isArchived: false,
-	})
-
-	const totalCount = allTaskRows.length
-
-	const completedCount = allTaskRows.filter(
-		(t) => t.status?.type === WorkspaceStatusType.COMPLETED,
-	).length
-
-	const inProgressCount = allTaskRows.filter(
-		(t) => t.status?.type === WorkspaceStatusType.IN_PROGRESS,
-	).length
-
-	const notStartedCount = allTaskRows.filter(
-		(t) => t.status?.type === WorkspaceStatusType.NOT_STARTED,
-	).length
-
 	function handleNavigateToPersonal() {
 		navigate({ to: "/personal", search: { view: TasksView.TABLE } })
 	}
 
+	const { data: allTaskRows = [] } = useListPersonalTaskRows({
+		isArchived: false,
+	})
+	const totalCount = allTaskRows.length
+
 	return (
 		<CardRoot onClick={handleNavigateToPersonal}>
-			<Header>
-				<TitleRow>
-					{/* <NewTaskCount>({totalCount} הנחיות חדשות)</NewTaskCount> */}
-					<Title>אזור אישי</Title>
-				</TitleRow>
-				<Greeting>
-					<GreetingText>
-						שלום <GreetingBold>{userName}</GreetingBold>, באיזור האישי תוכל
-						לצפות בכל ההנחיות שקיבלת
-					</GreetingText>
-				</Greeting>
-			</Header>
-
+			<PersonalAreaHeader />
 			<Footer>
 				{totalCount > 0 ? (
 					<StatsRow>
-						<StatItem>
-							<StatNumber>{completedCount}</StatNumber>
-							<StatTag
-								$color={STATUS_DEFAULTS[WorkspaceStatusType.COMPLETED].color}
-							>
-								{STATUS_DEFAULTS[WorkspaceStatusType.COMPLETED].name}
-							</StatTag>
-						</StatItem>
-						<StatItem>
-							<StatNumber>{inProgressCount}</StatNumber>
-							<StatTag
-								$color={STATUS_DEFAULTS[WorkspaceStatusType.IN_PROGRESS].color}
-							>
-								{STATUS_DEFAULTS[WorkspaceStatusType.IN_PROGRESS].name}
-							</StatTag>
-						</StatItem>
-						<StatItem>
-							<StatNumber>{notStartedCount}</StatNumber>
-							<StatTag
-								$color={STATUS_DEFAULTS[WorkspaceStatusType.NOT_STARTED].color}
-							>
-								{STATUS_DEFAULTS[WorkspaceStatusType.NOT_STARTED].name}
-							</StatTag>
-						</StatItem>
+						<PersonalAreaStats taskRows={allTaskRows} />
 					</StatsRow>
 				) : (
 					<EmptyText>טרם שויכו אליך משימות</EmptyText>
 				)}
-
-				<StyledPrimaryButton
-					title={
-						<>
-							כניסה לאזור האישי
-							<ArrowLeft size={18} />
-						</>
-					}
-					onClick={handleNavigateToPersonal}
-				/>
+				<PersonalAreaButton />
 			</Footer>
 		</CardRoot>
 	)
@@ -115,28 +53,6 @@ const CardRoot = styled.div`
   }
 `
 
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 4px;
-`
-
-const TitleRow = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 8px;
-`
-
-const Title = styled.span`
-  color: var(--Color-Subtitle);
-  font-size: clamp(22px, 1.6vw, 30px);
-  font-weight: 400;
-  line-height: clamp(30px, 4.3vh, 46px);
-`
-
 const Footer = styled.span`
     display: flex;
     flex-direction: column;
@@ -145,46 +61,10 @@ const Footer = styled.span`
     gap: 10px;
 `
 
-const Greeting = styled.div`
-  display: flex;
-  direction: rtl;
-`
-
-const GreetingBold = styled.span`
-  color: var(--text-color);
-  font-size: clamp(14px, 1vw, 20px);
-  font-weight: 500;
-  line-height: clamp(20px, 2.6vh, 28px);
-`
-
-const GreetingText = styled.span`
-  color: var(--text-color);
-  font-size: clamp(14px, 1vw, 20px);
-  font-weight: 400;
-  line-height: clamp(20px, 2.6vh, 28px);
-`
-
 const StatsRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-inline: 16px;
-  gap: 24px;
-`
-
-const StatItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-`
-
-const StatNumber = styled.span`
-  font-size: var(--fs-xl);
-  font-weight: 400;
-  line-height: 32px;
-  color: var(--text-color-2);
-  white-space: nowrap;
 `
 
 const EmptyText = styled.span`
@@ -194,24 +74,6 @@ const EmptyText = styled.span`
   color: var(--text-color-2);
   direction: rtl;
   white-space: nowrap;
-`
-
-const StatTag = styled.span<{ $color: string }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 76px;
-  padding: 1px 8px;
-  border-radius: 35px;
-  background: rgb(from ${({ $color }) => $color} r g b / 0.1);
-  color: ${({ $color }) => $color};
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 22px;
-  white-space: nowrap;
-`
-const StyledPrimaryButton = styled(PrimaryButton)`
-    font-size: var(--fs-btn);
 `
 
 // const NewTaskCount = styled.span`
