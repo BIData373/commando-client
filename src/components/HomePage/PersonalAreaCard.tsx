@@ -75,41 +75,11 @@ const StatsRow = styled.div`
   gap: 24px;
 `
 
-const StatItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-`
-
-const StatNumber = styled.span`
-  font-size: var(--fs-xl);
-  font-weight: 400;
-  line-height: 32px;
-  color: var(--text-color-2);
-  white-space: nowrap;
-`
-
 const EmptyText = styled.span`
   font-size: var(--fs-base);
   font-weight: 400;
   line-height: 28px;
   color: var(--text-color-2);
   direction: rtl;
-  white-space: nowrap;
-`
-
-const StatTag = styled.span<{ $color: string }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 76px;
-  padding: 1px 8px;
-  border-radius: 35px;
-  background: rgb(from ${({ $color }) => $color} r g b / 0.1);
-  color: ${({ $color }) => $color};
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 22px;
   white-space: nowrap;
 `
