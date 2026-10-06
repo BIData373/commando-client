@@ -7,9 +7,14 @@
  */
 import type { AssigneeDto } from "./assignee-dto"
 import type { TaskDto } from "./task-dto"
+import type { UserDto } from "./user-dto"
 import type { WorkspaceStatusDto } from "./workspace-status-dto"
 
 export interface AssigneeTaskStatusDto {
+	createdAt: Date
+	createdBy: UserDto
+	updatedAt: Date
+	updatedBy: UserDto
 	task: TaskDto
 	assignee: AssigneeDto
 	status: WorkspaceStatusDto
