@@ -105,6 +105,10 @@ const StyledCalendar = styled(Calendar)`
     justify-content: center;
   }
 
+  .rdp-outside button{
+    color: rgba(0, 0, 0, 0.35) !important;
+  }
+
   /* ── Today: purple border, no background (only when not in a range) ── */
   .rdp-today:not(.rdp-range_start):not(.rdp-range_end):not(.rdp-range_middle) {
     background: transparent !important;
