@@ -1,6 +1,6 @@
 import type { MirageUserDto, PermissionType, UserInfoDto } from "src/api/model"
 
-export const COOKIE_NAME = "ssoUser"
+export const TOKEN_KEY = "ssoUser"
 
 type SsoUser = Partial<UserInfoDto> & { upn: string }
 
@@ -28,19 +28,20 @@ export function decodeSsoUserJwt(jwtValue?: string): SsoUser | null {
 	}
 }
 
-export function onCookieChange(
-	name: string,
+const TOKEN_CHANGE_EVENT = "token-change"
+
+export function dispatchTokenChange(value: string | undefined): void {
+	window.dispatchEvent(new CustomEvent(TOKEN_CHANGE_EVENT, { detail: value }))
+}
+
+export function onTokenChange(
 	callback: (value: string | undefined) => void,
 ): () => void {
-	const handler = (event: CookieChangeEvent) => {
-		const newValue = event.changed?.find((c) => c.name === name)?.value
-		const wasDeleted = event.deleted?.some((c) => c.name === name)
-		if (newValue !== undefined || wasDeleted) {
-			callback(newValue)
-		}
+	const handler = (event: Event) => {
+		callback((event as CustomEvent<string | undefined>).detail)
 	}
-	cookieStore.addEventListener("change", handler)
-	return () => cookieStore.removeEventListener("change", handler)
+	window.addEventListener(TOKEN_CHANGE_EVENT, handler)
+	return () => window.removeEventListener(TOKEN_CHANGE_EVENT, handler)
 }
 
 export function concatName(user: MirageUserDto, type?: PermissionType): string {

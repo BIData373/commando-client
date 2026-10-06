@@ -2,7 +2,12 @@ import axios, { type AxiosError, type AxiosRequestConfig } from "axios"
 import createAuthRefreshInterceptor from "axios-auth-refresh"
 import { parseISO } from "date-fns"
 import qs from "qs"
-import { AUTH_ENABLED, authenticate } from "./utils/auth-utils"
+import {
+	AUTH_ENABLED,
+	authenticate,
+	BEARER_PREFIX,
+	getStoredToken,
+} from "./utils/auth-utils"
 import {
 	API_BASE_URL,
 	API_PREFIX,
@@ -20,13 +25,23 @@ import { getRequestIdentity } from "./utils/request-utils"
 
 export const axiosInstance = axios.create({
 	baseURL: new URL(API_PREFIX, API_BASE_URL).toString(),
-	withCredentials: USE_SSO,
+	withCredentials: false,
 	headers: {
 		"Content-Type": "application/json",
 		...(STATIC_TOKEN && { [STATIC_TOKEN_HEADER]: STATIC_TOKEN }),
 	},
 	paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
 })
+
+if (USE_SSO) {
+	axiosInstance.interceptors.request.use((config) => {
+		const token = getStoredToken()
+		if (token) {
+			config.headers.Authorization = `${BEARER_PREFIX}${token}`
+		}
+		return config
+	})
+}
 
 if (STATIC_TOKEN) {
 	axiosInstance.interceptors.request.use((config) => {

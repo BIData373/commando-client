@@ -1,10 +1,10 @@
 import { type PropsWithChildren, useEffect } from "react"
+import { getStoredToken } from "src/utils/auth-utils"
 import { MATOMO_ENABLED, MATOMO_SITE_ID } from "src/utils/env-utils"
 import {
-	COOKIE_NAME,
 	decodeSsoUserJwt,
 	normalizeUpn,
-	onCookieChange,
+	onTokenChange,
 } from "src/utils/user-utils"
 
 declare global {
@@ -57,19 +57,11 @@ export default function MatomoWrapper({ children }: PropsWithChildren) {
 
 		// setUserId must be queued before trackPageView, otherwise the
 		// tracked pageview is not attributed to the user.
-		cookieStore
-			.get(COOKIE_NAME)
-			.then((cookie) => {
-				pushMatomoUserId(cookie?.value)
-			})
-			.catch(() => {
-				pushMatomoUserId()
-			})
-			.finally(() => {
-				loadMatomoTracker()
-			})
+		const token = getStoredToken()
+		pushMatomoUserId(token ?? undefined)
+		loadMatomoTracker()
 
-		return onCookieChange(COOKIE_NAME, pushMatomoUserId)
+		return onTokenChange(pushMatomoUserId)
 	}, [])
 
 	return children
