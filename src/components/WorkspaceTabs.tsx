@@ -51,6 +51,7 @@ export function WorkspaceTabs({
 					</NavigationMenuItem>
 				)}
 				<ArchiveDropdown
+					variant="workspace"
 					tasksRoute={{ to: "/workspace/$urlName/tasks", params: { urlName } }}
 					archiveRoute={{
 						to: "/workspace/$urlName/archive",
