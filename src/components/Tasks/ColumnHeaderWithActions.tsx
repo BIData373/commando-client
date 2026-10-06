@@ -27,9 +27,7 @@ function ColumnHeaderWithActions<TData>({
 		: undefined
 
 	const visibleFilterOptions = availableValues
-		? filterOptions.filter(
-				({ value }) => availableValues.has(value) || activeValues.has(value),
-			)
+		? filterOptions.filter(({ value }) => availableValues.has(value))
 		: filterOptions
 
 	const canFilter = isFilterable && visibleFilterOptions.length > 0
