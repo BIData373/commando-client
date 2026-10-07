@@ -2,6 +2,9 @@ import { createFileRoute, Outlet } from "@tanstack/react-router"
 import Header from "src/components/Header"
 import { ContentScrollArea } from "src/components/shared/ContentScrollArea"
 import { PageShell } from "src/components/shared/PageShell"
+import { MobileViewTaskDetail } from "src/components/‏‏Mobile/task/MobileViewTaskDetail"
+import { useIsMobile } from "src/hooks/use-mobile"
+import { useTaskDetail } from "src/hooks/useTaskDetail"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 
 export const Route = createFileRoute("/personal")({
@@ -9,9 +12,14 @@ export const Route = createFileRoute("/personal")({
 })
 
 function PersonalPage() {
+	const isMobile = useIsMobile()
 	useRenderInHeader("center", "אזור אישי - הנחיות שקיבלתי")
+	const { task } = useTaskDetail("274")
 
-	return (
+	//temp
+	return isMobile ? (
+		<MobileViewTaskDetail task={task} />
+	) : (
 		<PageShell>
 			<Header variant="personal" />
 			<ContentScrollArea>
