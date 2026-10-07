@@ -1,21 +1,28 @@
 import styled from "@emotion/styled"
-import { useNavigate } from "@tanstack/react-router"
-import { ChevronRight } from "lucide-react"
-import logoIcon from "src/assets/logo-icon.svg"
+import { useNavigate, useRouter } from "@tanstack/react-router"
+import { ArrowLeft, ChevronRight } from "lucide-react"
+import logoIcon from "src/assets/logo-with-text.svg"
 import WorkspaceIconTitle from "src/components/shared/WorkspaceIconTitle"
 
 interface MobileHeaderProps {
 	icon?: string | null
 	title: string
 	minimal?: boolean
+	backRedirect?: boolean
 }
 
 export default function MobileHeader({
 	icon,
 	title,
 	minimal,
+	backRedirect,
 }: MobileHeaderProps) {
 	const navigate = useNavigate()
+	const router = useRouter()
+
+	function onBack() {
+		router.history.back()
+	}
 
 	function handleLogoClick() {
 		navigate({ to: "/" })
@@ -27,6 +34,13 @@ export default function MobileHeader({
 				<ChevronRight size={18} />
 			</ChevronButton>
 		</MinimalRoot>
+	) : backRedirect ? (
+		<HeaderRoot $isWithoutSpaceBetween={backRedirect}>
+			<BackRedirect onClick={onBack}>
+				חזרה
+				<ArrowLeft size={18} />
+			</BackRedirect>
+		</HeaderRoot>
 	) : (
 		<HeaderRoot>
 			<StyledWorkspaceIconTitle
@@ -41,10 +55,10 @@ export default function MobileHeader({
 	)
 }
 
-const HeaderRoot = styled.header`
+const HeaderRoot = styled.header<{ $isWithoutSpaceBetween?: boolean }>`
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: ${({ $isWithoutSpaceBetween }) => ($isWithoutSpaceBetween ? "flex-end" : "space-between")};
 	height: 64px;
 	padding: 0 16px;
 	background: var(--header-bg);
@@ -89,4 +103,11 @@ const StyledWorkspaceIconTitle = styled(WorkspaceIconTitle)`
 	font-weight: 500;
 	line-height: 28px;
 	color: var(--background);
+`
+
+const BackRedirect = styled.button`
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--Text-color-text);
 `
