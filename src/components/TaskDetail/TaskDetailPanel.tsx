@@ -1,14 +1,9 @@
 import styled from "@emotion/styled"
-import { concat, uniqBy } from "lodash"
-import { Calendar, Paperclip, Pencil } from "lucide-react"
+import { Paperclip, Pencil } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
 import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assignee/archived-workspace-assignee"
-import {
-	DeadlineType,
-	PermissionType,
-	type TaskWithWorkspaceDto,
-} from "src/api/model"
+import { PermissionType, type TaskWithWorkspaceDto } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import {
 	getGetTaskQueryKey,
@@ -27,14 +22,14 @@ import { useAttachmentDownload } from "src/hooks/useAttachmentDownload"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { invalidateQueries } from "src/query-client"
-import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
 import { CommentsDivider } from "../shared/CommentsDivider"
-import { DeadlineTypeTag } from "../shared/DeadlineTypeTag"
+import { DueDateGroup } from "../shared/DueDateGroup"
 import FlagIcon from "../shared/FlagIcon"
 import { ModalContent } from "../shared/ModalContent"
 import { SpinIcon } from "../shared/SpinIcon"
+import { TagsRow } from "../shared/TagsRow"
 import WorkspaceCell from "../shared/WorkspaceCell"
 import { RowActionsMenu } from "../Tasks/RowActionsMenu"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
@@ -152,16 +147,6 @@ function TaskDetailPanel({
 
 	const handleUpdateTaskStatus = useUpdateTaskStatus({ notify: true })
 
-	const displayDate = getDeadlineDisplayDate(
-		deadlineType,
-		dueDate,
-		source,
-		createdAt,
-	)
-	const showDueDateMeta = deadlineType !== DeadlineType.IMMEDIATE
-
-	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
-
 	const { isDownloading, download } = useAttachmentDownload()
 
 	function handleAttachmentDownload() {
@@ -256,18 +241,12 @@ function TaskDetailPanel({
 					<DeadlineSection>
 						<SectionLabel>תג"ב</SectionLabel>
 						<MetaRow>
-							<DueDateGroup>
-								<DeadlineTypeTag type={deadlineType} />
-								{displayDate && (
-									<DateContainer>
-										{showDueDateMeta && <MetaLabel>עד</MetaLabel>}
-										<DueDateText>
-											{formatDateMonthYear(displayDate)}
-										</DueDateText>
-										{showDueDateMeta && <Calendar size={16} />}
-									</DateContainer>
-								)}
-							</DueDateGroup>
+							<DueDateGroup
+								dueDate={dueDate}
+								deadlineType={deadlineType}
+								createdAt={createdAt}
+								source={source}
+							/>
 							<CreatedGroup>
 								{/* <HistoryButton onClick={() => setShowHistory(true)}>
 										<History size={16} />
@@ -337,14 +316,10 @@ function TaskDetailPanel({
 								</InfoAttachment>
 							</InfoBlock>
 						)}
-						{allTags.length > 0 && (
+						{!!tags && (
 							<InfoBlock>
 								<SectionLabel>תגיות</SectionLabel>
-								<TagsRow>
-									{allTags.map((tag) => (
-										<TagChip key={tag.id}>{tag.name}</TagChip>
-									))}
-								</TagsRow>
+								<TagsRow source={source} tags={tags}></TagsRow>
 							</InfoBlock>
 						)}
 					</InfoGrid>
@@ -484,33 +459,6 @@ const MetaRow = styled.div`
   width: 100%;
 `
 
-const DueDateGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-color);
-`
-
-const DueDateText = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color);
-`
-
-const DateContainer = styled.div`
-  display: flex;
-  gap: 8px;
-  align-items: center;
-`
-
-const MetaLabel = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color);
-`
-
 const CreatedGroup = styled.span`
   display: inline-flex;
   align-items: center;
@@ -544,25 +492,6 @@ const InfoBlock = styled.div`
   gap: 8px;
   align-items: flex-start;
   min-width: 0;
-`
-
-const TagsRow = styled.div`
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-`
-
-const TagChip = styled.span`
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  border-radius: 4px;
-  font-size: var(--fs-sm);
-  line-height: 20px;
-  background: var(--card-background);
-  border: 1px solid var(--chip-line);
-  color: var(--sea-ink);
-  white-space: nowrap;
 `
 
 const NotesBlock = styled.div`
