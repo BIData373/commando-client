@@ -100,7 +100,7 @@ export const headerVariants = {
 
       --seperator-color: var(--Background-color-bg-text-active);
 
-      --bi-data-color: var(--text-color-2);
+      --bi-data-color: var(--Colors-Base-Geekblue-10);
 
       --logo-height: 90%;
 
