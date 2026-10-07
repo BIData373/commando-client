@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { isEqual } from "lodash"
 import { type ReactElement, useLayoutEffect, useRef, useState } from "react"
 
 interface OverflowRowProps {
@@ -96,10 +97,13 @@ export function OverflowRow({
 						.map((_, i) => i)
 						.sort((a, b) => (widths[a] ?? Infinity) - (widths[b] ?? Infinity))
 
-			setMeasured({
+			const next = {
 				itemCount: items.length,
 				...packByWidth(order, widths, containerWidth, overflowWidth, gap),
-			})
+			}
+
+			// The observer fires once on attach; bail out so that doesn't re-render
+			setMeasured((previous) => (isEqual(previous, next) ? previous : next))
 		}
 
 		recalculate()

@@ -1,21 +1,22 @@
 import styled from "@emotion/styled"
-import type { Column } from "@tanstack/react-table"
+import type { Column, RowData } from "@tanstack/react-table"
 import { useState } from "react"
 import { TbArrowsSort } from "react-icons/tb"
 import type { FilterOption } from "../../functions/filter-utils"
+import type { AppTableFeatures } from "../../utils/table-features"
 import { ColumnFilterDropdown } from "./ColumnFilterDropdown"
 
-interface ColumnHeaderWithActionsProps<TData> {
+interface ColumnHeaderWithActionsProps<TData extends RowData, TValue> {
 	label: string
-	column: Column<TData, unknown>
+	column: Column<AppTableFeatures, TData, TValue>
 	filterOptions?: FilterOption[]
 }
 
-function ColumnHeaderWithActions<TData>({
+function ColumnHeaderWithActions<TData extends RowData, TValue>({
 	label,
 	column,
 	filterOptions = [],
-}: ColumnHeaderWithActionsProps<TData>) {
+}: ColumnHeaderWithActionsProps<TData, TValue>) {
 	const [filterOpen, setFilterOpen] = useState(false)
 	const canFilter = column.getCanFilter() && filterOptions.length > 0
 	const canSort = column.getCanSort()

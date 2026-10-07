@@ -6,6 +6,7 @@ import { type ReactNode, useMemo } from "react"
 import type { ListMessagesParams, TaskRowDto } from "src/api/model"
 import { QuickFilter } from "src/api/model/quick-filter"
 import { matchesQuickFilter } from "src/functions/filter-utils"
+import type { AppTableFeatures } from "src/utils/table-features"
 import {
 	buildCountingColumns,
 	type TaskColumnMeta,
@@ -25,7 +26,7 @@ interface TaskFiltersProps<TTask extends TaskRowDto> {
 	onClearColumnFilters?: () => void
 	extraFilters?: ReactNode
 	extraButtons?: ReactNode
-	extraColumns?: ColumnDef<TTask>[]
+	extraColumns?: ColumnDef<AppTableFeatures, TTask>[]
 	extraColumnsMeta?: TaskColumnMeta[]
 	startSlot?: ReactNode
 	urlColumnFilters?: ColumnFiltersState

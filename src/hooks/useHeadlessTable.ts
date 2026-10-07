@@ -1,38 +1,35 @@
 import {
 	type ColumnDef,
 	type ColumnFiltersState,
-	getCoreRowModel,
-	getFilteredRowModel,
-	getSortedRowModel,
+	type RowData,
 	type SortingState,
-	useReactTable,
+	useTable,
 } from "@tanstack/react-table"
+import {
+	type AppTableFeatures,
+	appTableFeatures,
+} from "../utils/table-features"
 
-interface UseHeadlessTableOptions<TData> {
+interface UseHeadlessTableOptions<TData extends RowData> {
 	data: TData[]
-	columns: ColumnDef<TData>[]
+	columns: ColumnDef<AppTableFeatures, TData>[]
 	columnFilters?: ColumnFiltersState
 	sorting?: SortingState
 }
 
-export function useHeadlessTable<TData>({
+export function useHeadlessTable<TData extends RowData>({
 	data,
 	columns,
 	columnFilters,
 	sorting,
 }: UseHeadlessTableOptions<TData>) {
-	return useReactTable({
+	return useTable({
+		features: appTableFeatures,
 		data,
 		columns,
 		state: {
 			...(columnFilters !== undefined && { columnFilters }),
 			...(sorting !== undefined && { sorting }),
 		},
-		getCoreRowModel: getCoreRowModel(),
-		...(columnFilters !== undefined && {
-			getFilteredRowModel: getFilteredRowModel(),
-		}),
-		...(sorting !== undefined && { getSortedRowModel: getSortedRowModel() }),
-		autoResetPageIndex: false,
 	})
 }
