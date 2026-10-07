@@ -11,24 +11,15 @@ interface MobileTaskDryInfoProps {
 
 export function MobileTaskDryInfo({
 	task: {
-		id,
 		serialId,
 		title,
-		flagged,
 		deadlineType,
 		dueDate,
 		updatedAt,
 		createdAt,
-		createdBy,
 		source,
 		notes,
 		tags,
-		assigneeStatuses,
-		status,
-		editable,
-		workspace,
-		workspaceArchivedAt,
-		workspace: { id: workspaceId, permissionType },
 	},
 }: MobileTaskDryInfoProps) {
 	return (
