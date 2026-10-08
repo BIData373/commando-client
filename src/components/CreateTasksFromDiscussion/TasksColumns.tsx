@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
-import type { ColumnDef } from "@tanstack/react-table"
+import { createColumnHelper } from "@tanstack/react-table"
 import type { CreateTaskDto } from "src/api/model"
+import type { AppTableFeatures } from "../../utils/table-features"
 import FlagIcon from "../shared/FlagIcon"
 import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
 import { TrashButton } from "../shared/TrashButton"
@@ -88,9 +89,10 @@ export function handleCellKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
 }
 
 // ─── Columns ────────────────────────────────────────────────────────────────
+const columnHelper = createColumnHelper<AppTableFeatures, NewTaskRow>()
 
-const columns: ColumnDef<NewTaskRow>[] = [
-	{
+const columns = columnHelper.columns([
+	columnHelper.display({
 		id: "title",
 		size: 583,
 		header: () => (
@@ -121,8 +123,8 @@ const columns: ColumnDef<NewTaskRow>[] = [
 				</TextareaCellWrapper>
 			)
 		},
-	},
-	{
+	}),
+	columnHelper.display({
 		id: "deadline",
 		size: 138,
 		header: () => <HeaderLabel>{`תג"ב`}</HeaderLabel>,
@@ -144,8 +146,8 @@ const columns: ColumnDef<NewTaskRow>[] = [
 				/>
 			)
 		},
-	},
-	{
+	}),
+	columnHelper.display({
 		id: "assignee",
 		size: 170,
 		header: () => <HeaderLabel>אחראי</HeaderLabel>,
@@ -155,16 +157,16 @@ const columns: ColumnDef<NewTaskRow>[] = [
 				meta={table.options.meta as TaskTableMeta}
 			/>
 		),
-	},
-	{
+	}),
+	columnHelper.display({
 		id: "notes",
 		size: 274,
 		header: () => <HeaderLabel>הערה</HeaderLabel>,
 		cell: ({ row, table }) => (
 			<NotesCell row={row} meta={table.options.meta as TaskTableMeta} />
 		),
-	},
-	{
+	}),
+	columnHelper.display({
 		id: "tags",
 		size: 224,
 		header: () => <HeaderLabel>תגיות</HeaderLabel>,
@@ -174,8 +176,8 @@ const columns: ColumnDef<NewTaskRow>[] = [
 				meta={table.options.meta as TaskTableMeta}
 			/>
 		),
-	},
-	{
+	}),
+	columnHelper.display({
 		id: "important",
 		size: 62,
 		header: () => (
@@ -202,8 +204,8 @@ const columns: ColumnDef<NewTaskRow>[] = [
 				</CheckboxWrapper>
 			)
 		},
-	},
-	{
+	}),
+	columnHelper.display({
 		id: "delete",
 		size: 35,
 		header: () => null,
@@ -218,8 +220,8 @@ const columns: ColumnDef<NewTaskRow>[] = [
 				/>
 			)
 		},
-	},
-]
+	}),
+])
 
 export default columns
 

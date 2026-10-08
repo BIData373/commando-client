@@ -5,7 +5,7 @@ import type {
 	Row,
 	RowSelectionState,
 } from "@tanstack/react-table"
-import { chain, uniqBy } from "lodash"
+import { chain, keyBy, uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
 import type {
@@ -27,8 +27,11 @@ import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { runBatch } from "src/utils/batch-utils"
 import { getEmptyState } from "src/utils/empty-state-utils"
+import type { AppTableFeatures } from "src/utils/table-features"
 import {
 	DISABLED_CLICK_COLUMNS,
+	groupRowsByTask,
+	TASK_COLUMN_ID,
 	TASK_ROW_ID_SEPARATOR,
 } from "src/utils/task-table-utils"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -45,7 +48,7 @@ interface TaskTableProps<TTask extends TaskRowDto> {
 	onEdit?: (taskId: number) => void
 	onAddComment?: (taskId: number) => void
 	onClick?: (taskId: number) => void
-	extraColumns?: ColumnDef<TTask>[]
+	extraColumns?: ColumnDef<AppTableFeatures, TTask>[]
 	showHeader?: boolean
 	statusFilter?: WorkspaceStatusType[]
 	deadlineTypeFilter?: DeadlineType[]
@@ -157,26 +160,28 @@ function TaskTable<TTask extends TaskRowDto>({
 		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
 	}
 
+	const tasksByRowKey = useMemo(() => keyBy(tasks, "rowKey"), [tasks])
+
 	const selectedRowKeys = Object.keys(rowSelection).filter(
 		(key) => rowSelection[key],
 	)
+
+	const selectedTasks = selectedRowKeys
+		.map((rowKey) => tasksByRowKey[rowKey])
+		.filter((task) => task !== undefined)
 
 	// FIX Seperate state?
 	const selectedTaskIds = selectedRowKeys.map((key) =>
 		Number(key.split(TASK_ROW_ID_SEPARATOR)[0]),
 	)
 
-	const bulkDeleteDisabled = selectedTaskIds.some(
-		(id) =>
-			getPermissionType(tasks.find((t) => t.id === id)) !==
-			PermissionType.MANAGER,
+	const bulkDeleteDisabled = selectedTasks.some(
+		(task) => getPermissionType(task) !== PermissionType.MANAGER,
 	)
 
 	const bulkStatusDisabled =
 		selectedTaskIds.length === 0 ||
-		selectedRowKeys.some(
-			(rowKey) => !tasks.find((t) => t.rowKey === rowKey)?.editable,
-		)
+		selectedRowKeys.some((rowKey) => !tasksByRowKey[rowKey]?.editable)
 
 	function handleEnterSelectMode(rowKey: string) {
 		setSelectMode(true)
@@ -190,12 +195,15 @@ function TaskTable<TTask extends TaskRowDto>({
 		setRowSelection({})
 	}
 
-	function handleSelectAll(rows: Row<TTask>[], checked: boolean) {
+	function handleSelectAll(
+		rows: Row<AppTableFeatures, TTask>[],
+		checked: boolean,
+	) {
 		setRowSelection(
 			checked
 				? chain(rows)
 						.keyBy("original.rowKey")
-						.mapValues(() => true)
+						.mapValues(() => true as const)
 						.value()
 				: {},
 		)
@@ -210,11 +218,10 @@ function TaskTable<TTask extends TaskRowDto>({
 	}
 
 	function getSelectedArchiveEntries() {
-		return tasks
-			.filter((task) =>
-				selectedRowKeys.some((rowKey) => task.rowKey === rowKey),
-			)
-			.map(({ id, assignee }) => ({ id, assigneeId: assignee?.id }))
+		return selectedTasks.map(({ id, assignee }) => ({
+			id,
+			assigneeId: assignee?.id,
+		}))
 	}
 
 	function handleBulkArchive() {
@@ -232,14 +239,7 @@ function TaskTable<TTask extends TaskRowDto>({
 		handleExitSelectMode()
 	}
 
-	async function bulkUpdateStatus(
-		rowKeys: string[],
-		status: WorkspaceStatusDto,
-	) {
-		const selectedTasks = rowKeys
-			.map((rowKey) => tasks.find((t) => t.rowKey === rowKey))
-			.filter((task) => task !== undefined)
-
+	async function bulkUpdateStatus(status: WorkspaceStatusDto) {
 		const results = await Promise.all(
 			selectedTasks.map((task) =>
 				updateStatus(task.id, task.assignee?.id, status),
@@ -255,6 +255,8 @@ function TaskTable<TTask extends TaskRowDto>({
 	}
 
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
+
+	const groupedTasks = useMemo(() => groupRowsByTask(tasks), [tasks])
 
 	const { columns } = useTaskColumns({
 		columnOrder,
@@ -308,7 +310,7 @@ function TaskTable<TTask extends TaskRowDto>({
 			<TableWrapper>
 				<DataTable
 					columns={columns}
-					data={tasks}
+					data={groupedTasks}
 					rowSelection={selectMode ? rowSelection : undefined}
 					onRowSelectionChange={selectMode ? setRowSelection : undefined}
 					columnFilters={columnFilters}
@@ -383,7 +385,7 @@ function TaskTable<TTask extends TaskRowDto>({
 				isVisible={selectMode}
 				selectedCount={selectedTaskIds.length}
 				statuses={hideStatusAction ? undefined : statuses}
-				onChangeStatus={(status) => bulkUpdateStatus(selectedRowKeys, status)}
+				onChangeStatus={bulkUpdateStatus}
 				onArchive={onArchive ? handleBulkArchive : undefined}
 				onUnarchive={onUnarchive ? handleBulkUnarchive : undefined}
 				onDelete={allowDelete ? handleBulkDelete : undefined}
@@ -467,7 +469,8 @@ const TableWrapper = styled.div`
     overflow: hidden;
     border: 0.5px solid var(--Background-color-bg-text-active);
 
-    &:first-of-type {
+    &[data-column-id="${TASK_COLUMN_ID.serialId}"],
+    &[data-column-id="${TASK_COLUMN_ID.select}"] {
       border-right: none;
     }
 

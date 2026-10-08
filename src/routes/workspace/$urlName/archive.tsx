@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import type { ColumnDef } from "@tanstack/react-table"
+import { createColumnHelper } from "@tanstack/react-table"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { DateText } from "src/components/shared/DateText"
@@ -8,6 +8,7 @@ import WorkspaceTaskTable from "src/components/Tasks/WorkspaceTaskTable"
 import { WorkspaceTabs } from "src/components/WorkspaceTabs"
 import { formatDateShort } from "src/functions/date-utils"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import type { AppTableFeatures } from "src/utils/table-features"
 import {
 	ARCHIVE_DEFAULT_HIDDEN,
 	COLUMN_LABELS,
@@ -43,8 +44,10 @@ const WORKSPACE_ARCHIVE_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] 
 		TASK_COLUMN_ID.updatedAt,
 	]
 
-const ARCHIVE_EXTRA_COLUMNS = [
-	{
+const columnHelper = createColumnHelper<AppTableFeatures, TaskRowDto>()
+
+const ARCHIVE_EXTRA_COLUMNS = columnHelper.columns([
+	columnHelper.accessor((row) => row.workspaceArchivedAt, {
 		id: TASK_COLUMN_ID.workspaceArchivedAt,
 		header: ({ column }) => (
 			<ColumnHeaderWithActions
@@ -54,18 +57,12 @@ const ARCHIVE_EXTRA_COLUMNS = [
 		),
 		size: 140,
 		enableColumnFilter: false,
-		accessorFn: (row) => row.workspaceArchivedAt,
-		cell: ({
-			row: {
-				original: { workspaceArchivedAt },
-			},
-		}) => (
-			<DateText>
-				{workspaceArchivedAt && formatDateShort(workspaceArchivedAt)}
-			</DateText>
-		),
-	},
-] as ColumnDef<TaskRowDto>[]
+		cell: ({ getValue }) => {
+			const archivedAt = getValue()
+			return <DateText>{archivedAt && formatDateShort(archivedAt)}</DateText>
+		},
+	}),
+])
 
 function WorkspaceArchivePage() {
 	const { urlName } = Route.useParams()

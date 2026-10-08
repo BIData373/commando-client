@@ -1,5 +1,9 @@
 import styled from "@emotion/styled"
-import type { ColumnDef, Row } from "@tanstack/react-table"
+import {
+	type ColumnDef,
+	createColumnHelper,
+	type Row,
+} from "@tanstack/react-table"
 import { differenceInDays, startOfToday } from "date-fns"
 import { useMemo } from "react"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
@@ -12,9 +16,10 @@ import {
 } from "src/api/model"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
+import type { AppTableFeatures } from "src/utils/table-features"
 import {
 	COLUMN_LABELS,
-	TASK_COLUMN_DEFINITIONS,
+	createTaskColumnDefinitions,
 	TASK_COLUMN_ID,
 } from "src/utils/task-table-utils"
 import { DateText } from "../components/shared/DateText"
@@ -41,7 +46,7 @@ interface SelectModeConfig<TTask extends TaskRowDto> {
 	enabled: boolean
 	tasks: TTask[]
 	selectedTaskIds: number[]
-	onSelectAll: (rows: Row<TTask>[], checked: boolean) => void
+	onSelectAll: (rows: Row<AppTableFeatures, TTask>[], checked: boolean) => void
 }
 
 export interface TaskArchiveEntry {
@@ -61,7 +66,7 @@ interface ActionsConfig {
 interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	columnOrder: (keyof TTask)[]
 	hiddenColumns?: Set<keyof TTask>
-	extraColumns?: ColumnDef<TTask>[]
+	extraColumns?: ColumnDef<AppTableFeatures, TTask>[]
 	searchQuery?: string
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
 	selectMode?: SelectModeConfig<TTask>
@@ -86,13 +91,13 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 }: UseTaskColumnsOptions<TTask>) {
 	const handleUpdateStatus = useUpdateTaskStatus({ notify: true })
 
-	const columns = useMemo<ColumnDef<TTask>[]>(() => {
-		// TODO Move all constant fields to task-table-utils
-
+	const columns = useMemo(() => {
+		const columnHelper = createColumnHelper<AppTableFeatures, TTask>()
+		const definitions = createTaskColumnDefinitions<TTask>()
 		const today = startOfToday()
 
-		const pinnedStartColumn: ColumnDef<TTask> = selectMode?.enabled
-			? {
+		const pinnedStartColumn = selectMode?.enabled
+			? columnHelper.display({
 					id: TASK_COLUMN_ID.select,
 					size: 61,
 					enableSorting: false,
@@ -118,10 +123,9 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							/>
 						</CheckboxCenter>
 					),
-				}
-			: {
+				})
+			: columnHelper.accessor((row) => row.serialId, {
 					id: TASK_COLUMN_ID.serialId,
-					accessorKey: TASK_COLUMN_ID.serialId,
 					header: ({ column }) => (
 						<ColumnHeaderWithActions
 							label={COLUMN_LABELS.serialId}
@@ -130,24 +134,22 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					),
 					size: 70,
 					enableColumnFilter: false,
-					cell: ({
-						row: {
-							original: { serialId },
-						},
-					}) => (
+					spanRows: ({ anchorRow, row }) =>
+						anchorRow.original.id === row.original.id,
+					cell: ({ getValue }) => (
 						<IdCell>
 							<HighlightMatch
-								text={String(serialId)}
+								text={String(getValue())}
 								query={searchQuery ?? ""}
 								variant="mark"
 							/>
 						</IdCell>
 					),
-				}
+				})
 
-		const pinnedEndColumn: ColumnDef<TTask> | undefined =
+		const pinnedEndColumn =
 			showMenuColumn && actions
-				? {
+				? columnHelper.display({
 						id: TASK_COLUMN_ID.actions,
 						size: 45,
 						enableSorting: false,
@@ -189,13 +191,12 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 								/>
 							)
 						},
-					}
+					})
 				: undefined
 
-		const middleColumns = [
-			{
+		const middleColumns = columnHelper.columns([
+			columnHelper.accessor((row) => row.title, {
 				id: TASK_COLUMN_ID.title,
-				accessorKey: TASK_COLUMN_ID.title,
 				header: COLUMN_LABELS.title,
 				size: 300,
 				minSize: 160,
@@ -242,9 +243,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						</TitleContent>
 					</TitleCell>
 				),
-			},
-			{
-				id: TASK_COLUMN_ID.status,
+			}),
+			definitions.status({
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.status}
@@ -253,7 +253,6 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					/>
 				),
 				size: 100,
-				...TASK_COLUMN_DEFINITIONS.status,
 				cell: ({
 					row: {
 						original: {
@@ -277,9 +276,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							onUpdate={handleUpdateStatus}
 						/>
 					),
-			},
-			{
-				id: TASK_COLUMN_ID.assignee,
+			}),
+			definitions.assignee({
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.assignee}
@@ -288,7 +286,6 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					/>
 				),
 				size: 100,
-				...TASK_COLUMN_DEFINITIONS.assignee,
 				cell: ({
 					row: {
 						original: { assignee, otherAssignees },
@@ -300,10 +297,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							otherAssignees={otherAssignees ?? []}
 						/>
 					),
-			},
-			{
-				id: TASK_COLUMN_ID.deadlineType,
-				accessorKey: TASK_COLUMN_ID.deadlineType,
+			}),
+			definitions.deadlineType({
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.deadlineType}
@@ -312,19 +307,11 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					/>
 				),
 				size: 150,
-				...TASK_COLUMN_DEFINITIONS.deadlineType,
 				cell: ({
 					row: {
-						original: {
-							deadlineType: rawDeadlineType,
-							dueDate,
-							status,
-							source,
-							createdAt,
-						},
+						original: { deadlineType, dueDate, status, source, createdAt },
 					},
 				}) => {
-					const deadlineType = rawDeadlineType
 					const daysUntil = dueDate
 						? differenceInDays(new Date(dueDate), today)
 						: null
@@ -385,9 +372,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						</DeadlineCell>
 					)
 				},
-			},
-			{
-				id: TASK_COLUMN_ID.source,
+			}),
+			definitions.source({
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.source}
@@ -396,7 +382,6 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					/>
 				),
 				size: 240,
-				...TASK_COLUMN_DEFINITIONS.source,
 				cell: ({
 					row: {
 						original: { source },
@@ -429,8 +414,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						</SourceCell>
 					)
 				},
-			},
-			{
+			}),
+			columnHelper.display({
 				id: TASK_COLUMN_ID.lastMessage,
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
@@ -470,9 +455,8 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 						</TooltipProvider>
 					)
 				},
-			},
-			{
-				id: TASK_COLUMN_ID.tags,
+			}),
+			definitions.tags({
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.tags}
@@ -483,15 +467,13 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				size: 100,
 				minSize: 70,
 				enableSorting: false,
-				...TASK_COLUMN_DEFINITIONS.tags,
 				meta: { grow: true },
 				cell: ({ getValue }) => (
-					<TopicCell tags={getValue<string[]>()} searchQuery={searchQuery} />
+					<TopicCell tags={getValue()} searchQuery={searchQuery} />
 				),
-			},
-			{
+			}),
+			columnHelper.accessor((row) => row.notes, {
 				id: TASK_COLUMN_ID.notes,
-				accessorKey: TASK_COLUMN_ID.notes,
 				header: COLUMN_LABELS.notes,
 				size: 100,
 				minSize: 100,
@@ -499,13 +481,11 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				enableColumnFilter: false,
 				meta: { grow: true },
 				cell: ({ getValue }) => {
-					const notes = getValue<string>()
+					const notes = getValue()
 					return notes && <NotesText tooltip={notes}>{notes}</NotesText>
 				},
-			},
-			{
-				id: TASK_COLUMN_ID.createdAt,
-				accessorKey: TASK_COLUMN_ID.createdAt,
+			}),
+			definitions.createdAt({
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.createdAt}
@@ -514,14 +494,11 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				),
 				size: 120,
 				enableColumnFilter: false,
-				...TASK_COLUMN_DEFINITIONS.createdAt,
 				cell: ({ getValue }) => (
-					<DateText>{formatDateShort(getValue<Date>())}</DateText>
+					<DateText>{formatDateShort(getValue())}</DateText>
 				),
-			},
-			{
-				id: TASK_COLUMN_ID.updatedAt,
-				accessorKey: TASK_COLUMN_ID.updatedAt,
+			}),
+			definitions.updatedAt({
 				header: ({ column }) => (
 					<ColumnHeaderWithActions
 						label={COLUMN_LABELS.updatedAt}
@@ -530,31 +507,30 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				),
 				size: 100,
 				enableColumnFilter: false,
-				...TASK_COLUMN_DEFINITIONS.updatedAt,
 				cell: ({ getValue }) => (
-					<DateText>{formatDateShort(getValue<Date>())}</DateText>
+					<DateText>{formatDateShort(getValue())}</DateText>
 				),
-			},
-		] as ColumnDef<TTask>[]
+			}),
+		])
 
 		const orderableColumns = [...middleColumns, ...extraColumns]
 		const columnsById = new Map(
-			orderableColumns.map((column) => [column.id as string, column]),
+			orderableColumns.map((column) => [column.id, column]),
 		)
 
 		const orderedColumns = columnOrder
 			.map((id) => columnsById.get(id as string))
-			.filter((column): column is ColumnDef<TTask> => !!column)
+			.filter((column) => column !== undefined)
 
 		const filteredColumns = orderedColumns.filter(
 			({ id }) => !hiddenColumns.has(id as keyof TTask),
 		)
 
-		return [
+		return columnHelper.columns([
 			pinnedStartColumn,
 			...filteredColumns,
 			...(pinnedEndColumn ? [pinnedEndColumn] : []),
-		]
+		])
 	}, [
 		columnOrder,
 		hiddenColumns,

@@ -1,12 +1,7 @@
 import styled from '@emotion/styled'
 import {
   flexRender,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable,
+  useTable,
   type ColumnDef,
   type ColumnFiltersState,
   type OnChangeFn,
@@ -16,10 +11,7 @@ import {
   type SortingState,
   type TableMeta,
 } from '@tanstack/react-table'
-import { useVirtualizer } from '@tanstack/react-virtual'
 import {
-  Fragment,
-  memo,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -27,23 +19,16 @@ import {
   type MouseEvent,
   type ReactNode
 } from 'react'
-import { LoadingSpinner } from '../shared/LoadingSpinner'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
+import { appTableFeatures, type AppTableFeatures } from '../../utils/table-features'
+import { DataTableBody } from './data-table-body'
+import { Table, TableHead, TableHeader, TableRow } from './table'
 
-declare module '@tanstack/react-table' {
-  interface ColumnMeta<TData extends RowData, TValue> {
-    grow?: boolean
-  }
-}
-
-const EXPANSION_ROW_ATTR = 'data-expansion-row'
-
-interface DataTableProps<TData> {
-  columns: ColumnDef<TData>[]
+interface DataTableProps<TData extends RowData> {
+  columns: ColumnDef<AppTableFeatures, TData>[]
   data: TData[]
-  onCellClick?: (row: Row<TData>, columnId: string) => void
-  onRowDoubleClick?: (row: Row<TData>) => void
-  onRowContextMenu?: (row: Row<TData>, event: MouseEvent) => void
+  onCellClick?: (row: Row<AppTableFeatures, TData>, columnId: string) => void
+  onRowDoubleClick?: (row: Row<AppTableFeatures, TData>) => void
+  onRowContextMenu?: (row: Row<AppTableFeatures, TData>, event: MouseEvent) => void
   rowSelection?: RowSelectionState
   onRowSelectionChange?: OnChangeFn<RowSelectionState>
   columnFilters?: ColumnFiltersState
@@ -52,9 +37,9 @@ interface DataTableProps<TData> {
   onSortingChange?: OnChangeFn<SortingState>
   getRowId?: (row: TData) => string
   highlightedRowIds?: Set<string>
-  meta?: TableMeta<TData>
-  renderRowOverlay?: (row: Row<TData>) => React.ReactNode
-  renderRowExpansion?: (row: Row<TData>) => React.ReactNode
+  meta?: TableMeta<AppTableFeatures, TData>
+  renderRowOverlay?: (row: Row<AppTableFeatures, TData>) => React.ReactNode
+  renderRowExpansion?: (row: Row<AppTableFeatures, TData>) => React.ReactNode
   expansionColSpan?: number
   containerClassName?: string
   showHeader?: boolean
@@ -62,67 +47,7 @@ interface DataTableProps<TData> {
   isLoading?: boolean
 }
 
-interface DataTableRowProps<TData> {
-  row: Row<TData>
-  index: number
-  isSelected: boolean
-  isHighlighted: boolean
-  rowRef?: (node: HTMLTableRowElement | null) => void
-  onCellClick?: (row: Row<TData>, columnId: string) => void
-  onRowContextMenu?: (row: Row<TData>, event: MouseEvent) => void
-  renderRowOverlay?: (row: Row<TData>) => ReactNode
-  renderRowExpansion?: (row: Row<TData>) => ReactNode
-  expansionColSpan: number
-}
-
-function DataTableRowInner<TData>({
-  row,
-  index,
-  isSelected,
-  isHighlighted,
-  rowRef,
-  onCellClick,
-  onRowContextMenu,
-  renderRowOverlay,
-  renderRowExpansion,
-  expansionColSpan,
-}: DataTableRowProps<TData>) {
-  const expansionContent = renderRowExpansion?.(row)
-
-  return (
-    <Fragment>
-      <TableRow
-        ref={rowRef}
-        data-index={index}
-        data-state={isSelected ? 'selected' : undefined}
-        data-highlighted={isHighlighted ? '' : undefined}
-        onContextMenu={onRowContextMenu ? (event) => onRowContextMenu(row, event) : undefined}
-      >
-        {row.getVisibleCells().map((cell) => (
-          <TableCell
-            key={cell.id}
-            data-column-id={cell.column.id}
-            onClick={onCellClick ? () => onCellClick(row, cell.column.id) : undefined}
-          >
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </TableCell>
-        ))}
-        {renderRowOverlay?.(row)}
-      </TableRow>
-      {expansionContent != null && (
-        <tr {...{ [EXPANSION_ROW_ATTR]: '' }}>
-          <ExpansionCell colSpan={expansionColSpan}>
-            {expansionContent}
-          </ExpansionCell>
-        </tr>
-      )}
-    </Fragment>
-  )
-}
-
-const DataTableRow = memo(DataTableRowInner) as typeof DataTableRowInner
-
-export function DataTable<TData>({
+export function DataTable<TData extends RowData>({
   columns,
   data,
   onCellClick,
@@ -146,14 +71,10 @@ export function DataTable<TData>({
   emptyState,
   isLoading,
 }: DataTableProps<TData>) {
-  const table = useReactTable({
+  const table = useTable({
+    features: appTableFeatures,
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-    getSortedRowModel: getSortedRowModel(),
     state: {
       ...(rowSelection !== undefined && { rowSelection }),
       ...(columnFilters !== undefined && { columnFilters }),
@@ -172,8 +93,6 @@ export function DataTable<TData>({
   useLayoutEffect(() => {
     const el = containerRef.current
     if (!el) return
-
-    el.style.overflowAnchor = 'none'
 
     function updateWidth(width: number) {
       const rounded = Math.round(width)
@@ -260,30 +179,7 @@ export function DataTable<TData>({
   )
 
   const totalSize = fixedTotal + growMinTotal
-
-  const tableRows = table.getRowModel().rows
-  const { getVirtualItems, getTotalSize, measureElement } = useVirtualizer({
-    count: tableRows.length,
-    getScrollElement: () => containerRef.current,
-    estimateSize: () => 43,
-    overscan: 16,
-    useFlushSync: false,
-    measureElement: (el) => {
-      let height = el.clientHeight
-      const next = el.nextElementSibling
-      if (next?.hasAttribute(EXPANSION_ROW_ATTR)) {
-        height += (next as HTMLElement).clientHeight
-      }
-      return height
-    }
-  })
-
   const tableMinWidth = totalSize > 0 ? totalSize : undefined
-
-  const virtualRows = getVirtualItems()
-  const paddingTop = virtualRows.length > 0 ? virtualRows[0].start : 0
-  const paddingBottom =
-    virtualRows.length > 0 ? getTotalSize() - virtualRows[virtualRows.length - 1].end : 0
 
   return (
     <StyledTable containerRef={containerRef} containerClassName={containerClassName} $minWidth={tableMinWidth}>
@@ -303,85 +199,37 @@ export function DataTable<TData>({
           ))}
         </TableHeader>
       )}
-      <TableBody>
-        {paddingTop > 0 && (
-          <tr>
-            <SpacerCell data-virtual-spacer colSpan={columns.length} $height={paddingTop} />
-          </tr>
-        )}
-        {virtualRows.length ? (
-          virtualRows.map((virtualRow) => {
-            const row = tableRows[virtualRow.index]
-
-            return (
-              <DataTableRow
-                key={row.id}
-                row={row}
-                index={virtualRow.index}
-                isSelected={row.getIsSelected()}
-                isHighlighted={highlightedRowIds?.has(row.id) ?? false}
-                rowRef={measureElement}
-                onCellClick={onCellClick}
-                onRowContextMenu={onRowContextMenu}
-                renderRowOverlay={renderRowOverlay}
-                renderRowExpansion={renderRowExpansion}
-                expansionColSpan={expansionColSpan ?? columns.length}
-              />
-            )
-          })
-        ) : isLoading ? (
-          <EmptyRow>
-            <EmptyCell colSpan={columns.length}>
-              <LoadingSpinner />
-            </EmptyCell>
-          </EmptyRow>
-        ) : (
-          <EmptyRow>
-            <EmptyCell colSpan={columns.length}>
-              {emptyState}
-            </EmptyCell>
-          </EmptyRow>
-        )}
-        {paddingBottom > 0 && (
-          <tr>
-            <SpacerCell data-virtual-spacer colSpan={columns.length} $height={paddingBottom} />
-          </tr>
-        )}
-      </TableBody>
+      <DataTableBody
+        rows={table.getRowModel().rows}
+        rowSpans={table.getCellSpanIndex().rowSpans}
+        columnCount={visibleColumns.length}
+        scrollContainerRef={containerRef}
+        highlightedRowIds={highlightedRowIds}
+        onCellClick={onCellClick}
+        onRowContextMenu={onRowContextMenu}
+        renderRowOverlay={renderRowOverlay}
+        renderRowExpansion={renderRowExpansion}
+        expansionColSpan={expansionColSpan}
+        emptyState={emptyState}
+        isLoading={isLoading}
+      />
     </StyledTable>
   )
 }
 
-const EmptyRow = styled.tr`
-  &:hover {
-    background: none !important;
-  }
-`
-
-const EmptyCell = styled.td`
-  text-align: center;
-  padding: 72px 0 !important;
-`
-
-const ExpansionCell = styled.td`
-  padding: 0;
-  border: none;
-  height: auto;
-  background: var(--colors-base-neutral-3) !important;
-  outline: none !important;
-`
-
 const StyledTable = styled(Table) <{ $minWidth?: number }>`
   min-width: ${({ $minWidth }) => ($minWidth !== undefined ? `${$minWidth}px` : undefined)};
+
+  /* A spanned cell belongs to its first row, so it would otherwise take that row's hover alone */
+  td[rowspan] {
+    background: var(--background);
+  }
+
+  tr[data-highlighted] > td[rowspan] {
+    background: inherit;
+  }
 `
 
 const Col = styled.col<{ $width?: number }>`
   width: ${({ $width }) => ($width !== undefined ? `${$width}px` : undefined)};
-`
-
-const SpacerCell = styled.td<{ $height: number }>`
-  height: ${({ $height }) => `${$height}px`} !important;
-  max-height: none !important;
-  padding: 0 !important;
-  border: none !important;
 `
