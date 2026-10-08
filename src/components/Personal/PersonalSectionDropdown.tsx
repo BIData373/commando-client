@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import {
@@ -13,24 +14,27 @@ interface PersonalSectionDropdownProps {
 export function PersonalSectionDropdown({
 	current,
 }: PersonalSectionDropdownProps) {
-	useRenderInHeader(
-		"right",
-		<NavigationMenu viewport={false}>
-			<NavigationMenuList>
-				<ArchiveDropdown
-					variant="personal"
-					tasksRoute={{
-						to: "/personal/tasks",
-						search: { view: TasksView.TABLE },
-					}}
-					archiveRoute={{ to: "/personal/archive" }}
-					section={current}
-					isActive={true}
-				/>
-			</NavigationMenuList>
-		</NavigationMenu>,
+	const sectionDropdown = useMemo(
+		() => (
+			<NavigationMenu viewport={false}>
+				<NavigationMenuList>
+					<ArchiveDropdown
+						variant="personal"
+						tasksRoute={{
+							to: "/personal/tasks",
+							search: { view: TasksView.TABLE },
+						}}
+						archiveRoute={{ to: "/personal/archive" }}
+						section={current}
+						isActive={true}
+					/>
+				</NavigationMenuList>
+			</NavigationMenu>
+		),
 		[current],
 	)
+
+	useRenderInHeader("right", sectionDropdown)
 
 	return null
 }
