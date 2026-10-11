@@ -1,77 +1,27 @@
 import styled from "@emotion/styled"
 import { Search, X } from "lucide-react"
-import { useState } from "react"
-import type { WorkspaceWithPermissionDto } from "src/api/model"
-import {
-	useGetPermittedWorkspaces,
-	useListWorkspaces,
-} from "src/api/workspace/workspace"
-import emptyWorkspacesImage from "src/assets/empty-states/empty-workspace.svg"
-import noResultsFound from "src/assets/empty-states/no-results-found.svg"
-import {
-	EmptyCardState,
-	type EmptyCardStateProps,
-} from "src/components/shared/EmptyCardState"
+
+import { EmptyCardState } from "src/components/shared/EmptyCardState"
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
-import { filterByTitle } from "src/utils/workspace-utils"
+import { tabKeys, useSpacesContainer } from "src/hooks/useSpacesContainer"
 import NewWorkspaceButton from "./NewWorkspaceButton"
 import WorkspaceCard from "./WorkspaceCard"
 
-type TabKey = "mine" | "all"
-interface TabType {
-	isLoading: boolean
-	workspaces: WorkspaceWithPermissionDto[]
-	label: string
-}
-
 export default function SpacesContainer() {
-	const { data: allWorkspaces = [], isLoading: isAllWorkspacesLoading } =
-		useListWorkspaces()
-	const { data: myWorkspaces = [], isLoading: isMyWorkspacesLoading } =
-		useGetPermittedWorkspaces()
-	const [searchQuery, setSearchQuery] = useState("")
-	const [activeTab, setActiveTab] = useState<TabKey>("mine")
+	const {
+		tabs,
+		activeTab,
+		setActiveTab,
+		searchQuery,
+		setSearchQuery,
+		workspaces,
+		isLoading,
+		emptyState,
+	} = useSpacesContainer()
 
-	const filteredMine = filterByTitle(myWorkspaces, searchQuery)
-	const filteredAll = filterByTitle(allWorkspaces, searchQuery)
-
-	function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
+	function handleSearchQuery(e: React.ChangeEvent<HTMLInputElement>) {
 		setSearchQuery(e.target.value)
 	}
-
-	const tabs = {
-		all: {
-			label: "כל הסביבות",
-			workspaces: filteredAll,
-			isLoading: isAllWorkspacesLoading,
-		},
-		mine: {
-			label: "הסביבות שלי",
-			workspaces: filteredMine,
-			isLoading: isMyWorkspacesLoading,
-		},
-	} satisfies Record<TabKey, TabType>
-	activeTab
-
-	const isLoading = tabs[activeTab].isLoading
-
-	const emptyCardStatePropOptions = {
-		noWorkspacesFound: {
-			imgSrc: noResultsFound,
-			title: "לא נמצאו סביבות",
-			description: `לא נמצאו סביבות מתאימות ל-${searchQuery}`,
-		},
-		noPermissionsForAnyWorkspace: {
-			imgSrc: emptyWorkspacesImage,
-			title: "לא נמצאו הרשאות לסביבות",
-			description: "ניתן לפנות למנהל סביבה כדי לקבל הרשאות",
-		},
-		fallback: {
-			imgSrc: "",
-			title: "",
-			description: "",
-		},
-	} satisfies Record<string, EmptyCardStateProps>
 
 	return (
 		<SpaceContainerCard>
@@ -84,7 +34,7 @@ export default function SpacesContainer() {
 							<SearchInput
 								placeholder="חפש סביבה"
 								value={searchQuery}
-								onChange={handleSearchChange}
+								onChange={handleSearchQuery}
 							/>
 							<SearchIconWrapper>
 								<Search size={24} />
@@ -101,13 +51,13 @@ export default function SpacesContainer() {
 				</HeaderRow>
 
 				<TabsRow>
-					{Object.entries(tabs).map(([key, { label }]) => (
+					{tabKeys.map((key) => (
 						<Tab
 							key={key}
 							$active={activeTab === key}
-							onClick={() => setActiveTab(key as keyof typeof tabs)}
+							onClick={() => setActiveTab(key)}
 						>
-							{label}
+							{tabs[key].label}
 						</Tab>
 					))}
 				</TabsRow>
@@ -117,20 +67,14 @@ export default function SpacesContainer() {
 				<LoadingSpace>
 					<LoadingSpinner />
 				</LoadingSpace>
-			) : tabs[activeTab].workspaces.length === 0 ? (
+			) : workspaces.length === 0 ? (
 				<EmptySpace>
-					<EmptyCardState
-						{...(searchQuery
-							? emptyCardStatePropOptions.noWorkspacesFound
-							: activeTab === "mine"
-								? emptyCardStatePropOptions.noPermissionsForAnyWorkspace
-								: emptyCardStatePropOptions.fallback)}
-					/>
+					<EmptyCardState {...emptyState} />
 				</EmptySpace>
 			) : (
 				<ScrollContainer>
 					<WorkspacesContainer>
-						{tabs[activeTab].workspaces.map((ws) => (
+						{workspaces.map((ws) => (
 							<WorkspaceCard key={ws.urlName} workspace={ws} />
 						))}
 					</WorkspacesContainer>
