@@ -8,7 +8,10 @@ import {
 import emptyWorkspacesImage from "src/assets/empty-states/empty-workspace.svg"
 import noResultsFound from "src/assets/empty-states/no-results-found.svg"
 import WorkspaceCard from "src/components/SpacesContainer/WorkspaceCard"
-import { EmptyCardState } from "src/components/shared/EmptyCardState"
+import {
+	EmptyCardState,
+	type EmptyCardStateProps,
+} from "src/components/shared/EmptyCardState"
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
 import { filterByTitle } from "src/utils/workspace-utils"
 import SearchInput from "./SearchInput"
@@ -46,6 +49,24 @@ export default function SpacesContainer() {
 
 	const isLoading = tabs[activeTab].isLoading
 
+	const emptyCardStatePropOptions = {
+		noWorkspacesFound: {
+			imgSrc: noResultsFound,
+			title: "לא נמצאו סביבות",
+			description: `לא נמצאו סביבות מתאימות ל-${searchQuery}`,
+		},
+		noPermissionsForAnyWorkspace: {
+			imgSrc: emptyWorkspacesImage,
+			title: "לא נמצאו הרשאות לסביבות",
+			description: "ניתן לפנות למנהל סביבה כדי לקבל הרשאות",
+		},
+		fallback: {
+			imgSrc: "",
+			title: "",
+			description: "",
+		},
+	} satisfies Record<string, EmptyCardStateProps>
+
 	return (
 		<SpaceContainerCard>
 			<TopSection>
@@ -82,21 +103,13 @@ export default function SpacesContainer() {
 				</LoadingSpace>
 			) : tabs[activeTab].workspaces.length === 0 ? (
 				<EmptySpace>
-					{searchQuery ? (
-						<EmptyCardState
-							imgSrc={noResultsFound}
-							title="לא נמצאו סביבות"
-							description={`לא נמצאו סביבות התואמות ל-"${searchQuery}"`}
-						/>
-					) : (
-						activeTab === "mine" && (
-							<EmptyCardState
-								imgSrc={emptyWorkspacesImage}
-								title="לא נמצאו הרשאות לסביבות"
-								description="ניתן לפנות למנהל סביבה כדי לקבל הרשאות"
-							/>
-						)
-					)}
+					<EmptyCardState
+						{...(searchQuery
+							? emptyCardStatePropOptions.noWorkspacesFound
+							: activeTab === "mine"
+								? emptyCardStatePropOptions.noPermissionsForAnyWorkspace
+								: emptyCardStatePropOptions.fallback)}
+					/>
 				</EmptySpace>
 			) : (
 				<ScrollContainer>
