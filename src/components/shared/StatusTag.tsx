@@ -2,6 +2,7 @@ import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import { TbChevronDown } from "react-icons/tb"
 import type { WorkspaceStatusDto } from "src/api/model"
+import { useIsMobile } from "src/hooks/use-mobile"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface StatusTagProps {
@@ -11,6 +12,8 @@ interface StatusTagProps {
 	withArrow?: boolean
 	open?: boolean
 	tooltip?: string
+	isCurrentUserTask?: boolean
+	isAdmin?: boolean
 }
 
 export function StatusTag({
@@ -20,14 +23,20 @@ export function StatusTag({
 	withArrow = false,
 	open = false,
 	tooltip = "לא קיימת הרשאת שינוי סטטוס",
+	isCurrentUserTask,
+	isAdmin,
 }: StatusTagProps) {
+	const isMobile = useIsMobile()
 	const tag = (
 		<Tag
+			$isMobile={isMobile}
 			$fontColor={color}
 			$backgroundColor={color}
 			$interactive={interactive}
 			$editable={editable}
 			$withArrow={withArrow}
+			$isCurrentUserTask={isCurrentUserTask}
+			$isAdmin={isAdmin}
 		>
 			{withArrow && <Arrow size={12} $open={open} />}
 			<Label $withArrow={withArrow}>
@@ -87,17 +96,21 @@ const Text = styled.span`
 `
 
 const Tag = styled.span<{
+	$isMobile: boolean
 	$fontColor: string
 	$backgroundColor: string
 	$interactive?: boolean
 	$editable?: boolean
 	$withArrow?: boolean
+	$isCurrentUserTask?: boolean
+	$isAdmin?: boolean
 }>`
   direction: ltr;
   display: inline-flex;
   align-items: center;
+  justify-content: ${({ $isMobile }) => ($isMobile ? "center" : "auto")};
   gap: 2px;
-  width: 76px;
+  width: ${({ $isMobile, $isCurrentUserTask, $isAdmin }) => ($isMobile ? ($isAdmin ? "100%" : $isCurrentUserTask ? "100%" : "76px") : "76px")};
   padding: ${({ $withArrow }) => ($withArrow ? "1px 0 1px 8px" : "1px 8px")};
   border-radius: 999px;
   font-size: var(--fs-sm);
