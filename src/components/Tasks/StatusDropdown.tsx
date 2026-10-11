@@ -3,6 +3,7 @@ import { useToggle } from "@mantine/hooks"
 import { memo } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
+import { useIsMobile } from "src/hooks/use-mobile"
 import { StatusTag } from "../shared/StatusTag"
 import {
 	DropdownMenu,
@@ -23,6 +24,8 @@ interface StatusDropdownProps {
 		assigneeId: number | undefined,
 		status: WorkspaceStatusDto,
 	) => void
+	isCurrentUserTask?: boolean
+	isAdmin?: boolean
 }
 
 export const StatusDropdown = memo(
@@ -34,7 +37,10 @@ export const StatusDropdown = memo(
 		editable = false,
 		isArchived,
 		onUpdate,
+		isCurrentUserTask,
+		isAdmin = false,
 	}: StatusDropdownProps) => {
+		const isMobile = useIsMobile()
 		const [isOpen, toggleOpen] = useToggle()
 
 		const { data: fetchedStatuses = [], isLoading: isFetchingStatuses } =
@@ -60,14 +66,16 @@ export const StatusDropdown = memo(
 				{editable && statusesReady ? (
 					<DropdownMenu onOpenChange={toggleOpen}>
 						<DropdownMenuTrigger asChild>
-							<TriggerWrapper tabIndex={0}>
+							<TriggerWrapper tabIndex={0} $isMobile={isMobile}>
 								<StatusTag
+									isCurrentUserTask={isCurrentUserTask}
 									open={isOpen}
 									status={status}
 									interactive
 									editable={editable}
 									withArrow={editable}
 									tooltip={tooltip}
+									isAdmin={isAdmin}
 								/>
 							</TriggerWrapper>
 						</DropdownMenuTrigger>
@@ -79,17 +87,25 @@ export const StatusDropdown = memo(
 									onSelect={() => handleSelectStatus(currentStatus)}
 								>
 									<StatusTag
+										isCurrentUserTask={isCurrentUserTask}
 										status={currentStatus}
 										interactive
 										editable={editable}
 										tooltip={tooltip}
+										isAdmin={isAdmin}
 									/>
 								</StatusDropdownItem>
 							))}
 						</StatusDropdownContent>
 					</DropdownMenu>
 				) : (
-					<StatusTag status={status} editable={editable} tooltip={tooltip} />
+					<StatusTag
+						status={status}
+						editable={editable}
+						tooltip={tooltip}
+						isCurrentUserTask={isCurrentUserTask}
+						isAdmin={isAdmin}
+					/>
 				)}
 			</CellCenter>
 		)
@@ -102,8 +118,9 @@ const CellCenter = styled.div`
   align-items: center;
 `
 
-const TriggerWrapper = styled.span`
+const TriggerWrapper = styled.span<{ $isMobile: boolean }>`
   cursor: pointer;
+  width: ${({ $isMobile }) => ($isMobile ? "100%" : "76px")};
 
   &:focus-visible {
     outline: none;

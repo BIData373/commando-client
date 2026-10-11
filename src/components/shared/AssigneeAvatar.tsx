@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import type { AssigneeDto } from "src/api/model"
 import { isColorVarDark } from "src/functions/contrast-color"
+import { useIsMobile } from "src/hooks/use-mobile"
 import { getInitials } from "src/utils/avatar-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import {
@@ -25,13 +26,14 @@ export const AssigneeAvatar = ({
 	cursor,
 	...props
 }: AssigneeAvatarProps) => {
+	const isMobile = useIsMobile()
 	return (
 		<StyledRoot $size={size} $cursor={cursor} ref={ref} {...props}>
 			<MesibaAvatarImage
 				src={formatMesibaIcon(assignee.icon)}
 				alt={assignee.name}
 			/>
-			<ColoredFallback $color={assignee.color}>
+			<ColoredFallback $color={assignee.color} $isMobile={isMobile}>
 				{getInitials(assignee.name)}
 			</ColoredFallback>
 		</StyledRoot>
@@ -51,10 +53,11 @@ const StyledRoot = styled(MesibaAvatarRoot)<{
 
 const ColoredFallback = styled(MesibaAvatarFallback)<{
 	$color: string | null
+	$isMobile: boolean
 }>`
   background: ${({ $color }) => $color ?? "var(--chip-bg)"};
     color: ${({ $color }) => ($color && isColorVarDark($color) ? "var(--background)" : "var(--foreground)")};
-  font-size: var(--fs-btn);
+  font-size: ${({ $isMobile }) => ($isMobile ? "11px" : "var(--fs-btn)")};
   font-weight: 400;
   width: 100%;
   height: 100%;
