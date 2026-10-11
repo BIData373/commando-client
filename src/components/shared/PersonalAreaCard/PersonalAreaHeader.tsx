@@ -3,17 +3,16 @@ import { useCurrentUser } from "src/hooks/useCurrentUser"
 
 export default function PersonalAreaHeader() {
 	const user = useCurrentUser()
-	const userName = user.info?.name || user.upn
+	const username = user.info?.name || user.upn
 
 	return (
 		<Header>
 			<TitleRow>
-				{/* <NewTaskCount>({totalCount} הנחיות חדשות)</NewTaskCount> */}
 				<Title>אזור אישי</Title>
 			</TitleRow>
 			<Greeting>
 				<GreetingText>
-					שלום <GreetingBold>{userName}</GreetingBold>, באיזור האישי תוכל לצפות
+					שלום <GreetingBold>{username}</GreetingBold>, באיזור האישי תוכל לצפות
 					בכל ההנחיות שקיבלת
 				</GreetingText>
 			</Greeting>
