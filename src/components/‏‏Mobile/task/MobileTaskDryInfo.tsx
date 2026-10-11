@@ -64,7 +64,7 @@ export function MobileTaskDryInfo({
 				{!!tags && (
 					<SectionWrapper>
 						<SectionLabel>תגיות</SectionLabel>
-						<TagsRow isMobile source={source} tags={tags}></TagsRow>
+						<TagsRow isMobile source={source} tags={tags} />
 					</SectionWrapper>
 				)}
 			</TaskDetails>
