@@ -62,11 +62,15 @@ export function useSpacesContainer() {
 	const isLoading = tabs[activeTab].isLoading
 	const workspaces = tabs[activeTab].workspaces
 
-	const emptyState = searchQuery
-		? emptyCardStatePropOptions.noWorkspacesFound
-		: activeTab === "mine"
-			? emptyCardStatePropOptions.noPermissionsForAnyWorkspace
-			: emptyCardStatePropOptions.fallback
+	let emptyState: EmptyCardStateProps
+
+	if (searchQuery) {
+		emptyState = emptyCardStatePropOptions.noWorkspacesFound
+	} else if (activeTab === "mine") {
+		emptyState = emptyCardStatePropOptions.noPermissionsForAnyWorkspace
+	} else {
+		emptyState = emptyCardStatePropOptions.fallback
+	}
 
 	return {
 		tabs,
