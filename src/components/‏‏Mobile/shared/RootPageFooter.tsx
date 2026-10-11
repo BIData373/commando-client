@@ -17,7 +17,7 @@ export function RootPageFooter({ className }: RootPageFooterProps) {
 			<Credits>
 				<FooterIcon src={BIDataIcon} alt="BI DATA" />
 				<CreditsText>
-					<FooterText>2026©</FooterText>
+					<FooterText>{new Date().getFullYear()}©</FooterText>
 					<FooterText>וקטור המפקד - פותח ע"י BI DATA</FooterText>
 				</CreditsText>
 			</Credits>
