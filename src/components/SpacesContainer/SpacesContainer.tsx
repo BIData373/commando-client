@@ -73,16 +73,6 @@ export default function SpacesContainer() {
 		},
 	} satisfies Record<string, EmptyCardStateProps>
 
-	let emptyState: EmptyCardStateProps
-
-	if (searchQuery) {
-		emptyState = emptyCardStatePropOptions.noWorkspacesFound
-	} else if (activeTab === "mine") {
-		emptyState = emptyCardStatePropOptions.noPermissionsForAnyWorkspace
-	} else {
-		emptyState = emptyCardStatePropOptions.fallback
-	}
-
 	return (
 		<SpaceContainerCard>
 			<TopSection>
@@ -129,7 +119,13 @@ export default function SpacesContainer() {
 				</LoadingSpace>
 			) : tabs[activeTab].workspaces.length === 0 ? (
 				<EmptySpace>
-					<EmptyCardState {...emptyState} />
+					<EmptyCardState
+						{...(searchQuery
+							? emptyCardStatePropOptions.noWorkspacesFound
+							: activeTab === "mine"
+								? emptyCardStatePropOptions.noPermissionsForAnyWorkspace
+								: emptyCardStatePropOptions.fallback)}
+					/>
 				</EmptySpace>
 			) : (
 				<ScrollContainer>
