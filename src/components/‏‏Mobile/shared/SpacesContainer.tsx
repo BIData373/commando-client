@@ -103,7 +103,6 @@ export default function SpacesContainer() {
 
 const SpaceContainerCard = styled.div`
   display: flex;
-  padding: clamp(12px, 1.9vh, 20px) clamp(24px, 2.5vw, 48px) 0;
   flex-direction: column;
   align-items: flex-start;
   gap: clamp(12px, 2.2vh, 24px);
@@ -174,8 +173,8 @@ const ScrollContainer = styled.div`
 const WorkspacesContainer = styled.div`
   direction: rtl;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
-  grid-auto-rows: minmax(140px, 1fr); 
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+  grid-auto-rows: minmax(120px, 1fr); 
   gap: 12px;
   padding-inline-end: 4px;
   padding-bottom: 8px;
