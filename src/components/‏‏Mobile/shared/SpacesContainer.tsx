@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { useState } from "react"
+import type { WorkspaceWithPermissionDto } from "src/api/model"
 import {
 	useGetPermittedWorkspaces,
 	useListWorkspaces,
@@ -9,11 +10,13 @@ import noResultsFound from "src/assets/empty-states/no-results-found.svg"
 import WorkspaceCard from "src/components/SpacesContainer/WorkspaceCard"
 import { EmptyCardState } from "src/components/shared/EmptyCardState"
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
+import { filterByTitle } from "src/utils/workspace-utils"
 import SearchInput from "./SearchInput"
 
-function filterByTitle<T extends { title: string }>(items: T[], query: string) {
-	const lower = query.toLowerCase()
-	return items.filter((item) => item.title.toLowerCase().includes(lower))
+interface TabType {
+	isLoading: boolean
+	workspaces: WorkspaceWithPermissionDto[]
+	label: string
 }
 
 export default function SpacesContainer() {
@@ -22,19 +25,26 @@ export default function SpacesContainer() {
 	const { data: myWorkspaces = [], isLoading: isMyWorkspacesLoading } =
 		useGetPermittedWorkspaces()
 	const [searchQuery, setSearchQuery] = useState("")
-	const [activeTab, setActiveTab] = useState<"mine" | "all">("mine")
-
-	const tabs: { key: "mine" | "all"; label: string }[] = [
-		{ key: "mine", label: "הסביבות שלי" },
-		{ key: "all", label: "כל הסביבות" },
-	]
+	const [activeTab, setActiveTab] = useState<keyof typeof tabs>("mine")
 
 	const filteredMine = filterByTitle(myWorkspaces, searchQuery)
 	const filteredAll = filterByTitle(allWorkspaces, searchQuery)
 
-	const displayedWorkspaces = activeTab === "mine" ? filteredMine : filteredAll
-	const isLoading =
-		activeTab === "mine" ? isMyWorkspacesLoading : isAllWorkspacesLoading
+	const tabs = {
+		all: {
+			label: "כל הסביבות",
+			workspaces: filteredAll,
+			isLoading: isAllWorkspacesLoading,
+		},
+		mine: {
+			label: "הסביבות שלי",
+			workspaces: filteredMine,
+			isLoading: isMyWorkspacesLoading,
+		},
+	} satisfies Record<string, TabType>
+	activeTab
+
+	const isLoading = tabs[activeTab].isLoading
 
 	return (
 		<SpaceContainerCard>
@@ -42,11 +52,11 @@ export default function SpacesContainer() {
 				<HeaderRow>
 					<SectionTitle>סביבות מפקדים</SectionTitle>
 					<TabsRow>
-						{tabs.map(({ key, label }) => (
+						{Object.entries(tabs).map(([key, { label }]) => (
 							<Tab
 								key={key}
 								$active={activeTab === key}
-								onClick={() => setActiveTab(key)}
+								onClick={() => setActiveTab(key as keyof typeof tabs)}
 							>
 								{label}
 							</Tab>
@@ -70,7 +80,7 @@ export default function SpacesContainer() {
 				<LoadingSpace>
 					<LoadingSpinner />
 				</LoadingSpace>
-			) : displayedWorkspaces.length === 0 ? (
+			) : tabs[activeTab].workspaces.length === 0 ? (
 				<EmptySpace>
 					{searchQuery ? (
 						<EmptyCardState
@@ -91,7 +101,7 @@ export default function SpacesContainer() {
 			) : (
 				<ScrollContainer>
 					<WorkspacesContainer>
-						{displayedWorkspaces.map((ws) => (
+						{tabs[activeTab].workspaces.map((ws) => (
 							<WorkspaceCard key={ws.urlName} workspace={ws} />
 						))}
 					</WorkspacesContainer>

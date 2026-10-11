@@ -9,13 +9,9 @@ import emptyWorkspacesImage from "src/assets/empty-states/empty-workspace.svg"
 import noResultsFound from "src/assets/empty-states/no-results-found.svg"
 import { EmptyCardState } from "src/components/shared/EmptyCardState"
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
+import { filterByTitle } from "src/utils/workspace-utils"
 import NewWorkspaceButton from "./NewWorkspaceButton"
 import WorkspaceCard from "./WorkspaceCard"
-
-function filterByTitle<T extends { title: string }>(items: T[], query: string) {
-	const lower = query.toLowerCase()
-	return items.filter((item) => item.title.toLowerCase().includes(lower))
-}
 
 export default function SpacesContainer() {
 	const { data: allWorkspaces = [], isLoading: isAllWorkspacesLoading } =
