@@ -2,8 +2,8 @@ import styled from "@emotion/styled"
 import { ArrowLeft } from "lucide-react"
 import { PrimaryButton } from "../PrimaryButton"
 
-type PersonalAreaButtonProps = {
-	onClick?: () => void
+interface PersonalAreaButtonProps {
+	onClick?(): void
 }
 
 export default function PersonalAreaButton({
