@@ -16,6 +16,7 @@ import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
 import { filterByTitle } from "src/utils/workspace-utils"
 import SearchInput from "./SearchInput"
 
+type TabKey = "mine" | "all"
 interface TabType {
 	isLoading: boolean
 	workspaces: WorkspaceWithPermissionDto[]
@@ -28,7 +29,7 @@ export default function SpacesContainer() {
 	const { data: myWorkspaces = [], isLoading: isMyWorkspacesLoading } =
 		useGetPermittedWorkspaces()
 	const [searchQuery, setSearchQuery] = useState("")
-	const [activeTab, setActiveTab] = useState<keyof typeof tabs>("mine")
+	const [activeTab, setActiveTab] = useState<TabKey>("mine")
 
 	const filteredMine = filterByTitle(myWorkspaces, searchQuery)
 	const filteredAll = filterByTitle(allWorkspaces, searchQuery)
@@ -44,7 +45,7 @@ export default function SpacesContainer() {
 			workspaces: filteredMine,
 			isLoading: isMyWorkspacesLoading,
 		},
-	} satisfies Record<string, TabType>
+	} satisfies Record<TabKey, TabType>
 	activeTab
 
 	const isLoading = tabs[activeTab].isLoading
