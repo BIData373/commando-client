@@ -23,24 +23,67 @@ import {
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import type { AppTableFeatures } from "src/utils/table-features"
 import {
-	COLUMN_LABELS,
 	TASK_COLUMN_ID,
 	type TaskColumnMeta,
 	WORKSPACE_COLUMN_META,
 } from "src/utils/task-table-utils"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
-import WorkspaceCell from "../shared/WorkspaceCell"
-import { ColumnHeaderWithActions } from "../Tasks/ColumnHeaderWithActions"
+import { TaskColumnHeader } from "../Tasks/cells/TaskColumnHeader"
 import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
+import { WorkspaceColumnCell } from "./WorkspaceColumnCell"
 
 const columnHelper = createColumnHelper<
 	AppTableFeatures,
 	TaskRowWithWorkspaceDto
 >()
+
+const WORKSPACE_COLUMN = columnHelper.accessor((row) => row.workspace?.title, {
+	id: TASK_COLUMN_ID.workspace,
+	header: TaskColumnHeader,
+	size: 170,
+	enableColumnFilter: false,
+	sortFn: (rowA, rowB) =>
+		(rowA.original.workspace?.title ?? "").localeCompare(
+			rowB.original.workspace?.title ?? "",
+			"he",
+		),
+	cell: WorkspaceColumnCell,
+})
+
+function getWorkspaceSearchValues(task: TaskRowWithWorkspaceDto) {
+	return [task.workspace?.title]
+}
+
+interface PersonalTaskMetrics {
+	totalCount: number
+	notStartedCount: number
+	inProgressCount: number
+	weeklyNew: number
+}
+
+function getPersonalTaskMetrics(
+	tasks: TaskRowWithWorkspaceDto[],
+): PersonalTaskMetrics {
+	return tasks.reduce<PersonalTaskMetrics>(
+		(metrics, task) => ({
+			totalCount: metrics.totalCount + 1,
+			notStartedCount:
+				metrics.notStartedCount +
+				Number(task.status?.type === WorkspaceStatusType.NOT_STARTED),
+			inProgressCount:
+				metrics.inProgressCount +
+				Number(task.status?.type === WorkspaceStatusType.IN_PROGRESS),
+			weeklyNew:
+				metrics.weeklyNew +
+				Number(isThisWeek(task.createdAt, { weekStartsOn: 0 })),
+		}),
+		{ totalCount: 0, notStartedCount: 0, inProgressCount: 0, weeklyNew: 0 },
+	)
+}
 
 interface PersonalTaskTableProps {
 	isArchived?: boolean
@@ -62,7 +105,7 @@ function PersonalTaskTable({
 	onOpenTask,
 	filePrefix,
 }: PersonalTaskTableProps) {
-	const { columnOrder, hiddenColumns, searchQuery } = useTasksFilters()
+	const { columnOrder, hiddenColumns } = useTasksFilters()
 
 	const {
 		data: tasks = [],
@@ -80,50 +123,19 @@ function PersonalTaskTable({
 		Set<number>
 	>(new Set())
 
-	const workspaces = uniqBy(tasks, "workspace.id").map(
-		({ workspace }) => workspace,
+	const workspaces = useMemo(
+		() => uniqBy(tasks, "workspace.id").map(({ workspace }) => workspace),
+		[tasks],
 	)
 
 	const baseFilteredTaskRows = useFilteredTasks(tasks, {
-		additionalSearchValues: (task) => [task.workspace?.title],
+		additionalSearchValues: getWorkspaceSearchValues,
 	})
 
-	const workspaceColumn = useMemo(
-		() =>
-			columnHelper.accessor((row) => row.workspace?.title, {
-				id: TASK_COLUMN_ID.workspace,
-				header: ({ column }) => (
-					<ColumnHeaderWithActions
-						label={COLUMN_LABELS.workspace}
-						column={column}
-					/>
-				),
-				size: 170,
-				enableColumnFilter: false,
-				sortFn: (rowA, rowB) =>
-					(rowA.original.workspace?.title ?? "").localeCompare(
-						rowB.original.workspace?.title ?? "",
-						"he",
-					),
-				cell: ({
-					row: {
-						original: { workspace, createdBy },
-					},
-				}) => (
-					<WorkspaceCell
-						workspace={workspace}
-						createdBy={createdBy}
-						searchQuery={searchQuery}
-					/>
-				),
-			}),
-		[searchQuery],
+	const tableExtraColumns = useMemo(
+		() => columnHelper.columns([WORKSPACE_COLUMN, ...(extraColumns ?? [])]),
+		[extraColumns],
 	)
-
-	const tableExtraColumns = columnHelper.columns([
-		workspaceColumn,
-		...(extraColumns ?? []),
-	])
 
 	const filteredTaskRows = useMemo(
 		() =>
@@ -135,19 +147,10 @@ function PersonalTaskTable({
 		[baseFilteredTaskRows, activeWorkspaceFilters],
 	)
 
-	const totalCount = tasks.length
-
-	const notStartedCount = tasks.filter(
-		(t) => t.status?.type === WorkspaceStatusType.NOT_STARTED,
-	).length
-
-	const inProgressCount = tasks.filter(
-		(t) => t.status?.type === WorkspaceStatusType.IN_PROGRESS,
-	).length
-
-	const weeklyNew = tasks.filter((t) =>
-		isThisWeek(t.createdAt, { weekStartsOn: 0 }),
-	).length
+	const { totalCount, notStartedCount, inProgressCount, weeklyNew } = useMemo(
+		() => getPersonalTaskMetrics(tasks),
+		[tasks],
+	)
 
 	const onArchive = !isArchived ? archive : undefined
 	const onUnarchive = isArchived ? unarchive : undefined

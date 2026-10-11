@@ -1,48 +1,60 @@
 import styled from "@emotion/styled"
+import { useQueryClient } from "@tanstack/react-query"
 import { Download } from "lucide-react"
 import { useState } from "react"
-import { useListMessages } from "src/api/message/message"
+import { getListMessagesQueryKey, listMessages } from "src/api/message/message"
 import type { ListMessagesParams, MessageDto, TaskRowDto } from "src/api/model"
 import { SpinIcon } from "src/components/shared/SpinIcon"
 import { exportTasksToExcel } from "src/functions/export-excel"
 import { TASK_COLUMN_ID } from "src/utils/task-table-utils"
 
+export interface TaskExport<TTask extends TaskRowDto> {
+	rows: TTask[]
+	messagesParams: ListMessagesParams
+}
+
 interface ExportButtonProps<TTask extends TaskRowDto> {
-	exportRows: TTask[]
+	getExport(): TaskExport<TTask>
 	columnOrder: (keyof TTask)[]
 	hiddenColumns: Set<keyof TTask>
-	messagesParams: ListMessagesParams
 	exportFilePrefix?: string
 }
 
 function ExportButton<TTask extends TaskRowDto>({
-	exportRows,
+	getExport,
 	columnOrder,
 	hiddenColumns,
-	messagesParams,
 	exportFilePrefix,
 }: ExportButtonProps<TTask>) {
+	const queryClient = useQueryClient()
 	const [isExporting, setIsExporting] = useState(false)
 
 	const needsMessages = !hiddenColumns.has(
 		TASK_COLUMN_ID.lastMessage as keyof TTask,
 	)
 
-	const { refetch } = useListMessages(messagesParams, {
-		query: { enabled: false },
-	})
+	async function fetchMessages(params: ListMessagesParams) {
+		try {
+			return await queryClient.fetchQuery({
+				queryKey: getListMessagesQueryKey(params),
+				queryFn: ({ signal }) => listMessages(params, signal),
+				staleTime: 0,
+			})
+		} catch {
+			return []
+		}
+	}
 
 	async function handleExport() {
 		setIsExporting(true)
 		try {
-			let messages: MessageDto[] = []
-			if (needsMessages) {
-				const { data = [] } = await refetch()
-				messages = data
-			}
+			const { rows, messagesParams } = getExport()
+			const messages: MessageDto[] = needsMessages
+				? await fetchMessages(messagesParams)
+				: []
 
 			exportTasksToExcel(
-				exportRows,
+				rows,
 				columnOrder,
 				hiddenColumns,
 				messages,

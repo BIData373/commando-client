@@ -26,15 +26,17 @@ function ColumnFilterDropdown({
 	isActive,
 	onOpenChange,
 }: ColumnFilterDropdownProps) {
+	const [open, setOpen] = useState(false)
 	const [selectedValues, setSelectedValues] = useState<Set<string>>(
 		new Set(activeValues),
 	)
 
-	function handleOpenChange(open: boolean) {
-		if (open) {
+	function handleOpenChange(nextOpen: boolean) {
+		if (nextOpen) {
 			setSelectedValues(new Set(activeValues))
 		}
-		onOpenChange(open)
+		setOpen(nextOpen)
+		onOpenChange(nextOpen)
 	}
 
 	function toggleOption(value: string) {
@@ -51,16 +53,16 @@ function ColumnFilterDropdown({
 
 	function handleApply() {
 		onApply(selectedValues)
-		onOpenChange(false)
+		handleOpenChange(false)
 	}
 
 	function handleReset() {
 		onApply(new Set())
-		onOpenChange(false)
+		handleOpenChange(false)
 	}
 
 	return (
-		<Popover onOpenChange={handleOpenChange}>
+		<Popover open={open} onOpenChange={handleOpenChange}>
 			<PopoverTrigger asChild>
 				<IconButton $active={isActive}>
 					<TbFilter size={16} />

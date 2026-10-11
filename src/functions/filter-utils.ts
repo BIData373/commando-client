@@ -19,8 +19,8 @@ export interface FilterOption {
 export function matchesQuickFilter(
 	task: TaskRowDto,
 	filter: QuickFilter,
+	today: Date = startOfToday(),
 ): boolean {
-	const today = startOfToday()
 	const daysUntil = task.dueDate ? differenceInDays(task.dueDate, today) : null
 	const isNotCompleted = task.status.type !== WorkspaceStatusType.COMPLETED
 	const isNotImmediate = task.deadlineType !== DeadlineType.IMMEDIATE
@@ -46,6 +46,26 @@ export function matchesQuickFilter(
 		default:
 			return false
 	}
+}
+
+export function countQuickFilters(
+	tasks: TaskRowDto[],
+): Record<QuickFilter, number> {
+	const today = startOfToday()
+	const filters = Object.values(QuickFilter)
+	const counts = Object.fromEntries(
+		filters.map((filter) => [filter, 0]),
+	) as Record<QuickFilter, number>
+
+	for (const task of tasks) {
+		for (const filter of filters) {
+			if (matchesQuickFilter(task, filter, today)) {
+				counts[filter]++
+			}
+		}
+	}
+
+	return counts
 }
 
 export type FilterOptions =

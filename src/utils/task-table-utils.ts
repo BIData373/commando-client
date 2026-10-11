@@ -1,5 +1,6 @@
 import {
 	type ColumnDef,
+	type ColumnFiltersState,
 	createColumnHelper,
 	type IdentifiedColumnDef,
 	type Row,
@@ -123,7 +124,11 @@ export function createTaskColumnDefinitions<TTask extends TaskRowDto>() {
 		tags: defineColumn(
 			TASK_COLUMN_ID.tags,
 			(row) => uniq(map(concat(row.tags, row.source?.tags ?? []), "name")),
-			{ filterFn: "arrIncludesSome" },
+			{
+				filterFn: "arrIncludesSome",
+				getUniqueValues: (row) =>
+					map(concat(row.tags, row.source?.tags ?? []), "name"),
+			},
 		),
 		deadlineType: defineColumn(
 			TASK_COLUMN_ID.deadlineType,
@@ -166,11 +171,40 @@ export function groupRowsByTask<TTask extends TaskRowDto>(
 	const rowsByTaskId = new Map<number, TTask[]>()
 
 	tasks.forEach((task) => {
-		rowsByTaskId.set(task.id, [...(rowsByTaskId.get(task.id) ?? []), task])
+		const rows = rowsByTaskId.get(task.id)
+
+		if (rows) {
+			rows.push(task)
+		} else {
+			rowsByTaskId.set(task.id, [task])
+		}
 	})
 
 	return [...rowsByTaskId.values()].flat()
 }
+
+export function buildUrlColumnFilters(
+	statusFilter: string[],
+	deadlineTypeFilter: string[],
+	assigneeFilter: string[],
+): ColumnFiltersState {
+	return [
+		...(statusFilter.length
+			? [{ id: TASK_COLUMN_ID.status, value: statusFilter }]
+			: []),
+		...(deadlineTypeFilter.length
+			? [{ id: TASK_COLUMN_ID.deadlineType, value: deadlineTypeFilter }]
+			: []),
+		...(assigneeFilter.length
+			? [{ id: TASK_COLUMN_ID.assignee, value: assigneeFilter }]
+			: []),
+	]
+}
+
+/** Shared empty defaults: a fresh `[]` or `new Set()` per render would invalidate every memo keyed on it */
+export const EMPTY_LIST: never[] = []
+
+export const EMPTY_SET = new Set<never>()
 
 export const CONFIGURABLE_COLUMNS = CONFIGURABLE_COLUMNS_META.filter(
 	(c) => c.id !== TASK_COLUMN_ID.serialId,

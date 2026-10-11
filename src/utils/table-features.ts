@@ -1,8 +1,11 @@
 import {
 	cellSpanningFeature,
+	columnFacetingFeature,
 	columnFilteringFeature,
 	columnSizingFeature,
 	columnVisibilityFeature,
+	createFacetedRowModel,
+	createFacetedUniqueValues,
 	createFilteredRowModel,
 	createSortedRowModel,
 	filterFns,
@@ -19,6 +22,7 @@ export interface AppColumnMeta {
 
 export const appTableFeatures = tableFeatures({
 	cellSpanningFeature,
+	columnFacetingFeature,
 	columnFilteringFeature,
 	columnSizingFeature,
 	columnVisibilityFeature,
@@ -27,6 +31,8 @@ export const appTableFeatures = tableFeatures({
 	rowSortingFeature,
 	filteredRowModel: createFilteredRowModel(),
 	sortedRowModel: createSortedRowModel(),
+	facetedRowModel: createFacetedRowModel(),
+	facetedUniqueValues: createFacetedUniqueValues(),
 	filterFns,
 	sortFns,
 	columnMeta: {} as AppColumnMeta,

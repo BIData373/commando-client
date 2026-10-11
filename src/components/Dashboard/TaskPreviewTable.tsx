@@ -1,5 +1,6 @@
 import { type ReactNode, useMemo } from "react"
 import type { TaskRowDto } from "src/api/model"
+import { TaskTableProvider } from "src/providers/TaskTableProvider"
 import {
 	DEFAULT_COLUMN_ORDER,
 	DISABLED_CLICK_COLUMNS,
@@ -22,9 +23,14 @@ export function TaskPreviewTable({
 	onClick,
 	emptyState,
 }: TaskPreviewTableProps) {
+	const hiddenColumns = useMemo(
+		() => toHiddenColumns(visibleColumns),
+		[visibleColumns],
+	)
+
 	const { columns } = useTaskColumns<TaskRowDto>({
 		columnOrder: DEFAULT_COLUMN_ORDER,
-		hiddenColumns: toHiddenColumns(visibleColumns),
+		hiddenColumns,
 		showMenuColumn: false,
 	})
 
@@ -37,12 +43,14 @@ export function TaskPreviewTable({
 	}
 
 	return (
-		<DataTable
-			columns={columns}
-			data={groupedTasks}
-			showHeader={false}
-			emptyState={emptyState}
-			onCellClick={handleCellClick}
-		/>
+		<TaskTableProvider>
+			<DataTable
+				columns={columns}
+				data={groupedTasks}
+				showHeader={false}
+				emptyState={emptyState}
+				onCellClick={handleCellClick}
+			/>
+		</TaskTableProvider>
 	)
 }

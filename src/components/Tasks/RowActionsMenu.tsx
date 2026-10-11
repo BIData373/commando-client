@@ -17,9 +17,9 @@ export function RowActionsMenu({ trigger, actions }: RowActionsMenuProps) {
 		<RowMenu
 			trigger={
 				trigger ?? (
-					<DefaultTrigger>
+					<RowActionsTrigger>
 						<MoreVertical size={16} />
-					</DefaultTrigger>
+					</RowActionsTrigger>
 				)
 			}
 			open={open}
@@ -29,7 +29,7 @@ export function RowActionsMenu({ trigger, actions }: RowActionsMenuProps) {
 	)
 }
 
-const DefaultTrigger = styled.button`
+export const RowActionsTrigger = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
