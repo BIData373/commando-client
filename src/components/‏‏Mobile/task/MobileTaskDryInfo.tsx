@@ -61,7 +61,7 @@ export function MobileTaskDryInfo({
 						</SectionDescription>
 					</SectionWrapper>
 				)}
-				{!!tags && (
+				{tags.length !== 0 && (
 					<SectionWrapper>
 						<SectionLabel>תגיות</SectionLabel>
 						<TagsRow isMobile source={source} tags={tags} />
@@ -125,7 +125,7 @@ const SectionDescription = styled.p`
     color: var(--text-color-2);
 `
 
-const LightSectionDescriptionText = styled.p`
+const LightSectionDescriptionText = styled.span`
     color: var(--text-color);
 `
 
