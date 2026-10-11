@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
-import {
-	type TaskRowWithWorkspaceDto,
+import { countBy } from "lodash"
+import type {
+	TaskRowWithWorkspaceDto,
 	WorkspaceStatusType,
 } from "src/api/model"
 import { STATUS_DEFAULTS } from "src/functions/status-defaults"
@@ -11,42 +12,20 @@ type PersonalAreaStatsProps = {
 export default function PersonalAreaStats({
 	taskRows,
 }: PersonalAreaStatsProps) {
-	const completedCount = taskRows.filter(
-		(t) => t.status?.type === WorkspaceStatusType.COMPLETED,
-	).length
-
-	const inProgressCount = taskRows.filter(
-		(t) => t.status?.type === WorkspaceStatusType.IN_PROGRESS,
-	).length
-
-	const notStartedCount = taskRows.filter(
-		(t) => t.status?.type === WorkspaceStatusType.NOT_STARTED,
-	).length
+	const groupedTaskRows = countBy(taskRows, (row) => row.status.type)
 
 	return (
 		<>
-			<StatItem>
-				<StatNumber>{completedCount}</StatNumber>
-				<StatTag $color={STATUS_DEFAULTS[WorkspaceStatusType.COMPLETED].color}>
-					{STATUS_DEFAULTS[WorkspaceStatusType.COMPLETED].name}
-				</StatTag>
-			</StatItem>
-			<StatItem>
-				<StatNumber>{inProgressCount}</StatNumber>
-				<StatTag
-					$color={STATUS_DEFAULTS[WorkspaceStatusType.IN_PROGRESS].color}
-				>
-					{STATUS_DEFAULTS[WorkspaceStatusType.IN_PROGRESS].name}
-				</StatTag>
-			</StatItem>
-			<StatItem>
-				<StatNumber>{notStartedCount}</StatNumber>
-				<StatTag
-					$color={STATUS_DEFAULTS[WorkspaceStatusType.NOT_STARTED].color}
-				>
-					{STATUS_DEFAULTS[WorkspaceStatusType.NOT_STARTED].name}
-				</StatTag>
-			</StatItem>
+			{Object.entries(groupedTaskRows).map(([statusType, taskRowCount]) => {
+				const status = STATUS_DEFAULTS[statusType as WorkspaceStatusType]
+
+				return (
+					<StatItem key={statusType}>
+						<StatNumber>{taskRowCount}</StatNumber>
+						<StatTag $color={status.color}>{status.name}</StatTag>
+					</StatItem>
+				)
+			})}
 		</>
 	)
 }
