@@ -75,11 +75,3 @@ const EmptyText = styled.span`
   direction: rtl;
   white-space: nowrap;
 `
-
-// const NewTaskCount = styled.span`
-//   direction: rtl;
-//   color: rgba(0, 0, 0, 0.45);
-//   font-size: clamp(14px, 1vw, 20px);
-//   font-weight: 400;
-//   line-height: clamp(24px, 3.5vh, 38px);
-// `
