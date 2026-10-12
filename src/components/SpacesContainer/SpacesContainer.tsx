@@ -79,32 +79,6 @@ export default function SpacesContainer() {
 		},
 	} satisfies Record<string, EmptyCardStateProps>
 
-	const searchInputMobile = (
-		<SearchInput
-			placeholder="חפש סביבה"
-			value={searchQuery}
-			onChange={setSearchQuery}
-		/>
-	)
-
-	const searchInputDesktop = (
-		<SearchWrapper>
-			<DesktopSearchInput
-				placeholder="חפש סביבה"
-				value={searchQuery}
-				onChange={handleSearchChange}
-			/>
-			<SearchIconWrapper>
-				<Search size={24} />
-			</SearchIconWrapper>
-			{searchQuery && (
-				<ClearIconWrapper>
-					<ClearIcon size={14} onClick={() => setSearchQuery("")} />
-				</ClearIconWrapper>
-			)}
-		</SearchWrapper>
-	)
-
 	return (
 		<SpaceContainerCard $isMobile={isMobile}>
 			<TopSection>
@@ -112,7 +86,21 @@ export default function SpacesContainer() {
 					{!isMobile && (
 						<ActionsRow>
 							<WorkspaceRequestButton />
-							{searchInputDesktop}
+							<SearchWrapper>
+								<DesktopSearchInput
+									placeholder="חפש סביבה"
+									value={searchQuery}
+									onChange={handleSearchChange}
+								/>
+								<SearchIconWrapper>
+									<Search size={24} />
+								</SearchIconWrapper>
+								{searchQuery && (
+									<ClearIconWrapper>
+										<ClearIcon size={14} onClick={() => setSearchQuery("")} />
+									</ClearIconWrapper>
+								)}
+							</SearchWrapper>
 						</ActionsRow>
 					)}
 					<SectionTitle $isMobile>סביבות מפקדים</SectionTitle>
@@ -131,7 +119,13 @@ export default function SpacesContainer() {
 				</TabsRow>
 
 				{isMobile && (
-					<MobileSearchWrapper>{searchInputMobile}</MobileSearchWrapper>
+					<MobileSearchWrapper>
+						<SearchInput
+							placeholder="חפש סביבה"
+							value={searchQuery}
+							onChange={setSearchQuery}
+						/>
+					</MobileSearchWrapper>
 				)}
 			</TopSection>
 
