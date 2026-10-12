@@ -49,6 +49,7 @@ interface TasksFiltersContextValue {
 
 	columnsFilters: ColumnFiltersState
 	setColumnsFilters(columnsFilters: ColumnFiltersState): void
+	clearAllFilters: () => void
 
 	sorting: SortingState
 	setSorting: Dispatch<SetStateAction<SortingState>>
@@ -189,6 +190,12 @@ export function TasksFiltersProvider({
 		debouncedUpdateQuickFilter([])
 	}
 
+	function clearAllFilters() {
+		setColumnsFilters([])
+		setDateRange(undefined)
+		setDateType(DATE_TYPE.CREATION_DATE)
+	}
+
 	function setColumnsFilters(columnsFilters: ColumnFiltersState) {
 		updateTableView({
 			columnFilters: columnsFilters as ColumnFilterDto[],
@@ -248,6 +255,7 @@ export function TasksFiltersProvider({
 				setAssigneeFilter,
 				columnsFilters: columnFilters,
 				setColumnsFilters,
+				clearAllFilters,
 				sorting: sorting,
 				setSorting,
 				setColumnOrder,

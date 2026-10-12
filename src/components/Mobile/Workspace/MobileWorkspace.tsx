@@ -38,6 +38,7 @@ export default function MobileWorkspace() {
 		clearQuickFilters,
 		columnsFilters,
 		dateRange,
+		clearAllFilters,
 	} = useTasksFilters()
 
 	const { data: tasks = [], isLoading } = useListTaskRows({
@@ -92,7 +93,7 @@ export default function MobileWorkspace() {
 							<ActiveFiltersLabel onClick={() => setFilterSheetOpen(true)}>
 								סננים פעילים ({activeFilterCount})
 							</ActiveFiltersLabel>
-							<ClearFiltersButton onClick={() => setFilterSheetOpen(true)}>
+							<ClearFiltersButton onClick={clearAllFilters}>
 								<TbFilterOff size={16} />
 								נקה סננים
 							</ClearFiltersButton>

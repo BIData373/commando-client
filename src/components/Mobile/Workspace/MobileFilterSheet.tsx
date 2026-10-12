@@ -6,7 +6,6 @@ import type { AssigneeDto, TaskRowDto } from "src/api/model"
 import { Sheet, SheetContent } from "src/components/ui/sheet"
 import { buildFilterOptionsMap } from "src/functions/filter-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
-import { DATE_TYPE } from "src/utils/date-utils"
 import MobileDateFilter from "../Workspace/MobileDateFilter"
 import MobileListFilter from "../Workspace/MobileListFilter"
 
@@ -45,6 +44,7 @@ export default function MobileFilterSheet({
 		setDateRange,
 		columnsFilters,
 		setColumnsFilters,
+		clearAllFilters,
 	} = useTasksFilters()
 
 	const [expandedKey, setExpandedKey] = useState<FilterKey | null>(null)
@@ -84,9 +84,7 @@ export default function MobileFilterSheet({
 	}
 
 	function handleClearSelection() {
-		setColumnsFilters([])
-		setDateRange(undefined)
-		setDateType(DATE_TYPE.CREATION_DATE)
+		clearAllFilters()
 	}
 
 	return (

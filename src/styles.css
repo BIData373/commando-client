@@ -253,6 +253,7 @@ body,
   --shadow-comment-bar: 0 -4px 3.5px rgba(0, 0, 0, 0.1);
   --shadow-textarea-focus: 0 0 0 2px rgba(5, 145, 255, 0.1);
   --shadow-modal-header: 0px 10px 20px 0px rgba(0, 0, 0, 0.06);
+  --shadow-calendar-mobile:0 7.329px 19.543px 0 rgba(0, 0, 0, 0.08), 0 3.664px 7.329px -4.886px rgba(0, 0, 0, 0.12), 0 10.993px 34.2px 9.771px rgba(0, 0, 0, 0.05);
 }
 
 .dark {
