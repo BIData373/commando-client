@@ -316,7 +316,7 @@ function TaskDetailPanel({
 								</InfoAttachment>
 							</InfoBlock>
 						)}
-						{!!tags && (
+						{tags.length > 0 && (
 							<InfoBlock>
 								<SectionLabel>תגיות</SectionLabel>
 								<TagsRow source={source} tags={tags}></TagsRow>
