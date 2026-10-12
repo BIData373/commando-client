@@ -20,6 +20,7 @@ import NewWorkspaceButton from "./NewWorkspaceButton"
 import WorkspaceCard from "./WorkspaceCard"
 
 type TabKey = "mine" | "all"
+const tabKeys: TabKey[] = ["mine", "all"]
 
 interface TabType {
 	isLoading: boolean
@@ -118,13 +119,13 @@ export default function SpacesContainer() {
 				</HeaderRow>
 
 				<TabsRow>
-					{Object.entries(tabs).map(([key, { label }]) => (
+					{tabKeys.map((key) => (
 						<Tab
 							key={key}
 							$active={activeTab === key}
-							onClick={() => setActiveTab(key as TabKey)}
+							onClick={() => setActiveTab(key)}
 						>
-							{label}
+							{tabs[key].label}
 						</Tab>
 					))}
 				</TabsRow>
