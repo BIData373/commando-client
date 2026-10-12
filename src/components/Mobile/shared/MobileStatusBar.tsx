@@ -1,11 +1,11 @@
 import styled from "@emotion/styled"
-import { compact } from "lodash"
 import { useMemo } from "react"
-import { WorkspaceStatusType } from "src/api/model"
-import { useListTaskRows } from "src/api/task/task"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { type TaskRowDto, WorkspaceStatusType } from "src/api/model"
 
-const STATUS_CONFIG: { type: WorkspaceStatusType; color: string }[] = [
+export const STATUS_COLOR_CONFIG: {
+	type: WorkspaceStatusType
+	color: string
+}[] = [
 	{
 		type: WorkspaceStatusType.NOT_STARTED,
 		color: "var(--Colors-Base-Volcano-4)",
@@ -17,35 +17,39 @@ const STATUS_CONFIG: { type: WorkspaceStatusType; color: string }[] = [
 	{ type: WorkspaceStatusType.COMPLETED, color: "var(--Colors-Base-Green-4)" },
 ]
 
-export default function MobileStatusBar() {
-	const {
-		workspace: { id: workspaceId },
-		statuses,
-	} = useWorkspace()
+const STATUS_LABELS: Record<WorkspaceStatusType, string> = {
+	[WorkspaceStatusType.NOT_STARTED]: "טרם בוצע",
+	[WorkspaceStatusType.IN_PROGRESS]: "בעבודה",
+	[WorkspaceStatusType.COMPLETED]: "בוצע",
+}
 
-	const { data: tasks = [] } = useListTaskRows({
-		workspaceId,
-		isArchived: false,
-	})
+export interface StatusSegment {
+	id: string | number
+	name: string
+	color: string
+	count: number
+}
 
+interface MobileStatusBarProps {
+	tasks: TaskRowDto[]
+	segments?: StatusSegment[]
+}
+
+export default function MobileStatusBar({
+	tasks,
+	segments: externalSegments,
+}: MobileStatusBarProps) {
 	const segments = useMemo(
 		() =>
-			compact(
-				STATUS_CONFIG.map(({ type, color }) => {
-					const status = Object.values(statuses).find((s) => s.type === type)
-					return status
-						? {
-								id: status.id,
-								name: status.name,
-								color,
-								count: tasks.filter((t) => t.status?.id === status.id).length,
-							}
-						: null
-				}),
-			),
-		[tasks, statuses],
+			externalSegments ??
+			STATUS_COLOR_CONFIG.map(({ type, color }) => ({
+				id: type,
+				name: STATUS_LABELS[type],
+				color,
+				count: tasks.filter((t) => t.status?.type === type).length,
+			})),
+		[tasks, externalSegments],
 	)
-
 	const total = tasks.length
 
 	return (
@@ -114,7 +118,6 @@ const BarTrack = styled.div`
 	display: flex;
 	height: 16px;
 	border-radius: 8px;
-	justify-content: space-between;
 	align-items: flex-start;
 	align-self: stretch;
 	overflow: hidden;

@@ -11,12 +11,14 @@ interface MobileTaskCardProps {
 	task: TaskRowDto
 	searchQuery: string
 	onClick: () => void
+	workspaceName?: string
 }
 
 export default function MobileTaskCard({
 	task,
 	searchQuery,
 	onClick,
+	workspaceName,
 }: MobileTaskCardProps) {
 	const {
 		title,
@@ -75,6 +77,13 @@ export default function MobileTaskCard({
 							<InfoLabel>אחראי:</InfoLabel>
 						</InfoRow>
 					</>
+				)}
+
+				{workspaceName && (
+					<InfoRow>
+						<InfoValue>{workspaceName}</InfoValue>
+						<InfoLabel>מפקד מנחה:</InfoLabel>
+					</InfoRow>
 				)}
 			</TextBlock>
 		</CardRoot>
@@ -166,6 +175,12 @@ const InfoLabel = styled.span`
 `
 
 const AssigneeName = styled.span`
+	font-size: var(--fs-btn);
+	font-weight: 400;
+	color: var(--Colors-Neutral-Bg-colorBgSolidHover);
+`
+
+const InfoValue = styled.span`
 	font-size: var(--fs-btn);
 	font-weight: 400;
 	color: var(--Colors-Neutral-Bg-colorBgSolidHover);
