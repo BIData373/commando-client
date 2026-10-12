@@ -385,7 +385,7 @@ function CreateDiscussionModal({
 										<TooltipContent>
 											{alreadyExtracted
 												? "המסמך הזה כבר חולץ"
-												: "בהעלאת סיכום דיון ניתן לחלץ הנחיות באמצעות AI, מומלץ להשתמש במסמך וורד"}
+												: "בהעלאת מסמך סיכום, ניתן לחלץ הנחיות באמצעות AI. מומלץ להשתמש במסמך WORD, ניתן גם בPDF."}
 										</TooltipContent>
 									</Tooltip>
 								</TooltipProvider>

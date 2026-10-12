@@ -81,6 +81,10 @@ export const multiSelectColumnFilter: FilterFn<Partial<TaskRowDto>> = (
 	return !filterValue?.length || filterValue.includes(row.getValue(columnId))
 }
 
+function getTaskTagNames(row: Partial<TaskRowDto>): string[] {
+	return uniq(map(concat(row.tags ?? [], row.source?.tags ?? []), "name"))
+}
+
 export const TASK_COLUMN_DEFINITIONS: Partial<
 	Record<
 		keyof Partial<TaskRowDto>,
@@ -99,8 +103,8 @@ export const TASK_COLUMN_DEFINITIONS: Partial<
 		filterFn: multiSelectColumnFilter,
 	},
 	[TASK_COLUMN_ID.tags]: {
-		accessorFn: (row) =>
-			uniq(map(concat(row.tags, row.source?.tags ?? []), "name")),
+		accessorFn: getTaskTagNames,
+		getUniqueValues: getTaskTagNames,
 		filterFn: "arrIncludesSome",
 	},
 	[TASK_COLUMN_ID.deadlineType]: {

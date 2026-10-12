@@ -32,13 +32,13 @@ function RootComponent() {
 			<TooltipProvider>
 				<HeaderProvider>
 					<AppShell>
-						<Toaster />
 						<PageContainer>
 							<Outlet />
 						</PageContainer>
 					</AppShell>
 				</HeaderProvider>
 			</TooltipProvider>
+			<Toaster />
 			<ErrorModal />
 			{IS_DEV && (
 				<TanStackDevtools

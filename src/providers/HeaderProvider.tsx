@@ -44,16 +44,12 @@ export function useHeader() {
 	return context
 }
 
-export function useRenderInHeader(
-	key: ElementPlacements,
-	node: ReactNode,
-	deps: unknown[] = [],
-) {
+export function useRenderInHeader(key: ElementPlacements, node: ReactNode) {
 	const { setElementPlacements } = useHeader()
 
 	useLayoutEffect(() => {
 		setElementPlacements((prev) => ({ ...prev, [key]: node }))
 
 		return () => setElementPlacements(({ [key]: _, ...rest }) => rest)
-	}, [setElementPlacements, ...deps, key])
+	}, [setElementPlacements, node, key])
 }
