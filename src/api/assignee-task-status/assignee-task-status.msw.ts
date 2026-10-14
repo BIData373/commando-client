@@ -22,6 +22,56 @@ export const getListAssigneeTaskStatusesResponseMock =
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
 		).map(() => ({
+			createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			createdBy: {
+				id: faker.number.float({ fractionDigits: 2 }),
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				info: faker.helpers.arrayElement([
+					{
+						...{
+							upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+							displayName: faker.helpers.arrayElement([
+								faker.string.alpha({ length: { min: 10, max: 20 } }),
+								undefined,
+							]),
+							name: faker.helpers.arrayElement([
+								faker.string.alpha({ length: { min: 10, max: 20 } }),
+								undefined,
+							]),
+							isBI: faker.helpers.arrayElement([
+								faker.datatype.boolean(),
+								undefined,
+							]),
+						},
+					},
+					null,
+				]),
+			},
+			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			updatedBy: {
+				id: faker.number.float({ fractionDigits: 2 }),
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				info: faker.helpers.arrayElement([
+					{
+						...{
+							upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+							displayName: faker.helpers.arrayElement([
+								faker.string.alpha({ length: { min: 10, max: 20 } }),
+								undefined,
+							]),
+							name: faker.helpers.arrayElement([
+								faker.string.alpha({ length: { min: 10, max: 20 } }),
+								undefined,
+							]),
+							isBI: faker.helpers.arrayElement([
+								faker.datatype.boolean(),
+								undefined,
+							]),
+						},
+					},
+					null,
+				]),
+			},
 			task: {
 				createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				createdBy: {
@@ -796,6 +846,56 @@ export const getListAssigneeTaskStatusesResponseMock =
 export const getUpsertAssigneeTaskStatusResponseMock = (
 	overrideResponse: Partial<Extract<AssigneeTaskStatusDto, object>> = {},
 ): AssigneeTaskStatusDto => ({
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+	createdBy: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: faker.helpers.arrayElement([
+			{
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+			null,
+		]),
+	},
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+	updatedBy: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: faker.helpers.arrayElement([
+			{
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+			null,
+		]),
+	},
 	task: {
 		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		createdBy: {
@@ -1543,6 +1643,56 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 export const getDeleteAssigneeTaskStatusResponseMock = (
 	overrideResponse: Partial<Extract<AssigneeTaskStatusDto, object>> = {},
 ): AssigneeTaskStatusDto => ({
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+	createdBy: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: faker.helpers.arrayElement([
+			{
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+			null,
+		]),
+	},
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+	updatedBy: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: faker.helpers.arrayElement([
+			{
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+			null,
+		]),
+	},
 	task: {
 		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		createdBy: {

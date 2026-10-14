@@ -8,7 +8,6 @@ export const HeaderNavTab = styled(NavigationMenuLink)`
     gap: 8px;
     padding: 10px 8px;
     border-radius: 0;
-    color: var(--Menu-Tab-Text);
     font-size: var(--fs-btn);
     font-weight: 400;
     line-height: 20px;
@@ -18,8 +17,7 @@ export const HeaderNavTab = styled(NavigationMenuLink)`
     cursor: pointer;
 
     &:hover {
-      color: var(--Menu-Tab-Text);
-      background: var(--Menu-Tab-Hover);
+      background: var(--header-button-hover);
     }
   }
 `
