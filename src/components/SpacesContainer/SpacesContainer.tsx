@@ -103,7 +103,7 @@ export default function SpacesContainer() {
 							</SearchWrapper>
 						</ActionsRow>
 					)}
-					<SectionTitle $isMobile>סביבות מפקדים</SectionTitle>
+					<SectionTitle $isMobile={isMobile}>סביבות מפקדים</SectionTitle>
 				</HeaderRow>
 
 				<TabsRow>
@@ -145,7 +145,7 @@ export default function SpacesContainer() {
 				</EmptySpace>
 			) : (
 				<ScrollContainer $isMobile={isMobile}>
-					<WorkspacesContainer>
+					<WorkspacesContainer $isMobile={isMobile}>
 						{tabs[activeTab].workspaces.map((ws) => (
 							<WorkspaceCard key={ws.urlName} workspace={ws} />
 						))}
@@ -316,10 +316,11 @@ const ScrollContainer = styled.div<{ $isMobile: boolean }>`
 		`}
 `
 
-const WorkspacesContainer = styled.div`
+const WorkspacesContainer = styled.div<{ $isMobile: boolean }>`
 	direction: rtl;
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: ${({ $isMobile }) =>
+		`repeat(auto-fill, minmax(${$isMobile ? "120px" : "160px"}, 1fr))`};
 	grid-auto-rows: minmax(140px, auto);
 	gap: 12px;
 	padding-inline-end: 4px;
