@@ -1,4 +1,5 @@
 import { useDebouncedCallback, useLocalStorage } from "@mantine/hooks"
+import { useLocation } from "@tanstack/react-router"
 import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
 import { intersection } from "lodash"
 import {
@@ -71,6 +72,12 @@ export function TasksFiltersProvider({
 	children,
 }: TasksFiltersProviderProps) {
 	const { view, updateView, defaultColumnOrder } = useUserView()
+	const fromDashboard = useLocation({
+		select: (location) => location.state.fromDashboard ?? false,
+	})
+	const [ignoreSavedFilters] = useState(fromDashboard)
+	const [scopedColumnFilters, setScopedColumnFilters] =
+		useState<ColumnFiltersState>([])
 	const [localQuickFilters, setLocalQuickFilters] = useState<
 		Set<QuickFilter> | undefined
 	>(initialQuickFilters)
@@ -128,12 +135,23 @@ export function TasksFiltersProvider({
 	)
 
 	const activeQuickFilters = useMemo(
-		() => localQuickFilters ?? new Set<QuickFilter>(quickFilter),
-		[localQuickFilters, quickFilter],
+		() =>
+			localQuickFilters ??
+			new Set<QuickFilter>(ignoreSavedFilters ? [] : quickFilter),
+		[localQuickFilters, quickFilter, ignoreSavedFilters],
 	)
 
+	// Drop the flag from the browser entry so a refresh restores saved filters
 	useEffect(() => {
-		if (!localQuickFilters) return
+		if (!ignoreSavedFilters) return
+		window.history.replaceState(
+			{ ...window.history.state, fromDashboard: false },
+			"",
+		)
+	}, [ignoreSavedFilters])
+
+	useEffect(() => {
+		if (!localQuickFilters || ignoreSavedFilters) return
 
 		const serverQuickFilters = new Set<QuickFilter>(quickFilter)
 		const matchesServer =
@@ -143,7 +161,7 @@ export function TasksFiltersProvider({
 		if (matchesServer) {
 			setLocalQuickFilters(undefined)
 		}
-	}, [localQuickFilters, quickFilter])
+	}, [localQuickFilters, quickFilter, ignoreSavedFilters])
 
 	const columnOrder = useMemo(
 		() => reconcileColumnOrder(columnOrderRaw, knownColumnIds),
@@ -183,12 +201,16 @@ export function TasksFiltersProvider({
 		}
 
 		setLocalQuickFilters(nextQuickFilters)
-		debouncedUpdateQuickFilter([...nextQuickFilters])
+		if (!ignoreSavedFilters) {
+			debouncedUpdateQuickFilter([...nextQuickFilters])
+		}
 	}
 
 	function clearQuickFilters() {
 		setLocalQuickFilters(new Set())
-		debouncedUpdateQuickFilter([])
+		if (!ignoreSavedFilters) {
+			debouncedUpdateQuickFilter([])
+		}
 	}
 
 	function resetColumnFilters() {
@@ -203,6 +225,11 @@ export function TasksFiltersProvider({
 	}
 
 	function setColumnsFilters(columnsFilters: ColumnFiltersState) {
+		if (ignoreSavedFilters) {
+			setScopedColumnFilters(columnsFilters)
+			return
+		}
+
 		updateTableView({
 			columnFilters: columnsFilters as ColumnFilterDto[],
 		})
@@ -259,7 +286,9 @@ export function TasksFiltersProvider({
 				setDateRange,
 				assigneeFilter,
 				setAssigneeFilter,
-				columnsFilters: columnFilters,
+				columnsFilters: ignoreSavedFilters
+					? scopedColumnFilters
+					: columnFilters,
 				setColumnsFilters,
 				resetColumnFilters,
 				clearMobileFilters,

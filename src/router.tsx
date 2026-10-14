@@ -18,4 +18,10 @@ declare module "@tanstack/react-router" {
 	}
 }
 
+declare module "@tanstack/history" {
+	interface HistoryState {
+		fromDashboard?: boolean
+	}
+}
+
 export default router

@@ -29,10 +29,11 @@ export const ViewMoreInstructions = ({
 			params: { urlName },
 			search: {
 				view: TasksView.TABLE,
-				quickFilter: quickFilter ? [quickFilter] : [],
+				quickFilter: quickFilter ? [quickFilter] : undefined,
 				statusFilter,
 				deadlineTypeFilter,
 			},
+			state: { fromDashboard: true },
 		})
 	}
 
