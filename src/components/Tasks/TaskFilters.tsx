@@ -6,16 +6,17 @@ import { type ReactNode, useMemo } from "react"
 import type { ListMessagesParams, TaskRowDto } from "src/api/model"
 import { QuickFilter } from "src/api/model/quick-filter"
 import { matchesQuickFilter } from "src/functions/filter-utils"
+import { QUICK_FILTER_LABELS } from "src/utils/filter-utils"
 import {
 	buildCountingColumns,
 	type TaskColumnMeta,
 } from "src/utils/task-table-utils"
 import { useHeadlessTable } from "../../hooks/useHeadlessTable"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
+import SearchInput from "../shared/SearchInput"
 import { ColumnVisibilityDropdown } from "../Tasks/ColumnVisibilityDropdown"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { ExportButton } from "./ExportButton"
-import { TaskSearchInput } from "./TaskSearchInput"
 
 interface TaskFiltersProps<TTask extends TaskRowDto> {
 	allTaskRows: TTask[]
@@ -58,6 +59,8 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		setColumnsFilters,
 		setAssigneeFilter,
 		sorting,
+		searchQuery,
+		setSearchQuery,
 	} = useTasksFilters()
 
 	const hasActiveColumnFilters =
@@ -148,7 +151,8 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					$active={activeQuickFilters.has(QuickFilter.flagged)}
 					onClick={() => toggleQuickFilter(QuickFilter.flagged)}
 				>
-					במיקוד{flaggedCount > 0 && ` (${flaggedCount})`}
+					{QUICK_FILTER_LABELS[QuickFilter.flagged]}
+					{flaggedCount > 0 && ` (${flaggedCount})`}
 				</FilterPill>
 			),
 			[QuickFilter.approaching]: (
@@ -158,7 +162,8 @@ export function TaskFilters<TTask extends TaskRowDto>({
 							$active={activeQuickFilters.has(QuickFilter.approaching)}
 							onClick={() => toggleQuickFilter(QuickFilter.approaching)}
 						>
-							תג"ב מתקרב{approachingCount > 0 && ` (${approachingCount})`}
+							{QUICK_FILTER_LABELS[QuickFilter.approaching]}
+							{approachingCount > 0 && ` (${approachingCount})`}
 						</FilterPill>
 					</WarningTrigger>
 					<TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
@@ -170,7 +175,8 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					$active={activeQuickFilters.has(QuickFilter.overdue)}
 					onClick={() => toggleQuickFilter(QuickFilter.overdue)}
 				>
-					חריגה מתג"ב{overdueCount > 0 && ` (${overdueCount})`}
+					{QUICK_FILTER_LABELS[QuickFilter.overdue]}
+					{overdueCount > 0 && ` (${overdueCount})`}
 				</FilterPill>
 			),
 			[QuickFilter.rolling]: (
@@ -179,7 +185,8 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					$active={activeQuickFilters.has(QuickFilter.rolling)}
 					onClick={() => toggleQuickFilter(QuickFilter.rolling)}
 				>
-					שוטפות{rollingCount > 0 && ` (${rollingCount})`}
+					{QUICK_FILTER_LABELS[QuickFilter.rolling]}
+					{rollingCount > 0 && ` (${rollingCount})`}
 				</FilterPill>
 			),
 		}),
@@ -210,7 +217,11 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					exportFilePrefix={exportFilePrefix}
 				/>
 
-				<TaskSearchInput />
+				<TaskSearchInput
+					placeholder="חפש הנחיה"
+					value={searchQuery}
+					onChange={setSearchQuery}
+				/>
 			</BarStart>
 
 			<BarEnd>
@@ -302,6 +313,11 @@ export const FilterPill = styled.div<{ $active: boolean }>`
 		background: var(--link-bg-hover);
 	}
   }
+`
+
+const TaskSearchInput = styled(SearchInput)`
+  flex: none;
+  width: 222px;
 `
 
 const FilterDivider = styled.div`

@@ -1,5 +1,4 @@
 import styled from "@emotion/styled"
-import { Search, X } from "lucide-react"
 import { useState } from "react"
 import type { WorkspaceWithPermissionDto } from "src/api/model"
 import {
@@ -13,9 +12,9 @@ import {
 	type EmptyCardStateProps,
 } from "src/components/shared/EmptyCardState"
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
-import { useIsMobile } from "src/hooks/use-mobile"
+import { MOBILE_MEDIA_QUERY, useIsMobile } from "src/hooks/use-mobile"
 import { filterByTitle } from "src/utils/workspace-utils"
-import SearchInput from "../Mobile/shared/SearchInput"
+import SearchInput from "../shared/SearchInput"
 import NewWorkspaceButton from "./NewWorkspaceButton"
 import WorkspaceCard from "./WorkspaceCard"
 
@@ -41,10 +40,6 @@ export default function SpacesContainer() {
 
 	const filteredMine = filterByTitle(myWorkspaces, searchQuery)
 	const filteredAll = filterByTitle(allWorkspaces, searchQuery)
-
-	function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-		setSearchQuery(e.target.value)
-	}
 
 	const tabs = {
 		all: {
@@ -79,31 +74,25 @@ export default function SpacesContainer() {
 		},
 	} satisfies Record<string, EmptyCardStateProps>
 
+	const searchInput = (
+		<WorkspaceSearchInput
+			placeholder="חפש סביבה"
+			value={searchQuery}
+			onChange={setSearchQuery}
+		/>
+	)
+
 	return (
-		<SpaceContainerCard $isMobile={isMobile}>
+		<SpaceContainerCard>
 			<TopSection>
 				<HeaderRow>
 					{!isMobile && (
 						<ActionsRow>
 							<WorkspaceRequestButton />
-							<SearchWrapper>
-								<DesktopSearchInput
-									placeholder="חפש סביבה"
-									value={searchQuery}
-									onChange={handleSearchChange}
-								/>
-								<SearchIconWrapper>
-									<Search size={24} />
-								</SearchIconWrapper>
-								{searchQuery && (
-									<ClearIconWrapper>
-										<ClearIcon size={14} onClick={() => setSearchQuery("")} />
-									</ClearIconWrapper>
-								)}
-							</SearchWrapper>
+							{searchInput}
 						</ActionsRow>
 					)}
-					<SectionTitle $isMobile>סביבות מפקדים</SectionTitle>
+					<SectionTitle>סביבות מפקדים</SectionTitle>
 				</HeaderRow>
 
 				<TabsRow>
@@ -118,15 +107,7 @@ export default function SpacesContainer() {
 					))}
 				</TabsRow>
 
-				{isMobile && (
-					<MobileSearchWrapper>
-						<SearchInput
-							placeholder="חפש סביבה"
-							value={searchQuery}
-							onChange={setSearchQuery}
-						/>
-					</MobileSearchWrapper>
-				)}
+				{isMobile && searchInput}
 			</TopSection>
 
 			{isLoading ? (
@@ -144,7 +125,7 @@ export default function SpacesContainer() {
 					/>
 				</EmptySpace>
 			) : (
-				<ScrollContainer $isMobile={isMobile}>
+				<ScrollContainer>
 					<WorkspacesContainer>
 						{tabs[activeTab].workspaces.map((ws) => (
 							<WorkspaceCard key={ws.urlName} workspace={ws} />
@@ -156,7 +137,7 @@ export default function SpacesContainer() {
 	)
 }
 
-const SpaceContainerCard = styled.div<{ $isMobile: boolean }>`
+const SpaceContainerCard = styled.div`
 	display: flex;
 	padding: 0;
 	flex-direction: column;
@@ -168,13 +149,11 @@ const SpaceContainerCard = styled.div<{ $isMobile: boolean }>`
 	border-radius: 8px;
 	width: 100%;
 
-	${({ $isMobile }) =>
-		$isMobile &&
-		`
-			flex: none;
-			min-height: auto;
-			overflow: visible;
-		`}
+	${MOBILE_MEDIA_QUERY} {
+		flex: none;
+		min-height: auto;
+		overflow: visible;
+	}
 `
 
 const HeaderRow = styled.div`
@@ -185,10 +164,9 @@ const HeaderRow = styled.div`
 	width: 100%;
 `
 
-const SectionTitle = styled.h2<{ $isMobile: boolean }>`
+const SectionTitle = styled.h2`
 	margin: 0;
-
-  margin-inline-start: ${({ $isMobile }) => ($isMobile ? "auto" : "0")};
+	margin-inline-start: auto;
 	font-size: clamp(20px, 1.5vw, 32px);
 	font-weight: 400;
 	line-height: clamp(30px, 4.3vh, 46px);
@@ -202,61 +180,12 @@ const ActionsRow = styled.div`
 	gap: 16px;
 `
 
-const SearchWrapper = styled.div`
-	position: relative;
-	display: flex;
-	align-items: center;
+const WorkspaceSearchInput = styled(SearchInput)`
+	flex: none;
 	width: 284px;
-`
 
-const DesktopSearchInput = styled.input`
-	direction: rtl;
-	width: 100%;
-	height: 40px;
-	box-sizing: border-box;
-	padding: 8px;
-	padding-inline-start: 40px;
-	padding-inline-end: 28px;
-	border: 1px solid var(--card-border);
-	border-radius: 8px;
-	background: var(--background);
-	font-size: var(--fs-base);
-	color: var(--sea-ink);
-	outline: none;
-	text-align: start;
-
-	&::placeholder {
-		color: var(--Text-color-text-placeholder);
-	}
-
-	&:focus {
-		border-color: var(--primary);
-	}
-`
-
-const SearchIconWrapper = styled.span`
-	position: absolute;
-	inset-inline-end: 8px;
-	display: flex;
-	color: var(--Text-color-text-placeholder);
-	pointer-events: none;
-`
-
-const ClearIconWrapper = styled.span`
-	position: absolute;
-	inset-inline-start: 8px;
-	display: flex;
-`
-
-const ClearIcon = styled(X)`
-	color: var(--background);
-	cursor: pointer;
-	background: var(--icon-background);
-	border-radius: 50%;
-	padding: 2px;
-
-	&:hover {
-		background: var(--text-color);
+	${MOBILE_MEDIA_QUERY} {
+		width: 100%;
 	}
 `
 
@@ -266,12 +195,6 @@ const TopSection = styled.div`
 	align-items: flex-start;
 	width: 100%;
 	gap: 16px;
-`
-
-const MobileSearchWrapper = styled.div`
-	direction: ltr;
-	width: 100%;
-	min-width: 0;
 `
 
 const TabsRow = styled.div`
@@ -298,22 +221,20 @@ const Tab = styled.button<{ $active: boolean }>`
 	white-space: nowrap;
 `
 
-const ScrollContainer = styled.div<{ $isMobile: boolean }>`
+const ScrollContainer = styled.div`
 	direction: ltr;
 	flex: 1;
 	width: 100%;
 	min-width: 0;
 	min-height: 0;
-	overflow-y: ${({ $isMobile }) => ($isMobile ? "visible" : "auto")};
+	overflow-y: auto;
 	scrollbar-gutter: stable;
 
-	${({ $isMobile }) =>
-		$isMobile &&
-		`
-			flex: none;
-			min-height: auto;
-			overflow: visible;
-		`}
+	${MOBILE_MEDIA_QUERY} {
+		flex: none;
+		min-height: auto;
+		overflow: visible;
+	}
 `
 
 const WorkspacesContainer = styled.div`

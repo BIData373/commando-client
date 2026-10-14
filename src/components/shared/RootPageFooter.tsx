@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { User } from "lucide-react"
 import { TbBook, TbGridDots, TbMessage } from "react-icons/tb"
 import BIDataIcon from "src/assets/biData.png"
+import { MOBILE_MEDIA_QUERY, useIsMobile } from "src/hooks/use-mobile"
 import { STATIC_TOKEN } from "src/utils/env-utils"
 import {
 	openMoreOfUs,
@@ -22,43 +23,52 @@ interface RootPageFooterProps {
 }
 
 export function RootPageFooter({ className }: RootPageFooterProps) {
+	const isMobile = useIsMobile()
+
 	return (
 		<FooterRoot className={className}>
-			<FooterLeft>
+			<Credits>
 				<FooterIcon src={BIDataIcon} alt="BI DATA" />
-				<FooterText>2026©</FooterText>
-				<FooterText>וקטור המפקד - פותח ע"י BI DATA</FooterText>
-			</FooterLeft>
+				<CreditsText>
+					<FooterText>{new Date().getFullYear()}©</FooterText>
+					<FooterText>וקטור המפקד - פותח ע"י BI DATA</FooterText>
+				</CreditsText>
+			</Credits>
 
-			<FooterRight>
-				<OutlineGradientButton onClick={openUserGuide}>
-					<GradientText>מארז הדרכה</GradientText>
-					<GradientBookIcon size={18} />
-				</OutlineGradientButton>
+			<Actions>
+				{!isMobile && (
+					<OutlineGradientButton onClick={openUserGuide}>
+						<GradientText>מארז הדרכה</GradientText>
+						<GradientBookIcon size={18} />
+					</OutlineGradientButton>
+				)}
+
+				{!isMobile && (
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<IconButton onClick={openMoreOfUs}>
+									<TbGridDots size={18} />
+								</IconButton>
+							</TooltipTrigger>
+							<TooltipContent side="top">עוד מאיתנו</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+				)}
 
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<IconButton onClick={openMoreOfUs}>
-								<TbGridDots size={18} />
-							</IconButton>
-						</TooltipTrigger>
-						<TooltipContent side="top">עוד מאיתנו</TooltipContent>
-					</Tooltip>
-				</TooltipProvider>
-
-				<TooltipProvider>
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<IconButton onClick={openSupportChat}>
+							<ContactButton onClick={openSupportChat}>
 								<TbMessage size={18} />
-							</IconButton>
+								{isMobile && "צור קשר"}
+							</ContactButton>
 						</TooltipTrigger>
 						<TooltipContent side="top">צור קשר</TooltipContent>
 					</Tooltip>
 				</TooltipProvider>
 
-				{STATIC_TOKEN && (
+				{!isMobile && STATIC_TOKEN && (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<IconButton>
@@ -68,7 +78,7 @@ export function RootPageFooter({ className }: RootPageFooterProps) {
 						<UserDropdown />
 					</DropdownMenu>
 				)}
-			</FooterRight>
+			</Actions>
 		</FooterRoot>
 	)
 }
@@ -81,12 +91,34 @@ const FooterRoot = styled.footer`
   width: 100%;
   padding-top: clamp(8px, 2.2vh, 24px);
   flex-shrink: 0;
+
+  ${MOBILE_MEDIA_QUERY} {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 32px;
+  }
 `
 
-const FooterLeft = styled.div`
+const Credits = styled.div`
   display: flex;
   align-items: flex-end;
   gap: 12px;
+
+  ${MOBILE_MEDIA_QUERY} {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+`
+
+const CreditsText = styled.div`
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+
+  ${MOBILE_MEDIA_QUERY} {
+    gap: 8px;
+  }
 `
 
 const FooterIcon = styled.img`
@@ -104,10 +136,14 @@ const FooterText = styled.span`
   white-space: nowrap;
 `
 
-const FooterRight = styled.div`
+const Actions = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+
+  ${MOBILE_MEDIA_QUERY} {
+    align-self: stretch;
+  }
 `
 
 const OutlineGradientButton = styled.button`
@@ -155,7 +191,19 @@ const IconButton = styled.button`
   color: var(--text-color-2);
   box-shadow: var(--shadow-button);
 
-  :hover{
+  &:hover {
     background: var(--link-bg-hover);
+  }
+`
+
+const ContactButton = styled(IconButton)`
+  ${MOBILE_MEDIA_QUERY} {
+    flex: 1;
+    width: auto;
+    gap: 8px;
+    padding-inline: 15px;
+    background: var(--muted);
+    border: none;
+    box-shadow: none;
   }
 `

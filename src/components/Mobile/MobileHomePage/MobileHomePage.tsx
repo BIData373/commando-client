@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import logoWithText from "src/assets/logo-with-text-dark.png"
 import SpacesContainer from "src/components/SpacesContainer/SpacesContainer"
-import { RootPageFooter } from "../shared/RootPageFooter"
+import { RootPageFooter } from "src/components/shared/RootPageFooter"
 import MobilePersonalAreaCard from "./MobilePersonalAreaCard"
 
 export default function MobileHomePage() {

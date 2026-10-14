@@ -2,28 +2,24 @@ import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 import { TbFilter, TbFilterOff } from "react-icons/tb"
-import { QuickFilter, type TaskRowDto } from "src/api/model"
+import type { TaskRowDto } from "src/api/model"
 import { useListTaskRows } from "src/api/task/task"
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
+import SearchInput from "src/components/shared/SearchInput"
 import { FilterPill } from "src/components/Tasks/TaskFilters"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { formatSourceLabel } from "src/functions/source-utils"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { ACTIVE_QUICK_FILTERS } from "src/utils/filter-utils"
+import {
+	ACTIVE_QUICK_FILTERS,
+	QUICK_FILTER_LABELS,
+} from "src/utils/filter-utils"
 import MobileHeader from "../MobileHeader"
-import SearchInput from "../shared/SearchInput"
 import MobileFilterSheet, { type FilterKey } from "./MobileFilterSheet"
 import MobileStatusBar from "./MobileStatusBar"
 import MobileTaskCard from "./MobileTaskCard"
-
-const QUICK_FILTER_LABELS: Record<QuickFilter, string> = {
-	[QuickFilter.overdue]: 'חריגה מתג"ב',
-	[QuickFilter.approaching]: 'תג"ב מתקרב',
-	[QuickFilter.flagged]: "במיקוד",
-	[QuickFilter.rolling]: "שוטפות",
-}
 
 export default function MobileWorkspace() {
 	const {
@@ -80,6 +76,22 @@ export default function MobileWorkspace() {
 		})
 	}
 
+	function openFilterSheet() {
+		setFilterSheetOpen(true)
+	}
+
+	function closeFilterSheet() {
+		setFilterSheetOpen(false)
+	}
+
+	function handleSearchFocus() {
+		setSearchFocused(true)
+	}
+
+	function handleSearchBlur() {
+		setSearchFocused(false)
+	}
+
 	return (
 		<PageRoot>
 			<MobileHeader icon={icon} title={title} minimal={searchFocused} />
@@ -90,7 +102,7 @@ export default function MobileWorkspace() {
 				{hasActiveFilters ? (
 					<>
 						<ActiveFiltersBar>
-							<ActiveFiltersLabel onClick={() => setFilterSheetOpen(true)}>
+							<ActiveFiltersLabel onClick={openFilterSheet}>
 								סננים פעילים ({activeFilterCount})
 							</ActiveFiltersLabel>
 							<ClearFiltersButton onClick={clearAllFilters}>
@@ -107,11 +119,11 @@ export default function MobileWorkspace() {
 								value={searchQuery}
 								onChange={setSearchQuery}
 								placeholder="חפש הנחייה"
-								onFocus={() => setSearchFocused(true)}
-								onBlur={() => setSearchFocused(false)}
+								onFocus={handleSearchFocus}
+								onBlur={handleSearchBlur}
 							/>
 							{!searchFocused && (
-								<FilterButton onClick={() => setFilterSheetOpen(true)}>
+								<FilterButton onClick={openFilterSheet}>
 									<TbFilter size={18} />
 								</FilterButton>
 							)}
@@ -166,7 +178,7 @@ export default function MobileWorkspace() {
 
 			<MobileFilterSheet
 				open={filterSheetOpen}
-				onClose={() => setFilterSheetOpen(false)}
+				onClose={closeFilterSheet}
 				tasks={tasks}
 				filteredCount={filtered.length}
 			/>
