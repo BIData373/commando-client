@@ -15,7 +15,7 @@ import {
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
 import { useIsMobile } from "src/hooks/use-mobile"
 import { filterByTitle } from "src/utils/workspace-utils"
-import SearchInput from "../‏‏Mobile/shared/SearchInput"
+import SearchInput from "../Mobile/shared/SearchInput"
 import NewWorkspaceButton from "./NewWorkspaceButton"
 import WorkspaceCard from "./WorkspaceCard"
 
