@@ -1,5 +1,9 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router"
-import { OnboardingModal } from "src/components/OnboardingModal/OnboardingModal"
+import { readLocalStorageValue } from "@mantine/hooks"
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
+import {
+	ONBOARDING_REQUIRED_KEY,
+	OnboardingModal,
+} from "src/components/OnboardingModal/OnboardingModal"
 import { z } from "zod"
 
 export enum OnboardingSteps {
@@ -15,6 +19,17 @@ const OnboardingStepSchema = z.object({
 export const Route = createFileRoute("/onboarding")({
 	component: Onboarding,
 	validateSearch: OnboardingStepSchema,
+	beforeLoad: () => {
+		const needsOnboarding = readLocalStorageValue({
+			key: ONBOARDING_REQUIRED_KEY,
+			defaultValue: true,
+		})
+		if (!needsOnboarding) {
+			throw redirect({
+				to: "/",
+			})
+		}
+	},
 })
 
 function Onboarding() {
