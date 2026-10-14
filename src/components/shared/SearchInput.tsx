@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Search, X } from "lucide-react"
+import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 
 interface SearchInputProps {
 	value: string
@@ -7,6 +8,7 @@ interface SearchInputProps {
 	placeholder?: string
 	onFocus?: () => void
 	onBlur?: () => void
+	className?: string
 }
 
 export default function SearchInput({
@@ -15,6 +17,7 @@ export default function SearchInput({
 	placeholder,
 	onFocus,
 	onBlur,
+	className,
 }: SearchInputProps) {
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		onChange(e.target.value)
@@ -25,7 +28,7 @@ export default function SearchInput({
 	}
 
 	return (
-		<Wrapper>
+		<Wrapper className={className}>
 			<Input
 				placeholder={placeholder}
 				value={value}
@@ -57,13 +60,13 @@ const Wrapper = styled.div`
 const Input = styled.input`
 	direction: rtl;
 	width: 100%;
-	height: 48px;
+	height: 40px;
 	padding: 8px 12px;
 	padding-inline-start: 40px;
-	border: 0.5px solid var(--Text-color-text-placeholder);
+	border: 1px solid var(--card-border);
 	border-radius: 8px;
 	background: var(--background);
-	font-size: var(--fs-lg);
+	font-size: var(--fs-base);
 	color: var(--sea-ink);
 	outline: none;
 	text-align: start;
@@ -74,6 +77,12 @@ const Input = styled.input`
 
 	&:focus {
 		border-color: var(--primary);
+	}
+
+	${MOBILE_MEDIA_QUERY} {
+		height: 48px;
+		border: 0.5px solid var(--Text-color-text-placeholder);
+		font-size: var(--fs-lg);
 	}
 `
 
@@ -95,4 +104,5 @@ const ClearButton = styled.button`
 	border: none;
 	padding: 0;
 	color: var(--sea-ink-soft);
+	cursor: pointer;
 `
