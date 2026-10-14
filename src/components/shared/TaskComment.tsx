@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { MoreVertical, Trash2 } from "lucide-react"
 import type { MessageDto } from "src/api/model"
+import { useIsMobile } from "src/hooks/use-mobile"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import {
 	DropdownMenu,
@@ -16,8 +17,13 @@ interface TaskCommentProps {
 }
 
 function TaskComment({ message, canDelete, onDelete }: TaskCommentProps) {
+	const isMobile = useIsMobile()
 	const { upn, info } = message.user
-	const userMeta = info?.displayName ? `${upn} - ${info.displayName}` : upn
+	const userMeta = info?.displayName
+		? isMobile
+			? `${info.displayName} - ${upn}`
+			: `${upn} - ${info.displayName}`
+		: upn
 	const userName = info?.name ?? upn
 
 	function handleDelete() {
@@ -44,14 +50,18 @@ function TaskComment({ message, canDelete, onDelete }: TaskCommentProps) {
 				)}
 				<Content>{message.content}</Content>
 			</MainRow>
-			<Footer>
+			<Footer $isMobile={isMobile}>
 				<Timestamp>
 					{formatMinutesHours(message.createdAt)} ·{" "}
 					{formatDateMonthYear(message.createdAt)}
 				</Timestamp>
 				<UserDetails>
-					<UserMeta title={userMeta}>{userMeta}</UserMeta>
-					<UserName title={userName}>{userName}</UserName>
+					<UserMeta $isMobile={isMobile} title={userMeta}>
+						{userMeta}
+					</UserMeta>
+					<UserName $isMobile={isMobile} title={userName}>
+						{userName}
+					</UserName>
 				</UserDetails>
 			</Footer>
 		</Card>
@@ -119,9 +129,10 @@ const Content = styled.p`
   margin: 0;
 `
 
-const Footer = styled.div`
+const Footer = styled.div<{ $isMobile: boolean }>`
   display: flex;
-  align-items: center;
+  flex-direction: ${({ $isMobile }) => ($isMobile ? "column" : "row")};
+  align-items: ${({ $isMobile }) => ($isMobile ? "flex-end" : "center")};
   justify-content: space-between;
   width: 100%;
   font-size: var(--fs-sm);
@@ -143,8 +154,8 @@ const UserDetails = styled.div`
   text-align: end;
 `
 
-const UserMeta = styled.span`
-  flex: 0 0 50%;
+const UserMeta = styled.span<{ $isMobile: boolean }>`
+  flex: ${({ $isMobile }) => ($isMobile ? "auto" : "0 0 50%")};
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -153,8 +164,8 @@ const UserMeta = styled.span`
   color: var(--sea-ink-soft);
 `
 
-const UserName = styled.span`
-  flex: 0 0 50%;
+const UserName = styled.span<{ $isMobile: boolean }>`
+  flex: ${({ $isMobile }) => ($isMobile ? "auto" : "0 0 50%")};
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;

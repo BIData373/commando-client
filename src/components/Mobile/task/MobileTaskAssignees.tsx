@@ -65,6 +65,7 @@ export function MobileTaskAssignees({
 					))}
 				</AssigneeSection>
 			)}
+			<Seperator />
 		</Wrapper>
 	)
 }
@@ -75,7 +76,12 @@ const Wrapper = styled.div`
     gap: 1rem;
     border-radius: 8px;
     background: white;
-    padding: 1rem;
+    padding: 1rem 1rem 0;
+`
+
+const Seperator = styled.div`
+	height: 1px;
+	background: var(--button-hover);
 `
 
 const AssigneeSection = styled.section`
