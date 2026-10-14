@@ -1,51 +1,16 @@
 import styled from "@emotion/styled"
-import { compact } from "lodash"
-import { useMemo } from "react"
-import { WorkspaceStatusType } from "src/api/model"
-import { useListTaskRows } from "src/api/task/task"
+import type { TaskRowDto } from "src/api/model"
+import { countTasksByStatus } from "src/functions/status-counts"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 
-const STATUS_CONFIG: { type: WorkspaceStatusType; color: string }[] = [
-	{
-		type: WorkspaceStatusType.NOT_STARTED,
-		color: "var(--Colors-Base-Volcano-4)",
-	},
-	{
-		type: WorkspaceStatusType.IN_PROGRESS,
-		color: "var(--Colors-Base-Geekblue-4)",
-	},
-	{ type: WorkspaceStatusType.COMPLETED, color: "var(--Colors-Base-Green-4)" },
-]
+interface MobileStatusBarProps {
+	tasks: TaskRowDto[]
+}
 
-export default function MobileStatusBar() {
-	const {
-		workspace: { id: workspaceId },
-		statuses,
-	} = useWorkspace()
+export default function MobileStatusBar({ tasks }: MobileStatusBarProps) {
+	const { statuses } = useWorkspace()
 
-	const { data: tasks = [] } = useListTaskRows({
-		workspaceId,
-		isArchived: false,
-	})
-
-	const segments = useMemo(
-		() =>
-			compact(
-				STATUS_CONFIG.map(({ type, color }) => {
-					const status = Object.values(statuses).find((s) => s.type === type)
-					return status
-						? {
-								id: status.id,
-								name: status.name,
-								color,
-								count: tasks.filter((t) => t.status?.id === status.id).length,
-							}
-						: null
-				}),
-			),
-		[tasks, statuses],
-	)
-
+	const segments = countTasksByStatus(tasks, statuses)
 	const total = tasks.length
 
 	return (

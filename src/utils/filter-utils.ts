@@ -14,8 +14,8 @@ export const QUICK_FILTER_LABELS: Record<QuickFilter, string> = {
 }
 
 export const ARCHIVE_QUICK_FILTERS: QuickFilter[] = [
-	QuickFilter.flagged,
 	QuickFilter.rolling,
+	QuickFilter.flagged,
 ]
 
 const getDashboardFilterKey = "dashboard-filter"

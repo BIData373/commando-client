@@ -1,20 +1,16 @@
-import * as React from "react"
+import { type UseOSReturnValue, useMediaQuery, useOs } from "@mantine/hooks"
 
-export const MOBILE_BREAKPOINT = 768
-export const MOBILE_MEDIA_QUERY = `@media (max-width: ${MOBILE_BREAKPOINT - 1}px)`
+const MOBILE_BREAKPOINT = 768
+const MOBILE_QUERY = `(max-width: ${MOBILE_BREAKPOINT - 1}px)`
+const MOBILE_OPERATING_SYSTEMS: UseOSReturnValue[] = ["android", "ios"]
+
+export const MOBILE_MEDIA_QUERY = `@media ${MOBILE_QUERY}`
 
 export function useIsMobile() {
-	const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
+	const isSmallScreen = useMediaQuery(MOBILE_QUERY, false, {
+		getInitialValueInEffect: false,
+	})
+	const os = useOs({ getValueInEffect: false })
 
-	React.useEffect(() => {
-		const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-		const onChange = () => {
-			setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-		}
-		mql.addEventListener("change", onChange)
-		setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-		return () => mql.removeEventListener("change", onChange)
-	}, [])
-
-	return !!isMobile
+	return isSmallScreen || MOBILE_OPERATING_SYSTEMS.includes(os)
 }

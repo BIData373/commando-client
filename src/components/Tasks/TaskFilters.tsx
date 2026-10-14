@@ -56,8 +56,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		toggleQuickFilter,
 		clearQuickFilters,
 		columnsFilters,
-		setColumnsFilters,
-		setAssigneeFilter,
+		resetColumnFilters,
 		sorting,
 		searchQuery,
 		setSearchQuery,
@@ -67,8 +66,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		columnsFilters.length > 0 || urlColumnFilters.length > 0
 
 	function clearAllColumnFilters() {
-		setColumnsFilters([])
-		setAssigneeFilter([])
+		resetColumnFilters()
 		onClearColumnFilters?.()
 	}
 
@@ -225,20 +223,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 			</BarStart>
 
 			<BarEnd>
-				{hasActiveColumnFilters && (
-					<>
-						<ClearButton onClick={clearAllColumnFilters}>
-							<FilterX size={18} />
-							נקה סננים
-						</ClearButton>
-
-						<FilterSeparator />
-					</>
-				)}
-
-				{extraFilters}
-
-				{quickFilters.map((filter) => quickFilterButtons[filter])}
+				{extraButtons}
 
 				<FilterPill
 					$active={activeQuickFilters.size === 0}
@@ -247,7 +232,20 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					הכל ({taskRowsForCounts.length})
 				</FilterPill>
 
-				{extraButtons}
+				{quickFilters.map((filter) => quickFilterButtons[filter])}
+
+				{extraFilters}
+
+				{hasActiveColumnFilters && (
+					<>
+						<FilterSeparator />
+
+						<ClearButton onClick={clearAllColumnFilters}>
+							<FilterX size={18} />
+							נקה סננים
+						</ClearButton>
+					</>
+				)}
 			</BarEnd>
 		</BarRoot>
 	)
@@ -269,6 +267,7 @@ const BarStart = styled.div`
 
 const BarEnd = styled.div`
   display: flex;
+  flex-direction: row-reverse;
   align-items: center;
   gap: 8px;
 `
