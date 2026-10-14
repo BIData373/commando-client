@@ -1,9 +1,9 @@
 import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
 import systemDescription from "../../assets/system-description.svg"
+import { GradientGhostButton } from "../shared/GradientGhostButton"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { ButtonGroup as ButtonGroupPrimitive } from "../ui/button-group"
-import { GhostButton } from "./GhostButton"
 
 interface OnboardingSysDescPageProps {
 	onNext: () => void
@@ -24,7 +24,7 @@ export function OnboardingSysDescPage({
 					<SkipBtn onClick={onSkip}>דלג</SkipBtn>
 				</Link>
 				<ButtonGroup>
-					<GhostButton onClick={onPrevious}>חזור</GhostButton>
+					<GradientGhostButton onClick={onPrevious}>חזור</GradientGhostButton>
 					<PrimaryBtn onClick={onNext} title="המשך"></PrimaryBtn>
 				</ButtonGroup>
 			</Footer>

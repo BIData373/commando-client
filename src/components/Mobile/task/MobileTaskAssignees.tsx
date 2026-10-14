@@ -65,6 +65,7 @@ export function MobileTaskAssignees({
 					{assigneeContainers(otherUsersAssigneeStatuses)}
 				</AssigneeSection>
 			)}
+			<Seperator />
 		</Wrapper>
 	)
 }
