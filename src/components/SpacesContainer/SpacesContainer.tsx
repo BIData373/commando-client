@@ -245,6 +245,10 @@ const WorkspacesContainer = styled.div`
 	gap: 12px;
 	padding-inline-end: 4px;
 	padding-bottom: 8px;
+
+	${MOBILE_MEDIA_QUERY} {
+		grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+	}
 `
 
 const EmptySpace = styled.div`
