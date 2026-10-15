@@ -14,23 +14,24 @@ interface ColumnHeaderWithActionsProps<TData> {
 function ColumnHeaderWithActions<TData>({
 	label,
 	column,
-	filterOptions = [],
+	filterOptions,
 }: ColumnHeaderWithActionsProps<TData>) {
 	const [filterOpen, setFilterOpen] = useState(false)
 	const canSort = column.getCanSort()
 	const filterValue = (column.getFilterValue() as string[] | undefined) ?? []
 	const activeValues = new Set(filterValue)
-	const isFilterable = column.getCanFilter() && filterOptions.length > 0
+	const isFilterable = column.getCanFilter() && filterOptions !== undefined
 
 	const availableValues = isFilterable
 		? column.getFacetedUniqueValues()
 		: undefined
 
-	const visibleFilterOptions = availableValues
-		? filterOptions.filter(({ value }) => availableValues.has(value))
-		: filterOptions
+	const visibleFilterOptions =
+		availableValues && filterOptions
+			? filterOptions.filter(({ value }) => availableValues.has(value))
+			: (filterOptions ?? [])
 
-	const canFilter = isFilterable && visibleFilterOptions.length > 0
+	const canFilter = isFilterable
 	const isFilterActive = filterValue.length > 0
 	const isSortActive = column.getIsSorted() !== false
 	const alwaysShow = isFilterActive || isSortActive || filterOpen

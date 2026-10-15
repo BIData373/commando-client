@@ -37,6 +37,8 @@ function FilterDropdown<T extends string | number>({
 	const [search, setSearch] = useState("")
 	const [pendingValues, setPendingValues] = useState<T[]>(activeValues)
 
+	const isEmpty = options.length === 0
+
 	const filteredOptions = search
 		? options.filter((option) =>
 				option.label.toLowerCase().includes(search.toLowerCase()),
@@ -71,43 +73,53 @@ function FilterDropdown<T extends string | number>({
 			<PopoverTrigger asChild>{children}</PopoverTrigger>
 
 			<StyledPopoverContent align="start" sideOffset={4}>
-				<SearchRow>
-					<SearchWrapper>
-						<Search opacity={0.5} size={14} />
-						<SearchField
-							placeholder={searchPlaceholder}
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-						/>
-					</SearchWrapper>
-				</SearchRow>
+				{isEmpty && (
+					<SearchRow>
+						<SearchWrapper>
+							<Search opacity={0.5} size={14} />
+							<SearchField
+								placeholder={searchPlaceholder}
+								value={search}
+								onChange={(e) => setSearch(e.target.value)}
+							/>
+						</SearchWrapper>
+					</SearchRow>
+				)}
 
-				<OptionsList>
-					{filteredOptions.length === 0 && emptyTitle ? (
-						<EmptyCardState title={emptyTitle} description={emptyDescription} />
-					) : (
-						filteredOptions.map((option) => (
-							<OptionItem
-								key={option.value}
-								onClick={() => handleToggle(option.value)}
-							>
-								<OptionRow>
-									<Checkbox
-										checked={pendingValues.includes(option.value)}
-										onCheckedChange={() => handleToggle(option.value)}
-										onClick={(e) => e.stopPropagation()}
-									/>
-									{option.icon}
-									<OptionLabel>{option.label}</OptionLabel>
-								</OptionRow>
-							</OptionItem>
-						))
-					)}
-				</OptionsList>
-
+				{isEmpty ? (
+					<EmptyMessage>לא נמצאו ערכים המתאימים לסנן זה</EmptyMessage>
+				) : (
+					<OptionsList>
+						{filteredOptions.length === 0 && emptyTitle ? (
+							<EmptyCardState
+								title={emptyTitle}
+								description={emptyDescription}
+							/>
+						) : (
+							filteredOptions.map((option) => (
+								<OptionItem
+									key={option.value}
+									onClick={() => handleToggle(option.value)}
+								>
+									<OptionRow>
+										<Checkbox
+											checked={pendingValues.includes(option.value)}
+											onCheckedChange={() => handleToggle(option.value)}
+											onClick={(e) => e.stopPropagation()}
+										/>
+										{option.icon}
+										<OptionLabel>{option.label}</OptionLabel>
+									</OptionRow>
+								</OptionItem>
+							))
+						)}
+					</OptionsList>
+				)}
 				<Footer>
 					<ApplyButton onClick={handleApply}>
-						החל{pendingValues.length > 0 && ` (${pendingValues.length})`}
+						החל
+						{(isEmpty || pendingValues.length > 0) &&
+							` (${pendingValues.length})`}
 					</ApplyButton>
 					<ResetButton
 						type="button"
@@ -175,6 +187,21 @@ const SearchField = styled.input`
   &::placeholder {
     color: var(--Text-color-text-placeholder);
   }
+`
+
+const EmptyMessage = styled.div`
+  direction: rtl;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  margin: 8px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  text-align: center;
+  font-size: var(--fs-btn);
+  line-height: 22px;
+  color: rgba(0, 0, 0, 0.45);
 `
 
 const OptionsList = styled.div`
