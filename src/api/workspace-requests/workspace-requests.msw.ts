@@ -38,6 +38,7 @@ export const getCreateWorkspaceRequestResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -63,6 +64,7 @@ export const getCreateWorkspaceRequestResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -93,6 +95,7 @@ export const getCreateWorkspaceRequestResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -150,6 +153,7 @@ export const getListWorkspaceRequestsResponseMock = (): WorkspaceRequestDto[] =>
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -175,6 +179,7 @@ export const getListWorkspaceRequestsResponseMock = (): WorkspaceRequestDto[] =>
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -205,6 +210,7 @@ export const getListWorkspaceRequestsResponseMock = (): WorkspaceRequestDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -259,6 +265,7 @@ export const getGetWorkspaceRequestResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -284,6 +291,7 @@ export const getGetWorkspaceRequestResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -314,6 +322,7 @@ export const getGetWorkspaceRequestResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -369,6 +378,7 @@ export const getUpdateWorkspaceRequestResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -394,6 +404,7 @@ export const getUpdateWorkspaceRequestResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -424,6 +435,7 @@ export const getUpdateWorkspaceRequestResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -479,6 +491,7 @@ export const getDeleteWorkspaceRequestResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -504,6 +517,7 @@ export const getDeleteWorkspaceRequestResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -534,6 +548,7 @@ export const getDeleteWorkspaceRequestResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,

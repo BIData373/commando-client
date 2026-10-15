@@ -12,4 +12,5 @@ export interface PermissionDto {
 	user: UserDto
 	workspaceId: number
 	type: PermissionType
+	hasEnteredWorkspace: boolean
 }

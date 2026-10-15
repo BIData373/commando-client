@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
-import { useLocalStorage } from "@mantine/hooks"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 import logoWithText from "src/assets/logo-with-text-dark.png"
+import { useMarkOnboarded } from "src/hooks/useMarkOnboarded"
 import { OnboardingSteps } from "src/routes/onboarding"
 import { Dialog, DialogContent } from "../ui/dialog"
 import { OnboardingGreetingPage } from "./OnboardingGreetingPage"
@@ -14,16 +14,10 @@ export const ONBOARDING_STEP_ORDER: OnboardingSteps[] = [
 	OnboardingSteps.Redirects,
 ]
 
-export const ONBOARDING_REQUIRED_KEY = "onboarding_required"
-
 export function OnboardingModal() {
 	const navigate = useNavigate({ from: "/onboarding" })
 	const { step = OnboardingSteps.Greeting } = useSearch({ from: "/onboarding" })
-
-	const [isOpen, setIsOpen] = useLocalStorage({
-		key: ONBOARDING_REQUIRED_KEY,
-		defaultValue: true,
-	})
+	const markOnboarded = useMarkOnboarded()
 
 	const currentStepIndex = ONBOARDING_STEP_ORDER.indexOf(step)
 
@@ -45,8 +39,13 @@ export function OnboardingModal() {
 		}
 	}
 
-	const handleCloseModal = () => {
-		setIsOpen(false)
+	function handleFinishOnboarding() {
+		markOnboarded()
+	}
+
+	function handleSkipOnboarding() {
+		markOnboarded()
+		navigate({ to: "/" })
 	}
 
 	const pages: Record<OnboardingSteps, React.ReactNode> = {
@@ -57,19 +56,19 @@ export function OnboardingModal() {
 			<OnboardingSysDescPage
 				onNext={handleStepIncrement}
 				onPrevious={handleStepDecrement}
-				onSkip={handleCloseModal}
+				onSkip={handleSkipOnboarding}
 			/>
 		),
 		[OnboardingSteps.Redirects]: (
 			<OnboardingRedirectPage
 				onPrevious={handleStepDecrement}
-				onRedirect={handleCloseModal}
+				onRedirect={handleFinishOnboarding}
 			/>
 		),
 	}
 
 	return (
-		<Dialog open={!!isOpen}>
+		<Dialog open>
 			<FullScreenPanel closable={false} showCloseButton={false}>
 				<ContentWrapper>
 					<Header>

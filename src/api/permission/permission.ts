@@ -28,6 +28,7 @@ import type {
 	DeletePermissionParams,
 	GetMyPermissionParams,
 	ListPermissionsParams,
+	MarkMyWorkspaceVisitParams,
 	PermissionDto,
 	UpsertPermissionDto,
 } from "../model"
@@ -501,4 +502,84 @@ export function useGetMyPermission<
 	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 	return withQueryKey(query, queryOptions.queryKey)
+}
+
+export const markMyWorkspaceVisit = (
+	params: MarkMyWorkspaceVisitParams,
+	signal?: AbortSignal,
+) => {
+	return sendRequest<PermissionDto>({
+		url: `/permission/visit`,
+		method: "PATCH",
+		params,
+		signal,
+	})
+}
+
+export const getMarkMyWorkspaceVisitMutationOptions = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(options?: {
+	mutation?: UseMutationOptions<
+		Awaited<ReturnType<typeof markMyWorkspaceVisit>>,
+		TError,
+		{ params: MarkMyWorkspaceVisitParams },
+		TContext
+	>
+}): UseMutationOptions<
+	Awaited<ReturnType<typeof markMyWorkspaceVisit>>,
+	TError,
+	{ params: MarkMyWorkspaceVisitParams },
+	TContext
+> => {
+	const mutationKey = ["markMyWorkspaceVisit"]
+	const { mutation: mutationOptions } = options
+		? options.mutation &&
+			"mutationKey" in options.mutation &&
+			options.mutation.mutationKey
+			? options
+			: { ...options, mutation: { ...options.mutation, mutationKey } }
+		: { mutation: { mutationKey } }
+
+	const mutationFn: MutationFunction<
+		Awaited<ReturnType<typeof markMyWorkspaceVisit>>,
+		{ params: MarkMyWorkspaceVisitParams }
+	> = (props) => {
+		const { params } = props ?? {}
+
+		return markMyWorkspaceVisit(params)
+	}
+
+	return { mutationFn, ...mutationOptions }
+}
+
+export type MarkMyWorkspaceVisitMutationResult = NonNullable<
+	Awaited<ReturnType<typeof markMyWorkspaceVisit>>
+>
+
+export type MarkMyWorkspaceVisitMutationError = ErrorType<unknown>
+
+export const useMarkMyWorkspaceVisit = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
+	options?: {
+		mutation?: UseMutationOptions<
+			Awaited<ReturnType<typeof markMyWorkspaceVisit>>,
+			TError,
+			{ params: MarkMyWorkspaceVisitParams },
+			TContext
+		>
+	},
+	queryClient?: QueryClient,
+): UseMutationResult<
+	Awaited<ReturnType<typeof markMyWorkspaceVisit>>,
+	TError,
+	{ params: MarkMyWorkspaceVisitParams },
+	TContext
+> => {
+	return useMutation(
+		getMarkMyWorkspaceVisitMutationOptions(options),
+		queryClient,
+	)
 }

@@ -46,6 +46,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -71,6 +72,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			task: {
 				createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -97,6 +99,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -122,6 +125,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -152,6 +156,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -217,6 +222,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 							updatedAt: new Date(
 								faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -244,6 +250,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 							deletedAt: faker.helpers.arrayElement([
 								new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -280,6 +287,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 											},
 											null,
 										]),
+										hasOnboarded: faker.datatype.boolean(),
 									},
 								},
 								null,
@@ -336,6 +344,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 										},
 										null,
 									]),
+									hasOnboarded: faker.datatype.boolean(),
 								},
 								updatedAt: new Date(
 									faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -365,6 +374,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 										},
 										null,
 									]),
+									hasOnboarded: faker.datatype.boolean(),
 								},
 								id: faker.number.float({ fractionDigits: 2 }),
 								name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -404,6 +414,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -431,6 +442,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					id: faker.number.float({ fractionDigits: 2 }),
 					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -463,6 +475,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -490,6 +503,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					deletedAt: faker.helpers.arrayElement([
 						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -520,6 +534,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 						},
 						null,
@@ -549,6 +564,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					taskId: faker.number.float({ fractionDigits: 2 }),
 				},
@@ -585,6 +601,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						updatedAt: new Date(
 							faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -612,6 +629,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						deletedAt: faker.helpers.arrayElement([
 							new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -644,6 +662,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 										},
 										null,
 									]),
+									hasOnboarded: faker.datatype.boolean(),
 								},
 							},
 							null,
@@ -686,6 +705,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						})),
 					},
 					status: {
@@ -734,6 +754,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -759,6 +780,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -789,6 +811,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -831,6 +854,7 @@ export const getListAssigneeTaskStatusesResponseMock =
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			status: {
@@ -870,6 +894,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -895,6 +920,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	task: {
 		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -921,6 +947,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -946,6 +973,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -976,6 +1004,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -1039,6 +1068,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -1066,6 +1096,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					deletedAt: faker.helpers.arrayElement([
 						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1096,6 +1127,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 						},
 						null,
@@ -1150,6 +1182,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						updatedAt: new Date(
 							faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -1177,6 +1210,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						id: faker.number.float({ fractionDigits: 2 }),
 						name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1214,6 +1248,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -1239,6 +1274,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1269,6 +1305,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -1294,6 +1331,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1324,6 +1362,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				null,
@@ -1353,6 +1392,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			taskId: faker.number.float({ fractionDigits: 2 }),
 		},
@@ -1387,6 +1427,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -1412,6 +1453,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1442,6 +1484,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -1484,6 +1527,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			status: {
@@ -1530,6 +1574,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1555,6 +1600,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1585,6 +1631,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -1627,6 +1674,7 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		})),
 	},
 	status: {
@@ -1667,6 +1715,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -1692,6 +1741,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	task: {
 		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1718,6 +1768,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1743,6 +1794,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1773,6 +1825,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -1836,6 +1889,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -1863,6 +1917,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					deletedAt: faker.helpers.arrayElement([
 						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1893,6 +1948,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 						},
 						null,
@@ -1947,6 +2003,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						updatedAt: new Date(
 							faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -1974,6 +2031,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						id: faker.number.float({ fractionDigits: 2 }),
 						name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -2011,6 +2069,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -2036,6 +2095,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -2066,6 +2126,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -2091,6 +2152,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2121,6 +2183,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				null,
@@ -2150,6 +2213,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			taskId: faker.number.float({ fractionDigits: 2 }),
 		},
@@ -2184,6 +2248,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -2209,6 +2274,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2239,6 +2305,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -2281,6 +2348,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			status: {
@@ -2327,6 +2395,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -2352,6 +2421,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2382,6 +2452,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -2424,6 +2495,7 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		})),
 	},
 	status: {

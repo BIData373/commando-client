@@ -38,6 +38,7 @@ export const getCreateAssigneeResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -63,6 +64,7 @@ export const getCreateAssigneeResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -93,6 +95,7 @@ export const getCreateAssigneeResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -135,6 +138,7 @@ export const getCreateAssigneeResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	})),
 	...overrideResponse,
 })
@@ -168,6 +172,7 @@ export const getListAssigneesResponseMock = (): AssigneesDto[] =>
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -193,6 +198,7 @@ export const getListAssigneesResponseMock = (): AssigneesDto[] =>
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -223,6 +229,7 @@ export const getListAssigneesResponseMock = (): AssigneesDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -265,6 +272,7 @@ export const getListAssigneesResponseMock = (): AssigneesDto[] =>
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		})),
 		tasksCount: faker.number.float({ fractionDigits: 2 }),
 	}))
@@ -296,6 +304,7 @@ export const getGetAssigneeResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -321,6 +330,7 @@ export const getGetAssigneeResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -351,6 +361,7 @@ export const getGetAssigneeResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -393,6 +404,7 @@ export const getGetAssigneeResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	})),
 	...overrideResponse,
 })
@@ -424,6 +436,7 @@ export const getUpdateAssigneeResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -449,6 +462,7 @@ export const getUpdateAssigneeResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -479,6 +493,7 @@ export const getUpdateAssigneeResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -521,6 +536,7 @@ export const getUpdateAssigneeResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	})),
 	...overrideResponse,
 })
@@ -552,6 +568,7 @@ export const getDeleteAssigneeResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -577,6 +594,7 @@ export const getDeleteAssigneeResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -607,6 +625,7 @@ export const getDeleteAssigneeResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -649,6 +668,7 @@ export const getDeleteAssigneeResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	})),
 	...overrideResponse,
 })
