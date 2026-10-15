@@ -601,7 +601,6 @@ const InfoAttachment = styled.div`
 const AttachmentDownloadButton = styled.button`
   display: inline-flex;
   align-items: center;
-  justify-content:flex-start;
   gap: 4px;
   background: none;
   border: none;
@@ -610,8 +609,7 @@ const AttachmentDownloadButton = styled.button`
   font-size: var(--fs-btn);
   direction: rtl;
   cursor: pointer;
-  text-align: start;        
-  align-self: flex-start;   
+  text-align: start;         
  
 
   &:hover:not(:disabled) {
