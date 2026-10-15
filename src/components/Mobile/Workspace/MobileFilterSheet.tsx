@@ -1,12 +1,14 @@
 import styled from "@emotion/styled"
+import type { Table } from "@tanstack/react-table"
 import { compact, flatMap, map, uniqBy, xor } from "lodash"
 import { X } from "lucide-react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { Accordion } from "src/components/ui/accordion"
 import { Sheet, SheetContent } from "src/components/ui/sheet"
-import { buildFilterOptionsMap } from "src/functions/filter-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
+import { buildFilterOptionsMap } from "src/utils/filter-utils"
+import type { AppTableFeatures } from "src/utils/table-features"
 import MobileDateFilter from "./MobileDateFilter"
 import MobileFilterSection from "./MobileFilterSection"
 import MobileListFilter from "./MobileListFilter"
@@ -19,12 +21,11 @@ const LIST_SECTIONS = [
 	{ label: "סנן על פי סטטוס", key: "status", placeholder: "חפש סטטוס" },
 ] as const
 
-export type ListFilterKey = (typeof LIST_SECTIONS)[number]["key"]
-
 interface MobileFilterSheetProps {
 	open: boolean
 	onClose: () => void
 	tasks: TaskRowDto[]
+	table: Table<AppTableFeatures, TaskRowDto>
 	filteredCount: number
 }
 
@@ -32,6 +33,7 @@ export default function MobileFilterSheet({
 	open,
 	onClose,
 	tasks,
+	table,
 	filteredCount,
 }: MobileFilterSheetProps) {
 	const {
@@ -46,16 +48,21 @@ export default function MobileFilterSheet({
 
 	const [expandedKey, setExpandedKey] = useState("")
 
-	const filterOptions = buildFilterOptionsMap(tasks)
+	// The sheet stays mounted while closed, so without these every search keystroke would rebuild them
+	const filterOptions = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
 
-	const assignees = uniqBy(
-		compact(
-			flatMap(tasks, ({ assignee, otherAssignees }) => [
-				assignee,
-				...map(otherAssignees, "assignee"),
-			]),
-		),
-		"name",
+	const assignees = useMemo(
+		() =>
+			uniqBy(
+				compact(
+					flatMap(tasks, ({ assignee, otherAssignees }) => [
+						assignee,
+						...map(otherAssignees, "assignee"),
+					]),
+				),
+				"name",
+			),
+		[tasks],
 	)
 
 	function getColumnFilterValues(columnId: string): string[] {
@@ -110,6 +117,7 @@ export default function MobileFilterSheet({
 					{LIST_SECTIONS.map(({ key, label, placeholder }) => (
 						<MobileFilterSection key={key} value={key} label={label}>
 							<MobileListFilter
+								column={table.getColumn(key)}
 								options={filterOptions[key]}
 								selected={getColumnFilterValues(key)}
 								onToggle={(val) => handleToggleListItem(key, val)}

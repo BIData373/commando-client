@@ -1,11 +1,11 @@
-import { endOfDay, isWithinInterval, startOfDay } from "date-fns"
+import { endOfDay, isWithinInterval, startOfDay, startOfToday } from "date-fns"
 import { some } from "lodash"
-import { useMemo } from "react"
+import { useDeferredValue, useMemo } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { formatDateShort } from "src/functions/date-utils"
-import { matchesQuickFilter } from "src/functions/filter-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { DATE_TYPE } from "src/utils/date-utils"
+import { matchesQuickFilter } from "src/utils/filter-utils"
 import { useFuse } from "./useFuse"
 
 const FUSE_OPTIONS = {
@@ -89,53 +89,58 @@ export function useFilteredTasks<T extends TaskRowDto>(
 		[tasks, additionalSearchValues],
 	)
 
-	const searchResults = useFuse(searchableTasks, searchQuery, FUSE_OPTIONS)
+	const deferredSearchQuery = useDeferredValue(searchQuery)
+
+	const searchResults = useFuse(
+		searchableTasks,
+		deferredSearchQuery,
+		FUSE_OPTIONS,
+	)
 
 	const searchedTasks = useMemo(
 		() => searchResults.map(({ task }) => task),
 		[searchResults],
 	)
 
-	return useMemo(
-		() =>
-			searchedTasks
-				.filter((task) => {
-					const matchers = [
-						...(additionalFilter ? [additionalFilter(task)] : []),
-						...(!skipQuickFilters && activeQuickFilters.size > 0
-							? [
-									Array.from(activeQuickFilters).some((filter) =>
-										matchesQuickFilter(task, filter),
-									),
-								]
-							: []),
-					]
-					return matchers.length === 0 || some(matchers)
-				})
-				.filter((task) => {
-					if (!from || !to) {
-						return true
-					}
+	return useMemo(() => {
+		const today = startOfToday()
+		const quickFilters =
+			skipQuickFilters || activeQuickFilters.size === 0
+				? []
+				: [...activeQuickFilters]
+		const interval = from &&
+			to && { start: startOfDay(from), end: endOfDay(to) }
 
-					const date = getTaskDate(task, dateType)
+		return searchedTasks
+			.filter((task) => {
+				const matchers = [
+					...(additionalFilter ? [additionalFilter(task)] : []),
+					...(quickFilters.length > 0
+						? [
+								quickFilters.some((filter) =>
+									matchesQuickFilter(task, filter, today),
+								),
+							]
+						: []),
+				]
+				return matchers.length === 0 || some(matchers)
+			})
+			.filter((task) => {
+				if (!interval) {
+					return true
+				}
 
-					return (
-						date &&
-						isWithinInterval(date, {
-							start: startOfDay(from),
-							end: endOfDay(to),
-						})
-					)
-				}),
-		[
-			activeQuickFilters,
-			skipQuickFilters,
-			searchQuery,
-			searchedTasks,
-			additionalFilter,
-			from,
-			dateType,
-			to,
-		],
-	)
+				const date = getTaskDate(task, dateType)
+
+				return date && isWithinInterval(date, interval)
+			})
+	}, [
+		activeQuickFilters,
+		skipQuickFilters,
+		searchedTasks,
+		additionalFilter,
+		from,
+		dateType,
+		to,
+	])
 }
