@@ -32,7 +32,6 @@ function ColumnHeaderWithActions<TData>({
 			? filterOptions.filter(({ value }) => availableValues.has(value))
 			: (filterOptions ?? [])
 
-	const canFilter = isFilterable
 	const isFilterActive = filterValue.length > 0
 	const isSortActive = column.getIsSorted() !== false
 	const alwaysShow = isFilterActive || isSortActive || filterOpen
@@ -45,7 +44,7 @@ function ColumnHeaderWithActions<TData>({
 		<HeaderWrapper $alwaysShow={alwaysShow}>
 			<Label>{label}</Label>
 			<ActionsArea data-slot="actions-area" $show={alwaysShow}>
-				{canFilter && (
+				{isFilterable && (
 					<ColumnFilterDropdown
 						options={visibleFilterOptions}
 						activeValues={activeValues}
