@@ -14,11 +14,7 @@ interface MobileTaskCardProps {
 }
 
 export default function MobileTaskCard({
-	task,
-	searchQuery,
-	onClick,
-}: MobileTaskCardProps) {
-	const {
+	task: {
 		title,
 		description,
 		status,
@@ -26,7 +22,11 @@ export default function MobileTaskCard({
 		deadlineType,
 		assignee,
 		otherAssignees,
-	} = task
+		flagged,
+	},
+	searchQuery,
+	onClick,
+}: MobileTaskCardProps) {
 	const extraCount = otherAssignees.length
 
 	return (
@@ -47,7 +47,7 @@ export default function MobileTaskCard({
 
 			<TextBlock>
 				<TaskText dir="auto">
-					{task.flagged && <InlineFlag size={16} />}
+					{flagged && <InlineFlag size={16} />}
 					<TitleSpan>
 						<HighlightMatch text={title} query={searchQuery} variant="mark" />
 					</TitleSpan>

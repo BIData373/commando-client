@@ -1,28 +1,25 @@
 import styled from "@emotion/styled"
-import { uniqBy, xor } from "lodash"
-import { ChevronDown, ChevronLeft, X } from "lucide-react"
+import { compact, flatMap, map, uniqBy, xor } from "lodash"
+import { X } from "lucide-react"
 import { useState } from "react"
-import type { AssigneeDto, TaskRowDto } from "src/api/model"
+import type { TaskRowDto } from "src/api/model"
+import { Accordion } from "src/components/ui/accordion"
 import { Sheet, SheetContent } from "src/components/ui/sheet"
 import { buildFilterOptionsMap } from "src/functions/filter-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
-import MobileDateFilter from "../Workspace/MobileDateFilter"
-import MobileListFilter from "../Workspace/MobileListFilter"
+import MobileDateFilter from "./MobileDateFilter"
+import MobileFilterSection from "./MobileFilterSection"
+import MobileListFilter from "./MobileListFilter"
 
-const FILTER_SECTIONS = [
-	{ label: "סנן לפי תאריך", key: "date" },
-	{ label: "סנן לפי אחראי", key: "assignee" },
-	{ label: "סנן על פי מקור", key: "source" },
-	{ label: "סנן על פי סטטוס", key: "status" },
+const DATE_SECTION = { label: "סנן לפי תאריך", key: "date" } as const
+
+const LIST_SECTIONS = [
+	{ label: "סנן לפי אחראי", key: "assignee", placeholder: "חפש אחראי" },
+	{ label: "סנן על פי מקור", key: "source", placeholder: "חפש מקור" },
+	{ label: "סנן על פי סטטוס", key: "status", placeholder: "חפש סטטוס" },
 ] as const
 
-const LIST_PLACEHOLDERS: Record<Exclude<FilterKey, "date">, string> = {
-	assignee: "חפש אחראי",
-	source: "חפש מקור",
-	status: "חפש סטטוס",
-}
-
-export type FilterKey = (typeof FILTER_SECTIONS)[number]["key"]
+export type ListFilterKey = (typeof LIST_SECTIONS)[number]["key"]
 
 interface MobileFilterSheetProps {
 	open: boolean
@@ -44,34 +41,27 @@ export default function MobileFilterSheet({
 		setDateRange,
 		columnsFilters,
 		setColumnsFilters,
-		clearAllFilters,
+		clearMobileFilters,
 	} = useTasksFilters()
 
-	const [expandedKey, setExpandedKey] = useState<FilterKey | null>(null)
+	const [expandedKey, setExpandedKey] = useState("")
 
 	const filterOptions = buildFilterOptionsMap(tasks)
 
-	const assignees =
-		expandedKey === "assignee"
-			? uniqBy(
-					tasks
-						.flatMap((t) => [
-							t.assignee,
-							...t.otherAssignees.map((oa) => oa.assignee),
-						])
-						.filter(Boolean) as AssigneeDto[],
-					"name",
-				)
-			: undefined
+	const assignees = uniqBy(
+		compact(
+			flatMap(tasks, ({ assignee, otherAssignees }) => [
+				assignee,
+				...map(otherAssignees, "assignee"),
+			]),
+		),
+		"name",
+	)
 
 	function getColumnFilterValues(columnId: string): string[] {
 		return (
 			(columnsFilters.find((f) => f.id === columnId)?.value as string[]) ?? []
 		)
-	}
-
-	function handleToggleSection(key: FilterKey) {
-		setExpandedKey((prev) => (prev === key ? null : key))
 	}
 
 	function handleToggleListItem(columnId: string, value: string) {
@@ -83,12 +73,14 @@ export default function MobileFilterSheet({
 		setColumnsFilters(nextFilters)
 	}
 
-	function handleClearSelection() {
-		clearAllFilters()
+	function handleOpenChange(isOpen: boolean) {
+		if (!isOpen) {
+			onClose()
+		}
 	}
 
 	return (
-		<Sheet open={open} onOpenChange={(o) => !o && onClose()}>
+		<Sheet open={open} onOpenChange={handleOpenChange}>
 			<StyledSheetContent side="bottom" showCloseButton={false}>
 				<Header>
 					<Title>מסננים</Title>
@@ -97,52 +89,41 @@ export default function MobileFilterSheet({
 					</CloseButton>
 				</Header>
 
-				<OptionsList>
-					{FILTER_SECTIONS.map((section) => (
-						<Section key={section.key}>
-							<SectionHeader onClick={() => handleToggleSection(section.key)}>
-								{section.label}
-								{expandedKey === section.key ? (
-									<ChevronDown size={16} />
-								) : (
-									<ChevronLeft size={16} />
-								)}
-							</SectionHeader>
+				<OptionsList
+					type="single"
+					collapsible
+					value={expandedKey}
+					onValueChange={setExpandedKey}
+				>
+					<MobileFilterSection
+						value={DATE_SECTION.key}
+						label={DATE_SECTION.label}
+					>
+						<MobileDateFilter
+							dateType={dateType}
+							dateRange={dateRange}
+							onDateTypeChange={setDateType}
+							onDateRangeChange={setDateRange}
+						/>
+					</MobileFilterSection>
 
-							{expandedKey === section.key && (
-								<SectionContent>
-									{section.key === "date" ? (
-										<MobileDateFilter
-											dateType={dateType}
-											dateRange={dateRange}
-											onDateTypeChange={setDateType}
-											onDateRangeChange={setDateRange}
-										/>
-									) : (
-										<MobileListFilter
-											options={
-												filterOptions[section.key as Exclude<FilterKey, "date">]
-											}
-											selected={getColumnFilterValues(section.key)}
-											onToggle={(val) => handleToggleListItem(section.key, val)}
-											placeholder={LIST_PLACEHOLDERS[section.key]}
-											assignees={
-												section.key === "assignee" ? assignees : undefined
-											}
-										/>
-									)}
-								</SectionContent>
-							)}
-
-							<SectionDivider />
-						</Section>
+					{LIST_SECTIONS.map(({ key, label, placeholder }) => (
+						<MobileFilterSection key={key} value={key} label={label}>
+							<MobileListFilter
+								options={filterOptions[key]}
+								selected={getColumnFilterValues(key)}
+								onToggle={(val) => handleToggleListItem(key, val)}
+								placeholder={placeholder}
+								assignees={key === "assignee" ? assignees : undefined}
+							/>
+						</MobileFilterSection>
 					))}
 				</OptionsList>
 
 				<Footer>
 					<ClearText
 						disabled={columnsFilters.length === 0 && !dateRange}
-						onClick={handleClearSelection}
+						onClick={clearMobileFilters}
 					>
 						נקה בחירה
 					</ClearText>
@@ -197,38 +178,10 @@ const CloseButton = styled.button`
 	color: var(--sea-ink);
 `
 
-const OptionsList = styled.div`
-	display: flex;
-	flex-direction: column;
+const OptionsList = styled(Accordion)`
 	flex: 1;
 	padding: 0 24px;
 	overflow-y: auto;
-`
-
-const Section = styled.div`
-	display: flex;
-	flex-direction: column;
-`
-
-const SectionHeader = styled.button`
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 20px 0;
-	background: none;
-	border: none;
-	color: var(--text-color-2);
-	font-size: var(--fs-xl);
-	font-weight: 400;
-`
-
-const SectionContent = styled.div`
-	padding-bottom: 8px;
-`
-
-const SectionDivider = styled.div`
-	height: 1px;
-	background: var(--Bar-hover);
 `
 
 const Footer = styled.div`

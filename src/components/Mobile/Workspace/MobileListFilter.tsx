@@ -1,8 +1,8 @@
 import styled from "@emotion/styled"
 import { useState } from "react"
 import type { AssigneeDto } from "src/api/model"
-import SearchInput from "src/components/Mobile/shared/SearchInput"
 import { AssigneeAvatar } from "src/components/shared/AssigneeAvatar"
+import SearchInput from "src/components/shared/SearchInput"
 import { Checkbox } from "src/components/ui/checkbox"
 import type { FilterOption } from "src/functions/filter-utils"
 

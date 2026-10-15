@@ -49,7 +49,8 @@ interface TasksFiltersContextValue {
 
 	columnsFilters: ColumnFiltersState
 	setColumnsFilters(columnsFilters: ColumnFiltersState): void
-	clearAllFilters: () => void
+	resetColumnFilters: () => void
+	clearMobileFilters: () => void
 
 	sorting: SortingState
 	setSorting: Dispatch<SetStateAction<SortingState>>
@@ -190,8 +191,13 @@ export function TasksFiltersProvider({
 		debouncedUpdateQuickFilter([])
 	}
 
-	function clearAllFilters() {
+	function resetColumnFilters() {
 		setColumnsFilters([])
+		setAssigneeFilter([])
+	}
+
+	function clearMobileFilters() {
+		resetColumnFilters()
 		setDateRange(undefined)
 		setDateType(DATE_TYPE.CREATION_DATE)
 	}
@@ -255,7 +261,8 @@ export function TasksFiltersProvider({
 				setAssigneeFilter,
 				columnsFilters: columnFilters,
 				setColumnsFilters,
-				clearAllFilters,
+				resetColumnFilters,
+				clearMobileFilters,
 				sorting: sorting,
 				setSorting,
 				setColumnOrder,

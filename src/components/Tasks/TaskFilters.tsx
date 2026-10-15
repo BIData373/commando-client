@@ -6,6 +6,7 @@ import { type ReactNode, useMemo } from "react"
 import type { ListMessagesParams, TaskRowDto } from "src/api/model"
 import { QuickFilter } from "src/api/model/quick-filter"
 import { countQuickFilters } from "src/functions/filter-utils"
+import { QUICK_FILTER_LABELS } from "src/utils/filter-utils"
 import type { AppTableFeatures } from "src/utils/table-features"
 import {
 	buildCountingColumns,
@@ -14,10 +15,10 @@ import {
 } from "src/utils/task-table-utils"
 import { useHeadlessTable } from "../../hooks/useHeadlessTable"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
+import SearchInput from "../shared/SearchInput"
 import { ColumnVisibilityDropdown } from "../Tasks/ColumnVisibilityDropdown"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { ExportButton, type TaskExport } from "./ExportButton"
-import { TaskSearchInput } from "./TaskSearchInput"
 
 interface TaskFiltersProps<TTask extends TaskRowDto> {
 	allTaskRows: TTask[]
@@ -57,17 +58,17 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		toggleQuickFilter,
 		clearQuickFilters,
 		columnsFilters,
-		setColumnsFilters,
-		setAssigneeFilter,
+		resetColumnFilters,
 		sorting,
+		searchQuery,
+		setSearchQuery,
 	} = useTasksFilters()
 
 	const hasActiveColumnFilters =
 		columnsFilters.length > 0 || urlColumnFilters.length > 0
 
 	function clearAllColumnFilters() {
-		setColumnsFilters([])
-		setAssigneeFilter([])
+		resetColumnFilters()
 		onClearColumnFilters?.()
 	}
 
@@ -125,7 +126,8 @@ export function TaskFilters<TTask extends TaskRowDto>({
 				$active={activeQuickFilters.has(QuickFilter.flagged)}
 				onClick={() => toggleQuickFilter(QuickFilter.flagged)}
 			>
-				במיקוד{formatCount(QuickFilter.flagged)}
+				{QUICK_FILTER_LABELS[QuickFilter.flagged]}
+				{formatCount(QuickFilter.flagged)}
 			</FilterPill>
 		),
 		[QuickFilter.approaching]: (
@@ -135,7 +137,8 @@ export function TaskFilters<TTask extends TaskRowDto>({
 						$active={activeQuickFilters.has(QuickFilter.approaching)}
 						onClick={() => toggleQuickFilter(QuickFilter.approaching)}
 					>
-						תג"ב מתקרב{formatCount(QuickFilter.approaching)}
+						{QUICK_FILTER_LABELS[QuickFilter.approaching]}
+						{formatCount(QuickFilter.approaching)}
 					</FilterPill>
 				</WarningTrigger>
 				<TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
@@ -147,7 +150,8 @@ export function TaskFilters<TTask extends TaskRowDto>({
 				$active={activeQuickFilters.has(QuickFilter.overdue)}
 				onClick={() => toggleQuickFilter(QuickFilter.overdue)}
 			>
-				חריגה מתג"ב{formatCount(QuickFilter.overdue)}
+				{QUICK_FILTER_LABELS[QuickFilter.overdue]}
+				{formatCount(QuickFilter.overdue)}
 			</FilterPill>
 		),
 		[QuickFilter.rolling]: (
@@ -156,7 +160,8 @@ export function TaskFilters<TTask extends TaskRowDto>({
 				$active={activeQuickFilters.has(QuickFilter.rolling)}
 				onClick={() => toggleQuickFilter(QuickFilter.rolling)}
 			>
-				שוטפות{formatCount(QuickFilter.rolling)}
+				{QUICK_FILTER_LABELS[QuickFilter.rolling]}
+				{formatCount(QuickFilter.rolling)}
 			</FilterPill>
 		),
 	}
@@ -177,24 +182,15 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					exportFilePrefix={exportFilePrefix}
 				/>
 
-				<TaskSearchInput />
+				<TaskSearchInput
+					placeholder="חפש הנחיה"
+					value={searchQuery}
+					onChange={setSearchQuery}
+				/>
 			</BarStart>
 
 			<BarEnd>
-				{hasActiveColumnFilters && (
-					<>
-						<ClearButton onClick={clearAllColumnFilters}>
-							<FilterX size={18} />
-							נקה סננים
-						</ClearButton>
-
-						<FilterSeparator />
-					</>
-				)}
-
-				{extraFilters}
-
-				{quickFilters.map((filter) => quickFilterButtons[filter])}
+				{extraButtons}
 
 				<FilterPill
 					$active={activeQuickFilters.size === 0}
@@ -203,7 +199,20 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					הכל ({filteredRowsForCounts.length})
 				</FilterPill>
 
-				{extraButtons}
+				{quickFilters.map((filter) => quickFilterButtons[filter])}
+
+				{extraFilters}
+
+				{hasActiveColumnFilters && (
+					<>
+						<FilterSeparator />
+
+						<ClearButton onClick={clearAllColumnFilters}>
+							<FilterX size={18} />
+							נקה סננים
+						</ClearButton>
+					</>
+				)}
 			</BarEnd>
 		</BarRoot>
 	)
@@ -225,6 +234,7 @@ const BarStart = styled.div`
 
 const BarEnd = styled.div`
   display: flex;
+  flex-direction: row-reverse;
   align-items: center;
   gap: 8px;
 `
@@ -269,6 +279,11 @@ export const FilterPill = styled.div<{ $active: boolean }>`
 		background: var(--link-bg-hover);
 	}
   }
+`
+
+const TaskSearchInput = styled(SearchInput)`
+  flex: none;
+  width: 222px;
 `
 
 const FilterDivider = styled.div`
