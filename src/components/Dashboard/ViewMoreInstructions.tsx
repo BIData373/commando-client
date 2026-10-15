@@ -33,6 +33,7 @@ export const ViewMoreInstructions = ({
 				statusFilter,
 				deadlineTypeFilter,
 			},
+			state: { fromViewMore: true },
 		})
 	}
 

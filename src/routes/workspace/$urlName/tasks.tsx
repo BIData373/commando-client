@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { useMemo } from "react"
+import { createFileRoute, useLocation } from "@tanstack/react-router"
+import { useEffect } from "react"
 import { DeadlineType, QuickFilter, WorkspaceStatusType } from "src/api/model"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { WorkspaceTabs } from "src/components/WorkspaceTabs"
@@ -35,22 +35,43 @@ export const Route = createFileRoute("/workspace/$urlName/tasks")({
 function TasksPage() {
 	const { view, quickFilter, statusFilter, deadlineTypeFilter } =
 		Route.useSearch()
-
 	const { urlName } = Route.useParams()
+	const fromViewMore = useLocation({
+		select: (location) => location.state.fromViewMore,
+	})
 
-	const initialQuickFilters = useMemo(
-		() => (quickFilter ? new Set<QuickFilter>(quickFilter) : undefined),
-		[quickFilter],
-	)
+	// History state survives a reload, so drop the flag from the browser entry
+	useEffect(() => {
+		if (!fromViewMore) return
+
+		window.history.replaceState(
+			{ ...window.history.state, fromViewMore: undefined },
+			"",
+		)
+	}, [fromViewMore])
+
+	const viewMoreFilters = fromViewMore
+		? {
+				quickFilter: quickFilter ?? [],
+				columnFilters: [
+					...(statusFilter.length
+						? [{ id: "status", value: statusFilter }]
+						: []),
+					...(deadlineTypeFilter.length
+						? [{ id: "deadlineType", value: deadlineTypeFilter }]
+						: []),
+				],
+			}
+		: undefined
 
 	return (
-		<TasksFiltersProvider initialQuickFilters={initialQuickFilters}>
+		<TasksFiltersProvider initialPageFilters={viewMoreFilters}>
 			<WorkspaceTabs section={DropdownSection.TASKS} />
 			<TasksLayout
 				view={view}
 				urlName={urlName}
-				statusFilter={statusFilter}
-				deadlineTypeFilter={deadlineTypeFilter}
+				statusFilter={fromViewMore ? statusFilter : []}
+				deadlineTypeFilter={fromViewMore ? deadlineTypeFilter : []}
 			/>
 		</TasksFiltersProvider>
 	)
