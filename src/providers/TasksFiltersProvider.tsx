@@ -174,10 +174,14 @@ export function TasksFiltersProvider({
 
 	// While page filters are active, the first edit saves them as the user's view
 	function updateFilters(update: Partial<PageFilters>) {
-		if (pageFilters) {
-			setPageFilters({ ...pageFilters, ...update })
+		if (!pageFilters) {
+			updateTableView(update)
+			return
 		}
-		updateTableView({ ...pageFilters, ...update })
+
+		const nextPageFilters: PageFilters = { ...pageFilters, ...update }
+		setPageFilters(nextPageFilters)
+		updateTableView(nextPageFilters)
 	}
 
 	const debouncedUpdateQuickFilter = useDebouncedCallback(
