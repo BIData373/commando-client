@@ -372,6 +372,185 @@ export function useSearchUsers<
 	return withQueryKey(query, queryOptions.queryKey)
 }
 
+export const getMe = (signal?: AbortSignal) => {
+	return sendRequest<UserDto>({ url: `/user/me`, method: "GET", signal })
+}
+
+export const getGetMeQueryKey = () => {
+	return [`/user/me`] as const
+}
+
+export const getGetMeQueryOptions = <
+	TData = Awaited<ReturnType<typeof getMe>>,
+	TError = ErrorType<unknown>,
+>(options?: {
+	query?: Partial<
+		UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
+	>
+}) => {
+	const { query: queryOptions } = options ?? {}
+
+	const queryKey = queryOptions?.queryKey ?? getGetMeQueryKey()
+
+	const queryFn: QueryFunction<Awaited<ReturnType<typeof getMe>>> = ({
+		signal,
+	}) => getMe(signal)
+
+	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+		Awaited<ReturnType<typeof getMe>>,
+		TError,
+		TData
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetMeQueryResult = NonNullable<Awaited<ReturnType<typeof getMe>>>
+export type GetMeQueryError = ErrorType<unknown>
+
+export function useGetMe<
+	TData = Awaited<ReturnType<typeof getMe>>,
+	TError = ErrorType<unknown>,
+>(
+	options: {
+		query: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
+		> &
+			Pick<
+				DefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getMe>>,
+					TError,
+					Awaited<ReturnType<typeof getMe>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetMe<
+	TData = Awaited<ReturnType<typeof getMe>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
+		> &
+			Pick<
+				UndefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getMe>>,
+					TError,
+					Awaited<ReturnType<typeof getMe>>
+				>,
+				"initialData"
+			>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetMe<
+	TData = Awaited<ReturnType<typeof getMe>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+
+export function useGetMe<
+	TData = Awaited<ReturnType<typeof getMe>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
+		>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+} {
+	const queryOptions = getGetMeQueryOptions(options)
+
+	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+		TData,
+		TError
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+	return withQueryKey(query, queryOptions.queryKey)
+}
+
+export const markMeOnboarded = (signal?: AbortSignal) => {
+	return sendRequest<UserDto>({ url: `/user/visit`, method: "PATCH", signal })
+}
+
+export const getMarkMeOnboardedMutationOptions = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(options?: {
+	mutation?: UseMutationOptions<
+		Awaited<ReturnType<typeof markMeOnboarded>>,
+		TError,
+		void,
+		TContext
+	>
+}): UseMutationOptions<
+	Awaited<ReturnType<typeof markMeOnboarded>>,
+	TError,
+	void,
+	TContext
+> => {
+	const mutationKey = ["markMeOnboarded"]
+	const { mutation: mutationOptions } = options
+		? options.mutation &&
+			"mutationKey" in options.mutation &&
+			options.mutation.mutationKey
+			? options
+			: { ...options, mutation: { ...options.mutation, mutationKey } }
+		: { mutation: { mutationKey } }
+
+	const mutationFn: MutationFunction<
+		Awaited<ReturnType<typeof markMeOnboarded>>,
+		void
+	> = () => {
+		return markMeOnboarded()
+	}
+
+	return { mutationFn, ...mutationOptions }
+}
+
+export type MarkMeOnboardedMutationResult = NonNullable<
+	Awaited<ReturnType<typeof markMeOnboarded>>
+>
+
+export type MarkMeOnboardedMutationError = ErrorType<unknown>
+
+export const useMarkMeOnboarded = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
+	options?: {
+		mutation?: UseMutationOptions<
+			Awaited<ReturnType<typeof markMeOnboarded>>,
+			TError,
+			void,
+			TContext
+		>
+	},
+	queryClient?: QueryClient,
+): UseMutationResult<
+	Awaited<ReturnType<typeof markMeOnboarded>>,
+	TError,
+	void,
+	TContext
+> => {
+	return useMutation(getMarkMeOnboardedMutationOptions(options), queryClient)
+}
 export const getUser = (
 	{ id }: GetUserPathParameters,
 	signal?: AbortSignal,

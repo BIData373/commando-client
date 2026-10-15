@@ -43,6 +43,7 @@ export const getCreateSourceResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -68,6 +69,7 @@ export const getCreateSourceResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -98,6 +100,7 @@ export const getCreateSourceResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -150,6 +153,7 @@ export const getCreateSourceResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -175,6 +179,7 @@ export const getCreateSourceResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -212,6 +217,7 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -237,6 +243,7 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -267,6 +274,7 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -319,6 +327,7 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -344,6 +353,7 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -378,6 +388,7 @@ export const getGetSourceResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -403,6 +414,7 @@ export const getGetSourceResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -433,6 +445,7 @@ export const getGetSourceResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -485,6 +498,7 @@ export const getGetSourceResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -510,6 +524,7 @@ export const getGetSourceResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -543,6 +558,7 @@ export const getGetSourceResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -568,6 +584,7 @@ export const getGetSourceResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -598,6 +615,7 @@ export const getGetSourceResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -661,6 +679,7 @@ export const getGetSourceResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -688,6 +707,7 @@ export const getGetSourceResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					deletedAt: faker.helpers.arrayElement([
 						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -718,6 +738,7 @@ export const getGetSourceResponseMock = (
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 						},
 						null,
@@ -772,6 +793,7 @@ export const getGetSourceResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						updatedAt: new Date(
 							faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -799,6 +821,7 @@ export const getGetSourceResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						id: faker.number.float({ fractionDigits: 2 }),
 						name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -836,6 +859,7 @@ export const getGetSourceResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -861,6 +885,7 @@ export const getGetSourceResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -891,6 +916,7 @@ export const getGetSourceResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -916,6 +942,7 @@ export const getGetSourceResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -946,6 +973,7 @@ export const getGetSourceResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				null,
@@ -975,6 +1003,7 @@ export const getGetSourceResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			taskId: faker.number.float({ fractionDigits: 2 }),
 		},
@@ -1009,6 +1038,7 @@ export const getGetSourceResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -1034,6 +1064,7 @@ export const getGetSourceResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1064,6 +1095,7 @@ export const getGetSourceResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -1106,6 +1138,7 @@ export const getGetSourceResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			status: {
@@ -1157,6 +1190,7 @@ export const getUpdateSourceResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -1182,6 +1216,7 @@ export const getUpdateSourceResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1212,6 +1247,7 @@ export const getUpdateSourceResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -1264,6 +1300,7 @@ export const getUpdateSourceResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1289,6 +1326,7 @@ export const getUpdateSourceResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1324,6 +1362,7 @@ export const getDeleteSourceResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -1349,6 +1388,7 @@ export const getDeleteSourceResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1379,6 +1419,7 @@ export const getDeleteSourceResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -1431,6 +1472,7 @@ export const getDeleteSourceResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1456,6 +1498,7 @@ export const getDeleteSourceResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1491,6 +1534,7 @@ export const getExtractSourceResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -1516,6 +1560,7 @@ export const getExtractSourceResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1546,6 +1591,7 @@ export const getExtractSourceResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -1598,6 +1644,7 @@ export const getExtractSourceResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1623,6 +1670,7 @@ export const getExtractSourceResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1658,6 +1706,7 @@ export const getAiExtractionCallbackResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -1683,6 +1732,7 @@ export const getAiExtractionCallbackResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1713,6 +1763,7 @@ export const getAiExtractionCallbackResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -1765,6 +1816,7 @@ export const getAiExtractionCallbackResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1790,6 +1842,7 @@ export const getAiExtractionCallbackResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1823,6 +1876,7 @@ export const getAiExtractionCallbackResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1848,6 +1902,7 @@ export const getAiExtractionCallbackResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1878,6 +1933,7 @@ export const getAiExtractionCallbackResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -1941,6 +1997,7 @@ export const getAiExtractionCallbackResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -1968,6 +2025,7 @@ export const getAiExtractionCallbackResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					deletedAt: faker.helpers.arrayElement([
 						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1998,6 +2056,7 @@ export const getAiExtractionCallbackResponseMock = (
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 						},
 						null,
@@ -2052,6 +2111,7 @@ export const getAiExtractionCallbackResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						updatedAt: new Date(
 							faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -2079,6 +2139,7 @@ export const getAiExtractionCallbackResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						id: faker.number.float({ fractionDigits: 2 }),
 						name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -2116,6 +2177,7 @@ export const getAiExtractionCallbackResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -2141,6 +2203,7 @@ export const getAiExtractionCallbackResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -2171,6 +2234,7 @@ export const getAiExtractionCallbackResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -2196,6 +2260,7 @@ export const getAiExtractionCallbackResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2226,6 +2291,7 @@ export const getAiExtractionCallbackResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				null,
@@ -2255,6 +2321,7 @@ export const getAiExtractionCallbackResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			taskId: faker.number.float({ fractionDigits: 2 }),
 		},
@@ -2289,6 +2356,7 @@ export const getAiExtractionCallbackResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -2314,6 +2382,7 @@ export const getAiExtractionCallbackResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2344,6 +2413,7 @@ export const getAiExtractionCallbackResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -2386,6 +2456,7 @@ export const getAiExtractionCallbackResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			status: {

@@ -12,4 +12,5 @@ export interface UserDto {
 	upn: string
 	/** @nullable */
 	info: UserInfoDto | null
+	hasOnboarded: boolean
 }

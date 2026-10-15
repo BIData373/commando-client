@@ -49,6 +49,7 @@ export const getCreateTaskResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -74,6 +75,7 @@ export const getCreateTaskResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -104,6 +106,7 @@ export const getCreateTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -165,6 +168,7 @@ export const getCreateTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -190,6 +194,7 @@ export const getCreateTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -220,6 +225,7 @@ export const getCreateTaskResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -274,6 +280,7 @@ export const getCreateTaskResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -301,6 +308,7 @@ export const getCreateTaskResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					id: faker.number.float({ fractionDigits: 2 }),
 					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -338,6 +346,7 @@ export const getCreateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -363,6 +372,7 @@ export const getCreateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -393,6 +403,7 @@ export const getCreateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -418,6 +429,7 @@ export const getCreateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -448,6 +460,7 @@ export const getCreateTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -477,6 +490,7 @@ export const getCreateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		taskId: faker.number.float({ fractionDigits: 2 }),
 	},
@@ -511,6 +525,7 @@ export const getCreateTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -536,6 +551,7 @@ export const getCreateTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -566,6 +582,7 @@ export const getCreateTaskResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				null,
@@ -608,6 +625,7 @@ export const getCreateTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			})),
 		},
 		status: {
@@ -653,6 +671,7 @@ export const getCreateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -678,6 +697,7 @@ export const getCreateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -708,6 +728,7 @@ export const getCreateTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -760,6 +781,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -785,6 +807,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -815,6 +838,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -878,6 +902,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -905,6 +930,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					deletedAt: faker.helpers.arrayElement([
 						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -935,6 +961,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 						},
 						null,
@@ -989,6 +1016,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						updatedAt: new Date(
 							faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -1016,6 +1044,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						id: faker.number.float({ fractionDigits: 2 }),
 						name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1053,6 +1082,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -1078,6 +1108,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1108,6 +1139,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -1133,6 +1165,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1163,6 +1196,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				null,
@@ -1192,6 +1226,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			taskId: faker.number.float({ fractionDigits: 2 }),
 		},
@@ -1226,6 +1261,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -1251,6 +1287,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1281,6 +1318,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -1323,6 +1361,7 @@ export const getListTasksResponseMock = (): TaskDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			status: {
@@ -1374,6 +1413,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1399,6 +1439,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1429,6 +1470,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -1492,6 +1534,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -1519,6 +1562,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					deletedAt: faker.helpers.arrayElement([
 						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1549,6 +1593,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 						},
 						null,
@@ -1603,6 +1648,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						updatedAt: new Date(
 							faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -1630,6 +1676,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						id: faker.number.float({ fractionDigits: 2 }),
 						name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1667,6 +1714,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -1692,6 +1740,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1722,6 +1771,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -1747,6 +1797,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1777,6 +1828,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				null,
@@ -1806,6 +1858,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			taskId: faker.number.float({ fractionDigits: 2 }),
 		},
@@ -1838,6 +1891,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -1863,6 +1917,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1893,6 +1948,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -1935,6 +1991,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			undefined,
@@ -1968,6 +2025,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -1993,6 +2051,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2023,6 +2082,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -2065,6 +2125,7 @@ export const getListTaskRowsResponseMock = (): TaskRowDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			status: {
@@ -2120,6 +2181,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -2145,6 +2207,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2175,6 +2238,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -2238,6 +2302,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -2265,6 +2330,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					deletedAt: faker.helpers.arrayElement([
 						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2295,6 +2361,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 						},
 						null,
@@ -2349,6 +2416,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						updatedAt: new Date(
 							faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -2376,6 +2444,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						id: faker.number.float({ fractionDigits: 2 }),
 						name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -2413,6 +2482,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -2438,6 +2508,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -2468,6 +2539,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -2493,6 +2565,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2523,6 +2596,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				null,
@@ -2552,6 +2626,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			taskId: faker.number.float({ fractionDigits: 2 }),
 		},
@@ -2586,6 +2661,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -2611,6 +2687,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2641,6 +2718,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -2683,6 +2761,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			status: {
@@ -2728,6 +2807,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -2753,6 +2833,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2783,6 +2864,7 @@ export const getListPersonalTasksResponseMock = (): TaskWithWorkspaceDto[] =>
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				null,
@@ -2835,6 +2917,7 @@ export const getListPersonalTaskRowsResponseMock =
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -2860,6 +2943,7 @@ export const getListPersonalTaskRowsResponseMock =
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2890,6 +2974,7 @@ export const getListPersonalTaskRowsResponseMock =
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				null,
@@ -2953,6 +3038,7 @@ export const getListPersonalTaskRowsResponseMock =
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						updatedAt: new Date(
 							faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -2980,6 +3066,7 @@ export const getListPersonalTaskRowsResponseMock =
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 						deletedAt: faker.helpers.arrayElement([
 							new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -3012,6 +3099,7 @@ export const getListPersonalTaskRowsResponseMock =
 										},
 										null,
 									]),
+									hasOnboarded: faker.datatype.boolean(),
 								},
 							},
 							null,
@@ -3066,6 +3154,7 @@ export const getListPersonalTaskRowsResponseMock =
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 							updatedAt: new Date(
 								faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -3093,6 +3182,7 @@ export const getListPersonalTaskRowsResponseMock =
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 							id: faker.number.float({ fractionDigits: 2 }),
 							name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -3130,6 +3220,7 @@ export const getListPersonalTaskRowsResponseMock =
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -3155,6 +3246,7 @@ export const getListPersonalTaskRowsResponseMock =
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				id: faker.number.float({ fractionDigits: 2 }),
 				name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -3185,6 +3277,7 @@ export const getListPersonalTaskRowsResponseMock =
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -3210,6 +3303,7 @@ export const getListPersonalTaskRowsResponseMock =
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -3240,6 +3334,7 @@ export const getListPersonalTaskRowsResponseMock =
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -3269,6 +3364,7 @@ export const getListPersonalTaskRowsResponseMock =
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				taskId: faker.number.float({ fractionDigits: 2 }),
 			},
@@ -3303,6 +3399,7 @@ export const getListPersonalTaskRowsResponseMock =
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -3330,6 +3427,7 @@ export const getListPersonalTaskRowsResponseMock =
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					deletedAt: faker.helpers.arrayElement([
 						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -3360,6 +3458,7 @@ export const getListPersonalTaskRowsResponseMock =
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 						},
 						null,
@@ -3402,6 +3501,7 @@ export const getListPersonalTaskRowsResponseMock =
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					})),
 				},
 				undefined,
@@ -3437,6 +3537,7 @@ export const getListPersonalTaskRowsResponseMock =
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -3464,6 +3565,7 @@ export const getListPersonalTaskRowsResponseMock =
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					deletedAt: faker.helpers.arrayElement([
 						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -3494,6 +3596,7 @@ export const getListPersonalTaskRowsResponseMock =
 									},
 									null,
 								]),
+								hasOnboarded: faker.datatype.boolean(),
 							},
 						},
 						null,
@@ -3536,6 +3639,7 @@ export const getListPersonalTaskRowsResponseMock =
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					})),
 				},
 				status: {
@@ -3585,6 +3689,7 @@ export const getListPersonalTaskRowsResponseMock =
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -3610,6 +3715,7 @@ export const getListPersonalTaskRowsResponseMock =
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -3640,6 +3746,7 @@ export const getListPersonalTaskRowsResponseMock =
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -3689,6 +3796,7 @@ export const getGetTaskResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -3714,6 +3822,7 @@ export const getGetTaskResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -3744,6 +3853,7 @@ export const getGetTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -3805,6 +3915,7 @@ export const getGetTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -3830,6 +3941,7 @@ export const getGetTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -3860,6 +3972,7 @@ export const getGetTaskResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -3914,6 +4027,7 @@ export const getGetTaskResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -3941,6 +4055,7 @@ export const getGetTaskResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					id: faker.number.float({ fractionDigits: 2 }),
 					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -3978,6 +4093,7 @@ export const getGetTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -4003,6 +4119,7 @@ export const getGetTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -4033,6 +4150,7 @@ export const getGetTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -4058,6 +4176,7 @@ export const getGetTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -4088,6 +4207,7 @@ export const getGetTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -4117,6 +4237,7 @@ export const getGetTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		taskId: faker.number.float({ fractionDigits: 2 }),
 	},
@@ -4151,6 +4272,7 @@ export const getGetTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -4176,6 +4298,7 @@ export const getGetTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -4206,6 +4329,7 @@ export const getGetTaskResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				null,
@@ -4248,6 +4372,7 @@ export const getGetTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			})),
 		},
 		status: {
@@ -4293,6 +4418,7 @@ export const getGetTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -4318,6 +4444,7 @@ export const getGetTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -4348,6 +4475,7 @@ export const getGetTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -4398,6 +4526,7 @@ export const getUpdateTaskResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -4423,6 +4552,7 @@ export const getUpdateTaskResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -4453,6 +4583,7 @@ export const getUpdateTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -4514,6 +4645,7 @@ export const getUpdateTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -4539,6 +4671,7 @@ export const getUpdateTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -4569,6 +4702,7 @@ export const getUpdateTaskResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -4623,6 +4757,7 @@ export const getUpdateTaskResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -4650,6 +4785,7 @@ export const getUpdateTaskResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					id: faker.number.float({ fractionDigits: 2 }),
 					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -4687,6 +4823,7 @@ export const getUpdateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -4712,6 +4849,7 @@ export const getUpdateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -4742,6 +4880,7 @@ export const getUpdateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -4767,6 +4906,7 @@ export const getUpdateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -4797,6 +4937,7 @@ export const getUpdateTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -4826,6 +4967,7 @@ export const getUpdateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		taskId: faker.number.float({ fractionDigits: 2 }),
 	},
@@ -4860,6 +5002,7 @@ export const getUpdateTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -4885,6 +5028,7 @@ export const getUpdateTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -4915,6 +5059,7 @@ export const getUpdateTaskResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				null,
@@ -4957,6 +5102,7 @@ export const getUpdateTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			})),
 		},
 		status: {
@@ -5002,6 +5148,7 @@ export const getUpdateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -5027,6 +5174,7 @@ export const getUpdateTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -5057,6 +5205,7 @@ export const getUpdateTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -5107,6 +5256,7 @@ export const getDeleteTaskResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -5132,6 +5282,7 @@ export const getDeleteTaskResponseMock = (
 			},
 			null,
 		]),
+		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -5162,6 +5313,7 @@ export const getDeleteTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		null,
@@ -5223,6 +5375,7 @@ export const getDeleteTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -5248,6 +5401,7 @@ export const getDeleteTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -5278,6 +5432,7 @@ export const getDeleteTaskResponseMock = (
 								},
 								null,
 							]),
+							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					null,
@@ -5332,6 +5487,7 @@ export const getDeleteTaskResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -5359,6 +5515,7 @@ export const getDeleteTaskResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 					id: faker.number.float({ fractionDigits: 2 }),
 					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -5396,6 +5553,7 @@ export const getDeleteTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -5421,6 +5579,7 @@ export const getDeleteTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -5451,6 +5610,7 @@ export const getDeleteTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -5476,6 +5636,7 @@ export const getDeleteTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -5506,6 +5667,7 @@ export const getDeleteTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
@@ -5535,6 +5697,7 @@ export const getDeleteTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		taskId: faker.number.float({ fractionDigits: 2 }),
 	},
@@ -5569,6 +5732,7 @@ export const getDeleteTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -5594,6 +5758,7 @@ export const getDeleteTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -5624,6 +5789,7 @@ export const getDeleteTaskResponseMock = (
 							},
 							null,
 						]),
+						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				null,
@@ -5666,6 +5832,7 @@ export const getDeleteTaskResponseMock = (
 					},
 					null,
 				]),
+				hasOnboarded: faker.datatype.boolean(),
 			})),
 		},
 		status: {
@@ -5711,6 +5878,7 @@ export const getDeleteTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -5736,6 +5904,7 @@ export const getDeleteTaskResponseMock = (
 				},
 				null,
 			]),
+			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -5766,6 +5935,7 @@ export const getDeleteTaskResponseMock = (
 						},
 						null,
 					]),
+					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			null,
