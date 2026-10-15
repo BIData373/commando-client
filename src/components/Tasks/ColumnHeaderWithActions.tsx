@@ -21,6 +21,7 @@ function ColumnHeaderWithActions<TData>({
 	const filterValue = (column.getFilterValue() as string[] | undefined) ?? []
 	const activeValues = new Set(filterValue)
 	const isFilterable = column.getCanFilter() && filterOptions !== undefined
+	const isSearchable = column.columnDef.meta?.searchable ?? false
 
 	const availableValues = isFilterable
 		? column.getFacetedUniqueValues()
@@ -51,6 +52,7 @@ function ColumnHeaderWithActions<TData>({
 						onApply={handleApplyFilter}
 						isActive={isFilterActive}
 						onOpenChange={setFilterOpen}
+						searchable={isSearchable}
 					/>
 				)}
 				{canSort && (
