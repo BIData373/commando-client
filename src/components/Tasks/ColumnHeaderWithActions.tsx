@@ -15,23 +15,24 @@ interface ColumnHeaderWithActionsProps<TData extends RowData, TValue> {
 function ColumnHeaderWithActions<TData extends RowData, TValue>({
 	label,
 	column,
-	filterOptions = [],
+	filterOptions,
 }: ColumnHeaderWithActionsProps<TData, TValue>) {
 	const [filterOpen, setFilterOpen] = useState(false)
 	const canSort = column.getCanSort()
 	const filterValue = (column.getFilterValue() as string[] | undefined) ?? []
 	const activeValues = new Set(filterValue)
-	const isFilterable = column.getCanFilter() && filterOptions.length > 0
+	const isFilterable = column.getCanFilter() && filterOptions !== undefined
+	const isSearchable = column.columnDef.meta?.searchable ?? false
 
 	const availableValues = isFilterable
 		? column.getFacetedUniqueValues()
 		: undefined
 
-	const visibleFilterOptions = availableValues
-		? filterOptions.filter(({ value }) => availableValues.has(value))
-		: filterOptions
+	const visibleFilterOptions =
+		availableValues && filterOptions
+			? filterOptions.filter(({ value }) => availableValues.has(value))
+			: (filterOptions ?? [])
 
-	const canFilter = isFilterable && visibleFilterOptions.length > 0
 	const isFilterActive = filterValue.length > 0
 	const isSortActive = column.getIsSorted() !== false
 	const alwaysShow = isFilterActive || isSortActive || filterOpen
@@ -44,13 +45,14 @@ function ColumnHeaderWithActions<TData extends RowData, TValue>({
 		<HeaderWrapper $alwaysShow={alwaysShow}>
 			<Label>{label}</Label>
 			<ActionsArea data-slot="actions-area" $show={alwaysShow}>
-				{canFilter && (
+				{isFilterable && (
 					<ColumnFilterDropdown
 						options={visibleFilterOptions}
 						activeValues={activeValues}
 						onApply={handleApplyFilter}
 						isActive={isFilterActive}
 						onOpenChange={setFilterOpen}
+						searchable={isSearchable}
 					/>
 				)}
 				{canSort && (

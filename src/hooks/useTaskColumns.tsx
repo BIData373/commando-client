@@ -98,6 +98,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 			definitions.assignee({
 				header: TaskColumnHeader,
 				size: 100,
+				meta: { searchable: true },
 				cell: AssigneesCell,
 			}),
 			definitions.deadlineType({
@@ -108,6 +109,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 			definitions.source({
 				header: TaskColumnHeader,
 				size: 240,
+				meta: { searchable: true },
 				cell: SourceCell,
 			}),
 			columnHelper.display({
@@ -125,7 +127,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				size: 100,
 				minSize: 70,
 				enableSorting: false,
-				meta: { grow: true },
+				meta: { grow: true, searchable: true },
 				cell: TagsCell,
 			}),
 			columnHelper.accessor((row) => row.notes, {

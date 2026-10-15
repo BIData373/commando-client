@@ -18,6 +18,7 @@ import {
 
 export interface AppColumnMeta {
 	grow?: boolean
+	searchable?: boolean
 }
 
 export const appTableFeatures = tableFeatures({
