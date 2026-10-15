@@ -88,15 +88,10 @@ const DeadlineDateText = styled.span<{
   line-height: 22px;
   white-space: nowrap;
 
-  color: ${({ $isOverdue, $isApproaching }) => {
-		if ($isOverdue) {
-			return "var(--Colors-Brand-Error-colorErrorActive)"
-		}
-
-		if ($isApproaching) {
-			return "var(--Colors-Brand-Warning-colorWarningText)"
-		}
-
-		return "var(--sea-ink-soft)"
-	}};
+  color: ${({ $isOverdue, $isApproaching }) =>
+		$isOverdue
+			? "var(--Colors-Brand-Error-colorErrorActive)"
+			: $isApproaching
+				? "var(--Colors-Brand-Warning-colorWarningText)"
+				: "var(--sea-ink-soft)"};
 `

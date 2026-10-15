@@ -310,7 +310,7 @@ function TaskTable<TTask extends TaskRowDto>({
 				<DataTable
 					columns={columns}
 					data={groupedTasks}
-					rowSelection={selectMode ? rowSelection : undefined}
+					rowSelection={rowSelection}
 					onRowSelectionChange={selectMode ? setRowSelection : undefined}
 					columnFilters={columnFilters}
 					onColumnFiltersChange={handleColumnFiltersChange}

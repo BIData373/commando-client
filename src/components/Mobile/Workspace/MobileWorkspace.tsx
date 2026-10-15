@@ -1,26 +1,21 @@
 import styled from "@emotion/styled"
 import { useDisclosure } from "@mantine/hooks"
 import { useNavigate } from "@tanstack/react-router"
+import { useDeferredValue, useRef } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { useListTaskRows } from "src/api/task/task"
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
-import { formatSourceLabel } from "src/functions/source-utils"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import { useHeadlessTable } from "src/hooks/useHeadlessTable"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { buildCountingColumns } from "src/utils/task-table-utils"
 import MobileHeader from "../MobileHeader"
-import MobileFilterSheet, { type ListFilterKey } from "./MobileFilterSheet"
-import MobileTaskCard from "./MobileTaskCard"
+import MobileFilterSheet from "./MobileFilterSheet"
+import MobileTaskList from "./MobileTaskList"
 import MobileTasksToolbar from "./MobileTasksToolbar"
 
-type ColumnAccessor = (task: TaskRowDto) => string
-
-// TODO - when fixing performance, take a look at this as well
-const COLUMN_ACCESSORS: Partial<Record<string, ColumnAccessor>> = {
-	assignee: (t) => t.assignee?.name ?? "",
-	source: (t) => (t.source ? formatSourceLabel(t.source) : ""),
-	status: (t) => t.status.type,
-} satisfies Record<ListFilterKey, ColumnAccessor>
+const TASK_COLUMNS = buildCountingColumns<TaskRowDto>()
 
 export default function MobileWorkspace() {
 	const {
@@ -37,17 +32,17 @@ export default function MobileWorkspace() {
 	const [filterSheetOpen, filterSheet] = useDisclosure()
 	const [searchFocused, searchFocus] = useDisclosure()
 
-	function matchesColumnFilters(task: TaskRowDto): boolean {
-		return columnsFilters.every(({ id, value }) => {
-			const accessor = COLUMN_ACCESSORS[id]
-			return accessor ? (value as string[]).includes(accessor(task)) : true
-		})
-	}
+	const searchedTasks = useFilteredTasks(tasks)
+	const deferredSearchQuery = useDeferredValue(searchQuery)
 
-	const filtered = useFilteredTasks(tasks, {
-		additionalFilter:
-			columnsFilters.length > 0 ? matchesColumnFilters : undefined,
+	const table = useHeadlessTable({
+		data: searchedTasks,
+		columns: TASK_COLUMNS,
+		columnFilters: columnsFilters,
 	})
+
+	const rows = table.getRowModel().rows
+	const contentRef = useRef<HTMLDivElement>(null)
 
 	function handleOpenTask(task: TaskRowDto) {
 		navigate({
@@ -60,10 +55,10 @@ export default function MobileWorkspace() {
 		<PageRoot>
 			<MobileHeader icon={icon} title={title} minimal={searchFocused} />
 
-			<Content>
+			<Content ref={contentRef}>
 				<MobileTasksToolbar
 					tasks={tasks}
-					matchCount={filtered.length}
+					matchCount={rows.length}
 					searchFocused={searchFocused}
 					onSearchFocus={searchFocus.open}
 					onSearchBlur={searchFocus.close}
@@ -75,17 +70,15 @@ export default function MobileWorkspace() {
 						<LoadingWrapper>
 							<LoadingSpinner />
 						</LoadingWrapper>
-					) : filtered.length === 0 ? (
+					) : rows.length === 0 ? (
 						<EmptyState>לא נמצאו הנחיות</EmptyState>
 					) : (
-						filtered.map((task) => (
-							<MobileTaskCard
-								key={task.rowKey}
-								task={task}
-								searchQuery={searchQuery}
-								onClick={() => handleOpenTask(task)}
-							/>
-						))
+						<MobileTaskList
+							tasks={rows.map(({ original }) => original)}
+							searchQuery={deferredSearchQuery}
+							scrollContainerRef={contentRef}
+							onOpenTask={handleOpenTask}
+						/>
 					)}
 				</CardList>
 			</Content>
@@ -94,7 +87,8 @@ export default function MobileWorkspace() {
 				open={filterSheetOpen}
 				onClose={filterSheet.close}
 				tasks={tasks}
-				filteredCount={filtered.length}
+				table={table}
+				filteredCount={rows.length}
 			/>
 		</PageRoot>
 	)
@@ -115,6 +109,7 @@ const PageRoot = styled.div`
 `
 
 const Content = styled.div`
+	position: relative;
 	direction: ltr;
 	display: flex;
 	flex-direction: column;
