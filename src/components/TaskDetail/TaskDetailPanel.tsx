@@ -607,7 +607,9 @@ const AttachmentDownloadButton = styled.button`
   padding: 0;
   color: inherit;
   font-size: var(--fs-btn);
+  direction: rtl;
   cursor: pointer;
+  text-align: start;         
 
   &:hover:not(:disabled) {
     text-decoration: underline;
