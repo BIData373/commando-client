@@ -5,29 +5,23 @@ import {
 	DEFAULT_COLUMN_ORDER,
 	DISABLED_CLICK_COLUMNS,
 	groupRowsByTask,
-	toHiddenColumns,
 } from "src/utils/task-table-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
 import { DataTable } from "../ui/data-table"
 
 interface TaskPreviewTableProps {
 	tasks: TaskRowDto[]
-	visibleColumns: (keyof TaskRowDto)[]
+	hiddenColumns: Set<keyof TaskRowDto>
 	onClick?(taskId: number): void
 	emptyState: ReactNode
 }
 
 export function TaskPreviewTable({
 	tasks,
-	visibleColumns,
+	hiddenColumns,
 	onClick,
 	emptyState,
 }: TaskPreviewTableProps) {
-	const hiddenColumns = useMemo(
-		() => toHiddenColumns(visibleColumns),
-		[visibleColumns],
-	)
-
 	const { columns } = useTaskColumns<TaskRowDto>({
 		columnOrder: DEFAULT_COLUMN_ORDER,
 		hiddenColumns,

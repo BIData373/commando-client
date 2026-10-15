@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { Outlet } from "@tanstack/react-router"
-import { type ColumnDef, createColumnHelper } from "@tanstack/react-table"
+import type { ColumnDef } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
@@ -22,37 +22,17 @@ import {
 } from "src/utils/filter-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import type { AppTableFeatures } from "src/utils/table-features"
+import { PERSONAL_EXTRA_COLUMNS } from "src/utils/task-extra-columns"
 import {
-	TASK_COLUMN_ID,
 	type TaskColumnMeta,
 	WORKSPACE_COLUMN_META,
 } from "src/utils/task-table-utils"
 import { MultiSelectFilterDropdown } from "../shared/MultiSelectFilterDropdown"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
-import { TaskColumnHeader } from "../Tasks/cells/TaskColumnHeader"
 import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
-import { WorkspaceColumnCell } from "./WorkspaceColumnCell"
-
-const columnHelper = createColumnHelper<
-	AppTableFeatures,
-	TaskRowWithWorkspaceDto
->()
-
-const WORKSPACE_COLUMN = columnHelper.accessor((row) => row.workspace?.title, {
-	id: TASK_COLUMN_ID.workspace,
-	header: TaskColumnHeader,
-	size: 170,
-	enableColumnFilter: false,
-	sortFn: (rowA, rowB) =>
-		(rowA.original.workspace?.title ?? "").localeCompare(
-			rowB.original.workspace?.title ?? "",
-			"he",
-		),
-	cell: WorkspaceColumnCell,
-})
 
 function getWorkspaceSearchValues(task: TaskRowWithWorkspaceDto) {
 	return [task.workspace?.title]
@@ -133,7 +113,7 @@ function PersonalTaskTable({
 	})
 
 	const tableExtraColumns = useMemo(
-		() => columnHelper.columns([WORKSPACE_COLUMN, ...(extraColumns ?? [])]),
+		() => [...PERSONAL_EXTRA_COLUMNS, ...(extraColumns ?? [])],
 		[extraColumns],
 	)
 

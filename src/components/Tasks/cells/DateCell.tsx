@@ -6,6 +6,7 @@ import { DateText } from "../../shared/DateText"
 
 export function DateCell<TTask extends TaskRowDto>({
 	getValue,
-}: CellContext<AppTableFeatures, TTask, Date>) {
-	return <DateText>{formatDateShort(getValue())}</DateText>
+}: CellContext<AppTableFeatures, TTask, Date | null>) {
+	const date = getValue()
+	return <DateText>{date && formatDateShort(date)}</DateText>
 }

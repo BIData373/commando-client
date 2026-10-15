@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { useQueryClient } from "@tanstack/react-query"
 import { Download } from "lucide-react"
 import { useState } from "react"
-import { getListMessagesQueryKey, listMessages } from "src/api/message/message"
+import { getListMessagesQueryOptions } from "src/api/message/message"
 import type { ListMessagesParams, MessageDto, TaskRowDto } from "src/api/model"
 import { SpinIcon } from "src/components/shared/SpinIcon"
 import { exportTasksToExcel } from "src/functions/export-excel"
@@ -35,9 +35,8 @@ function ExportButton<TTask extends TaskRowDto>({
 
 	async function fetchMessages(params: ListMessagesParams) {
 		try {
-			return await queryClient.fetchQuery({
-				queryKey: getListMessagesQueryKey(params),
-				queryFn: ({ signal }) => listMessages(params, signal),
+			return await queryClient.query({
+				...getListMessagesQueryOptions(params),
 				staleTime: 0,
 			})
 		} catch {

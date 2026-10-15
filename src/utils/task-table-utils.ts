@@ -84,6 +84,10 @@ function multiSelectColumnFilter<TTask extends TaskRowDto>(
 	return !filterValue?.length || filterValue.includes(row.getValue(columnId))
 }
 
+export function getTaskTagNames(task: TaskRowDto): string[] {
+	return map(concat(task.tags, task.source?.tags ?? []), "name")
+}
+
 function compareDueDates(dueDateA: Date | null, dueDateB: Date | null) {
 	const a = dueDateA ? new Date(dueDateA).getTime() : Infinity
 	const b = dueDateB ? new Date(dueDateB).getTime() : Infinity
@@ -123,11 +127,10 @@ export function createTaskColumnDefinitions<TTask extends TaskRowDto>() {
 		),
 		tags: defineColumn(
 			TASK_COLUMN_ID.tags,
-			(row) => uniq(map(concat(row.tags, row.source?.tags ?? []), "name")),
+			(row) => uniq(getTaskTagNames(row)),
 			{
 				filterFn: "arrIncludesSome",
-				getUniqueValues: (row) =>
-					map(concat(row.tags, row.source?.tags ?? []), "name"),
+				getUniqueValues: getTaskTagNames,
 			},
 		),
 		deadlineType: defineColumn(

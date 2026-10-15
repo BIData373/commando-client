@@ -5,8 +5,7 @@ import { FilterX } from "lucide-react"
 import { type ReactNode, useMemo } from "react"
 import type { ListMessagesParams, TaskRowDto } from "src/api/model"
 import { QuickFilter } from "src/api/model/quick-filter"
-import { countQuickFilters } from "src/functions/filter-utils"
-import { QUICK_FILTER_LABELS } from "src/utils/filter-utils"
+import { countQuickFilters, QUICK_FILTER_LABELS } from "src/utils/filter-utils"
 import type { AppTableFeatures } from "src/utils/table-features"
 import {
 	buildCountingColumns,

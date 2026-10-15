@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import type { Column, RowData } from "@tanstack/react-table"
 import { useState } from "react"
 import { TbArrowsSort } from "react-icons/tb"
-import type { FilterOption } from "../../functions/filter-utils"
+import type { FilterOption } from "../../utils/filter-utils"
 import type { AppTableFeatures } from "../../utils/table-features"
 import { ColumnFilterDropdown } from "./ColumnFilterDropdown"
 
