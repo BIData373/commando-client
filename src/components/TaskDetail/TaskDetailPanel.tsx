@@ -30,12 +30,12 @@ import FlagIcon from "../shared/FlagIcon"
 import { ModalContent } from "../shared/ModalContent"
 import { SpinIcon } from "../shared/SpinIcon"
 import { TagsRow } from "../shared/TagsRow"
+import TaskCommentsSection from "../shared/TaskCommentsSection"
 import WorkspaceCell from "../shared/WorkspaceCell"
 import { RowActionsMenu } from "../Tasks/RowActionsMenu"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
 import { Dialog } from "../ui/dialog"
 import { AssigneeSection } from "./AssigneeSection"
-import TaskCommentsSection from "./TaskCommentsSection"
 import TaskHistoryPanel from "./TaskHistoryPanel"
 
 interface TaskDetailPanelProps {
