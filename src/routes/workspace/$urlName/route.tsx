@@ -1,6 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { PermissionType } from "src/api/model"
-import MobileWorkspace from "src/components/Mobile/Workspace/MobileWorkspace"
 import { ContentScrollArea } from "src/components/shared/ContentScrollArea"
 import { WorkspacePageShell } from "src/components/Workspace/WorkspacePageShell"
 import { WorkspaceTitle } from "src/components/WorkspaceTitle"
@@ -47,7 +46,7 @@ function WorkspaceContent() {
 			>
 				{isMobile ? (
 					<TasksFiltersProvider>
-						<MobileWorkspace />
+						<Outlet />
 					</TasksFiltersProvider>
 				) : (
 					<WorkspacePageShell workspaceId={workspace.id}>
