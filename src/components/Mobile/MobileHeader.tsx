@@ -6,7 +6,7 @@ import WorkspaceIconTitle from "src/components/shared/WorkspaceIconTitle"
 
 interface MobileHeaderProps {
 	icon?: string | null
-	title: string
+	title?: string
 	minimal?: boolean
 	backRedirect?: boolean
 }
@@ -45,7 +45,7 @@ export default function MobileHeader({
 		<HeaderRoot>
 			<StyledWorkspaceIconTitle
 				icon={icon}
-				title={title}
+				title={title || ""}
 				iconSize={28}
 				rounded
 			/>
