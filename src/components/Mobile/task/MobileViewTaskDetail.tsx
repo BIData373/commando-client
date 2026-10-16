@@ -13,7 +13,7 @@ export function MobileViewTaskDetail({ task }: MobileViewTaskDetailProps) {
 	}
 	return (
 		<PageShell>
-			<MobileHeader title="sdfisdf" backRedirect={true} />
+			<MobileHeader backRedirect={true} />
 			<TaskContainer>
 				<MobileTaskDryInfo task={task} />
 			</TaskContainer>
