@@ -56,15 +56,17 @@ export function MobileTaskComments({
 				</GradientGhostButton>
 			</Header>
 			{messages.length > 0 && (
-				<TaskComment
-					canDelete={isManager || messages[0].user.upn === currentUser.upn}
-					message={messages[0]}
-					onDelete={handleDeleteComment}
-				/>
+				<>
+					<TaskComment
+						canDelete={isManager || messages[0].user.upn === currentUser.upn}
+						message={messages[0]}
+						onDelete={handleDeleteComment}
+					/>
+					<ShowMoreButton onClick={handleOpenChange}>
+						<GradientText>הצג עוד</GradientText>
+					</ShowMoreButton>
+				</>
 			)}
-			<ShowMoreButton onClick={handleOpenChange}>
-				<GradientText>הצג עוד</GradientText>
-			</ShowMoreButton>
 			<Drawer open={isCommentsOpen} onOpenChange={handleOpenChange}>
 				<StyledDrawerContent>
 					<CommentsHeader>
