@@ -35,11 +35,10 @@ export function MobileViewTaskDetail({ task }: MobileViewTaskDetailProps) {
 	)
 }
 
-//need fix before merge :>
 const PageShell = styled.div`
     display: flex;
     flex-direction: column;
-    height: 100dvh;
+    height: 100%;
     min-height: 0;
 `
 

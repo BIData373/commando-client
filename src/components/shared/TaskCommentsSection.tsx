@@ -105,8 +105,6 @@ function TaskCommentsSection({
 		/>
 	)
 
-	console.log(commentValue)
-
 	return (
 		<Wrapper $isMobile={isMobile}>
 			{commentsDividerRef && (
