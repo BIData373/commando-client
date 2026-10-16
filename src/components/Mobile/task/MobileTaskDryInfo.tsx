@@ -22,9 +22,10 @@ export function MobileTaskDryInfo({
 		tags,
 	},
 }: MobileTaskDryInfoProps) {
+	const isTaskDetailsExist = !!notes && !!source && tags.length !== 0
 	return (
 		<Wrapper>
-			<TaskHeader as="header">
+			<TaskHeader as="header" $isTaskDetailsExist={isTaskDetailsExist}>
 				<MetaData>
 					<TaskIdLabel>#{serialId}</TaskIdLabel>
 					<LastUpdate>
@@ -43,31 +44,33 @@ export function MobileTaskDryInfo({
 					/>
 				</SectionWrapper>
 			</TaskHeader>
-			<TaskDetails>
-				{!!notes && (
-					<SectionWrapper>
-						<SectionLabel>הערה</SectionLabel>
-						<SectionDescription>{notes}</SectionDescription>
-					</SectionWrapper>
-				)}
-				{!!source && (
-					<SectionWrapper>
-						<SectionLabel>מקור</SectionLabel>
-						<SectionDescription>
-							{source.name}
-							<LightSectionDescriptionText>
-								{source.date && <>{formatDateMonthYear(source.date)}</>}
-							</LightSectionDescriptionText>
-						</SectionDescription>
-					</SectionWrapper>
-				)}
-				{tags.length !== 0 && (
-					<SectionWrapper>
-						<SectionLabel>תגיות</SectionLabel>
-						<TagsRow isMobile source={source} tags={tags} />
-					</SectionWrapper>
-				)}
-			</TaskDetails>
+			{isTaskDetailsExist && (
+				<TaskDetails>
+					{!!notes && (
+						<SectionWrapper>
+							<SectionLabel>הערה</SectionLabel>
+							<SectionDescription>{notes}</SectionDescription>
+						</SectionWrapper>
+					)}
+					{!!source && (
+						<SectionWrapper>
+							<SectionLabel>מקור</SectionLabel>
+							<SectionDescription>
+								{source.name}
+								<LightSectionDescriptionText>
+									{source.date && <>{formatDateMonthYear(source.date)}</>}
+								</LightSectionDescriptionText>
+							</SectionDescription>
+						</SectionWrapper>
+					)}
+					{tags.length !== 0 && (
+						<SectionWrapper>
+							<SectionLabel>תגיות</SectionLabel>
+							<TagsRow isMobile source={source} tags={tags} />
+						</SectionWrapper>
+					)}
+				</TaskDetails>
+			)}
 		</Wrapper>
 	)
 }
@@ -85,8 +88,8 @@ const TaskDetails = styled.div`
     padding: 1rem;
 `
 
-const TaskHeader = styled(TaskDetails)`
-    border-bottom: 1px solid var(--line);
+const TaskHeader = styled(TaskDetails)<{ $isTaskDetailsExist: boolean }>`
+    border-bottom: ${({ $isTaskDetailsExist }) => ($isTaskDetailsExist ? "1px solid var(--line)" : "none")};
 `
 
 const MetaData = styled.div`
