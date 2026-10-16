@@ -51,7 +51,7 @@ export default function MobileWorkspace() {
 
 	function handleOpenTask(task: TaskRowDto) {
 		navigate({
-			to: "/workspace/$urlName/tasks/$taskId",
+			to: "/workspace/$urlName/dashboard/$taskId",
 			params: { urlName, taskId: String(task.id) },
 		})
 	}
