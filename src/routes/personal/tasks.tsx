@@ -3,6 +3,7 @@ import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
+import { useOpenTask } from "src/hooks/useOpenTask"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../providers/UserViewProvider"
 import { TASK_COLUMN_ID } from "../../utils/task-table-utils"
@@ -42,13 +43,10 @@ const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 
 function PersonalTasksPage() {
 	const navigate = useNavigate()
+	const openTask = useOpenTask("/personal/tasks/$taskId")
 
-	function handleOpenTask(taskId: number) {
-		navigate({
-			to: "/personal/tasks/$taskId",
-			params: { taskId: String(taskId) },
-			search: { view: TasksView.TABLE },
-		})
+	function handleAddComment(taskId: number) {
+		openTask(taskId, { focusComment: true })
 	}
 
 	function handleEdit(taskId: number) {
@@ -56,14 +54,6 @@ function PersonalTasksPage() {
 			to: "/personal/tasks/$taskId/edit",
 			params: { taskId: String(taskId) },
 			search: { view: TasksView.TABLE },
-		})
-	}
-
-	function handleAddComment(taskId: number) {
-		navigate({
-			to: "/personal/tasks/$taskId",
-			params: { taskId: String(taskId) },
-			search: { view: TasksView.TABLE, focusComment: true },
 		})
 	}
 
@@ -76,7 +66,7 @@ function PersonalTasksPage() {
 				<PersonalSectionDropdown current={DropdownSection.TASKS} />
 				<PersonalTaskTable
 					filePrefix="אזור אישי"
-					onOpenTask={handleOpenTask}
+					onOpenTask={openTask}
 					onEdit={handleEdit}
 					onAddComment={handleAddComment}
 				/>

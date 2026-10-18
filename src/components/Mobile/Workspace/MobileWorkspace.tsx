@@ -1,11 +1,11 @@
 import styled from "@emotion/styled"
 import { useDisclosure } from "@mantine/hooks"
-import { useNavigate } from "@tanstack/react-router"
 import type { TaskRowDto } from "src/api/model"
 import { useListTaskRows } from "src/api/task/task"
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
 import { formatSourceLabel } from "src/functions/source-utils"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import { useOpenTask } from "src/hooks/useOpenTask"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import MobileHeader from "../MobileHeader"
@@ -24,9 +24,9 @@ const COLUMN_ACCESSORS: Partial<Record<string, ColumnAccessor>> = {
 
 export default function MobileWorkspace() {
 	const {
-		workspace: { id: workspaceId, icon, title, urlName },
+		workspace: { id: workspaceId, icon, title },
 	} = useWorkspace()
-	const navigate = useNavigate()
+	const openTask = useOpenTask("/workspace/$urlName/tasks/$taskId")
 	const { searchQuery, columnsFilters } = useTasksFilters()
 
 	const { data: tasks = [], isLoading } = useListTaskRows({
@@ -49,13 +49,6 @@ export default function MobileWorkspace() {
 		additionalFilter:
 			columnsFilters.length > 0 ? matchesColumnFilters : undefined,
 	})
-
-	function handleOpenTask(task: TaskRowDto) {
-		navigate({
-			to: "/workspace/$urlName/tasks/$taskId",
-			params: { urlName, taskId: String(task.id) },
-		})
-	}
 
 	return (
 		<PageRoot>
@@ -84,7 +77,7 @@ export default function MobileWorkspace() {
 								key={task.rowKey}
 								task={task}
 								searchQuery={searchQuery}
-								onClick={() => handleOpenTask(task)}
+								onClick={() => openTask(task.id)}
 							/>
 						))
 					)}
