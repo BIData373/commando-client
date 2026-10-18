@@ -1,25 +1,15 @@
-import { useNavigate } from "@tanstack/react-router"
-import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { useListPersonalTaskRows } from "src/api/task/task"
 import { countTasksByStatusType } from "src/functions/status-counts"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
+import { useOpenTask } from "src/hooks/useOpenTask"
 import MobileTasksPage from "../MobileTasksPage"
 import MobileTaskCard from "../Workspace/MobileTaskCard"
 
 export default function MobilePersonal() {
-	const navigate = useNavigate()
+	const { openTask } = useOpenTask("/personal/tasks/$taskId")
 
 	const { data: tasks = [], isLoading } = useListPersonalTaskRows({
 		isArchived: false,
 	})
-
-	function handleOpenTask(task: TaskRowWithWorkspaceDto) {
-		navigate({
-			to: "/personal/tasks/$taskId",
-			params: { taskId: String(task.id) },
-			search: { view: TasksView.TABLE },
-		})
-	}
 
 	return (
 		<MobileTasksPage
@@ -33,7 +23,7 @@ export default function MobilePersonal() {
 					task={task}
 					searchQuery={searchQuery}
 					workspaceTitle={task.workspace?.title}
-					onClick={() => handleOpenTask(task)}
+					onClick={() => openTask(task.id)}
 				/>
 			)}
 		/>
