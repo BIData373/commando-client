@@ -16,7 +16,7 @@ interface MobileTasksToolbarProps {
 	tasks: TaskRowDto[]
 	statusSegments: StatusTaskCount[]
 	matchCount: number
-	searchFocused: boolean
+	searchActive: boolean
 	onSearchFocus: () => void
 	onSearchBlur: () => void
 	onOpenFilters: () => void
@@ -26,7 +26,7 @@ export default function MobileTasksToolbar({
 	tasks,
 	statusSegments,
 	matchCount,
-	searchFocused,
+	searchActive,
 	onSearchFocus,
 	onSearchBlur,
 	onOpenFilters,
@@ -63,7 +63,7 @@ export default function MobileTasksToolbar({
 
 	return (
 		<>
-			{!searchFocused && (
+			{!searchActive && (
 				<MobileStatusBar segments={statusSegments} total={tasks.length} />
 			)}
 
@@ -75,7 +75,7 @@ export default function MobileTasksToolbar({
 					onFocus={onSearchFocus}
 					onBlur={onSearchBlur}
 				/>
-				{!searchFocused && (
+				{!searchActive && (
 					<FilterButton onClick={onOpenFilters}>
 						<TbFilter size={18} />
 					</FilterButton>
