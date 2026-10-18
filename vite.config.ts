@@ -14,10 +14,10 @@ const config = defineConfig({
 	},
 	plugins: [
 		devtools({
-		    consolePiping: {
-		        levels: ["log", "warn", "error"],
-		    },
-		    enhancedLogs: { enabled: true },
+			consolePiping: {
+				levels: ["log", "warn", "error"],
+			},
+			enhancedLogs: { enabled: true },
 		}),
 		tsconfigPaths({ projects: ["./tsconfig.json"] }),
 		tailwindcss(),
