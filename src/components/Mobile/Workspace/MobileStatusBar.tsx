@@ -1,18 +1,15 @@
 import styled from "@emotion/styled"
-import type { TaskRowDto } from "src/api/model"
-import { countTasksByStatus } from "src/functions/status-counts"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
+import type { StatusTaskCount } from "src/functions/status-counts"
 
 interface MobileStatusBarProps {
-	tasks: TaskRowDto[]
+	segments: StatusTaskCount[]
+	total: number
 }
 
-export default function MobileStatusBar({ tasks }: MobileStatusBarProps) {
-	const { statuses } = useWorkspace()
-
-	const segments = countTasksByStatus(tasks, statuses)
-	const total = tasks.length
-
+export default function MobileStatusBar({
+	segments,
+	total,
+}: MobileStatusBarProps) {
 	return (
 		<Root>
 			<TitleRow>

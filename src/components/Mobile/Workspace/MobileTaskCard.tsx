@@ -6,10 +6,12 @@ import FlagIcon from "src/components/shared/FlagIcon"
 import HighlightMatch from "src/components/shared/HighlightMatch"
 import { StatusTag } from "src/components/shared/StatusTag"
 import { formatDateShort } from "src/functions/date-utils"
+import { COLUMN_LABELS } from "src/utils/task-table-utils"
 
 interface MobileTaskCardProps {
 	task: TaskRowDto
 	searchQuery: string
+	workspaceTitle?: string
 	onClick: () => void
 }
 
@@ -25,6 +27,7 @@ export default function MobileTaskCard({
 		flagged,
 	},
 	searchQuery,
+	workspaceTitle,
 	onClick,
 }: MobileTaskCardProps) {
 	const extraCount = otherAssignees.length
@@ -65,16 +68,22 @@ export default function MobileTaskCard({
 					)}
 				</TaskText>
 
+				{(assignee || workspaceTitle) && <Divider />}
+
 				{assignee && (
-					<>
-						<Divider />
-						<InfoRow>
-							{extraCount > 0 && <ExtraBadge>+{extraCount}</ExtraBadge>}
-							<AssigneeName>{assignee.name}</AssigneeName>
-							<AssigneeAvatar assignee={assignee} size={28} />
-							<InfoLabel>אחראי:</InfoLabel>
-						</InfoRow>
-					</>
+					<InfoRow>
+						{extraCount > 0 && <ExtraBadge>+{extraCount}</ExtraBadge>}
+						<AssigneeName>{assignee.name}</AssigneeName>
+						<AssigneeAvatar assignee={assignee} size={28} />
+						<InfoLabel>אחראי:</InfoLabel>
+					</InfoRow>
+				)}
+
+				{workspaceTitle && (
+					<InfoRow>
+						<WorkspaceName>{workspaceTitle}</WorkspaceName>
+						<WorkspaceLabel>{COLUMN_LABELS.workspace}:</WorkspaceLabel>
+					</InfoRow>
 				)}
 			</TextBlock>
 		</CardRoot>
@@ -169,6 +178,21 @@ const AssigneeName = styled.span`
 	font-size: var(--fs-btn);
 	font-weight: 400;
 	color: var(--Colors-Neutral-Bg-colorBgSolidHover);
+`
+
+const WorkspaceLabel = styled.span`
+	direction: rtl;
+	font-size: var(--fs-lg);
+	font-weight: 400;
+	line-height: 24px;
+	color: var(--text-color-400);
+`
+
+const WorkspaceName = styled.span`
+	font-size: var(--fs-lg);
+	font-weight: 400;
+	line-height: 22px;
+	color: var(--text-color-2);
 `
 
 const ExtraBadge = styled.div`
