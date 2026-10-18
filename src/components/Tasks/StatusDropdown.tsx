@@ -4,6 +4,8 @@ import { memo } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { useIsMobile } from "src/hooks/use-mobile"
+import { MobileDrawer } from "../Mobile/task/MobileDrawer"
+import { MobileStatusSelect } from "../Mobile/task/MobileStatusSelect"
 import { StatusTag } from "../shared/StatusTag"
 import {
 	DropdownMenu,
@@ -61,30 +63,39 @@ export const StatusDropdown = memo(
 			}
 		}
 
+		function handleSelectStatusMobile(newStatus: WorkspaceStatusDto) {
+			handleSelectStatus(newStatus)
+			toggleOpen()
+		}
+
+		const statusTagRef = (
+			<StatusTag
+				isCurrentUserTask={isCurrentUserTask}
+				open={isOpen}
+				status={status}
+				interactive
+				editable={editable}
+				withArrow={editable}
+				tooltip={tooltip}
+				isAdmin={isAdmin}
+			/>
+		)
+
 		return (
 			<CellCenter>
 				{editable && statusesReady ? (
-					<DropdownMenu onOpenChange={toggleOpen}>
-						<DropdownMenuTrigger asChild>
-							<TriggerWrapper tabIndex={0} $isMobile={isMobile}>
-								<StatusTag
-									isCurrentUserTask={isCurrentUserTask}
-									open={isOpen}
-									status={status}
-									interactive
-									editable={editable}
-									withArrow={editable}
-									tooltip={tooltip}
-									isAdmin={isAdmin}
-								/>
-							</TriggerWrapper>
-						</DropdownMenuTrigger>
-						<StatusDropdownContent align="center" sideOffset={6}>
+					isMobile ? (
+						<MobileDrawer
+							open={isOpen}
+							onOpenChange={toggleOpen}
+							title="בחירת סטטוס"
+							trigger={statusTagRef}
+						>
 							{statuses.map((currentStatus) => (
-								<StatusDropdownItem
+								<MobileStatusSelect
 									key={currentStatus.id}
-									$selected={currentStatus.id === status.id}
-									onSelect={() => handleSelectStatus(currentStatus)}
+									selected={currentStatus.id === status.id}
+									onSelect={() => handleSelectStatusMobile(currentStatus)}
 								>
 									<StatusTag
 										isCurrentUserTask={isCurrentUserTask}
@@ -94,10 +105,36 @@ export const StatusDropdown = memo(
 										tooltip={tooltip}
 										isAdmin={isAdmin}
 									/>
-								</StatusDropdownItem>
+								</MobileStatusSelect>
 							))}
-						</StatusDropdownContent>
-					</DropdownMenu>
+						</MobileDrawer>
+					) : (
+						<DropdownMenu onOpenChange={toggleOpen}>
+							<DropdownMenuTrigger asChild>
+								<TriggerWrapper tabIndex={0} $isMobile={isMobile}>
+									{statusTagRef}
+								</TriggerWrapper>
+							</DropdownMenuTrigger>
+							<StatusDropdownContent align="center" sideOffset={6}>
+								{statuses.map((currentStatus) => (
+									<StatusDropdownItem
+										key={currentStatus.id}
+										$selected={currentStatus.id === status.id}
+										onSelect={() => handleSelectStatus(currentStatus)}
+									>
+										<StatusTag
+											isCurrentUserTask={isCurrentUserTask}
+											status={currentStatus}
+											interactive
+											editable={editable}
+											tooltip={tooltip}
+											isAdmin={isAdmin}
+										/>
+									</StatusDropdownItem>
+								))}
+							</StatusDropdownContent>
+						</DropdownMenu>
+					)
 				) : (
 					<StatusTag
 						status={status}
