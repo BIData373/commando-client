@@ -19,6 +19,7 @@ import {
 	useDeleteTask,
 } from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
+import { viewTasks } from "src/api/user-viewed-tasks/user-viewed-tasks"
 import type { AppMutationMeta } from "src/functions/mutation-toast-cache"
 import {
 	archiveTaskMessage,
@@ -101,6 +102,14 @@ function TaskDetailPanel({
 	useEffect(() => {
 		requestAnimationFrame(checkCommentsDividerVisibility)
 	}, [])
+
+	useEffect(() => {
+		async function markTaskView(taskId: number) {
+			await viewTasks({ taskId })
+		}
+
+		markTaskView(id)
+	}, [onClose])
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const isManager = myPermission?.type === PermissionType.MANAGER
