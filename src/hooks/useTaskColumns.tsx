@@ -288,6 +288,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					/>
 				),
 				size: 100,
+				meta: { searchable: true },
 				...TASK_COLUMN_DEFINITIONS.assignee,
 				cell: ({
 					row: {
@@ -396,6 +397,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					/>
 				),
 				size: 240,
+				meta: { searchable: true },
 				...TASK_COLUMN_DEFINITIONS.source,
 				cell: ({
 					row: {
@@ -484,7 +486,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				minSize: 70,
 				enableSorting: false,
 				...TASK_COLUMN_DEFINITIONS.tags,
-				meta: { grow: true },
+				meta: { grow: true, searchable: true },
 				cell: ({ getValue }) => (
 					<TopicCell tags={getValue<string[]>()} searchQuery={searchQuery} />
 				),

@@ -610,9 +610,7 @@ const AttachmentDownloadButton = styled.button`
   font-size: var(--fs-btn);
   direction: rtl;
   cursor: pointer;
-  text-align: start;        
-  align-self: flex-start;   
- 
+  text-align: start;     
 
   &:hover:not(:disabled) {
     text-decoration: underline;
