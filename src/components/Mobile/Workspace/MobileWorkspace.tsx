@@ -36,6 +36,7 @@ export default function MobileWorkspace() {
 
 	const [filterSheetOpen, filterSheet] = useDisclosure()
 	const [searchFocused, searchFocus] = useDisclosure()
+	const searchActive = searchFocused || searchQuery !== ""
 
 	function matchesColumnFilters(task: TaskRowDto): boolean {
 		return columnsFilters.every(({ id, value }) => {
@@ -58,13 +59,13 @@ export default function MobileWorkspace() {
 
 	return (
 		<PageRoot>
-			<MobileHeader icon={icon} title={title} minimal={searchFocused} />
+			<MobileHeader icon={icon} title={title} minimal={searchActive} />
 
 			<Content>
 				<MobileTasksToolbar
 					tasks={tasks}
 					matchCount={filtered.length}
-					searchFocused={searchFocused}
+					searchActive={searchActive}
 					onSearchFocus={searchFocus.open}
 					onSearchBlur={searchFocus.close}
 					onOpenFilters={filterSheet.open}

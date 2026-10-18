@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { Search, X } from "lucide-react"
 import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 
+// TODO - migrate this to use InputElement Props
 interface SearchInputProps {
 	value: string
 	onChange: (value: string) => void

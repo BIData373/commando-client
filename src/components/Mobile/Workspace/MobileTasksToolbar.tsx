@@ -14,7 +14,7 @@ import MobileStatusBar from "./MobileStatusBar"
 interface MobileTasksToolbarProps {
 	tasks: TaskRowDto[]
 	matchCount: number
-	searchFocused: boolean
+	searchActive: boolean
 	onSearchFocus: () => void
 	onSearchBlur: () => void
 	onOpenFilters: () => void
@@ -23,7 +23,7 @@ interface MobileTasksToolbarProps {
 export default function MobileTasksToolbar({
 	tasks,
 	matchCount,
-	searchFocused,
+	searchActive,
 	onSearchFocus,
 	onSearchBlur,
 	onOpenFilters,
@@ -60,7 +60,7 @@ export default function MobileTasksToolbar({
 
 	return (
 		<>
-			{!searchFocused && <MobileStatusBar tasks={tasks} />}
+			{!searchActive && <MobileStatusBar tasks={tasks} />}
 
 			<HeaderRow>
 				<SearchInput
@@ -70,7 +70,7 @@ export default function MobileTasksToolbar({
 					onFocus={onSearchFocus}
 					onBlur={onSearchBlur}
 				/>
-				{!searchFocused && (
+				{!searchActive && (
 					<FilterButton onClick={onOpenFilters}>
 						<TbFilter size={18} />
 					</FilterButton>
