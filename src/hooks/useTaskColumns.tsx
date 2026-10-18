@@ -10,6 +10,7 @@ import {
 	type WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
+import { UnreadDot } from "src/components/shared/UnreadDot"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import {
@@ -70,6 +71,7 @@ interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	statuses?: WorkspaceStatusDto[]
 	onTitleDoubleClick?: (taskId: number) => void
 	getPermissionType?(task?: TTask): PermissionType | null | undefined
+	showUnreadDot?: boolean
 }
 
 export function useTaskColumns<TTask extends TaskRowDto>({
@@ -83,6 +85,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 	showMenuColumn = true,
 	statuses,
 	getPermissionType,
+	showUnreadDot = false,
 }: UseTaskColumnsOptions<TTask>) {
 	const handleUpdateStatus = useUpdateTaskStatus({ notify: true })
 
@@ -132,10 +135,13 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					enableColumnFilter: false,
 					cell: ({
 						row: {
-							original: { serialId },
+							original: { serialId, viewedInTable },
 						},
 					}) => (
 						<IdCell>
+							{showUnreadDot && !viewedInTable && (
+								<UnreadDot $right={6.5} $top={18.5} />
+							)}
 							<HighlightMatch
 								text={String(serialId)}
 								query={searchQuery ?? ""}
@@ -447,7 +453,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				enableColumnFilter: false,
 				cell: ({
 					row: {
-						original: { lastMessage, messageCount },
+						original: { lastMessage, messageCount, viewedMessages },
 					},
 				}) => {
 					const userName =
@@ -461,6 +467,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<CommentCell>
+										{!viewedMessages && <UnreadDot />}
 										<CommentText>{text}</CommentText>
 										{messageCount > 1 && (
 											<CommentCount>({messageCount})</CommentCount>
@@ -591,6 +598,7 @@ const IdCell = styled.span`
   width: 100%;
   height: 100%;
   cursor: pointer;
+  position: relative;
 `
 
 const TitleCell = styled.div<{ $clickable?: boolean }>`

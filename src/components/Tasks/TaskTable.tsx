@@ -271,6 +271,7 @@ function TaskTable<TTask extends TaskRowDto>({
 		},
 		showMenuColumn: showActionsColumn,
 		getPermissionType,
+		showUnreadDot: true,
 		actions: {
 			onEdit,
 			onAddComment,

@@ -12,6 +12,7 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
+import { viewTasks } from "src/api/user-viewed-tasks/user-viewed-tasks"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { invalidateQueries } from "src/query-client"
 import { CommentsDivider } from "../shared/CommentsDivider"
@@ -46,7 +47,27 @@ function TaskCommentsSection({
 
 	const currentUser = useCurrentUser()
 
-	const { data: messages = [] } = useListMessages({ taskIds: [taskId] })
+	const { data: messages = [], isLoading: isLoadingMessages } = useListMessages(
+		{
+			taskIds: [taskId],
+		},
+	)
+
+	useEffect(() => {
+		async function markTaskView(taskId: number) {
+			await viewTasks({ taskId })
+		}
+
+		const timer = setTimeout(() => {
+			if (!isLoadingMessages) {
+				markTaskView(taskId)
+			}
+		}, 100)
+
+		return () => {
+			clearTimeout(timer)
+		}
+	}, [taskId, isLoadingMessages])
 
 	function handleSettled() {
 		invalidateQueries([
