@@ -33,6 +33,7 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 
 	const [filterSheetOpen, filterSheet] = useDisclosure()
 	const [searchFocused, searchFocus] = useDisclosure()
+	const searchActive = searchFocused || searchQuery !== ""
 
 	function matchesActiveColumnFilters(task: T): boolean {
 		return matchesColumnFilters(task, columnsFilters)
@@ -53,7 +54,7 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 					tasks={tasks}
 					statusSegments={statusSegments}
 					matchCount={filtered.length}
-					searchFocused={searchFocused}
+					searchActive={searchActive}
 					onSearchFocus={searchFocus.open}
 					onSearchBlur={searchFocus.close}
 					onOpenFilters={filterSheet.open}

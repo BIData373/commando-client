@@ -14,11 +14,9 @@ function PersonalPage() {
 
 	useRenderInHeader("center", "אזור אישי - הנחיות שקיבלתי")
 
-	if (isMobile) {
-		return <Outlet />
-	}
-
-	return (
+	return isMobile ? (
+		<Outlet />
+	) : (
 		<PageShell>
 			<Header variant="personal" />
 			<ContentScrollArea>
