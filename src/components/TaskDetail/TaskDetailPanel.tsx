@@ -601,7 +601,7 @@ const InfoAttachment = styled.div`
 const AttachmentDownloadButton = styled.button`
   display: inline-flex;
   align-items: center;
-  justify-content:flex-start;
+  justify-content: flex-start;
   gap: 4px;
   background: none;
   border: none;
