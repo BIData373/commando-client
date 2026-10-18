@@ -3,18 +3,18 @@ import type { StatusTaskCount } from "src/functions/status-counts"
 
 interface MobileStatusBarProps {
 	segments: StatusTaskCount[]
-	total: number
+	totalTaskCount: number
 }
 
 export default function MobileStatusBar({
 	segments,
-	total,
+	totalTaskCount,
 }: MobileStatusBarProps) {
 	return (
 		<Root>
 			<TitleRow>
 				<Label dir="auto">הנחיות בסביבה</Label>
-				<Count>{total}</Count>
+				<Count>{totalTaskCount}</Count>
 			</TitleRow>
 
 			<BarTrack>
@@ -22,7 +22,7 @@ export default function MobileStatusBar({
 					<BarSegment
 						key={seg.id}
 						$color={seg.color}
-						$pct={total > 0 ? (seg.count / total) * 100 : 0}
+						$pct={totalTaskCount > 0 ? (seg.count / totalTaskCount) * 100 : 0}
 					/>
 				))}
 			</BarTrack>

@@ -23,7 +23,9 @@ function TasksLayout({
 	deadlineTypeFilter = [],
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
-	const openTask = useOpenTask("/workspace/$urlName/tasks/$taskId")
+	const { openTask, editTask } = useOpenTask(
+		"/workspace/$urlName/tasks/$taskId",
+	)
 
 	function navigateToTasks(taskFilter: Partial<TasksSearchSchemaType>) {
 		navigate({
@@ -35,14 +37,6 @@ function TasksLayout({
 				deadlineTypeFilter,
 				...taskFilter,
 			},
-		})
-	}
-
-	function handleEdit(taskId: number) {
-		navigate({
-			to: "/workspace/$urlName/tasks/$taskId/edit",
-			params: { urlName, taskId: String(taskId) },
-			search: { view },
 		})
 	}
 
@@ -68,7 +62,7 @@ function TasksLayout({
 			<WorkspaceTabs section={DropdownSection.TASKS} />
 			<WorkspaceTaskTable
 				onOpenTask={openTask}
-				onEdit={handleEdit}
+				onEdit={editTask}
 				clearColumnFilters={handleClearColumnFilters}
 				onColumnFilterChange={handleColumnFiltersChange}
 				deadlineTypeFilter={deadlineTypeFilter}

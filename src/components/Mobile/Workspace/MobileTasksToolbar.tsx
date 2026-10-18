@@ -64,7 +64,10 @@ export default function MobileTasksToolbar({
 	return (
 		<>
 			{!searchActive && (
-				<MobileStatusBar segments={statusSegments} total={tasks.length} />
+				<MobileStatusBar
+					segments={statusSegments}
+					totalTaskCount={tasks.length}
+				/>
 			)}
 
 			<HeaderRow>
