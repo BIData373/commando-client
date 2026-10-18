@@ -4,6 +4,7 @@ import type { TaskRowDto } from "src/api/model"
 import { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { QuickFilter } from "src/api/model/quick-filter"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
+import { formatSourceLabel } from "./source-utils"
 
 // TODO Move to utils/filter-utils
 // ─── Shared Types ────────────────────────────────────────────────────────────
@@ -69,12 +70,8 @@ export function buildFilterOptionsMap(
 			assigneeSet.add(t.assignee.name)
 		}
 
-		for (const { assignee } of t.otherAssignees) {
-			assigneeSet.add(assignee.name)
-		}
-
 		if (t.source) {
-			sourceSet.add(t.source.name)
+			sourceSet.add(formatSourceLabel(t.source))
 		}
 
 		t.tags.forEach((tag) => {
@@ -94,10 +91,10 @@ export function buildFilterOptionsMap(
 
 	return {
 		assignee: toOptions(assigneeSet),
-		status: uniqBy(tasks, "status.name")
-			.map(({ status }) => status)
-			.filter((status) => !!status)
-			.map((s) => ({ value: s.type, label: s.name })),
+		status: uniqBy(
+			tasks.map(({ status }) => status).filter((status) => !!status),
+			"type",
+		).map((s) => ({ value: s.type, label: s.name })),
 		deadlineType: toOptions(deadlineTypeSet, DEADLINE_LABELS),
 		source: toOptions(sourceSet),
 		tags: toOptions(tagsSet),

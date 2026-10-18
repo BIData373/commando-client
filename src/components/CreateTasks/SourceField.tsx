@@ -231,12 +231,6 @@ export default function SourceField({
 	)
 }
 
-const LabelText = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-`
-
 const SourceDateRow = styled.div`
   direction: rtl;
   display: flex;

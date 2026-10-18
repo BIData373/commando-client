@@ -98,7 +98,6 @@ function DeadlineCell({
 						))}
 						<DatePickerPopover
 							mode={CalendarMode.Single}
-							hasConfirm
 							open={canHaveDate}
 							value={dueDate ?? undefined}
 							side="left"
@@ -112,9 +111,8 @@ function DeadlineCell({
 									{isRollingType ? "עד (אופציונלי)" : "בחר תאריך להנחיה"}
 								</PopoverHeaderText>
 							)}
-							footer={({ onConfirm }) => (
+							footer={() => (
 								<PopoverFooter>
-									<SetButton onClick={onConfirm}>הגדר</SetButton>
 									{canHaveDate && (
 										<SetWithoutDateButton onClick={handleSetWithoutDate}>
 											הגדר ללא תאריך

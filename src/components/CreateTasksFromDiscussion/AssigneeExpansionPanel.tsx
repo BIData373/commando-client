@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { ChevronUp } from "lucide-react"
 import { useListAssignees } from "src/api/assignee/assignee"
-import type { AssigneeExtra } from "../shared/AssigneeRow"
+import type { AssigneeStatusDto } from "src/api/model/assignee-status-dto"
 import AssigneeRowList from "../shared/AssigneeRow"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -18,7 +18,7 @@ interface AssigneeExpansionPanelProps {
 
 function toExtras(
 	details: Record<number, string>,
-): Record<number, AssigneeExtra> {
+): Record<number, Partial<AssigneeStatusDto>> {
 	return Object.fromEntries(
 		Object.entries(details).map(([id, description]) => [id, { description }]),
 	)

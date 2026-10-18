@@ -102,9 +102,15 @@ function PersonalTaskTable({
 			...WORKSPACE_COLUMN_DEFINITION,
 			cell: ({
 				row: {
-					original: { workspace },
+					original: { workspace, createdBy },
 				},
-			}) => <WorkspaceCell workspace={workspace} searchQuery={searchQuery} />,
+			}) => (
+				<WorkspaceCell
+					workspace={workspace}
+					createdBy={createdBy}
+					searchQuery={searchQuery}
+				/>
+			),
 		}),
 		[searchQuery],
 	)

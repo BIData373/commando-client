@@ -45,9 +45,9 @@ export const StatusDropdown = memo(
 
 		const statuses = providedStatuses ?? fetchedStatuses
 		const statusesReady = statuses !== undefined && !isFetchingStatuses
-
-		const statusEditable = editable && !isArchived
-		const tooltip = isArchived ? "לא ניתן לערוך סטטוס הנחיה בארכיון" : undefined
+		const tooltip = isArchived
+			? "ההנחיה נמצאת בארכיון סביבת המפקד - לא ניתן לערוך סטטוס"
+			: undefined
 
 		function handleSelectStatus(newStatus: WorkspaceStatusDto) {
 			if (newStatus.id !== status.id) {
@@ -57,7 +57,7 @@ export const StatusDropdown = memo(
 
 		return (
 			<CellCenter>
-				{statusEditable && statusesReady ? (
+				{editable && statusesReady ? (
 					<DropdownMenu onOpenChange={toggleOpen}>
 						<DropdownMenuTrigger asChild>
 							<TriggerWrapper tabIndex={0}>
@@ -65,8 +65,8 @@ export const StatusDropdown = memo(
 									open={isOpen}
 									status={status}
 									interactive
-									editable={statusEditable}
-									withArrow={statusEditable}
+									editable={editable}
+									withArrow={editable}
 									tooltip={tooltip}
 								/>
 							</TriggerWrapper>
@@ -81,7 +81,7 @@ export const StatusDropdown = memo(
 									<StatusTag
 										status={currentStatus}
 										interactive
-										editable={statusEditable}
+										editable={editable}
 										tooltip={tooltip}
 									/>
 								</StatusDropdownItem>
@@ -89,11 +89,7 @@ export const StatusDropdown = memo(
 						</StatusDropdownContent>
 					</DropdownMenu>
 				) : (
-					<StatusTag
-						status={status}
-						editable={statusEditable}
-						tooltip={tooltip}
-					/>
+					<StatusTag status={status} editable={editable} tooltip={tooltip} />
 				)}
 			</CellCenter>
 		)

@@ -1,5 +1,4 @@
 import type { MirageUserDto, PermissionType, UserInfoDto } from "src/api/model"
-import { CHAT_URL } from "./env-utils"
 
 export const COOKIE_NAME = "ssoUser"
 

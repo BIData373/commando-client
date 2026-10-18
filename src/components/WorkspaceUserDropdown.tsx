@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -10,14 +11,15 @@ export function WorkspaceUserDropdown() {
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 
-	useRenderInHeader(
-		"user",
-		<UserDropdown
-			permissionType={myPermission?.type}
-			showPersonalArea={true}
-		/>,
-		[myPermission?.type],
+	const permissionType = myPermission?.type
+	const userDropdown = useMemo(
+		() => (
+			<UserDropdown permissionType={permissionType} showPersonalArea={true} />
+		),
+		[permissionType],
 	)
+
+	useRenderInHeader("user", userDropdown)
 
 	return null
 }

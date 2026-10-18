@@ -5,6 +5,7 @@ import type {
 } from "@tanstack/react-table"
 import { concat, intersection, map, uniq, zipObject } from "lodash"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
+import { formatSourceLabel } from "../functions/source-utils"
 
 export interface TaskColumnMeta {
 	id: keyof TaskRowWithWorkspaceDto
@@ -80,6 +81,10 @@ export const multiSelectColumnFilter: FilterFn<Partial<TaskRowDto>> = (
 	return !filterValue?.length || filterValue.includes(row.getValue(columnId))
 }
 
+function getTaskTagNames(row: Partial<TaskRowDto>): string[] {
+	return uniq(map(concat(row.tags ?? [], row.source?.tags ?? []), "name"))
+}
+
 export const TASK_COLUMN_DEFINITIONS: Partial<
 	Record<
 		keyof Partial<TaskRowDto>,
@@ -98,8 +103,8 @@ export const TASK_COLUMN_DEFINITIONS: Partial<
 		filterFn: multiSelectColumnFilter,
 	},
 	[TASK_COLUMN_ID.tags]: {
-		accessorFn: (row) =>
-			uniq(map(concat(row.tags, row.source?.tags ?? []), "name")),
+		accessorFn: getTaskTagNames,
+		getUniqueValues: getTaskTagNames,
 		filterFn: "arrIncludesSome",
 	},
 	[TASK_COLUMN_ID.deadlineType]: {
@@ -116,7 +121,7 @@ export const TASK_COLUMN_DEFINITIONS: Partial<
 	},
 	[TASK_COLUMN_ID.source]: {
 		sortingFn: "text",
-		accessorFn: (row) => row.source?.name,
+		accessorFn: (row) => row.source && formatSourceLabel(row.source),
 		filterFn: multiSelectColumnFilter,
 	},
 	[TASK_COLUMN_ID.createdAt]: { sortingFn: "datetime" },

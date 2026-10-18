@@ -107,7 +107,6 @@ export function DashboardContent() {
 const ContentArea = styled.div`
   display: flex;
   flex-direction: column;
-  padding-block-end: 32px;
   color: var(--sea-ink-soft);
   padding-top: 24px;
 `
@@ -127,7 +126,7 @@ const DatePickerSlot = styled.div``
 const GridLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr 450px;
-  gap: 62px;
+  gap: 30px 62px;
   margin-top: 28px;
 
   @media (max-width: 1300px) {

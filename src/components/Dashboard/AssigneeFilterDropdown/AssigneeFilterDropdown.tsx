@@ -1,10 +1,8 @@
 import styled from "@emotion/styled"
-import { CircleUser, Search } from "lucide-react"
-import { useState } from "react"
+import { CircleUser } from "lucide-react"
 import { useListAssignees } from "src/api/assignee/assignee"
-import { useFilteredAssignees } from "src/hooks/useFilteredAssignees"
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover"
-import AssigneeDropdown from "./AssigneeDropdown"
+import { AssigneeAvatar } from "src/components/shared/AssigneeAvatar"
+import { FilterDropdown } from "src/components/shared/FilterDropdown"
 
 interface AssigneeFilterDropdownProps {
 	workspaceId: number
@@ -17,83 +15,30 @@ function AssigneeFilterDropdown({
 	selectedIds,
 	onApply,
 }: AssigneeFilterDropdownProps) {
-	const [open, setOpen] = useState(false)
-	const [search, setSearch] = useState("")
-	const [pendingIds, setPendingIds] = useState(selectedIds)
-
 	const { data: assignees = [] } = useListAssignees({ workspaceId })
 
-	const filteredAssignees = useFilteredAssignees(assignees, search)
-
-	function handleOpenChange(nextOpen: boolean) {
-		setOpen(nextOpen)
-		if (nextOpen) {
-			setPendingIds(selectedIds)
-			setSearch("")
-		}
-	}
-
-	function handleToggle(id: number) {
-		setPendingIds((current) =>
-			current.includes(id)
-				? current.filter((pendingId) => pendingId !== id)
-				: [...current, id],
-		)
-	}
-
-	function handleReset() {
-		setPendingIds([])
-	}
-
-	function handleApply() {
-		onApply(pendingIds)
-		setOpen(false)
-	}
+	const options = assignees.map((assignee) => ({
+		value: assignee.id,
+		label: assignee.name,
+		icon: <AssigneeAvatar assignee={assignee} />,
+	}))
 
 	return (
-		<Popover open={open} onOpenChange={handleOpenChange}>
-			<PopoverTrigger asChild>
-				<TriggerButton $active={open || selectedIds.length > 0}>
-					<CircleUser size={18} />
-					{selectedIds.length > 0 ? (
-						<TriggerLabel>אחראי ({selectedIds.length})</TriggerLabel>
-					) : (
-						<TriggerLabel>סינון אחראי</TriggerLabel>
-					)}
-				</TriggerButton>
-			</PopoverTrigger>
-
-			<StyledPopoverContent align="start" sideOffset={4}>
-				<SearchRow>
-					<SearchWrapper>
-						<Search opacity={0.5} size={14} />
-						<SearchField
-							placeholder="חפש אחראי"
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-						/>
-					</SearchWrapper>
-				</SearchRow>
-
-				<AssigneeDropdown
-					filteredAssignees={filteredAssignees}
-					pendingIds={pendingIds}
-					handleToggle={handleToggle}
-				/>
-				<Footer>
-					<ApplyButton onClick={handleApply}>
-						החל{pendingIds.length > 0 && ` (${pendingIds.length})`}
-					</ApplyButton>
-					<ResetButton
-						type="button"
-						disabled={pendingIds.length === 0}
-						onClick={handleReset}
-					>
-						איפוס
-					</ResetButton>
-				</Footer>
-			</StyledPopoverContent>
-		</Popover>
+		<FilterDropdown
+			options={options}
+			activeValues={selectedIds}
+			onApply={onApply}
+			searchPlaceholder="חפש אחראי"
+		>
+			<TriggerButton $active={selectedIds.length > 0}>
+				<CircleUser size={18} />
+				{selectedIds.length > 0 ? (
+					<TriggerLabel>אחראי ({selectedIds.length})</TriggerLabel>
+				) : (
+					<TriggerLabel>סינון אחראי</TriggerLabel>
+				)}
+			</TriggerButton>
+		</FilterDropdown>
 	)
 }
 
@@ -126,107 +71,4 @@ const TriggerButton = styled.button<{ $active: boolean }>`
 
 const TriggerLabel = styled.span`
   font-size: var(--fs-base);
-`
-
-const StyledPopoverContent = styled(PopoverContent)`
-  direction: rtl;
-  width: 248px;
-  padding: 0;
-  gap: 0;
-  border-radius: 6px;
-  box-shadow:var(--boxShadowSecondary)
-`
-
-const SearchRow = styled.div`
-  direction: rtl;
-  display: flex;
-  padding: 7px 8px;
-  border-bottom: 1px solid var(--line);
-`
-
-const SearchWrapper = styled.div`
-  direction: rtl;
-  display: flex;
-  flex: 1;
-  align-items: center;
-  gap: 4px;
-  height: 32px;
-  padding-inline-start: 11px;
-  border: 1px solid var(--card-border);
-  border-radius: 6px;
-
-  &:focus-within {
-    border-color: var(--button-color-hover);
-  }
-`
-
-const SearchField = styled.input`
-  flex: 1;
-  height: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color-2);
-  text-align: right;
-  direction: rtl;
-
-  &::placeholder {
-    color: var(--Text-color-text-placeholder);
-  }
-`
-
-const Footer = styled.div`
-  direction: ltr;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 8px;
-  border-top: 1px solid var(--line);
-`
-
-const ApplyButton = styled.button`
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  height: 24px;
-  padding: 0 7px;
-  border: none;
-  border-radius: 4px;
-  background: linear-gradient(165deg, var(--purple-start) 0%, var(--purple-end) 100%);
-  color: var(--primary-foreground);
-  font-size: var(--fs-btn);
-  cursor: pointer;
-  transition: opacity 0.15s;
-
-  &:hover {
-    opacity: 0.9;
-  }
-`
-
-const ResetButton = styled.button`
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  height: 24px;
-  padding: 0 7px;
-  border: none;
-  border-radius: 4px;
-  background: transparent;
-  color: var(--sea-ink-soft);
-  font-size: var(--fs-btn);
-  cursor: pointer;
-
-  &:disabled {
-    color: var(--Text-color-text-placeholder);
-    cursor: default;
-  }
-
-  &:hover:not(:disabled) {
-    background: var(--link-bg-hover);
-  }
 `

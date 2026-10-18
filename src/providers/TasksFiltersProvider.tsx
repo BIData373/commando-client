@@ -17,6 +17,7 @@ import type {
 	QuickFilter,
 	TaskRowWithWorkspaceDto,
 	UserViewDto,
+	UserViewTableDto,
 } from "src/api/model"
 import { DATE_TYPE } from "src/utils/date-utils"
 import {
@@ -49,6 +50,8 @@ interface TasksFiltersContextValue {
 
 	columnsFilters: ColumnFiltersState
 	setColumnsFilters(columnsFilters: ColumnFiltersState): void
+	resetColumnFilters: () => void
+	clearMobileFilters: () => void
 
 	sorting: SortingState
 	setSorting: Dispatch<SetStateAction<SortingState>>
@@ -60,18 +63,21 @@ const TasksFiltersContext = createContext<TasksFiltersContextValue | null>(null)
 
 const QUICK_FILTER_DEBOUNCE_MS = 300
 
+type PageFilters = Pick<UserViewTableDto, "quickFilter" | "columnFilters">
+
 interface TasksFiltersProviderProps extends PropsWithChildren {
-	initialQuickFilters?: Set<QuickFilter>
+	initialPageFilters?: PageFilters
 }
 
 export function TasksFiltersProvider({
-	initialQuickFilters,
+	initialPageFilters,
 	children,
 }: TasksFiltersProviderProps) {
 	const { view, updateView, defaultColumnOrder } = useUserView()
+	const [pageFilters, setPageFilters] = useState(initialPageFilters)
 	const [localQuickFilters, setLocalQuickFilters] = useState<
 		Set<QuickFilter> | undefined
-	>(initialQuickFilters)
+	>()
 	const { columnVisibility, quickFilter, columnFilters, sorting } = view.table
 	const { columnOrder: columnOrderRaw, hiddenColumns: hiddenColumnsRaw } =
 		columnVisibility as {
@@ -126,8 +132,10 @@ export function TasksFiltersProvider({
 	)
 
 	const activeQuickFilters = useMemo(
-		() => localQuickFilters ?? new Set<QuickFilter>(quickFilter),
-		[localQuickFilters, quickFilter],
+		() =>
+			localQuickFilters ??
+			new Set<QuickFilter>(pageFilters?.quickFilter ?? quickFilter),
+		[localQuickFilters, pageFilters, quickFilter],
 	)
 
 	useEffect(() => {
@@ -164,9 +172,21 @@ export function TasksFiltersProvider({
 		updateView(nextView)
 	}
 
+	// While page filters are active, the first edit saves them as the user's view
+	function updateFilters(update: Partial<PageFilters>) {
+		if (!pageFilters) {
+			updateTableView(update)
+			return
+		}
+
+		const nextPageFilters: PageFilters = { ...pageFilters, ...update }
+		setPageFilters(nextPageFilters)
+		updateTableView(nextPageFilters)
+	}
+
 	const debouncedUpdateQuickFilter = useDebouncedCallback(
 		(nextQuickFilters: QuickFilter[]) => {
-			updateTableView({ quickFilter: nextQuickFilters })
+			updateFilters({ quickFilter: nextQuickFilters })
 		},
 		QUICK_FILTER_DEBOUNCE_MS,
 	)
@@ -189,8 +209,19 @@ export function TasksFiltersProvider({
 		debouncedUpdateQuickFilter([])
 	}
 
+	function resetColumnFilters() {
+		setColumnsFilters([])
+		setAssigneeFilter([])
+	}
+
+	function clearMobileFilters() {
+		resetColumnFilters()
+		setDateRange(undefined)
+		setDateType(DATE_TYPE.CREATION_DATE)
+	}
+
 	function setColumnsFilters(columnsFilters: ColumnFiltersState) {
-		updateTableView({
+		updateFilters({
 			columnFilters: columnsFilters as ColumnFilterDto[],
 		})
 	}
@@ -246,8 +277,10 @@ export function TasksFiltersProvider({
 				setDateRange,
 				assigneeFilter,
 				setAssigneeFilter,
-				columnsFilters: columnFilters,
+				columnsFilters: pageFilters?.columnFilters ?? columnFilters,
 				setColumnsFilters,
+				resetColumnFilters,
+				clearMobileFilters,
 				sorting: sorting,
 				setSorting,
 				setColumnOrder,

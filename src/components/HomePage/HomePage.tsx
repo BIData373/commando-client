@@ -28,12 +28,12 @@ const PageRoot = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: clamp(32px, 9.3vh, 100px) clamp(32px, 7.8vw, 150px);
   width: 100%;
   height: 100%;
+  padding: clamp(32px, 5.5vh, 100px) clamp(32px, 7.8vw, 150px);
   background: url(${backgroundImage}) no-repeat bottom left;
   background-size: contain;
-  overflow: hidden;
+  overflow: hidden;  
 `
 
 const TopBar = styled.div`
@@ -46,7 +46,7 @@ const TopBar = styled.div`
 `
 
 const Logo = styled.img`
-  height: 44px;
+  height: 40px;
 `
 
 const TitleGroup = styled.div`
@@ -58,21 +58,21 @@ const TitleGroup = styled.div`
 `
 
 const MainTitle = styled.span`
-  font-size: clamp(32px, 3.3vw, 64px);
+  font-size: clamp(40px, 3.3vw, 64px);
   font-weight: 500;
   line-height: clamp(24px, 4.3vh, 46px);
   white-space: nowrap;
 `
 
 const Subtitle = styled.span`
-  font-size: clamp(20px, 2vw, 38px);
+  font-size: clamp(20px, 1.8vw, 32px);
   font-weight: 400;
   line-height: clamp(24px, 4.3vh, 46px);
   white-space: nowrap;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 26px;
+  height: 24px;
 `
 
 const ContentWrapper = styled.div`

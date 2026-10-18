@@ -145,6 +145,25 @@ All tokens defined in `:root` (light) and `.dark` in `src/styles.css`.
 - Always use logical CSS properties: `inset-inline-start`, `margin-inline-end`, `padding-block`, etc.
 - To control item order for RTL: reverse the array (not the DOM structure).
 
+## Responsive (Mobile vs Desktop)
+
+Breakpoint lives in `src/hooks/use-mobile.ts` (`MOBILE_BREAKPOINT`, `MOBILE_MEDIA_QUERY`, `useIsMobile`). Never hardcode `768`.
+
+- **Layout → CSS.** Same elements arranged differently (direction, gap, alignment, sizing): `${MOBILE_MEDIA_QUERY} { ... }` inside the styled block.
+- **Presence → JS.** Element exists on only one platform: `{!isMobile && <X />}` with `useIsMobile()`. Never `display: none` to hide by breakpoint.
+- **Exception:** if conditional rendering would hurt performance (e.g. remounting a heavy subtree or refetching on resize), fall back to CSS hiding.
+- Entirely different screens → branch at the page level (`isMobile ? <MobileX /> : <X />`), not inside a shared component.
+
+```tsx
+const isMobile = useIsMobile()
+{!isMobile && <UserGuideButton />}
+
+const Actions = styled.div`
+  display: flex;
+  ${MOBILE_MEDIA_QUERY} { flex-direction: column; }
+`
+```
+
 ## Modal / Dialog Pattern
 
 **Never use `DialogContent`** — it has enter/exit animations that flash on route unmount.

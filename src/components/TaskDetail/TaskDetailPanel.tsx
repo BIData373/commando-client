@@ -64,6 +64,7 @@ function TaskDetailPanel({
 		dueDate,
 		updatedAt,
 		createdAt,
+		createdBy,
 		source,
 		notes,
 		tags,
@@ -257,7 +258,11 @@ function TaskDetailPanel({
 			>
 				<HeaderRow>
 					{showWorkspace && (
-						<WorkspaceCell workspace={workspace} iconSize={20} />
+						<WorkspaceCell
+							workspace={workspace}
+							createdBy={createdBy}
+							iconSize={20}
+						/>
 					)}
 
 					<TitleRow $shadow={scrollShadowTop}>
@@ -623,7 +628,9 @@ const AttachmentDownloadButton = styled.button`
   padding: 0;
   color: inherit;
   font-size: var(--fs-btn);
+  direction: rtl;
   cursor: pointer;
+  text-align: start;     
 
   &:hover:not(:disabled) {
     text-decoration: underline;

@@ -5,6 +5,7 @@ export const Route = createFileRoute("/workspace/$urlName/")({
 		throw redirect({
 			to: "/workspace/$urlName/dashboard",
 			params,
+			replace: true,
 		})
 	},
 })

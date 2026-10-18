@@ -1,18 +1,14 @@
 import styled from "@emotion/styled"
-import { useMemo } from "react"
 import { Cell, Pie, PieChart } from "recharts"
 import type { TaskRowDto } from "src/api/model"
+import {
+	countTasksByStatus,
+	type StatusTaskCount,
+} from "src/functions/status-counts"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 
 interface StatusCardProps {
 	tasks: TaskRowDto[]
-}
-
-interface StatusCount {
-	id: number | string
-	name: string
-	color: string
-	count: number
 }
 
 const CHART_EMPTY_COLOR = "var(--chip-bg)"
@@ -21,32 +17,20 @@ const EMPTY_STATUS = {
 	id: -1,
 	name: "לא משוייך",
 	color: CHART_EMPTY_COLOR, //  'black'
-	type: "UNASSIGNED",
 }
 
 export default function StatusCard({ tasks }: StatusCardProps) {
 	const { statuses } = useWorkspace()
 
-	const statusCounts = useMemo(() => {
-		const result: Record<string, StatusCount> = {}
-
-		for (const status of Object.values(statuses)) {
-			result[status.id] = {
-				...status,
-				count: tasks.filter((t) => t.status?.id === status.id).length,
-			}
-		}
-
-		const unassignedCount = tasks.filter((t) => t.status == null).length
-		if (unassignedCount > 0) {
-			result[EMPTY_STATUS.type] = { ...EMPTY_STATUS, count: unassignedCount }
-		}
-
-		return result
-	}, [tasks, statuses])
+	const unassignedCount = tasks.filter((t) => t.status == null).length
+	const statusList: StatusTaskCount[] = [
+		...countTasksByStatus(tasks, statuses),
+		...(unassignedCount > 0
+			? [{ ...EMPTY_STATUS, count: unassignedCount }]
+			: []),
+	]
 
 	const total = tasks.length
-	const statusList = Object.values(statusCounts)
 
 	const chartData =
 		total === 0

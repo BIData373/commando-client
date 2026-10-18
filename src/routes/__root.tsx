@@ -1,12 +1,12 @@
 import styled from "@emotion/styled"
 import { TanStackDevtools } from "@tanstack/react-devtools"
-import { createRootRoute, Outlet } from "@tanstack/react-router"
+import { createRootRoute, Outlet, redirect } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { StrictMode } from "react"
 import { NotFoundComponent } from "src/components/Error/NotFoundComponent"
 import { RootErrorComponent } from "src/components/Error/RootErrorComponent"
+import { checkForOnboarding } from "src/utils/redirect-utils"
 import { ErrorModal } from "../components/ErrorModal"
-import { OnboardingModal } from "../components/OnboardingModal/OnboardingModal"
 import { Toaster } from "../components/ui/sonner"
 import { TooltipProvider } from "../components/ui/tooltip"
 import { HeaderProvider } from "../providers/HeaderProvider"
@@ -17,6 +17,13 @@ export const Route = createRootRoute({
 	component: RootComponent,
 	notFoundComponent: NotFoundComponent,
 	errorComponent: RootErrorComponent,
+	beforeLoad: ({ location }) => {
+		if (checkForOnboarding(location.href)) {
+			throw redirect({
+				to: "/onboarding",
+			})
+		}
+	},
 })
 
 function RootComponent() {
@@ -25,14 +32,13 @@ function RootComponent() {
 			<TooltipProvider>
 				<HeaderProvider>
 					<AppShell>
-						<Toaster />
 						<PageContainer>
-							<OnboardingModal />
 							<Outlet />
 						</PageContainer>
 					</AppShell>
 				</HeaderProvider>
 			</TooltipProvider>
+			<Toaster />
 			<ErrorModal />
 			{IS_DEV && (
 				<TanStackDevtools
@@ -62,7 +68,6 @@ const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow: hidden;
   min-height: 0;
   background: var(--primary-foreground);
 `

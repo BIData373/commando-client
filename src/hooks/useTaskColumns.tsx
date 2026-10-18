@@ -294,6 +294,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					/>
 				),
 				size: 100,
+				meta: { searchable: true },
 				...TASK_COLUMN_DEFINITIONS.assignee,
 				cell: ({
 					row: {
@@ -402,6 +403,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					/>
 				),
 				size: 240,
+				meta: { searchable: true },
 				...TASK_COLUMN_DEFINITIONS.source,
 				cell: ({
 					row: {
@@ -465,7 +467,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<CommentCell>
-										{!viewedMessages && <UnreadDot $right={0} $top={4} />}
+										{!viewedMessages && <UnreadDot />}
 										<CommentText>{text}</CommentText>
 										{messageCount > 1 && (
 											<CommentCount>({messageCount})</CommentCount>
@@ -491,7 +493,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				minSize: 70,
 				enableSorting: false,
 				...TASK_COLUMN_DEFINITIONS.tags,
-				meta: { grow: true },
+				meta: { grow: true, searchable: true },
 				cell: ({ getValue }) => (
 					<TopicCell tags={getValue<string[]>()} searchQuery={searchQuery} />
 				),
@@ -704,7 +706,6 @@ const CommentCell = styled.div`
   overflow: hidden;
   width: 100%;
   height: 100%;
-  position: relative;
 `
 
 const CommentCount = styled.span`
