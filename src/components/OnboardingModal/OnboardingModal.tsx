@@ -110,8 +110,6 @@ const ContentWrapper = styled.div`
 	width: 100%;
 	height: 100%;
 	min-height: 100%;
-
-
 `
 
 const Header = styled.header`
