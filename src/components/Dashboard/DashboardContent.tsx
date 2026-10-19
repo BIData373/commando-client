@@ -22,7 +22,7 @@ export function DashboardContent() {
 	} = useWorkspace()
 
 	const navigate = useNavigate()
-	const openTask = useOpenTask("/workspace/$urlName/dashboard/$taskId")
+	const { openTask } = useOpenTask("/workspace/$urlName/dashboard/$taskId")
 
 	const { assigneeFilter, setAssigneeFilter } = useTasksFilters()
 

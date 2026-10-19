@@ -4,6 +4,7 @@ import type { TaskRowDto } from "src/api/model"
 import SearchInput from "src/components/shared/SearchInput"
 import { FilterPill } from "src/components/Tasks/TaskFilters"
 import { matchesQuickFilter } from "src/functions/filter-utils"
+import type { StatusTaskCount } from "src/functions/status-counts"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import {
 	ACTIVE_QUICK_FILTERS,
@@ -13,6 +14,7 @@ import MobileStatusBar from "./MobileStatusBar"
 
 interface MobileTasksToolbarProps {
 	tasks: TaskRowDto[]
+	statusSegments: StatusTaskCount[]
 	matchCount: number
 	searchActive: boolean
 	onSearchFocus: () => void
@@ -22,6 +24,7 @@ interface MobileTasksToolbarProps {
 
 export default function MobileTasksToolbar({
 	tasks,
+	statusSegments,
 	matchCount,
 	searchActive,
 	onSearchFocus,
@@ -60,7 +63,12 @@ export default function MobileTasksToolbar({
 
 	return (
 		<>
-			{!searchActive && <MobileStatusBar tasks={tasks} />}
+			{!searchActive && (
+				<MobileStatusBar
+					segments={statusSegments}
+					totalTaskCount={tasks.length}
+				/>
+			)}
 
 			<HeaderRow>
 				<SearchInput

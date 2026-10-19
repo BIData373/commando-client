@@ -71,7 +71,7 @@ function WorkspaceArchivePage() {
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
-	const openTask = useOpenTask("/workspace/$urlName/archive/$taskId")
+	const { openTask } = useOpenTask("/workspace/$urlName/archive/$taskId")
 
 	return (
 		<UserViewProvider

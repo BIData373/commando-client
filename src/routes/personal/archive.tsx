@@ -68,7 +68,7 @@ const ARCHIVE_EXTRA_COLUMNS = [
 ] as ColumnDef<TaskRowWithWorkspaceDto>[]
 
 function PersonalArchivePage() {
-	const openTask = useOpenTask("/personal/archive/$taskId")
+	const { openTask } = useOpenTask("/personal/archive/$taskId")
 
 	function handleAddComment(taskId: number) {
 		openTask(taskId, { focusComment: true })
