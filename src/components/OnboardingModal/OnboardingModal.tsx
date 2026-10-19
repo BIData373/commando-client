@@ -98,7 +98,6 @@ const FullScreenPanel = styled(DialogContent)`
 	direction: rtl;
 	
 	background: var(--background-area);
-
 `
 
 const ContentWrapper = styled.div`
