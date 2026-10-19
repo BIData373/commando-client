@@ -8,12 +8,14 @@ interface MobileHeaderProps {
 	icon?: string | null
 	title: string
 	minimal?: boolean
+	onBack?: () => void
 }
 
 export default function MobileHeader({
 	icon,
 	title,
 	minimal,
+	onBack,
 }: MobileHeaderProps) {
 	const navigate = useNavigate()
 
@@ -23,7 +25,7 @@ export default function MobileHeader({
 
 	return minimal ? (
 		<MinimalRoot>
-			<ChevronButton onClick={handleLogoClick}>
+			<ChevronButton onMouseDown={onBack}>
 				<ChevronRight size={18} />
 			</ChevronButton>
 		</MinimalRoot>
