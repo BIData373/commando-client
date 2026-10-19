@@ -1,15 +1,12 @@
 import styled from "@emotion/styled"
-import { concat, uniqBy } from "lodash"
 import type { SourceDto, TagDto } from "src/api/model"
 
 interface TagsRowProps {
-	tags: TagDto[]
-	source: SourceDto | null
+	allTags: TagDto[]
 	isMobile?: boolean
 }
 
-export function TagsRow({ tags, source, isMobile = false }: TagsRowProps) {
-	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
+export function TagsRow({ allTags, isMobile = false }: TagsRowProps) {
 	return (
 		<TagsWrapper>
 			{allTags.map((tag) => (
@@ -32,7 +29,7 @@ const TagChip = styled.span<{ $isMobile: boolean }>`
   align-items: center;
   padding: 1px 8px;
   border-radius: 4px;
-  font-size: ${({ $isMobile }) => ($isMobile ? "var(--fs-md)" : "var(--fs-sm)")};
+  font-size: ${({ $isMobile }) => ($isMobile ? "var(--fs-base)" : "var(--fs-sm)")};
   line-height: 20px;
   background: var(--card-background);
   border: ${({ $isMobile }) => ($isMobile ? "none" : "1px solid var(--chip-line)")};

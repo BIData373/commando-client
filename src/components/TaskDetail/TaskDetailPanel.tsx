@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { concat, uniqBy } from "lodash"
 import { Paperclip, Pencil } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
@@ -99,6 +100,7 @@ function TaskDetailPanel({
 	const isManager = myPermission?.type === PermissionType.MANAGER
 	const canArchive = isPersonal || isManager
 	const canShowArchiveAction = canArchive && assigneeStatuses.length === 0
+	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
 
 	const { data: history } = useListTaskHistory({ taskId: id })
 
@@ -316,10 +318,10 @@ function TaskDetailPanel({
 								</InfoAttachment>
 							</InfoBlock>
 						)}
-						{tags.length > 0 && (
+						{allTags.length > 0 && (
 							<InfoBlock>
 								<SectionLabel>תגיות</SectionLabel>
-								<TagsRow source={source} tags={tags}></TagsRow>
+								<TagsRow allTags={allTags}></TagsRow>
 							</InfoBlock>
 						)}
 					</InfoGrid>
