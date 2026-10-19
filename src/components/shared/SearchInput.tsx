@@ -24,6 +24,10 @@ export default function SearchInput({
 		onChange(e.target.value)
 	}
 
+	function keepInputFocus(e: React.MouseEvent) {
+		e.preventDefault()
+	}
+
 	function handleClear() {
 		onChange("")
 	}
@@ -38,7 +42,7 @@ export default function SearchInput({
 				onBlur={onBlur}
 			/>
 			{value ? (
-				<ClearButton onClick={handleClear}>
+				<ClearButton onMouseDown={keepInputFocus} onClick={handleClear}>
 					<X size={18} />
 				</ClearButton>
 			) : (

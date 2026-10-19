@@ -29,11 +29,10 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 	statusSegments,
 	renderCard,
 }: MobileTasksPageProps<T>) {
-	const { searchQuery, columnsFilters } = useTasksFilters()
+	const { columnsFilters } = useTasksFilters()
 
 	const [filterSheetOpen, filterSheet] = useDisclosure()
 	const [searchFocused, searchFocus] = useDisclosure()
-	const searchActive = searchFocused || searchQuery !== ""
 
 	function matchesActiveColumnFilters(task: T): boolean {
 		return matchesColumnFilters(task, columnsFilters)
@@ -47,14 +46,14 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 
 	return (
 		<PageRoot>
-			<MobileHeader icon={icon} title={title} minimal={searchActive} />
+			<MobileHeader icon={icon} title={title} minimal={searchFocused} />
 
 			<Content>
 				<MobileTasksToolbar
 					tasks={tasks}
 					statusSegments={statusSegments}
 					matchCount={filtered.length}
-					searchActive={searchActive}
+					searchFocused={searchFocused}
 					onSearchFocus={searchFocus.open}
 					onSearchBlur={searchFocus.close}
 					onOpenFilters={filterSheet.open}
