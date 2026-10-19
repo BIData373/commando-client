@@ -7,10 +7,11 @@ import {
 import { invalidateQueries } from "src/query-client"
 
 export function handleSettled(taskId: number) {
-	invalidateQueries([
-		getListMessagesQueryKey({ taskIds: [taskId] }),
-		getGetTaskQueryKey({ id: taskId }),
-		getListTaskRowsQueryKey(),
-		getListPersonalTaskRowsQueryKey(),
-	])
+	return () =>
+		invalidateQueries([
+			getListMessagesQueryKey({ taskIds: [taskId] }),
+			getGetTaskQueryKey({ id: taskId }),
+			getListTaskRowsQueryKey(),
+			getListPersonalTaskRowsQueryKey(),
+		])
 }

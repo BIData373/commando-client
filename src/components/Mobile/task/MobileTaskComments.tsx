@@ -37,7 +37,7 @@ export function MobileTaskComments({
 	const { mutate: deleteMessage } = useDeleteMessage({
 		mutation: {
 			meta: { toast: { error: true } },
-			onSettled: () => handleSettled(id),
+			onSettled: handleSettled(id),
 		},
 	})
 
@@ -109,7 +109,7 @@ const ShowMoreButton = styled.button`
     width: 100%;
     padding-bottom: 1rem;
     transform: translateX(-50%);
-    background: linear-gradient(rgba(255, 255, 255, 0), #ffffff 65%);
+    background: var(--black-to-background-linear);
 `
 
 const Seperator = styled.div`

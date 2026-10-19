@@ -49,7 +49,7 @@ function TaskCommentsSection({
 		useCreateMessage({
 			mutation: {
 				meta: { toast: { error: true } },
-				onSettled: () => handleSettled(taskId),
+				onSettled: handleSettled(taskId),
 				onSuccess() {
 					setCommentValue("")
 				},
@@ -116,8 +116,8 @@ function TaskCommentsSection({
 					<CommentsSection>{commentList}</CommentsSection>
 					<MobileTextareaRow>
 						{commentsTextArea}
-						{commentValue ? (
-							isSendingComment ? (
+						{commentValue &&
+							(isSendingComment ? (
 								<IconContainer $withBorder={false}>
 									<SpinIcon size={16} />
 								</IconContainer>
@@ -125,8 +125,7 @@ function TaskCommentsSection({
 								<IconContainer $withBorder={true} onClick={submitComment}>
 									<Send size={16} color="var(--active-color)" />
 								</IconContainer>
-							)
-						) : null}
+							))}
 					</MobileTextareaRow>
 				</>
 			) : (

@@ -121,6 +121,7 @@ body,
   --button-active: rgba(0, 0, 0, 0.1);
 
   --default-linear: linear-gradient(135deg, #615fff 0%, #9810fa 100%);
+  --black-to-background-linear: linear-gradient(rgba(255, 255, 255, 0), #ffffff 65%);
   --Components-Upload-Global-colorPrimary: #1677ff;
   --colors-base-neutral-11: rgba(240, 240, 240, 1);
   --colors-base-neutral-3: oklch(97.02% 0 271.15);
