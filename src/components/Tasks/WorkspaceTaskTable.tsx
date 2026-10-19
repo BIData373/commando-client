@@ -16,6 +16,7 @@ import {
 	useListTaskRows,
 } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import { useSaveWorkspaceVisit } from "src/hooks/useSaveWorkspaceVisit"
 import { useTaskArchive } from "src/hooks/useTaskArchive"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"
@@ -34,6 +35,7 @@ import { FilterSeparator, TaskFilters } from "./TaskFilters"
 import { TaskTable } from "./TaskTable"
 
 export interface WorkspaceTaskTableProps {
+	urlName: string
 	view?: TasksView
 	statusFilter?: WorkspaceStatusType[]
 	deadlineTypeFilter?: DeadlineType[]
@@ -50,6 +52,7 @@ export interface WorkspaceTaskTableProps {
 }
 
 function WorkspaceTaskTable({
+	urlName,
 	view = TasksView.TABLE,
 	statusFilter = [],
 	deadlineTypeFilter = [],
@@ -67,6 +70,8 @@ function WorkspaceTaskTable({
 		workspace: { id: workspaceId, title: workspaceTitle },
 		statuses,
 	} = useWorkspace()
+
+	useSaveWorkspaceVisit({ workspaceId, urlName })
 
 	const {
 		data: tasks = [],

@@ -91,6 +91,7 @@ function WorkspaceArchivePage() {
 			<TasksFiltersProvider>
 				<WorkspaceTabs section={DropdownSection.ARCHIVE} />
 				<WorkspaceTaskTable
+					urlName={urlName}
 					onOpenTask={handleOpenTask}
 					isArchived={true}
 					extraColumns={ARCHIVE_EXTRA_COLUMNS}
