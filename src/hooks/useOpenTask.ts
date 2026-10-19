@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router"
 import type { FileRoutesByTo, FileRouteTypes } from "../routeTree.gen"
 
-type TaskPath = Extract<FileRouteTypes["to"], `${string}/$taskId`>
+type TaskPath = Extract<FileRouteTypes["fullPaths"], `${string}/$taskId`>
 
 type EditableTaskPath = Extract<
 	TaskPath,

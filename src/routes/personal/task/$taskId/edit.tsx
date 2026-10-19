@@ -1,35 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { PermissionType } from "src/api/model"
-import { useTaskDetail } from "src/hooks/useTaskDetail"
+import { createFileRoute, redirect } from "@tanstack/react-router"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import { AuthorizationWrapper } from "src/wrappers/AuthorizationWrapper"
-import TaskEditModal from "../../../../components/CreateTasks/TaskEditModal"
 
+// TODO: Temporary redirect from the legacy /personal/task/ URL — remove once old links are no longer in use
 export const Route = createFileRoute("/personal/task/$taskId/edit")({
-	component: PersonalTaskEdit,
+	beforeLoad: ({ params }) => {
+		throw redirect({
+			to: "/personal/tasks/$taskId/edit",
+			params,
+			search: { view: TasksView.TABLE },
+			replace: true,
+		})
+	},
 })
-
-function PersonalTaskEdit() {
-	const { taskId } = Route.useParams()
-
-	const { task } = useTaskDetail(taskId)
-
-	if (!task) return null
-
-	return (
-		<AuthorizationWrapper
-			type={PermissionType.MANAGER}
-			workspaceId={task.workspace.id}
-		>
-			<TaskEditModal
-				task={task}
-				closeTo={{ to: "/personal", search: { view: TasksView.TABLE } }}
-				viewTo={{
-					to: "/personal/task/$taskId",
-					params: { taskId },
-					search: { view: TasksView.TABLE },
-				}}
-			/>
-		</AuthorizationWrapper>
-	)
-}

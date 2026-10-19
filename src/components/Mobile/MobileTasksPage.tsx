@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { useDisclosure } from "@mantine/hooks"
-import type { ReactNode } from "react"
+import { Fragment, type ReactNode } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
 import type { StatusTaskCount } from "src/functions/status-counts"
@@ -18,7 +18,7 @@ interface MobileTasksPageProps<T extends TaskRowDto> {
 	tasks: T[]
 	isLoading: boolean
 	statusSegments: StatusTaskCount[]
-	renderCard(task: T, searchQuery: string): ReactNode
+	renderCard(task: T): ReactNode
 }
 
 export default function MobileTasksPage<T extends TaskRowDto>({
@@ -47,7 +47,7 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 
 	return (
 		<PageRoot>
-			<MobileHeader icon={icon} title={title} minimal={searchFocused} />
+			<MobileHeader icon={icon} title={title} minimal={searchActive} />
 
 			<Content>
 				<MobileTasksToolbar
@@ -68,7 +68,9 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 					) : filtered.length === 0 ? (
 						<EmptyState>לא נמצאו הנחיות</EmptyState>
 					) : (
-						filtered.map((task) => renderCard(task, searchQuery))
+						filtered.map((task) => (
+							<Fragment key={task.rowKey}>{renderCard(task)}</Fragment>
+						))
 					)}
 				</CardList>
 			</Content>
