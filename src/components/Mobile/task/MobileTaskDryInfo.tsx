@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { concat, uniqBy } from "lodash"
 import { History } from "lucide-react"
 import type { TaskWithWorkspaceDto } from "src/api/model"
 import { DueDateGroup } from "src/components/shared/DueDateGroup"
@@ -22,7 +23,8 @@ export function MobileTaskDryInfo({
 		tags,
 	},
 }: MobileTaskDryInfoProps) {
-	const isTaskDetailsExist = !!notes && !!source && tags.length !== 0
+	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
+	const isTaskDetailsExist = !!notes || !!source || allTags.length > 0
 	return (
 		<Wrapper>
 			<TaskHeader as="header" $isTaskDetailsExist={isTaskDetailsExist}>
@@ -63,10 +65,10 @@ export function MobileTaskDryInfo({
 							</SectionDescription>
 						</SectionWrapper>
 					)}
-					{tags.length !== 0 && (
+					{allTags.length > 0 && (
 						<SectionWrapper>
 							<SectionLabel>תגיות</SectionLabel>
-							<TagsRow isMobile source={source} tags={tags} />
+							<TagsRow isMobile allTags={allTags} />
 						</SectionWrapper>
 					)}
 				</TaskDetails>
@@ -78,7 +80,7 @@ export function MobileTaskDryInfo({
 const Wrapper = styled.div`
     font-size: var(--fs-btn);
     border-radius: 8px;
-    background: white;
+    background: var(--background);
 `
 
 const TaskDetails = styled.div`
