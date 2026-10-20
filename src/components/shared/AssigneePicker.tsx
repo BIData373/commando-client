@@ -7,15 +7,16 @@ import { AssigneeDialog } from "../settings/AssigneeDialog"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { AssigneeAvatar } from "./AssigneeAvatar"
 
+export interface AssigneePickerTriggerProps {
+	search: string
+	onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+	open: boolean
+}
+
 interface AssigneePickerProps {
 	workspaceId: number
 	selectedAssignees: number[]
-	trigger:
-		| ReactNode
-		| ((props: {
-				search: string
-				onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-		  }) => ReactNode)
+	trigger: ReactNode | ((props: AssigneePickerTriggerProps) => ReactNode)
 	onToggle: (id: number) => void
 	closeOnFirstSelect?: boolean
 }
@@ -77,7 +78,7 @@ function AssigneePicker({
 			<Popover open={open} onOpenChange={handleOpenChange}>
 				<PopoverTrigger asChild>
 					{typeof trigger === "function"
-						? trigger({ search, onSearchChange: handleSearchChange })
+						? trigger({ search, onSearchChange: handleSearchChange, open })
 						: trigger}
 				</PopoverTrigger>
 
