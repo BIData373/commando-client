@@ -49,6 +49,7 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 		columnFilters: columnsFilters,
 	})
 
+	const headerVariant = searchFocused ? "minimal" : "default"
 	const rows = table.getRowModel().rows
 	const contentRef = useRef<HTMLDivElement>(null)
 
@@ -57,7 +58,7 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 			<MobileHeader
 				icon={icon}
 				title={title}
-				minimal={searchFocused}
+				variant={headerVariant}
 				onBack={handleSearchBack}
 			/>
 
