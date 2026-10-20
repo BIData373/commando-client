@@ -6,11 +6,17 @@ const MOBILE_OPERATING_SYSTEMS: UseOSReturnValue[] = ["android", "ios"]
 
 export const MOBILE_MEDIA_QUERY = `@media ${MOBILE_QUERY}`
 
+export function useIsMobileDevice() {
+	const os = useOs({ getValueInEffect: false })
+
+	return MOBILE_OPERATING_SYSTEMS.includes(os)
+}
+
 export function useIsMobile() {
 	const isSmallScreen = useMediaQuery(MOBILE_QUERY, false, {
 		getInitialValueInEffect: false,
 	})
-	const os = useOs({ getValueInEffect: false })
+	const isMobileDevice = useIsMobileDevice()
 
-	return isSmallScreen || MOBILE_OPERATING_SYSTEMS.includes(os)
+	return isSmallScreen || isMobileDevice
 }
