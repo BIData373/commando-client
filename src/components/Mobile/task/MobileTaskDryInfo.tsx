@@ -104,9 +104,11 @@ const MetaData = styled.div`
 const TaskTitle = styled.h1`
     display: flex;
     align-items: center;
+	min-width: 0;
     font-size: var(--fs-heading-3);
     font-weight: 500;
     color: var(--text-color-2);
+    word-break: break-word;
 `
 
 const SectionWrapper = styled.section`
