@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { useRouter } from "@tanstack/react-router"
 import type { TaskWithWorkspaceDto } from "src/api/model"
 import MobileHeader from "../MobileHeader"
 import { MobileTaskDryInfo } from "./MobileTaskDryInfo"
@@ -8,12 +9,19 @@ interface MobileViewTaskDetailProps {
 }
 
 export function MobileViewTaskDetail({ task }: MobileViewTaskDetailProps) {
+	const router = useRouter()
+
+	function handleBackRedirect() {
+		router.history.back()
+	}
+
 	if (!task) {
 		return null
 	}
+
 	return (
 		<PageShell>
-			<MobileHeader backRedirect={true} />
+			<MobileHeader variant="task" onBack={handleBackRedirect} title="" />
 			<TaskContainer>
 				<MobileTaskDryInfo task={task} />
 			</TaskContainer>

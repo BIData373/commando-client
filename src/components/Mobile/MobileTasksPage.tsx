@@ -48,12 +48,14 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 			columnsFilters.length > 0 ? matchesActiveColumnFilters : undefined,
 	})
 
+	const headerVariant = searchFocused ? "minimal" : "default"
+
 	return (
 		<PageRoot>
 			<MobileHeader
 				icon={icon}
 				title={title}
-				minimal={searchFocused}
+				variant={headerVariant}
 				onBack={handleSearchBack}
 			/>
 
