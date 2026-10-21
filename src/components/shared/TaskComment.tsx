@@ -19,11 +19,7 @@ interface TaskCommentProps {
 function TaskComment({ message, canDelete, onDelete }: TaskCommentProps) {
 	const isMobile = useIsMobile()
 	const { upn, info } = message.user
-	const userMeta = info?.displayName
-		? isMobile
-			? `${info.displayName} - ${upn}`
-			: `${upn} - ${info.displayName}`
-		: upn
+	const userMeta = info?.displayName ? `${upn} - ${info.displayName}` : upn
 	const userName = info?.name ?? upn
 
 	function handleDelete() {
@@ -55,20 +51,43 @@ function TaskComment({ message, canDelete, onDelete }: TaskCommentProps) {
 					{formatMinutesHours(message.createdAt)} ·{" "}
 					{formatDateMonthYear(message.createdAt)}
 				</Timestamp>
-				<UserDetails>
-					<UserMeta $isMobile={isMobile} title={userMeta}>
-						{userMeta}
-					</UserMeta>
-					<UserName $isMobile={isMobile} title={userName}>
-						{userName}
-					</UserName>
-				</UserDetails>
+				{isMobile ? (
+					<MobileUserDetails>
+						<MobileUserName>{userName}</MobileUserName>{" "}
+						<MobileUserMeta>{userMeta}</MobileUserMeta>
+					</MobileUserDetails>
+				) : (
+					<UserDetails>
+						<UserMeta>{userMeta}</UserMeta>
+						<UserName>{userName}</UserName>
+					</UserDetails>
+				)}
 			</Footer>
 		</Card>
 	)
 }
 
 export default TaskComment
+
+const MobileUserName = styled.span`
+  color: black;
+  font-weight: 500;
+`
+
+const MobileUserMeta = styled.span`
+  color: grey;
+  font-weight: 400;
+`
+
+const MobileUserDetails = styled.div`
+  width: 100%;
+  min-width: 0;
+  direction: rtl;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: break-all;
+`
 
 const Card = styled.div`
   display: flex;
@@ -152,21 +171,22 @@ const UserDetails = styled.div`
   min-width: 0;
   flex: 1;
   text-align: end;
+  justify-content: flex-end;
 `
 
-const UserMeta = styled.span<{ $isMobile: boolean }>`
-  flex: ${({ $isMobile }) => ($isMobile ? "auto" : "0 0 50%")};
+const UserMeta = styled.span`
+  direction: rtl;
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   font-weight: 400;
   color: var(--sea-ink-soft);
+  margin-left: 8px;
 `
 
-const UserName = styled.span<{ $isMobile: boolean }>`
-  flex: ${({ $isMobile }) => ($isMobile ? "auto" : "0 0 50%")};
-  min-width: 0;
+const UserName = styled.span`
+  min-width: fit-content;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
