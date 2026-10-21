@@ -16,6 +16,11 @@ import { HeaderProvider } from "../providers/HeaderProvider"
 import "../styles.css"
 import { IS_DEV } from "../utils/env-utils"
 
+const VALID_ORIENTATIONS: OrientationType[] = [
+	"portrait-primary",
+	"portrait-secondary",
+]
+
 export const Route = createRootRoute({
 	component: RootComponent,
 	notFoundComponent: NotFoundComponent,
@@ -35,7 +40,7 @@ function RootComponent() {
 		defaultType: "portrait-primary",
 		getInitialValueInEffect: false,
 	})
-	const isLandscape = orientationType.startsWith("landscape")
+	const isValidOrientation = VALID_ORIENTATIONS.includes(orientationType)
 
 	return (
 		<StrictMode>
@@ -50,7 +55,7 @@ function RootComponent() {
 			</TooltipProvider>
 			<Toaster />
 			<ErrorModal />
-			{isMobileDevice && isLandscape && <RotateDeviceScreen />}
+			{isMobileDevice && !isValidOrientation && <RotateDeviceScreen />}
 			{IS_DEV && (
 				<TanStackDevtools
 					config={{
