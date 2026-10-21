@@ -17,6 +17,7 @@ interface FilterDropdownProps<T extends string | number> {
 	activeValues: T[]
 	onApply: (values: T[]) => void
 	onOpenChange?: (open: boolean) => void
+	searchable?: boolean
 	searchPlaceholder?: string
 	emptyTitle?: string
 	emptyDescription?: string
@@ -28,6 +29,7 @@ function FilterDropdown<T extends string | number>({
 	activeValues,
 	onApply,
 	onOpenChange,
+	searchable = false,
 	searchPlaceholder = "חפש...",
 	emptyTitle,
 	emptyDescription,
@@ -73,7 +75,7 @@ function FilterDropdown<T extends string | number>({
 			<PopoverTrigger asChild>{children}</PopoverTrigger>
 
 			<StyledPopoverContent align="start" sideOffset={4}>
-				{isEmpty && (
+				{searchable && !isEmpty && (
 					<SearchRow>
 						<SearchWrapper>
 							<Search opacity={0.5} size={14} />

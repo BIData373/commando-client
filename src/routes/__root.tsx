@@ -5,12 +5,12 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { StrictMode } from "react"
 import { NotFoundComponent } from "src/components/Error/NotFoundComponent"
 import { RootErrorComponent } from "src/components/Error/RootErrorComponent"
+import { checkForOnboarding } from "src/utils/redirect-utils"
 import { ErrorModal } from "../components/ErrorModal"
 import { Toaster } from "../components/ui/sonner"
 import { TooltipProvider } from "../components/ui/tooltip"
 import { HeaderProvider } from "../providers/HeaderProvider"
 import "../styles.css"
-import { checkForOnboarding } from "src/utils/redirect-utils"
 import { IS_DEV } from "../utils/env-utils"
 
 export const Route = createRootRoute({

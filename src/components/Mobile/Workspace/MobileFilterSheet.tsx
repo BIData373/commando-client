@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import type { ColumnFiltersState } from "@tanstack/react-table"
 import { compact, flatMap, map, uniqBy, xor } from "lodash"
 import { X } from "lucide-react"
 import { useState } from "react"
@@ -6,6 +7,7 @@ import type { TaskRowDto } from "src/api/model"
 import { Accordion } from "src/components/ui/accordion"
 import { Sheet, SheetContent } from "src/components/ui/sheet"
 import { buildFilterOptionsMap } from "src/functions/filter-utils"
+import { formatSourceLabel } from "src/functions/source-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import MobileDateFilter from "./MobileDateFilter"
 import MobileFilterSection from "./MobileFilterSection"
@@ -20,6 +22,22 @@ const LIST_SECTIONS = [
 ] as const
 
 export type ListFilterKey = (typeof LIST_SECTIONS)[number]["key"]
+
+const COLUMN_ACCESSORS: Record<ListFilterKey, (task: TaskRowDto) => string> = {
+	assignee: (task) => task.assignee?.name ?? "",
+	source: (task) => (task.source ? formatSourceLabel(task.source) : ""),
+	status: (task) => task.status.type,
+}
+
+export function matchesColumnFilters(
+	task: TaskRowDto,
+	columnsFilters: ColumnFiltersState,
+): boolean {
+	return columnsFilters.every(({ id, value }) => {
+		const accessor = COLUMN_ACCESSORS[id as ListFilterKey]
+		return accessor ? (value as string[]).includes(accessor(task)) : true
+	})
+}
 
 interface MobileFilterSheetProps {
 	open: boolean
