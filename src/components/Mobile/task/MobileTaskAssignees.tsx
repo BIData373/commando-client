@@ -1,5 +1,9 @@
 import styled from "@emotion/styled"
-import { PermissionType, type TaskWithWorkspaceDto } from "src/api/model"
+import {
+	type AssigneeStatusDto,
+	PermissionType,
+	type TaskWithWorkspaceDto,
+} from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { AssigneeContainer } from "src/components/TaskDetail/AssigneeContainer"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
@@ -35,34 +39,30 @@ export function MobileTaskAssignees({
 			),
 	)
 
+	function assigneeContainers(assigneeStatuses: AssigneeStatusDto[]) {
+		return assigneeStatuses.map((assigneeStatus) => (
+			<AssigneeContainer
+				key={assigneeStatus.assignee.id}
+				assignee={assigneeStatus}
+				taskId={id}
+				workspaceId={workspaceId}
+				isAdmin={isAdmin}
+			/>
+		))
+	}
+
 	return (
 		<Wrapper>
-			{currentUserAssigneStatuses.length !== 0 && (
+			{currentUserAssigneStatuses.length > 0 && (
 				<AssigneeSection>
 					<AssigneeSectionTitle>אחריותך לבצע</AssigneeSectionTitle>
-					{currentUserAssigneStatuses.map((assigneeStatus) => (
-						<AssigneeContainer
-							key={assigneeStatus.assignee.id}
-							assignee={assigneeStatus}
-							taskId={id}
-							workspaceId={workspaceId}
-							isAdmin={isAdmin}
-						/>
-					))}
+					{assigneeContainers(currentUserAssigneStatuses)}
 				</AssigneeSection>
 			)}
-			{otherUsersAssigneeStatuses.length !== 0 && (
+			{otherUsersAssigneeStatuses.length > 0 && (
 				<AssigneeSection>
 					<AssigneeSectionTitle>אחראים אחרים לביצוע</AssigneeSectionTitle>
-					{otherUsersAssigneeStatuses.map((assigneeStatus) => (
-						<AssigneeContainer
-							key={assigneeStatus.assignee.id}
-							assignee={assigneeStatus}
-							taskId={id}
-							workspaceId={workspaceId}
-							isAdmin={isAdmin}
-						/>
-					))}
+					{assigneeContainers(otherUsersAssigneeStatuses)}
 				</AssigneeSection>
 			)}
 		</Wrapper>

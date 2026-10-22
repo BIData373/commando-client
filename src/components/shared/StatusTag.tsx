@@ -110,7 +110,7 @@ const Tag = styled.span<{
   align-items: center;
   justify-content: ${({ $isMobile }) => ($isMobile ? "center" : "auto")};
   gap: 2px;
-  width: ${({ $isMobile, $isCurrentUserTask, $isAdmin }) => ($isMobile ? ($isAdmin ? "100%" : $isCurrentUserTask ? "100%" : "76px") : "76px")};
+  width: ${({ $isMobile, $isCurrentUserTask, $isAdmin }) => ($isMobile && ($isAdmin || $isCurrentUserTask) ? "100%" : "76px")};
   padding: ${({ $withArrow }) => ($withArrow ? "1px 0 1px 8px" : "1px 8px")};
   border-radius: 999px;
   font-size: var(--fs-sm);

@@ -27,7 +27,7 @@ const StatusSelect = styled.div<{
   width: 100%;
   padding: 12px;
   border-radius: 4px;
-  background: ${({ $selected }) => ($selected ? "rgba(230, 244, 255, 0.25)" : "transparent")};
+  background: ${({ $selected }) => ($selected ? "var(--drawer-status-select)" : "transparent")};
   cursor: pointer;
   outline: none;
 `
