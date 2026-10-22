@@ -157,7 +157,10 @@ const AssigneeRowContainer = styled.div<{
   justify-content: flex-start;
   gap: var(--container-gap);
   padding: 7px 12px;
-  background: ${({ $enabled, $isMobile, $isCurrentUserTask, $isAdmin }) => ($isMobile ? ($isAdmin ? "var(--background)" : $isCurrentUserTask ? "var(--background)" : "var(--background-area)") : $enabled ? "var(--background)" : "var(--background-area)")};
+  background: ${({ $enabled, $isMobile, $isCurrentUserTask, $isAdmin }) =>
+		($isMobile ? $isAdmin || $isCurrentUserTask : $enabled)
+			? "var(--background)"
+			: "var(--background-area)"};
   border: var(--container-border);
   border-radius: 8px;
   width: 100%;
