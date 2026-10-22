@@ -1,4 +1,6 @@
 import { createFileRoute, useSearch } from "@tanstack/react-router"
+import { MobileViewTaskDetail } from "src/components/Mobile/task/MobileViewTaskDetail"
+import { useIsMobile } from "src/hooks/use-mobile"
 import { useTaskDetail } from "src/hooks/useTaskDetail"
 import { useWorkspaceMismatchError } from "src/hooks/useWorkspaceMismatchError"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -9,6 +11,7 @@ export const Route = createFileRoute("/workspace/$urlName/tasks/$taskId/")({
 })
 
 function TaskDetail() {
+	const isMobile = useIsMobile()
 	const { taskId } = Route.useParams()
 	const { view } = useSearch({ from: "/workspace/$urlName/tasks" })
 
@@ -20,7 +23,9 @@ function TaskDetail() {
 
 	useWorkspaceMismatchError(isFetched, task)
 
-	return (
+	return isMobile ? (
+		<MobileViewTaskDetail task={task} />
+	) : (
 		<TaskDetailView
 			task={task}
 			closeTo={{
