@@ -74,7 +74,7 @@ const Wrapper = styled.div`
     flex-direction: column;
     gap: 1rem;
     border-radius: 8px;
-    background: white;
+    background: var(--background);
     padding: 1rem;
 `
 
