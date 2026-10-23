@@ -2,6 +2,7 @@ import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import { TbChevronDown } from "react-icons/tb"
 import type { WorkspaceStatusDto } from "src/api/model"
+import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface StatusTagProps {
@@ -11,6 +12,7 @@ interface StatusTagProps {
 	withArrow?: boolean
 	open?: boolean
 	tooltip?: string
+	fullWidth?: boolean
 }
 
 export function StatusTag({
@@ -20,6 +22,7 @@ export function StatusTag({
 	withArrow = false,
 	open = false,
 	tooltip = "לא קיימת הרשאת שינוי סטטוס",
+	fullWidth = false,
 }: StatusTagProps) {
 	const tag = (
 		<Tag
@@ -28,6 +31,7 @@ export function StatusTag({
 			$interactive={interactive}
 			$editable={editable}
 			$withArrow={withArrow}
+			$fullWidth={fullWidth}
 		>
 			{withArrow && <Arrow size={12} $open={open} />}
 			<Label $withArrow={withArrow}>
@@ -92,12 +96,13 @@ const Tag = styled.span<{
 	$interactive?: boolean
 	$editable?: boolean
 	$withArrow?: boolean
+	$fullWidth: boolean
 }>`
   direction: ltr;
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  width: 76px;
+  width: ${({ $fullWidth }) => ($fullWidth ? "100%" : "76px")};
   padding: ${({ $withArrow }) => ($withArrow ? "1px 0 1px 8px" : "1px 8px")};
   border-radius: 999px;
   font-size: var(--fs-sm);
@@ -110,6 +115,10 @@ const Tag = styled.span<{
 
   :focus-visible {
     outline: none;
+  }
+
+  ${MOBILE_MEDIA_QUERY} {
+    justify-content: center;
   }
 
   ${({ $editable, $backgroundColor }) =>

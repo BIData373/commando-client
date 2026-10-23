@@ -165,6 +165,7 @@ body,
   --Menu-Tab-Active: rgba(255, 255, 255, 0.15);
   --Menu-Tab-Text: #C7C9CB;
   --link-visited: #0958D9;
+  --drawer-status-select: rgba(230, 244, 255, 0.15);
 
   --font-sans: "Rubik Variable", ui-sans-serif, sans-serif;
   --font-serif: "Rubik Variable", ui-sans-serif, sans-serif;
