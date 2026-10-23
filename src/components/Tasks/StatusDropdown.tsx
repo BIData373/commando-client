@@ -26,8 +26,7 @@ interface StatusDropdownProps {
 		assigneeId: number | undefined,
 		status: WorkspaceStatusDto,
 	) => void
-	isCurrentUserTask?: boolean
-	isAdmin?: boolean
+	fullWidth?: boolean
 }
 
 export const StatusDropdown = memo(
@@ -39,8 +38,7 @@ export const StatusDropdown = memo(
 		editable = false,
 		isArchived,
 		onUpdate,
-		isCurrentUserTask,
-		isAdmin = false,
+		fullWidth,
 	}: StatusDropdownProps) => {
 		const isMobile = useIsMobile()
 		const [isOpen, toggleOpen] = useToggle()
@@ -70,14 +68,13 @@ export const StatusDropdown = memo(
 
 		const statusTagRef = (
 			<StatusTag
-				isCurrentUserTask={isCurrentUserTask}
+				fullWidth={fullWidth}
 				open={isOpen}
 				status={status}
 				interactive
 				editable={editable}
 				withArrow={editable}
 				tooltip={tooltip}
-				isAdmin={isAdmin}
 			/>
 		)
 
@@ -98,12 +95,11 @@ export const StatusDropdown = memo(
 									onSelect={() => handleSelectStatusMobile(currentStatus)}
 								>
 									<StatusTag
-										isCurrentUserTask={isCurrentUserTask}
+										fullWidth={fullWidth}
 										status={currentStatus}
 										interactive
 										editable={editable}
 										tooltip={tooltip}
-										isAdmin={isAdmin}
 									/>
 								</MobileStatusSelect>
 							))}
@@ -121,12 +117,11 @@ export const StatusDropdown = memo(
 										onSelect={() => handleSelectStatus(currentStatus)}
 									>
 										<StatusTag
-											isCurrentUserTask={isCurrentUserTask}
+											fullWidth={fullWidth}
 											status={currentStatus}
 											interactive
 											editable={editable}
 											tooltip={tooltip}
-											isAdmin={isAdmin}
 										/>
 									</StatusDropdownItem>
 								))}
@@ -138,8 +133,7 @@ export const StatusDropdown = memo(
 						status={status}
 						editable={editable}
 						tooltip={tooltip}
-						isCurrentUserTask={isCurrentUserTask}
-						isAdmin={isAdmin}
+						fullWidth={fullWidth}
 					/>
 				)}
 			</CellCenter>

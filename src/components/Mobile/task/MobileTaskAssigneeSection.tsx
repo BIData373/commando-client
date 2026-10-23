@@ -17,21 +17,21 @@ export function MobileTaskAssigneeSection({
 	workspaceId,
 	isAdmin,
 }: MobileTaskAssigneeSectionProps) {
-	if (assigneeStatuses.length === 0) return null
-
 	return (
-		<AssigneeSection>
-			<AssigneeSectionTitle>{title}</AssigneeSectionTitle>
-			{assigneeStatuses.map((assigneeStatus) => (
-				<AssigneeContainer
-					key={assigneeStatus.assignee.id}
-					assignee={assigneeStatus}
-					taskId={taskId}
-					workspaceId={workspaceId}
-					isAdmin={isAdmin}
-				/>
-			))}
-		</AssigneeSection>
+		assigneeStatuses.length > 0 && (
+			<AssigneeSection>
+				<AssigneeSectionTitle>{title}</AssigneeSectionTitle>
+				{assigneeStatuses.map((assigneeStatus) => (
+					<AssigneeContainer
+						key={assigneeStatus.assignee.id}
+						assignee={assigneeStatus}
+						taskId={taskId}
+						workspaceId={workspaceId}
+						isAdmin={isAdmin}
+					/>
+				))}
+			</AssigneeSection>
+		)
 	)
 }
 

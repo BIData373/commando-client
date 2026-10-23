@@ -73,7 +73,7 @@ export const AssigneeContainer = ({
 			<StatusBlock>
 				{status && (
 					<StatusDropdown
-						isCurrentUserTask={isCurrentUserTask}
+						fullWidth={taskVariant === "currentUserMobile"}
 						status={status}
 						statuses={statuses}
 						taskId={taskId}
@@ -81,7 +81,6 @@ export const AssigneeContainer = ({
 						editable={editable}
 						isArchived={!!personalArchivedAt || !!workspaceArchivedAt}
 						onUpdate={handleUpdateAssigneeStatus}
-						isAdmin={isAdmin}
 					/>
 				)}
 			</StatusBlock>
