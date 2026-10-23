@@ -1,26 +1,29 @@
 import styled from "@emotion/styled"
 import { useVirtualizer } from "@tanstack/react-virtual"
-import { type RefObject, useLayoutEffect, useRef, useState } from "react"
+import {
+	type ReactNode,
+	type RefObject,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react"
 import type { TaskRowDto } from "src/api/model"
-import MobileTaskCard from "./MobileTaskCard"
 
 const ESTIMATED_CARD_HEIGHT = 160
 const CARD_GAP = 12
 const VIRTUAL_OVERSCAN = 6
 
-interface MobileTaskListProps {
-	tasks: TaskRowDto[]
-	searchQuery: string
+interface MobileTaskListProps<T extends TaskRowDto> {
+	tasks: T[]
 	scrollContainerRef: RefObject<HTMLDivElement | null>
-	onOpenTask: (task: TaskRowDto) => void
+	renderCard(task: T): ReactNode
 }
 
-export default function MobileTaskList({
+export default function MobileTaskList<T extends TaskRowDto>({
 	tasks,
-	searchQuery,
 	scrollContainerRef,
-	onOpenTask,
-}: MobileTaskListProps) {
+	renderCard,
+}: MobileTaskListProps<T>) {
 	const listRef = useRef<HTMLDivElement>(null)
 	const [scrollMargin, setScrollMargin] = useState(0)
 
@@ -49,23 +52,11 @@ export default function MobileTaskList({
 	return (
 		<List ref={listRef}>
 			<Spacer $height={paddingTop} />
-			{virtualItems.map(({ key, index }) => {
-				const task = tasks[index]
-
-				return (
-					<CardSlot
-						key={key}
-						data-index={index}
-						ref={virtualizer.measureElement}
-					>
-						<MobileTaskCard
-							task={task}
-							searchQuery={searchQuery}
-							onClick={() => onOpenTask(task)}
-						/>
-					</CardSlot>
-				)
-			})}
+			{virtualItems.map(({ key, index }) => (
+				<CardSlot key={key} data-index={index} ref={virtualizer.measureElement}>
+					{renderCard(tasks[index])}
+				</CardSlot>
+			))}
 			<Spacer $height={paddingBottom} />
 		</List>
 	)

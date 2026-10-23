@@ -1,23 +1,20 @@
 import styled from "@emotion/styled"
-import type { TaskRowDto } from "src/api/model"
-import { countTasksByStatus } from "src/functions/status-counts"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
+import type { StatusTaskCount } from "src/functions/status-counts"
 
 interface MobileStatusBarProps {
-	tasks: TaskRowDto[]
+	segments: StatusTaskCount[]
+	totalTaskCount: number
 }
 
-export default function MobileStatusBar({ tasks }: MobileStatusBarProps) {
-	const { statuses } = useWorkspace()
-
-	const segments = countTasksByStatus(tasks, statuses)
-	const total = tasks.length
-
+export default function MobileStatusBar({
+	segments,
+	totalTaskCount,
+}: MobileStatusBarProps) {
 	return (
 		<Root>
 			<TitleRow>
 				<Label dir="auto">הנחיות בסביבה</Label>
-				<Count>{total}</Count>
+				<Count>{totalTaskCount}</Count>
 			</TitleRow>
 
 			<BarTrack>
@@ -25,7 +22,7 @@ export default function MobileStatusBar({ tasks }: MobileStatusBarProps) {
 					<BarSegment
 						key={seg.id}
 						$color={seg.color}
-						$pct={total > 0 ? (seg.count / total) * 100 : 0}
+						$pct={totalTaskCount > 0 ? (seg.count / totalTaskCount) * 100 : 0}
 					/>
 				))}
 			</BarTrack>

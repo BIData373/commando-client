@@ -1,8 +1,11 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
+import MobilePersonal from "src/components/Mobile/Personal/MobilePersonal"
 import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
+import { useIsMobile } from "src/hooks/use-mobile"
+import { useOpenTask } from "src/hooks/useOpenTask"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../providers/UserViewProvider"
 import { TASK_COLUMN_ID } from "../../utils/task-table-utils"
@@ -41,30 +44,11 @@ const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 ])
 
 function PersonalTasksPage() {
-	const navigate = useNavigate()
-
-	function handleOpenTask(taskId: number) {
-		navigate({
-			to: "/personal/tasks/$taskId",
-			params: { taskId: String(taskId) },
-			search: { view: TasksView.TABLE },
-		})
-	}
-
-	function handleEdit(taskId: number) {
-		navigate({
-			to: "/personal/tasks/$taskId/edit",
-			params: { taskId: String(taskId) },
-			search: { view: TasksView.TABLE },
-		})
-	}
+	const isMobile = useIsMobile()
+	const { openTask, editTask } = useOpenTask("/personal/tasks/$taskId")
 
 	function handleAddComment(taskId: number) {
-		navigate({
-			to: "/personal/tasks/$taskId",
-			params: { taskId: String(taskId) },
-			search: { view: TasksView.TABLE, focusComment: true },
-		})
+		openTask(taskId, { focusComment: true })
 	}
 
 	return (
@@ -73,13 +57,19 @@ function PersonalTasksPage() {
 			defaultHiddenColumns={PERSONAL_DEFAULT_HIDDEN}
 		>
 			<TasksFiltersProvider>
-				<PersonalSectionDropdown current={DropdownSection.TASKS} />
-				<PersonalTaskTable
-					filePrefix="אזור אישי"
-					onOpenTask={handleOpenTask}
-					onEdit={handleEdit}
-					onAddComment={handleAddComment}
-				/>
+				{isMobile ? (
+					<MobilePersonal />
+				) : (
+					<>
+						<PersonalSectionDropdown current={DropdownSection.TASKS} />
+						<PersonalTaskTable
+							filePrefix="אזור אישי"
+							onOpenTask={openTask}
+							onEdit={editTask}
+							onAddComment={handleAddComment}
+						/>
+					</>
+				)}
 			</TasksFiltersProvider>
 		</UserViewProvider>
 	)

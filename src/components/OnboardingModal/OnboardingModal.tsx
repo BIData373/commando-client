@@ -84,7 +84,10 @@ export function OnboardingModal() {
 const FullScreenPanel = styled(DialogContent)`
 	//the svgs have built in shadow that needs accomodating as it takes space
 	--accomodation-padding: 6.5vw;
-
+	box-sizing: border-box;
+	overflow-y: auto;
+	overflow-x: hidden;
+	
 	width: 100vw;
 	max-width: 100vw;
 	height: 100vh;
@@ -106,6 +109,7 @@ const ContentWrapper = styled.div`
 	position: relative;
 	width: 100%;
 	height: 100%;
+	min-height: 100%;
 `
 
 const Header = styled.header`

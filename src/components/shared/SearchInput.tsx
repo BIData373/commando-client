@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { Search, X } from "lucide-react"
 import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 
+// TODO - migrate this to use InputElement Props
 interface SearchInputProps {
 	value: string
 	onChange: (value: string) => void
@@ -23,6 +24,10 @@ export default function SearchInput({
 		onChange(e.target.value)
 	}
 
+	function keepInputFocus(e: React.MouseEvent) {
+		e.preventDefault()
+	}
+
 	function handleClear() {
 		onChange("")
 	}
@@ -37,7 +42,7 @@ export default function SearchInput({
 				onBlur={onBlur}
 			/>
 			{value ? (
-				<ClearButton onClick={handleClear}>
+				<ClearButton onMouseDown={keepInputFocus} onClick={handleClear}>
 					<X size={18} />
 				</ClearButton>
 			) : (
