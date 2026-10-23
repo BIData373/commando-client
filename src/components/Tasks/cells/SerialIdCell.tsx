@@ -32,6 +32,9 @@ const IdCell = styled.span`
   line-height: 24px;
   color: var(--text-color);
   width: 100%;
-  height: 100%;
+  height: var(--table-row-height, 100%);
   cursor: pointer;
+  /* Stays visible below the header while its spanned cell scrolls */
+  position: sticky;
+  top: var(--table-header-height, 0px);
 `

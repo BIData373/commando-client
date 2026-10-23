@@ -376,6 +376,8 @@ const TableWrapper = styled.div`
   background: var(--background);
   box-shadow: var(--card-shadow-default);
   overflow: hidden;
+  --table-header-height: 48px;
+  --table-row-height: 43px;
 
   [data-slot="table-container"] {
     overflow: auto;
@@ -408,7 +410,7 @@ const TableWrapper = styled.div`
     font-weight: 500;
     line-height: 24px;
     color: var(--text-color);
-    height: 48px;
+    height: var(--table-header-height);
     white-space: normal;
     background: var(--background);
     border-right: 0.5px solid var(--Background-color-bg-text-active);
@@ -428,10 +430,16 @@ const TableWrapper = styled.div`
 
   td:not([data-virtual-spacer]) {
     padding: 0 6px;
-    height: 43px;
-    max-height: 43px;
+    height: var(--table-row-height);
+    max-height: var(--table-row-height);
     overflow: hidden;
     border: 0.5px solid var(--Background-color-bg-text-active);
+
+    /* \`clip\` doesn't make the cell a scroll container, so sticky content inside it follows the table's scroll */
+    &[rowspan] {
+      vertical-align: top;
+      overflow: clip;
+    }
 
     &[data-column-id="${TASK_COLUMN_ID.serialId}"],
     &[data-column-id="${TASK_COLUMN_ID.select}"] {
