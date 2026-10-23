@@ -3,7 +3,7 @@ import { TbFilter, TbFilterOff } from "react-icons/tb"
 import type { TaskRowDto } from "src/api/model"
 import SearchInput from "src/components/shared/SearchInput"
 import { FilterPill } from "src/components/Tasks/TaskFilters"
-import { matchesQuickFilter } from "src/functions/filter-utils"
+import { countQuickFilters } from "src/functions/filter-utils"
 import type { StatusTaskCount } from "src/functions/status-counts"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import {
@@ -61,6 +61,8 @@ export default function MobileTasksToolbar({
 		)
 	}
 
+	const quickFilterCounts = countQuickFilters(tasks)
+
 	return (
 		<>
 			{!searchFocused && (
@@ -93,9 +95,7 @@ export default function MobileTasksToolbar({
 					הכל ({tasks.length})
 				</FilterPill>
 				{ACTIVE_QUICK_FILTERS.map((filter) => {
-					const count = tasks.filter((t) =>
-						matchesQuickFilter(t, filter),
-					).length
+					const count = quickFilterCounts[filter]
 
 					return (
 						<FilterPill
