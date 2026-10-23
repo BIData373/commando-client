@@ -25,11 +25,10 @@ export function MobileTaskAssignees({
 
 	const isAdmin = permission?.type === PermissionType.MANAGER
 
-	const currentUserAssigneStatuses = isAdmin
-		? assigneeStatuses
-		: assigneeStatuses.filter(({ assignee: { users } }) =>
-				users.some(({ upn }) => upn === currentUser.upn),
-			)
+	const currentUserAssigneStatuses = assigneeStatuses.filter(
+		({ assignee: { users } }) =>
+			isAdmin || users.some(({ upn }) => upn === currentUser.upn),
+	)
 
 	const otherUsersAssigneeStatuses = assigneeStatuses.filter(
 		({ assignee: otherAssignee }) =>
