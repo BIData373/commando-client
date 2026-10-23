@@ -111,9 +111,7 @@ export const StatusDropdown = memo(
 					) : (
 						<DropdownMenu onOpenChange={toggleOpen}>
 							<DropdownMenuTrigger asChild>
-								<TriggerWrapper tabIndex={0} $isMobile={isMobile}>
-									{statusTagRef}
-								</TriggerWrapper>
+								<TriggerWrapper tabIndex={0}>{statusTagRef}</TriggerWrapper>
 							</DropdownMenuTrigger>
 							<StatusDropdownContent align="center" sideOffset={6}>
 								{statuses.map((currentStatus) => (
@@ -155,9 +153,9 @@ const CellCenter = styled.div`
   align-items: center;
 `
 
-const TriggerWrapper = styled.span<{ $isMobile: boolean }>`
+const TriggerWrapper = styled.span`
   cursor: pointer;
-  width: ${({ $isMobile }) => ($isMobile ? "100%" : "76px")};
+  width: 76px;
 
   &:focus-visible {
     outline: none;

@@ -58,17 +58,6 @@ function resolveIcon(icon: AppToastOptions["icon"]) {
 	return icon
 }
 
-function generateToastId() {
-	if (crypto.randomUUID === undefined) {
-		const bytes = crypto.getRandomValues(new Uint8Array(16))
-
-		return Array.from(bytes)
-			.map((b) => b.toString(16).padStart(2, "0"))
-			.join("")
-	}
-	return crypto.randomUUID()
-}
-
 function showToast(
 	type: "success" | "error" | "info" | "warning",
 	message: ReactNode,
@@ -96,7 +85,6 @@ function showToast(
 	const hasActions = toastActions.length > 0
 	const showCloseText = closeable && Boolean(closeLabel)
 	const showCloseIcon = closeable && !showCloseText && !hasActions
-	const toastId = options.id ?? generateToastId()
 	// Left undefined, sonner applies the Toaster's duration and the bar inherits
 	// its --toast-duration. A bar that never drains is misleading, so persistent
 	// toasts drop it.
@@ -127,9 +115,8 @@ function showToast(
 		dismissToast()
 	}
 
-	sonnerToast[type](message, {
+	const toastId = sonnerToast[type](message, {
 		...options,
-		id: toastId,
 		className:
 			clsx(
 				banner && TOAST_CLASS.banner,

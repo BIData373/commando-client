@@ -1,12 +1,8 @@
 import styled from "@emotion/styled"
-import {
-	type AssigneeStatusDto,
-	PermissionType,
-	type TaskWithWorkspaceDto,
-} from "src/api/model"
+import { PermissionType, type TaskWithWorkspaceDto } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
-import { AssigneeContainer } from "src/components/TaskDetail/AssigneeContainer"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
+import { MobileTaskAssigneeSection } from "./MobileTaskAssigneeSection"
 
 interface MobileTaskAssignees {
 	task: TaskWithWorkspaceDto
@@ -38,32 +34,22 @@ export function MobileTaskAssignees({
 			),
 	)
 
-	function assigneeContainers(assigneeStatuses: AssigneeStatusDto[]) {
-		return assigneeStatuses.map((assigneeStatus) => (
-			<AssigneeContainer
-				key={assigneeStatus.assignee.id}
-				assignee={assigneeStatus}
+	return (
+		<Wrapper>
+			<MobileTaskAssigneeSection
+				title="אחריותך לבצע"
+				assigneeStatuses={currentUserAssigneStatuses}
 				taskId={id}
 				workspaceId={workspaceId}
 				isAdmin={isAdmin}
 			/>
-		))
-	}
-
-	return (
-		<Wrapper>
-			{currentUserAssigneStatuses.length > 0 && (
-				<AssigneeSection>
-					<AssigneeSectionTitle>אחריותך לבצע</AssigneeSectionTitle>
-					{assigneeContainers(currentUserAssigneStatuses)}
-				</AssigneeSection>
-			)}
-			{otherUsersAssigneeStatuses.length > 0 && (
-				<AssigneeSection>
-					<AssigneeSectionTitle>אחראים אחרים לביצוע</AssigneeSectionTitle>
-					{assigneeContainers(otherUsersAssigneeStatuses)}
-				</AssigneeSection>
-			)}
+			<MobileTaskAssigneeSection
+				title="אחראים אחרים לביצוע"
+				assigneeStatuses={otherUsersAssigneeStatuses}
+				taskId={id}
+				workspaceId={workspaceId}
+				isAdmin={isAdmin}
+			/>
 		</Wrapper>
 	)
 }
@@ -75,18 +61,4 @@ const Wrapper = styled.div`
     border-radius: 8px;
     background: var(--background);
     padding: 1rem;
-`
-
-const AssigneeSection = styled.section`
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-`
-
-const AssigneeSectionTitle = styled.h2`
-    display: flex;
-    align-items: center;
-    font-size: var(--fs-base);
-    font-weight: 500;
-    color: var(--text-color-2);
 `

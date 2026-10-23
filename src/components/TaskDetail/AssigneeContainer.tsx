@@ -70,7 +70,7 @@ export const AssigneeContainer = ({
 				</AssigneeRoleText>
 			</AssigneeInfoBlock>
 
-			<StatusBlock $isMobile={isMobile}>
+			<StatusBlock>
 				{status && (
 					<StatusDropdown
 						isCurrentUserTask={isCurrentUserTask}
@@ -175,7 +175,7 @@ const AssigneeInfoBlock = styled.div`
   width: 161px;
 `
 
-const StatusBlock = styled.div<{ $isMobile: boolean }>`
+const StatusBlock = styled.div`
   order: var(--status-block-order);
   flex-shrink: 0;
   width: var(--status-block-width);
