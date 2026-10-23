@@ -4,7 +4,7 @@ import { memo } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { useIsMobile } from "src/hooks/use-mobile"
-import { MobileDrawer } from "../Mobile/task/MobileDrawer"
+import { MobileDrawer } from "../Mobile/MobileDrawer"
 import { MobileStatusSelect } from "../Mobile/task/MobileStatusSelect"
 import { StatusTag } from "../shared/StatusTag"
 import {
