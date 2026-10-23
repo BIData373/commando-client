@@ -1,9 +1,7 @@
 import styled from "@emotion/styled"
 import { useHotkeys } from "@mantine/hooks"
-import { X } from "lucide-react"
 import type { ComponentProps, ReactNode } from "react"
 import {
-	DialogClose,
 	DialogContentPrimitive,
 	DialogOverlay,
 	DialogPortal,

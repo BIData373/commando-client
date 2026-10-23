@@ -1,8 +1,9 @@
-import type { ReactNode } from "react"
+import { type ReactNode, useMemo } from "react"
 import type { TaskRowDto } from "src/api/model"
 import {
 	DEFAULT_COLUMN_ORDER,
 	DISABLED_CLICK_COLUMNS,
+	groupRowsByTask,
 	toHiddenColumns,
 } from "src/utils/task-table-utils"
 import { useTaskColumns } from "../../hooks/useTaskColumns"
@@ -27,6 +28,8 @@ export function TaskPreviewTable({
 		showMenuColumn: false,
 	})
 
+	const groupedTasks = useMemo(() => groupRowsByTask(tasks), [tasks])
+
 	function handleCellClick(row: { original: TaskRowDto }, columnId: string) {
 		if (!DISABLED_CLICK_COLUMNS.has(columnId)) {
 			onClick?.(row.original.id)
@@ -36,7 +39,7 @@ export function TaskPreviewTable({
 	return (
 		<DataTable
 			columns={columns}
-			data={tasks}
+			data={groupedTasks}
 			showHeader={false}
 			emptyState={emptyState}
 			onCellClick={handleCellClick}
