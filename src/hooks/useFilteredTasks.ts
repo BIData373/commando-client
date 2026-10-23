@@ -6,14 +6,6 @@ import { formatDateShort } from "src/functions/date-utils"
 import { matchesQuickFilter } from "src/functions/filter-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { DATE_TYPE } from "src/utils/date-utils"
-import { useFuse } from "./useFuse"
-
-const FUSE_OPTIONS = {
-	threshold: 0.3,
-	ignoreLocation: true,
-	minMatchCharLength: 1,
-	keys: ["searchText"],
-}
 
 function getTaskDate<T extends TaskRowDto>(
 	task: T,
@@ -89,7 +81,11 @@ export function useFilteredTasks<T extends TaskRowDto>(
 		[tasks, additionalSearchValues],
 	)
 
-	const searchResults = useFuse(searchableTasks, searchQuery, FUSE_OPTIONS)
+	const searchResults = useMemo(
+		() =>
+			searchableTasks.filter((task) => task.searchText.includes(searchQuery)),
+		[searchableTasks, searchQuery],
+	)
 
 	const searchedTasks = useMemo(
 		() => searchResults.map(({ task }) => task),
