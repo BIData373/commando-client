@@ -12,8 +12,7 @@ interface StatusTagProps {
 	withArrow?: boolean
 	open?: boolean
 	tooltip?: string
-	isCurrentUserTask?: boolean
-	isAdmin?: boolean
+	fullWidth?: boolean
 }
 
 export function StatusTag({
@@ -23,8 +22,7 @@ export function StatusTag({
 	withArrow = false,
 	open = false,
 	tooltip = "לא קיימת הרשאת שינוי סטטוס",
-	isCurrentUserTask,
-	isAdmin,
+	fullWidth = false,
 }: StatusTagProps) {
 	const tag = (
 		<Tag
@@ -33,8 +31,7 @@ export function StatusTag({
 			$interactive={interactive}
 			$editable={editable}
 			$withArrow={withArrow}
-			$isCurrentUserTask={isCurrentUserTask}
-			$isAdmin={isAdmin}
+			$fullWidth={fullWidth}
 		>
 			{withArrow && <Arrow size={12} $open={open} />}
 			<Label $withArrow={withArrow}>
@@ -99,14 +96,13 @@ const Tag = styled.span<{
 	$interactive?: boolean
 	$editable?: boolean
 	$withArrow?: boolean
-	$isCurrentUserTask?: boolean
-	$isAdmin?: boolean
+	$fullWidth: boolean
 }>`
   direction: ltr;
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  width: 76px;
+  width: ${({ $fullWidth }) => ($fullWidth ? "100%" : "76px")};
   padding: ${({ $withArrow }) => ($withArrow ? "1px 0 1px 8px" : "1px 8px")};
   border-radius: 999px;
   font-size: var(--fs-sm);
@@ -123,8 +119,6 @@ const Tag = styled.span<{
 
   ${MOBILE_MEDIA_QUERY} {
     justify-content: center;
-    ${({ $isAdmin, $isCurrentUserTask }) =>
-			($isAdmin || $isCurrentUserTask) && "width: 100%;"}
   }
 
   ${({ $editable, $backgroundColor }) =>
