@@ -7,7 +7,6 @@ import {
 	WorkspaceStatusType,
 } from "src/api/model"
 import { QuickFilter } from "src/api/model/quick-filter"
-import { matchesQuickFilter } from "src/functions/filter-utils"
 import { useUserView } from "src/providers/UserViewProvider"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
@@ -16,6 +15,7 @@ import { EmptyCardState } from "../shared/EmptyCardState"
 import { DashboardSection } from "./DashboardSection"
 import { TaskPreviewTable } from "./TaskPreviewTable"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
+import { matchesQuickFilter } from "src/utils/filter-utils"
 
 const HIDDEN_COLUMNS = hiddenColumnsExcept<keyof TaskRowDto>([
 	"title",

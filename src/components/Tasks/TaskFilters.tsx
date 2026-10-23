@@ -5,16 +5,16 @@ import { FilterX } from "lucide-react"
 import { type ReactNode, useMemo } from "react"
 import type { ListMessagesParams, TaskRowDto } from "src/api/model"
 import type { QuickFilter } from "src/api/model/quick-filter"
-import { countQuickFilters } from "src/functions/filter-utils"
 import {
-	QUICK_FILTER_LABELS,
-	QUICK_FILTER_TOOLTIPS,
+  countQuickFilters,
+  QUICK_FILTER_LABELS,
+  QUICK_FILTER_TOOLTIPS,
 } from "src/utils/filter-utils"
 import type { AppTableFeatures } from "src/utils/table-features"
 import {
-	buildCountingColumns,
-	EMPTY_LIST,
-	type TaskColumnMeta,
+  buildCountingColumns,
+  EMPTY_LIST,
+  type TaskColumnMeta,
 } from "src/utils/task-table-utils"
 import { useHeadlessTable } from "../../hooks/useHeadlessTable"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
@@ -24,178 +24,178 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { ExportButton, type TaskExport } from "./ExportButton"
 
 interface TaskFiltersProps<TTask extends TaskRowDto> {
-	allTaskRows: TTask[]
-	filteredTasks: TTask[]
-	columnOrder: (keyof TTask)[]
-	hiddenColumns: Set<keyof TTask>
-	onClearColumnFilters?: () => void
-	extraFilters?: ReactNode
-	extraButtons?: ReactNode
-	extraColumns?: ColumnDef<AppTableFeatures, TTask>[]
-	extraColumnsMeta?: TaskColumnMeta[]
-	startSlot?: ReactNode
-	urlColumnFilters?: ColumnFiltersState
-	baseMessagesParams: ListMessagesParams
-	exportFilePrefix?: string
-	quickFilters: QuickFilter[]
+  allTaskRows: TTask[]
+  filteredTasks: TTask[]
+  columnOrder: (keyof TTask)[]
+  hiddenColumns: Set<keyof TTask>
+  onClearColumnFilters?: () => void
+  extraFilters?: ReactNode
+  extraButtons?: ReactNode
+  extraColumns?: ColumnDef<AppTableFeatures, TTask>[]
+  extraColumnsMeta?: TaskColumnMeta[]
+  startSlot?: ReactNode
+  urlColumnFilters?: ColumnFiltersState
+  baseMessagesParams: ListMessagesParams
+  exportFilePrefix?: string
+  quickFilters: QuickFilter[]
 }
 
 export function TaskFilters<TTask extends TaskRowDto>({
-	allTaskRows,
-	filteredTasks,
-	columnOrder,
-	hiddenColumns,
-	onClearColumnFilters,
-	extraFilters,
-	extraColumns = EMPTY_LIST,
-	extraColumnsMeta,
-	startSlot,
-	urlColumnFilters = EMPTY_LIST,
-	extraButtons,
-	baseMessagesParams,
-	exportFilePrefix,
-	quickFilters,
+  allTaskRows,
+  filteredTasks,
+  columnOrder,
+  hiddenColumns,
+  onClearColumnFilters,
+  extraFilters,
+  extraColumns = EMPTY_LIST,
+  extraColumnsMeta,
+  startSlot,
+  urlColumnFilters = EMPTY_LIST,
+  extraButtons,
+  baseMessagesParams,
+  exportFilePrefix,
+  quickFilters,
 }: TaskFiltersProps<TTask>) {
-	const {
-		activeQuickFilters,
-		toggleQuickFilter,
-		clearQuickFilters,
-		columnsFilters,
-		resetColumnFilters,
-		sorting,
-		searchQuery,
-		setSearchQuery,
-	} = useTasksFilters()
+  const {
+    activeQuickFilters,
+    toggleQuickFilter,
+    clearQuickFilters,
+    columnsFilters,
+    resetColumnFilters,
+    sorting,
+    searchQuery,
+    setSearchQuery,
+  } = useTasksFilters()
 
-	const hasActiveColumnFilters =
-		columnsFilters.length > 0 || urlColumnFilters.length > 0
+  const hasActiveColumnFilters =
+    columnsFilters.length > 0 || urlColumnFilters.length > 0
 
-	function clearAllColumnFilters() {
-		resetColumnFilters()
-		onClearColumnFilters?.()
-	}
+  function clearAllColumnFilters() {
+    resetColumnFilters()
+    onClearColumnFilters?.()
+  }
 
-	const allColumnFilters = useMemo(
-		() => [...urlColumnFilters, ...columnsFilters],
-		[urlColumnFilters, columnsFilters],
-	)
+  const allColumnFilters = useMemo(
+    () => [...urlColumnFilters, ...columnsFilters],
+    [urlColumnFilters, columnsFilters],
+  )
 
-	const countingColumns = useMemo(
-		() => buildCountingColumns(extraColumns),
-		[extraColumns],
-	)
+  const countingColumns = useMemo(
+    () => buildCountingColumns(extraColumns),
+    [extraColumns],
+  )
 
-	const countingTable = useHeadlessTable({
-		data: allTaskRows,
-		columns: countingColumns,
-		columnFilters: allColumnFilters,
-	})
+  const countingTable = useHeadlessTable({
+    data: allTaskRows,
+    columns: countingColumns,
+    columnFilters: allColumnFilters,
+  })
 
-	const exportTable = useHeadlessTable({
-		data: filteredTasks,
-		columns: countingColumns,
-		columnFilters: allColumnFilters,
-		sorting,
-	})
+  const exportTable = useHeadlessTable({
+    data: filteredTasks,
+    columns: countingColumns,
+    columnFilters: allColumnFilters,
+    sorting,
+  })
 
-	function getExport(): TaskExport<TTask> {
-		const rows = exportTable.getSortedRowModel().rows.map((row) => row.original)
+  function getExport(): TaskExport<TTask> {
+    const rows = exportTable.getSortedRowModel().rows.map((row) => row.original)
 
-		return {
-			rows,
-			messagesParams:
-				rows.length < allTaskRows.length
-					? { taskIds: uniq(map(rows, "id")) }
-					: baseMessagesParams,
-		}
-	}
+    return {
+      rows,
+      messagesParams:
+        rows.length < allTaskRows.length
+          ? { taskIds: uniq(map(rows, "id")) }
+          : baseMessagesParams,
+    }
+  }
 
-	const filteredRowsForCounts = countingTable.getFilteredRowModel().rows
+  const filteredRowsForCounts = countingTable.getFilteredRowModel().rows
 
-	const quickFilterCounts = useMemo(
-		() => countQuickFilters(filteredRowsForCounts.map((row) => row.original)),
-		[filteredRowsForCounts],
-	)
+  const quickFilterCounts = useMemo(
+    () => countQuickFilters(filteredRowsForCounts.map((row) => row.original)),
+    [filteredRowsForCounts],
+  )
 
-	function formatCount(filter: QuickFilter) {
-		const count = quickFilterCounts[filter]
-		return count > 0 ? ` (${count})` : ""
-	}
+  function formatCount(filter: QuickFilter) {
+    const count = quickFilterCounts[filter]
+    return count > 0 ? ` (${count})` : ""
+  }
 
-	function renderQuickFilter(filter: QuickFilter) {
-		const pill = (
-			<FilterPill
-				key={filter}
-				$active={activeQuickFilters.has(filter)}
-				onClick={() => toggleQuickFilter(filter)}
-			>
-				{QUICK_FILTER_LABELS[filter]}
-				{formatCount(filter)}
-			</FilterPill>
-		)
+  function renderQuickFilter(filter: QuickFilter) {
+    const pill = (
+      <FilterPill
+        key={filter}
+        $active={activeQuickFilters.has(filter)}
+        onClick={() => toggleQuickFilter(filter)}
+      >
+        {QUICK_FILTER_LABELS[filter]}
+        {formatCount(filter)}
+      </FilterPill>
+    )
 
-		const tooltip = QUICK_FILTER_TOOLTIPS[filter]
+    const tooltip = QUICK_FILTER_TOOLTIPS[filter]
 
-		if (!tooltip) return pill
+    if (!tooltip) return pill
 
-		return (
-			<Tooltip key={filter}>
-				<WarningTrigger>{pill}</WarningTrigger>
-				<TooltipContent>{tooltip}</TooltipContent>
-			</Tooltip>
-		)
-	}
+    return (
+      <Tooltip key={filter}>
+        <WarningTrigger>{pill}</WarningTrigger>
+        <TooltipContent>{tooltip}</TooltipContent>
+      </Tooltip>
+    )
+  }
 
-	return (
-		<BarRoot>
-			<BarStart>
-				{startSlot}
+  return (
+    <BarRoot>
+      <BarStart>
+        {startSlot}
 
-				<FilterDivider />
+        <FilterDivider />
 
-				<ColumnVisibilityDropdown extraColumnsMeta={extraColumnsMeta} />
+        <ColumnVisibilityDropdown extraColumnsMeta={extraColumnsMeta} />
 
-				<ExportButton
-					getExport={getExport}
-					columnOrder={columnOrder}
-					hiddenColumns={hiddenColumns}
-					exportFilePrefix={exportFilePrefix}
-				/>
+        <ExportButton
+          getExport={getExport}
+          columnOrder={columnOrder}
+          hiddenColumns={hiddenColumns}
+          exportFilePrefix={exportFilePrefix}
+        />
 
-				<TaskSearchInput
-					placeholder="חפש הנחיה"
-					value={searchQuery}
-					onChange={setSearchQuery}
-				/>
-			</BarStart>
+        <TaskSearchInput
+          placeholder="חפש הנחיה"
+          value={searchQuery}
+          onChange={setSearchQuery}
+        />
+      </BarStart>
 
-			<BarEnd>
-				{extraButtons}
+      <BarEnd>
+        {extraButtons}
 
-				<FilterPill
-					$active={activeQuickFilters.size === 0}
-					onClick={clearQuickFilters}
-				>
-					הכל ({filteredRowsForCounts.length})
-				</FilterPill>
+        <FilterPill
+          $active={activeQuickFilters.size === 0}
+          onClick={clearQuickFilters}
+        >
+          הכל ({filteredRowsForCounts.length})
+        </FilterPill>
 
-				{quickFilters.map(renderQuickFilter)}
+        {quickFilters.map(renderQuickFilter)}
 
-				{extraFilters}
+        {extraFilters}
 
-				{hasActiveColumnFilters && (
-					<>
-						<FilterSeparator />
+        {hasActiveColumnFilters && (
+          <>
+            <FilterSeparator />
 
-						<ClearButton onClick={clearAllColumnFilters}>
-							<FilterX size={18} />
-							נקה סננים
-						</ClearButton>
-					</>
-				)}
-			</BarEnd>
-		</BarRoot>
-	)
+            <ClearButton onClick={clearAllColumnFilters}>
+              <FilterX size={18} />
+              נקה סננים
+            </ClearButton>
+          </>
+        )}
+      </BarEnd>
+    </BarRoot>
+  )
 }
 
 const BarRoot = styled.div`
