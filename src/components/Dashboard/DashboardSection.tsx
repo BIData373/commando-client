@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import type { ReactNode } from "react"
+import { TASK_COLUMN_ID } from "../../utils/task-table-utils"
 
 interface DashboardSectionProps {
 	tabButtons: ReactNode
@@ -63,7 +64,7 @@ const ContentPanel = styled.div`
     border-inline-start: 0.5px solid rgba(0, 0, 0, 0.04);
   }
 
-  [data-slot="table-cell"]:first-child {
+  [data-slot="table-cell"][data-column-id="${TASK_COLUMN_ID.serialId}"] {
     border-inline-start: none;
     max-width: 0;
     overflow: hidden;

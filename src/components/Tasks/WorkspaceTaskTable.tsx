@@ -24,6 +24,7 @@ import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
 } from "src/utils/filter-utils"
+import type { AppTableFeatures } from "src/utils/table-features"
 import { TASK_COLUMN_ID, type TaskColumnMeta } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
@@ -39,7 +40,7 @@ export interface WorkspaceTaskTableProps {
 	deadlineTypeFilter?: DeadlineType[]
 	isArchived?: boolean
 	extraColumnsMeta?: TaskColumnMeta[]
-	extraColumns?: ColumnDef<TaskRowDto>[]
+	extraColumns?: ColumnDef<AppTableFeatures, TaskRowDto>[]
 	onEdit?(taskId: number): void
 	clearColumnFilters?(): void
 	onColumnFilterChange?(
