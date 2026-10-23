@@ -1,4 +1,4 @@
-import { css } from "@emotion/react"
+import { css, type SerializedStyles } from "@emotion/react"
 import styled from "@emotion/styled"
 import type { AssigneeStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
@@ -8,6 +8,12 @@ import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { AssigneeDetailPopover } from "../shared/AssigneeDetailPopover"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
+
+enum CardVariant {
+	Default = "default",
+	CurrentUserMobile = "currentUserMobile",
+	OtherUserMobile = "otherUserMobile",
+}
 
 interface AssigneeContainerProps {
 	taskId: number
@@ -42,12 +48,10 @@ export const AssigneeContainer = ({
 	)
 
 	const taskVariant = isMobile
-		? isAdmin
-			? "currentUserMobile"
-			: isCurrentUserTask
-				? "currentUserMobile"
-				: "otherUserMobile"
-		: "default"
+		? isAdmin || isCurrentUserTask
+			? CardVariant.CurrentUserMobile
+			: CardVariant.OtherUserMobile
+		: CardVariant.Default
 
 	return (
 		<AssigneeRowContainer
@@ -73,7 +77,7 @@ export const AssigneeContainer = ({
 			<StatusBlock>
 				{status && (
 					<StatusDropdown
-						fullWidth={taskVariant === "currentUserMobile"}
+						fullWidth={taskVariant === CardVariant.CurrentUserMobile}
 						status={status}
 						statuses={statuses}
 						taskId={taskId}
@@ -90,8 +94,8 @@ export const AssigneeContainer = ({
 	)
 }
 
-const cardVariants = {
-	default: css`
+const cardVariants: Record<CardVariant, SerializedStyles> = {
+	[CardVariant.Default]: css`
 		--container-flex-direction: row;
 		--container-align-items: center;
 		--container-gap: 24px;
@@ -107,7 +111,7 @@ const cardVariants = {
 		--description-font-size: 13px;
 		--description-color: var(--text-color-2);
 	`,
-	currentUserMobile: css`
+	[CardVariant.CurrentUserMobile]: css`
 		--container-flex-direction: column;
 		--container-align-items: flex-start;
 		--container-gap: 8px;
@@ -123,7 +127,7 @@ const cardVariants = {
 		--description-font-size: var(--fs-base);
 		--description-color: var(--text-color-2);
 	`,
-	otherUserMobile: css`
+	[CardVariant.OtherUserMobile]: css`
 		--container-flex-direction: column;
 		--container-align-items: flex-start;
 		--container-gap: 8px;
@@ -139,16 +143,16 @@ const cardVariants = {
 		--description-font-size: var(--fs-base);
 		--description-color: var(--text-color);
 	`,
-} as const
+}
 
 const AssigneeRowContainer = styled.div<{
-	$variant: keyof typeof cardVariants
+	$variant: CardVariant
 	$enabled?: boolean
 	$isMobile?: boolean
 	$isCurrentUserTask?: boolean
 	$isAdmin?: boolean
 }>`
-  ${({ $variant }) => $variant && cardVariants[$variant]}
+  ${({ $variant }) => cardVariants[$variant]}
 
   display: flex;
   flex-direction: var(--container-flex-direction);
