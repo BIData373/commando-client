@@ -11,17 +11,18 @@ import { matchesQuickFilter } from "src/functions/filter-utils"
 import { useUserView } from "src/providers/UserViewProvider"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
+import { toHiddenColumns } from "src/utils/task-table-utils"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DashboardSection } from "./DashboardSection"
 import { TaskPreviewTable } from "./TaskPreviewTable"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
-const VISIBLE_COLUMNS: (keyof TaskRowDto)[] = [
+const HIDDEN_COLUMNS = toHiddenColumns<keyof TaskRowDto>([
 	"title",
 	"status",
 	"assignee",
 	"deadlineType",
-]
+])
 
 interface TabConfig {
 	id: QuickFilter
@@ -146,7 +147,7 @@ export default function FocusedInstructions({
 		>
 			<TaskPreviewTable
 				tasks={filteredTasks}
-				visibleColumns={VISIBLE_COLUMNS}
+				hiddenColumns={HIDDEN_COLUMNS}
 				onClick={onClick}
 				emptyState={<EmptyCardState {...DASHBOARD_EMPTY_STATES[activeTab]} />}
 			/>

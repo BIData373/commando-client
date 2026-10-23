@@ -1,17 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { createColumnHelper } from "@tanstack/react-table"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
-import { DateText } from "src/components/shared/DateText"
-import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithActions"
-import { formatDateShort } from "src/functions/date-utils"
 import { useOpenTask } from "src/hooks/useOpenTask"
-import type { AppTableFeatures } from "src/utils/table-features"
+import { PERSONAL_ARCHIVE_EXTRA_COLUMNS } from "src/utils/task-extra-columns"
 import {
 	ARCHIVE_DEFAULT_HIDDEN,
-	COLUMN_LABELS,
 	PERSONAL_ARCHIVED_COLUMN_META,
 	TASK_COLUMN_ID,
 } from "src/utils/task-table-utils"
@@ -44,29 +39,6 @@ const PERSONAL_ARCHIVE_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] =
 		TASK_COLUMN_ID.updatedAt,
 	]
 
-const columnHelper = createColumnHelper<
-	AppTableFeatures,
-	TaskRowWithWorkspaceDto
->()
-
-const ARCHIVE_EXTRA_COLUMNS = columnHelper.columns([
-	columnHelper.accessor((row) => row.personalArchivedAt, {
-		id: TASK_COLUMN_ID.personalArchivedAt,
-		header: ({ column }) => (
-			<ColumnHeaderWithActions
-				label={COLUMN_LABELS.personalArchivedAt}
-				column={column}
-			/>
-		),
-		size: 140,
-		enableColumnFilter: false,
-		cell: ({ getValue }) => {
-			const archivedAt = getValue()
-			return <DateText>{archivedAt && formatDateShort(archivedAt)}</DateText>
-		},
-	}),
-])
-
 function PersonalArchivePage() {
 	const { openTask } = useOpenTask("/personal/archive/$taskId")
 
@@ -86,7 +58,7 @@ function PersonalArchivePage() {
 					onOpenTask={openTask}
 					isArchived={true}
 					extraColumnsMeta={PERSONAL_ARCHIVED_COLUMN_META}
-					extraColumns={ARCHIVE_EXTRA_COLUMNS}
+					extraColumns={PERSONAL_ARCHIVE_EXTRA_COLUMNS}
 					onAddComment={handleAddComment}
 				/>
 			</TasksFiltersProvider>
