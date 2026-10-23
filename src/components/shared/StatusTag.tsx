@@ -2,7 +2,7 @@ import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import { TbChevronDown } from "react-icons/tb"
 import type { WorkspaceStatusDto } from "src/api/model"
-import { useIsMobile } from "src/hooks/use-mobile"
+import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 interface StatusTagProps {
@@ -26,10 +26,8 @@ export function StatusTag({
 	isCurrentUserTask,
 	isAdmin,
 }: StatusTagProps) {
-	const isMobile = useIsMobile()
 	const tag = (
 		<Tag
-			$isMobile={isMobile}
 			$fontColor={color}
 			$backgroundColor={color}
 			$interactive={interactive}
@@ -96,7 +94,6 @@ const Text = styled.span`
 `
 
 const Tag = styled.span<{
-	$isMobile: boolean
 	$fontColor: string
 	$backgroundColor: string
 	$interactive?: boolean
@@ -108,9 +105,8 @@ const Tag = styled.span<{
   direction: ltr;
   display: inline-flex;
   align-items: center;
-  justify-content: ${({ $isMobile }) => ($isMobile ? "center" : "auto")};
   gap: 2px;
-  width: ${({ $isMobile, $isCurrentUserTask, $isAdmin }) => ($isMobile && ($isAdmin || $isCurrentUserTask) ? "100%" : "76px")};
+  width: 76px;
   padding: ${({ $withArrow }) => ($withArrow ? "1px 0 1px 8px" : "1px 8px")};
   border-radius: 999px;
   font-size: var(--fs-sm);
@@ -123,6 +119,12 @@ const Tag = styled.span<{
 
   :focus-visible {
     outline: none;
+  }
+
+  ${MOBILE_MEDIA_QUERY} {
+    justify-content: center;
+    ${({ $isAdmin, $isCurrentUserTask }) =>
+			($isAdmin || $isCurrentUserTask) && "width: 100%;"}
   }
 
   ${({ $editable, $backgroundColor }) =>
