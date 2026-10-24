@@ -7,9 +7,9 @@ import {
 	useRef,
 } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
-import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import type { TaskRowHandlers } from "src/functions/row-actions"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
+import type { FilterOption, FilterOptions } from "src/utils/filter-utils"
 
 interface TaskTableHandlers extends TaskRowHandlers {
 	onUpdateStatus: ReturnType<typeof useUpdateTaskStatus>

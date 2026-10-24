@@ -2,9 +2,9 @@ import { endOfDay, isWithinInterval, startOfDay, startOfToday } from "date-fns"
 import { useDeferredValue, useMemo } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { formatDateShort } from "src/functions/date-utils"
-import { matchesQuickFilter } from "src/functions/filter-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { DATE_TYPE } from "src/utils/date-utils"
+import { matchesQuickFilter } from "src/utils/filter-utils"
 import { useFuse } from "./useFuse"
 
 const FUSE_OPTIONS = {
