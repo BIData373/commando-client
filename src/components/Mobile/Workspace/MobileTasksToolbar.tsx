@@ -94,20 +94,16 @@ export default function MobileTasksToolbar({
 				>
 					הכל ({tasks.length})
 				</FilterPill>
-				{ACTIVE_QUICK_FILTERS.map((filter) => {
-					const count = quickFilterCounts[filter]
-
-					return (
-						<FilterPill
-							key={filter}
-							$active={activeQuickFilters.has(filter)}
-							onClick={() => toggleQuickFilter(filter)}
-						>
-							{QUICK_FILTER_LABELS[filter]}
-							{count > 0 && ` (${count})`}
-						</FilterPill>
-					)
-				})}
+				{ACTIVE_QUICK_FILTERS.map((filter) => (
+					<FilterPill
+						key={filter}
+						$active={activeQuickFilters.has(filter)}
+						onClick={() => toggleQuickFilter(filter)}
+					>
+						{QUICK_FILTER_LABELS[filter]}
+						{quickFilterCounts[filter] > 0 && ` (${quickFilterCounts[filter]})`}
+					</FilterPill>
+				))}
 			</ChipsRow>
 		</>
 	)
