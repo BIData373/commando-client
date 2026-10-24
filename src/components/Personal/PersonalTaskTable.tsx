@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { Outlet } from "@tanstack/react-router"
-import type { ColumnDef } from "@tanstack/react-table"
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import { isThisWeek } from "date-fns"
 import { uniqBy } from "lodash"
 import { useMemo, useState } from "react"
@@ -12,6 +12,7 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	useListPersonalTaskRows,
 } from "src/api/task/task"
+import type { AppTableFeatures } from "src/consts/table-features"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useTaskArchive } from "src/hooks/useTaskArchive"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
@@ -36,25 +37,15 @@ import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
 
-const WORKSPACE_COLUMN_DEFINITION: ColumnDef<TaskRowWithWorkspaceDto> = {
-	id: TASK_COLUMN_ID.workspace,
-	header: ({ column }) => (
-		<ColumnHeaderWithActions label={COLUMN_LABELS.workspace} column={column} />
-	),
-	size: 170,
-	enableColumnFilter: false,
-	sortingFn: (rowA, rowB) => {
-		const a = rowA.original.workspace?.title ?? ""
-		const b = rowB.original.workspace?.title ?? ""
-		return a.localeCompare(b, "he")
-	},
-	accessorFn: (row) => row.workspace?.title,
-}
+const columnHelper = createColumnHelper<
+	AppTableFeatures,
+	TaskRowWithWorkspaceDto
+>()
 
 interface PersonalTaskTableProps {
 	isArchived?: boolean
 	extraColumnsMeta?: TaskColumnMeta[]
-	extraColumns?: ColumnDef<TaskRowWithWorkspaceDto>[]
+	extraColumns?: ColumnDef<AppTableFeatures, TaskRowWithWorkspaceDto>[]
 	onEdit?(taskId: number): void
 	onAddComment?(taskId: number): void
 	onOpenTask(taskId: number): void
@@ -97,23 +88,42 @@ function PersonalTaskTable({
 		additionalSearchValues: (task) => [task.workspace?.title],
 	})
 
-	const workspaceColumn = useMemo<ColumnDef<TaskRowWithWorkspaceDto>>(
-		() => ({
-			...WORKSPACE_COLUMN_DEFINITION,
-			cell: ({
-				row: {
-					original: { workspace, createdBy },
-				},
-			}) => (
-				<WorkspaceCell
-					workspace={workspace}
-					createdBy={createdBy}
-					searchQuery={searchQuery}
-				/>
-			),
-		}),
+	const workspaceColumn = useMemo(
+		() =>
+			columnHelper.accessor((row) => row.workspace?.title, {
+				id: TASK_COLUMN_ID.workspace,
+				header: ({ column }) => (
+					<ColumnHeaderWithActions
+						label={COLUMN_LABELS.workspace}
+						column={column}
+					/>
+				),
+				size: 170,
+				enableColumnFilter: false,
+				sortFn: (rowA, rowB) =>
+					(rowA.original.workspace?.title ?? "").localeCompare(
+						rowB.original.workspace?.title ?? "",
+						"he",
+					),
+				cell: ({
+					row: {
+						original: { workspace, createdBy },
+					},
+				}) => (
+					<WorkspaceCell
+						workspace={workspace}
+						createdBy={createdBy}
+						searchQuery={searchQuery}
+					/>
+				),
+			}),
 		[searchQuery],
 	)
+
+	const tableExtraColumns = columnHelper.columns([
+		workspaceColumn,
+		...(extraColumns ?? []),
+	])
 
 	const filteredTaskRows = useMemo(
 		() =>
@@ -159,7 +169,7 @@ function PersonalTaskTable({
 					filteredTasks={filteredTaskRows}
 					columnOrder={columnOrder}
 					hiddenColumns={hiddenColumns}
-					extraColumns={[workspaceColumn, ...(extraColumns ?? [])]}
+					extraColumns={tableExtraColumns}
 					extraColumnsMeta={[
 						...WORKSPACE_COLUMN_META,
 						...(extraColumnsMeta ?? []),
@@ -210,7 +220,7 @@ function PersonalTaskTable({
 					onAddComment={onAddComment}
 					onClick={onOpenTask}
 					getPermissionType={(task) => task?.workspace?.permissionType}
-					extraColumns={[workspaceColumn, ...(extraColumns ?? [])]}
+					extraColumns={tableExtraColumns}
 					onArchive={onArchive}
 					onUnarchive={onUnarchive}
 				/>

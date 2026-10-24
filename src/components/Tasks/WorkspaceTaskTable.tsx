@@ -15,6 +15,7 @@ import {
 	getListTaskRowsQueryKey,
 	useListTaskRows,
 } from "src/api/task/task"
+import type { AppTableFeatures } from "src/consts/table-features"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useTaskArchive } from "src/hooks/useTaskArchive"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -39,7 +40,7 @@ export interface WorkspaceTaskTableProps {
 	deadlineTypeFilter?: DeadlineType[]
 	isArchived?: boolean
 	extraColumnsMeta?: TaskColumnMeta[]
-	extraColumns?: ColumnDef<TaskRowDto>[]
+	extraColumns?: ColumnDef<AppTableFeatures, TaskRowDto>[]
 	onEdit?(taskId: number): void
 	clearColumnFilters?(): void
 	onColumnFilterChange?(

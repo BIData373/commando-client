@@ -1,41 +1,28 @@
-import { useEffect, useRef, useState } from "react"
+import { type PointerEvent, useState } from "react"
 
 interface UseOverflowOptions {
-	content?: string
 	includeDescendants?: boolean
 }
 
+/**
+ * Measures overflow when the pointer enters instead of on mount, so cells
+ * mounting during virtual scrolling don't each force a layout.
+ */
 export function useOverflow<TElement extends HTMLElement>({
-	content,
 	includeDescendants = false,
 }: UseOverflowOptions = {}) {
-	const ref = useRef<TElement>(null)
 	const [isOverflowing, setIsOverflowing] = useState(false)
 
-	useEffect(() => {
-		const element = ref.current
+	function handlePointerEnter(event: PointerEvent<TElement>) {
+		const target = event.currentTarget
+		const elements = includeDescendants
+			? [target, ...target.querySelectorAll<HTMLElement>("*")]
+			: [target]
 
-		if (!element) {
-			return
-		}
+		setIsOverflowing(
+			elements.some((node) => node.scrollWidth > node.clientWidth),
+		)
+	}
 
-		function updateOverflow(target: TElement) {
-			const elements = includeDescendants
-				? [target, ...target.querySelectorAll<HTMLElement>("*")]
-				: [target]
-
-			setIsOverflowing(
-				elements.some((node) => node.scrollWidth > node.clientWidth),
-			)
-		}
-
-		updateOverflow(element)
-
-		const observer = new ResizeObserver(() => updateOverflow(element))
-		observer.observe(element)
-
-		return () => observer.disconnect()
-	}, [content, includeDescendants])
-
-	return { ref, isOverflowing }
+	return { isOverflowing, handlePointerEnter }
 }

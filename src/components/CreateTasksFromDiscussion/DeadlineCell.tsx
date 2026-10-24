@@ -147,7 +147,7 @@ const DeadlineTrigger = styled.button`
   justify-content: flex-start;
   width: 100%;
   height: 100%;
-  padding-inline: 0;
+  padding-inline: 12px;
   background: transparent;
   cursor: pointer;
   outline: none;
@@ -157,7 +157,7 @@ const PlaceholderText = styled.span`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
-  color:  var(--Components-Dropdown-Global-colorTextDescription);
+  color: var(--Text-color-text-placeholder);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
