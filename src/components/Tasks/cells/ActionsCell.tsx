@@ -1,6 +1,6 @@
+import { useDisclosure } from "@mantine/hooks"
 import type { CellContext } from "@tanstack/react-table"
 import { MoreVertical } from "lucide-react"
-import { useState } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { buildRowMenuActions } from "src/functions/row-actions"
 import { useTaskTable } from "src/providers/TaskTableProvider"
@@ -12,7 +12,7 @@ export function ActionsCell<TTask extends TaskRowDto, TValue>({
 	row: { original },
 }: CellContext<AppTableFeatures, TTask, TValue>) {
 	const { getHandlers } = useTaskTable()
-	const [open, setOpen] = useState(false)
+	const [open, { set }] = useDisclosure()
 
 	// Owning `open` here re-renders this cell on open, so the menu reads the latest handlers
 	const actions = buildRowMenuActions(getHandlers(), original)
@@ -25,7 +25,7 @@ export function ActionsCell<TTask extends TaskRowDto, TValue>({
 				</RowActionsTrigger>
 			}
 			open={open}
-			onOpenChange={setOpen}
+			onOpenChange={set}
 			actions={actions}
 		/>
 	)

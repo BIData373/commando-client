@@ -12,6 +12,18 @@ import { getDeadlineDisplayDate } from "../../../utils/deadline-utils"
 import { DeadlineTypeTag } from "../../shared/DeadlineTypeTag"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip"
 
+enum DeadlineUrgency {
+	OVERDUE = "overdue",
+	APPROACHING = "approaching",
+	NORMAL = "normal",
+}
+
+const DEADLINE_URGENCY_COLORS: Record<DeadlineUrgency, string> = {
+	[DeadlineUrgency.OVERDUE]: "var(--Colors-Brand-Error-colorErrorActive)",
+	[DeadlineUrgency.APPROACHING]: "var(--Colors-Brand-Warning-colorWarningText)",
+	[DeadlineUrgency.NORMAL]: "var(--sea-ink-soft)",
+}
+
 function getDeadlineTooltipText(daysUntil: number, isOverdue: boolean) {
 	if (isOverdue) {
 		return `חריגה של ${Math.abs(daysUntil)} ימים`
@@ -37,6 +49,12 @@ export function DeadlineCell<TTask extends TaskRowDto, TValue>({
 	const isApproaching =
 		!isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
 
+	const urgency = isOverdue
+		? DeadlineUrgency.OVERDUE
+		: isApproaching
+			? DeadlineUrgency.APPROACHING
+			: DeadlineUrgency.NORMAL
+
 	const displayDate = getDeadlineDisplayDate(
 		deadlineType,
 		dueDate,
@@ -52,7 +70,7 @@ export function DeadlineCell<TTask extends TaskRowDto, TValue>({
 			: null
 
 	const dateText = displayDate && (
-		<DeadlineDateText $isOverdue={isOverdue} $isApproaching={isApproaching}>
+		<DeadlineDateText $urgency={urgency}>
 			{formatDateShort(displayDate)}
 		</DeadlineDateText>
 	)
@@ -79,19 +97,11 @@ const CellRoot = styled.div`
   gap: 6px;
 `
 
-const DeadlineDateText = styled.span<{
-	$isOverdue?: boolean
-	$isApproaching?: boolean
-}>`
+const DeadlineDateText = styled.span<{ $urgency: DeadlineUrgency }>`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
   white-space: nowrap;
 
-  color: ${({ $isOverdue, $isApproaching }) =>
-		$isOverdue
-			? "var(--Colors-Brand-Error-colorErrorActive)"
-			: $isApproaching
-				? "var(--Colors-Brand-Warning-colorWarningText)"
-				: "var(--sea-ink-soft)"};
+  color: ${({ $urgency }) => DEADLINE_URGENCY_COLORS[$urgency]};
 `

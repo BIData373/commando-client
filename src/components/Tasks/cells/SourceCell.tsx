@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import type { CellContext } from "@tanstack/react-table"
+import { compact } from "lodash"
 import { BsPaperclip as Paperclip } from "react-icons/bs"
 import type { TaskRowDto } from "src/api/model"
 import { useTaskTable } from "src/providers/TaskTableProvider"
@@ -18,12 +19,10 @@ export function SourceCell<TTask extends TaskRowDto, TValue>({
 		return null
 	}
 
-	const sourceText = [
+	const sourceText = compact([
 		source.name,
 		...(source.date ? [formatDateShort(source.date)] : []),
-	]
-		.filter(Boolean)
-		.join(" | ")
+	]).join(" | ")
 
 	return (
 		<CellRoot>

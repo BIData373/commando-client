@@ -57,7 +57,7 @@ function isSameRow<TTask extends TaskRowDto, TValue>(
 	return prev.row.original === next.row.original
 }
 
-// memo() drops generics; cast back so the column definition keeps its TTask
+// we use `isSameRow` to ensure that don't rerender the assignee too many times
 export const AssigneesCell = memo(
 	AssigneesCellContent,
 	isSameRow,
