@@ -5,7 +5,7 @@ import {
 	type IdentifiedColumnDef,
 	type Row,
 } from "@tanstack/react-table"
-import { concat, intersection, map, uniq, zipObject } from "lodash"
+import { concat, groupBy, intersection, map, uniq, zipObject } from "lodash"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
 import { formatSourceLabel } from "../functions/source-utils"
 import type { AppTableFeatures } from "./table-features"
@@ -171,19 +171,9 @@ export function buildCountingColumns<TTask extends TaskRowDto>(
 export function groupRowsByTask<TTask extends TaskRowDto>(
 	tasks: TTask[],
 ): TTask[] {
-	const rowsByTaskId = new Map<number, TTask[]>()
+	const rowsByTaskId = groupBy(tasks, "id")
 
-	tasks.forEach((task) => {
-		const rows = rowsByTaskId.get(task.id)
-
-		if (rows) {
-			rows.push(task)
-		} else {
-			rowsByTaskId.set(task.id, [task])
-		}
-	})
-
-	return [...rowsByTaskId.values()].flat()
+	return uniq(map(tasks, "id")).flatMap((id) => rowsByTaskId[id])
 }
 
 export function buildUrlColumnFilters(
@@ -233,7 +223,7 @@ export function reconcileColumnOrder(
 	)
 }
 
-export function toHiddenColumns<TId extends string>(
+export function hiddenColumnsExcept<TId extends string>(
 	visibleColumns: TId[],
 ): Set<TId> {
 	const visible = new Set(visibleColumns)

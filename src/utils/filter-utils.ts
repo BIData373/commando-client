@@ -13,6 +13,10 @@ export const QUICK_FILTER_LABELS: Record<QuickFilter, string> = {
 	[QuickFilter.rolling]: "שוטפות",
 }
 
+export const QUICK_FILTER_TOOLTIPS: Partial<Record<QuickFilter, string>> = {
+	[QuickFilter.approaching]: 'תג"ב בעוד 2 ימים או פחות',
+}
+
 export const ARCHIVE_QUICK_FILTERS: QuickFilter[] = [
 	QuickFilter.rolling,
 	QuickFilter.flagged,

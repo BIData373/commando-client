@@ -4,9 +4,12 @@ import { map, uniq } from "lodash"
 import { FilterX } from "lucide-react"
 import { type ReactNode, useMemo } from "react"
 import type { ListMessagesParams, TaskRowDto } from "src/api/model"
-import { QuickFilter } from "src/api/model/quick-filter"
+import type { QuickFilter } from "src/api/model/quick-filter"
 import { countQuickFilters } from "src/functions/filter-utils"
-import { QUICK_FILTER_LABELS } from "src/utils/filter-utils"
+import {
+	QUICK_FILTER_LABELS,
+	QUICK_FILTER_TOOLTIPS,
+} from "src/utils/filter-utils"
 import type { AppTableFeatures } from "src/utils/table-features"
 import {
 	buildCountingColumns,
@@ -119,51 +122,28 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		return count > 0 ? ` (${count})` : ""
 	}
 
-	const quickFilterButtons: Record<QuickFilter, ReactNode> = {
-		[QuickFilter.flagged]: (
+	function renderQuickFilter(filter: QuickFilter) {
+		const pill = (
 			<FilterPill
-				key={QuickFilter.flagged}
-				$active={activeQuickFilters.has(QuickFilter.flagged)}
-				onClick={() => toggleQuickFilter(QuickFilter.flagged)}
+				key={filter}
+				$active={activeQuickFilters.has(filter)}
+				onClick={() => toggleQuickFilter(filter)}
 			>
-				{QUICK_FILTER_LABELS[QuickFilter.flagged]}
-				{formatCount(QuickFilter.flagged)}
+				{QUICK_FILTER_LABELS[filter]}
+				{formatCount(filter)}
 			</FilterPill>
-		),
-		[QuickFilter.approaching]: (
-			<Tooltip key={QuickFilter.approaching}>
-				<WarningTrigger>
-					<FilterPill
-						$active={activeQuickFilters.has(QuickFilter.approaching)}
-						onClick={() => toggleQuickFilter(QuickFilter.approaching)}
-					>
-						{QUICK_FILTER_LABELS[QuickFilter.approaching]}
-						{formatCount(QuickFilter.approaching)}
-					</FilterPill>
-				</WarningTrigger>
-				<TooltipContent>תג"ב בעוד 2 ימים או פחות</TooltipContent>
+		)
+
+		const tooltip = QUICK_FILTER_TOOLTIPS[filter]
+
+		if (!tooltip) return pill
+
+		return (
+			<Tooltip key={filter}>
+				<WarningTrigger>{pill}</WarningTrigger>
+				<TooltipContent>{tooltip}</TooltipContent>
 			</Tooltip>
-		),
-		[QuickFilter.overdue]: (
-			<FilterPill
-				key={QuickFilter.overdue}
-				$active={activeQuickFilters.has(QuickFilter.overdue)}
-				onClick={() => toggleQuickFilter(QuickFilter.overdue)}
-			>
-				{QUICK_FILTER_LABELS[QuickFilter.overdue]}
-				{formatCount(QuickFilter.overdue)}
-			</FilterPill>
-		),
-		[QuickFilter.rolling]: (
-			<FilterPill
-				key={QuickFilter.rolling}
-				$active={activeQuickFilters.has(QuickFilter.rolling)}
-				onClick={() => toggleQuickFilter(QuickFilter.rolling)}
-			>
-				{QUICK_FILTER_LABELS[QuickFilter.rolling]}
-				{formatCount(QuickFilter.rolling)}
-			</FilterPill>
-		),
+		)
 	}
 
 	return (
@@ -199,7 +179,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					הכל ({filteredRowsForCounts.length})
 				</FilterPill>
 
-				{quickFilters.map((filter) => quickFilterButtons[filter])}
+				{quickFilters.map(renderQuickFilter)}
 
 				{extraFilters}
 

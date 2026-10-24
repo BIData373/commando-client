@@ -45,24 +45,24 @@ interface PersonalTaskMetrics {
 	weeklyNew: number
 }
 
+function countByStatus(
+	tasks: TaskRowWithWorkspaceDto[],
+	statusType: WorkspaceStatusType,
+): number {
+	return tasks.filter((task) => task.status?.type === statusType).length
+}
+
 function getPersonalTaskMetrics(
 	tasks: TaskRowWithWorkspaceDto[],
 ): PersonalTaskMetrics {
-	return tasks.reduce<PersonalTaskMetrics>(
-		(metrics, task) => ({
-			totalCount: metrics.totalCount + 1,
-			notStartedCount:
-				metrics.notStartedCount +
-				Number(task.status?.type === WorkspaceStatusType.NOT_STARTED),
-			inProgressCount:
-				metrics.inProgressCount +
-				Number(task.status?.type === WorkspaceStatusType.IN_PROGRESS),
-			weeklyNew:
-				metrics.weeklyNew +
-				Number(isThisWeek(task.createdAt, { weekStartsOn: 0 })),
-		}),
-		{ totalCount: 0, notStartedCount: 0, inProgressCount: 0, weeklyNew: 0 },
-	)
+	return {
+		totalCount: tasks.length,
+		notStartedCount: countByStatus(tasks, WorkspaceStatusType.NOT_STARTED),
+		inProgressCount: countByStatus(tasks, WorkspaceStatusType.IN_PROGRESS),
+		weeklyNew: tasks.filter((task) =>
+			isThisWeek(task.createdAt, { weekStartsOn: 0 }),
+		).length,
+	}
 }
 
 interface PersonalTaskTableProps {
@@ -127,11 +127,6 @@ function PersonalTaskTable({
 		[baseFilteredTaskRows, activeWorkspaceFilters],
 	)
 
-	const { totalCount, notStartedCount, inProgressCount, weeklyNew } = useMemo(
-		() => getPersonalTaskMetrics(tasks),
-		[tasks],
-	)
-
 	const onArchive = !isArchived ? archive : undefined
 	const onUnarchive = isArchived ? unarchive : undefined
 
@@ -140,12 +135,7 @@ function PersonalTaskTable({
 			<PageRoot>
 				{isArchived && <ArchiveHeader>ארכיון</ArchiveHeader>}
 
-				<MetricsBar
-					totalCount={totalCount}
-					notStartedCount={notStartedCount}
-					inProgressCount={inProgressCount}
-					weeklyNew={weeklyNew}
-				/>
+				<MetricsBar {...getPersonalTaskMetrics(tasks)} />
 
 				<TaskFilters
 					allTaskRows={tasks}

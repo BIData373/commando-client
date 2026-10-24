@@ -11,20 +11,18 @@ import { matchesQuickFilter } from "src/functions/filter-utils"
 import { useUserView } from "src/providers/UserViewProvider"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
-import { toHiddenColumns } from "src/utils/task-table-utils"
+import { hiddenColumnsExcept } from "src/utils/task-table-utils"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DashboardSection } from "./DashboardSection"
 import { TaskPreviewTable } from "./TaskPreviewTable"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
-const VISIBLE_COLUMNS: (keyof TaskRowDto)[] = [
+const HIDDEN_COLUMNS = hiddenColumnsExcept<keyof TaskRowDto>([
 	"title",
 	"status",
 	"assignee",
 	"deadlineType",
-]
-
-const HIDDEN_COLUMNS = toHiddenColumns(VISIBLE_COLUMNS)
+])
 
 interface TabConfig {
 	id: QuickFilter

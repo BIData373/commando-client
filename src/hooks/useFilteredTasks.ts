@@ -1,5 +1,4 @@
 import { endOfDay, isWithinInterval, startOfDay, startOfToday } from "date-fns"
-import { some } from "lodash"
 import { useDeferredValue, useMemo } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { formatDateShort } from "src/functions/date-utils"
@@ -104,36 +103,37 @@ export function useFilteredTasks<T extends TaskRowDto>(
 
 	return useMemo(() => {
 		const today = startOfToday()
-		const quickFilters =
-			skipQuickFilters || activeQuickFilters.size === 0
-				? []
-				: [...activeQuickFilters]
-		const interval = from &&
-			to && { start: startOfDay(from), end: endOfDay(to) }
+		const quickFilters = skipQuickFilters ? [] : [...activeQuickFilters]
+		const interval =
+			from && to ? { start: startOfDay(from), end: endOfDay(to) } : null
 
-		return searchedTasks
-			.filter((task) => {
-				const matchers = [
-					...(additionalFilter ? [additionalFilter(task)] : []),
-					...(quickFilters.length > 0
-						? [
-								quickFilters.some((filter) =>
-									matchesQuickFilter(task, filter, today),
-								),
-							]
-						: []),
-				]
-				return matchers.length === 0 || some(matchers)
-			})
-			.filter((task) => {
-				if (!interval) {
-					return true
-				}
+		function matchesQuickFilters(task: T) {
+			return quickFilters.some((filter) =>
+				matchesQuickFilter(task, filter, today),
+			)
+		}
 
-				const date = getTaskDate(task, dateType)
+		function matchesAnyFilter(task: T) {
+			if (!additionalFilter && quickFilters.length === 0) {
+				return true
+			}
 
-				return date && isWithinInterval(date, interval)
-			})
+			return !!additionalFilter?.(task) || matchesQuickFilters(task)
+		}
+
+		function matchesDateRange(task: T) {
+			if (!interval) {
+				return true
+			}
+
+			const date = getTaskDate(task, dateType)
+
+			return date && isWithinInterval(date, interval)
+		}
+
+		return searchedTasks.filter(
+			(task) => matchesAnyFilter(task) && matchesDateRange(task),
+		)
 	}, [
 		activeQuickFilters,
 		skipQuickFilters,

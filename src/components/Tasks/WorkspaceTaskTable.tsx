@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { Outlet } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
-import { without } from "lodash"
+import { values, without } from "lodash"
 import { useMemo } from "react"
 import type {
 	DeadlineType,
@@ -93,7 +93,7 @@ function WorkspaceTaskTable({
 		[statusFilter, deadlineTypeFilter, assigneeFilter],
 	)
 
-	const statusList = useMemo(() => Object.values(statuses), [statuses])
+	const statusList = useMemo(() => values(statuses), [statuses])
 
 	const noWorkspaceColumnOrder = useMemo(
 		() =>

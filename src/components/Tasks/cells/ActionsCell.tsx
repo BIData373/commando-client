@@ -14,7 +14,6 @@ export function ActionsCell<TTask extends TaskRowDto, TValue>({
 	const { getHandlers } = useTaskTable()
 	const [open, { set }] = useDisclosure()
 
-	// Owning `open` here re-renders this cell on open, so the menu reads the latest handlers
 	const actions = buildRowMenuActions(getHandlers(), original)
 
 	return (
