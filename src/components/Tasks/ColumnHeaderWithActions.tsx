@@ -2,9 +2,9 @@ import styled from "@emotion/styled"
 import type { Column, RowData } from "@tanstack/react-table"
 import { useState } from "react"
 import { TbArrowsSort } from "react-icons/tb"
-import type { AppTableFeatures } from "../../consts/table-features"
-import type { FilterOption } from "../../functions/filter-utils"
+import type { FilterOption } from "../../utils/filter-utils"
 import { ColumnFilterDropdown } from "./ColumnFilterDropdown"
+import type { AppTableFeatures } from "src/consts/table-features"
 
 interface ColumnHeaderWithActionsProps<TData extends RowData, TValue> {
 	label: string

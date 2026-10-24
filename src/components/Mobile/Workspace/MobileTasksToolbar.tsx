@@ -3,11 +3,11 @@ import { TbFilter, TbFilterOff } from "react-icons/tb"
 import type { TaskRowDto } from "src/api/model"
 import SearchInput from "src/components/shared/SearchInput"
 import { FilterPill } from "src/components/Tasks/TaskFilters"
-import { countQuickFilters } from "src/functions/filter-utils"
 import type { StatusTaskCount } from "src/functions/status-counts"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import {
 	ACTIVE_QUICK_FILTERS,
+	countQuickFilters,
 	QUICK_FILTER_LABELS,
 } from "src/utils/filter-utils"
 import MobileStatusBar from "./MobileStatusBar"
