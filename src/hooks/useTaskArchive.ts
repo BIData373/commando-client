@@ -16,7 +16,7 @@ import {
 } from "src/functions/toast-messages"
 import { invalidateQueries } from "src/query-client"
 import { runBatch } from "src/utils/batch-utils"
-import type { TaskArchiveEntry } from "./useTaskColumns"
+import type { TaskArchiveEntry } from "../functions/row-actions"
 
 interface TaskArchiveOptions {
 	/** The list query the calling page renders, invalidated after every toggle. */

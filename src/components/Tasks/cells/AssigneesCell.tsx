@@ -1,29 +1,33 @@
 import styled from "@emotion/styled"
+import type { CellContext } from "@tanstack/react-table"
 import { Popover as PopoverPrimitive } from "radix-ui"
 import { memo } from "react"
-import type { AssigneeDto, AssigneeStatusDto } from "src/api/model"
-import { AssigneeAvatar } from "../shared/AssigneeAvatar"
-import { AssigneeDetailPopover } from "../shared/AssigneeDetailPopover"
-import { StatusTag } from "../shared/StatusTag"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import type { TaskRowDto } from "src/api/model"
+import type { AppTableFeatures } from "src/utils/table-features"
+import { AssigneeAvatar } from "../../shared/AssigneeAvatar"
+import { AssigneeDetailPopover } from "../../shared/AssigneeDetailPopover"
+import { StatusTag } from "../../shared/StatusTag"
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover"
 
-//delete after replace assigneeAvatar
-export type AvatarColor = "cyan" | "blue" | "green" | "orange" | "gray"
+type AssigneesCellProps<TTask extends TaskRowDto, TValue> = CellContext<
+	AppTableFeatures,
+	TTask,
+	TValue
+>
 
-interface AssigneeCellProps {
-	assignee: AssigneeDto | null
-	otherAssignees: AssigneeStatusDto[]
-}
+function AssigneesCellContent<TTask extends TaskRowDto, TValue>({
+	row: {
+		original: { assignee, otherAssignees },
+	},
+}: AssigneesCellProps<TTask, TValue>) {
+	if (!assignee) return null
 
-export const AssigneeCell = memo(
-	({ assignee, otherAssignees }: AssigneeCellProps) => (
+	return (
 		<CellRoot>
-			{assignee && (
-				<AssigneeDetailPopover assignee={assignee}>
-					<AssigneeAvatar assignee={assignee} cursor />
-				</AssigneeDetailPopover>
-			)}
-			{otherAssignees.length > 0 && (
+			<AssigneeDetailPopover assignee={assignee}>
+				<AssigneeAvatar assignee={assignee} cursor />
+			</AssigneeDetailPopover>
+			{otherAssignees && otherAssignees.length > 0 && (
 				<Popover>
 					<PopoverTrigger asChild>
 						<AvatarCircle>{otherAssignees.length}+</AvatarCircle>
@@ -43,8 +47,21 @@ export const AssigneeCell = memo(
 				</Popover>
 			)}
 		</CellRoot>
-	),
-)
+	)
+}
+
+function isSameRow<TTask extends TaskRowDto, TValue>(
+	prev: AssigneesCellProps<TTask, TValue>,
+	next: AssigneesCellProps<TTask, TValue>,
+) {
+	return prev.row.original === next.row.original
+}
+
+// we use `isSameRow` to ensure that don't rerender the assignee too many times
+export const AssigneesCell = memo(
+	AssigneesCellContent,
+	isSameRow,
+) as typeof AssigneesCellContent
 
 // ─── Cell layout ──────────────────────────────────────────────────────────────
 
@@ -55,7 +72,7 @@ const CellRoot = styled.div`
 `
 
 // FIX Use AssigneeAvatar
-const AvatarCircle = styled.button<{ $color?: AvatarColor }>`
+const AvatarCircle = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -70,20 +87,14 @@ const AvatarCircle = styled.button<{ $color?: AvatarColor }>`
   cursor: pointer;
   border: none;
   padding: 0;
-  ${({ $color }) => `background: ${$color ?? "var(--colors-base-neutral-3)"};`}
+  background: var(--colors-base-neutral-3);
 `
 
-// ─── Shared popover styles ─────────────────────────────────────────────────────
-
-const POPOVER_SHADOW = `
-  box-shadow: var(--card-shadow-hover);
-`
+// ─── Popover ──────────────────────────────────────────────────────────────────
 
 const PopoverArrow = styled(PopoverPrimitive.Arrow)`
   fill: var(--background);
 `
-
-// ─── Compact popover ──────────────────────────────────────────────────────────
 
 const CompactContent = styled(PopoverContent)`
   width: 236px;
@@ -93,7 +104,7 @@ const CompactContent = styled(PopoverContent)`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  ${POPOVER_SHADOW}
+  box-shadow: var(--card-shadow-hover);
 `
 
 const CompactList = styled.div`

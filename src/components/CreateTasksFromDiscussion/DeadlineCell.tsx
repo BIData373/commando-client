@@ -239,23 +239,6 @@ const PopoverFooter = styled.div`
   gap: 8px;
 `
 
-const SetButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 32px;
-  padding-inline: 15px;
-  border: 1px solid var(--primary);
-  border-radius: 6px;
-  background: var(--default-linear);
-  color: var(--background);
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  cursor: pointer;
-  white-space: nowrap;
-`
-
 const SetWithoutDateButton = styled.button`
   display: flex;
   align-items: center;
