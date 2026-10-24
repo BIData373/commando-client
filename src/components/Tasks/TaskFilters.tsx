@@ -5,8 +5,8 @@ import { FilterX } from "lucide-react"
 import { type ReactNode, useMemo } from "react"
 import type { ListMessagesParams, TaskRowDto } from "src/api/model"
 import type { QuickFilter } from "src/api/model/quick-filter"
-import { countQuickFilters } from "src/functions/filter-utils"
 import {
+	countQuickFilters,
 	QUICK_FILTER_LABELS,
 	QUICK_FILTER_TOOLTIPS,
 } from "src/utils/filter-utils"
@@ -136,13 +136,13 @@ export function TaskFilters<TTask extends TaskRowDto>({
 
 		const tooltip = QUICK_FILTER_TOOLTIPS[filter]
 
-		if (!tooltip) return pill
-
-		return (
+		return tooltip ? (
 			<Tooltip key={filter}>
 				<WarningTrigger>{pill}</WarningTrigger>
 				<TooltipContent>{tooltip}</TooltipContent>
 			</Tooltip>
+		) : (
+			pill
 		)
 	}
 

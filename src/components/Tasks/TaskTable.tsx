@@ -16,7 +16,6 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { toast } from "src/components/Toast/toast-api"
-import { buildFilterOptionsMap } from "src/functions/filter-utils"
 import {
 	buildRowMenuActions,
 	type TaskArchiveEntry,
@@ -32,6 +31,7 @@ import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { TaskTableProvider } from "src/providers/TaskTableProvider"
 import { runBatch } from "src/utils/batch-utils"
 import { getEmptyState } from "src/utils/empty-state-utils"
+import { buildFilterOptionsMap } from "src/utils/filter-utils"
 import type { AppTableFeatures } from "src/utils/table-features"
 import {
 	buildUrlColumnFilters,

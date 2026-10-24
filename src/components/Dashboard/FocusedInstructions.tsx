@@ -7,10 +7,10 @@ import {
 	WorkspaceStatusType,
 } from "src/api/model"
 import { QuickFilter } from "src/api/model/quick-filter"
-import { matchesQuickFilter } from "src/functions/filter-utils"
 import { useUserView } from "src/providers/UserViewProvider"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
+import { matchesQuickFilter } from "src/utils/filter-utils"
 import { hiddenColumnsExcept } from "src/utils/task-table-utils"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DashboardSection } from "./DashboardSection"
