@@ -12,6 +12,7 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	useListPersonalTaskRows,
 } from "src/api/task/task"
+import type { AppTableFeatures } from "src/consts/table-features"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useTaskArchive } from "src/hooks/useTaskArchive"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
@@ -21,7 +22,6 @@ import {
 	ARCHIVE_QUICK_FILTERS,
 } from "src/utils/filter-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
-import type { AppTableFeatures } from "src/utils/table-features"
 import {
 	COLUMN_LABELS,
 	TASK_COLUMN_ID,

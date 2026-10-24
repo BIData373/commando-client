@@ -19,7 +19,7 @@ import {
   type MouseEvent,
   type ReactNode
 } from 'react'
-import { appTableFeatures, type AppTableFeatures } from '../../utils/table-features'
+import { appTableFeatures, type AppTableFeatures } from '../../consts/table-features'
 import { DataTableBody } from './data-table-body'
 import { Table, TableHead, TableHeader, TableRow } from './table'
 

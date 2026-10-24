@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { createColumnHelper } from "@tanstack/react-table"
 import type { CreateTaskDto } from "src/api/model"
-import type { AppTableFeatures } from "../../utils/table-features"
+import type { AppTableFeatures } from "../../consts/table-features"
 import FlagIcon from "../shared/FlagIcon"
 import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
 import { TrashButton } from "../shared/TrashButton"

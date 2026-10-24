@@ -15,6 +15,7 @@ import {
 	getListTaskRowsQueryKey,
 	useListTaskRows,
 } from "src/api/task/task"
+import type { AppTableFeatures } from "src/consts/table-features"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useTaskArchive } from "src/hooks/useTaskArchive"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -24,7 +25,6 @@ import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
 } from "src/utils/filter-utils"
-import type { AppTableFeatures } from "src/utils/table-features"
 import { TASK_COLUMN_ID, type TaskColumnMeta } from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"

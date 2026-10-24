@@ -6,9 +6,9 @@ import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { DateText } from "src/components/shared/DateText"
 import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithActions"
+import type { AppTableFeatures } from "src/consts/table-features"
 import { formatDateShort } from "src/functions/date-utils"
 import { useOpenTask } from "src/hooks/useOpenTask"
-import type { AppTableFeatures } from "src/utils/table-features"
 import {
 	ARCHIVE_DEFAULT_HIDDEN,
 	COLUMN_LABELS,

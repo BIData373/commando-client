@@ -14,9 +14,9 @@ import {
 	type WorkspaceStatusDto,
 	WorkspaceStatusType,
 } from "src/api/model"
+import type { AppTableFeatures } from "src/consts/table-features"
 import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
-import type { AppTableFeatures } from "src/utils/table-features"
 import {
 	COLUMN_LABELS,
 	createTaskColumnDefinitions,

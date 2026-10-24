@@ -6,8 +6,8 @@ import {
 } from "@tanstack/react-table"
 import { concat, intersection, map, uniq, zipObject } from "lodash"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
+import type { AppTableFeatures } from "../consts/table-features"
 import { formatSourceLabel } from "../functions/source-utils"
-import type { AppTableFeatures } from "./table-features"
 
 export interface TaskColumnMeta {
 	id: keyof TaskRowWithWorkspaceDto

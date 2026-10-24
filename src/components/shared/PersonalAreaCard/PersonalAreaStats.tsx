@@ -4,7 +4,7 @@ import type {
 	TaskRowWithWorkspaceDto,
 	WorkspaceStatusType,
 } from "src/api/model"
-import { STATUS_DEFAULTS } from "src/functions/status-defaults"
+import { STATUS_DEFAULTS } from "src/consts/status-defaults"
 
 type PersonalAreaStatsProps = {
 	taskRows: TaskRowWithWorkspaceDto[]

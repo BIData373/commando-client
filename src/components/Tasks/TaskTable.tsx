@@ -17,6 +17,7 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { toast } from "src/components/Toast/toast-api"
+import type { AppTableFeatures } from "src/consts/table-features"
 import { buildFilterOptionsMap } from "src/functions/filter-utils"
 import {
 	deleteTaskMessage,
@@ -27,7 +28,6 @@ import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { runBatch } from "src/utils/batch-utils"
 import { getEmptyState } from "src/utils/empty-state-utils"
-import type { AppTableFeatures } from "src/utils/table-features"
 import {
 	DISABLED_CLICK_COLUMNS,
 	groupRowsByTask,

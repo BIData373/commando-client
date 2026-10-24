@@ -6,10 +6,10 @@ import { DateText } from "src/components/shared/DateText"
 import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithActions"
 import WorkspaceTaskTable from "src/components/Tasks/WorkspaceTaskTable"
 import { WorkspaceTabs } from "src/components/WorkspaceTabs"
+import type { AppTableFeatures } from "src/consts/table-features"
 import { formatDateShort } from "src/functions/date-utils"
 import { useOpenTask } from "src/hooks/useOpenTask"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import type { AppTableFeatures } from "src/utils/table-features"
 import {
 	ARCHIVE_DEFAULT_HIDDEN,
 	COLUMN_LABELS,

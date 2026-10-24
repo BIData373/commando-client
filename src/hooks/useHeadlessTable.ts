@@ -8,7 +8,7 @@ import {
 import {
 	type AppTableFeatures,
 	appTableFeatures,
-} from "../utils/table-features"
+} from "../consts/table-features"
 
 interface UseHeadlessTableOptions<TData extends RowData> {
 	data: TData[]

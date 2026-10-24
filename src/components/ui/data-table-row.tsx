@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { flexRender, type Cell, type Row, type RowData } from '@tanstack/react-table'
 import { isEqual, isEqualWith } from 'lodash'
 import { Fragment, memo, type MouseEvent, type ReactNode } from 'react'
-import type { AppTableFeatures } from '../../utils/table-features'
+import type { AppTableFeatures } from '../../consts/table-features'
 import { TableCell, TableRow } from './table'
 
 export const EXPANSION_ROW_ATTR = 'data-expansion-row'
