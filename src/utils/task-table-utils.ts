@@ -1,10 +1,11 @@
 import {
 	type ColumnDef,
+	type ColumnFiltersState,
 	createColumnHelper,
 	type IdentifiedColumnDef,
 	type Row,
 } from "@tanstack/react-table"
-import { concat, intersection, map, uniq, zipObject } from "lodash"
+import { concat, groupBy, intersection, map, uniq, zipObject } from "lodash"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
 import type { AppTableFeatures } from "../consts/table-features"
 import { formatSourceLabel } from "../functions/source-utils"
@@ -83,6 +84,10 @@ function multiSelectColumnFilter<TTask extends TaskRowDto>(
 	return !filterValue?.length || filterValue.includes(row.getValue(columnId))
 }
 
+export function getTaskTagNames(task: TaskRowDto): string[] {
+	return map(concat(task.tags, task.source?.tags ?? []), "name")
+}
+
 function compareDueDates(dueDateA: Date | null, dueDateB: Date | null) {
 	const a = dueDateA ? new Date(dueDateA).getTime() : Infinity
 	const b = dueDateB ? new Date(dueDateB).getTime() : Infinity
@@ -122,8 +127,11 @@ export function createTaskColumnDefinitions<TTask extends TaskRowDto>() {
 		),
 		tags: defineColumn(
 			TASK_COLUMN_ID.tags,
-			(row) => uniq(map(concat(row.tags, row.source?.tags ?? []), "name")),
-			{ filterFn: "arrIncludesSome" },
+			(row) => uniq(getTaskTagNames(row)),
+			{
+				filterFn: "arrIncludesSome",
+				getUniqueValues: getTaskTagNames,
+			},
 		),
 		deadlineType: defineColumn(
 			TASK_COLUMN_ID.deadlineType,
@@ -163,14 +171,33 @@ export function buildCountingColumns<TTask extends TaskRowDto>(
 export function groupRowsByTask<TTask extends TaskRowDto>(
 	tasks: TTask[],
 ): TTask[] {
-	const rowsByTaskId = new Map<number, TTask[]>()
+	const rowsByTaskId = groupBy(tasks, "id")
 
-	tasks.forEach((task) => {
-		rowsByTaskId.set(task.id, [...(rowsByTaskId.get(task.id) ?? []), task])
-	})
-
-	return [...rowsByTaskId.values()].flat()
+	return uniq(map(tasks, "id")).flatMap((id) => rowsByTaskId[id])
 }
+
+export function buildUrlColumnFilters(
+	statusFilter: string[],
+	deadlineTypeFilter: string[],
+	assigneeFilter: string[],
+): ColumnFiltersState {
+	return [
+		...(statusFilter.length
+			? [{ id: TASK_COLUMN_ID.status, value: statusFilter }]
+			: []),
+		...(deadlineTypeFilter.length
+			? [{ id: TASK_COLUMN_ID.deadlineType, value: deadlineTypeFilter }]
+			: []),
+		...(assigneeFilter.length
+			? [{ id: TASK_COLUMN_ID.assignee, value: assigneeFilter }]
+			: []),
+	]
+}
+
+/** Shared empty defaults: a fresh `[]` or `new Set()` per render would invalidate every memo keyed on it */
+export const EMPTY_LIST: never[] = []
+
+export const EMPTY_SET = new Set<never>()
 
 export const CONFIGURABLE_COLUMNS = CONFIGURABLE_COLUMNS_META.filter(
 	(c) => c.id !== TASK_COLUMN_ID.serialId,
@@ -196,7 +223,7 @@ export function reconcileColumnOrder(
 	)
 }
 
-export function toHiddenColumns<TId extends string>(
+export function hiddenColumnsExcept<TId extends string>(
 	visibleColumns: TId[],
 ): Set<TId> {
 	const visible = new Set(visibleColumns)
