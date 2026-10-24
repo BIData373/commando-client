@@ -1,26 +1,30 @@
 import { differenceInDays, startOfToday } from "date-fns"
-import { uniqBy } from "lodash"
+import { compact, keyBy, map, mapValues, sumBy, uniq, uniqBy } from "lodash"
 import type { TaskRowDto } from "src/api/model"
-import { DeadlineType, WorkspaceStatusType } from "src/api/model"
-import { QuickFilter } from "src/api/model/quick-filter"
+import { DeadlineType, QuickFilter, WorkspaceStatusType } from "src/api/model"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
+import { getTaskTagNames } from "../utils/task-table-utils"
 import { formatSourceLabel } from "./source-utils"
 
 // TODO Move to utils/filter-utils
-// ─── Shared Types ────────────────────────────────────────────────────────────
 
 export interface FilterOption {
 	value: string
 	label: string
 }
 
-// ─── Quick Filters ───────────────────────────────────────────────────────────
+export type FilterOptions =
+	| "assignee"
+	| "status"
+	| "deadlineType"
+	| "source"
+	| "tags"
 
 export function matchesQuickFilter(
 	task: TaskRowDto,
 	filter: QuickFilter,
+	today: Date = startOfToday(),
 ): boolean {
-	const today = startOfToday()
 	const daysUntil = task.dueDate ? differenceInDays(task.dueDate, today) : null
 	const isNotCompleted = task.status.type !== WorkspaceStatusType.COMPLETED
 	const isNotImmediate = task.deadlineType !== DeadlineType.IMMEDIATE
@@ -48,55 +52,42 @@ export function matchesQuickFilter(
 	}
 }
 
-export type FilterOptions =
-	| "assignee"
-	| "status"
-	| "deadlineType"
-	| "source"
-	| "tags"
+export function countQuickFilters(
+	tasks: TaskRowDto[],
+): Record<QuickFilter, number> {
+	const today = startOfToday()
+
+	return mapValues(keyBy(Object.values(QuickFilter)), (filter) =>
+		sumBy(tasks, (task) => Number(matchesQuickFilter(task, filter, today))),
+	) as Record<QuickFilter, number>
+}
+
+function toFilterOptions(
+	values: string[],
+	labels?: Record<string, string>,
+): FilterOption[] {
+	return uniq(values).map((value) => ({
+		value,
+		label: labels?.[value] ?? value,
+	}))
+}
 
 export function buildFilterOptionsMap(
 	tasks: TaskRowDto[],
 ): Record<FilterOptions, FilterOption[]> {
-	const assigneeSet = new Set<string>()
-	const deadlineTypeSet = new Set<string>()
-	const sourceSet = new Set<string>()
-	const tagsSet = new Set<string>()
-
-	for (const t of tasks) {
-		deadlineTypeSet.add(t.deadlineType)
-
-		if (t.assignee) {
-			assigneeSet.add(t.assignee.name)
-		}
-
-		if (t.source) {
-			sourceSet.add(formatSourceLabel(t.source))
-		}
-
-		t.tags.forEach((tag) => {
-			tagsSet.add(tag.name)
-		})
-
-		t.source?.tags?.forEach((tag) => {
-			tagsSet.add(tag.name)
-		})
-	}
-
-	const toOptions = (
-		set: Set<string>,
-		labelMap?: Record<string, string>,
-	): FilterOption[] =>
-		[...set].map((v) => ({ value: v, label: labelMap?.[v] ?? v }))
-
 	return {
-		assignee: toOptions(assigneeSet),
-		status: uniqBy(
-			tasks.map(({ status }) => status).filter((status) => !!status),
-			"type",
-		).map((s) => ({ value: s.type, label: s.name })),
-		deadlineType: toOptions(deadlineTypeSet, DEADLINE_LABELS),
-		source: toOptions(sourceSet),
-		tags: toOptions(tagsSet),
+		assignee: toFilterOptions(
+			compact(tasks.map((task) => task.assignee?.name)),
+		),
+		status: uniqBy(compact(map(tasks, "status")), "type").map(
+			({ type, name }) => ({ value: type, label: name }),
+		),
+		deadlineType: toFilterOptions(map(tasks, "deadlineType"), DEADLINE_LABELS),
+		source: toFilterOptions(
+			compact(
+				tasks.map((task) => task.source && formatSourceLabel(task.source)),
+			),
+		),
+		tags: toFilterOptions(tasks.flatMap(getTaskTagNames)),
 	}
 }
