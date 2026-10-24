@@ -274,9 +274,9 @@ const CellTextarea = styled.textarea<{ $color?: string }>`
   text-align: right;
   outline: none;
   resize: none;
+  padding-inline: 12px;
   overflow-y: auto;
   overflow-x: hidden;
-  height: 100%;
   display: flex;
 
   

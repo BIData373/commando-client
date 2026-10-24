@@ -124,6 +124,7 @@ const CollapsedAssigneeButton = styled.button`
   justify-content: space-between;
   width: 100%;
   height: 100%;
+  padding-inline: 12px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -144,6 +145,7 @@ const CompactTriggerButton = styled.button`
   justify-content: space-between;
   width: 100%;
   height: 100%;
+  padding-inline: 12px;
   border: none;
   outline: none;
   background: transparent;
