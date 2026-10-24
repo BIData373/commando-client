@@ -17,12 +17,14 @@ import { DashboardSection } from "./DashboardSection"
 import { TaskPreviewTable } from "./TaskPreviewTable"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
-const HIDDEN_COLUMNS = toHiddenColumns<keyof TaskRowDto>([
+const VISIBLE_COLUMNS: (keyof TaskRowDto)[] = [
 	"title",
 	"status",
 	"assignee",
 	"deadlineType",
-])
+]
+
+const HIDDEN_COLUMNS = toHiddenColumns(VISIBLE_COLUMNS)
 
 interface TabConfig {
 	id: QuickFilter
