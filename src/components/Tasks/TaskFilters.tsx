@@ -136,13 +136,13 @@ export function TaskFilters<TTask extends TaskRowDto>({
 
 		const tooltip = QUICK_FILTER_TOOLTIPS[filter]
 
-		if (!tooltip) return pill
-
-		return (
+		return tooltip ? (
 			<Tooltip key={filter}>
 				<WarningTrigger>{pill}</WarningTrigger>
 				<TooltipContent>{tooltip}</TooltipContent>
 			</Tooltip>
+		) : (
+			pill
 		)
 	}
 
