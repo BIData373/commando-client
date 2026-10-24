@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import type { Row, RowData } from '@tanstack/react-table'
-import { useVirtualizer } from '@tanstack/react-virtual'
+import { observeElementRect, useVirtualizer, type Virtualizer } from '@tanstack/react-virtual'
 import { isEmpty, mapValues } from 'lodash'
 import { useState, type MouseEvent, type ReactNode, type RefObject } from 'react'
 import type { AppTableFeatures } from '../../consts/table-features'
@@ -49,6 +49,20 @@ function isIndexInRange(index: number, range: RowRange | null) {
   return range !== null && index >= range.first && index <= range.last
 }
 
+/**
+ * A scroll container sized by its content measures 0px until rows render, and the
+ * virtualizer renders no rows for a 0px viewport. Assuming the window's height
+ * breaks that deadlock; once rows render, the container reports its real size.
+ */
+function observeContentSizedRect(
+  instance: Virtualizer<HTMLDivElement, Element>,
+  onRect: (rect: { width: number; height: number }) => void,
+) {
+  return observeElementRect(instance, (rect) => {
+    onRect(rect.height > 0 ? rect : { ...rect, height: instance.targetWindow?.innerHeight ?? 0 })
+  })
+}
+
 function measureRowWithExpansion(element: Element) {
   const expansion = element.nextElementSibling
   const expansionHeight = expansion?.hasAttribute(EXPANSION_ROW_ATTR) ? expansion.clientHeight : 0
@@ -79,6 +93,7 @@ export function DataTableBody<TData extends RowData>({
     overscan: VIRTUAL_OVERSCAN,
     useFlushSync: false,
     measureElement: measureRowWithExpansion,
+    observeElementRect: observeContentSizedRect,
   })
 
   // Rows are fixed height unless they can expand; measuring them anyway costs a

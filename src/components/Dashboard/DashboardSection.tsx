@@ -39,6 +39,7 @@ const ContentPanel = styled.div`
   background: var(--background);
   border-radius: 8px;
   overflow: hidden;
+  --table-row-height: 44px;
 
   [data-slot="table-container"] {
     overflow-y: auto;
@@ -70,5 +71,11 @@ const ContentPanel = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    /* \`clip\` doesn't make the cell a scroll container, so the sticky serial ID follows the scroll */
+    &[rowspan] {
+      vertical-align: top;
+      overflow: clip;
+    }
   }
 `
