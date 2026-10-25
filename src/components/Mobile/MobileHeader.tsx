@@ -34,12 +34,12 @@ export default function MobileHeader({
 			)
 		case "task":
 			return (
-				<HeaderRoot $isWithoutSpaceBetween={true}>
+				<BackOnlyHeaderRoot>
 					<BackRedirect onClick={onBack}>
 						חזרה
 						<ArrowLeft size={18} />
 					</BackRedirect>
-				</HeaderRoot>
+				</BackOnlyHeaderRoot>
 			)
 		default:
 			return (
@@ -56,14 +56,18 @@ export default function MobileHeader({
 	}
 }
 
-const HeaderRoot = styled.header<{ $isWithoutSpaceBetween?: boolean }>`
+const HeaderRoot = styled.header`
 	display: flex;
 	align-items: center;
-	justify-content: ${({ $isWithoutSpaceBetween }) => ($isWithoutSpaceBetween ? "flex-end" : "space-between")};
+	justify-content: space-between;
 	height: 64px;
 	padding: 0 16px;
 	background: var(--header-bg);
 	flex-shrink: 0;
+`
+
+const BackOnlyHeaderRoot = styled(HeaderRoot)`
+	justify-content: flex-end;
 `
 
 const MinimalRoot = styled.header`
