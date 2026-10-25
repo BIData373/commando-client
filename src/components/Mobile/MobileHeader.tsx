@@ -1,20 +1,20 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
-import { ChevronRight } from "lucide-react"
-import logoIcon from "src/assets/logo-icon.svg"
+import { ArrowLeft, ChevronRight } from "lucide-react"
+import logoIcon from "src/assets/logo-with-text.svg"
 import WorkspaceIconTitle from "src/components/shared/WorkspaceIconTitle"
 
 interface MobileHeaderProps {
 	icon?: string | null
 	title: string
-	minimal?: boolean
+	variant?: string
 	onBack?: () => void
 }
 
 export default function MobileHeader({
 	icon,
 	title,
-	minimal,
+	variant,
 	onBack,
 }: MobileHeaderProps) {
 	const navigate = useNavigate()
@@ -23,24 +23,37 @@ export default function MobileHeader({
 		navigate({ to: "/" })
 	}
 
-	return minimal ? (
-		<MinimalRoot>
-			<ChevronButton onMouseDown={onBack}>
-				<ChevronRight size={18} />
-			</ChevronButton>
-		</MinimalRoot>
-	) : (
-		<HeaderRoot>
-			<StyledWorkspaceIconTitle
-				icon={icon}
-				title={title}
-				iconSize={28}
-				rounded
-			/>
-
-			<Logo src={logoIcon} alt="Vector" onClick={handleLogoClick} />
-		</HeaderRoot>
-	)
+	switch (variant) {
+		case "minimal":
+			return (
+				<MinimalRoot>
+					<ChevronButton onMouseDown={onBack}>
+						<ChevronRight size={18} />
+					</ChevronButton>
+				</MinimalRoot>
+			)
+		case "task":
+			return (
+				<BackOnlyHeaderRoot>
+					<BackRedirect onClick={onBack}>
+						חזרה
+						<ArrowLeft size={18} />
+					</BackRedirect>
+				</BackOnlyHeaderRoot>
+			)
+		default:
+			return (
+				<HeaderRoot>
+					<StyledWorkspaceIconTitle
+						icon={icon}
+						title={title}
+						iconSize={28}
+						rounded
+					/>
+					<Logo src={logoIcon} alt="Vector" onClick={handleLogoClick} />
+				</HeaderRoot>
+			)
+	}
 }
 
 const HeaderRoot = styled.header`
@@ -51,6 +64,10 @@ const HeaderRoot = styled.header`
 	padding: 0 16px;
 	background: var(--header-bg);
 	flex-shrink: 0;
+`
+
+const BackOnlyHeaderRoot = styled(HeaderRoot)`
+	justify-content: flex-end;
 `
 
 const MinimalRoot = styled.header`
@@ -91,4 +108,11 @@ const StyledWorkspaceIconTitle = styled(WorkspaceIconTitle)`
 	font-weight: 500;
 	line-height: 28px;
 	color: var(--background);
+`
+
+const BackRedirect = styled.button`
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--Text-color-text);
 `

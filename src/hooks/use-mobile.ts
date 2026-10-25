@@ -13,10 +13,7 @@ export function useIsMobileDevice() {
 }
 
 export function useIsMobile() {
-	const isSmallScreen = useMediaQuery(MOBILE_QUERY, false, {
+	return useMediaQuery(MOBILE_QUERY, false, {
 		getInitialValueInEffect: false,
 	})
-	const isMobileDevice = useIsMobileDevice()
-
-	return isSmallScreen || isMobileDevice
 }
