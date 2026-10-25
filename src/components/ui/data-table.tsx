@@ -372,7 +372,7 @@ const ExpansionCell = styled.td`
   outline: none !important;
 `
 
-const StyledTable = styled(Table) <{ $minWidth?: number }>`
+const StyledTable = styled(Table, { shouldForwardProp: (prop: string) => !prop.startsWith("$") })<{ $minWidth?: number }>`
   min-width: ${({ $minWidth }) => ($minWidth !== undefined ? `${$minWidth}px` : undefined)};
 `
 

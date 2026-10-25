@@ -47,7 +47,9 @@ export function StatusTag({
 	)
 }
 
-const Arrow = styled(TbChevronDown)<{ $open: boolean }>`
+const Arrow = styled(TbChevronDown, {
+	shouldForwardProp: (prop: string) => !prop.startsWith("$"),
+})<{ $open: boolean }>`
   flex-shrink: 0;
   color: var(--text-color-2);
   transition: transform 0.2s ease;

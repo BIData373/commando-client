@@ -5,6 +5,10 @@ import type {
 } from "@tanstack/react-table"
 import { concat, intersection, map, uniq, zipObject } from "lodash"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
+import {
+	EMPTY_FILTER_VALUE,
+	getDeadlineFilterValue,
+} from "../functions/filter-utils"
 import { formatSourceLabel } from "../functions/source-utils"
 
 export interface TaskColumnMeta {
@@ -78,11 +82,16 @@ export const multiSelectColumnFilter: FilterFn<Partial<TaskRowDto>> = (
 	columnId,
 	filterValue: string[],
 ) => {
-	return !filterValue?.length || filterValue.includes(row.getValue(columnId))
+	const rowValues = row.getUniqueValues(columnId)
+	return !filterValue?.length || filterValue.some((v) => rowValues.includes(v))
 }
 
 function getTaskTagNames(row: Partial<TaskRowDto>): string[] {
 	return uniq(map(concat(row.tags ?? [], row.source?.tags ?? []), "name"))
+}
+
+function getSourceLabel(row: Partial<TaskRowDto>) {
+	return row.source && formatSourceLabel(row.source)
 }
 
 export const TASK_COLUMN_DEFINITIONS: Partial<
@@ -100,12 +109,16 @@ export const TASK_COLUMN_DEFINITIONS: Partial<
 	[TASK_COLUMN_ID.assignee]: {
 		sortingFn: "text",
 		accessorFn: (row) => row.assignee?.name,
+		getUniqueValues: (row) => [row.assignee?.name || EMPTY_FILTER_VALUE],
 		filterFn: multiSelectColumnFilter,
 	},
 	[TASK_COLUMN_ID.tags]: {
 		accessorFn: getTaskTagNames,
-		getUniqueValues: getTaskTagNames,
-		filterFn: "arrIncludesSome",
+		getUniqueValues: (row) => {
+			const tagNames = getTaskTagNames(row)
+			return tagNames.length ? tagNames : [EMPTY_FILTER_VALUE]
+		},
+		filterFn: multiSelectColumnFilter,
 	},
 	[TASK_COLUMN_ID.deadlineType]: {
 		accessorKey: TASK_COLUMN_ID.deadlineType,
@@ -117,11 +130,13 @@ export const TASK_COLUMN_DEFINITIONS: Partial<
 			const b = dueDateB ? new Date(dueDateB).getTime() : Infinity
 			return a > b ? 1 : a < b ? -1 : 0
 		},
+		getUniqueValues: (row) => [getDeadlineFilterValue(row)],
 		filterFn: multiSelectColumnFilter,
 	},
 	[TASK_COLUMN_ID.source]: {
 		sortingFn: "text",
-		accessorFn: (row) => row.source && formatSourceLabel(row.source),
+		accessorFn: getSourceLabel,
+		getUniqueValues: (row) => [getSourceLabel(row) || EMPTY_FILTER_VALUE],
 		filterFn: multiSelectColumnFilter,
 	},
 	[TASK_COLUMN_ID.createdAt]: { sortingFn: "datetime" },

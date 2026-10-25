@@ -5,7 +5,7 @@ import type {
 	Row,
 	RowSelectionState,
 } from "@tanstack/react-table"
-import { chain, uniqBy } from "lodash"
+import { chain, uniqBy, without } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
 import type {
@@ -17,7 +17,10 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { toast } from "src/components/Toast/toast-api"
-import { buildFilterOptionsMap } from "src/functions/filter-utils"
+import {
+	buildFilterOptionsMap,
+	EMPTY_FILTER_VALUE,
+} from "src/functions/filter-utils"
 import {
 	deleteTaskMessage,
 	updateStatusMessage,
@@ -154,7 +157,10 @@ function TaskTable<TTask extends TaskRowDto>({
 
 		setColumnsFilters(newFilters)
 		setAssigneeFilter(tableAssigneeColumnValue)
-		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
+		onFiltersChange?.(
+			tableStatusColumnValue,
+			without(tableDeadlineColumnValue, EMPTY_FILTER_VALUE as DeadlineType),
+		)
 	}
 
 	const selectedRowKeys = Object.keys(rowSelection).filter(
@@ -254,7 +260,10 @@ function TaskTable<TTask extends TaskRowDto>({
 		)
 	}
 
-	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
+	const filterOptionsMap = useMemo(
+		() => buildFilterOptionsMap(tasks, true),
+		[tasks],
+	)
 
 	const { columns } = useTaskColumns({
 		columnOrder,

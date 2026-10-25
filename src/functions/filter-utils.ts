@@ -14,6 +14,19 @@ export interface FilterOption {
 	label: string
 }
 
+export const EMPTY_FILTER_VALUE = "__EMPTY__"
+
+const EMPTY_FILTER_LABEL = "(ריקים)"
+
+export function getDeadlineFilterValue(
+	task: Pick<Partial<TaskRowDto>, "deadlineType" | "dueDate">,
+): string {
+	return !task.deadlineType ||
+		(task.deadlineType === DeadlineType.DATE && !task.dueDate)
+		? EMPTY_FILTER_VALUE
+		: task.deadlineType
+}
+
 // ─── Quick Filters ───────────────────────────────────────────────────────────
 
 export function matchesQuickFilter(
@@ -57,6 +70,7 @@ export type FilterOptions =
 
 export function buildFilterOptionsMap(
 	tasks: TaskRowDto[],
+	includeEmpty = false,
 ): Record<FilterOptions, FilterOption[]> {
 	const assigneeSet = new Set<string>()
 	const deadlineTypeSet = new Set<string>()
@@ -64,14 +78,12 @@ export function buildFilterOptionsMap(
 	const tagsSet = new Set<string>()
 
 	for (const t of tasks) {
-		deadlineTypeSet.add(t.deadlineType)
+		deadlineTypeSet.add(getDeadlineFilterValue(t))
+		assigneeSet.add(t.assignee?.name || EMPTY_FILTER_VALUE)
+		sourceSet.add(t.source ? formatSourceLabel(t.source) : EMPTY_FILTER_VALUE)
 
-		if (t.assignee) {
-			assigneeSet.add(t.assignee.name)
-		}
-
-		if (t.source) {
-			sourceSet.add(formatSourceLabel(t.source))
+		if (!t.tags.length && !t.source?.tags?.length) {
+			tagsSet.add(EMPTY_FILTER_VALUE)
 		}
 
 		t.tags.forEach((tag) => {
@@ -87,7 +99,17 @@ export function buildFilterOptionsMap(
 		set: Set<string>,
 		labelMap?: Record<string, string>,
 	): FilterOption[] =>
-		[...set].map((v) => ({ value: v, label: labelMap?.[v] ?? v }))
+		[...set]
+			.filter((v) => includeEmpty || v !== EMPTY_FILTER_VALUE)
+			.sort(
+				(a, b) =>
+					Number(a === EMPTY_FILTER_VALUE) - Number(b === EMPTY_FILTER_VALUE),
+			)
+			.map((v) => ({
+				value: v,
+				label:
+					v === EMPTY_FILTER_VALUE ? EMPTY_FILTER_LABEL : (labelMap?.[v] ?? v),
+			}))
 
 	return {
 		assignee: toOptions(assigneeSet),

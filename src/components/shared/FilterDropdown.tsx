@@ -216,7 +216,7 @@ const OptionsList = styled.div`
   direction: ltr;
 `
 
-const OptionItem = styled.button`
+const OptionItem = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
