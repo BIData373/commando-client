@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { useRouter } from "@tanstack/react-router"
 import type { TaskWithWorkspaceDto } from "src/api/model"
 import MobileHeader from "../MobileHeader"
-import { MobileTaskDryInfo } from "./MobileTaskDryInfo"
+import { MobileTaskInfo } from "./MobileTaskInfo"
 
 interface MobileViewTaskDetailProps {
 	task?: TaskWithWorkspaceDto
@@ -20,7 +20,7 @@ export function MobileViewTaskDetail({ task }: MobileViewTaskDetailProps) {
 			<PageShell>
 				<MobileHeader variant="task" onBack={handleBackRedirect} title="" />
 				<TaskContainer>
-					<MobileTaskDryInfo task={task} />
+					<MobileTaskInfo task={task} />
 				</TaskContainer>
 			</PageShell>
 		)

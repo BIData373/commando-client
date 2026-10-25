@@ -6,11 +6,11 @@ import { DueDateGroup } from "src/components/shared/DueDateGroup"
 import { TagsRow } from "src/components/shared/TagsRow"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 
-interface MobileTaskDryInfoProps {
+interface MobileTaskInfoProps {
 	task: TaskWithWorkspaceDto
 }
 
-export function MobileTaskDryInfo({
+export function MobileTaskInfo({
 	task: {
 		serialId,
 		title,
@@ -22,7 +22,7 @@ export function MobileTaskDryInfo({
 		notes,
 		tags,
 	},
-}: MobileTaskDryInfoProps) {
+}: MobileTaskInfoProps) {
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
 	const isTaskDetailsExist = !!notes || !!source || allTags.length > 0
 
