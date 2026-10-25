@@ -1,7 +1,7 @@
 import type { CellContext } from "@tanstack/react-table"
 import type { TaskRowDto, WorkspaceStatusDto } from "src/api/model"
+import type { AppTableFeatures } from "src/consts/table-features"
 import { useTaskTable } from "src/providers/TaskTableProvider"
-import type { AppTableFeatures } from "src/utils/table-features"
 import { StatusDropdown } from "../StatusDropdown"
 
 export function StatusCell<TTask extends TaskRowDto, TValue>({

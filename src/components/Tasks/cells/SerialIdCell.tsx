@@ -1,8 +1,8 @@
 import styled from "@emotion/styled"
 import type { CellContext } from "@tanstack/react-table"
 import type { TaskRowDto } from "src/api/model"
+import type { AppTableFeatures } from "src/consts/table-features"
 import { useTaskTable } from "src/providers/TaskTableProvider"
-import type { AppTableFeatures } from "src/utils/table-features"
 import HighlightMatch from "../../shared/HighlightMatch"
 
 export function SerialIdCell<TTask extends TaskRowDto, TValue>({

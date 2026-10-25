@@ -3,9 +3,9 @@ import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
 import WorkspaceCell from "../components/shared/WorkspaceCell"
 import { DateCell } from "../components/Tasks/cells/DateCell"
 import { TaskColumnHeader } from "../components/Tasks/cells/TaskColumnHeader"
+import type { AppTableFeatures } from "../consts/table-features"
 import { useTaskTable } from "../providers/TaskTableProvider"
 import { localeSortBy } from "./sort-utils"
-import type { AppTableFeatures } from "./table-features"
 import { TASK_COLUMN_ID } from "./task-table-utils"
 
 const taskColumnHelper = createColumnHelper<AppTableFeatures, TaskRowDto>()

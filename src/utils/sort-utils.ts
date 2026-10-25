@@ -1,7 +1,7 @@
 import type { RowData, SortFn } from "@tanstack/react-table"
 import { get } from "lodash"
+import type { AppTableFeatures } from "../consts/table-features"
 import type { StringPath } from "../types/path-types"
-import type { AppTableFeatures } from "./table-features"
 
 const COLLATION_LOCALE = "he"
 

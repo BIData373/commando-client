@@ -5,8 +5,8 @@ import type { AssigneeDto, TaskRowDto } from "src/api/model"
 import { AssigneeAvatar } from "src/components/shared/AssigneeAvatar"
 import SearchInput from "src/components/shared/SearchInput"
 import { Checkbox } from "src/components/ui/checkbox"
+import type { AppTableFeatures } from "src/consts/table-features"
 import type { FilterOption } from "src/utils/filter-utils"
-import type { AppTableFeatures } from "src/utils/table-features"
 
 interface MobileListFilterProps {
 	column?: Column<AppTableFeatures, TaskRowDto, unknown>

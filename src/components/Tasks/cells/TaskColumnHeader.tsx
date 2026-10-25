@@ -1,8 +1,8 @@
 import type { HeaderContext } from "@tanstack/react-table"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
+import type { AppTableFeatures } from "src/consts/table-features"
 import { useTaskTable } from "src/providers/TaskTableProvider"
 import type { FilterOptions } from "src/utils/filter-utils"
-import type { AppTableFeatures } from "src/utils/table-features"
 import { COLUMN_LABELS } from "src/utils/task-table-utils"
 import { ColumnHeaderWithActions } from "../ColumnHeaderWithActions"
 
