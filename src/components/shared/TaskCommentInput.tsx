@@ -1,10 +1,10 @@
 import styled from "@emotion/styled"
 import { useSearch } from "@tanstack/react-router"
-import { Send } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useCreateMessage } from "src/api/message/message"
 import { invalidateTaskComments } from "src/functions/comment-utils"
-import { useIsMobile } from "src/hooks/use-mobile"
+import { MOBILE_MEDIA_QUERY, useIsMobile } from "src/hooks/use-mobile"
+import { CommentSendButton } from "./CommentSendButton"
 import { SpinIcon } from "./SpinIcon"
 
 interface TaskCommentInputProps {
@@ -56,42 +56,26 @@ function TaskCommentInput({ taskId }: TaskCommentInputProps) {
 		createMessage({ data: { taskId, content } })
 	}
 
-	const commentsTextArea = (
-		<CommentsTextarea
-			ref={textareaRef}
-			value={commentValue}
-			onChange={handleCommentInput}
-			onKeyDown={handleCommentKeyDown}
-			placeholder="הוספת תגובה"
-			disabled={isSendingComment}
-			dir="rtl"
-			rows={1}
-		/>
-	)
-
-	if (!isMobile) {
-		return (
-			<TextareaRow>
-				{commentsTextArea}
-				{isSendingComment && <SpinIcon size={16} />}
-			</TextareaRow>
-		)
-	}
-
 	return (
-		<MobileTextareaRow>
-			{commentsTextArea}
-			{commentValue &&
-				(isSendingComment ? (
-					<IconContainer $withBorder={false}>
-						<SpinIcon size={16} />
-					</IconContainer>
-				) : (
-					<IconContainer $withBorder={true} onClick={submitComment}>
-						<Send size={16} color="var(--active-color)" />
-					</IconContainer>
-				))}
-		</MobileTextareaRow>
+		<TextareaRow>
+			<CommentsTextarea
+				ref={textareaRef}
+				value={commentValue}
+				onChange={handleCommentInput}
+				onKeyDown={handleCommentKeyDown}
+				placeholder="הוספת תגובה"
+				disabled={isSendingComment}
+				dir="rtl"
+				rows={1}
+			/>
+			{isMobile && commentValue && (
+				<CommentSendButton
+					isSending={isSendingComment}
+					onSend={submitComment}
+				/>
+			)}
+			{!isMobile && isSendingComment && <SpinIcon size={16} />}
+		</TextareaRow>
 	)
 }
 
@@ -103,17 +87,17 @@ const TextareaRow = styled.div`
   gap: 8px;
   width: 100%;
   margin-top: 0.75rem;
-`
 
-const MobileTextareaRow = styled(TextareaRow)`
-  position: sticky;
-  bottom: 0;
-  padding: 0.75rem 1.5rem 1.5rem;
-  background: white;
-  flex-shrink: 0;
-  border-top: 1px solid var(--button-hover);
-  gap: 16px;
-  align-items: flex-end;
+  ${MOBILE_MEDIA_QUERY} {
+    position: sticky;
+    bottom: 0;
+    padding: 0.75rem 1.5rem 1.5rem;
+    background: white;
+    flex-shrink: 0;
+    border-top: 1px solid var(--button-hover);
+    gap: 16px;
+    align-items: flex-end;
+  }
 `
 
 const CommentsTextarea = styled.textarea`
@@ -147,15 +131,4 @@ const CommentsTextarea = styled.textarea`
     border-color: var(--active-color);
     box-shadow: var(--shadow-textarea-focus);
   }
-`
-
-const IconContainer = styled.button<{ $withBorder: boolean }>`
-	flex-shrink: 0;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 32px;
-	width: 32px;
-	border: ${({ $withBorder }) => ($withBorder ? "1px solid var(--active-color)" : "none")};
-	border-radius: 8px;
 `
