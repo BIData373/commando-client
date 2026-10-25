@@ -25,6 +25,7 @@ export function MobileTaskDryInfo({
 }: MobileTaskDryInfoProps) {
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
 	const isTaskDetailsExist = !!notes || !!source || allTags.length > 0
+	
 	return (
 		<Wrapper>
 			<TaskHeader as="header" $isTaskDetailsExist={isTaskDetailsExist}>
