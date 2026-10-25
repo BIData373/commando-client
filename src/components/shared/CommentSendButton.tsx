@@ -4,7 +4,7 @@ import { SpinIcon } from "./SpinIcon"
 
 interface CommentSendButtonProps {
 	isSending: boolean
-	onSend: () => void
+	onSend(): void
 }
 
 export function CommentSendButton({
