@@ -7,7 +7,7 @@ import { GradientGhostButton } from "src/components/shared/GradientGhostButton"
 import { GradientText } from "src/components/shared/GradientText"
 import TaskComment from "src/components/shared/TaskComment"
 import TaskCommentsSection from "src/components/shared/TaskCommentsSection"
-import { handleSettled } from "src/functions/comment-utils"
+import { invalidateTaskComments } from "src/functions/comment-utils"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { MobileDrawer } from "../MobileDrawer"
 
@@ -37,7 +37,7 @@ export function MobileTaskComments({
 	const { mutate: deleteMessage } = useDeleteMessage({
 		mutation: {
 			meta: { toast: { error: true } },
-			onSettled: handleSettled(id),
+			onSettled: () => invalidateTaskComments(id),
 		},
 	})
 

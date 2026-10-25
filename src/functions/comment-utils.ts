@@ -6,12 +6,11 @@ import {
 } from "src/api/task/task"
 import { invalidateQueries } from "src/query-client"
 
-export function handleSettled(taskId: number) {
-	return () =>
-		invalidateQueries([
-			getListMessagesQueryKey({ taskIds: [taskId] }),
-			getGetTaskQueryKey({ id: taskId }),
-			getListTaskRowsQueryKey(),
-			getListPersonalTaskRowsQueryKey(),
-		])
+export function invalidateTaskComments(taskId: number) {
+	invalidateQueries([
+		getListMessagesQueryKey({ taskIds: [taskId] }),
+		getGetTaskQueryKey({ id: taskId }),
+		getListTaskRowsQueryKey(),
+		getListPersonalTaskRowsQueryKey(),
+	])
 }
