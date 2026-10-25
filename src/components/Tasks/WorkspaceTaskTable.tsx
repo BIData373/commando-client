@@ -25,7 +25,12 @@ import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
 } from "src/utils/filter-utils"
-import { buildUrlColumnFilters, EMPTY_LIST, TASK_COLUMN_ID, type TaskColumnMeta } from "src/utils/task-table-utils"
+import {
+	buildUrlColumnFilters,
+	EMPTY_LIST,
+	TASK_COLUMN_ID,
+	type TaskColumnMeta,
+} from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"

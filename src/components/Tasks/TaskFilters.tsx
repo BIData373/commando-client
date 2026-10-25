@@ -5,6 +5,7 @@ import { FilterX } from "lucide-react"
 import { type ReactNode, useMemo } from "react"
 import type { ListMessagesParams, TaskRowDto } from "src/api/model"
 import type { QuickFilter } from "src/api/model/quick-filter"
+import type { AppTableFeatures } from "src/consts/table-features"
 import {
 	countQuickFilters,
 	QUICK_FILTER_LABELS,
@@ -21,7 +22,6 @@ import SearchInput from "../shared/SearchInput"
 import { ColumnVisibilityDropdown } from "../Tasks/ColumnVisibilityDropdown"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { ExportButton, type TaskExport } from "./ExportButton"
-import type { AppTableFeatures } from "src/consts/table-features"
 
 interface TaskFiltersProps<TTask extends TaskRowDto> {
 	allTaskRows: TTask[]

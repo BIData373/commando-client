@@ -15,17 +15,15 @@ export function MobileViewTaskDetail({ task }: MobileViewTaskDetailProps) {
 		router.history.back()
 	}
 
-	if (!task) {
-		return null
-	}
-
 	return (
-		<PageShell>
-			<MobileHeader variant="task" onBack={handleBackRedirect} title="" />
-			<TaskContainer>
-				<MobileTaskDryInfo task={task} />
-			</TaskContainer>
-		</PageShell>
+		task && (
+			<PageShell>
+				<MobileHeader variant="task" onBack={handleBackRedirect} title="" />
+				<TaskContainer>
+					<MobileTaskDryInfo task={task} />
+				</TaskContainer>
+			</PageShell>
+		)
 	)
 }
 

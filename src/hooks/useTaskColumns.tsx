@@ -1,5 +1,6 @@
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import { useMemo } from "react"
+import type { TaskRowDto } from "src/api/model"
 import type { AppTableFeatures } from "src/consts/table-features"
 import {
 	COLUMN_LABELS,
@@ -22,7 +23,6 @@ import { StatusCell } from "../components/Tasks/cells/StatusCell"
 import { TagsCell } from "../components/Tasks/cells/TagsCell"
 import { TaskColumnHeader } from "../components/Tasks/cells/TaskColumnHeader"
 import { TitleCell } from "../components/Tasks/cells/TitleCell"
-import type { TaskRowDto } from "src/api/model"
 
 interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	columnOrder: (keyof TTask)[]

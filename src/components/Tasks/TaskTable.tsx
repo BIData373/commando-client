@@ -16,6 +16,7 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { toast } from "src/components/Toast/toast-api"
+import type { AppTableFeatures } from "src/consts/table-features"
 import {
 	buildRowMenuActions,
 	type TaskArchiveEntry,
@@ -44,7 +45,6 @@ import { EmptyCardState } from "../shared/EmptyCardState"
 import { DataTable } from "../ui/data-table"
 import { BulkActionsBar } from "./BulkActionsBar"
 import { RowContextMenu } from "./RowContextMenu"
-import type { AppTableFeatures } from "src/consts/table-features"
 
 interface TaskTableProps<TTask extends TaskRowDto> {
 	tasks: TTask[]

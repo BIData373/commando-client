@@ -22,6 +22,7 @@ import {
 	ARCHIVE_QUICK_FILTERS,
 } from "src/utils/filter-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
+import { PERSONAL_EXTRA_COLUMNS } from "src/utils/task-extra-columns"
 import {
 	type TaskColumnMeta,
 	WORKSPACE_COLUMN_META,
@@ -32,7 +33,6 @@ import { TaskFilters } from "../Tasks/TaskFilters"
 import { TaskTable } from "../Tasks/TaskTable"
 import { TooltipProvider } from "../ui/tooltip"
 import { MetricsBar } from "./MetricsBar"
-import { PERSONAL_EXTRA_COLUMNS } from "src/utils/task-extra-columns"
 
 function getWorkspaceSearchValues(task: TaskRowWithWorkspaceDto) {
 	return [task.workspace?.title]
