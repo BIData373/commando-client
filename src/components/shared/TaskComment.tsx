@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { MoreVertical, Trash2 } from "lucide-react"
 import type { MessageDto } from "src/api/model"
-import { useIsMobile } from "src/hooks/use-mobile"
+import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import {
 	DropdownMenu,
@@ -17,7 +17,6 @@ interface TaskCommentProps {
 }
 
 function TaskComment({ message, canDelete, onDelete }: TaskCommentProps) {
-	const isMobile = useIsMobile()
 	const { upn, info } = message.user
 	const userMeta = info?.displayName ? `${upn} - ${info.displayName}` : upn
 	const userName = info?.name ?? upn
@@ -46,48 +45,20 @@ function TaskComment({ message, canDelete, onDelete }: TaskCommentProps) {
 				)}
 				<Content>{message.content}</Content>
 			</MainRow>
-			<Footer $isMobile={isMobile}>
+			<Footer>
 				<Timestamp>
 					{formatMinutesHours(message.createdAt)} ·{" "}
 					{formatDateMonthYear(message.createdAt)}
 				</Timestamp>
-				{isMobile ? (
-					<MobileUserDetails>
-						<MobileUserName>{userName}</MobileUserName>{" "}
-						<MobileUserMeta>{userMeta}</MobileUserMeta>
-					</MobileUserDetails>
-				) : (
-					<UserDetails>
-						<UserMeta>{userMeta}</UserMeta>
-						<UserName>{userName}</UserName>
-					</UserDetails>
-				)}
+				<UserDetails>
+					<UserName>{userName}</UserName> <UserMeta>{userMeta}</UserMeta>
+				</UserDetails>
 			</Footer>
 		</Card>
 	)
 }
 
 export default TaskComment
-
-const MobileUserName = styled.span`
-  color: black;
-  font-weight: 500;
-`
-
-const MobileUserMeta = styled.span`
-  color: grey;
-  font-weight: 400;
-`
-
-const MobileUserDetails = styled.div`
-  width: 100%;
-  min-width: 0;
-  direction: rtl;
-  text-align: start;
-  white-space: normal;
-  overflow-wrap: normal;
-  word-break: break-all;
-`
 
 const Card = styled.div`
   display: flex;
@@ -148,15 +119,19 @@ const Content = styled.p`
   margin: 0;
 `
 
-const Footer = styled.div<{ $isMobile: boolean }>`
+const Footer = styled.div`
   display: flex;
-  flex-direction: ${({ $isMobile }) => ($isMobile ? "column" : "row")};
-  align-items: ${({ $isMobile }) => ($isMobile ? "flex-end" : "center")};
+  align-items: center;
   justify-content: space-between;
   width: 100%;
   font-size: var(--fs-sm);
   line-height: 20px;
   white-space: nowrap;
+
+  ${MOBILE_MEDIA_QUERY} {
+    flex-direction: column;
+    align-items: flex-end;
+  }
 `
 
 const Timestamp = styled.span`
@@ -170,19 +145,30 @@ const UserDetails = styled.div`
   gap: 8px;
   min-width: 0;
   flex: 1;
-  text-align: end;
-  justify-content: flex-end;
+  direction: rtl;
+
+  ${MOBILE_MEDIA_QUERY} {
+    display: block;
+    width: 100%;
+    text-align: start;
+    white-space: normal;
+    word-break: break-all;
+  }
 `
 
 const UserMeta = styled.span`
-  direction: rtl;
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   font-weight: 400;
   color: var(--sea-ink-soft);
-  margin-left: 8px;
+  margin-inline-end: 8px;
+
+  ${MOBILE_MEDIA_QUERY} {
+    white-space: normal;
+    margin-inline-end: 0;
+  }
 `
 
 const UserName = styled.span`
@@ -192,4 +178,8 @@ const UserName = styled.span`
   text-overflow: ellipsis;
   font-weight: 500;
   color: var(--sea-ink);
+
+  ${MOBILE_MEDIA_QUERY} {
+    white-space: normal;
+  }
 `
