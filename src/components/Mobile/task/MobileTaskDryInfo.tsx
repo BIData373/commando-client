@@ -25,7 +25,7 @@ export function MobileTaskDryInfo({
 }: MobileTaskDryInfoProps) {
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
 	const isTaskDetailsExist = !!notes || !!source || allTags.length > 0
-	
+
 	return (
 		<Wrapper>
 			<TaskHeader as="header" $isTaskDetailsExist={isTaskDetailsExist}>
@@ -69,7 +69,7 @@ export function MobileTaskDryInfo({
 					{allTags.length > 0 && (
 						<SectionWrapper>
 							<SectionLabel>תגיות</SectionLabel>
-							<TagsRow isMobile allTags={allTags} />
+							<TagsRow allTags={allTags} />
 						</SectionWrapper>
 					)}
 				</TaskDetails>

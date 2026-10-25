@@ -1,18 +1,16 @@
 import styled from "@emotion/styled"
-import type { SourceDto, TagDto } from "src/api/model"
+import type { TagDto } from "src/api/model"
+import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 
 interface TagsRowProps {
 	allTags: TagDto[]
-	isMobile?: boolean
 }
 
-export function TagsRow({ allTags, isMobile = false }: TagsRowProps) {
+export function TagsRow({ allTags }: TagsRowProps) {
 	return (
 		<TagsWrapper>
 			{allTags.map((tag) => (
-				<TagChip $isMobile={isMobile} key={tag.id}>
-					{tag.name}
-				</TagChip>
+				<TagChip key={tag.id}>{tag.name}</TagChip>
 			))}
 		</TagsWrapper>
 	)
@@ -24,15 +22,20 @@ const TagsWrapper = styled.div`
   flex-wrap: wrap;
 `
 
-const TagChip = styled.span<{ $isMobile: boolean }>`
+const TagChip = styled.span`
   display: inline-flex;
   align-items: center;
   padding: 1px 8px;
   border-radius: 4px;
-  font-size: ${({ $isMobile }) => ($isMobile ? "var(--fs-base)" : "var(--fs-sm)")};
+  font-size: var(--fs-sm);
   line-height: 20px;
   background: var(--card-background);
-  border: ${({ $isMobile }) => ($isMobile ? "none" : "1px solid var(--chip-line)")};
+  border: 1px solid var(--chip-line);
   color: var(--sea-ink);
   white-space: nowrap;
+
+  ${MOBILE_MEDIA_QUERY} {
+    font-size: var(--fs-base);
+    border: none;
+  }
 `
