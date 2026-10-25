@@ -6,14 +6,14 @@ import WorkspaceIconTitle from "src/components/shared/WorkspaceIconTitle"
 
 interface MobileHeaderProps {
 	icon?: string | null
-	title: string
+	title?: string
 	variant?: string
 	onBack?: () => void
 }
 
 export default function MobileHeader({
 	icon,
-	title,
+	title = '',
 	variant,
 	onBack,
 }: MobileHeaderProps) {

@@ -2,29 +2,31 @@ import styled from "@emotion/styled"
 import { useRouter } from "@tanstack/react-router"
 import type { TaskWithWorkspaceDto } from "src/api/model"
 import MobileHeader from "../MobileHeader"
+import { MobileTaskAssignees } from "./MobileTaskAssignees"
 import { MobileTaskInfo } from "./MobileTaskInfo"
 
 interface MobileViewTaskDetailProps {
-	task?: TaskWithWorkspaceDto
+  task?: TaskWithWorkspaceDto
 }
 
 export function MobileViewTaskDetail({ task }: MobileViewTaskDetailProps) {
-	const router = useRouter()
+  const router = useRouter()
 
-	function handleBackRedirect() {
-		router.history.back()
-	}
+  function handleBackRedirect() {
+    router.history.back()
+  }
 
-	return (
-		task && (
-			<PageShell>
-				<MobileHeader variant="task" onBack={handleBackRedirect} title="" />
-				<TaskContainer>
-					<MobileTaskInfo task={task} />
-				</TaskContainer>
-			</PageShell>
-		)
-	)
+  return (
+    task && (
+      <PageShell>
+        <MobileHeader variant="task" onBack={handleBackRedirect} />
+        <TaskContainer>
+          <MobileTaskInfo task={task} />
+          <MobileTaskAssignees task={task} />
+        </TaskContainer>
+      </PageShell>
+    )
+  )
 }
 
 const PageShell = styled.div`
@@ -32,10 +34,12 @@ const PageShell = styled.div`
     flex-direction: column;
     height: 100%;
     min-height: 0;
+	overflow-y: auto;
 `
 
 const TaskContainer = styled.main`
     display: flex;
     flex-direction: column;
     padding: 1rem;
+    gap: 0.5rem;
 `
