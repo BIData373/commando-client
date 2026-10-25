@@ -4,9 +4,9 @@ import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { openUserGuide } from "src/utils/redirect-utils"
 import createWorkspace from "../../assets/create-workspace.svg"
 import toPersonalSpace from "../../assets/to-personal-space.svg"
+import { GradientGhostButton } from "../shared/GradientGhostButton"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { ButtonGroup as ButtonGroupPrimitive } from "../ui/button-group"
-import { GhostButton } from "./GhostButton"
 
 interface OnboardingRedirectPageProps {
 	onPrevious: () => void
@@ -47,7 +47,7 @@ export function OnboardingRedirectPage({
 					<GuideLink onClick={openUserGuide}>למארז ההדרכה</GuideLink>
 				</Help>
 				<ButtonGroup>
-					<GhostButton onClick={onPrevious}>חזור</GhostButton>
+					<GradientGhostButton onClick={onPrevious}>חזור</GradientGhostButton>
 					<Link to="/">
 						<PrimaryBtn onClick={onRedirect} title="למסך הראשי"></PrimaryBtn>
 					</Link>
