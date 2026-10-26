@@ -57,5 +57,6 @@ const ContentWrapper = styled.div`
   align-self: stretch;
   flex: 1;
   min-height: 0;
+  overflow: scroll;
   padding: clamp(16px, 5.0vh, 100px) clamp(16px, 5.0vw, 150px);
 `
