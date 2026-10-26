@@ -25,6 +25,10 @@ function getTaskDate<T extends TaskRowDto>(
 	}
 }
 
+export function removePunctuation(str: string) {
+	return str.replace(/[^\p{L}\p{N}\s]/gu, "")
+}
+
 function buildTaskSearchText<T extends TaskRowDto>(
 	task: T,
 	additionalSearchValues?: (
@@ -33,7 +37,7 @@ function buildTaskSearchText<T extends TaskRowDto>(
 ): string {
 	const values = [
 		String(task.serialId),
-		task.title,
+		removePunctuation(task.title),
 		task.description,
 		task.source?.name,
 		task.source?.date ? formatDateShort(task.source.date) : undefined,
@@ -83,7 +87,9 @@ export function useFilteredTasks<T extends TaskRowDto>(
 
 	const searchResults = useMemo(
 		() =>
-			searchableTasks.filter((task) => task.searchText.includes(searchQuery)),
+			searchableTasks.filter((task) =>
+				task.searchText.includes(removePunctuation(searchQuery).trim()),
+			),
 		[searchableTasks, searchQuery],
 	)
 
