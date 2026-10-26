@@ -203,7 +203,6 @@ const TabsRow = styled.div`
 	justify-content: flex-end;
 	padding-inline: 8px;
 	width: auto;
-	border-bottom: 1px solid var(--line);
 `
 
 const Tab = styled.button<{ $active: boolean }>`
