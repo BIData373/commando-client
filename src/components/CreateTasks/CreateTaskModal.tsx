@@ -196,6 +196,20 @@ function CreateTaskModal({
 		}
 	}
 
+	function handleAssigneeGroupSelect(assigneeIds: number[]) {
+		const current = values.assignees ?? []
+		const defaultStatusId = isEditMode
+			? Object.values(statusById).find(
+					(s) => s.type === WorkspaceStatusType.NOT_STARTED,
+				)?.id
+			: undefined
+		const newEntries = assigneeIds.map((id) => ({
+			id,
+			statusId: defaultStatusId,
+		}))
+		form.setFieldValue("assignees", [...current, ...newEntries])
+	}
+
 	function handleRemoveAssignee(id: number) {
 		form.setFieldValue(
 			"assignees",
@@ -387,6 +401,7 @@ function CreateTaskModal({
 								selectedAssignees={(values.assignees ?? []).map((a) => a.id)}
 								directiveTitle={values.title}
 								onToggle={handleAssigneeToggle}
+								onGroupSelect={handleAssigneeGroupSelect}
 								onRemove={handleRemoveAssignee}
 								onDetailChange={handleAssigneeDetailChange}
 								assigneeExtras={assigneeExtras}

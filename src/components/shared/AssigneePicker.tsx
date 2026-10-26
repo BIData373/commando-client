@@ -2,9 +2,11 @@ import styled from "@emotion/styled"
 import { Plus } from "lucide-react"
 import { type ReactNode, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
+import { useListAssigneeGroups } from "src/api/assignee-group/assignee-group"
 import type { AssigneeDto } from "src/api/model"
 import { AssigneeDialog } from "../settings/AssigneeDialog"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { AssigneeGroupOption } from "./AssigneeGroupOption"
 import { AssigneeOption } from "./AssigneeOption"
 
 export interface AssigneePickerTriggerProps {
@@ -18,7 +20,9 @@ interface AssigneePickerProps {
 	selectedAssignees: number[]
 	trigger: ReactNode | ((props: AssigneePickerTriggerProps) => ReactNode)
 	onToggle: (id: number) => void
+	onGroupSelect?: (assigneeIds: number[]) => void
 	closeOnFirstSelect?: boolean
+	showGroupAvatars?: boolean
 }
 
 function AssigneePicker({
@@ -26,13 +30,20 @@ function AssigneePicker({
 	selectedAssignees,
 	trigger,
 	onToggle,
+	onGroupSelect,
 	closeOnFirstSelect = false,
+	showGroupAvatars = true,
 }: AssigneePickerProps) {
 	const [open, setOpen] = useState(false)
 	const [search, setSearch] = useState("")
 	const [dialogOpen, setDialogOpen] = useState(false)
 
 	const { data: assignees = [] } = useListAssignees({ workspaceId })
+	const { data: assigneeGroups = [] } = useListAssigneeGroups({ workspaceId })
+
+	const filteredGroups = assigneeGroups.filter(
+		(group) => group.assignees.length > 0,
+	)
 
 	const filteredAssignees = assignees
 		.filter((assignee) => {
@@ -56,6 +67,17 @@ function AssigneePicker({
 
 	function handleAssigneeClick(id: number) {
 		onToggle(id)
+
+		if (closeOnFirstSelect && selectedAssignees.length === 0) {
+			setOpen(false)
+			setSearch("")
+		}
+	}
+
+	function handleGroupSelect(assigneeIds: number[]) {
+		const newIds = assigneeIds.filter((id) => !selectedAssignees.includes(id))
+		if (newIds.length === 0) return
+		onGroupSelect?.(newIds)
 
 		if (closeOnFirstSelect && selectedAssignees.length === 0) {
 			setOpen(false)
@@ -87,6 +109,21 @@ function AssigneePicker({
 					onOpenAutoFocus={(e) => e.preventDefault()}
 					onWheel={(e) => e.stopPropagation()}
 				>
+					{filteredGroups.length > 0 && (
+						<>
+							<SectionLabel>רשימות תפוצה</SectionLabel>
+							{filteredGroups.map((group) => (
+								<AssigneeGroupOption
+									key={group.id}
+									group={group}
+									onSelect={handleGroupSelect}
+									showAvatars={showGroupAvatars}
+								/>
+							))}
+							<SectionLabel>אחראים</SectionLabel>
+						</>
+					)}
+
 					{filteredAssignees.map((assignee) => (
 						<AssigneeOption
 							key={assignee.id}
@@ -127,6 +164,14 @@ const AssigneeDropdown = styled(PopoverContent)`
   z-index: var(--z-dropdown);
 `
 
+const SectionLabel = styled.div`
+  font-size: var(--fs-sm);
+  color: var(--sea-ink-soft);
+  padding: 4px 12px 0;
+  line-height: 22px;
+  text-align: start;
+`
+
 const CreateNewButton = styled.button`
   direction: ltr;
   display: flex;
@@ -139,12 +184,12 @@ const CreateNewButton = styled.button`
   background: transparent;
   cursor: pointer;
   border-radius: 6px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   font-size: var(--fs-btn);
   line-height: 32px;
   white-space: nowrap;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.04);
+    background: var(--link-bg-hover);
   }
 `
