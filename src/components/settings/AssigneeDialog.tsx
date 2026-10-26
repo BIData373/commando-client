@@ -25,6 +25,7 @@ import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { invalidateQueries, queryClient } from "src/query-client"
 import { CancelButton } from "../shared/CancelButton"
 import { FormField } from "../shared/FormField"
+import InputWithCount from "../shared/InputWithCount"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import {
@@ -33,7 +34,6 @@ import {
 	DialogDescription,
 	DialogTitle,
 } from "../ui/dialog"
-import { Input } from "../ui/input"
 import { AssigneeUsersList } from "./AssigneeUsersList"
 import { ColorPicker, PRESET_COLORS } from "./ColorPicker"
 import { DropdownUsers } from "./DropdownUsers"
@@ -160,15 +160,6 @@ export function AssigneeDialog({
 		},
 	})
 
-	function handleKeyChange(e: React.KeyboardEvent<HTMLInputElement>) {
-		if (
-			e.code !== "Backspace" &&
-			e.currentTarget.value.length >= MAX_NAME_LENGTH
-		) {
-			e.preventDefault()
-		}
-	}
-
 	function handleRemoveAssignee(upn: string) {
 		form.setFieldValue("users", (prev) =>
 			prev.filter((user) => user.upn !== upn),
@@ -242,10 +233,10 @@ export function AssigneeDialog({
 							<FieldGroup>
 								<FieldLabel>שם אחראי</FieldLabel>
 								<FormField field={field}>
-									<Input
-										value={field.state.value}
-										onKeyDown={handleKeyChange}
-										onChange={(e) => field.handleChange(e.target.value)}
+									<InputWithCount
+										text={field.state.value}
+										onChange={field.handleChange}
+										maxLength={MAX_NAME_LENGTH}
 										placeholder='לדוגמה: מג"ד, רע"ן מפקדים, קמב"צ...'
 									/>
 								</FormField>
