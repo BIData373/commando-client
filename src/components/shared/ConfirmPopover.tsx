@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { CircleAlert } from "lucide-react"
+import { Popover as PopoverPrimitive } from "radix-ui"
 import type { MouseEvent, ReactNode } from "react"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
@@ -18,6 +19,7 @@ export interface ConfirmPopoverProps {
 	align?: "center" | "start" | "end"
 	sideOffset?: number
 	onCloseAutoFocus?: (e: Event) => void
+	showArrow?: boolean
 }
 
 export function ConfirmPopover({
@@ -35,6 +37,7 @@ export function ConfirmPopover({
 	sideOffset = 12,
 	onCloseAutoFocus,
 	openManually = false,
+	showArrow = false,
 }: ConfirmPopoverProps) {
 	function handleCancel(e: MouseEvent) {
 		e.stopPropagation()
@@ -60,6 +63,7 @@ export function ConfirmPopover({
 				align={align}
 				onCloseAutoFocus={onCloseAutoFocus}
 			>
+				{showArrow && <Arrow width={16} height={8} />}
 				<Head>
 					<TextWrapper>
 						<Title>{title}</Title>
@@ -96,6 +100,10 @@ const Content = styled(PopoverContent)`
   background: var(--background);
   z-index: 1000;
   box-shadow: var(--card-shadow-hover);
+`
+
+const Arrow = styled(PopoverPrimitive.Arrow)`
+  fill: var(--background);
 `
 
 const Head = styled.div`

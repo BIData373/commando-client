@@ -65,6 +65,12 @@ export const updateResponsibleMessage = "פרטי האחראי עודכנו בה
 
 export const removeResponsibleMessage = "האחראי הוסר בהצלחה"
 
+export const createAssigneeGroupMessage = "רשימת אחראים נוצרה בהצלחה"
+
+export const updateAssigneeGroupMessage = "רשימת האחראים עודכנה בהצלחה"
+
+export const deleteAssigneeGroupMessage = "רשימת האחראים נמחקה בהצלחה"
+
 export const updatePermissionsMessage = "הרשאות המשתמש עודכנו בהצלחה"
 
 const NO_PERMISSION = "אין לך הרשאה לבצע פעולה זו"

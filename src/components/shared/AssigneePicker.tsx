@@ -1,11 +1,11 @@
 import styled from "@emotion/styled"
-import { Check, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 import { type ReactNode, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import type { AssigneeDto } from "src/api/model"
 import { AssigneeDialog } from "../settings/AssigneeDialog"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
-import { AssigneeAvatar } from "./AssigneeAvatar"
+import { AssigneeOption } from "./AssigneeOption"
 
 export interface AssigneePickerTriggerProps {
 	search: string
@@ -90,23 +90,10 @@ function AssigneePicker({
 					{filteredAssignees.map((assignee) => (
 						<AssigneeOption
 							key={assignee.id}
-							$selected={assignee.selected}
-							type="button"
-							onClick={() => handleAssigneeClick(assignee.id)}
-						>
-							<AssigneeOptionEnd>
-								<AssigneeAvatar assignee={assignee} size={22} />
-
-								<AssigneeOptionName
-									title={assignee.name}
-									$selected={assignee.selected}
-								>
-									{assignee.name}
-								</AssigneeOptionName>
-							</AssigneeOptionEnd>
-
-							{assignee.selected && <StyleCheck size={18} />}
-						</AssigneeOption>
+							assignee={assignee}
+							selected={assignee.selected}
+							onToggle={handleAssigneeClick}
+						/>
 					))}
 
 					<CreateNewButton type="button" onClick={handleCreateNew}>
@@ -140,40 +127,6 @@ const AssigneeDropdown = styled(PopoverContent)`
   z-index: var(--z-dropdown);
 `
 
-const AssigneeOption = styled.button<{ $selected: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  border: none;
-  background: ${({ $selected }) => ($selected ? "#e6f4ff" : "transparent")};
-  cursor: pointer;
-  border-radius: 2px;
-
-  &:hover {
-    background: ${({ $selected }) => ($selected ? "#e6f4ff" : "rgba(0, 0, 0, 0.04)")};
-  }
-`
-
-const AssigneeOptionEnd = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 12px;
-  height: 32px;
-  width: 100%;
-`
-
-const AssigneeOptionName = styled.span<{ $selected: boolean }>`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: ${({ $selected }) => ($selected ? "var(--tab-active-color)" : "var(--text-color-2)")};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
 const CreateNewButton = styled.button`
   direction: ltr;
   display: flex;
@@ -194,8 +147,4 @@ const CreateNewButton = styled.button`
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
-`
-
-const StyleCheck = styled(Check)`
-  color: var(--tab-active-color);
 `
