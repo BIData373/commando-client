@@ -4,7 +4,7 @@ import { useErrorHandler } from "src/providers/ErrorModalProvider"
 import { ErrorCode, isErrorCode } from "src/utils/error-utils"
 
 interface RootErrorComponentProps {
-	error: Error
+	error: unknown
 }
 
 export function RootErrorComponent({ error }: RootErrorComponentProps) {

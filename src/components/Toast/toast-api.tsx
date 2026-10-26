@@ -85,7 +85,6 @@ function showToast(
 	const hasActions = toastActions.length > 0
 	const showCloseText = closeable && Boolean(closeLabel)
 	const showCloseIcon = closeable && !showCloseText && !hasActions
-	const toastId = options.id ?? crypto.randomUUID()
 	// Left undefined, sonner applies the Toaster's duration and the bar inherits
 	// its --toast-duration. A bar that never drains is misleading, so persistent
 	// toasts drop it.
@@ -116,9 +115,8 @@ function showToast(
 		dismissToast()
 	}
 
-	sonnerToast[type](message, {
+	const toastId = sonnerToast[type](message, {
 		...options,
-		id: toastId,
 		className:
 			clsx(
 				banner && TOAST_CLASS.banner,

@@ -3,11 +3,11 @@ import { TbFilter, TbFilterOff } from "react-icons/tb"
 import type { TaskRowDto } from "src/api/model"
 import SearchInput from "src/components/shared/SearchInput"
 import { FilterPill } from "src/components/Tasks/TaskFilters"
-import { matchesQuickFilter } from "src/functions/filter-utils"
 import type { StatusTaskCount } from "src/functions/status-counts"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import {
 	ACTIVE_QUICK_FILTERS,
+	countQuickFilters,
 	QUICK_FILTER_LABELS,
 } from "src/utils/filter-utils"
 import MobileStatusBar from "./MobileStatusBar"
@@ -61,6 +61,8 @@ export default function MobileTasksToolbar({
 		)
 	}
 
+	const quickFilterCounts = countQuickFilters(tasks)
+
 	return (
 		<>
 			{!searchFocused && (
@@ -92,22 +94,16 @@ export default function MobileTasksToolbar({
 				>
 					הכל ({tasks.length})
 				</FilterPill>
-				{ACTIVE_QUICK_FILTERS.map((filter) => {
-					const count = tasks.filter((t) =>
-						matchesQuickFilter(t, filter),
-					).length
-
-					return (
-						<FilterPill
-							key={filter}
-							$active={activeQuickFilters.has(filter)}
-							onClick={() => toggleQuickFilter(filter)}
-						>
-							{QUICK_FILTER_LABELS[filter]}
-							{count > 0 && ` (${count})`}
-						</FilterPill>
-					)
-				})}
+				{ACTIVE_QUICK_FILTERS.map((filter) => (
+					<FilterPill
+						key={filter}
+						$active={activeQuickFilters.has(filter)}
+						onClick={() => toggleQuickFilter(filter)}
+					>
+						{QUICK_FILTER_LABELS[filter]}
+						{quickFilterCounts[filter] > 0 && ` (${quickFilterCounts[filter]})`}
+					</FilterPill>
+				))}
 			</ChipsRow>
 		</>
 	)

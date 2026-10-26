@@ -11,7 +11,6 @@ export const Route = createFileRoute("/personal")({
 
 function PersonalPage() {
 	const isMobile = useIsMobile()
-
 	useRenderInHeader("center", "אזור אישי - הנחיות שקיבלתי")
 
 	return isMobile ? (

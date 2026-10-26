@@ -1,16 +1,19 @@
 import styled from "@emotion/styled"
 import { useDisclosure } from "@mantine/hooks"
-import { Fragment, type ReactNode } from "react"
+import { type ReactNode, useRef } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
 import type { StatusTaskCount } from "src/functions/status-counts"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import { useHeadlessTable } from "src/hooks/useHeadlessTable"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
+import { buildCountingColumns } from "src/utils/task-table-utils"
 import MobileHeader from "./MobileHeader"
-import MobileFilterSheet, {
-	matchesColumnFilters,
-} from "./Workspace/MobileFilterSheet"
+import MobileFilterSheet from "./Workspace/MobileFilterSheet"
+import MobileTaskList from "./Workspace/MobileTaskList"
 import MobileTasksToolbar from "./Workspace/MobileTasksToolbar"
+
+const TASK_COLUMNS = buildCountingColumns<TaskRowDto>()
 
 interface MobileTasksPageProps<T extends TaskRowDto> {
 	title: string
@@ -38,30 +41,32 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 		setSearchQuery("")
 	}
 
-	function matchesActiveColumnFilters(task: T): boolean {
-		return matchesColumnFilters(task, columnsFilters)
-	}
+	const searchedTasks = useFilteredTasks(tasks)
 
-	// An always-true filter would be OR'ed with the quick filters and cancel them out
-	const filtered = useFilteredTasks(tasks, {
-		additionalFilter:
-			columnsFilters.length > 0 ? matchesActiveColumnFilters : undefined,
+	const table = useHeadlessTable<TaskRowDto>({
+		data: searchedTasks,
+		columns: TASK_COLUMNS,
+		columnFilters: columnsFilters,
 	})
+
+	const headerVariant = searchFocused ? "minimal" : "default"
+	const rows = table.getRowModel().rows
+	const contentRef = useRef<HTMLDivElement>(null)
 
 	return (
 		<PageRoot>
 			<MobileHeader
 				icon={icon}
 				title={title}
-				minimal={searchFocused}
+				variant={headerVariant}
 				onBack={handleSearchBack}
 			/>
 
-			<Content>
+			<Content ref={contentRef}>
 				<MobileTasksToolbar
 					tasks={tasks}
 					statusSegments={statusSegments}
-					matchCount={filtered.length}
+					matchCount={rows.length}
 					searchFocused={searchFocused}
 					onSearchFocus={searchFocus.open}
 					onSearchBlur={searchFocus.close}
@@ -73,12 +78,14 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 						<CenteredState>
 							<LoadingSpinner />
 						</CenteredState>
-					) : filtered.length === 0 ? (
+					) : rows.length === 0 ? (
 						<EmptyState>לא נמצאו הנחיות</EmptyState>
 					) : (
-						filtered.map((task) => (
-							<Fragment key={task.rowKey}>{renderCard(task)}</Fragment>
-						))
+						<MobileTaskList
+							tasks={rows.map(({ original }) => original as T)}
+							scrollContainerRef={contentRef}
+							renderCard={renderCard}
+						/>
 					)}
 				</CardList>
 			</Content>
@@ -87,7 +94,8 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 				open={filterSheetOpen}
 				onClose={filterSheet.close}
 				tasks={tasks}
-				filteredCount={filtered.length}
+				table={table}
+				filteredCount={rows.length}
 			/>
 		</PageRoot>
 	)
@@ -108,6 +116,7 @@ const PageRoot = styled.div`
 `
 
 const Content = styled.div`
+	position: relative;
 	direction: ltr;
 	display: flex;
 	flex-direction: column;

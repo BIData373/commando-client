@@ -4,7 +4,8 @@ import { cn } from "src/lib/utils"
 
 interface TableProps extends React.ComponentProps<"table"> {
   containerClassName?: string;
-  // Ref forwarded to the scroll container, used by DataTable for ResizeObserver width tracking
+  // Ref forwarded to the scroll container, used by DataTable for ResizeObserver width tracking and virtualization.
+  // Scroll anchoring is disabled on the container since the virtualizer corrects scroll position itself.
   containerRef?: React.Ref<HTMLDivElement>;
 }
 
@@ -18,7 +19,7 @@ function Table({
     <div
       ref={containerRef}
       data-slot="table-container"
-      className={cn("relative w-full overflow-x-auto", containerClassName)}
+      className={cn("relative w-full overflow-x-auto [overflow-anchor:none]", containerClassName)}
     >
       <table
         data-slot="table"
@@ -67,7 +68,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-[#0591ff19]",
+        "border-b transition-colors hover:bg-muted/50 data-[highlighted]:bg-muted/50 data-[state=selected]:bg-[#0591ff19]",
         className
       )}
       {...props}

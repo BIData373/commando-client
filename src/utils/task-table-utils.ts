@@ -1,10 +1,13 @@
-import type {
-	AccessorColumnDef,
-	ColumnDef,
-	FilterFn,
+import {
+	type ColumnDef,
+	type ColumnFiltersState,
+	createColumnHelper,
+	type IdentifiedColumnDef,
+	type Row,
 } from "@tanstack/react-table"
-import { concat, intersection, map, uniq, zipObject } from "lodash"
+import { concat, groupBy, intersection, map, uniq, zipObject } from "lodash"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
+import type { AppTableFeatures } from "../consts/table-features"
 import { formatSourceLabel } from "../functions/source-utils"
 
 export interface TaskColumnMeta {
@@ -73,72 +76,128 @@ export const COLUMN_LABELS = Object.fromEntries(
 	TASK_COLUMNS_META.map(({ id, label }) => [id, label]),
 ) as Record<keyof TaskRowWithWorkspaceDto, string>
 
-export const multiSelectColumnFilter: FilterFn<Partial<TaskRowDto>> = (
-	row,
-	columnId,
+function multiSelectColumnFilter<TTask extends TaskRowDto>(
+	row: Row<AppTableFeatures, TTask>,
+	columnId: string,
 	filterValue: string[],
-) => {
+): boolean {
 	return !filterValue?.length || filterValue.includes(row.getValue(columnId))
 }
 
-function getTaskTagNames(row: Partial<TaskRowDto>): string[] {
-	return uniq(map(concat(row.tags ?? [], row.source?.tags ?? []), "name"))
+export function getTaskTagNames(task: TaskRowDto): string[] {
+	return map(concat(task.tags, task.source?.tags ?? []), "name")
 }
 
-export const TASK_COLUMN_DEFINITIONS: Partial<
-	Record<
-		keyof Partial<TaskRowDto>,
-		Partial<AccessorColumnDef<Partial<TaskRowDto>>>
-	>
-> = {
-	[TASK_COLUMN_ID.status]: {
-		accessorFn: (row) => row.status?.type,
-		sortingFn: (rowA, rowB) =>
-			(rowA.original.status?.id ?? 0) - (rowB.original.status?.id ?? 0),
-		filterFn: multiSelectColumnFilter,
-	},
-	[TASK_COLUMN_ID.assignee]: {
-		sortingFn: "text",
-		accessorFn: (row) => row.assignee?.name,
-		filterFn: multiSelectColumnFilter,
-	},
-	[TASK_COLUMN_ID.tags]: {
-		accessorFn: getTaskTagNames,
-		getUniqueValues: getTaskTagNames,
-		filterFn: "arrIncludesSome",
-	},
-	[TASK_COLUMN_ID.deadlineType]: {
-		accessorKey: TASK_COLUMN_ID.deadlineType,
-		sortingFn: (
-			{ original: { dueDate: dueDateA } },
-			{ original: { dueDate: dueDateB } },
-		) => {
-			const a = dueDateA ? new Date(dueDateA).getTime() : Infinity
-			const b = dueDateB ? new Date(dueDateB).getTime() : Infinity
-			return a > b ? 1 : a < b ? -1 : 0
-		},
-		filterFn: multiSelectColumnFilter,
-	},
-	[TASK_COLUMN_ID.source]: {
-		sortingFn: "text",
-		accessorFn: (row) => row.source && formatSourceLabel(row.source),
-		filterFn: multiSelectColumnFilter,
-	},
-	[TASK_COLUMN_ID.createdAt]: { sortingFn: "datetime" },
-	[TASK_COLUMN_ID.updatedAt]: { sortingFn: "datetime" },
+function compareDueDates(dueDateA: Date | null, dueDateB: Date | null) {
+	const a = dueDateA ? new Date(dueDateA).getTime() : Infinity
+	const b = dueDateB ? new Date(dueDateB).getTime() : Infinity
+	return a > b ? 1 : a < b ? -1 : 0
+}
+
+/**
+ * Accessor, sorting and filtering shared by the visible table and the headless
+ * counting/export tables. Each entry builds its column, merging in per-table options.
+ */
+export function createTaskColumnDefinitions<TTask extends TaskRowDto>() {
+	const columnHelper = createColumnHelper<AppTableFeatures, TTask>()
+
+	function defineColumn<TValue>(
+		id: string,
+		accessorFn: (row: TTask) => TValue,
+		base: IdentifiedColumnDef<AppTableFeatures, TTask, TValue> = {},
+	) {
+		return (
+			options: IdentifiedColumnDef<AppTableFeatures, TTask, TValue> = {},
+		) => columnHelper.accessor(accessorFn, { ...base, ...options, id })
+	}
+
+	return {
+		status: defineColumn(TASK_COLUMN_ID.status, (row) => row.status?.type, {
+			sortFn: (rowA, rowB) =>
+				(rowA.original.status?.id ?? 0) - (rowB.original.status?.id ?? 0),
+			filterFn: multiSelectColumnFilter,
+		}),
+		assignee: defineColumn(
+			TASK_COLUMN_ID.assignee,
+			(row) => row.assignee?.name,
+			{
+				sortFn: "text",
+				filterFn: multiSelectColumnFilter,
+			},
+		),
+		tags: defineColumn(
+			TASK_COLUMN_ID.tags,
+			(row) => uniq(getTaskTagNames(row)),
+			{
+				filterFn: "arrIncludesSome",
+				getUniqueValues: getTaskTagNames,
+			},
+		),
+		deadlineType: defineColumn(
+			TASK_COLUMN_ID.deadlineType,
+			(row) => row.deadlineType,
+			{
+				sortFn: (rowA, rowB) =>
+					compareDueDates(rowA.original.dueDate, rowB.original.dueDate),
+				filterFn: multiSelectColumnFilter,
+			},
+		),
+		source: defineColumn(
+			TASK_COLUMN_ID.source,
+			(row) => row.source && formatSourceLabel(row.source),
+			{ sortFn: "text", filterFn: multiSelectColumnFilter },
+		),
+		createdAt: defineColumn(TASK_COLUMN_ID.createdAt, (row) => row.createdAt, {
+			sortFn: "datetime",
+		}),
+		updatedAt: defineColumn(TASK_COLUMN_ID.updatedAt, (row) => row.updatedAt, {
+			sortFn: "datetime",
+		}),
+	}
 }
 
 export function buildCountingColumns<TTask extends TaskRowDto>(
-	extraColumns: ColumnDef<TTask>[] = [],
-): ColumnDef<TTask>[] {
-	return [
-		...Object.entries(TASK_COLUMN_DEFINITIONS).map(([id, def]) => ({
-			id,
-			...def,
-		})),
+	extraColumns: ColumnDef<AppTableFeatures, TTask>[] = [],
+): ColumnDef<AppTableFeatures, TTask>[] {
+	return createColumnHelper<AppTableFeatures, TTask>().columns([
+		...Object.values(createTaskColumnDefinitions<TTask>()).map((define) =>
+			define(),
+		),
 		...extraColumns,
-	] as ColumnDef<TTask>[]
+	])
 }
+
+/** Keeps the per-assignee rows of a task adjacent so their shared cells can span, preserving first-appearance order. */
+export function groupRowsByTask<TTask extends TaskRowDto>(
+	tasks: TTask[],
+): TTask[] {
+	const rowsByTaskId = groupBy(tasks, "id")
+
+	return uniq(map(tasks, "id")).flatMap((id) => rowsByTaskId[id])
+}
+
+export function buildUrlColumnFilters(
+	statusFilter: string[],
+	deadlineTypeFilter: string[],
+	assigneeFilter: string[],
+): ColumnFiltersState {
+	return [
+		...(statusFilter.length
+			? [{ id: TASK_COLUMN_ID.status, value: statusFilter }]
+			: []),
+		...(deadlineTypeFilter.length
+			? [{ id: TASK_COLUMN_ID.deadlineType, value: deadlineTypeFilter }]
+			: []),
+		...(assigneeFilter.length
+			? [{ id: TASK_COLUMN_ID.assignee, value: assigneeFilter }]
+			: []),
+	]
+}
+
+/** Shared empty defaults: a fresh `[]` or `new Set()` per render would invalidate every memo keyed on it */
+export const EMPTY_LIST: never[] = []
+
+export const EMPTY_SET = new Set<never>()
 
 export const CONFIGURABLE_COLUMNS = CONFIGURABLE_COLUMNS_META.filter(
 	(c) => c.id !== TASK_COLUMN_ID.serialId,
@@ -164,7 +223,7 @@ export function reconcileColumnOrder(
 	)
 }
 
-export function toHiddenColumns<TId extends string>(
+export function hiddenColumnsExcept<TId extends string>(
 	visibleColumns: TId[],
 ): Set<TId> {
 	const visible = new Set(visibleColumns)
