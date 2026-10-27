@@ -22,15 +22,24 @@ interface WorkspaceCardProps {
 
 export default function WorkspaceCard({
 	className,
-	workspace: { title, urlName, icon, permissionType },
+	workspace: { title, urlName, icon, permissionType, id },
 }: WorkspaceCardProps) {
 	const navigate = useNavigate()
 
 	function handleWorkspaceClick() {
-		navigate({
-			to: "/workspace/$urlName",
-			params: { urlName },
-		})
+		if (permissionType) {
+			navigate({
+				to: "/workspace/$urlName",
+				params: { urlName },
+			})
+		} else {
+			navigate({
+				to: "/no-permissions",
+				search: {
+					sourceId: id,
+				},
+			})
+		}
 	}
 
 	return (

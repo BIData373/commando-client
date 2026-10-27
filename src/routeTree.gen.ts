@@ -14,6 +14,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PersonalRouteImport } from './routes/personal'
 import { Route as HomeIndexRouteImport } from './routes/_home/index'
 import { Route as HomeNewWorkspaceRouteImport } from './routes/_home/new-workspace'
+import { Route as HomeNoPermissionsRouteImport } from './routes/_home/no-permissions'
 import { Route as PersonalIndexRouteImport } from './routes/personal/index'
 import { Route as PersonalArchiveRouteImport } from './routes/personal/archive'
 import { Route as PersonalTasksRouteImport } from './routes/personal/tasks'
@@ -72,6 +73,11 @@ const HomeIndexRoute = HomeIndexRouteImport.update({
 const HomeNewWorkspaceRoute = HomeNewWorkspaceRouteImport.update({
   id: '/new-workspace',
   path: '/new-workspace',
+  getParentRoute: () => HomeRoute,
+} as any)
+const HomeNoPermissionsRoute = HomeNoPermissionsRouteImport.update({
+  id: '/no-permissions',
+  path: '/no-permissions',
   getParentRoute: () => HomeRoute,
 } as any)
 const PersonalIndexRoute = PersonalIndexRouteImport.update({
@@ -279,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/personal': typeof PersonalRouteWithChildren
   '/workspace/$urlName': typeof WorkspaceUrlNameRouteRouteWithChildren
   '/new-workspace': typeof HomeNewWorkspaceRoute
+  '/no-permissions': typeof HomeNoPermissionsRoute
   '/personal/archive': typeof PersonalArchiveRouteWithChildren
   '/personal/tasks': typeof PersonalTasksRouteWithChildren
   '/personal/': typeof PersonalIndexRoute
@@ -317,6 +324,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/new-workspace': typeof HomeNewWorkspaceRoute
+  '/no-permissions': typeof HomeNoPermissionsRoute
   '/personal/archive': typeof PersonalArchiveRouteWithChildren
   '/personal/tasks': typeof PersonalTasksRouteWithChildren
   '/': typeof HomeIndexRoute
@@ -352,6 +360,7 @@ export interface FileRoutesById {
   '/personal': typeof PersonalRouteWithChildren
   '/workspace/$urlName': typeof WorkspaceUrlNameRouteRouteWithChildren
   '/_home/new-workspace': typeof HomeNewWorkspaceRoute
+  '/_home/no-permissions': typeof HomeNoPermissionsRoute
   '/personal/archive': typeof PersonalArchiveRouteWithChildren
   '/personal/tasks': typeof PersonalTasksRouteWithChildren
   '/_home/': typeof HomeIndexRoute
@@ -396,6 +405,7 @@ export interface FileRouteTypes {
     | '/personal'
     | '/workspace/$urlName'
     | '/new-workspace'
+    | '/no-permissions'
     | '/personal/archive'
     | '/personal/tasks'
     | '/personal/'
@@ -434,6 +444,7 @@ export interface FileRouteTypes {
   to:
     | '/onboarding'
     | '/new-workspace'
+    | '/no-permissions'
     | '/personal/archive'
     | '/personal/tasks'
     | '/'
@@ -468,6 +479,7 @@ export interface FileRouteTypes {
     | '/personal'
     | '/workspace/$urlName'
     | '/_home/new-workspace'
+    | '/_home/no-permissions'
     | '/personal/archive'
     | '/personal/tasks'
     | '/_home/'
@@ -547,6 +559,13 @@ declare module '@tanstack/react-router' {
       path: '/new-workspace'
       fullPath: '/new-workspace'
       preLoaderRoute: typeof HomeNewWorkspaceRouteImport
+      parentRoute: typeof HomeRoute
+    }
+    '/_home/no-permissions': {
+      id: '/_home/no-permissions'
+      path: '/no-permissions'
+      fullPath: '/no-permissions'
+      preLoaderRoute: typeof HomeNoPermissionsRouteImport
       parentRoute: typeof HomeRoute
     }
     '/personal/': {
@@ -799,11 +818,13 @@ declare module '@tanstack/react-router' {
 
 interface HomeRouteChildren {
   HomeNewWorkspaceRoute: typeof HomeNewWorkspaceRoute
+  HomeNoPermissionsRoute: typeof HomeNoPermissionsRoute
   HomeIndexRoute: typeof HomeIndexRoute
 }
 
 const HomeRouteChildren: HomeRouteChildren = {
   HomeNewWorkspaceRoute: HomeNewWorkspaceRoute,
+  HomeNoPermissionsRoute: HomeNoPermissionsRoute,
   HomeIndexRoute: HomeIndexRoute,
 }
 
