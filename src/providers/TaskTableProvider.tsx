@@ -19,6 +19,8 @@ interface TaskTableContextValue {
 	searchQuery: string
 	statuses?: WorkspaceStatusDto[]
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
+	titleExpanded: boolean
+	onToggleTitleExpanded(): void
 	getHandlers(): TaskTableHandlers
 }
 
@@ -26,6 +28,8 @@ interface TaskTableProviderProps extends PropsWithChildren {
 	searchQuery?: string
 	statuses?: WorkspaceStatusDto[]
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
+	titleExpanded?: boolean
+	onToggleTitleExpanded?(): void
 	handlers?: TaskRowHandlers
 }
 
@@ -35,6 +39,8 @@ export function TaskTableProvider({
 	searchQuery = "",
 	statuses,
 	filterOptionsMap,
+	titleExpanded = false,
+	onToggleTitleExpanded = () => {},
 	handlers,
 	children,
 }: TaskTableProviderProps) {
@@ -52,9 +58,17 @@ export function TaskTableProvider({
 			searchQuery,
 			statuses,
 			filterOptionsMap,
+			titleExpanded,
+			onToggleTitleExpanded,
 			getHandlers: () => handlersRef.current,
 		}),
-		[searchQuery, statuses, filterOptionsMap],
+		[
+			searchQuery,
+			statuses,
+			filterOptionsMap,
+			titleExpanded,
+			onToggleTitleExpanded,
+		],
 	)
 
 	return (
