@@ -13,17 +13,20 @@ declare global {
 	}
 }
 
-function pushMatomoUserId(cookieValue?: string): void {
-	const user = cookieValue ? decodeSsoUserJwt(cookieValue) : null
+// Decodes the SSO cookie and queues a setUserId command for Matomo.
+// Returns false if the user could not be identified.
+function setUserId(cookieValue: string): boolean {
+	const user = decodeSsoUserJwt(cookieValue)
 	const displayName = user?.displayName
 	const upn = user?.upn
 
+	if (!upn) {
+		return false
+	}
 	window._paq = window._paq || []
+	window._paq.push(["setUserId", `${normalizeUpn(upn)}\n${displayName ?? ""}`])
 
-	window._paq.push([
-		"setUserId",
-		upn ? `${normalizeUpn(upn)}\n${displayName ?? ""}` : "",
-	])
+	return true
 }
 
 function loadMatomoTracker(): void {
@@ -55,21 +58,20 @@ export default function MatomoWrapper({ children }: PropsWithChildren) {
 			return
 		}
 
-		// setUserId must be queued before trackPageView, otherwise the
-		// tracked pageview is not attributed to the user.
-		cookieStore
-			.get(COOKIE_NAME)
-			.then((cookie) => {
-				pushMatomoUserId(cookie?.value)
-			})
-			.catch(() => {
-				pushMatomoUserId()
-			})
-			.finally(() => {
-				loadMatomoTracker()
-			})
+		// Only load Matomo after successfully identifying the user — avoids anonymous visits.
+		function identifyAndTrack(cookieValue?: string): void {
+			if (!cookieValue || !setUserId(cookieValue)) {
+				return
+			}
+			loadMatomoTracker()
+		}
 
-		return onCookieChange(COOKIE_NAME, pushMatomoUserId)
+		// Try immediately; if the cookie isn't set yet, wait for SSO to complete.
+		cookieStore.get(COOKIE_NAME).then((cookie) => {
+			identifyAndTrack(cookie?.value)
+		})
+
+		return onCookieChange(COOKIE_NAME, identifyAndTrack)
 	}, [])
 
 	return children
