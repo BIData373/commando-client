@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import NoPermissionsModal, {
 	noPermissionsSearchSchema,
-} from "src/components/Mobile/MobileHomePage/NoPermissionModal"
+} from "src/components/Mobile/MobileHomePage/NoPermissionsModal"
 
 export const Route = createFileRoute("/_home/no-permissions")({
 	validateSearch: noPermissionsSearchSchema,
