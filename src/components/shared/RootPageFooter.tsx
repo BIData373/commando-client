@@ -202,7 +202,7 @@ const ContactButton = styled(IconButton)`
     width: auto;
     gap: 8px;
     padding-inline: 15px;
-    background: var(--muted);
+		background: var(--Components-Button-Global-colorFillTertiary, rgba(0, 0, 0, 0.04));
     border: none;
     box-shadow: none;
   }
