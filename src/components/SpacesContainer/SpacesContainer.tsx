@@ -107,7 +107,7 @@ export default function SpacesContainer() {
 					))}
 				</TabsRow>
 
-				{isMobile && searchInput}
+				{isMobile && activeTab === "all" && searchInput}
 			</TopSection>
 
 			{isLoading ? (
