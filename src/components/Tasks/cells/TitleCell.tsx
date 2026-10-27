@@ -58,8 +58,10 @@ const CellRoot = styled.div`
   line-height: 20px;
   overflow: hidden;
   width: 100%;
-  height: 100%;
+  height: var(--table-row-height, 100%);
   cursor: pointer;
+  position: sticky;
+  top: var(--table-header-height, 0px);
 `
 
 const TitleContent = styled(EllipsisTooltip)`

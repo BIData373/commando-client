@@ -34,7 +34,9 @@ const CommentCell = styled.div`
   gap: 6px;
   overflow: hidden;
   width: 100%;
-  height: 100%;
+  height: var(--table-row-height, 100%);
+  position: sticky;
+  top: var(--table-header-height, 0px);
 `
 
 const CommentCount = styled.span`

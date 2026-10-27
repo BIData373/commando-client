@@ -48,6 +48,16 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 		const columnHelper = createColumnHelper<AppTableFeatures, TTask>()
 		const definitions = createTaskColumnDefinitions<TTask>()
 
+		const spanByTask = selectable
+			? undefined
+			: ({
+					anchorRow,
+					row,
+				}: {
+					anchorRow: { original: TTask }
+					row: { original: TTask }
+				}) => anchorRow.original.id === row.original.id
+
 		const pinnedStartColumn = selectable
 			? columnHelper.display({
 					id: TASK_COLUMN_ID.select,
@@ -62,8 +72,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 					header: TaskColumnHeader,
 					size: 70,
 					enableColumnFilter: false,
-					spanRows: ({ anchorRow, row }) =>
-						anchorRow.original.id === row.original.id,
+					spanRows: spanByTask,
 					cell: SerialIdCell,
 				})
 
@@ -88,6 +97,12 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				meta: { grow: true },
 				enableSorting: false,
 				enableColumnFilter: false,
+				spanRows: selectable
+					? undefined
+					: ({ anchorRow, row }) =>
+							anchorRow.original.id === row.original.id &&
+							!row.original.description &&
+							!row.original.otherAssignees.some((a) => a.description),
 				cell: TitleCell,
 			}),
 			definitions.status({
@@ -104,12 +119,14 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 			definitions.deadlineType({
 				header: TaskColumnHeader,
 				size: 150,
+				spanRows: spanByTask,
 				cell: DeadlineCell,
 			}),
 			definitions.source({
 				header: TaskColumnHeader,
 				size: 240,
 				meta: { searchable: true },
+				spanRows: spanByTask,
 				cell: SourceCell,
 			}),
 			columnHelper.display({
@@ -120,6 +137,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				meta: { grow: true },
 				enableSorting: false,
 				enableColumnFilter: false,
+				spanRows: spanByTask,
 				cell: LastMessageCell,
 			}),
 			definitions.tags({
@@ -128,6 +146,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				minSize: 70,
 				enableSorting: false,
 				meta: { grow: true, searchable: true },
+				spanRows: spanByTask,
 				cell: TagsCell,
 			}),
 			columnHelper.accessor((row) => row.notes, {
@@ -138,18 +157,21 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				enableSorting: false,
 				enableColumnFilter: false,
 				meta: { grow: true },
+				spanRows: spanByTask,
 				cell: NotesCell,
 			}),
 			definitions.createdAt({
 				header: TaskColumnHeader,
 				size: 120,
 				enableColumnFilter: false,
+				spanRows: spanByTask,
 				cell: DateCell,
 			}),
 			definitions.updatedAt({
 				header: TaskColumnHeader,
 				size: 100,
 				enableColumnFilter: false,
+				spanRows: spanByTask,
 				cell: DateCell,
 			}),
 		])
