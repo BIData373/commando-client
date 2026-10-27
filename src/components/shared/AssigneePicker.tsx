@@ -50,6 +50,7 @@ function AssigneePicker({
 	}
 
 	function handleOpenChange(nextOpen: boolean) {
+		if (!nextOpen && document.activeElement?.tagName === "INPUT") return
 		setOpen(nextOpen)
 		if (!nextOpen) setSearch("")
 	}
