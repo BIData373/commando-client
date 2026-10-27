@@ -12,45 +12,73 @@ export function TitleCell<TTask extends TaskRowDto, TValue>({
 		original: { title, description, flagged },
 	},
 }: CellContext<AppTableFeatures, TTask, TValue>) {
-	const { searchQuery } = useTaskTable()
+	const { searchQuery, titleExpanded } = useTaskTable()
 
 	return (
-		<CellRoot>
+		<CellRoot $expanded={titleExpanded}>
 			{flagged && <FlagIcon />}
-			<TitleContent
-				tooltip={`${title}${description ? ` - ${description}` : ""}`}
-			>
-				<TitlePart>
-					{searchQuery ? (
-						<HighlightMatch text={title} query={searchQuery} variant="mark" />
-					) : (
-						title
+			{titleExpanded ? (
+				<ExpandedContent>
+					<TitlePart $expanded>
+						{searchQuery ? (
+							<HighlightMatch text={title} query={searchQuery} variant="mark" />
+						) : (
+							title
+						)}
+					</TitlePart>
+					{description && (
+						<>
+							<TitleSeparator> - </TitleSeparator>
+							<DetailsPart $expanded>
+								{searchQuery ? (
+									<HighlightMatch
+										text={description}
+										query={searchQuery}
+										variant="mark"
+									/>
+								) : (
+									description
+								)}
+							</DetailsPart>
+						</>
 					)}
-				</TitlePart>
-				{description && (
-					<>
-						<TitleSeparator> - </TitleSeparator>
-						<DetailsPart>
-							{searchQuery ? (
-								<HighlightMatch
-									text={description}
-									query={searchQuery}
-									variant="mark"
-								/>
-							) : (
-								description
-							)}
-						</DetailsPart>
-					</>
-				)}
-			</TitleContent>
+				</ExpandedContent>
+			) : (
+				<TitleContent
+					tooltip={`${title}${description ? ` - ${description}` : ""}`}
+				>
+					<TitlePart $expanded={false}>
+						{searchQuery ? (
+							<HighlightMatch text={title} query={searchQuery} variant="mark" />
+						) : (
+							title
+						)}
+					</TitlePart>
+					{description && (
+						<>
+							<TitleSeparator> - </TitleSeparator>
+							<DetailsPart $expanded={false}>
+								{searchQuery ? (
+									<HighlightMatch
+										text={description}
+										query={searchQuery}
+										variant="mark"
+									/>
+								) : (
+									description
+								)}
+							</DetailsPart>
+						</>
+					)}
+				</TitleContent>
+			)}
 		</CellRoot>
 	)
 }
 
-const CellRoot = styled.div`
+const CellRoot = styled.div<{ $expanded: boolean }>`
   display: flex;
-  align-items: center;
+  align-items: ${({ $expanded }) => ($expanded ? "flex-start" : "center")};
   gap: 6px;
   color: var(--sea-ink);
   font-size: var(--fs-btn);
@@ -70,14 +98,20 @@ const TitleContent = styled(EllipsisTooltip)`
   min-width: 0;
 `
 
-const TitlePart = styled.span`
-  font-weight: 400;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1 1 50%;
-  max-width: max-content;
+const ExpandedContent = styled.div`
+  flex: 1;
   min-width: 0;
+  white-space: normal;
+  word-break: break-word;
+`
+
+const TitlePart = styled.span<{ $expanded: boolean }>`
+  font-weight: 400;
+  min-width: 0;
+  ${({ $expanded }) =>
+		$expanded
+			? "white-space: normal; word-break: break-word;"
+			: "overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1 1 50%; max-width: max-content;"}
 `
 
 const TitleSeparator = styled.span`
@@ -85,12 +119,11 @@ const TitleSeparator = styled.span`
   white-space: nowrap;
 `
 
-const DetailsPart = styled.span`
+const DetailsPart = styled.span<{ $expanded: boolean }>`
   font-weight: 300;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1 1 50%;
-  max-width: max-content;
   min-width: 0;
+  ${({ $expanded }) =>
+		$expanded
+			? "white-space: normal; word-break: break-word;"
+			: "overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1 1 50%; max-width: max-content;"}
 `
