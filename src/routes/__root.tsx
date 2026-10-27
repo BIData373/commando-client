@@ -3,7 +3,7 @@ import { useOrientation } from "@mantine/hooks"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { createRootRoute, Outlet, redirect } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { StrictMode } from "react"
+import { StrictMode, useEffect } from "react"
 import { NotFoundComponent } from "src/components/Error/NotFoundComponent"
 import { RootErrorComponent } from "src/components/Error/RootErrorComponent"
 import { checkForOnboarding } from "src/utils/redirect-utils"
@@ -41,6 +41,11 @@ function RootComponent() {
 		getInitialValueInEffect: false,
 	})
 	const isValidOrientation = VALID_ORIENTATIONS.includes(orientationType)
+	const showRotateScreen = isMobileDevice && !isValidOrientation
+
+	useEffect(() => {
+		document.body.style.overflow = showRotateScreen ? "hidden" : ""
+	}, [showRotateScreen])
 
 	return (
 		<StrictMode>
@@ -55,7 +60,7 @@ function RootComponent() {
 			</TooltipProvider>
 			<Toaster />
 			<ErrorModal />
-			{isMobileDevice && !isValidOrientation && <RotateDeviceScreen />}
+			{showRotateScreen && <RotateDeviceScreen />}
 			{IS_DEV && (
 				<TanStackDevtools
 					config={{
