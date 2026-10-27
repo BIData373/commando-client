@@ -183,6 +183,7 @@ const ActionsRow = styled.div`
 const WorkspaceSearchInput = styled(SearchInput)`
 	flex: none;
 	width: 284px;
+	direction: ltr;
 
 	${MOBILE_MEDIA_QUERY} {
 		width: 100%;
