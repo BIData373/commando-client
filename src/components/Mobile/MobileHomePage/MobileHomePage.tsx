@@ -26,6 +26,7 @@ const PageRoot = styled.div`
   align-items: flex-start;
   width: 100%;
   height: 100%;
+  overflow-y: scroll;
 `
 
 const TopBar = styled.div`
@@ -57,6 +58,5 @@ const ContentWrapper = styled.div`
   align-self: stretch;
   flex: 1;
   min-height: 0;
-  overflow: scroll;
   padding: clamp(16px, 5.0vh, 100px) clamp(16px, 5.0vw, 150px);
 `
