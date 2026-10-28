@@ -21,7 +21,7 @@ export function LastMessageCell<TTask extends TaskRowDto, TValue>({
 		<Tooltip>
 			<TooltipTrigger asChild>
 				<CommentCell>
-					{showUnreadDot && !viewedMessages && <UnreadDot />}
+					{showUnreadDot && text && !viewedMessages && <UnreadDot />}
 					<CommentText>{text}</CommentText>
 					{messageCount > 1 && <CommentCount>({messageCount})</CommentCount>}
 				</CommentCell>
