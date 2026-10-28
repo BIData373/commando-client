@@ -1,10 +1,11 @@
 import { type PropsWithChildren, useEffect } from "react"
+import { getStoredToken } from "src/utils/auth-utils"
 import { MATOMO_ENABLED, MATOMO_SITE_ID } from "src/utils/env-utils"
 import {
-	COOKIE_NAME,
 	decodeSsoUserJwt,
 	normalizeUpn,
 	onCookieChange,
+	TOKEN_NAME,
 } from "src/utils/user-utils"
 
 declare global {
@@ -13,8 +14,8 @@ declare global {
 	}
 }
 
-function getUserId(cookieValue: string): string | null {
-	const user = decodeSsoUserJwt(cookieValue)
+function getUserId(token: string): string | null {
+	const user = decodeSsoUserJwt(token)
 	const upn = user?.upn
 
 	if (!upn) {
@@ -54,23 +55,21 @@ export default function MatomoWrapper({ children }: PropsWithChildren) {
 		}
 
 		// Only load Matomo after successfully identifying the user — avoids anonymous visits.
-		function identifyAndTrack(cookieValue?: string): void {
-			if (!cookieValue) {
+		function identifyAndTrack(token?: string): void {
+			if (!token) {
 				return
 			}
-			const userId = getUserId(cookieValue)
+			const userId = getUserId(token)
 			if (!userId) {
 				return
 			}
 			loadMatomoTracker(userId)
 		}
 
-		// Try immediately; if the cookie isn't set yet, wait for SSO to complete.
-		cookieStore.get(COOKIE_NAME).then((cookie) => {
-			identifyAndTrack(cookie?.value)
-		})
+		// Try immediately; if the token isn't set yet, wait for SSO to complete.
+		getStoredToken().then(identifyAndTrack)
 
-		return onCookieChange(COOKIE_NAME, identifyAndTrack)
+		return onCookieChange(TOKEN_NAME, identifyAndTrack)
 	}, [])
 
 	return children
