@@ -1,28 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { useTaskDetail } from "src/hooks/useTaskDetail"
+import { createFileRoute, redirect } from "@tanstack/react-router"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
-import TaskDetailView from "../../../../components/TaskDetail/TaskDetailView"
 
+// TODO: Temporary redirect from the legacy /personal/task/ URL — remove once old links are no longer in use
 export const Route = createFileRoute("/personal/task/$taskId/")({
-	component: PersonalTaskDetail,
+	beforeLoad: ({ params }) => {
+		throw redirect({
+			to: "/personal/tasks/$taskId",
+			params,
+			search: { view: TasksView.TABLE },
+			replace: true,
+		})
+	},
 })
-
-function PersonalTaskDetail() {
-	const { taskId } = Route.useParams()
-
-	const { task } = useTaskDetail(taskId)
-
-	return (
-		<TaskDetailView
-			task={task}
-			showWorkspace={true}
-			closeTo={{ to: "/personal", search: { view: TasksView.TABLE } }}
-			editTo={{
-				to: "/personal/task/$taskId/edit",
-				params: { taskId },
-				search: { view: TasksView.TABLE },
-			}}
-			isPersonal
-		/>
-	)
-}

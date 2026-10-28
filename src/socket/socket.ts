@@ -4,6 +4,7 @@ import {
 	REQUEST_USERNAME_HEADER,
 	STATIC_TOKEN_HEADER,
 } from "../axios"
+import { IS_MOBILE_DEVICE } from "../hooks/use-mobile"
 import { getStoredToken } from "../utils/auth-utils"
 import { API_BASE_URL, STATIC_TOKEN } from "../utils/env-utils"
 import { getRequestIdentity } from "../utils/request-utils"
@@ -19,6 +20,8 @@ export function createSocket(urlName: string) {
 			const { username, isBI } = getRequestIdentity()
 			cb({
 				ssoUser,
+				...(IS_MOBILE_DEVICE &&
+					ssoUser && { Authorization: `Bearer ${ssoUser}` }),
 				...(STATIC_TOKEN && { [STATIC_TOKEN_HEADER]: STATIC_TOKEN }),
 				...(username &&
 					username.length > 0 && { [REQUEST_USERNAME_HEADER]: username }),

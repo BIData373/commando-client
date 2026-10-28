@@ -466,9 +466,13 @@ const TableOuterContainer = styled.div`
 
   td {
     height: 44px;
-    padding: 0px 12px;
+    padding: 0;
     background: var(--background);
     vertical-align: middle;
+
+    tr[data-expansion-row] > & {
+      padding: 0 12px;
+    }
 
     &:not(:last-of-type) {
       border-bottom: 0.5px solid var(--Background-color-bg-text-active);
@@ -494,9 +498,6 @@ const TableOuterContainer = styled.div`
       outline: 1px solid var(--button-color-hover);
       outline-offset: -2px;
     }
-  }
-   &:has(textarea){
-	 padding: 0 12px 0 0;
   }
 }
 `

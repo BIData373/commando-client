@@ -128,6 +128,7 @@ export const getCreateMessageResponseMock = (
 		hasOnboarded: faker.datatype.boolean(),
 	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
+	viewed: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -250,6 +251,7 @@ export const getListMessagesResponseMock = (): MessageDto[] =>
 			hasOnboarded: faker.datatype.boolean(),
 		},
 		taskId: faker.number.float({ fractionDigits: 2 }),
+		viewed: faker.datatype.boolean(),
 	}))
 
 export const getGetMessageResponseMock = (
@@ -369,6 +371,7 @@ export const getGetMessageResponseMock = (
 		hasOnboarded: faker.datatype.boolean(),
 	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
+	viewed: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -489,6 +492,7 @@ export const getUpdateMessageResponseMock = (
 		hasOnboarded: faker.datatype.boolean(),
 	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
+	viewed: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -609,6 +613,7 @@ export const getDeleteMessageResponseMock = (
 		hasOnboarded: faker.datatype.boolean(),
 	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
+	viewed: faker.datatype.boolean(),
 	...overrideResponse,
 })
 

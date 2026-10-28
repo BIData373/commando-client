@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { TbFilter } from "react-icons/tb"
-import type { FilterOption } from "../../functions/filter-utils"
+import type { FilterOption } from "../../utils/filter-utils"
 import { FilterDropdown } from "../shared/FilterDropdown"
 
 interface ColumnFilterDropdownProps {
@@ -9,6 +9,7 @@ interface ColumnFilterDropdownProps {
 	onApply: (values: Set<string>) => void
 	isActive: boolean
 	onOpenChange: (open: boolean) => void
+	searchable?: boolean
 }
 
 function ColumnFilterDropdown({
@@ -17,6 +18,7 @@ function ColumnFilterDropdown({
 	onApply,
 	isActive,
 	onOpenChange,
+	searchable,
 }: ColumnFilterDropdownProps) {
 	function handleApply(values: string[]) {
 		onApply(new Set(values))
@@ -28,6 +30,7 @@ function ColumnFilterDropdown({
 			activeValues={[...activeValues]}
 			onApply={handleApply}
 			onOpenChange={onOpenChange}
+			searchable={searchable}
 			searchPlaceholder="חפש..."
 		>
 			<IconButton $active={isActive}>

@@ -5,6 +5,7 @@ import { PermissionType, type TaskRowDto } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTaskRows } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
+import { useOpenTask } from "src/hooks/useOpenTask"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
@@ -21,6 +22,7 @@ export function DashboardContent() {
 	} = useWorkspace()
 
 	const navigate = useNavigate()
+	const { openTask } = useOpenTask("/workspace/$urlName/dashboard/$taskId")
 
 	const { assigneeFilter, setAssigneeFilter } = useTasksFilters()
 
@@ -50,13 +52,6 @@ export function DashboardContent() {
 		navigate({
 			to: "/workspace/$urlName/settings/assignees",
 			params: { urlName },
-		})
-	}
-
-	function handleOpenTask(taskId: number) {
-		navigate({
-			to: "/workspace/$urlName/dashboard/$taskId",
-			params: { urlName, taskId: String(taskId) },
 		})
 	}
 
@@ -95,9 +90,9 @@ export function DashboardContent() {
 			</ButtonGroup>
 
 			<GridLayout>
-				<FocusedInstructions onClick={handleOpenTask} taskRows={tasks} />
+				<FocusedInstructions onClick={openTask} taskRows={tasks} />
 				<StatusCard tasks={tasks} />
-				<RecentlyCompleted onClick={handleOpenTask} tasks={tasks} />
+				<RecentlyCompleted onClick={openTask} tasks={tasks} />
 				<SystemDistribution onSetAssignees={handleSetAssignees} tasks={tasks} />
 			</GridLayout>
 		</ContentArea>

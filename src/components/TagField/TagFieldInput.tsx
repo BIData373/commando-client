@@ -127,6 +127,7 @@ function TagFieldInput({
 								))}
 
 								<TagInputField
+									$flush={isFlush}
 									ref={inputRef}
 									value={tagQuery}
 									onChange={handleQueryChange}
@@ -232,13 +233,13 @@ const InputContent = styled.div`
   transform: scaleX(-1);
 `
 
-const TagInputField = styled.input`
+const TagInputField = styled.input<{ $flush: boolean }>`
   direction: rtl;
   flex: 1;
   border: none;
   outline: none;
   background: transparent;
-  font-size: var(--fs-base);
+  font-size: ${({ $flush }) => ($flush ? "var(--fs-btn)" : "var(--fs-base)")};
   font-weight: 400;
   line-height: 18px;
   color: var(--text-color-2);

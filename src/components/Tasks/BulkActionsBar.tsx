@@ -94,7 +94,7 @@ export function BulkActionsBar({
 							<StatusContent align="start" sideOffset={12}>
 								{statuses.map((s) => (
 									<StatusItem key={s.id} onSelect={() => onChangeStatus(s)}>
-										<StatusTag status={s} />
+										<StatusTag status={s} editable />
 									</StatusItem>
 								))}
 							</StatusContent>

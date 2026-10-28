@@ -1,7 +1,9 @@
 import styled from "@emotion/styled"
 import { MoreVertical, Trash2 } from "lucide-react"
 import type { MessageDto } from "src/api/model"
+import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
+import { UnreadDot } from "../shared/UnreadDot"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -26,6 +28,7 @@ function TaskComment({ message, canDelete, onDelete }: TaskCommentProps) {
 
 	return (
 		<Card>
+			{!message.viewed && <UnreadDot />}
 			<MainRow>
 				{canDelete && (
 					<DropdownMenu>
@@ -50,8 +53,7 @@ function TaskComment({ message, canDelete, onDelete }: TaskCommentProps) {
 					{formatDateMonthYear(message.createdAt)}
 				</Timestamp>
 				<UserDetails>
-					<UserMeta title={userMeta}>{userMeta}</UserMeta>
-					<UserName title={userName}>{userName}</UserName>
+					<UserName>{userName}</UserName> <UserMeta>{userMeta}</UserMeta>
 				</UserDetails>
 			</Footer>
 		</Card>
@@ -70,6 +72,7 @@ const Card = styled.div`
   background: var(--card-background);
   width: 100%;
   direction: ltr;
+  position: relative;
 `
 
 const MainRow = styled.div`
@@ -127,6 +130,11 @@ const Footer = styled.div`
   font-size: var(--fs-sm);
   line-height: 20px;
   white-space: nowrap;
+
+  ${MOBILE_MEDIA_QUERY} {
+    flex-direction: column;
+    align-items: flex-end;
+  }
 `
 
 const Timestamp = styled.span`
@@ -140,25 +148,41 @@ const UserDetails = styled.div`
   gap: 8px;
   min-width: 0;
   flex: 1;
-  text-align: end;
+  direction: rtl;
+
+  ${MOBILE_MEDIA_QUERY} {
+    display: block;
+    width: 100%;
+    text-align: start;
+    white-space: normal;
+    word-break: break-all;
+  }
 `
 
 const UserMeta = styled.span`
-  flex: 0 0 50%;
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   font-weight: 400;
   color: var(--sea-ink-soft);
+  margin-inline-end: 8px;
+
+  ${MOBILE_MEDIA_QUERY} {
+    white-space: normal;
+    margin-inline-end: 0;
+  }
 `
 
 const UserName = styled.span`
-  flex: 0 0 50%;
-  min-width: 0;
+  min-width: fit-content;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   font-weight: 500;
   color: var(--sea-ink);
+
+  ${MOBILE_MEDIA_QUERY} {
+    white-space: normal;
+  }
 `
