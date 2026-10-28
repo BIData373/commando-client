@@ -7,8 +7,6 @@ import {
 } from "./env-utils"
 import { normalizeUpn } from "./user-utils"
 
-export const ONBOARDING_PATH = "/onboarding"
-
 export function openUserGuide() {
 	window.open(USER_GUIDE_URL, "_blank")
 }
