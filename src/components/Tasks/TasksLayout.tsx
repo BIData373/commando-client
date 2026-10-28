@@ -61,7 +61,6 @@ function TasksLayout({
 		<>
 			<WorkspaceTabs section={DropdownSection.TASKS} />
 			<WorkspaceTaskTable
-				urlName={urlName}
 				onOpenTask={openTask}
 				onEdit={editTask}
 				clearColumnFilters={handleClearColumnFilters}

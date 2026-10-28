@@ -41,7 +41,6 @@ import { FilterSeparator, TaskFilters } from "./TaskFilters"
 import { TaskTable } from "./TaskTable"
 
 export interface WorkspaceTaskTableProps {
-	urlName: string
 	view?: TasksView
 	statusFilter?: WorkspaceStatusType[]
 	deadlineTypeFilter?: DeadlineType[]
@@ -58,7 +57,6 @@ export interface WorkspaceTaskTableProps {
 }
 
 function WorkspaceTaskTable({
-	urlName,
 	view = TasksView.TABLE,
 	statusFilter = EMPTY_LIST,
 	deadlineTypeFilter = EMPTY_LIST,
@@ -73,7 +71,7 @@ function WorkspaceTaskTable({
 	const { columnOrder, hiddenColumns, assigneeFilter } = useTasksFilters()
 
 	const {
-		workspace: { id: workspaceId, title: workspaceTitle },
+		workspace: { id: workspaceId, title: workspaceTitle, urlName },
 		statuses,
 	} = useWorkspace()
 

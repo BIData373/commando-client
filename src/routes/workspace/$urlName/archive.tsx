@@ -43,7 +43,6 @@ function WorkspaceArchivePage() {
 	const {
 		workspace: { id: workspaceId },
 	} = useWorkspace()
-	const { urlName } = Route.useParams()
 	const { openTask } = useOpenTask("/workspace/$urlName/archive/$taskId")
 
 	return (
@@ -55,7 +54,6 @@ function WorkspaceArchivePage() {
 			<TasksFiltersProvider>
 				<WorkspaceTabs section={DropdownSection.ARCHIVE} />
 				<WorkspaceTaskTable
-					urlName={urlName}
 					onOpenTask={openTask}
 					isArchived={true}
 					extraColumns={WORKSPACE_ARCHIVE_EXTRA_COLUMNS}
