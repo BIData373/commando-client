@@ -74,11 +74,16 @@ export default function SpacesContainer() {
 		},
 	} satisfies Record<string, EmptyCardStateProps>
 
+	function handleSearchChange(query: string) {
+		setSearchQuery(query)
+		if (query && activeTab === "mine") setActiveTab("all")
+	}
+
 	const searchInput = (
 		<WorkspaceSearchInput
 			placeholder="חפש סביבה"
 			value={searchQuery}
-			onChange={setSearchQuery}
+			onChange={handleSearchChange}
 		/>
 	)
 
@@ -86,13 +91,11 @@ export default function SpacesContainer() {
 		<SpaceContainerCard>
 			<TopSection>
 				<HeaderRow>
-					{!isMobile && (
-						<ActionsRow>
-							<WorkspaceRequestButton />
-							{searchInput}
-						</ActionsRow>
-					)}
-					<SectionTitle>סביבות מפקדים</SectionTitle>
+					{!isMobile && <WorkspaceRequestButton />}
+					<TitleGroup>
+						{!isMobile && searchInput}
+						<SectionTitle>סביבות מפקדים</SectionTitle>
+					</TitleGroup>
 				</HeaderRow>
 
 				<TabsRow>
@@ -164,20 +167,21 @@ const HeaderRow = styled.div`
 	width: 100%;
 `
 
+const TitleGroup = styled.div`
+	display: flex;
+	align-items: flex-end;
+	flex: 1;
+	justify-content: flex-end;
+	gap: 29px;
+`
+
 const SectionTitle = styled.h2`
 	margin: 0;
-	margin-inline-start: auto;
 	font-size: clamp(20px, 1.5vw, 32px);
 	font-weight: 400;
 	line-height: clamp(30px, 4.3vh, 46px);
 	color: var(--Color-Subtitle);
 	white-space: nowrap;
-`
-
-const ActionsRow = styled.div`
-	display: flex;
-	align-items: center;
-	gap: 16px;
 `
 
 const WorkspaceSearchInput = styled(SearchInput)`
