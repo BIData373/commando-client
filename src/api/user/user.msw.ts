@@ -16,23 +16,21 @@ export const getCreateUserResponseMock = (
 ): UserDto => ({
 	id: faker.number.float({ fractionDigits: 2 }),
 	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	info: faker.helpers.arrayElement([
-		{
-			...{
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				name: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-			},
+	info: {
+		...{
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			displayName: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			name: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
-		null,
-	]),
+	},
+	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -43,26 +41,21 @@ export const getListUsersResponseMock = (): UserDto[] =>
 	).map(() => ({
 		id: faker.number.float({ fractionDigits: 2 }),
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
-			null,
-		]),
+		},
+		hasOnboarded: faker.datatype.boolean(),
 	}))
 
 export const getSearchUsersResponseMock = (): MirageUserDto[] =>
@@ -71,35 +64,7 @@ export const getSearchUsersResponseMock = (): MirageUserDto[] =>
 		(_, i) => i + 1,
 	).map(() => ({
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
-			},
-			null,
-		]),
-	}))
-
-export const getGetUserResponseMock = (
-	overrideResponse: Partial<Extract<UserDto, object>> = {},
-): UserDto => ({
-	id: faker.number.float({ fractionDigits: 2 }),
-	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	info: faker.helpers.arrayElement([
-		{
+		info: {
 			...{
 				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				displayName: faker.helpers.arrayElement([
@@ -113,8 +78,74 @@ export const getGetUserResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		null,
-	]),
+	}))
+
+export const getGetMeResponseMock = (
+	overrideResponse: Partial<Extract<UserDto, object>> = {},
+): UserDto => ({
+	id: faker.number.float({ fractionDigits: 2 }),
+	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	info: {
+		...{
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			displayName: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			name: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+		},
+	},
+	hasOnboarded: faker.datatype.boolean(),
+	...overrideResponse,
+})
+
+export const getCompleteOnboardingResponseMock = (
+	overrideResponse: Partial<Extract<UserDto, object>> = {},
+): UserDto => ({
+	id: faker.number.float({ fractionDigits: 2 }),
+	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	info: {
+		...{
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			displayName: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			name: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+		},
+	},
+	hasOnboarded: faker.datatype.boolean(),
+	...overrideResponse,
+})
+
+export const getGetUserResponseMock = (
+	overrideResponse: Partial<Extract<UserDto, object>> = {},
+): UserDto => ({
+	id: faker.number.float({ fractionDigits: 2 }),
+	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	info: {
+		...{
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			displayName: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			name: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+		},
+	},
+	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -123,23 +154,21 @@ export const getUpdateUserResponseMock = (
 ): UserDto => ({
 	id: faker.number.float({ fractionDigits: 2 }),
 	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	info: faker.helpers.arrayElement([
-		{
-			...{
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				name: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-			},
+	info: {
+		...{
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			displayName: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			name: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
-		null,
-	]),
+	},
+	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -148,23 +177,21 @@ export const getDeleteUserResponseMock = (
 ): UserDto => ({
 	id: faker.number.float({ fractionDigits: 2 }),
 	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	info: faker.helpers.arrayElement([
-		{
-			...{
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				name: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-			},
+	info: {
+		...{
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			displayName: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			name: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
-		null,
-	]),
+	},
+	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -233,6 +260,54 @@ export const getSearchUsersMockHandler = (
 						? await overrideResponse(info)
 						: overrideResponse
 					: getSearchUsersResponseMock(),
+				{ status: 200 },
+			)
+		},
+		options,
+	)
+}
+
+export const getGetMeMockHandler = (
+	overrideResponse?:
+		| UserDto
+		| ((
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
+		  ) => Promise<UserDto> | UserDto),
+	options?: RequestHandlerOptions,
+) => {
+	return http.get(
+		"*/user/me",
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+			return HttpResponse.json(
+				overrideResponse !== undefined
+					? typeof overrideResponse === "function"
+						? await overrideResponse(info)
+						: overrideResponse
+					: getGetMeResponseMock(),
+				{ status: 200 },
+			)
+		},
+		options,
+	)
+}
+
+export const getCompleteOnboardingMockHandler = (
+	overrideResponse?:
+		| UserDto
+		| ((
+				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+		  ) => Promise<UserDto> | UserDto),
+	options?: RequestHandlerOptions,
+) => {
+	return http.patch(
+		"*/user/complete-onboarding",
+		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+			return HttpResponse.json(
+				overrideResponse !== undefined
+					? typeof overrideResponse === "function"
+						? await overrideResponse(info)
+						: overrideResponse
+					: getCompleteOnboardingResponseMock(),
 				{ status: 200 },
 			)
 		},
@@ -315,6 +390,8 @@ export const getUserMock = () => [
 	getCreateUserMockHandler(),
 	getListUsersMockHandler(),
 	getSearchUsersMockHandler(),
+	getGetMeMockHandler(),
+	getCompleteOnboardingMockHandler(),
 	getGetUserMockHandler(),
 	getUpdateUserMockHandler(),
 	getDeleteUserMockHandler(),
