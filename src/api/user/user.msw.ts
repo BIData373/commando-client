@@ -16,23 +16,20 @@ export const getCreateUserResponseMock = (
 ): UserDto => ({
 	id: faker.number.float({ fractionDigits: 2 }),
 	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	info: faker.helpers.arrayElement([
-		{
-			...{
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				name: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-			},
+	info: {
+		...{
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			displayName: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			name: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
-		null,
-	]),
+	},
 	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
@@ -44,26 +41,20 @@ export const getListUsersResponseMock = (): UserDto[] =>
 	).map(() => ({
 		id: faker.number.float({ fractionDigits: 2 }),
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
-			null,
-		]),
+		},
 		hasOnboarded: faker.datatype.boolean(),
 	}))
 
@@ -73,26 +64,20 @@ export const getSearchUsersResponseMock = (): MirageUserDto[] =>
 		(_, i) => i + 1,
 	).map(() => ({
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
-			null,
-		]),
+		},
 	}))
 
 export const getGetMeResponseMock = (
@@ -100,49 +85,43 @@ export const getGetMeResponseMock = (
 ): UserDto => ({
 	id: faker.number.float({ fractionDigits: 2 }),
 	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	info: faker.helpers.arrayElement([
-		{
-			...{
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				name: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-			},
+	info: {
+		...{
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			displayName: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			name: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
-		null,
-	]),
+	},
 	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
-export const getMarkMeOnboardedResponseMock = (
+export const getCompleteOnboardingResponseMock = (
 	overrideResponse: Partial<Extract<UserDto, object>> = {},
 ): UserDto => ({
 	id: faker.number.float({ fractionDigits: 2 }),
 	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	info: faker.helpers.arrayElement([
-		{
-			...{
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				name: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-			},
+	info: {
+		...{
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			displayName: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			name: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
-		null,
-	]),
+	},
 	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
@@ -152,23 +131,20 @@ export const getGetUserResponseMock = (
 ): UserDto => ({
 	id: faker.number.float({ fractionDigits: 2 }),
 	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	info: faker.helpers.arrayElement([
-		{
-			...{
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				name: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-			},
+	info: {
+		...{
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			displayName: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			name: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
-		null,
-	]),
+	},
 	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
@@ -178,23 +154,20 @@ export const getUpdateUserResponseMock = (
 ): UserDto => ({
 	id: faker.number.float({ fractionDigits: 2 }),
 	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	info: faker.helpers.arrayElement([
-		{
-			...{
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				name: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-			},
+	info: {
+		...{
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			displayName: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			name: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
-		null,
-	]),
+	},
 	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
@@ -204,23 +177,20 @@ export const getDeleteUserResponseMock = (
 ): UserDto => ({
 	id: faker.number.float({ fractionDigits: 2 }),
 	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	info: faker.helpers.arrayElement([
-		{
-			...{
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				name: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-			},
+	info: {
+		...{
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			displayName: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			name: faker.helpers.arrayElement([
+				faker.string.alpha({ length: { min: 10, max: 20 } }),
+				undefined,
+			]),
+			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
-		null,
-	]),
+	},
 	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
@@ -321,7 +291,7 @@ export const getGetMeMockHandler = (
 	)
 }
 
-export const getMarkMeOnboardedMockHandler = (
+export const getCompleteOnboardingMockHandler = (
 	overrideResponse?:
 		| UserDto
 		| ((
@@ -330,14 +300,14 @@ export const getMarkMeOnboardedMockHandler = (
 	options?: RequestHandlerOptions,
 ) => {
 	return http.patch(
-		"*/user/visit",
+		"*/user/complete-onboarding",
 		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
 						? await overrideResponse(info)
 						: overrideResponse
-					: getMarkMeOnboardedResponseMock(),
+					: getCompleteOnboardingResponseMock(),
 				{ status: 200 },
 			)
 		},
@@ -421,7 +391,7 @@ export const getUserMock = () => [
 	getListUsersMockHandler(),
 	getSearchUsersMockHandler(),
 	getGetMeMockHandler(),
-	getMarkMeOnboardedMockHandler(),
+	getCompleteOnboardingMockHandler(),
 	getGetUserMockHandler(),
 	getUpdateUserMockHandler(),
 	getDeleteUserMockHandler(),

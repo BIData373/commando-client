@@ -27,6 +27,8 @@ export const viewTasks = (params: ViewTasksParams, signal?: AbortSignal) => {
 	})
 }
 
+export const getViewTasksMutationKey = () => ["viewTasks"] as const
+
 export const getViewTasksMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -34,16 +36,16 @@ export const getViewTasksMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof viewTasks>>,
 		TError,
-		{ params: ViewTasksParams },
+		ViewTasksMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof viewTasks>>,
 	TError,
-	{ params: ViewTasksParams },
+	ViewTasksMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["viewTasks"]
+	const mutationKey = getViewTasksMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -54,7 +56,7 @@ export const getViewTasksMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof viewTasks>>,
-		{ params: ViewTasksParams }
+		ViewTasksMutationVariables
 	> = (props) => {
 		const { params } = props ?? {}
 
@@ -69,13 +71,14 @@ export type ViewTasksMutationResult = NonNullable<
 >
 
 export type ViewTasksMutationError = ErrorType<unknown>
+export type ViewTasksMutationVariables = { params: ViewTasksParams }
 
 export const useViewTasks = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof viewTasks>>,
 			TError,
-			{ params: ViewTasksParams },
+			ViewTasksMutationVariables,
 			TContext
 		>
 	},
@@ -83,7 +86,7 @@ export const useViewTasks = <TError = ErrorType<unknown>, TContext = unknown>(
 ): UseMutationResult<
 	Awaited<ReturnType<typeof viewTasks>>,
 	TError,
-	{ params: ViewTasksParams },
+	ViewTasksMutationVariables,
 	TContext
 > => {
 	return useMutation(getViewTasksMutationOptions(options), queryClient)

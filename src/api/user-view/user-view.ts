@@ -191,6 +191,8 @@ export const upsertUserView = (
 	})
 }
 
+export const getUpsertUserViewMutationKey = () => ["upsertUserView"] as const
+
 export const getUpsertUserViewMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -198,16 +200,16 @@ export const getUpsertUserViewMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof upsertUserView>>,
 		TError,
-		{ data: UpsertUserViewDto },
+		UpsertUserViewMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof upsertUserView>>,
 	TError,
-	{ data: UpsertUserViewDto },
+	UpsertUserViewMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["upsertUserView"]
+	const mutationKey = getUpsertUserViewMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -218,7 +220,7 @@ export const getUpsertUserViewMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof upsertUserView>>,
-		{ data: UpsertUserViewDto }
+		UpsertUserViewMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
@@ -233,6 +235,7 @@ export type UpsertUserViewMutationResult = NonNullable<
 >
 export type UpsertUserViewMutationBody = UpsertUserViewDto
 export type UpsertUserViewMutationError = ErrorType<unknown>
+export type UpsertUserViewMutationVariables = { data: UpsertUserViewDto }
 
 export const useUpsertUserView = <
 	TError = ErrorType<unknown>,
@@ -242,7 +245,7 @@ export const useUpsertUserView = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof upsertUserView>>,
 			TError,
-			{ data: UpsertUserViewDto },
+			UpsertUserViewMutationVariables,
 			TContext
 		>
 	},
@@ -250,7 +253,7 @@ export const useUpsertUserView = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof upsertUserView>>,
 	TError,
-	{ data: UpsertUserViewDto },
+	UpsertUserViewMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpsertUserViewMutationOptions(options), queryClient)

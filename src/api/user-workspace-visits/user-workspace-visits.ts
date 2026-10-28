@@ -30,6 +30,9 @@ export const upsertUserWorkspaceVisit = (
 	})
 }
 
+export const getUpsertUserWorkspaceVisitMutationKey = () =>
+	["upsertUserWorkspaceVisit"] as const
+
 export const getUpsertUserWorkspaceVisitMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -37,16 +40,16 @@ export const getUpsertUserWorkspaceVisitMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof upsertUserWorkspaceVisit>>,
 		TError,
-		{ params?: UpsertUserWorkspaceVisitParams },
+		UpsertUserWorkspaceVisitMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof upsertUserWorkspaceVisit>>,
 	TError,
-	{ params?: UpsertUserWorkspaceVisitParams },
+	UpsertUserWorkspaceVisitMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["upsertUserWorkspaceVisit"]
+	const mutationKey = getUpsertUserWorkspaceVisitMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -57,7 +60,7 @@ export const getUpsertUserWorkspaceVisitMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof upsertUserWorkspaceVisit>>,
-		{ params?: UpsertUserWorkspaceVisitParams }
+		UpsertUserWorkspaceVisitMutationVariables
 	> = (props) => {
 		const { params } = props ?? {}
 
@@ -72,6 +75,9 @@ export type UpsertUserWorkspaceVisitMutationResult = NonNullable<
 >
 
 export type UpsertUserWorkspaceVisitMutationError = ErrorType<unknown>
+export type UpsertUserWorkspaceVisitMutationVariables = {
+	params?: UpsertUserWorkspaceVisitParams
+}
 
 export const useUpsertUserWorkspaceVisit = <
 	TError = ErrorType<unknown>,
@@ -81,7 +87,7 @@ export const useUpsertUserWorkspaceVisit = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof upsertUserWorkspaceVisit>>,
 			TError,
-			{ params?: UpsertUserWorkspaceVisitParams },
+			UpsertUserWorkspaceVisitMutationVariables,
 			TContext
 		>
 	},
@@ -89,7 +95,7 @@ export const useUpsertUserWorkspaceVisit = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof upsertUserWorkspaceVisit>>,
 	TError,
-	{ params?: UpsertUserWorkspaceVisitParams },
+	UpsertUserWorkspaceVisitMutationVariables,
 	TContext
 > => {
 	return useMutation(

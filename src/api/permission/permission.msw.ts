@@ -19,41 +19,7 @@ export const getListPermissionsResponseMock = (): PermissionDto[] =>
 		user: {
 			id: faker.number.float({ fractionDigits: 2 }),
 			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			info: faker.helpers.arrayElement([
-				{
-					...{
-						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-						displayName: faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							undefined,
-						]),
-						name: faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							undefined,
-						]),
-						isBI: faker.helpers.arrayElement([
-							faker.datatype.boolean(),
-							undefined,
-						]),
-					},
-				},
-				null,
-			]),
-			hasOnboarded: faker.datatype.boolean(),
-		},
-		workspaceId: faker.number.float({ fractionDigits: 2 }),
-		type: faker.helpers.arrayElement(Object.values(PermissionType)),
-		hasEnteredWorkspace: faker.datatype.boolean(),
-	}))
-
-export const getUpsertPermissionResponseMock = (
-	overrideResponse: Partial<Extract<PermissionDto, object>> = {},
-): PermissionDto => ({
-	user: {
-		id: faker.number.float({ fractionDigits: 2 }),
-		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
+			info: {
 				...{
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 					displayName: faker.helpers.arrayElement([
@@ -70,13 +36,36 @@ export const getUpsertPermissionResponseMock = (
 					]),
 				},
 			},
-			null,
-		]),
+			hasOnboarded: faker.datatype.boolean(),
+		},
+		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		type: faker.helpers.arrayElement(Object.values(PermissionType)),
+	}))
+
+export const getUpsertPermissionResponseMock = (
+	overrideResponse: Partial<Extract<PermissionDto, object>> = {},
+): PermissionDto => ({
+	user: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+			},
+		},
 		hasOnboarded: faker.datatype.boolean(),
 	},
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	type: faker.helpers.arrayElement(Object.values(PermissionType)),
-	hasEnteredWorkspace: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -86,31 +75,24 @@ export const getDeletePermissionResponseMock = (
 	user: {
 		id: faker.number.float({ fractionDigits: 2 }),
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
-			null,
-		]),
+		},
 		hasOnboarded: faker.datatype.boolean(),
 	},
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	type: faker.helpers.arrayElement(Object.values(PermissionType)),
-	hasEnteredWorkspace: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -120,65 +102,24 @@ export const getGetMyPermissionResponseMock = (
 	user: {
 		id: faker.number.float({ fractionDigits: 2 }),
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
-			null,
-		]),
+		},
 		hasOnboarded: faker.datatype.boolean(),
 	},
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
 	type: faker.helpers.arrayElement(Object.values(PermissionType)),
-	hasEnteredWorkspace: faker.datatype.boolean(),
-	...overrideResponse,
-})
-
-export const getMarkMyWorkspaceVisitResponseMock = (
-	overrideResponse: Partial<Extract<PermissionDto, object>> = {},
-): PermissionDto => ({
-	user: {
-		id: faker.number.float({ fractionDigits: 2 }),
-		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
-			},
-			null,
-		]),
-		hasOnboarded: faker.datatype.boolean(),
-	},
-	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	type: faker.helpers.arrayElement(Object.values(PermissionType)),
-	hasEnteredWorkspace: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -277,34 +218,9 @@ export const getGetMyPermissionMockHandler = (
 		options,
 	)
 }
-
-export const getMarkMyWorkspaceVisitMockHandler = (
-	overrideResponse?:
-		| PermissionDto
-		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
-		  ) => Promise<PermissionDto> | PermissionDto),
-	options?: RequestHandlerOptions,
-) => {
-	return http.patch(
-		"*/permission/visit",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
-			return HttpResponse.json(
-				overrideResponse !== undefined
-					? typeof overrideResponse === "function"
-						? await overrideResponse(info)
-						: overrideResponse
-					: getMarkMyWorkspaceVisitResponseMock(),
-				{ status: 200 },
-			)
-		},
-		options,
-	)
-}
 export const getPermissionMock = () => [
 	getListPermissionsMockHandler(),
 	getUpsertPermissionMockHandler(),
 	getDeletePermissionMockHandler(),
 	getGetMyPermissionMockHandler(),
-	getMarkMyWorkspaceVisitMockHandler(),
 ]

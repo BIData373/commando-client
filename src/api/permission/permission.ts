@@ -28,7 +28,6 @@ import type {
 	DeletePermissionParams,
 	GetMyPermissionParams,
 	ListPermissionsParams,
-	MarkMyWorkspaceVisitParams,
 	PermissionDto,
 	UpsertPermissionDto,
 } from "../model"
@@ -214,6 +213,9 @@ export const upsertPermission = (
 	})
 }
 
+export const getUpsertPermissionMutationKey = () =>
+	["upsertPermission"] as const
+
 export const getUpsertPermissionMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -221,16 +223,16 @@ export const getUpsertPermissionMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof upsertPermission>>,
 		TError,
-		{ data: UpsertPermissionDto },
+		UpsertPermissionMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof upsertPermission>>,
 	TError,
-	{ data: UpsertPermissionDto },
+	UpsertPermissionMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["upsertPermission"]
+	const mutationKey = getUpsertPermissionMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -241,7 +243,7 @@ export const getUpsertPermissionMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof upsertPermission>>,
-		{ data: UpsertPermissionDto }
+		UpsertPermissionMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
@@ -256,6 +258,7 @@ export type UpsertPermissionMutationResult = NonNullable<
 >
 export type UpsertPermissionMutationBody = UpsertPermissionDto
 export type UpsertPermissionMutationError = ErrorType<unknown>
+export type UpsertPermissionMutationVariables = { data: UpsertPermissionDto }
 
 export const useUpsertPermission = <
 	TError = ErrorType<unknown>,
@@ -265,7 +268,7 @@ export const useUpsertPermission = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof upsertPermission>>,
 			TError,
-			{ data: UpsertPermissionDto },
+			UpsertPermissionMutationVariables,
 			TContext
 		>
 	},
@@ -273,7 +276,7 @@ export const useUpsertPermission = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof upsertPermission>>,
 	TError,
-	{ data: UpsertPermissionDto },
+	UpsertPermissionMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpsertPermissionMutationOptions(options), queryClient)
@@ -290,6 +293,9 @@ export const deletePermission = (
 	})
 }
 
+export const getDeletePermissionMutationKey = () =>
+	["deletePermission"] as const
+
 export const getDeletePermissionMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -297,16 +303,16 @@ export const getDeletePermissionMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deletePermission>>,
 		TError,
-		{ params: DeletePermissionParams },
+		DeletePermissionMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deletePermission>>,
 	TError,
-	{ params: DeletePermissionParams },
+	DeletePermissionMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deletePermission"]
+	const mutationKey = getDeletePermissionMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -317,7 +323,7 @@ export const getDeletePermissionMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deletePermission>>,
-		{ params: DeletePermissionParams }
+		DeletePermissionMutationVariables
 	> = (props) => {
 		const { params } = props ?? {}
 
@@ -332,6 +338,9 @@ export type DeletePermissionMutationResult = NonNullable<
 >
 
 export type DeletePermissionMutationError = ErrorType<unknown>
+export type DeletePermissionMutationVariables = {
+	params: DeletePermissionParams
+}
 
 export const useDeletePermission = <
 	TError = ErrorType<unknown>,
@@ -341,7 +350,7 @@ export const useDeletePermission = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deletePermission>>,
 			TError,
-			{ params: DeletePermissionParams },
+			DeletePermissionMutationVariables,
 			TContext
 		>
 	},
@@ -349,7 +358,7 @@ export const useDeletePermission = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deletePermission>>,
 	TError,
-	{ params: DeletePermissionParams },
+	DeletePermissionMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeletePermissionMutationOptions(options), queryClient)
@@ -502,84 +511,4 @@ export function useGetMyPermission<
 	> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 	return withQueryKey(query, queryOptions.queryKey)
-}
-
-export const markMyWorkspaceVisit = (
-	params: MarkMyWorkspaceVisitParams,
-	signal?: AbortSignal,
-) => {
-	return sendRequest<PermissionDto>({
-		url: `/permission/visit`,
-		method: "PATCH",
-		params,
-		signal,
-	})
-}
-
-export const getMarkMyWorkspaceVisitMutationOptions = <
-	TError = ErrorType<unknown>,
-	TContext = unknown,
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof markMyWorkspaceVisit>>,
-		TError,
-		{ params: MarkMyWorkspaceVisitParams },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof markMyWorkspaceVisit>>,
-	TError,
-	{ params: MarkMyWorkspaceVisitParams },
-	TContext
-> => {
-	const mutationKey = ["markMyWorkspaceVisit"]
-	const { mutation: mutationOptions } = options
-		? options.mutation &&
-			"mutationKey" in options.mutation &&
-			options.mutation.mutationKey
-			? options
-			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof markMyWorkspaceVisit>>,
-		{ params: MarkMyWorkspaceVisitParams }
-	> = (props) => {
-		const { params } = props ?? {}
-
-		return markMyWorkspaceVisit(params)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type MarkMyWorkspaceVisitMutationResult = NonNullable<
-	Awaited<ReturnType<typeof markMyWorkspaceVisit>>
->
-
-export type MarkMyWorkspaceVisitMutationError = ErrorType<unknown>
-
-export const useMarkMyWorkspaceVisit = <
-	TError = ErrorType<unknown>,
-	TContext = unknown,
->(
-	options?: {
-		mutation?: UseMutationOptions<
-			Awaited<ReturnType<typeof markMyWorkspaceVisit>>,
-			TError,
-			{ params: MarkMyWorkspaceVisitParams },
-			TContext
-		>
-	},
-	queryClient?: QueryClient,
-): UseMutationResult<
-	Awaited<ReturnType<typeof markMyWorkspaceVisit>>,
-	TError,
-	{ params: MarkMyWorkspaceVisitParams },
-	TContext
-> => {
-	return useMutation(
-		getMarkMyWorkspaceVisitMutationOptions(options),
-		queryClient,
-	)
 }

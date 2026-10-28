@@ -222,6 +222,9 @@ export const upsertAssigneeTaskStatus = (
 	})
 }
 
+export const getUpsertAssigneeTaskStatusMutationKey = () =>
+	["upsertAssigneeTaskStatus"] as const
+
 export const getUpsertAssigneeTaskStatusMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -229,16 +232,16 @@ export const getUpsertAssigneeTaskStatusMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof upsertAssigneeTaskStatus>>,
 		TError,
-		{ data: UpdateAssigneeTaskStatusDto },
+		UpsertAssigneeTaskStatusMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof upsertAssigneeTaskStatus>>,
 	TError,
-	{ data: UpdateAssigneeTaskStatusDto },
+	UpsertAssigneeTaskStatusMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["upsertAssigneeTaskStatus"]
+	const mutationKey = getUpsertAssigneeTaskStatusMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -249,7 +252,7 @@ export const getUpsertAssigneeTaskStatusMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof upsertAssigneeTaskStatus>>,
-		{ data: UpdateAssigneeTaskStatusDto }
+		UpsertAssigneeTaskStatusMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
@@ -264,6 +267,9 @@ export type UpsertAssigneeTaskStatusMutationResult = NonNullable<
 >
 export type UpsertAssigneeTaskStatusMutationBody = UpdateAssigneeTaskStatusDto
 export type UpsertAssigneeTaskStatusMutationError = ErrorType<unknown>
+export type UpsertAssigneeTaskStatusMutationVariables = {
+	data: UpdateAssigneeTaskStatusDto
+}
 
 export const useUpsertAssigneeTaskStatus = <
 	TError = ErrorType<unknown>,
@@ -273,7 +279,7 @@ export const useUpsertAssigneeTaskStatus = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof upsertAssigneeTaskStatus>>,
 			TError,
-			{ data: UpdateAssigneeTaskStatusDto },
+			UpsertAssigneeTaskStatusMutationVariables,
 			TContext
 		>
 	},
@@ -281,7 +287,7 @@ export const useUpsertAssigneeTaskStatus = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof upsertAssigneeTaskStatus>>,
 	TError,
-	{ data: UpdateAssigneeTaskStatusDto },
+	UpsertAssigneeTaskStatusMutationVariables,
 	TContext
 > => {
 	return useMutation(
@@ -301,6 +307,9 @@ export const deleteAssigneeTaskStatus = (
 	})
 }
 
+export const getDeleteAssigneeTaskStatusMutationKey = () =>
+	["deleteAssigneeTaskStatus"] as const
+
 export const getDeleteAssigneeTaskStatusMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -308,16 +317,16 @@ export const getDeleteAssigneeTaskStatusMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
 		TError,
-		{ params: DeleteAssigneeTaskStatusParams },
+		DeleteAssigneeTaskStatusMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
 	TError,
-	{ params: DeleteAssigneeTaskStatusParams },
+	DeleteAssigneeTaskStatusMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deleteAssigneeTaskStatus"]
+	const mutationKey = getDeleteAssigneeTaskStatusMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -328,7 +337,7 @@ export const getDeleteAssigneeTaskStatusMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
-		{ params: DeleteAssigneeTaskStatusParams }
+		DeleteAssigneeTaskStatusMutationVariables
 	> = (props) => {
 		const { params } = props ?? {}
 
@@ -343,6 +352,9 @@ export type DeleteAssigneeTaskStatusMutationResult = NonNullable<
 >
 
 export type DeleteAssigneeTaskStatusMutationError = ErrorType<unknown>
+export type DeleteAssigneeTaskStatusMutationVariables = {
+	params: DeleteAssigneeTaskStatusParams
+}
 
 export const useDeleteAssigneeTaskStatus = <
 	TError = ErrorType<unknown>,
@@ -352,7 +364,7 @@ export const useDeleteAssigneeTaskStatus = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
 			TError,
-			{ params: DeleteAssigneeTaskStatusParams },
+			DeleteAssigneeTaskStatusMutationVariables,
 			TContext
 		>
 	},
@@ -360,7 +372,7 @@ export const useDeleteAssigneeTaskStatus = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
 	TError,
-	{ params: DeleteAssigneeTaskStatusParams },
+	DeleteAssigneeTaskStatusMutationVariables,
 	TContext
 > => {
 	return useMutation(

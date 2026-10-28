@@ -66,6 +66,8 @@ export const createUser = (
 	})
 }
 
+export const getCreateUserMutationKey = () => ["createUser"] as const
+
 export const getCreateUserMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -73,16 +75,16 @@ export const getCreateUserMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof createUser>>,
 		TError,
-		{ data: CreateUserDto },
+		CreateUserMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createUser>>,
 	TError,
-	{ data: CreateUserDto },
+	CreateUserMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["createUser"]
+	const mutationKey = getCreateUserMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -93,7 +95,7 @@ export const getCreateUserMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createUser>>,
-		{ data: CreateUserDto }
+		CreateUserMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
@@ -108,13 +110,14 @@ export type CreateUserMutationResult = NonNullable<
 >
 export type CreateUserMutationBody = CreateUserDto
 export type CreateUserMutationError = ErrorType<unknown>
+export type CreateUserMutationVariables = { data: CreateUserDto }
 
 export const useCreateUser = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createUser>>,
 			TError,
-			{ data: CreateUserDto },
+			CreateUserMutationVariables,
 			TContext
 		>
 	},
@@ -122,7 +125,7 @@ export const useCreateUser = <TError = ErrorType<unknown>, TContext = unknown>(
 ): UseMutationResult<
 	Awaited<ReturnType<typeof createUser>>,
 	TError,
-	{ data: CreateUserDto },
+	CreateUserMutationVariables,
 	TContext
 > => {
 	return useMutation(getCreateUserMutationOptions(options), queryClient)
@@ -485,27 +488,34 @@ export function useGetMe<
 	return withQueryKey(query, queryOptions.queryKey)
 }
 
-export const markMeOnboarded = (signal?: AbortSignal) => {
-	return sendRequest<UserDto>({ url: `/user/visit`, method: "PATCH", signal })
+export const completeOnboarding = (signal?: AbortSignal) => {
+	return sendRequest<UserDto>({
+		url: `/user/complete-onboarding`,
+		method: "PATCH",
+		signal,
+	})
 }
 
-export const getMarkMeOnboardedMutationOptions = <
+export const getCompleteOnboardingMutationKey = () =>
+	["completeOnboarding"] as const
+
+export const getCompleteOnboardingMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(options?: {
 	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof markMeOnboarded>>,
+		Awaited<ReturnType<typeof completeOnboarding>>,
 		TError,
 		void,
 		TContext
 	>
 }): UseMutationOptions<
-	Awaited<ReturnType<typeof markMeOnboarded>>,
+	Awaited<ReturnType<typeof completeOnboarding>>,
 	TError,
 	void,
 	TContext
 > => {
-	const mutationKey = ["markMeOnboarded"]
+	const mutationKey = getCompleteOnboardingMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -515,28 +525,28 @@ export const getMarkMeOnboardedMutationOptions = <
 		: { mutation: { mutationKey } }
 
 	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof markMeOnboarded>>,
+		Awaited<ReturnType<typeof completeOnboarding>>,
 		void
 	> = () => {
-		return markMeOnboarded()
+		return completeOnboarding()
 	}
 
 	return { mutationFn, ...mutationOptions }
 }
 
-export type MarkMeOnboardedMutationResult = NonNullable<
-	Awaited<ReturnType<typeof markMeOnboarded>>
+export type CompleteOnboardingMutationResult = NonNullable<
+	Awaited<ReturnType<typeof completeOnboarding>>
 >
 
-export type MarkMeOnboardedMutationError = ErrorType<unknown>
+export type CompleteOnboardingMutationError = ErrorType<unknown>
 
-export const useMarkMeOnboarded = <
+export const useCompleteOnboarding = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
 >(
 	options?: {
 		mutation?: UseMutationOptions<
-			Awaited<ReturnType<typeof markMeOnboarded>>,
+			Awaited<ReturnType<typeof completeOnboarding>>,
 			TError,
 			void,
 			TContext
@@ -544,12 +554,12 @@ export const useMarkMeOnboarded = <
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
-	Awaited<ReturnType<typeof markMeOnboarded>>,
+	Awaited<ReturnType<typeof completeOnboarding>>,
 	TError,
 	void,
 	TContext
 > => {
-	return useMutation(getMarkMeOnboardedMutationOptions(options), queryClient)
+	return useMutation(getCompleteOnboardingMutationOptions(options), queryClient)
 }
 export const getUser = (
 	{ id }: GetUserPathParameters,
@@ -693,6 +703,8 @@ export const updateUser = (
 	})
 }
 
+export const getUpdateUserMutationKey = () => ["updateUser"] as const
+
 export const getUpdateUserMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -700,16 +712,16 @@ export const getUpdateUserMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof updateUser>>,
 		TError,
-		{ pathParams: UpdateUserPathParameters; data: UpdateUserDto },
+		UpdateUserMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateUser>>,
 	TError,
-	{ pathParams: UpdateUserPathParameters; data: UpdateUserDto },
+	UpdateUserMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["updateUser"]
+	const mutationKey = getUpdateUserMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -720,7 +732,7 @@ export const getUpdateUserMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateUser>>,
-		{ pathParams: UpdateUserPathParameters; data: UpdateUserDto }
+		UpdateUserMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
@@ -735,13 +747,17 @@ export type UpdateUserMutationResult = NonNullable<
 >
 export type UpdateUserMutationBody = UpdateUserDto
 export type UpdateUserMutationError = ErrorType<unknown>
+export type UpdateUserMutationVariables = {
+	pathParams: UpdateUserPathParameters
+	data: UpdateUserDto
+}
 
 export const useUpdateUser = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateUser>>,
 			TError,
-			{ pathParams: UpdateUserPathParameters; data: UpdateUserDto },
+			UpdateUserMutationVariables,
 			TContext
 		>
 	},
@@ -749,7 +765,7 @@ export const useUpdateUser = <TError = ErrorType<unknown>, TContext = unknown>(
 ): UseMutationResult<
 	Awaited<ReturnType<typeof updateUser>>,
 	TError,
-	{ pathParams: UpdateUserPathParameters; data: UpdateUserDto },
+	UpdateUserMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpdateUserMutationOptions(options), queryClient)
@@ -761,6 +777,8 @@ export const deleteUser = (
 	return sendRequest<UserDto>({ url: `/user/${id}`, method: "DELETE", signal })
 }
 
+export const getDeleteUserMutationKey = () => ["deleteUser"] as const
+
 export const getDeleteUserMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -768,16 +786,16 @@ export const getDeleteUserMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteUser>>,
 		TError,
-		{ pathParams: DeleteUserPathParameters },
+		DeleteUserMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteUser>>,
 	TError,
-	{ pathParams: DeleteUserPathParameters },
+	DeleteUserMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deleteUser"]
+	const mutationKey = getDeleteUserMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -788,7 +806,7 @@ export const getDeleteUserMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteUser>>,
-		{ pathParams: DeleteUserPathParameters }
+		DeleteUserMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
@@ -803,13 +821,16 @@ export type DeleteUserMutationResult = NonNullable<
 >
 
 export type DeleteUserMutationError = ErrorType<unknown>
+export type DeleteUserMutationVariables = {
+	pathParams: DeleteUserPathParameters
+}
 
 export const useDeleteUser = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteUser>>,
 			TError,
-			{ pathParams: DeleteUserPathParameters },
+			DeleteUserMutationVariables,
 			TContext
 		>
 	},
@@ -817,7 +838,7 @@ export const useDeleteUser = <TError = ErrorType<unknown>, TContext = unknown>(
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteUser>>,
 	TError,
-	{ pathParams: DeleteUserPathParameters },
+	DeleteUserMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeleteUserMutationOptions(options), queryClient)

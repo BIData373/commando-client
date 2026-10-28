@@ -1,7 +1,8 @@
 import styled from "@emotion/styled"
 import { useNavigate, useSearch } from "@tanstack/react-router"
+import { getGetMeQueryKey, useCompleteOnboarding } from "src/api/user/user"
 import logoWithText from "src/assets/logo-with-text-dark.png"
-import { useMarkOnboarded } from "src/hooks/useMarkOnboarded"
+import { queryClient } from "src/query-client"
 import { OnboardingSteps } from "src/routes/onboarding"
 import { Dialog, DialogContent } from "../ui/dialog"
 import { OnboardingGreetingPage } from "./OnboardingGreetingPage"
@@ -17,7 +18,12 @@ export const ONBOARDING_STEP_ORDER: OnboardingSteps[] = [
 export function OnboardingModal() {
 	const navigate = useNavigate({ from: "/onboarding" })
 	const { step = OnboardingSteps.Greeting } = useSearch({ from: "/onboarding" })
-	const markOnboarded = useMarkOnboarded()
+	const { mutate: completeOnboarding } = useCompleteOnboarding({
+		mutation: {
+			onSuccess: () =>
+				queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() }),
+		},
+	})
 
 	const currentStepIndex = ONBOARDING_STEP_ORDER.indexOf(step)
 
@@ -40,12 +46,11 @@ export function OnboardingModal() {
 	}
 
 	function handleFinishOnboarding() {
-		markOnboarded()
+		completeOnboarding()
 	}
 
 	function handleSkipOnboarding() {
-		markOnboarded()
-		navigate({ to: "/" })
+		completeOnboarding(undefined, { onSuccess: () => navigate({ to: "/" }) })
 	}
 
 	const pages: Record<OnboardingSteps, React.ReactNode> = {

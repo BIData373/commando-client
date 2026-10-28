@@ -18,7 +18,7 @@ export function WorkspacePageShell({
 			workspaceId,
 		})
 	const {
-		workspace: { urlName },
+		workspace: { urlName, hasEnteredWorkspace },
 	} = useWorkspace()
 	const navigate = useNavigate()
 
@@ -29,13 +29,19 @@ export function WorkspacePageShell({
 
 		const isManager = myPermission?.type === PermissionType.MANAGER
 
-		if (!myPermission?.hasEnteredWorkspace && isManager) {
+		if (!hasEnteredWorkspace && isManager) {
 			navigate({
 				to: "/workspace/$urlName/settings/assignees/help",
 				params: { urlName },
 			})
 		}
-	}, [myPermission, isPermissionFetched, navigate, urlName])
+	}, [
+		myPermission,
+		isPermissionFetched,
+		hasEnteredWorkspace,
+		navigate,
+		urlName,
+	])
 
 	return <PageShell>{children}</PageShell>
 }

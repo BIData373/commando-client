@@ -65,6 +65,8 @@ export const createMessage = (
 	})
 }
 
+export const getCreateMessageMutationKey = () => ["createMessage"] as const
+
 export const getCreateMessageMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -72,16 +74,16 @@ export const getCreateMessageMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof createMessage>>,
 		TError,
-		{ data: CreateMessageDto },
+		CreateMessageMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createMessage>>,
 	TError,
-	{ data: CreateMessageDto },
+	CreateMessageMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["createMessage"]
+	const mutationKey = getCreateMessageMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -92,7 +94,7 @@ export const getCreateMessageMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createMessage>>,
-		{ data: CreateMessageDto }
+		CreateMessageMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
@@ -107,6 +109,7 @@ export type CreateMessageMutationResult = NonNullable<
 >
 export type CreateMessageMutationBody = CreateMessageDto
 export type CreateMessageMutationError = ErrorType<unknown>
+export type CreateMessageMutationVariables = { data: CreateMessageDto }
 
 export const useCreateMessage = <
 	TError = ErrorType<unknown>,
@@ -116,7 +119,7 @@ export const useCreateMessage = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createMessage>>,
 			TError,
-			{ data: CreateMessageDto },
+			CreateMessageMutationVariables,
 			TContext
 		>
 	},
@@ -124,7 +127,7 @@ export const useCreateMessage = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof createMessage>>,
 	TError,
-	{ data: CreateMessageDto },
+	CreateMessageMutationVariables,
 	TContext
 > => {
 	return useMutation(getCreateMessageMutationOptions(options), queryClient)
@@ -407,6 +410,8 @@ export const updateMessage = (
 	})
 }
 
+export const getUpdateMessageMutationKey = () => ["updateMessage"] as const
+
 export const getUpdateMessageMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -414,16 +419,16 @@ export const getUpdateMessageMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof updateMessage>>,
 		TError,
-		{ pathParams: UpdateMessagePathParameters; data: UpdateMessageDto },
+		UpdateMessageMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateMessage>>,
 	TError,
-	{ pathParams: UpdateMessagePathParameters; data: UpdateMessageDto },
+	UpdateMessageMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["updateMessage"]
+	const mutationKey = getUpdateMessageMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -434,7 +439,7 @@ export const getUpdateMessageMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateMessage>>,
-		{ pathParams: UpdateMessagePathParameters; data: UpdateMessageDto }
+		UpdateMessageMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
@@ -449,6 +454,10 @@ export type UpdateMessageMutationResult = NonNullable<
 >
 export type UpdateMessageMutationBody = UpdateMessageDto
 export type UpdateMessageMutationError = ErrorType<unknown>
+export type UpdateMessageMutationVariables = {
+	pathParams: UpdateMessagePathParameters
+	data: UpdateMessageDto
+}
 
 export const useUpdateMessage = <
 	TError = ErrorType<unknown>,
@@ -458,7 +467,7 @@ export const useUpdateMessage = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateMessage>>,
 			TError,
-			{ pathParams: UpdateMessagePathParameters; data: UpdateMessageDto },
+			UpdateMessageMutationVariables,
 			TContext
 		>
 	},
@@ -466,7 +475,7 @@ export const useUpdateMessage = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof updateMessage>>,
 	TError,
-	{ pathParams: UpdateMessagePathParameters; data: UpdateMessageDto },
+	UpdateMessageMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpdateMessageMutationOptions(options), queryClient)
@@ -482,6 +491,8 @@ export const deleteMessage = (
 	})
 }
 
+export const getDeleteMessageMutationKey = () => ["deleteMessage"] as const
+
 export const getDeleteMessageMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -489,16 +500,16 @@ export const getDeleteMessageMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteMessage>>,
 		TError,
-		{ pathParams: DeleteMessagePathParameters },
+		DeleteMessageMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteMessage>>,
 	TError,
-	{ pathParams: DeleteMessagePathParameters },
+	DeleteMessageMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deleteMessage"]
+	const mutationKey = getDeleteMessageMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -509,7 +520,7 @@ export const getDeleteMessageMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteMessage>>,
-		{ pathParams: DeleteMessagePathParameters }
+		DeleteMessageMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
@@ -524,6 +535,9 @@ export type DeleteMessageMutationResult = NonNullable<
 >
 
 export type DeleteMessageMutationError = ErrorType<unknown>
+export type DeleteMessageMutationVariables = {
+	pathParams: DeleteMessagePathParameters
+}
 
 export const useDeleteMessage = <
 	TError = ErrorType<unknown>,
@@ -533,7 +547,7 @@ export const useDeleteMessage = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteMessage>>,
 			TError,
-			{ pathParams: DeleteMessagePathParameters },
+			DeleteMessageMutationVariables,
 			TContext
 		>
 	},
@@ -541,7 +555,7 @@ export const useDeleteMessage = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteMessage>>,
 	TError,
-	{ pathParams: DeleteMessagePathParameters },
+	DeleteMessageMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeleteMessageMutationOptions(options), queryClient)
