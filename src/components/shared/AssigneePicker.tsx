@@ -1,10 +1,10 @@
 import styled from "@emotion/styled"
 import { Check, Plus } from "lucide-react"
-import { type ReactNode, useState } from "react"
+import { type ReactNode, useRef, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import type { AssigneeDto } from "src/api/model"
 import { AssigneeDialog } from "../settings/AssigneeDialog"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { Popover, PopoverAnchor, PopoverContent } from "../ui/popover"
 import { AssigneeAvatar } from "./AssigneeAvatar"
 
 export interface AssigneePickerTriggerProps {
@@ -31,6 +31,7 @@ function AssigneePicker({
 	const [open, setOpen] = useState(false)
 	const [search, setSearch] = useState("")
 	const [dialogOpen, setDialogOpen] = useState(false)
+	const anchorRef = useRef<HTMLDivElement>(null)
 
 	const { data: assignees = [] } = useListAssignees({ workspaceId })
 
@@ -44,15 +45,24 @@ function AssigneePicker({
 			selected: selectedAssignees.includes(assignee.id),
 		}))
 
+	function handleAnchorClick() {
+		if (!open) setOpen(true)
+	}
+
 	function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
 		setSearch(e.target.value)
 		if (!open) setOpen(true)
 	}
 
 	function handleOpenChange(nextOpen: boolean) {
-		if (!nextOpen && document.activeElement?.tagName === "INPUT") return
 		setOpen(nextOpen)
 		if (!nextOpen) setSearch("")
+	}
+
+	function handleInteractOutside(e: Event) {
+		if (anchorRef.current?.contains(e.target as Node)) {
+			e.preventDefault()
+		}
 	}
 
 	function handleAssigneeClick(id: number) {
@@ -77,15 +87,16 @@ function AssigneePicker({
 	return (
 		<>
 			<Popover open={open} onOpenChange={handleOpenChange}>
-				<PopoverTrigger asChild>
+				<PopoverAnchor asChild ref={anchorRef} onClick={handleAnchorClick}>
 					{typeof trigger === "function"
 						? trigger({ search, onSearchChange: handleSearchChange, open })
 						: trigger}
-				</PopoverTrigger>
+				</PopoverAnchor>
 
 				<AssigneeDropdown
 					sideOffset={4}
 					onOpenAutoFocus={(e) => e.preventDefault()}
+					onInteractOutside={handleInteractOutside}
 					onWheel={(e) => e.stopPropagation()}
 				>
 					{filteredAssignees.map((assignee) => (
