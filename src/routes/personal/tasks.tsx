@@ -1,6 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Outlet } from "@tanstack/react-router"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
-import MobilePersonal from "src/components/Mobile/Personal/MobilePersonal"
 import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
@@ -58,7 +57,7 @@ function PersonalTasksPage() {
 		>
 			<TasksFiltersProvider>
 				{isMobile ? (
-					<MobilePersonal />
+					<Outlet />
 				) : (
 					<>
 						<PersonalSectionDropdown current={DropdownSection.TASKS} />
