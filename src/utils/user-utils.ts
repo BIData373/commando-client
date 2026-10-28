@@ -1,6 +1,6 @@
 import type { MirageUserDto, PermissionType, UserInfoDto } from "src/api/model"
 
-export const COOKIE_NAME = "ssoUser"
+export const TOKEN_NAME = "ssoUser"
 
 type SsoUser = Partial<UserInfoDto> & { upn: string }
 
