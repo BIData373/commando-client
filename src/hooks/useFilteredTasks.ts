@@ -2,6 +2,7 @@ import { endOfDay, isWithinInterval, startOfDay, startOfToday } from "date-fns"
 import { useDeferredValue, useMemo } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { formatDateShort } from "src/functions/date-utils"
+import { normalizeSearchText } from "src/functions/search-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { DATE_TYPE } from "src/utils/date-utils"
 import { matchesQuickFilter } from "src/utils/filter-utils"
@@ -24,10 +25,6 @@ function getTaskDate<T extends TaskRowDto>(
 	}
 }
 
-export function removePunctuation(str: string) {
-	return str.replace(/[^\p{L}\p{N}\s]/gu, "")
-}
-
 function buildTaskSearchText<T extends TaskRowDto>(
 	task: T,
 	additionalSearchValues?: (
@@ -36,7 +33,7 @@ function buildTaskSearchText<T extends TaskRowDto>(
 ): string {
 	const values = [
 		String(task.serialId),
-		removePunctuation(task.title),
+		normalizeSearchText(task.title),
 		task.description,
 		task.source?.name,
 		task.source?.date ? formatDateShort(task.source.date) : undefined,
@@ -84,9 +81,7 @@ export function useFilteredTasks<T extends TaskRowDto>(
 		[tasks, additionalSearchValues],
 	)
 
-	const deferredSearchQuery = useDeferredValue(
-		removePunctuation(searchQuery).trim(),
-	)
+	const deferredSearchQuery = useDeferredValue(normalizeSearchText(searchQuery))
 
 	const searchResults = useMemo(
 		() =>
