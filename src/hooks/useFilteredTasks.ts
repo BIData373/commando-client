@@ -1,19 +1,11 @@
-import { endOfDay, isWithinInterval, startOfDay } from "date-fns"
-import { some } from "lodash"
-import { useMemo } from "react"
+import { endOfDay, isWithinInterval, startOfDay, startOfToday } from "date-fns"
+import { useDeferredValue, useMemo } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { formatDateShort } from "src/functions/date-utils"
-import { matchesQuickFilter } from "src/functions/filter-utils"
+import { normalizeSearchText } from "src/functions/search-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { DATE_TYPE } from "src/utils/date-utils"
-import { useFuse } from "./useFuse"
-
-const FUSE_OPTIONS = {
-	threshold: 0.3,
-	ignoreLocation: true,
-	minMatchCharLength: 1,
-	keys: ["searchText"],
-}
+import { matchesQuickFilter } from "src/utils/filter-utils"
 
 function getTaskDate<T extends TaskRowDto>(
 	task: T,
@@ -41,7 +33,7 @@ function buildTaskSearchText<T extends TaskRowDto>(
 ): string {
 	const values = [
 		String(task.serialId),
-		task.title,
+		normalizeSearchText(task.title),
 		task.description,
 		task.source?.name,
 		task.source?.date ? formatDateShort(task.source.date) : undefined,
@@ -89,53 +81,61 @@ export function useFilteredTasks<T extends TaskRowDto>(
 		[tasks, additionalSearchValues],
 	)
 
-	const searchResults = useFuse(searchableTasks, searchQuery, FUSE_OPTIONS)
+	const deferredSearchQuery = useDeferredValue(normalizeSearchText(searchQuery))
+
+	const searchResults = useMemo(
+		() =>
+			searchableTasks.filter((task) =>
+				task.searchText.includes(deferredSearchQuery),
+			),
+		[searchableTasks, searchQuery, deferredSearchQuery],
+	)
 
 	const searchedTasks = useMemo(
 		() => searchResults.map(({ task }) => task),
 		[searchResults],
 	)
 
-	return useMemo(
-		() =>
-			searchedTasks
-				.filter((task) => {
-					const matchers = [
-						...(additionalFilter ? [additionalFilter(task)] : []),
-						...(!skipQuickFilters && activeQuickFilters.size > 0
-							? [
-									Array.from(activeQuickFilters).some((filter) =>
-										matchesQuickFilter(task, filter),
-									),
-								]
-							: []),
-					]
-					return matchers.length === 0 || some(matchers)
-				})
-				.filter((task) => {
-					if (!from || !to) {
-						return true
-					}
+	return useMemo(() => {
+		const today = startOfToday()
+		const quickFilters = skipQuickFilters ? [] : [...activeQuickFilters]
+		const interval =
+			from && to ? { start: startOfDay(from), end: endOfDay(to) } : null
 
-					const date = getTaskDate(task, dateType)
+		function matchesQuickFilters(task: T) {
+			return quickFilters.some((filter) =>
+				matchesQuickFilter(task, filter, today),
+			)
+		}
 
-					return (
-						date &&
-						isWithinInterval(date, {
-							start: startOfDay(from),
-							end: endOfDay(to),
-						})
-					)
-				}),
-		[
-			activeQuickFilters,
-			skipQuickFilters,
-			searchQuery,
-			searchedTasks,
-			additionalFilter,
-			from,
-			dateType,
-			to,
-		],
-	)
+		function matchesAnyFilter(task: T) {
+			if (!additionalFilter && quickFilters.length === 0) {
+				return true
+			}
+
+			return !!additionalFilter?.(task) || matchesQuickFilters(task)
+		}
+
+		function matchesDateRange(task: T) {
+			if (!interval) {
+				return true
+			}
+
+			const date = getTaskDate(task, dateType)
+
+			return date && isWithinInterval(date, interval)
+		}
+
+		return searchedTasks.filter(
+			(task) => matchesAnyFilter(task) && matchesDateRange(task),
+		)
+	}, [
+		activeQuickFilters,
+		skipQuickFilters,
+		searchedTasks,
+		additionalFilter,
+		from,
+		dateType,
+		to,
+	])
 }

@@ -1,754 +1,174 @@
-import styled from "@emotion/styled"
-import type { ColumnDef, Row } from "@tanstack/react-table"
-import { differenceInDays, startOfToday } from "date-fns"
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import { useMemo } from "react"
-import { BsPaperclip as Paperclip } from "react-icons/bs"
-import {
-	DeadlineType,
-	PermissionType,
-	type TaskRowDto,
-	type WorkspaceStatusDto,
-	WorkspaceStatusType,
-} from "src/api/model"
-import { UnreadDot } from "src/components/shared/UnreadDot"
-import type { FilterOption, FilterOptions } from "src/functions/filter-utils"
-import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
+import type { TaskRowDto } from "src/api/model"
+import type { AppTableFeatures } from "src/consts/table-features"
 import {
 	COLUMN_LABELS,
-	TASK_COLUMN_DEFINITIONS,
+	createTaskColumnDefinitions,
+	EMPTY_LIST,
+	EMPTY_SET,
 	TASK_COLUMN_ID,
 } from "src/utils/task-table-utils"
-import { DateText } from "../components/shared/DateText"
-import { DeadlineTypeTag } from "../components/shared/DeadlineTypeTag"
-import EllipsisTooltip from "../components/shared/EllipsisTooltip"
-import FlagIcon from "../components/shared/FlagIcon"
-import HighlightMatch from "../components/shared/HighlightMatch"
-import { AssigneeCell } from "../components/Tasks/AssigneeCell"
-import { ColumnHeaderWithActions } from "../components/Tasks/ColumnHeaderWithActions"
-import { RowActionsMenu } from "../components/Tasks/RowActionsMenu"
-import { StatusDropdown } from "../components/Tasks/StatusDropdown"
-import { TopicCell } from "../components/Tasks/TopicCell"
-import { Checkbox } from "../components/ui/checkbox"
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "../components/ui/tooltip"
-import { formatDateShort } from "../functions/date-utils"
-import { getDeadlineDisplayDate } from "../utils/deadline-utils"
-
-interface SelectModeConfig<TTask extends TaskRowDto> {
-	enabled: boolean
-	tasks: TTask[]
-	selectedTaskIds: number[]
-	onSelectAll: (rows: Row<TTask>[], checked: boolean) => void
-}
-
-export interface TaskArchiveEntry {
-	id: number
-	assigneeId?: number
-}
-
-interface ActionsConfig {
-	onEdit?: (taskId: number) => void
-	onAddComment?: (taskId: number) => void
-	onArchive?(tasks: TaskArchiveEntry[]): void
-	onUnarchive?(tasks: TaskArchiveEntry[]): void
-	onDelete?(taskIds: number[]): void
-	onEnterSelectMode(rowKey?: string): void
-}
+import { ActionsCell } from "../components/Tasks/cells/ActionsCell"
+import { AssigneesCell } from "../components/Tasks/cells/AssigneesCell"
+import { DateCell } from "../components/Tasks/cells/DateCell"
+import { DeadlineCell } from "../components/Tasks/cells/DeadlineCell"
+import { LastMessageCell } from "../components/Tasks/cells/LastMessageCell"
+import { NotesCell } from "../components/Tasks/cells/NotesCell"
+import { SelectAllHeader } from "../components/Tasks/cells/SelectAllHeader"
+import { SelectCell } from "../components/Tasks/cells/SelectCell"
+import { SerialIdCell } from "../components/Tasks/cells/SerialIdCell"
+import { SourceCell } from "../components/Tasks/cells/SourceCell"
+import { StatusCell } from "../components/Tasks/cells/StatusCell"
+import { TagsCell } from "../components/Tasks/cells/TagsCell"
+import { TaskColumnHeader } from "../components/Tasks/cells/TaskColumnHeader"
+import { TitleCell } from "../components/Tasks/cells/TitleCell"
 
 interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	columnOrder: (keyof TTask)[]
 	hiddenColumns?: Set<keyof TTask>
-	extraColumns?: ColumnDef<TTask>[]
-	searchQuery?: string
-	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
-	selectMode?: SelectModeConfig<TTask>
-	actions?: ActionsConfig
+	extraColumns?: ColumnDef<AppTableFeatures, TTask>[]
+	selectable?: boolean
 	showMenuColumn?: boolean
-	statuses?: WorkspaceStatusDto[]
-	onTitleDoubleClick?: (taskId: number) => void
-	getPermissionType?(task?: TTask): PermissionType | null | undefined
-	showUnreadDot?: boolean
 }
 
+/**
+ * Cells and headers are module-level components reading per-render data from
+ * `TaskTableProvider`. `flexRender` treats each `cell` function as a component type,
+ * so recreating them would remount every visible cell.
+ */
 export function useTaskColumns<TTask extends TaskRowDto>({
 	columnOrder,
-	hiddenColumns = new Set<keyof TTask>(),
-	extraColumns = [],
-	searchQuery,
-	filterOptionsMap,
-	selectMode,
-	actions,
+	hiddenColumns = EMPTY_SET,
+	extraColumns = EMPTY_LIST,
+	selectable = false,
 	showMenuColumn = true,
-	statuses,
-	getPermissionType,
-	showUnreadDot = false,
 }: UseTaskColumnsOptions<TTask>) {
-	const handleUpdateStatus = useUpdateTaskStatus({ notify: true })
+	const columns = useMemo(() => {
+		const columnHelper = createColumnHelper<AppTableFeatures, TTask>()
+		const definitions = createTaskColumnDefinitions<TTask>()
 
-	const columns = useMemo<ColumnDef<TTask>[]>(() => {
-		// TODO Move all constant fields to task-table-utils
-
-		const today = startOfToday()
-
-		const pinnedStartColumn: ColumnDef<TTask> = selectMode?.enabled
-			? {
+		const pinnedStartColumn = selectable
+			? columnHelper.display({
 					id: TASK_COLUMN_ID.select,
 					size: 61,
 					enableSorting: false,
 					enableColumnFilter: false,
-					header: ({ table }) => (
-						<CheckboxCenter>
-							<Checkbox
-								checked={table.getIsAllRowsSelected()}
-								onCheckedChange={(checked) =>
-									selectMode.onSelectAll(
-										table.getFilteredRowModel().rows,
-										!!checked,
-									)
-								}
-							/>
-						</CheckboxCenter>
-					),
-					cell: ({ row }) => (
-						<CheckboxCenter>
-							<Checkbox
-								checked={row.getIsSelected()}
-								onCheckedChange={(checked) => row.toggleSelected(!!checked)}
-							/>
-						</CheckboxCenter>
-					),
-				}
-			: {
+					header: SelectAllHeader,
+					cell: SelectCell,
+				})
+			: columnHelper.accessor((row) => row.serialId, {
 					id: TASK_COLUMN_ID.serialId,
-					accessorKey: TASK_COLUMN_ID.serialId,
-					header: ({ column }) => (
-						<ColumnHeaderWithActions
-							label={COLUMN_LABELS.serialId}
-							column={column}
-						/>
-					),
+					header: TaskColumnHeader,
 					size: 70,
 					enableColumnFilter: false,
-					cell: ({
-						row: {
-							original: { serialId, viewedInTable },
-						},
-					}) => (
-						<IdCell>
-							{showUnreadDot && !viewedInTable && (
-								<UnreadDot $right={6.5} $top={18.5} />
-							)}
-							<HighlightMatch
-								text={String(serialId)}
-								query={searchQuery ?? ""}
-								variant="mark"
-							/>
-						</IdCell>
-					),
-				}
+					spanRows: ({ anchorRow, row }) =>
+						anchorRow.original.id === row.original.id,
+					cell: SerialIdCell,
+				})
 
-		const pinnedEndColumn: ColumnDef<TTask> | undefined =
-			showMenuColumn && actions
-				? {
+		const pinnedEndColumns = showMenuColumn
+			? [
+					columnHelper.display({
 						id: TASK_COLUMN_ID.actions,
 						size: 45,
 						enableSorting: false,
 						enableColumnFilter: false,
-						cell: ({ row: { original } }) => {
-							const { id, workspaceId, rowKey, assignee } = original
-							const isManager =
-								getPermissionType?.(original) === PermissionType.MANAGER
+						cell: ActionsCell,
+					}),
+				]
+			: []
 
-							return (
-								<RowActionsMenu
-									workspaceId={workspaceId}
-									actions={{
-										onEdit:
-											actions.onEdit && isManager
-												? () => actions.onEdit?.(id)
-												: undefined,
-										onAddComment:
-											actions.onAddComment &&
-											(() => actions.onAddComment?.(id)),
-										onArchive:
-											actions.onArchive &&
-											(() =>
-												actions.onArchive?.([
-													{ id, assigneeId: assignee?.id },
-												])),
-										onUnarchive:
-											actions.onUnarchive &&
-											(() =>
-												actions.onUnarchive?.([
-													{ id, assigneeId: assignee?.id },
-												])),
-										onEnterSelect: () => actions.onEnterSelectMode?.(rowKey),
-										onDelete:
-											actions.onDelete && isManager
-												? () => actions.onDelete?.([id])
-												: undefined,
-									}}
-								/>
-							)
-						},
-					}
-				: undefined
-
-		const middleColumns = [
-			{
+		const middleColumns = columnHelper.columns([
+			columnHelper.accessor((row) => row.title, {
 				id: TASK_COLUMN_ID.title,
-				accessorKey: TASK_COLUMN_ID.title,
 				header: COLUMN_LABELS.title,
 				size: 300,
 				minSize: 160,
 				meta: { grow: true },
 				enableSorting: false,
 				enableColumnFilter: false,
-				cell: ({
-					row: {
-						original: { title, description, flagged },
-					},
-				}) => (
-					<TitleCell>
-						{flagged && <FlagIcon />}
-						<TitleContent
-							tooltip={`${title}${description ? ` - ${description}` : ""}`}
-						>
-							<TitlePart>
-								{searchQuery ? (
-									<HighlightMatch
-										text={title}
-										query={searchQuery}
-										variant="mark"
-									/>
-								) : (
-									title
-								)}
-							</TitlePart>
-							{description && (
-								<>
-									<TitleSeparator> - </TitleSeparator>
-									<DetailsPart>
-										{searchQuery ? (
-											<HighlightMatch
-												text={description}
-												query={searchQuery}
-												variant="mark"
-											/>
-										) : (
-											description
-										)}
-									</DetailsPart>
-								</>
-							)}
-						</TitleContent>
-					</TitleCell>
-				),
-			},
-			{
-				id: TASK_COLUMN_ID.status,
-				header: ({ column }) => (
-					<ColumnHeaderWithActions
-						label={COLUMN_LABELS.status}
-						column={column}
-						filterOptions={filterOptionsMap?.status}
-					/>
-				),
+				cell: TitleCell,
+			}),
+			definitions.status({
+				header: TaskColumnHeader,
 				size: 100,
-				...TASK_COLUMN_DEFINITIONS.status,
-				cell: ({
-					row: {
-						original: {
-							id,
-							status,
-							assignee,
-							editable,
-							personalArchivedAt,
-							workspaceArchivedAt,
-						},
-					},
-				}) =>
-					status && (
-						<StatusDropdown
-							status={status}
-							statuses={statuses}
-							assigneeId={assignee?.id}
-							editable={editable}
-							taskId={id}
-							isArchived={!!personalArchivedAt || !!workspaceArchivedAt}
-							onUpdate={handleUpdateStatus}
-						/>
-					),
-			},
-			{
-				id: TASK_COLUMN_ID.assignee,
-				header: ({ column }) => (
-					<ColumnHeaderWithActions
-						label={COLUMN_LABELS.assignee}
-						column={column}
-						filterOptions={filterOptionsMap?.assignee}
-					/>
-				),
+				cell: StatusCell,
+			}),
+			definitions.assignee({
+				header: TaskColumnHeader,
 				size: 100,
 				meta: { searchable: true },
-				...TASK_COLUMN_DEFINITIONS.assignee,
-				cell: ({
-					row: {
-						original: { assignee, otherAssignees },
-					},
-				}) =>
-					assignee && (
-						<AssigneeCell
-							assignee={assignee}
-							otherAssignees={otherAssignees ?? []}
-						/>
-					),
-			},
-			{
-				id: TASK_COLUMN_ID.deadlineType,
-				accessorKey: TASK_COLUMN_ID.deadlineType,
-				header: ({ column }) => (
-					<ColumnHeaderWithActions
-						label={COLUMN_LABELS.deadlineType}
-						column={column}
-						filterOptions={filterOptionsMap?.deadlineType}
-					/>
-				),
+				cell: AssigneesCell,
+			}),
+			definitions.deadlineType({
+				header: TaskColumnHeader,
 				size: 150,
-				...TASK_COLUMN_DEFINITIONS.deadlineType,
-				cell: ({
-					row: {
-						original: {
-							deadlineType: rawDeadlineType,
-							dueDate,
-							status,
-							source,
-							createdAt,
-						},
-					},
-				}) => {
-					const deadlineType = rawDeadlineType
-					const daysUntil = dueDate
-						? differenceInDays(new Date(dueDate), today)
-						: null
-					const isOverdue =
-						daysUntil !== null &&
-						daysUntil < 0 &&
-						deadlineType !== DeadlineType.IMMEDIATE
-
-					const isApproaching =
-						!isOverdue && daysUntil !== null && daysUntil >= 0 && daysUntil < 2
-
-					const displayDate = getDeadlineDisplayDate(
-						deadlineType,
-						dueDate,
-						source,
-						createdAt,
-					)
-
-					const deadlineTooltipText = isOverdue
-						? `חריגה של ${Math.abs(daysUntil)} ימים`
-						: isApproaching
-							? daysUntil === 0
-								? 'תג"ב היום'
-								: 'תג"ב מחר'
-							: null
-
-					const showDeadlineTooltip =
-						status?.type !== WorkspaceStatusType.COMPLETED &&
-						deadlineTooltipText !== null
-
-					return (
-						<DeadlineCell>
-							<DeadlineTypeTag type={deadlineType} />
-							{displayDate &&
-								(showDeadlineTooltip ? (
-									<TooltipProvider>
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<DeadlineDateText
-													$isOverdue={isOverdue}
-													$isApproaching={isApproaching}
-												>
-													{formatDateShort(displayDate)}
-												</DeadlineDateText>
-											</TooltipTrigger>
-
-											<TooltipContent>{deadlineTooltipText}</TooltipContent>
-										</Tooltip>
-									</TooltipProvider>
-								) : (
-									<DeadlineDateText
-										$isOverdue={isOverdue}
-										$isApproaching={isApproaching}
-									>
-										{formatDateShort(displayDate)}
-									</DeadlineDateText>
-								))}
-						</DeadlineCell>
-					)
-				},
-			},
-			{
-				id: TASK_COLUMN_ID.source,
-				header: ({ column }) => (
-					<ColumnHeaderWithActions
-						label={COLUMN_LABELS.source}
-						column={column}
-						filterOptions={filterOptionsMap?.source}
-					/>
-				),
+				cell: DeadlineCell,
+			}),
+			definitions.source({
+				header: TaskColumnHeader,
 				size: 240,
 				meta: { searchable: true },
-				...TASK_COLUMN_DEFINITIONS.source,
-				cell: ({
-					row: {
-						original: { source },
-					},
-				}) => {
-					if (!source) {
-						return null
-					}
-
-					const sourceText = [
-						source.name,
-						...(source.date ? [formatDateShort(source.date)] : []),
-					]
-						.filter(Boolean)
-						.join(" | ")
-
-					return (
-						<SourceCell>
-							{source.attachmentKey && <SourceAttachmentIcon size={18} />}
-
-							{sourceText && (
-								<SourceText>
-									<HighlightMatch
-										text={sourceText}
-										query={searchQuery ?? ""}
-										variant="mark"
-									/>
-								</SourceText>
-							)}
-						</SourceCell>
-					)
-				},
-			},
-			{
+				cell: SourceCell,
+			}),
+			columnHelper.display({
 				id: TASK_COLUMN_ID.lastMessage,
-				header: ({ column }) => (
-					<ColumnHeaderWithActions
-						label={COLUMN_LABELS.lastMessage}
-						column={column}
-					/>
-				),
+				header: TaskColumnHeader,
 				size: 100,
 				minSize: 70,
 				meta: { grow: true },
 				enableSorting: false,
 				enableColumnFilter: false,
-				cell: ({
-					row: {
-						original: { lastMessage, messageCount, viewedMessages },
-					},
-				}) => {
-					const userName =
-						lastMessage?.user?.info?.name ?? lastMessage?.user?.info?.upn
-					const text = userName
-						? `${userName}: ${lastMessage.content}`
-						: (lastMessage?.content ?? "")
-
-					return (
-						<TooltipProvider>
-							<Tooltip>
-								<TooltipTrigger asChild>
-									<CommentCell>
-										{!viewedMessages && <UnreadDot />}
-										<CommentText>{text}</CommentText>
-										{messageCount > 1 && (
-											<CommentCount>({messageCount})</CommentCount>
-										)}
-									</CommentCell>
-								</TooltipTrigger>
-								{text && <CommentTooltip>{text}</CommentTooltip>}
-							</Tooltip>
-						</TooltipProvider>
-					)
-				},
-			},
-			{
-				id: TASK_COLUMN_ID.tags,
-				header: ({ column }) => (
-					<ColumnHeaderWithActions
-						label={COLUMN_LABELS.tags}
-						column={column}
-						filterOptions={filterOptionsMap?.tags}
-					/>
-				),
+				cell: LastMessageCell,
+			}),
+			definitions.tags({
+				header: TaskColumnHeader,
 				size: 100,
 				minSize: 70,
 				enableSorting: false,
-				...TASK_COLUMN_DEFINITIONS.tags,
 				meta: { grow: true, searchable: true },
-				cell: ({ getValue }) => (
-					<TopicCell tags={getValue<string[]>()} searchQuery={searchQuery} />
-				),
-			},
-			{
+				cell: TagsCell,
+			}),
+			columnHelper.accessor((row) => row.notes, {
 				id: TASK_COLUMN_ID.notes,
-				accessorKey: TASK_COLUMN_ID.notes,
 				header: COLUMN_LABELS.notes,
 				size: 100,
 				minSize: 100,
 				enableSorting: false,
 				enableColumnFilter: false,
 				meta: { grow: true },
-				cell: ({ getValue }) => {
-					const notes = getValue<string>()
-					return notes && <NotesText tooltip={notes}>{notes}</NotesText>
-				},
-			},
-			{
-				id: TASK_COLUMN_ID.createdAt,
-				accessorKey: TASK_COLUMN_ID.createdAt,
-				header: ({ column }) => (
-					<ColumnHeaderWithActions
-						label={COLUMN_LABELS.createdAt}
-						column={column}
-					/>
-				),
+				cell: NotesCell,
+			}),
+			definitions.createdAt({
+				header: TaskColumnHeader,
 				size: 120,
 				enableColumnFilter: false,
-				...TASK_COLUMN_DEFINITIONS.createdAt,
-				cell: ({ getValue }) => (
-					<DateText>{formatDateShort(getValue<Date>())}</DateText>
-				),
-			},
-			{
-				id: TASK_COLUMN_ID.updatedAt,
-				accessorKey: TASK_COLUMN_ID.updatedAt,
-				header: ({ column }) => (
-					<ColumnHeaderWithActions
-						label={COLUMN_LABELS.updatedAt}
-						column={column}
-					/>
-				),
+				cell: DateCell,
+			}),
+			definitions.updatedAt({
+				header: TaskColumnHeader,
 				size: 100,
 				enableColumnFilter: false,
-				...TASK_COLUMN_DEFINITIONS.updatedAt,
-				cell: ({ getValue }) => (
-					<DateText>{formatDateShort(getValue<Date>())}</DateText>
-				),
-			},
-		] as ColumnDef<TTask>[]
+				cell: DateCell,
+			}),
+		])
 
-		const orderableColumns = [...middleColumns, ...extraColumns]
 		const columnsById = new Map(
-			orderableColumns.map((column) => [column.id as string, column]),
+			[...middleColumns, ...extraColumns].map((column) => [column.id, column]),
 		)
 
 		const orderedColumns = columnOrder
+			.filter((id) => !hiddenColumns.has(id))
 			.map((id) => columnsById.get(id as string))
-			.filter((column): column is ColumnDef<TTask> => !!column)
+			.filter((column) => column !== undefined)
 
-		const filteredColumns = orderedColumns.filter(
-			({ id }) => !hiddenColumns.has(id as keyof TTask),
-		)
-
-		return [
+		return columnHelper.columns([
 			pinnedStartColumn,
-			...filteredColumns,
-			...(pinnedEndColumn ? [pinnedEndColumn] : []),
-		]
-	}, [
-		columnOrder,
-		hiddenColumns,
-		extraColumns,
-		searchQuery,
-		filterOptionsMap,
-		selectMode,
-		actions,
-		showMenuColumn,
-		statuses,
-		handleUpdateStatus,
-		getPermissionType,
-	])
+			...orderedColumns,
+			...pinnedEndColumns,
+		])
+	}, [columnOrder, hiddenColumns, extraColumns, selectable, showMenuColumn])
 
 	return { columns }
 }
-
-const CheckboxCenter = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const IdCell = styled.span`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 24px;
-  color: var(--text-color);
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  position: relative;
-`
-
-const TitleCell = styled.div<{ $clickable?: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--sea-ink);
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 20px;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-`
-
-const TitleContent = styled(EllipsisTooltip)`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 1;
-  min-width: 0;
-`
-
-const TitlePart = styled.span`
-  font-weight: 400;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1 1 50%;
-  max-width: max-content;
-  min-width: 0;
-`
-
-const TitleSeparator = styled.span`
-  flex-shrink: 0;
-  white-space: nowrap;
-`
-
-const DetailsPart = styled.span`
-  font-weight: 300;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1 1 50%;
-  max-width: max-content;
-  min-width: 0;
-`
-
-const DeadlineCell = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`
-
-const DeadlineDateText = styled.span<{
-	$isOverdue?: boolean
-	$isApproaching?: boolean
-}>`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  white-space: nowrap;
-
-  color: ${({ $isOverdue, $isApproaching }) => {
-		if ($isOverdue) {
-			return "var(--Colors-Brand-Error-colorErrorActive)"
-		}
-
-		if ($isApproaching) {
-			return "var(--Colors-Brand-Warning-colorWarningText)"
-		}
-
-		return "var(--sea-ink-soft)"
-	}};
-`
-
-const SourceCell = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--sea-ink-soft);
-`
-
-const SourceAttachmentIcon = styled(Paperclip)`
-  flex-shrink: 0;
-  color: var(--text-color-400);
-`
-
-const SourceText = styled.span`
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color);
-`
-
-const CommentCell = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-`
-
-const CommentCount = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--text-color-400);
-  flex-shrink: 0;
-  opacity: 0;
-
-  ${CommentCell}:hover & {
-    opacity: 1;
-  }
-`
-
-const CommentTooltip = styled(TooltipContent)`
-  background: var(--Components-Tooltip-Global-colorBgSpotlight);
-  border-radius: 6px;
-  padding: 6px 8px;
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  color: var(--background);
-  text-align: start;
-  max-width: 300px;
-`
-
-const CommentText = styled.span`
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 16px;
-  color: var(--text-color-2);
-  text-align: start;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-`
-
-const NotesText = styled(EllipsisTooltip)`
-  font-size: var(--fs-btn);
-  line-height: 20px;
-  color: var(--sea-ink-soft);
-  text-align: right;
-`

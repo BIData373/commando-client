@@ -1,20 +1,40 @@
 import styled from "@emotion/styled"
-import { DeadlineType, type TaskRowDto } from "src/api/model"
+import {
+	DeadlineType,
+	type TaskRowDto,
+	type TaskRowWithWorkspaceDto,
+} from "src/api/model"
 import { AssigneeAvatar } from "src/components/shared/AssigneeAvatar"
 import DeadlineTag, { DEADLINE_LABELS } from "src/components/shared/DeadlineTag"
 import FlagIcon from "src/components/shared/FlagIcon"
 import HighlightMatch from "src/components/shared/HighlightMatch"
 import { StatusTag } from "src/components/shared/StatusTag"
 import { formatDateShort } from "src/functions/date-utils"
+import { useOpenTask } from "src/hooks/useOpenTask"
+import { useTasksFilters } from "src/providers/TasksFiltersProvider"
+import { COLUMN_LABELS } from "src/utils/task-table-utils"
 
-interface MobileTaskCardProps {
+const TASK_PATHS = {
+	workspace: "/workspace/$urlName/tasks/$taskId",
+	personal: "/personal/tasks/$taskId",
+} as const
+
+interface WorkspaceTaskCardProps {
+	type: "workspace"
 	task: TaskRowDto
-	searchQuery: string
-	onClick: () => void
 }
 
-export default function MobileTaskCard({
-	task: {
+interface PersonalTaskCardProps {
+	type: "personal"
+	task: TaskRowWithWorkspaceDto
+}
+
+type MobileTaskCardProps = WorkspaceTaskCardProps | PersonalTaskCardProps
+
+export default function MobileTaskCard({ type, task }: MobileTaskCardProps) {
+	const { searchQuery } = useTasksFilters()
+	const { openTask } = useOpenTask(TASK_PATHS[type])
+	const {
 		title,
 		description,
 		status,
@@ -23,14 +43,16 @@ export default function MobileTaskCard({
 		assignee,
 		otherAssignees,
 		flagged,
-	},
-	searchQuery,
-	onClick,
-}: MobileTaskCardProps) {
+	} = task
+	const workspaceTitle = type === "personal" ? task.workspace.title : undefined
 	const extraCount = otherAssignees.length
 
+	function handleClick() {
+		openTask(task.id)
+	}
+
 	return (
-		<CardRoot onClick={onClick}>
+		<CardRoot onClick={handleClick}>
 			<TopRow>
 				<DateInfo>
 					{dueDate && <DateValue>{formatDateShort(dueDate)}</DateValue>}
@@ -65,16 +87,22 @@ export default function MobileTaskCard({
 					)}
 				</TaskText>
 
+				{(assignee || workspaceTitle) && <Divider />}
+
 				{assignee && (
-					<>
-						<Divider />
-						<InfoRow>
-							{extraCount > 0 && <ExtraBadge>+{extraCount}</ExtraBadge>}
-							<AssigneeName>{assignee.name}</AssigneeName>
-							<AssigneeAvatar assignee={assignee} size={28} />
-							<InfoLabel>אחראי:</InfoLabel>
-						</InfoRow>
-					</>
+					<InfoRow>
+						{extraCount > 0 && <ExtraBadge>+{extraCount}</ExtraBadge>}
+						<AssigneeName>{assignee.name}</AssigneeName>
+						<AssigneeAvatar assignee={assignee} size={28} />
+						<InfoLabel>אחראי:</InfoLabel>
+					</InfoRow>
+				)}
+
+				{workspaceTitle && (
+					<InfoRow>
+						<WorkspaceName>{workspaceTitle}</WorkspaceName>
+						<WorkspaceLabel>{COLUMN_LABELS.workspace}:</WorkspaceLabel>
+					</InfoRow>
 				)}
 			</TextBlock>
 		</CardRoot>
@@ -169,6 +197,21 @@ const AssigneeName = styled.span`
 	font-size: var(--fs-btn);
 	font-weight: 400;
 	color: var(--Colors-Neutral-Bg-colorBgSolidHover);
+`
+
+const WorkspaceLabel = styled.span`
+	direction: rtl;
+	font-size: var(--fs-lg);
+	font-weight: 400;
+	line-height: 24px;
+	color: var(--text-color-400);
+`
+
+const WorkspaceName = styled.span`
+	font-size: var(--fs-lg);
+	font-weight: 400;
+	line-height: 22px;
+	color: var(--text-color-2);
 `
 
 const ExtraBadge = styled.div`

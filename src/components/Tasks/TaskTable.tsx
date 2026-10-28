@@ -2,12 +2,11 @@ import styled from "@emotion/styled"
 import type {
 	ColumnDef,
 	ColumnFiltersState,
-	Row,
 	RowSelectionState,
 } from "@tanstack/react-table"
-import { chain, uniqBy } from "lodash"
+import { keyBy, uniqBy } from "lodash"
 import type React from "react"
-import { useMemo, useState } from "react"
+import { useDeferredValue, useMemo, useState } from "react"
 import type {
 	DeadlineType,
 	TaskRowDto,
@@ -17,18 +16,29 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { toast } from "src/components/Toast/toast-api"
-import { buildFilterOptionsMap } from "src/functions/filter-utils"
+import type { AppTableFeatures } from "src/consts/table-features"
+import {
+	buildRowMenuActions,
+	type TaskArchiveEntry,
+	type TaskRowHandlers,
+} from "src/functions/row-actions"
 import {
 	deleteTaskMessage,
 	updateStatusMessage,
 } from "src/functions/toast-messages"
-import { type TaskArchiveEntry, useTaskColumns } from "src/hooks/useTaskColumns"
+import { useTaskColumns } from "src/hooks/useTaskColumns"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
+import { TaskTableProvider } from "src/providers/TaskTableProvider"
 import { runBatch } from "src/utils/batch-utils"
 import { getEmptyState } from "src/utils/empty-state-utils"
+import { buildFilterOptionsMap } from "src/utils/filter-utils"
 import {
+	buildUrlColumnFilters,
 	DISABLED_CLICK_COLUMNS,
+	EMPTY_LIST,
+	groupRowsByTask,
+	TASK_COLUMN_ID,
 	TASK_ROW_ID_SEPARATOR,
 } from "src/utils/task-table-utils"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -45,7 +55,7 @@ interface TaskTableProps<TTask extends TaskRowDto> {
 	onEdit?: (taskId: number) => void
 	onAddComment?: (taskId: number) => void
 	onClick?: (taskId: number) => void
-	extraColumns?: ColumnDef<TTask>[]
+	extraColumns?: ColumnDef<AppTableFeatures, TTask>[]
 	showHeader?: boolean
 	statusFilter?: WorkspaceStatusType[]
 	deadlineTypeFilter?: DeadlineType[]
@@ -62,6 +72,16 @@ interface TaskTableProps<TTask extends TaskRowDto> {
 	onChangeSuccess?(): void
 }
 
+interface ContextMenuState<TTask extends TaskRowDto> {
+	task: TTask
+	x: number
+	y: number
+}
+
+function getTaskRowId(row: TaskRowDto) {
+	return row.rowKey
+}
+
 function TaskTable<TTask extends TaskRowDto>({
 	tasks,
 	getPermissionType,
@@ -71,10 +91,10 @@ function TaskTable<TTask extends TaskRowDto>({
 	onEdit,
 	onAddComment,
 	onClick,
-	extraColumns = [],
+	extraColumns = EMPTY_LIST,
 	showHeader = true,
-	statusFilter = [],
-	deadlineTypeFilter = [],
+	statusFilter = EMPTY_LIST,
+	deadlineTypeFilter = EMPTY_LIST,
 	onFiltersChange,
 	onChangeSuccess,
 	isLoading,
@@ -96,6 +116,8 @@ function TaskTable<TTask extends TaskRowDto>({
 		setAssigneeFilter,
 	} = useTasksFilters()
 
+	const deferredSearchQuery = useDeferredValue(searchQuery)
+
 	const { mutateAsync: deleteTaskMutate } = useDeleteTask({
 		mutation: { onSuccess: onChangeSuccess },
 	})
@@ -104,28 +126,24 @@ function TaskTable<TTask extends TaskRowDto>({
 
 	const [selectMode, setSelectMode] = useState(false)
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-	const [contextMenu, setContextMenu] = useState<{
-		task: TTask
-		x: number
-		y: number
-	} | null>(null)
+	const [contextMenu, setContextMenu] =
+		useState<ContextMenuState<TTask> | null>(null)
 
-	const urlColumnFilters: ColumnFiltersState = useMemo(
-		() => [
-			...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
-			...(deadlineTypeFilter.length
-				? [{ id: "deadlineType", value: deadlineTypeFilter }]
-				: []),
-			...(assigneeFilter.length
-				? [{ id: "assignee", value: assigneeFilter }]
-				: []),
-		],
-		[statusFilter, deadlineTypeFilter, assigneeFilter],
+	const columnFilters: ColumnFiltersState = useMemo(
+		() =>
+			uniqBy(
+				[
+					...buildUrlColumnFilters(
+						statusFilter,
+						deadlineTypeFilter,
+						assigneeFilter,
+					),
+					...columnsFilters,
+				],
+				"id",
+			),
+		[statusFilter, deadlineTypeFilter, assigneeFilter, columnsFilters],
 	)
-
-	const columnFilters: ColumnFiltersState = useMemo(() => {
-		return uniqBy([...urlColumnFilters, ...columnsFilters], "id")
-	}, [urlColumnFilters, columnsFilters])
 
 	function getColumnFilter(columnFilters: ColumnFiltersState, id: string) {
 		return columnFilters.find((column) => column.id === id)?.value ?? []
@@ -157,26 +175,28 @@ function TaskTable<TTask extends TaskRowDto>({
 		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
 	}
 
+	const tasksByRowKey = useMemo(() => keyBy(tasks, "rowKey"), [tasks])
+
 	const selectedRowKeys = Object.keys(rowSelection).filter(
 		(key) => rowSelection[key],
 	)
+
+	const selectedTasks = selectedRowKeys
+		.map((rowKey) => tasksByRowKey[rowKey])
+		.filter((task) => task !== undefined)
 
 	// FIX Seperate state?
 	const selectedTaskIds = selectedRowKeys.map((key) =>
 		Number(key.split(TASK_ROW_ID_SEPARATOR)[0]),
 	)
 
-	const bulkDeleteDisabled = selectedTaskIds.some(
-		(id) =>
-			getPermissionType(tasks.find((t) => t.id === id)) !==
-			PermissionType.MANAGER,
+	const bulkDeleteDisabled = selectedTasks.some(
+		(task) => getPermissionType(task) !== PermissionType.MANAGER,
 	)
 
 	const bulkStatusDisabled =
 		selectedTaskIds.length === 0 ||
-		selectedRowKeys.some(
-			(rowKey) => !tasks.find((t) => t.rowKey === rowKey)?.editable,
-		)
+		selectedRowKeys.some((rowKey) => !tasksByRowKey[rowKey]?.editable)
 
 	function handleEnterSelectMode(rowKey: string) {
 		setSelectMode(true)
@@ -190,17 +210,6 @@ function TaskTable<TTask extends TaskRowDto>({
 		setRowSelection({})
 	}
 
-	function handleSelectAll(rows: Row<TTask>[], checked: boolean) {
-		setRowSelection(
-			checked
-				? chain(rows)
-						.keyBy("original.rowKey")
-						.mapValues(() => true)
-						.value()
-				: {},
-		)
-	}
-
 	async function removeTasks(taskIds: number[]) {
 		const deleted = await runBatch(taskIds, (id) =>
 			deleteTaskMutate({ pathParams: { id } }),
@@ -210,11 +219,10 @@ function TaskTable<TTask extends TaskRowDto>({
 	}
 
 	function getSelectedArchiveEntries() {
-		return tasks
-			.filter((task) =>
-				selectedRowKeys.some((rowKey) => task.rowKey === rowKey),
-			)
-			.map(({ id, assignee }) => ({ id, assigneeId: assignee?.id }))
+		return selectedTasks.map(({ id, assignee }) => ({
+			id,
+			assigneeId: assignee?.id,
+		}))
 	}
 
 	function handleBulkArchive() {
@@ -232,14 +240,7 @@ function TaskTable<TTask extends TaskRowDto>({
 		handleExitSelectMode()
 	}
 
-	async function bulkUpdateStatus(
-		rowKeys: string[],
-		status: WorkspaceStatusDto,
-	) {
-		const selectedTasks = rowKeys
-			.map((rowKey) => tasks.find((t) => t.rowKey === rowKey))
-			.filter((task) => task !== undefined)
-
+	async function bulkUpdateStatus(status: WorkspaceStatusDto) {
 		const results = await Promise.all(
 			selectedTasks.map((task) =>
 				updateStatus(task.id, task.assignee?.id, status),
@@ -256,31 +257,25 @@ function TaskTable<TTask extends TaskRowDto>({
 
 	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
 
+	const groupedTasks = useMemo(() => groupRowsByTask(tasks), [tasks])
+
 	const { columns } = useTaskColumns({
 		columnOrder,
 		hiddenColumns,
 		extraColumns,
-		searchQuery,
-		filterOptionsMap,
-		statuses,
-		selectMode: {
-			enabled: selectMode,
-			tasks,
-			selectedTaskIds,
-			onSelectAll: handleSelectAll,
-		},
+		selectable: selectMode,
 		showMenuColumn: showActionsColumn,
-		getPermissionType,
-		showUnreadDot: true,
-		actions: {
-			onEdit,
-			onAddComment,
-			onArchive,
-			onUnarchive,
-			onDelete: allowDelete ? removeTasks : undefined,
-			onEnterSelectMode: handleEnterSelectMode,
-		},
 	})
+
+	const rowHandlers: TaskRowHandlers<TTask> = {
+		onEdit,
+		onAddComment,
+		onArchive,
+		onUnarchive,
+		onDelete: allowDelete ? removeTasks : undefined,
+		onEnterSelectMode: handleEnterSelectMode,
+		getPermissionType,
+	}
 
 	function handleCellClick(row: { original: TTask }, columnId: string) {
 		if (!DISABLED_CLICK_COLUMNS.has(columnId)) {
@@ -305,18 +300,24 @@ function TaskTable<TTask extends TaskRowDto>({
 	}
 
 	return (
-		<>
+		<TaskTableProvider
+			searchQuery={deferredSearchQuery}
+			statuses={statuses}
+			filterOptionsMap={filterOptionsMap}
+			showUnreadDot
+			handlers={rowHandlers as TaskRowHandlers}
+		>
 			<TableWrapper>
 				<DataTable
 					columns={columns}
-					data={tasks}
-					rowSelection={selectMode ? rowSelection : undefined}
+					data={groupedTasks}
+					rowSelection={rowSelection}
 					onRowSelectionChange={selectMode ? setRowSelection : undefined}
 					columnFilters={columnFilters}
 					onColumnFiltersChange={handleColumnFiltersChange}
 					sorting={sorting}
 					onSortingChange={setSorting}
-					getRowId={(row) => row.rowKey}
+					getRowId={getTaskRowId}
 					highlightedRowIds={
 						contextMenu ? new Set([contextMenu.task.rowKey]) : undefined
 					}
@@ -342,49 +343,14 @@ function TaskTable<TTask extends TaskRowDto>({
 				position={contextMenu ? { x: contextMenu.x, y: contextMenu.y } : null}
 				onOpenChange={handleContextMenuOpenChange}
 				actions={
-					contextMenu
-						? {
-								onEdit:
-									onEdit &&
-									getPermissionType(contextMenu.task) === PermissionType.MANAGER
-										? () => onEdit(contextMenu.task.id)
-										: undefined,
-								onAddComment:
-									onAddComment && (() => onAddComment(contextMenu.task.id)),
-								onArchive:
-									onArchive &&
-									(() =>
-										onArchive([
-											{
-												id: contextMenu.task.id,
-												assigneeId: contextMenu.task.assignee?.id,
-											},
-										])),
-								onUnarchive:
-									onUnarchive &&
-									(() =>
-										onUnarchive([
-											{
-												id: contextMenu.task.id,
-												assigneeId: contextMenu.task.assignee?.id,
-											},
-										])),
-								onEnterSelect: () =>
-									handleEnterSelectMode(contextMenu.task.rowKey),
-								onDelete:
-									allowDelete &&
-									getPermissionType(contextMenu.task) === PermissionType.MANAGER
-										? () => removeTasks([contextMenu.task.id])
-										: undefined,
-							}
-						: {}
+					contextMenu ? buildRowMenuActions(rowHandlers, contextMenu.task) : {}
 				}
 			/>
 			<BulkActionsBar
 				isVisible={selectMode}
 				selectedCount={selectedTaskIds.length}
 				statuses={hideStatusAction ? undefined : statuses}
-				onChangeStatus={(status) => bulkUpdateStatus(selectedRowKeys, status)}
+				onChangeStatus={bulkUpdateStatus}
 				onArchive={onArchive ? handleBulkArchive : undefined}
 				onUnarchive={onUnarchive ? handleBulkUnarchive : undefined}
 				onDelete={allowDelete ? handleBulkDelete : undefined}
@@ -392,7 +358,7 @@ function TaskTable<TTask extends TaskRowDto>({
 				statusDisabled={bulkStatusDisabled}
 				onExitSelect={handleExitSelectMode}
 			/>
-		</>
+		</TaskTableProvider>
 	)
 }
 
@@ -411,6 +377,8 @@ const TableWrapper = styled.div`
   background: var(--background);
   box-shadow: var(--card-shadow-default);
   overflow: hidden;
+  --table-header-height: 48px;
+  --table-row-height: 43px;
 
   [data-slot="table-container"] {
     overflow: auto;
@@ -443,7 +411,7 @@ const TableWrapper = styled.div`
     font-weight: 500;
     line-height: 24px;
     color: var(--text-color);
-    height: 48px;
+    height: var(--table-header-height);
     white-space: normal;
     background: var(--background);
     border-right: 0.5px solid var(--Background-color-bg-text-active);
@@ -463,12 +431,19 @@ const TableWrapper = styled.div`
 
   td:not([data-virtual-spacer]) {
     padding: 0 6px;
-    height: 43px;
-    max-height: 43px;
+    height: var(--table-row-height);
+    max-height: var(--table-row-height);
     overflow: hidden;
     border: 0.5px solid var(--Background-color-bg-text-active);
 
-    &:first-of-type {
+    /* \`clip\` doesn't make the cell a scroll container, so sticky content inside it follows the table's scroll */
+    &[rowspan] {
+      vertical-align: top;
+      overflow: clip;
+    }
+
+    &[data-column-id="${TASK_COLUMN_ID.serialId}"],
+    &[data-column-id="${TASK_COLUMN_ID.select}"] {
       border-right: none;
     }
 

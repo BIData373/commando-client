@@ -29,6 +29,7 @@ body,
 
 :root {
   --z-dropdown: 10;
+  --z-orientation-lock: 9999;
   --background: oklch(1 0 0);
   --foreground: oklch(0.14 0 0);
   --card: oklch(1 0 0);
@@ -120,6 +121,7 @@ body,
   --button-active: rgba(0, 0, 0, 0.1);
 
   --default-linear: linear-gradient(135deg, #615fff 0%, #9810fa 100%);
+  --black-to-background-linear: linear-gradient(rgba(255, 255, 255, 0), #ffffff 65%);
   --Components-Upload-Global-colorPrimary: #1677ff;
   --colors-base-neutral-11: rgba(240, 240, 240, 1);
   --colors-base-neutral-3: oklch(97.02% 0 271.15);
@@ -164,6 +166,7 @@ body,
   --Menu-Tab-Active: rgba(255, 255, 255, 0.15);
   --Menu-Tab-Text: #C7C9CB;
   --link-visited: #0958D9;
+  --drawer-status-select: rgba(230, 244, 255, 0.15);
 
   --font-sans: "Rubik Variable", ui-sans-serif, sans-serif;
   --font-serif: "Rubik Variable", ui-sans-serif, sans-serif;
