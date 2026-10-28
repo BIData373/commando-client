@@ -304,6 +304,7 @@ function TaskTable<TTask extends TaskRowDto>({
 			searchQuery={deferredSearchQuery}
 			statuses={statuses}
 			filterOptionsMap={filterOptionsMap}
+			showUnreadDot
 			handlers={rowHandlers as TaskRowHandlers}
 		>
 			<TableWrapper>

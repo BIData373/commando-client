@@ -124,6 +124,7 @@ export const getCreateMessageResponseMock = (
 		]),
 	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
+	viewed: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -242,6 +243,7 @@ export const getListMessagesResponseMock = (): MessageDto[] =>
 			]),
 		},
 		taskId: faker.number.float({ fractionDigits: 2 }),
+		viewed: faker.datatype.boolean(),
 	}))
 
 export const getGetMessageResponseMock = (
@@ -357,6 +359,7 @@ export const getGetMessageResponseMock = (
 		]),
 	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
+	viewed: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -473,6 +476,7 @@ export const getUpdateMessageResponseMock = (
 		]),
 	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
+	viewed: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -589,6 +593,7 @@ export const getDeleteMessageResponseMock = (
 		]),
 	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
+	viewed: faker.datatype.boolean(),
 	...overrideResponse,
 })
 

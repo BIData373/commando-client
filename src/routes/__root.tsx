@@ -11,7 +11,7 @@ import { ErrorModal } from "../components/ErrorModal"
 import { RotateDeviceScreen } from "../components/Mobile/RotateDeviceScreen"
 import { Toaster } from "../components/ui/sonner"
 import { TooltipProvider } from "../components/ui/tooltip"
-import { useIsMobileDevice } from "../hooks/use-mobile"
+import { IS_MOBILE_DEVICE } from "../hooks/use-mobile"
 import { HeaderProvider } from "../providers/HeaderProvider"
 import "../styles.css"
 import { IS_DEV } from "../utils/env-utils"
@@ -35,7 +35,6 @@ export const Route = createRootRoute({
 })
 
 function RootComponent() {
-	const isMobileDevice = useIsMobileDevice()
 	const { type: orientationType } = useOrientation({
 		defaultType: "portrait-primary",
 		getInitialValueInEffect: false,
@@ -55,7 +54,7 @@ function RootComponent() {
 			</TooltipProvider>
 			<Toaster />
 			<ErrorModal />
-			{isMobileDevice && !isValidOrientation && <RotateDeviceScreen />}
+			{IS_MOBILE_DEVICE && !isValidOrientation && <RotateDeviceScreen />}
 			{IS_DEV && (
 				<TanStackDevtools
 					config={{
