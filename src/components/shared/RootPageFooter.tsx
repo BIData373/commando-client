@@ -17,6 +17,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip"
+import { SecondaryButton } from "./SecondaryButton"
 
 interface RootPageFooterProps {
 	className?: string
@@ -37,10 +38,14 @@ export function RootPageFooter({ className }: RootPageFooterProps) {
 
 			<Actions>
 				{!isMobile && (
-					<OutlineGradientButton onClick={openUserGuide}>
-						<GradientText>מארז הדרכה</GradientText>
-						<GradientBookIcon size={18} />
-					</OutlineGradientButton>
+					<UserGuideButton
+						onClick={openUserGuide}
+						title={
+							<>
+								מארז הדרכה <TbBook size={18} />
+							</>
+						}
+					/>
 				)}
 
 				{!isMobile && (
@@ -146,36 +151,8 @@ const Actions = styled.div`
   }
 `
 
-const OutlineGradientButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 40px;
-  padding-inline: 16px;
-  background: var(--background);
-  border: 1px solid var(--primary);
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: var(--shadow-button-hover);
-  color: var(--primary);
-
-  &:hover {
-    border-color: var(--hover-primary);
-    color: var(--hover-primary);
-  }
-`
-
-const GradientText = styled.span`
+const UserGuideButton = styled(SecondaryButton)`
   font-size: var(--fs-base);
-  font-weight: 400;
-  line-height: 24px;
-  color: inherit;
-  white-space: nowrap;
-`
-
-const GradientBookIcon = styled(TbBook)`
-  color: inherit;
 `
 
 const IconButton = styled.button`

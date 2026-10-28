@@ -1,11 +1,13 @@
 import styled from "@emotion/styled"
-import { Check, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 import { type ReactNode, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
+import { useListAssigneeGroups } from "src/api/assignee-group/assignee-group"
 import type { AssigneeDto } from "src/api/model"
 import { AssigneeDialog } from "../settings/AssigneeDialog"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
-import { AssigneeAvatar } from "./AssigneeAvatar"
+import { AssigneeGroupOption } from "./AssigneeGroupOption"
+import { AssigneeOption } from "./AssigneeOption"
 
 export interface AssigneePickerTriggerProps {
 	search: string
@@ -18,7 +20,9 @@ interface AssigneePickerProps {
 	selectedAssignees: number[]
 	trigger: ReactNode | ((props: AssigneePickerTriggerProps) => ReactNode)
 	onToggle: (id: number) => void
+	onGroupSelect?: (assigneeIds: number[]) => void
 	closeOnFirstSelect?: boolean
+	showGroupAvatars?: boolean
 }
 
 function AssigneePicker({
@@ -26,13 +30,20 @@ function AssigneePicker({
 	selectedAssignees,
 	trigger,
 	onToggle,
+	onGroupSelect,
 	closeOnFirstSelect = false,
+	showGroupAvatars = true,
 }: AssigneePickerProps) {
 	const [open, setOpen] = useState(false)
 	const [search, setSearch] = useState("")
 	const [dialogOpen, setDialogOpen] = useState(false)
 
 	const { data: assignees = [] } = useListAssignees({ workspaceId })
+	const { data: assigneeGroups = [] } = useListAssigneeGroups({ workspaceId })
+
+	const filteredGroups = assigneeGroups.filter(
+		(group) => group.assignees.length > 0,
+	)
 
 	const filteredAssignees = assignees
 		.filter((assignee) => {
@@ -56,6 +67,17 @@ function AssigneePicker({
 
 	function handleAssigneeClick(id: number) {
 		onToggle(id)
+
+		if (closeOnFirstSelect && selectedAssignees.length === 0) {
+			setOpen(false)
+			setSearch("")
+		}
+	}
+
+	function handleGroupSelect(assigneeIds: number[]) {
+		const newIds = assigneeIds.filter((id) => !selectedAssignees.includes(id))
+		if (newIds.length === 0) return
+		onGroupSelect?.(newIds)
 
 		if (closeOnFirstSelect && selectedAssignees.length === 0) {
 			setOpen(false)
@@ -87,26 +109,28 @@ function AssigneePicker({
 					onOpenAutoFocus={(e) => e.preventDefault()}
 					onWheel={(e) => e.stopPropagation()}
 				>
+					{filteredGroups.length > 0 && (
+						<>
+							<SectionLabel>רשימות תפוצה</SectionLabel>
+							{filteredGroups.map((group) => (
+								<AssigneeGroupOption
+									key={group.id}
+									group={group}
+									onSelect={handleGroupSelect}
+									showAvatars={showGroupAvatars}
+								/>
+							))}
+							<SectionLabel>אחראים</SectionLabel>
+						</>
+					)}
+
 					{filteredAssignees.map((assignee) => (
 						<AssigneeOption
 							key={assignee.id}
-							$selected={assignee.selected}
-							type="button"
-							onClick={() => handleAssigneeClick(assignee.id)}
-						>
-							<AssigneeOptionEnd>
-								<AssigneeAvatar assignee={assignee} size={22} />
-
-								<AssigneeOptionName
-									title={assignee.name}
-									$selected={assignee.selected}
-								>
-									{assignee.name}
-								</AssigneeOptionName>
-							</AssigneeOptionEnd>
-
-							{assignee.selected && <StyleCheck size={18} />}
-						</AssigneeOption>
+							assignee={assignee}
+							selected={assignee.selected}
+							onToggle={handleAssigneeClick}
+						/>
 					))}
 
 					<CreateNewButton type="button" onClick={handleCreateNew}>
@@ -140,38 +164,12 @@ const AssigneeDropdown = styled(PopoverContent)`
   z-index: var(--z-dropdown);
 `
 
-const AssigneeOption = styled.button<{ $selected: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  border: none;
-  background: ${({ $selected }) => ($selected ? "#e6f4ff" : "transparent")};
-  cursor: pointer;
-  border-radius: 2px;
-
-  &:hover {
-    background: ${({ $selected }) => ($selected ? "#e6f4ff" : "rgba(0, 0, 0, 0.04)")};
-  }
-`
-
-const AssigneeOptionEnd = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 12px;
-  height: 32px;
-  width: 100%;
-`
-
-const AssigneeOptionName = styled.span<{ $selected: boolean }>`
-  font-size: var(--fs-btn);
-  font-weight: 400;
+const SectionLabel = styled.div`
+  font-size: var(--fs-sm);
+  color: var(--sea-ink-soft);
+  padding: 4px 12px 0;
   line-height: 22px;
-  color: ${({ $selected }) => ($selected ? "var(--tab-active-color)" : "var(--text-color-2)")};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  text-align: start;
 `
 
 const CreateNewButton = styled.button`
@@ -186,16 +184,12 @@ const CreateNewButton = styled.button`
   background: transparent;
   cursor: pointer;
   border-radius: 6px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-color);
   font-size: var(--fs-btn);
   line-height: 32px;
   white-space: nowrap;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.04);
+    background: var(--link-bg-hover);
   }
-`
-
-const StyleCheck = styled(Check)`
-  color: var(--tab-active-color);
 `
