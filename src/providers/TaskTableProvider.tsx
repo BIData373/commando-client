@@ -19,6 +19,7 @@ interface TaskTableContextValue {
 	searchQuery: string
 	statuses?: WorkspaceStatusDto[]
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
+	showUnreadDot: boolean
 	getHandlers(): TaskTableHandlers
 }
 
@@ -26,6 +27,7 @@ interface TaskTableProviderProps extends PropsWithChildren {
 	searchQuery?: string
 	statuses?: WorkspaceStatusDto[]
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
+	showUnreadDot?: boolean
 	handlers?: TaskRowHandlers
 }
 
@@ -35,6 +37,7 @@ export function TaskTableProvider({
 	searchQuery = "",
 	statuses,
 	filterOptionsMap,
+	showUnreadDot = false,
 	handlers,
 	children,
 }: TaskTableProviderProps) {
@@ -52,9 +55,10 @@ export function TaskTableProvider({
 			searchQuery,
 			statuses,
 			filterOptionsMap,
+			showUnreadDot,
 			getHandlers: () => handlersRef.current,
 		}),
-		[searchQuery, statuses, filterOptionsMap],
+		[searchQuery, statuses, filterOptionsMap, showUnreadDot],
 	)
 
 	return (

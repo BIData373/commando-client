@@ -1,4 +1,9 @@
-import { type CreateTaskDto, DeadlineType } from "src/api/model"
+import {
+	type CreateTaskDto,
+	DeadlineType,
+	type TaskWithWorkspaceDto,
+} from "src/api/model"
+import { viewTasks } from "src/api/user-viewed-tasks/user-viewed-tasks"
 import { toast } from "src/components/Toast/toast-api"
 import { saveTaskMessage } from "src/functions/toast-messages"
 import { invalidateQueries } from "src/query-client"
@@ -33,10 +38,18 @@ function toTaskData({ deadlineType, title, taskId, ...input }: TaskInput) {
 	}
 }
 
-export function useSaveTasks(workspaceId: number, onDone?: () => void) {
-	const { mutateAsync: createTask, isPending: isCreating } = useCreateTask()
+async function onSuccess(data: TaskWithWorkspaceDto) {
+	await viewTasks({ taskId: data.id })
+}
 
-	const { mutateAsync: updateTask, isPending: isUpdating } = useUpdateTask()
+export function useSaveTasks(workspaceId: number, onDone?: () => void) {
+	const { mutateAsync: createTask, isPending: isCreating } = useCreateTask({
+		mutation: { onSuccess },
+	})
+
+	const { mutateAsync: updateTask, isPending: isUpdating } = useUpdateTask({
+		mutation: { onSuccess },
+	})
 
 	async function saveTasks(inputs: TaskInput[]) {
 		const [created, updated] = await Promise.all([

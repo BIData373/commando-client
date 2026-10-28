@@ -5,6 +5,7 @@ import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { useIsMobile } from "src/hooks/use-mobile"
 import { useOpenTask } from "src/hooks/useOpenTask"
+import { useSaveWorkspaceVisit } from "src/hooks/useSaveWorkspaceVisit"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../providers/UserViewProvider"
 import { TASK_COLUMN_ID } from "../../utils/task-table-utils"
@@ -43,6 +44,8 @@ const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 ])
 
 function PersonalTasksPage() {
+	useSaveWorkspaceVisit({ urlName: Route.parentRoute.fullPath })
+
 	const isMobile = useIsMobile()
 	const { openTask, editTask } = useOpenTask("/personal/tasks/$taskId")
 
