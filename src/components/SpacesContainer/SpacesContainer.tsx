@@ -74,11 +74,16 @@ export default function SpacesContainer() {
 		},
 	} satisfies Record<string, EmptyCardStateProps>
 
+	function handleSearchChange(query: string) {
+		setSearchQuery(query)
+		if (query && activeTab === "mine") setActiveTab("all")
+	}
+
 	const searchInput = (
 		<WorkspaceSearchInput
 			placeholder="חפש סביבה"
 			value={searchQuery}
-			onChange={setSearchQuery}
+			onChange={handleSearchChange}
 		/>
 	)
 
@@ -165,8 +170,9 @@ const HeaderRow = styled.div`
 const TitleGroup = styled.div`
 	display: flex;
 	align-items: flex-end;
+	flex: 1;
+	justify-content: flex-end;
 	gap: 29px;
-	margin-inline-start: auto;
 `
 
 const SectionTitle = styled.h2`
