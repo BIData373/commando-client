@@ -6,6 +6,10 @@ const MOBILE_OPERATING_SYSTEMS: UseOSReturnValue[] = ["android", "ios"]
 
 export const MOBILE_MEDIA_QUERY = `@media ${MOBILE_QUERY}`
 
+export const IS_MOBILE_DEVICE = /Android|iPhone|iPad|iPod/i.test(
+	navigator.userAgent,
+)
+
 export function useIsMobileDevice() {
 	const os = useOs({ getValueInEffect: false })
 

@@ -36,6 +36,11 @@ const config = defineConfig({
 			},
 		}),
 	],
+	// Specifically for Mobile this is our target
+	build: {
+		target: "chrome83",
+		cssTarget: "chrome83",
+	},
 })
 
 export default config
