@@ -32,7 +32,6 @@ export const getCreateWorkspaceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -52,7 +51,6 @@ export const getCreateWorkspaceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -79,7 +77,6 @@ export const getCreateWorkspaceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -122,7 +119,6 @@ export const getListWorkspacesResponseMock = (): WorkspaceWithPermissionDto[] =>
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -145,7 +141,6 @@ export const getListWorkspacesResponseMock = (): WorkspaceWithPermissionDto[] =>
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -172,7 +167,6 @@ export const getListWorkspacesResponseMock = (): WorkspaceWithPermissionDto[] =>
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
@@ -220,7 +214,6 @@ export const getGetPermittedWorkspacesResponseMock =
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -243,7 +236,6 @@ export const getGetPermittedWorkspacesResponseMock =
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -270,7 +262,6 @@ export const getGetPermittedWorkspacesResponseMock =
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
@@ -312,7 +303,6 @@ export const getGetWorkspaceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -332,7 +322,6 @@ export const getGetWorkspaceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -359,7 +348,6 @@ export const getGetWorkspaceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -397,7 +385,6 @@ export const getUpdateWorkspaceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -417,7 +404,6 @@ export const getUpdateWorkspaceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -444,7 +430,6 @@ export const getUpdateWorkspaceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -482,7 +467,6 @@ export const getDeleteWorkspaceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -502,7 +486,6 @@ export const getDeleteWorkspaceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -529,7 +512,6 @@ export const getDeleteWorkspaceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),

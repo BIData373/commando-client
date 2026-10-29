@@ -32,7 +32,6 @@ export const getCreatePikudResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -52,7 +51,6 @@ export const getCreatePikudResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -79,7 +77,6 @@ export const getCreatePikudResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -117,7 +114,6 @@ export const getListPikudsResponseMock = (): PikudDto[] =>
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -140,7 +136,6 @@ export const getListPikudsResponseMock = (): PikudDto[] =>
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -167,7 +162,6 @@ export const getListPikudsResponseMock = (): PikudDto[] =>
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
@@ -199,7 +193,6 @@ export const getGetPikudResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -219,7 +212,6 @@ export const getGetPikudResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -246,7 +238,6 @@ export const getGetPikudResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -279,7 +270,6 @@ export const getUpdatePikudResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -299,7 +289,6 @@ export const getUpdatePikudResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -326,7 +315,6 @@ export const getUpdatePikudResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -359,7 +347,6 @@ export const getDeletePikudResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -379,7 +366,6 @@ export const getDeletePikudResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -406,7 +392,6 @@ export const getDeletePikudResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),

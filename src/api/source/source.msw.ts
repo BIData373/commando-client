@@ -37,7 +37,6 @@ export const getCreateSourceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -57,7 +56,6 @@ export const getCreateSourceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -84,7 +82,6 @@ export const getCreateSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -132,7 +129,6 @@ export const getCreateSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -155,7 +151,6 @@ export const getCreateSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -190,7 +185,6 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -213,7 +207,6 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -240,7 +233,6 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
@@ -288,7 +280,6 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -311,7 +302,6 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -340,7 +330,6 @@ export const getGetSourceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -360,7 +349,6 @@ export const getGetSourceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -387,7 +375,6 @@ export const getGetSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -435,7 +422,6 @@ export const getGetSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -458,7 +444,6 @@ export const getGetSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -489,7 +474,6 @@ export const getGetSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -512,7 +496,6 @@ export const getGetSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -539,7 +522,6 @@ export const getGetSourceResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
@@ -595,7 +577,6 @@ export const getGetSourceResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -618,7 +599,6 @@ export const getGetSourceResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -645,7 +625,6 @@ export const getGetSourceResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				id: faker.number.float({ fractionDigits: 2 }),
@@ -695,7 +674,6 @@ export const getGetSourceResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -720,7 +698,6 @@ export const getGetSourceResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 					id: faker.number.float({ fractionDigits: 2 }),
 					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -753,7 +730,6 @@ export const getGetSourceResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -776,7 +752,6 @@ export const getGetSourceResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -804,7 +779,6 @@ export const getGetSourceResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -827,7 +801,6 @@ export const getGetSourceResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -854,7 +827,6 @@ export const getGetSourceResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
@@ -879,7 +851,6 @@ export const getGetSourceResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			taskId: faker.number.float({ fractionDigits: 2 }),
 			viewed: faker.datatype.boolean(),
@@ -914,7 +885,6 @@ export const getGetSourceResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -937,7 +907,6 @@ export const getGetSourceResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -964,7 +933,6 @@ export const getGetSourceResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				id: faker.number.float({ fractionDigits: 2 }),
@@ -1002,7 +970,6 @@ export const getGetSourceResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			status: {
@@ -1048,7 +1015,6 @@ export const getUpdateSourceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -1068,7 +1034,6 @@ export const getUpdateSourceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1095,7 +1060,6 @@ export const getUpdateSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -1143,7 +1107,6 @@ export const getUpdateSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1166,7 +1129,6 @@ export const getUpdateSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1196,7 +1158,6 @@ export const getDeleteSourceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -1216,7 +1177,6 @@ export const getDeleteSourceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1243,7 +1203,6 @@ export const getDeleteSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -1291,7 +1250,6 @@ export const getDeleteSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1314,7 +1272,6 @@ export const getDeleteSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1344,7 +1301,6 @@ export const getExtractSourceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -1364,7 +1320,6 @@ export const getExtractSourceResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1391,7 +1346,6 @@ export const getExtractSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -1439,7 +1393,6 @@ export const getExtractSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1462,7 +1415,6 @@ export const getExtractSourceResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1492,7 +1444,6 @@ export const getAiExtractionCallbackResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -1512,7 +1463,6 @@ export const getAiExtractionCallbackResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1539,7 +1489,6 @@ export const getAiExtractionCallbackResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 	},
 	id: faker.number.float({ fractionDigits: 2 }),
@@ -1587,7 +1536,6 @@ export const getAiExtractionCallbackResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1610,7 +1558,6 @@ export const getAiExtractionCallbackResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
 		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1641,7 +1588,6 @@ export const getAiExtractionCallbackResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1664,7 +1610,6 @@ export const getAiExtractionCallbackResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1691,7 +1636,6 @@ export const getAiExtractionCallbackResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
@@ -1747,7 +1691,6 @@ export const getAiExtractionCallbackResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -1770,7 +1713,6 @@ export const getAiExtractionCallbackResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1797,7 +1739,6 @@ export const getAiExtractionCallbackResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				id: faker.number.float({ fractionDigits: 2 }),
@@ -1847,7 +1788,6 @@ export const getAiExtractionCallbackResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -1872,7 +1812,6 @@ export const getAiExtractionCallbackResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 					id: faker.number.float({ fractionDigits: 2 }),
 					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1905,7 +1844,6 @@ export const getAiExtractionCallbackResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -1928,7 +1866,6 @@ export const getAiExtractionCallbackResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1956,7 +1893,6 @@ export const getAiExtractionCallbackResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -1979,7 +1915,6 @@ export const getAiExtractionCallbackResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2006,7 +1941,6 @@ export const getAiExtractionCallbackResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
@@ -2031,7 +1965,6 @@ export const getAiExtractionCallbackResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			taskId: faker.number.float({ fractionDigits: 2 }),
 			viewed: faker.datatype.boolean(),
@@ -2066,7 +1999,6 @@ export const getAiExtractionCallbackResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -2089,7 +2021,6 @@ export const getAiExtractionCallbackResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2116,7 +2047,6 @@ export const getAiExtractionCallbackResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				id: faker.number.float({ fractionDigits: 2 }),
@@ -2154,7 +2084,6 @@ export const getAiExtractionCallbackResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			status: {

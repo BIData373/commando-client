@@ -43,7 +43,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -66,7 +65,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			task: {
 				createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -90,7 +88,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -113,7 +110,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -140,7 +136,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				id: faker.number.float({ fractionDigits: 2 }),
@@ -200,7 +195,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 									]),
 								},
 							},
-							hasOnboarded: faker.datatype.boolean(),
 						},
 						updatedAt: new Date(
 							faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -225,7 +219,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 									]),
 								},
 							},
-							hasOnboarded: faker.datatype.boolean(),
 						},
 						deletedAt: faker.helpers.arrayElement([
 							new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -252,7 +245,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 										]),
 									},
 								},
-								hasOnboarded: faker.datatype.boolean(),
 							},
 						},
 						id: faker.number.float({ fractionDigits: 2 }),
@@ -302,7 +294,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 										]),
 									},
 								},
-								hasOnboarded: faker.datatype.boolean(),
 							},
 							updatedAt: new Date(
 								faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -327,7 +318,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 										]),
 									},
 								},
-								hasOnboarded: faker.datatype.boolean(),
 							},
 							id: faker.number.float({ fractionDigits: 2 }),
 							name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -362,7 +352,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -387,7 +376,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 					id: faker.number.float({ fractionDigits: 2 }),
 					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -417,7 +405,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -442,7 +429,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 					deletedAt: faker.helpers.arrayElement([
 						new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -469,7 +455,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 									]),
 								},
 							},
-							hasOnboarded: faker.datatype.boolean(),
 						},
 					},
 					id: faker.number.float({ fractionDigits: 2 }),
@@ -494,7 +479,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 					taskId: faker.number.float({ fractionDigits: 2 }),
 					viewed: faker.datatype.boolean(),
@@ -531,7 +515,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 									]),
 								},
 							},
-							hasOnboarded: faker.datatype.boolean(),
 						},
 						updatedAt: new Date(
 							faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -556,7 +539,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 									]),
 								},
 							},
-							hasOnboarded: faker.datatype.boolean(),
 						},
 						deletedAt: faker.helpers.arrayElement([
 							new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -583,7 +565,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 										]),
 									},
 								},
-								hasOnboarded: faker.datatype.boolean(),
 							},
 						},
 						id: faker.number.float({ fractionDigits: 2 }),
@@ -621,7 +602,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 									]),
 								},
 							},
-							hasOnboarded: faker.datatype.boolean(),
 						})),
 					},
 					status: {
@@ -667,7 +647,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -690,7 +669,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -717,7 +695,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				id: faker.number.float({ fractionDigits: 2 }),
@@ -755,7 +732,6 @@ export const getListAssigneeTaskStatusesResponseMock =
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			status: {
@@ -789,7 +765,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -809,7 +784,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	task: {
 		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -833,7 +807,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -856,7 +829,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -883,7 +855,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
@@ -939,7 +910,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -962,7 +932,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -989,7 +958,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				id: faker.number.float({ fractionDigits: 2 }),
@@ -1039,7 +1007,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -1064,7 +1031,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 					id: faker.number.float({ fractionDigits: 2 }),
 					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1097,7 +1063,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -1120,7 +1085,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1148,7 +1112,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -1171,7 +1134,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1198,7 +1160,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
@@ -1223,7 +1184,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			taskId: faker.number.float({ fractionDigits: 2 }),
 			viewed: faker.datatype.boolean(),
@@ -1258,7 +1218,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -1281,7 +1240,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1308,7 +1266,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				id: faker.number.float({ fractionDigits: 2 }),
@@ -1346,7 +1303,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			status: {
@@ -1390,7 +1346,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1413,7 +1368,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1440,7 +1394,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
@@ -1478,7 +1431,6 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		})),
 	},
 	status: {
@@ -1513,7 +1465,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
@@ -1533,7 +1484,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	},
 	task: {
 		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1557,7 +1507,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -1580,7 +1529,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1607,7 +1555,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
@@ -1663,7 +1610,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -1686,7 +1632,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1713,7 +1658,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				id: faker.number.float({ fractionDigits: 2 }),
@@ -1763,7 +1707,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 					updatedAt: new Date(
 						faker.date.past().toISOString().slice(0, 19) + "Z",
@@ -1788,7 +1731,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 					id: faker.number.float({ fractionDigits: 2 }),
 					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1821,7 +1763,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -1844,7 +1785,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
 			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1872,7 +1812,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			updatedBy: {
@@ -1895,7 +1834,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			deletedAt: faker.helpers.arrayElement([
 				new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -1922,7 +1860,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 			},
 			id: faker.number.float({ fractionDigits: 2 }),
@@ -1947,7 +1884,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 			taskId: faker.number.float({ fractionDigits: 2 }),
 			viewed: faker.datatype.boolean(),
@@ -1982,7 +1918,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 				updatedBy: {
@@ -2005,7 +1940,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				},
 				deletedAt: faker.helpers.arrayElement([
 					new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2032,7 +1966,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 								]),
 							},
 						},
-						hasOnboarded: faker.datatype.boolean(),
 					},
 				},
 				id: faker.number.float({ fractionDigits: 2 }),
@@ -2070,7 +2003,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 							]),
 						},
 					},
-					hasOnboarded: faker.datatype.boolean(),
 				})),
 			},
 			status: {
@@ -2114,7 +2046,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
@@ -2137,7 +2068,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
@@ -2164,7 +2094,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 						]),
 					},
 				},
-				hasOnboarded: faker.datatype.boolean(),
 			},
 		},
 		id: faker.number.float({ fractionDigits: 2 }),
@@ -2202,7 +2131,6 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 					]),
 				},
 			},
-			hasOnboarded: faker.datatype.boolean(),
 		})),
 	},
 	status: {

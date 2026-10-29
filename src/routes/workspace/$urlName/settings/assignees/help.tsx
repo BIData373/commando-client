@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { AssigneesInfoModal } from "src/components/settings/AssigneesInfoModal"
+import { useSaveWorkspaceVisit } from "src/hooks/useSaveWorkspaceVisit"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 
 export const Route = createFileRoute(
@@ -10,10 +11,12 @@ export const Route = createFileRoute(
 
 function AssigneesInfo() {
 	const {
-		workspace: { urlName },
+		workspace: { id: workspaceId, urlName },
 	} = useWorkspace()
 
 	const navigate = useNavigate()
+
+	useSaveWorkspaceVisit({ workspaceId, urlName })
 
 	function handleCloseModal() {
 		navigate({

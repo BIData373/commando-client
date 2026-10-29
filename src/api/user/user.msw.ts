@@ -9,7 +9,7 @@ import { faker } from "@faker-js/faker"
 import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 
-import type { MirageUserDto, UserDto } from "../model"
+import type { CurrentUserDto, MirageUserDto, UserDto } from "../model"
 
 export const getCreateUserResponseMock = (
 	overrideResponse: Partial<Extract<UserDto, object>> = {},
@@ -30,7 +30,6 @@ export const getCreateUserResponseMock = (
 			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
 	},
-	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -55,7 +54,6 @@ export const getListUsersResponseMock = (): UserDto[] =>
 				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
 		},
-		hasOnboarded: faker.datatype.boolean(),
 	}))
 
 export const getSearchUsersResponseMock = (): MirageUserDto[] =>
@@ -81,8 +79,8 @@ export const getSearchUsersResponseMock = (): MirageUserDto[] =>
 	}))
 
 export const getGetMeResponseMock = (
-	overrideResponse: Partial<Extract<UserDto, object>> = {},
-): UserDto => ({
+	overrideResponse: Partial<Extract<CurrentUserDto, object>> = {},
+): CurrentUserDto => ({
 	id: faker.number.float({ fractionDigits: 2 }),
 	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	info: {
@@ -99,13 +97,17 @@ export const getGetMeResponseMock = (
 			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
 	},
+	personalAreaEnteredAt: faker.helpers.arrayElement([
+		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		null,
+	]),
 	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
 export const getCompleteOnboardingResponseMock = (
-	overrideResponse: Partial<Extract<UserDto, object>> = {},
-): UserDto => ({
+	overrideResponse: Partial<Extract<CurrentUserDto, object>> = {},
+): CurrentUserDto => ({
 	id: faker.number.float({ fractionDigits: 2 }),
 	upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	info: {
@@ -122,6 +124,10 @@ export const getCompleteOnboardingResponseMock = (
 			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
 	},
+	personalAreaEnteredAt: faker.helpers.arrayElement([
+		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		null,
+	]),
 	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
@@ -145,7 +151,6 @@ export const getGetUserResponseMock = (
 			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
 	},
-	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -168,7 +173,6 @@ export const getUpdateUserResponseMock = (
 			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
 	},
-	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -191,7 +195,6 @@ export const getDeleteUserResponseMock = (
 			isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 		},
 	},
-	hasOnboarded: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -269,10 +272,10 @@ export const getSearchUsersMockHandler = (
 
 export const getGetMeMockHandler = (
 	overrideResponse?:
-		| UserDto
+		| CurrentUserDto
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0],
-		  ) => Promise<UserDto> | UserDto),
+		  ) => Promise<CurrentUserDto> | CurrentUserDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
@@ -293,10 +296,10 @@ export const getGetMeMockHandler = (
 
 export const getCompleteOnboardingMockHandler = (
 	overrideResponse?:
-		| UserDto
+		| CurrentUserDto
 		| ((
 				info: Parameters<Parameters<typeof http.patch>[1]>[0],
-		  ) => Promise<UserDto> | UserDto),
+		  ) => Promise<CurrentUserDto> | CurrentUserDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.patch(

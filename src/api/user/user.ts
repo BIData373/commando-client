@@ -26,6 +26,7 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import type {
 	CreateUserDto,
+	CurrentUserDto,
 	DeleteUserPathParameters,
 	GetUserPathParameters,
 	MirageUserDto,
@@ -376,7 +377,7 @@ export function useSearchUsers<
 }
 
 export const getMe = (signal?: AbortSignal) => {
-	return sendRequest<UserDto>({ url: `/user/me`, method: "GET", signal })
+	return sendRequest<CurrentUserDto>({ url: `/user/me`, method: "GET", signal })
 }
 
 export const getGetMeQueryKey = () => {
@@ -489,7 +490,7 @@ export function useGetMe<
 }
 
 export const completeOnboarding = (signal?: AbortSignal) => {
-	return sendRequest<UserDto>({
+	return sendRequest<CurrentUserDto>({
 		url: `/user/complete-onboarding`,
 		method: "PATCH",
 		signal,
