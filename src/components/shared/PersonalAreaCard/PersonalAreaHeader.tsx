@@ -14,7 +14,9 @@ export default function PersonalAreaHeader({
 	return (
 		<Header>
 			<TitleRow>
-				<NewTaskCount>({totalTaskRowCount} הנחיות חדשות)</NewTaskCount>
+				{totalTaskRowCount > 0 && (
+					<NewTaskCount>({totalTaskRowCount} הנחיות חדשות)</NewTaskCount>
+				)}
 				<Title>אזור אישי</Title>
 			</TitleRow>
 			<Greeting>
