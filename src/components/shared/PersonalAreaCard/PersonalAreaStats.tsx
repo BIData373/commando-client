@@ -5,6 +5,7 @@ import type {
 	WorkspaceStatusType,
 } from "src/api/model"
 import { STATUS_DEFAULTS } from "src/consts/status-defaults"
+import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 
 type PersonalAreaStatsProps = {
 	taskRows: TaskRowWithWorkspaceDto[]
@@ -37,13 +38,14 @@ const StatTag = styled.span<{ $color: string }>`
   width: 76px;
   padding: 1px 8px;
   border-radius: 35px;
-  background: rgb(from ${({ $color }) => $color} r g b / 0.05);
+  background: rgb(from ${({ $color }) => $color} r g b / 0.1);
   color: ${({ $color }) => $color};
   font-size: 12px;
   font-weight: 400;
   line-height: 22px;
   white-space: nowrap;
 `
+
 const StatItem = styled.div`
   display: flex;
   flex-direction: column;
@@ -53,6 +55,11 @@ const StatItem = styled.div`
 
 const StatNumber = styled.span`
   font-size: var(--fs-xl);
-	font-weight: 500;
+  font-weight: 400;
+  line-height: 32px;
   white-space: nowrap;
+
+  ${MOBILE_MEDIA_QUERY} {
+    font-weight: 500;
+  }
 `

@@ -93,7 +93,7 @@ const FooterRoot = styled.footer`
   flex-shrink: 0;
 
   ${MOBILE_MEDIA_QUERY} {
-  	padding-top: 0;
+    padding-top: 0;
     flex-direction: column-reverse;
     align-items: center;
     gap: 32px;
@@ -116,10 +116,6 @@ const CreditsText = styled.div`
   display: flex;
   align-items: flex-end;
   gap: 12px;
-  
-  ${MOBILE_MEDIA_QUERY} {
-    gap: 8px;
-  }
 `
 
 const FooterIcon = styled.img`
@@ -133,7 +129,7 @@ const FooterText = styled.span`
   font-size: clamp(14px, 1vw, 20px);
   font-weight: 400;
   line-height: clamp(20px, 2.5vh, 27px);
-  color: var(--text-color);
+	color: var(--text-color);
   white-space: nowrap;
 `
 

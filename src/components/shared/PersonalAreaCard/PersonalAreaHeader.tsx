@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 
 interface PersonalAreaHeaderProps {
@@ -40,15 +41,24 @@ const Header = styled.div`
 const TitleRow = styled.div`
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   gap: 8px;
+
+  ${MOBILE_MEDIA_QUERY} {
+    align-items: center;
+  }
 `
 
 const Title = styled.span`
   color: var(--Color-Subtitle);
-  font-size: clamp(20px, 1.6vw, 30px);
-  font-weight: 700;
+  font-size: clamp(22px, 1.6vw, 30px);
+  font-weight: 400;
   line-height: clamp(30px, 4.3vh, 46px);
+
+  ${MOBILE_MEDIA_QUERY} {
+    font-size: clamp(20px, 1.6vw, 30px);
+    font-weight: 700;
+  }
 `
 
 const Greeting = styled.div`
