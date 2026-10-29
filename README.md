@@ -2,7 +2,15 @@
 
 Frontend for Commando, a task management system: workspaces, tasks (table/cards views), assignees, dashboards and settings. It talks to the Commando server over REST (and optionally Socket.IO).
 
-**Stack:** React 19, TypeScript, Vite, TanStack Router / Query / Table / Form, Shadcn (Radix + Base UI), `@emotion/styled`, Tailwind 4 (for Shadcn only), Orval (generated API client + MSW mocks), Biome, Vitest.
+## Stack
+
+- **UI:** React 19, TypeScript
+- **Build:** Vite
+- **Routing and data:** TanStack Router, Query, Table and Form
+- **Components:** Shadcn (Radix + Base UI)
+- **Styling:** `@emotion/styled`, plus Tailwind 4 for Shadcn only
+- **API client:** Orval (generated hooks and MSW mocks), Axios
+- **Tooling:** Biome, Vitest, Lefthook
 
 Coding conventions live in [`CLAUDE.md`](./CLAUDE.md).
 
