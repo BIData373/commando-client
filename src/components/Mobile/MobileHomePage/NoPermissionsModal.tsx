@@ -4,9 +4,8 @@ import { useListPermissions } from "src/api/permission/permission"
 import { useGetWorkspace } from "src/api/workspace/workspace"
 import denyIcon from "src/assets/icons/deny.svg"
 import logoWithText from "src/assets/logo-with-text-dark.png"
-import { ModalContent } from "src/components/shared/ModalContent"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
-import { Dialog } from "src/components/ui/dialog"
+import { Sheet, SheetContent, SheetTitle } from "src/components/ui/sheet"
 import { openUserChat } from "src/utils/redirect-utils"
 import { z } from "zod"
 
@@ -32,9 +31,15 @@ export default function NoPermissionsModal({
 		.filter(({ type }) => type === PermissionType.MANAGER)
 		.map(({ user }) => user)
 
+	function handleOpenChange(isOpen: boolean) {
+		if (!isOpen) {
+			onClose()
+		}
+	}
+
 	return (
-		<Dialog open>
-			<Panel showCloseButton={false} headerPadding={0}>
+		<Sheet open onOpenChange={handleOpenChange}>
+			<Panel side="bottom" showCloseButton={false} aria-describedby={undefined}>
 				<Body>
 					<Logo src={logoWithText} />
 					<MessageRow>
@@ -59,12 +64,14 @@ export default function NoPermissionsModal({
 					<PrimaryButton onClick={onClose} title="הבנתי, תודה" />
 				</Body>
 			</Panel>
-		</Dialog>
+		</Sheet>
 	)
 }
 
-const Panel = styled(ModalContent)`
-  width: 90vw;
+const Panel = styled(SheetContent)`
+  border: none;
+  border-radius: 8px 8px 0 0;
+  outline: none;
 `
 
 const Body = styled.div`
@@ -74,6 +81,7 @@ const Body = styled.div`
   gap: 24px;
   padding: var(--Components-Notification-Global-paddingMD)
     var(--Components-Notification-Global-paddingContentHorizontalLG);
+  padding-bottom: calc(var(--Components-Notification-Global-paddingMD) * 3)
 `
 
 const Logo = styled.img`
@@ -98,7 +106,7 @@ const MessageContent = styled.div`
   gap: 4px;
 `
 
-const Title = styled.h1`
+const Title = styled(SheetTitle)`
   font-weight: 500;
 `
 
