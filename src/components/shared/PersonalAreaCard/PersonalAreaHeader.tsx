@@ -40,14 +40,14 @@ const Header = styled.div`
 const TitleRow = styled.div`
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
   gap: 8px;
 `
 
 const Title = styled.span`
   color: var(--Color-Subtitle);
-  font-size: clamp(22px, 1.6vw, 30px);
-  font-weight: 400;
+  font-size: clamp(20px, 1.6vw, 30px);
+  font-weight: 700;
   line-height: clamp(30px, 4.3vh, 46px);
 `
 

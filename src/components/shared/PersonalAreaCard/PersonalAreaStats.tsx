@@ -37,7 +37,7 @@ const StatTag = styled.span<{ $color: string }>`
   width: 76px;
   padding: 1px 8px;
   border-radius: 35px;
-  background: rgb(from ${({ $color }) => $color} r g b / 0.1);
+  background: rgb(from ${({ $color }) => $color} r g b / 0.05);
   color: ${({ $color }) => $color};
   font-size: 12px;
   font-weight: 400;
@@ -53,8 +53,6 @@ const StatItem = styled.div`
 
 const StatNumber = styled.span`
   font-size: var(--fs-xl);
-  font-weight: 400;
-  line-height: 32px;
-  color: var(--text-color-2);
+	font-weight: 500;
   white-space: nowrap;
 `

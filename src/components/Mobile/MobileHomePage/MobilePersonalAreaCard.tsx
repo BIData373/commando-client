@@ -37,8 +37,7 @@ export default function MobilePersonalAreaCard() {
 const CardRoot = styled.div`
   direction: ltr;
   display: flex;
-  /* height: clamp(140px, 21.2vh, 229px); */
-  padding: clamp(12px, 2.2vh, 24px) clamp(24px, 2.5vw, 48px) clamp(16px, 3vh, 32px);
+  padding: 16px;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-end;
@@ -47,6 +46,7 @@ const CardRoot = styled.div`
   background: var(--background);
   box-shadow: var(--card-shadow-default);
   cursor: pointer;
+  gap: 16px;
 
   :hover {
     box-shadow: var(--card-shadow-hover);
@@ -58,7 +58,7 @@ const Footer = styled.span`
     flex-direction: column;
     justify-content: center;
     width: 100%;
-    gap: 10px;
+    gap: 16px;
 `
 
 const StatsRow = styled.div`
