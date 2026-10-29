@@ -21,6 +21,7 @@ export default function MobileHomePage() {
 }
 
 const PageRoot = styled.div`
+	background: var(--background-mobile);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -40,8 +41,9 @@ const TopBar = styled.div`
 `
 
 const Logo = styled.img`
-  height: 40px;
+  height: 35px;
 `
+
 const MainTitle = styled.span`
   font-size: clamp(20px, 3.3vw, 64px);
   font-weight: 500;
