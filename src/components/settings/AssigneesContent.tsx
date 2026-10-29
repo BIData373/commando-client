@@ -1,7 +1,12 @@
 import styled from "@emotion/styled"
 import { Mail, Pencil, Plus, Search } from "lucide-react"
 import { type ChangeEvent, useState } from "react"
-import { useListAssignees } from "src/api/assignee/assignee"
+import {
+	getListAssigneesQueryKey,
+	useListAssignees,
+	useUpdateAssigneeStatusEditable,
+} from "src/api/assignee/assignee"
+import type { AssigneesDto } from "src/api/model"
 import { useUpdateWorkspace } from "src/api/workspace/workspace"
 import { AssigneeCard } from "src/components/settings/AssigneeCard"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
@@ -14,6 +19,7 @@ import {
 import { updateEnvironmentMessage } from "src/functions/toast-messages"
 import { useFilteredAssignees } from "src/hooks/useFilteredAssignees"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { invalidateQueries, queryClient } from "src/query-client"
 import noResultsFound from "../../assets/empty-states/no-results-found.svg"
 import chatIcon from "../../assets/icons/chat.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -49,16 +55,44 @@ export function AssigneesContent({
 		},
 	})
 
-	const [searchQuery, setSearchQuery] = useState("")
+	const {
+		data: assignees = [],
+		isLoading,
+		queryKey,
+	} = useListAssignees({ workspaceId })
 
-	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
+	const { mutateAsync: updateAssigneeStatus } = useUpdateAssigneeStatusEditable(
+		{
+			mutation: {
+				onSuccess() {
+					invalidateQueries([queryKey])
+				},
+			},
+		},
+	)
+
+	const [searchQuery, setSearchQuery] = useState("")
 
 	const filteredAssignees = useFilteredAssignees(assignees, searchQuery)
 
-	function handleStatusEditableChange(checked: boolean) {
+	function handleWorkspaceStatusEditableChange(checked: boolean) {
 		updateSettings({
 			pathParams: { id: workspaceId },
 			data: { assigneeStatusEditable: checked },
+		})
+	}
+
+	function handleAssigneeStatusEditableChange(
+		assigneeId: number,
+		checked: boolean,
+		userId?: number,
+	) {
+		updateAssigneeStatus({
+			params: {
+				statusEditable: checked,
+				assigneeId,
+				userId,
+			},
 		})
 	}
 
@@ -83,33 +117,34 @@ export function AssigneesContent({
 	return (
 		<ContentRoot>
 			<StyledContent>
-				<SettingsSection>
-					<SettingToggleRow
-						label="אפשר לאחראים לעדכן סטטוס"
-						tooltip="מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות כבויה – עדכון הסטטוס יתאפשר רק למנהלי הסביבה."
-						icon={<Pencil size={18} />}
-						checked={assigneeStatusEditable}
-						onCheckedChange={handleStatusEditableChange}
-					/>
+				<SettingsSectionWrapper>
+					<SettingsSection>
+						<SettingToggleRow
+							label="הרשאות עריכת סטטוס מבוזרות"
+							tooltip="מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות כבויה – עדכון הסטטוס יתאפשר רק למנהלי הסביבה."
+							icon={<Pencil size={18} />}
+							checked={assigneeStatusEditable}
+							onCheckedChange={handleWorkspaceStatusEditableChange}
+						/>
+					</SettingsSection>
+					<SettingsSection>
+						<SettingToggleRow
+							label="שלח התראות בצ'אט למכותבים"
+							tooltip="שליחת התראות בצ'אט למכותבים בעת קבלת הנחיות"
+							icon={<img src={chatIcon} alt="" width={18} height={18} />}
+							checked={chatNotification}
+							onCheckedChange={handleChatNotificationsChange}
+						/>
 
-					<Divider />
-
-					<SettingToggleRow
-						label="שלח התראות בצ'אט למכותבים"
-						tooltip="שליחת התראות בצ'אט למכותבים בעת קבלת הנחיות"
-						icon={<img src={chatIcon} alt="" width={18} height={18} />}
-						checked={chatNotification}
-						onCheckedChange={handleChatNotificationsChange}
-					/>
-
-					<SettingToggleRow
-						label="שלח התראות במייל למכותבים"
-						tooltip="שליחת התראות במייל למכותבים בעת קבלת הנחיות"
-						icon={<Mail size={18} />}
-						checked={mailNotification}
-						onCheckedChange={handleMailNotificationsChange}
-					/>
-				</SettingsSection>
+						<SettingToggleRow
+							label="שלח התראות במייל למכותבים"
+							tooltip="שליחת התראות במייל למכותבים בעת קבלת הנחיות"
+							icon={<Mail size={18} />}
+							checked={mailNotification}
+							onCheckedChange={handleMailNotificationsChange}
+						/>
+					</SettingsSection>
+				</SettingsSectionWrapper>
 				<ToolbarRow>
 					<SearchWrapper>
 						<StyledInputGroup>
@@ -150,7 +185,12 @@ export function AssigneesContent({
 				) : (
 					<AssigneeCardGrid>
 						{filteredAssignees.map((assignee) => (
-							<AssigneeCard key={assignee.id} assignee={assignee} />
+							<AssigneeCard
+								key={assignee.id}
+								assignee={assignee}
+								statusEditable={assignee.statusEditable}
+								onStatusEditableChange={handleAssigneeStatusEditableChange}
+							/>
 						))}
 					</AssigneeCardGrid>
 				)}
@@ -177,6 +217,12 @@ const StyledContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 32px;
+`
+
+const SettingsSectionWrapper = styled.div`
+	display: flex;
+	align-items: flex-start;
+	gap: 16px;
 `
 
 const SettingsSection = styled.div`

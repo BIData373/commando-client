@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { User } from "lucide-react"
+import type { MouseEvent } from "react"
 import type { AssigneesDto } from "src/api/model"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
@@ -14,15 +15,24 @@ import {
 	CardTitle,
 } from "../ui/card"
 import { Separator } from "../ui/separator"
+import { Switch } from "../ui/switch"
 import { DeleteAssigneePopconfirm } from "./DeleteAssigneePopconfirm"
 
 interface AssigneeCardProps {
 	assignee: AssigneesDto
+	statusEditable: boolean
+	onStatusEditableChange(
+		assigneeId: number,
+		checked: boolean,
+		userId?: number,
+	): void
 }
 
 export function AssigneeCard({
 	assignee,
 	assignee: { users, tasksCount },
+	statusEditable,
+	onStatusEditableChange,
 }: AssigneeCardProps) {
 	const {
 		workspace: { urlName },
@@ -35,6 +45,10 @@ export function AssigneeCard({
 			to: "/workspace/$urlName/settings/assignees/$assigneeId",
 			params: { urlName, assigneeId: String(assignee.id) },
 		})
+	}
+
+	function handleToggleClick(e: MouseEvent) {
+		e.stopPropagation()
 	}
 
 	return (
@@ -54,7 +68,7 @@ export function AssigneeCard({
 						</CardMeta>
 
 						<StyledCardDescription>
-							{users.length} משתמשים
+							{users.length} מכותבים
 						</StyledCardDescription>
 					</CardWrapper>
 				</CardHeaderRow>
@@ -64,7 +78,7 @@ export function AssigneeCard({
 				{users.length > 0 && <StyledSeparator />}
 
 				<OverflowRow
-					items={users.map(({ id, info, upn }) => (
+					items={users.map(({ user: { id, info, upn } }) => (
 						<StyledBadge key={id} variant="secondary">
 							<User size={16} />
 
@@ -78,6 +92,16 @@ export function AssigneeCard({
 					)}
 				/>
 			</CardContent>
+
+			<StatusToggleRow onClick={handleToggleClick}>
+				<Switch
+					checked={statusEditable}
+					onCheckedChange={(checked) =>
+						onStatusEditableChange(assignee.id, checked)
+					}
+				/>
+				<StatusLabel>אפשר לעדכן סטטוס</StatusLabel>
+			</StatusToggleRow>
 		</StyledCard>
 	)
 }
@@ -91,14 +115,14 @@ const StyledCard = styled(Card)`
   transition: box-shadow 0.3s ease-in-out;
   width: 275px;
 
-  button {
+  button:not([data-slot="switch"]) {
     opacity: 0;
   }
 
   &:hover {
     box-shadow: var(--card-shadow-hover);
 
-    button {
+    button:not([data-slot="switch"]) {
         opacity: 1;
     }
   }
@@ -163,4 +187,18 @@ const BadgeText = styled.span`
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+`
+
+const StatusToggleRow = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 6px;
+	padding-inline: 16px;
+`
+
+const StatusLabel = styled.span`
+	font-size: var(--fs-base);
+	color: var(--sea-ink-soft);
+	white-space: nowrap;
 `

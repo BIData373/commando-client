@@ -5,6 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
+import type { AssigneeUserDto } from "./assignee-user-dto"
 import type { UserDto } from "./user-dto"
 
 export interface AssigneesDto {
@@ -24,6 +25,7 @@ export interface AssigneesDto {
 	/** @nullable */
 	iconName: string | null
 	workspaceId: number
-	users: UserDto[]
+	statusEditable: boolean
+	users: AssigneeUserDto[]
 	tasksCount: number
 }
