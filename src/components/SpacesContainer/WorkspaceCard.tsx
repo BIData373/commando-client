@@ -36,7 +36,7 @@ export default function WorkspaceCard({
 			navigate({
 				to: "/no-permissions",
 				search: {
-					sourceId: id,
+					workspaceId: id,
 				},
 			})
 		}

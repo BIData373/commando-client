@@ -10,11 +10,11 @@ export const Route = createFileRoute("/_home/no-permissions")({
 
 function NoPermissions() {
 	const navigate = useNavigate()
-	const { sourceId } = Route.useSearch()
+	const { workspaceId } = Route.useSearch()
 
 	function handleClose() {
 		navigate({ to: "/" })
 	}
 
-	return <NoPermissionsModal onClose={handleClose} sourceId={sourceId} />
+	return <NoPermissionsModal onClose={handleClose} workspaceId={workspaceId} />
 }

@@ -11,21 +11,21 @@ import { openUserChat } from "src/utils/redirect-utils"
 import { z } from "zod"
 
 interface NoPermissionsModalProps {
-	sourceId: number
+	workspaceId: number
 	onClose: () => void
 }
 
 export const noPermissionsSearchSchema = z.object({
-	sourceId: z.number(),
+	workspaceId: z.number(),
 })
 
 export default function NoPermissionsModal({
 	onClose,
-	sourceId,
+	workspaceId,
 }: NoPermissionsModalProps) {
-	const { data: workspace } = useGetWorkspace({ id: sourceId })
+	const { data: workspace } = useGetWorkspace({ id: workspaceId })
 	const { data: permissions = [] } = useListPermissions({
-		workspaceId: sourceId,
+		workspaceId,
 	})
 
 	const managers = permissions
