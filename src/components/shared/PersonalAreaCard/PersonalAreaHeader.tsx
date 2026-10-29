@@ -1,13 +1,23 @@
 import styled from "@emotion/styled"
+import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 
-export default function PersonalAreaHeader() {
+interface PersonalAreaHeaderProps {
+	totalTaskRowCount: number
+}
+
+export default function PersonalAreaHeader({
+	totalTaskRowCount,
+}: PersonalAreaHeaderProps) {
 	const user = useCurrentUser()
 	const username = user.info?.name || user.upn
 
 	return (
 		<Header>
 			<TitleRow>
+				{totalTaskRowCount > 0 && (
+					<NewTaskCount>({totalTaskRowCount} הנחיות חדשות)</NewTaskCount>
+				)}
 				<Title>אזור אישי</Title>
 			</TitleRow>
 			<Greeting>
@@ -33,6 +43,10 @@ const TitleRow = styled.div`
   justify-content: center;
   align-items: flex-end;
   gap: 8px;
+
+  ${MOBILE_MEDIA_QUERY} {
+    align-items: center;
+  }
 `
 
 const Title = styled.span`
@@ -40,6 +54,11 @@ const Title = styled.span`
   font-size: clamp(22px, 1.6vw, 30px);
   font-weight: 400;
   line-height: clamp(30px, 4.3vh, 46px);
+
+  ${MOBILE_MEDIA_QUERY} {
+    font-size: clamp(20px, 1.6vw, 30px);
+    font-weight: 700;
+  }
 `
 
 const Greeting = styled.div`
@@ -59,4 +78,12 @@ const GreetingText = styled.span`
   font-size: clamp(14px, 1vw, 20px);
   font-weight: 400;
   line-height: clamp(20px, 2.6vh, 28px);
+`
+
+const NewTaskCount = styled.span`
+  direction: rtl;
+  color: var(--text-color-400);
+  font-size: clamp(14px, 1vw, 20px);
+  font-weight: 400;
+  line-height: clamp(24px, 3.5vh, 38px);
 `

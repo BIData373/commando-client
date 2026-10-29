@@ -21,12 +21,18 @@ export default function MobileHomePage() {
 }
 
 const PageRoot = styled.div`
+	background: var(--background-mobile);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
   height: 100%;
-  padding: clamp(16px, 5.0vh, 100px) clamp(16px, 5.0vw, 150px);
+  overflow-y: scroll;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `
 
 const TopBar = styled.div`
@@ -34,13 +40,15 @@ const TopBar = styled.div`
   align-items: end;
   justify-content: space-between;
   width: 100%;
-  padding-bottom: clamp(24px, 5.9vh, 64px);
   flex-shrink: 0;
+  padding: 20px;
+  border-bottom: 1px solid var(--Colors-Neutral-Border-colorSplit);
 `
 
 const Logo = styled.img`
-  height: 40px;
+  height: 35px;
 `
+
 const MainTitle = styled.span`
   font-size: clamp(20px, 3.3vw, 64px);
   font-weight: 500;
@@ -56,4 +64,5 @@ const ContentWrapper = styled.div`
   align-self: stretch;
   flex: 1;
   min-height: 0;
+  padding: clamp(16px, 5.0vh, 100px) clamp(16px, 5.0vw, 150px);
 `
