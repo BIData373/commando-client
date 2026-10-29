@@ -28,6 +28,11 @@ const PageRoot = styled.div`
   width: 100%;
   height: 100%;
   overflow-y: scroll;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `
 
 const TopBar = styled.div`
