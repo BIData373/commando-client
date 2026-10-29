@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { useNavigate, useSearch } from "@tanstack/react-router"
+import type { UserDto } from "src/api/model"
 import { getGetMeQueryKey, useCompleteOnboarding } from "src/api/user/user"
 import logoWithText from "src/assets/logo-with-text-dark.png"
 import { queryClient } from "src/query-client"
@@ -18,12 +19,7 @@ export const ONBOARDING_STEP_ORDER: OnboardingSteps[] = [
 export function OnboardingModal() {
 	const navigate = useNavigate({ from: "/onboarding" })
 	const { step = OnboardingSteps.Greeting } = useSearch({ from: "/onboarding" })
-	const { mutate: completeOnboarding } = useCompleteOnboarding({
-		mutation: {
-			onSuccess: () =>
-				queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() }),
-		},
-	})
+	const { mutate: completeOnboarding } = useCompleteOnboarding()
 
 	const currentStepIndex = ONBOARDING_STEP_ORDER.indexOf(step)
 
@@ -46,11 +42,16 @@ export function OnboardingModal() {
 	}
 
 	function handleFinishOnboarding() {
+		queryClient.setQueryData<UserDto>(
+			getGetMeQueryKey(),
+			(me) => me && { ...me, hasOnboarded: true },
+		)
 		completeOnboarding()
 	}
 
 	function handleSkipOnboarding() {
-		completeOnboarding(undefined, { onSuccess: () => navigate({ to: "/" }) })
+		handleFinishOnboarding()
+		navigate({ to: "/" })
 	}
 
 	const pages: Record<OnboardingSteps, React.ReactNode> = {
