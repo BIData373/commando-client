@@ -36,8 +36,7 @@ const TopBar = styled.div`
   width: 100%;
   flex-shrink: 0;
   padding: 20px;
-	border-bottom: 2px solid red;
-	border-bottom: 1px solid var(--Colors-Neutral-Border-colorSplit, rgba(0, 0, 0, 0.06));
+  border-bottom: 1px solid var(--Colors-Neutral-Border-colorSplit);
 `
 
 const Logo = styled.img`

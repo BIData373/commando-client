@@ -72,7 +72,7 @@ const GreetingText = styled.span`
 
 const NewTaskCount = styled.span`
   direction: rtl;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
   font-size: clamp(14px, 1vw, 20px);
   font-weight: 400;
   line-height: clamp(24px, 3.5vh, 38px);

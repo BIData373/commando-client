@@ -72,7 +72,8 @@ const Body = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  padding: var(--Components-Notification-Global-paddingMD, 20px) var(--Components-Notification-Global-paddingContentHorizontalLG, 24px);
+  padding: var(--Components-Notification-Global-paddingMD)
+    var(--Components-Notification-Global-paddingContentHorizontalLG);
 `
 
 const Logo = styled.img`
@@ -84,7 +85,7 @@ const MessageRow = styled.div`
   display: flex;
   align-items: flex-start;
   align-self: stretch;
-  gap: var(--Space-Margin-marginXS, 8px);
+  gap: var(--Space-Margin-marginXS);
 `
 
 const DeniedIcon = styled.img`
