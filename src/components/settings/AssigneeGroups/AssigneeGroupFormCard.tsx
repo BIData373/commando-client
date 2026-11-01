@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { useQueryClient } from "@tanstack/react-query"
 import { Search } from "lucide-react"
 import { type ChangeEvent, useState } from "react"
 import { TbUsersGroup } from "react-icons/tb"
@@ -47,27 +48,74 @@ export function AssigneeGroupFormCard({
 		assigneeGroup?.assignees.map(({ id }) => id) ?? [],
 	)
 
+	const queryClient = useQueryClient()
+	const queryKey = getListAssigneeGroupsQueryKey({ workspaceId })
+
 	const { data: assignees = [] } = useListAssignees({ workspaceId })
 	const filteredAssignees = useFilteredAssignees(assignees, searchQuery)
+	const selectedAssignees = assignees.filter((a) => selectedIds.includes(a.id))
+
+	function optimisticMutation(
+		updater: (old: AssigneeGroupDto[]) => Partial<AssigneeGroupDto>[],
+		toast: { success: string },
+	) {
+		return {
+			meta: { toast: { ...toast, error: true as const } },
+			onMutate: () => {
+				const previous = queryClient.getQueryData<AssigneeGroupDto[]>(queryKey)
+				queryClient.setQueryData<AssigneeGroupDto[]>(
+					queryKey,
+					(old = []) => updater(old) as AssigneeGroupDto[],
+				)
+				onClose()
+				return { previous }
+			},
+			onError: (
+				_error: unknown,
+				_variables: unknown,
+				context: { previous?: AssigneeGroupDto[] } | undefined,
+			) => {
+				if (context?.previous) {
+					queryClient.setQueryData(queryKey, context.previous)
+				}
+			},
+			onSettled: () => {
+				invalidateQueries([queryKey])
+			},
+		}
+	}
 
 	const { mutate: createAssigneeGroup, isPending: isCreatePending } =
 		useCreateAssigneeGroup({
-			mutation: {
-				meta: {
-					toast: { success: createAssigneeGroupMessage, error: true },
-				},
-				onSuccess: handleSaveSuccess,
-			},
+			mutation: optimisticMutation(
+				(old) => [
+					...old,
+					{
+						id: -Date.now(),
+						name: name.trim(),
+						workspaceId,
+						assignees: selectedAssignees,
+					},
+				],
+				{ success: createAssigneeGroupMessage },
+			),
 		})
 
 	const { mutate: updateAssigneeGroup, isPending: isUpdatePending } =
 		useUpdateAssigneeGroup({
-			mutation: {
-				meta: {
-					toast: { success: updateAssigneeGroupMessage, error: true },
-				},
-				onSuccess: handleSaveSuccess,
-			},
+			mutation: optimisticMutation(
+				(old) =>
+					old.map((group) =>
+						group.id === assigneeGroup?.id
+							? {
+									...group,
+									name: name.trim(),
+									assignees: selectedAssignees,
+								}
+							: group,
+					),
+				{ success: updateAssigneeGroupMessage },
+			),
 		})
 
 	const canSave =
@@ -81,11 +129,6 @@ export function AssigneeGroupFormCard({
 			selectedIds.length !== initialIds.length ||
 			selectedIds.some((id) => !initialIds.includes(id))
 		)
-	}
-
-	function handleSaveSuccess() {
-		invalidateQueries([getListAssigneeGroupsQueryKey({ workspaceId })])
-		onClose()
 	}
 
 	function handleSearchChange(e: ChangeEvent<HTMLInputElement>) {

@@ -1,22 +1,11 @@
+import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import type { MouseEvent } from "react"
-import {
-	TbChevronDown,
-	TbChevronUp,
-	TbPencil,
-	TbTrash,
-	TbUsersGroup,
-} from "react-icons/tb"
+import { TbChevronDown, TbChevronUp, TbUsersGroup } from "react-icons/tb"
 import type { AssigneeGroupDto } from "src/api/model"
 import { AssigneeAvatar } from "src/components/shared/AssigneeAvatar"
 import { AssigneeDetailPopover } from "src/components/shared/AssigneeDetailPopover"
-import { DeletePopover } from "src/components/Tasks/DeletePopover"
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "src/components/ui/tooltip"
+import { AssigneeGroupActions } from "./AssigneeGroupActions"
 
 const MAX_VISIBLE_AVATARS = 3
 const AVATAR_SIZE = 29
@@ -34,7 +23,7 @@ interface AssigneeGroupCardProps {
 }
 
 export function AssigneeGroupCard({
-	assigneeGroup,
+	assigneeGroup: { id, name, assignees },
 	isExpanded,
 	onToggleExpanded,
 	isDeleteOpen,
@@ -42,8 +31,6 @@ export function AssigneeGroupCard({
 	onDelete,
 	onEdit,
 }: AssigneeGroupCardProps) {
-	const { id, name, assignees } = assigneeGroup
-
 	const hasAssignees = assignees.length > 0
 	const visibleAssignees = assignees.slice(0, MAX_VISIBLE_AVATARS)
 	const hiddenCount = assignees.length - visibleAssignees.length
@@ -60,10 +47,6 @@ export function AssigneeGroupCard({
 
 	function handleDeleteOpenChange(open: boolean) {
 		onDeleteOpenChange(id, open)
-	}
-
-	function handleOpenDelete() {
-		onDeleteOpenChange(id, true)
 	}
 
 	function handleDeleteConfirm() {
@@ -84,48 +67,18 @@ export function AssigneeGroupCard({
 			<Header>
 				<Title>
 					<TbUsersGroup size={24} />
-					<Name>‘{name}’</Name>
+					<Name>'{name}'</Name>
 				</Title>
 
 				<Summary>
 					{isExpanded ? (
-						<>
-							<TooltipProvider>
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<TooltipAnchor>
-											<DeletePopover
-												count={1}
-												title="מחיקת רשימה"
-												confirmLabel="מחק"
-												side="top"
-												align="end"
-												showArrow
-												open={isDeleteOpen}
-												onOpenChange={handleDeleteOpenChange}
-												onConfirm={handleDeleteConfirm}
-												onCloseAutoFocus={handleDeleteCloseAutoFocus}
-												trigger={
-													<IconActionButton
-														type="button"
-														onClick={handleOpenDelete}
-													>
-														<TbTrash size={14} />
-													</IconActionButton>
-												}
-											/>
-										</TooltipAnchor>
-									</TooltipTrigger>
-									{!isDeleteOpen && (
-										<TooltipContent side="top">מחיקת רשימה</TooltipContent>
-									)}
-								</Tooltip>
-							</TooltipProvider>
-							<ActionButton type="button" onClick={handleEditClick}>
-								עריכה
-								<TbPencil size={14} />
-							</ActionButton>
-						</>
+						<AssigneeGroupActions
+							isDeleteOpen={isDeleteOpen}
+							onDeleteOpenChange={handleDeleteOpenChange}
+							onDeleteConfirm={handleDeleteConfirm}
+							onDeleteCloseAutoFocus={handleDeleteCloseAutoFocus}
+							onEdit={handleEditClick}
+						/>
 					) : hasAssignees ? (
 						<Avatars>
 							{visibleAssignees.map((assignee) => (
@@ -157,23 +110,25 @@ export function AssigneeGroupCard({
 			</Header>
 
 			{isExpanded && (
-				<>
-					<Divider />
-					{hasAssignees ? (
-						<AssigneeList>
-							{assignees.map((assignee) => (
-								<AssigneeRow key={assignee.id}>
-									<AssigneeAvatar assignee={assignee} size={24} />
-									<AssigneeName title={assignee.name}>
-										{assignee.name}
-									</AssigneeName>
-								</AssigneeRow>
-							))}
-						</AssigneeList>
-					) : (
-						<EmptyListText>{NO_ASSIGNEES_TEXT}</EmptyListText>
-					)}
-				</>
+				<ExpandableContent>
+					<ContentInner>
+						<Divider />
+						{hasAssignees ? (
+							<AssigneeList>
+								{assignees.map((assignee) => (
+									<AssigneeRow key={assignee.id}>
+										<AssigneeAvatar assignee={assignee} size={24} />
+										<AssigneeName title={assignee.name}>
+											{assignee.name}
+										</AssigneeName>
+									</AssigneeRow>
+								))}
+							</AssigneeList>
+						) : (
+							<EmptyListText>{NO_ASSIGNEES_TEXT}</EmptyListText>
+						)}
+					</ContentInner>
+				</ExpandableContent>
 			)}
 		</Card>
 	)
@@ -276,38 +231,24 @@ const ChevronButton = styled.button`
   }
 `
 
-const ActionButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 24px;
-  padding-inline: 7px;
-  border: none;
-  border-radius: 4px;
-  background: var(--link-bg-hover);
-  color: var(--text-color-2);
-  font-size: var(--fs-btn);
-  line-height: 22px;
-  cursor: pointer;
-
-  &:hover {
-    background: var(--button-hover);
-  }
-`
-
-const IconActionButton = styled(ActionButton)`
-  justify-content: center;
-  width: 24px;
-  padding: 0;
-`
-
-const TooltipAnchor = styled.span`
-  display: flex;
-`
-
 const Divider = styled.div`
   height: 1px;
+  margin-bottom: 12px;
   background: var(--line);
+`
+
+const expandDown = keyframes`
+  from { grid-template-rows: 0fr; }
+  to { grid-template-rows: 1fr; }
+`
+
+const ExpandableContent = styled.div`
+  display: grid;
+  animation: ${expandDown} 200ms ease-out forwards;
+`
+
+const ContentInner = styled.div`
+  overflow: hidden;
 `
 
 const NoAssigneesText = styled.span`
@@ -318,7 +259,8 @@ const NoAssigneesText = styled.span`
 `
 
 const EmptyListText = styled(NoAssigneesText)`
-  align-self: center;
+  display: flex;
+  justify-content: center;
 `
 
 const AssigneeList = styled.div`

@@ -12,29 +12,31 @@ export function AssigneeGroupsEmptyState({
 	onOpenCreateDialog,
 }: AssigneeGroupsEmptyStateProps) {
 	return (
-		<EmptyStateContainer>
-			<EmptyCardState
-				imgSrc={assigneeGroupsIcon}
-				title="טרם הוגדרו רשימות תפוצה"
-				description={"הוסף רשימת אחראים כדי לשייך בקלות מספר\nאחראים להנחיה"}
-			/>
-			<SecondaryButton
-				onClick={onOpenCreateDialog}
-				height={32}
-				title={
-					<>
-						<Plus size={16} />
-						הוספת רשימת תפוצה
-					</>
-				}
-			/>
-		</EmptyStateContainer>
+		<StyledEmptyState
+			imgSrc={assigneeGroupsIcon}
+			title="טרם הוגדרו רשימות תפוצה"
+			description={"הוסף רשימת אחראים כדי לשייך בקלות מספר\nאחראים להנחיה"}
+			action={
+				<CreateButton
+					onClick={onOpenCreateDialog}
+					height={32}
+					title={
+						<>
+							<Plus size={16} />
+							הוספת רשימת תפוצה
+						</>
+					}
+				/>
+			}
+		/>
 	)
 }
 
-const EmptyStateContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
+const StyledEmptyState = styled(EmptyCardState)`
+  gap: 4px;
+  padding-top: 0;
+`
+
+const CreateButton = styled(SecondaryButton)`
+  margin-top: 20px;
 `

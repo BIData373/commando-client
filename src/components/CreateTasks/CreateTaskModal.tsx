@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
-import { omit, uniq } from "lodash"
+import { difference, omit, uniq } from "lodash"
 import { useRef, useState } from "react"
 import {
 	type CreateTaskDto,
@@ -174,6 +174,13 @@ function CreateTaskModal({
 		form.setFieldValue("dueDate", date)
 	}
 
+	function getDefaultStatusId() {
+		if (!isEditMode) return undefined
+		return Object.values(statusById).find(
+			(s) => s.type === WorkspaceStatusType.NOT_STARTED,
+		)?.id
+	}
+
 	function handleAssigneeToggle(id: number) {
 		const current = values.assignees ?? []
 		const isRemoving = current.some((a) => a.id === id)
@@ -184,28 +191,19 @@ function CreateTaskModal({
 				current.filter((a) => a.id !== id),
 			)
 		} else {
-			const defaultStatusId = isEditMode
-				? Object.values(statusById).find(
-						(s) => s.type === WorkspaceStatusType.NOT_STARTED,
-					)?.id
-				: undefined
 			form.setFieldValue("assignees", [
 				...current,
-				{ id, statusId: defaultStatusId },
+				{ id, statusId: getDefaultStatusId() },
 			])
 		}
 	}
 
 	function handleAssigneeGroupSelect(assigneeIds: number[]) {
 		const current = values.assignees ?? []
-		const defaultStatusId = isEditMode
-			? Object.values(statusById).find(
-					(s) => s.type === WorkspaceStatusType.NOT_STARTED,
-				)?.id
-			: undefined
-		const newEntries = assigneeIds.map((id) => ({
+		const existingIds = current.map((a) => a.id)
+		const newEntries = difference(assigneeIds, existingIds).map((id) => ({
 			id,
-			statusId: defaultStatusId,
+			statusId: getDefaultStatusId(),
 		}))
 		form.setFieldValue("assignees", [...current, ...newEntries])
 	}
