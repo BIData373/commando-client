@@ -20,11 +20,12 @@ export function useSaveWorkspaceVisit({
 
 	useEffect(() => {
 		if (!location.pathname.includes(urlName)) {
-			upsertUserWorkspaceVisit({ workspaceId })
-			invalidateQueries([
-				getListTaskRowsQueryKey(...(workspaceId ? [{ workspaceId }] : [])),
-				getListPersonalTaskRowsQueryKey(),
-			])
+			upsertUserWorkspaceVisit({ workspaceId }).then(() =>
+				invalidateQueries([
+					getListTaskRowsQueryKey(...(workspaceId ? [{ workspaceId }] : [])),
+					getListPersonalTaskRowsQueryKey(),
+				]),
+			)
 		}
 
 		function handleBeforeUnload() {
