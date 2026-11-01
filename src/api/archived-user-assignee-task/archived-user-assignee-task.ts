@@ -18,16 +18,17 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import type { ToggleUserTaskArchiveParams } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 export const toggleUserTaskArchive = (
 	params: ToggleUserTaskArchiveParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<void>({
-		url: `/archived-user-assignee-task`,
-		method: "PATCH",
-		params,
-		signal,
-	})
+	return sendRequest<void>(
+		{ url: `/archived-user-assignee-task`, method: "PATCH", params, signal },
+		options,
+	)
 }
 
 export const getToggleUserTaskArchiveMutationKey = () =>
@@ -43,6 +44,7 @@ export const getToggleUserTaskArchiveMutationOptions = <
 		ToggleUserTaskArchiveMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof toggleUserTaskArchive>>,
 	TError,
@@ -50,13 +52,13 @@ export const getToggleUserTaskArchiveMutationOptions = <
 	TContext
 > => {
 	const mutationKey = getToggleUserTaskArchiveMutationKey()
-	const { mutation: mutationOptions } = options
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof toggleUserTaskArchive>>,
@@ -64,7 +66,7 @@ export const getToggleUserTaskArchiveMutationOptions = <
 	> = (props) => {
 		const { params } = props ?? {}
 
-		return toggleUserTaskArchive(params)
+		return toggleUserTaskArchive(params, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -90,6 +92,7 @@ export const useToggleUserTaskArchive = <
 			ToggleUserTaskArchiveMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<

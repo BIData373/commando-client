@@ -1,7 +1,13 @@
 import styled from "@emotion/styled"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 
-export default function PersonalAreaHeader() {
+interface PersonalAreaHeaderProps {
+	unreadTasksCount: number
+}
+
+export default function PersonalAreaHeader({
+	unreadTasksCount,
+}: PersonalAreaHeaderProps) {
 	const user = useCurrentUser()
 	const username = user.info?.name || user.upn
 
@@ -9,6 +15,9 @@ export default function PersonalAreaHeader() {
 		<Header>
 			<TitleRow>
 				<Title>אזור אישי</Title>
+				{unreadTasksCount > 0 && (
+					<UnreadCount>({unreadTasksCount} הנחיות חדשות)</UnreadCount>
+				)}
 			</TitleRow>
 			<Greeting>
 				<GreetingText>
@@ -29,10 +38,18 @@ const Header = styled.div`
 `
 
 const TitleRow = styled.div`
+  direction: rtl;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: baseline;
   gap: 8px;
+`
+
+const UnreadCount = styled.span`
+  color: var(--text-color-400);
+  font-size: clamp(14px, 1vw, 20px);
+  font-weight: 400;
+  white-space: nowrap;
 `
 
 const Title = styled.span`

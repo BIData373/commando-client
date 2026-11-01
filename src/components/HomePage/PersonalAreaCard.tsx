@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { useListPersonalTaskRows } from "src/api/task/task"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
+import { countUnreadTasks } from "src/utils/filter-utils"
 import PersonalAreaButton from "../shared/PersonalAreaCard/PersonalAreaButton"
 import PersonalAreaHeader from "../shared/PersonalAreaCard/PersonalAreaHeader"
 import PersonalAreaStats from "../shared/PersonalAreaCard/PersonalAreaStats"
@@ -13,6 +14,7 @@ export default function PersonalAreaCard() {
 		isArchived: false,
 	})
 	const totalCount = allTaskRows.length
+	const unreadTasksCount = countUnreadTasks(allTaskRows)
 
 	function handleNavigateToPersonal() {
 		navigate({ to: "/personal", search: { view: TasksView.TABLE } })
@@ -20,7 +22,7 @@ export default function PersonalAreaCard() {
 
 	return (
 		<CardRoot onClick={handleNavigateToPersonal}>
-			<PersonalAreaHeader />
+			<PersonalAreaHeader unreadTasksCount={unreadTasksCount} />
 			<Footer>
 				<PersonalAreaButton onClick={handleNavigateToPersonal} />
 				{totalCount > 0 ? (

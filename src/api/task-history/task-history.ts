@@ -23,6 +23,8 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import type { ListTaskHistoryParams, TaskHistoryDto } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 const withQueryKey = <T extends object, K>(
 	query: T,
 	queryKey: K,
@@ -43,14 +45,13 @@ const withQueryKey = <T extends object, K>(
 
 export const listTaskHistory = (
 	params: ListTaskHistoryParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskHistoryDto[]>({
-		url: `/task-history`,
-		method: "GET",
-		params,
-		signal,
-	})
+	return sendRequest<TaskHistoryDto[]>(
+		{ url: `/task-history`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getListTaskHistoryQueryKey = (params?: ListTaskHistoryParams) => {
@@ -70,15 +71,16 @@ export const getListTaskHistoryQueryOptions = <
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getListTaskHistoryQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof listTaskHistory>>> = ({
 		signal,
-	}) => listTaskHistory(params, signal)
+	}) => listTaskHistory(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listTaskHistory>>,
@@ -113,6 +115,7 @@ export function useListTaskHistory<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -139,6 +142,7 @@ export function useListTaskHistory<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -157,6 +161,7 @@ export function useListTaskHistory<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -176,6 +181,7 @@ export function useListTaskHistory<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {

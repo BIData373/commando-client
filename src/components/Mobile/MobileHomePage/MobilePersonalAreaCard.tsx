@@ -5,6 +5,7 @@ import PersonalAreaButton from "src/components/shared/PersonalAreaCard/PersonalA
 import PersonalAreaHeader from "src/components/shared/PersonalAreaCard/PersonalAreaHeader"
 import PersonalAreaStats from "src/components/shared/PersonalAreaCard/PersonalAreaStats"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
+import { countUnreadTasks } from "src/utils/filter-utils"
 
 export default function MobilePersonalAreaCard() {
 	const navigate = useNavigate()
@@ -16,10 +17,11 @@ export default function MobilePersonalAreaCard() {
 		isArchived: false,
 	})
 	const totalCount = allTaskRows.length
+	const unreadTasksCount = countUnreadTasks(allTaskRows)
 
 	return (
 		<CardRoot onClick={handleNavigateToPersonal}>
-			<PersonalAreaHeader />
+			<PersonalAreaHeader unreadTasksCount={unreadTasksCount} />
 			<Footer>
 				{totalCount > 0 ? (
 					<StatsRow>

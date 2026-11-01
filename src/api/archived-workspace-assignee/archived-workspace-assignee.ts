@@ -18,16 +18,22 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import type { ToggleWorkspaceTaskArchiveParams } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 export const toggleWorkspaceTaskArchive = (
 	params: ToggleWorkspaceTaskArchiveParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<void>({
-		url: `/archived-workspace-assignee-task`,
-		method: "PATCH",
-		params,
-		signal,
-	})
+	return sendRequest<void>(
+		{
+			url: `/archived-workspace-assignee-task`,
+			method: "PATCH",
+			params,
+			signal,
+		},
+		options,
+	)
 }
 
 export const getToggleWorkspaceTaskArchiveMutationKey = () =>
@@ -43,6 +49,7 @@ export const getToggleWorkspaceTaskArchiveMutationOptions = <
 		ToggleWorkspaceTaskArchiveMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
 	TError,
@@ -50,13 +57,13 @@ export const getToggleWorkspaceTaskArchiveMutationOptions = <
 	TContext
 > => {
 	const mutationKey = getToggleWorkspaceTaskArchiveMutationKey()
-	const { mutation: mutationOptions } = options
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
@@ -64,7 +71,7 @@ export const getToggleWorkspaceTaskArchiveMutationOptions = <
 	> = (props) => {
 		const { params } = props ?? {}
 
-		return toggleWorkspaceTaskArchive(params)
+		return toggleWorkspaceTaskArchive(params, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -90,6 +97,7 @@ export const useToggleWorkspaceTaskArchive = <
 			ToggleWorkspaceTaskArchiveMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<

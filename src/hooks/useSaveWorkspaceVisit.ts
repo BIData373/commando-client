@@ -27,8 +27,11 @@ export function useSaveWorkspaceVisit({
 			])
 		}
 
-		async function handleBeforeUnload() {
-			await upsertUserWorkspaceVisit({ workspaceId })
+		function handleBeforeUnload() {
+			upsertUserWorkspaceVisit(
+				{ workspaceId },
+				{ adapter: "fetch", fetchOptions: { keepalive: true } },
+			)
 		}
 		window.addEventListener("beforeunload", handleBeforeUnload)
 		return () => window.removeEventListener("beforeunload", handleBeforeUnload)
