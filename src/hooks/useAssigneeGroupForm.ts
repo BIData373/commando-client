@@ -27,6 +27,9 @@ export function useAssigneeGroupForm(
 		assigneeGroup?.assignees.map(({ id }) => id) ?? [],
 	)
 
+	const canSave =
+		name.trim().length > 0 && (!assigneeGroup || hasChanges(assigneeGroup))
+
 	const queryClient = useQueryClient()
 	const queryKey = getListAssigneeGroupsQueryKey({ workspaceId })
 
@@ -105,9 +108,6 @@ export function useAssigneeGroupForm(
 			selectedIds.some((id) => !initialIds.includes(id))
 		)
 	}
-
-	const canSave =
-		name.trim().length > 0 && (!assigneeGroup || hasChanges(assigneeGroup))
 
 	function handleToggleAssignee(id: number) {
 		setSelectedIds((prev) =>
