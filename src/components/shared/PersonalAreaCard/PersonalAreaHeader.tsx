@@ -2,22 +2,13 @@ import styled from "@emotion/styled"
 import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 
-interface PersonalAreaHeaderProps {
-	totalTaskRowCount: number
-}
-
-export default function PersonalAreaHeader({
-	totalTaskRowCount,
-}: PersonalAreaHeaderProps) {
+export default function PersonalAreaHeader() {
 	const user = useCurrentUser()
 	const username = user.info?.name || user.upn
 
 	return (
 		<Header>
 			<TitleRow>
-				{totalTaskRowCount > 0 && (
-					<NewTaskCount>({totalTaskRowCount} הנחיות חדשות)</NewTaskCount>
-				)}
 				<Title>אזור אישי</Title>
 			</TitleRow>
 			<Greeting>
