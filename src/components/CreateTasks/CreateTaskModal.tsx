@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
-import { difference, omit, uniq } from "lodash"
+import { differenceBy, omit, uniq } from "lodash"
 import { useRef, useState } from "react"
 import {
 	type CreateTaskDto,
@@ -200,11 +200,11 @@ function CreateTaskModal({
 
 	function handleAssigneeGroupSelect(assigneeIds: number[]) {
 		const current = values.assignees ?? []
-		const existingIds = current.map((a) => a.id)
-		const newEntries = difference(assigneeIds, existingIds).map((id) => ({
-			id,
-			statusId: getDefaultStatusId(),
-		}))
+		const newEntries = differenceBy(
+			assigneeIds.map((id) => ({ id, statusId: getDefaultStatusId() })),
+			current,
+			"id",
+		)
 		form.setFieldValue("assignees", [...current, ...newEntries])
 	}
 

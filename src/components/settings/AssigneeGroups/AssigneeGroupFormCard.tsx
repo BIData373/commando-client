@@ -1,30 +1,10 @@
 import styled from "@emotion/styled"
-import { useQueryClient } from "@tanstack/react-query"
-import { Search } from "lucide-react"
-import { type ChangeEvent, useState } from "react"
 import { TbUsersGroup } from "react-icons/tb"
-import { useListAssignees } from "src/api/assignee/assignee"
-import {
-	getListAssigneeGroupsQueryKey,
-	useCreateAssigneeGroup,
-	useUpdateAssigneeGroup,
-} from "src/api/assignee-group/assignee-group"
 import type { AssigneeGroupDto } from "src/api/model"
-import { AssigneeOption } from "src/components/shared/AssigneeOption"
 import InputWithCount from "src/components/shared/InputWithCount"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
-import {
-	InputGroup,
-	InputGroupAddon,
-	InputGroupInput,
-} from "src/components/ui/input-group"
-import {
-	createAssigneeGroupMessage,
-	updateAssigneeGroupMessage,
-} from "src/functions/toast-messages"
-import { useFilteredAssignees } from "src/hooks/useFilteredAssignees"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries } from "src/query-client"
+import { useAssigneeGroupForm } from "src/hooks/useAssigneeGroupForm"
+import { AssigneeSearchList } from "./AssigneeSearchList"
 
 const NAME_MAX_LENGTH = 30
 
@@ -39,123 +19,15 @@ export function AssigneeGroupFormCard({
 	onClose,
 }: AssigneeGroupFormCardProps) {
 	const {
-		workspace: { id: workspaceId },
-	} = useWorkspace()
-
-	const [name, setName] = useState(assigneeGroup?.name ?? "")
-	const [searchQuery, setSearchQuery] = useState("")
-	const [selectedIds, setSelectedIds] = useState<number[]>(
-		assigneeGroup?.assignees.map(({ id }) => id) ?? [],
-	)
-
-	const queryClient = useQueryClient()
-	const queryKey = getListAssigneeGroupsQueryKey({ workspaceId })
-
-	const { data: assignees = [] } = useListAssignees({ workspaceId })
-	const filteredAssignees = useFilteredAssignees(assignees, searchQuery)
-	const selectedAssignees = assignees.filter((a) => selectedIds.includes(a.id))
-
-	function optimisticMutation(
-		updater: (old: AssigneeGroupDto[]) => Partial<AssigneeGroupDto>[],
-		toast: { success: string },
-	) {
-		return {
-			meta: { toast: { ...toast, error: true as const } },
-			onMutate: () => {
-				const previous = queryClient.getQueryData<AssigneeGroupDto[]>(queryKey)
-				queryClient.setQueryData<AssigneeGroupDto[]>(
-					queryKey,
-					(old = []) => updater(old) as AssigneeGroupDto[],
-				)
-				onClose()
-				return { previous }
-			},
-			onError: (
-				_error: unknown,
-				_variables: unknown,
-				context: { previous?: AssigneeGroupDto[] } | undefined,
-			) => {
-				if (context?.previous) {
-					queryClient.setQueryData(queryKey, context.previous)
-				}
-			},
-			onSettled: () => {
-				invalidateQueries([queryKey])
-			},
-		}
-	}
-
-	const { mutate: createAssigneeGroup, isPending: isCreatePending } =
-		useCreateAssigneeGroup({
-			mutation: optimisticMutation(
-				(old) => [
-					...old,
-					{
-						id: -Date.now(),
-						name: name.trim(),
-						workspaceId,
-						assignees: selectedAssignees,
-					},
-				],
-				{ success: createAssigneeGroupMessage },
-			),
-		})
-
-	const { mutate: updateAssigneeGroup, isPending: isUpdatePending } =
-		useUpdateAssigneeGroup({
-			mutation: optimisticMutation(
-				(old) =>
-					old.map((group) =>
-						group.id === assigneeGroup?.id
-							? {
-									...group,
-									name: name.trim(),
-									assignees: selectedAssignees,
-								}
-							: group,
-					),
-				{ success: updateAssigneeGroupMessage },
-			),
-		})
-
-	const canSave =
-		name.trim().length > 0 && (!assigneeGroup || hasChanges(assigneeGroup))
-
-	function hasChanges({ name: initialName, assignees }: AssigneeGroupDto) {
-		const initialIds = assignees.map(({ id }) => id)
-
-		return (
-			name.trim() !== initialName ||
-			selectedIds.length !== initialIds.length ||
-			selectedIds.some((id) => !initialIds.includes(id))
-		)
-	}
-
-	function handleSearchChange(e: ChangeEvent<HTMLInputElement>) {
-		setSearchQuery(e.target.value)
-	}
-
-	function handleToggleAssignee(id: number) {
-		setSelectedIds((prev) =>
-			prev.includes(id)
-				? prev.filter((selectedId) => selectedId !== id)
-				: [...prev, id],
-		)
-	}
-
-	function handleSave() {
-		const values = { name: name.trim(), assigneeIds: selectedIds }
-
-		if (assigneeGroup) {
-			updateAssigneeGroup({
-				pathParams: { id: assigneeGroup.id },
-				data: values,
-			})
-			return
-		}
-
-		createAssigneeGroup({ data: { workspaceId, ...values } })
-	}
+		name,
+		setName,
+		assignees,
+		selectedIds,
+		canSave,
+		isPending,
+		handleToggleAssignee,
+		handleSave,
+	} = useAssigneeGroupForm(assigneeGroup, onClose)
 
 	return (
 		<Card>
@@ -171,29 +43,11 @@ export function AssigneeGroupFormCard({
 
 			<Divider />
 
-			<AssigneesSection>
-				<StyledInputGroup>
-					<InputGroupAddon align="inline-start">
-						<Search size={16} />
-					</InputGroupAddon>
-					<SearchInput
-						value={searchQuery}
-						onChange={handleSearchChange}
-						placeholder="חפש אחראי"
-					/>
-				</StyledInputGroup>
-
-				<AssigneeList>
-					{filteredAssignees.map((assignee) => (
-						<AssigneeOption
-							key={assignee.id}
-							assignee={assignee}
-							selected={selectedIds.includes(assignee.id)}
-							onToggle={handleToggleAssignee}
-						/>
-					))}
-				</AssigneeList>
-			</AssigneesSection>
+			<AssigneeSearchList
+				assignees={assignees}
+				selectedIds={selectedIds}
+				onToggle={handleToggleAssignee}
+			/>
 
 			<Divider />
 
@@ -206,7 +60,7 @@ export function AssigneeGroupFormCard({
 					height={32}
 					width={80}
 					disabled={!canSave}
-					loading={isCreatePending || isUpdatePending}
+					loading={isPending}
 					onClick={handleSave}
 				/>
 			</Footer>
@@ -236,29 +90,6 @@ const Header = styled.div`
 const Divider = styled.div`
   height: 1px;
   background: var(--button-hover);
-`
-
-const AssigneesSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`
-
-const StyledInputGroup = styled(InputGroup)`
-  background: var(--background);
-`
-
-const SearchInput = styled(InputGroupInput)`
-  &::placeholder {
-    color: var(--Text-color-text-placeholder);
-  }
-`
-
-const AssigneeList = styled.div`
-  display: flex;
-  flex-direction: column;
-  max-height: 240px;
-  overflow-y: auto;
 `
 
 const Footer = styled.div`

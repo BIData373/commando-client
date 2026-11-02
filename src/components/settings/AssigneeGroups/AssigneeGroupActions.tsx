@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import type { MouseEvent } from "react"
+import { type MouseEvent, useState } from "react"
 import { TbPencil, TbTrash } from "react-icons/tb"
 import { DeletePopover } from "src/components/Tasks/DeletePopover"
 import {
@@ -10,22 +10,23 @@ import {
 } from "src/components/ui/tooltip"
 
 interface AssigneeGroupActionsProps {
-	isDeleteOpen: boolean
-	onDeleteOpenChange(open: boolean): void
 	onDeleteConfirm(): void
-	onDeleteCloseAutoFocus(e: Event): void
 	onEdit(e: MouseEvent<HTMLButtonElement>): void
 }
 
 export function AssigneeGroupActions({
-	isDeleteOpen,
-	onDeleteOpenChange,
 	onDeleteConfirm,
-	onDeleteCloseAutoFocus,
 	onEdit,
 }: AssigneeGroupActionsProps) {
-	function handleOpenDelete() {
-		onDeleteOpenChange(true)
+	const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+
+	function handleDeleteCloseAutoFocus(e: Event) {
+		e.preventDefault()
+	}
+
+	function handleOpenDelete(e: MouseEvent<HTMLButtonElement>) {
+		e.stopPropagation()
+		setIsDeleteOpen(true)
 	}
 
 	return (
@@ -42,9 +43,9 @@ export function AssigneeGroupActions({
 								align="end"
 								showArrow
 								open={isDeleteOpen}
-								onOpenChange={onDeleteOpenChange}
+								onOpenChange={setIsDeleteOpen}
 								onConfirm={onDeleteConfirm}
-								onCloseAutoFocus={onDeleteCloseAutoFocus}
+								onCloseAutoFocus={handleDeleteCloseAutoFocus}
 								trigger={
 									<IconActionButton type="button" onClick={handleOpenDelete}>
 										<TbTrash size={14} />

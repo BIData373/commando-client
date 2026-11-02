@@ -1,23 +1,19 @@
-import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import type { MouseEvent } from "react"
 import { TbChevronDown, TbChevronUp, TbUsersGroup } from "react-icons/tb"
 import type { AssigneeGroupDto } from "src/api/model"
-import { AssigneeAvatar } from "src/components/shared/AssigneeAvatar"
-import { AssigneeDetailPopover } from "src/components/shared/AssigneeDetailPopover"
 import { AssigneeGroupActions } from "./AssigneeGroupActions"
+import { AssigneeGroupAvatars } from "./AssigneeGroupAvatars"
+import { AssigneeGroupExpandedList } from "./AssigneeGroupExpandedList"
 
 const MAX_VISIBLE_AVATARS = 3
-const AVATAR_SIZE = 29
 const NO_ASSIGNEES_TEXT = "טרם נוספו אחראים"
-const POPOVER_TRIGGER_SELECTOR = '[data-slot="popover-trigger"]'
+const POPOVER_TRIGGER_SELECTOR = "[data-assignee-popover]"
 
 interface AssigneeGroupCardProps {
 	assigneeGroup: AssigneeGroupDto
 	isExpanded: boolean
 	onToggleExpanded(groupId: number): void
-	isDeleteOpen: boolean
-	onDeleteOpenChange(groupId: number, open: boolean): void
 	onDelete(groupId: number): void
 	onEdit(groupId: number): void
 }
@@ -26,8 +22,6 @@ export function AssigneeGroupCard({
 	assigneeGroup: { id, name, assignees },
 	isExpanded,
 	onToggleExpanded,
-	isDeleteOpen,
-	onDeleteOpenChange,
 	onDelete,
 	onEdit,
 }: AssigneeGroupCardProps) {
@@ -35,18 +29,12 @@ export function AssigneeGroupCard({
 	const visibleAssignees = assignees.slice(0, MAX_VISIBLE_AVATARS)
 	const hiddenCount = assignees.length - visibleAssignees.length
 
-	// Ignore clicks from portaled popover content and from popover triggers,
-	// without stopping propagation so Radix can still close other open popovers
 	function handleCardClick(e: MouseEvent<HTMLDivElement>) {
 		const target = e.target as Element
 		const isFromPortal = !e.currentTarget.contains(target)
 		const isPopoverTrigger = target.closest(POPOVER_TRIGGER_SELECTOR)
 		if (isFromPortal || isPopoverTrigger) return
 		onToggleExpanded(id)
-	}
-
-	function handleDeleteOpenChange(open: boolean) {
-		onDeleteOpenChange(id, open)
 	}
 
 	function handleDeleteConfirm() {
@@ -56,10 +44,6 @@ export function AssigneeGroupCard({
 	function handleEditClick(e: MouseEvent<HTMLButtonElement>) {
 		e.stopPropagation()
 		onEdit(id)
-	}
-
-	function handleDeleteCloseAutoFocus(e: Event) {
-		e.preventDefault()
 	}
 
 	return (
@@ -73,29 +57,14 @@ export function AssigneeGroupCard({
 				<Summary>
 					{isExpanded ? (
 						<AssigneeGroupActions
-							isDeleteOpen={isDeleteOpen}
-							onDeleteOpenChange={handleDeleteOpenChange}
 							onDeleteConfirm={handleDeleteConfirm}
-							onDeleteCloseAutoFocus={handleDeleteCloseAutoFocus}
 							onEdit={handleEditClick}
 						/>
 					) : hasAssignees ? (
-						<Avatars>
-							{visibleAssignees.map((assignee) => (
-								<StackedAvatar key={assignee.id}>
-									<AssigneeDetailPopover assignee={assignee}>
-										<AssigneeAvatar
-											assignee={assignee}
-											size={AVATAR_SIZE}
-											cursor
-										/>
-									</AssigneeDetailPopover>
-								</StackedAvatar>
-							))}
-							{hiddenCount > 0 && (
-								<MoreCount type="button">+{hiddenCount}</MoreCount>
-							)}
-						</Avatars>
+						<AssigneeGroupAvatars
+							assignees={visibleAssignees}
+							hiddenCount={hiddenCount}
+						/>
 					) : (
 						<NoAssigneesText>{NO_ASSIGNEES_TEXT}</NoAssigneesText>
 					)}
@@ -109,27 +78,7 @@ export function AssigneeGroupCard({
 				</Summary>
 			</Header>
 
-			{isExpanded && (
-				<ExpandableContent>
-					<ContentInner>
-						<Divider />
-						{hasAssignees ? (
-							<AssigneeList>
-								{assignees.map((assignee) => (
-									<AssigneeRow key={assignee.id}>
-										<AssigneeAvatar assignee={assignee} size={24} />
-										<AssigneeName title={assignee.name}>
-											{assignee.name}
-										</AssigneeName>
-									</AssigneeRow>
-								))}
-							</AssigneeList>
-						) : (
-							<EmptyListText>{NO_ASSIGNEES_TEXT}</EmptyListText>
-						)}
-					</ContentInner>
-				</ExpandableContent>
-			)}
+			{isExpanded && <AssigneeGroupExpandedList assignees={assignees} />}
 		</Card>
 	)
 }
@@ -183,36 +132,6 @@ const Summary = styled.div`
   flex-shrink: 0;
 `
 
-const Avatars = styled.div`
-  display: flex;
-  align-items: center;
-`
-
-const StackedAvatar = styled.span`
-  display: flex;
-
-  & + & {
-    margin-inline-start: -3px;
-  }
-`
-
-const MoreCount = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: ${AVATAR_SIZE}px;
-  height: ${AVATAR_SIZE}px;
-  margin-inline-start: -3px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  background: var(--chip-bg);
-  color: var(--text-color-2);
-  font-size: var(--fs-sm);
-  line-height: 20px;
-`
-
 const ChevronButton = styled.button`
   display: flex;
   align-items: center;
@@ -231,58 +150,9 @@ const ChevronButton = styled.button`
   }
 `
 
-const Divider = styled.div`
-  height: 1px;
-  margin-bottom: 12px;
-  background: var(--line);
-`
-
-const expandDown = keyframes`
-  from { grid-template-rows: 0fr; }
-  to { grid-template-rows: 1fr; }
-`
-
-const ExpandableContent = styled.div`
-  display: grid;
-  animation: ${expandDown} 200ms ease-out forwards;
-`
-
-const ContentInner = styled.div`
-  overflow: hidden;
-`
-
 const NoAssigneesText = styled.span`
   font-size: var(--fs-btn);
   line-height: 22px;
   color: var(--text-color);
   white-space: nowrap;
-`
-
-const EmptyListText = styled(NoAssigneesText)`
-  display: flex;
-  justify-content: center;
-`
-
-const AssigneeList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-height: 222px;
-  overflow-y: auto;
-`
-
-const AssigneeRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-`
-
-const AssigneeName = styled.span`
-  font-size: var(--fs-btn);
-  line-height: 22px;
-  color: var(--text-color-2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `

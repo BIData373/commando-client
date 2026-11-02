@@ -1,20 +1,9 @@
 import styled from "@emotion/styled"
 import { Plus } from "lucide-react"
 import { useState } from "react"
-import {
-	getListAssigneeGroupsQueryKey,
-	useCreateAssigneeGroup,
-	useDeleteAssigneeGroup,
-	useListAssigneeGroups,
-} from "src/api/assignee-group/assignee-group"
-import type { AssigneeGroupDto } from "src/api/model"
-import { toast } from "src/components/Toast/toast-api"
-import {
-	deleteAssigneeGroupMessage,
-	UNDO_LABEL,
-} from "src/functions/toast-messages"
+import { useListAssigneeGroups } from "src/api/assignee-group/assignee-group"
+import { useAssigneeGroupDelete } from "src/hooks/useAssigneeGroupDelete"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries } from "src/query-client"
 import { SecondaryButton } from "../../shared/SecondaryButton"
 import { SectionTitle } from "../SectionTitle"
 import { AssigneeGroupCard } from "./AssigneeGroupCard"
@@ -39,76 +28,14 @@ export function AssigneeGroups() {
 	>(null)
 
 	const [expandedGroupId, setExpandedGroupId] = useState<number | null>(null)
-	const [deletingGroupId, setDeletingGroupId] = useState<number | null>(null)
-	const [pendingDeleteIds, setPendingDeleteIds] = useState<number[]>([])
 
-	const { mutate: deleteAssigneeGroup } = useDeleteAssigneeGroup({
-		mutation: {
-			meta: { toast: { error: true } },
-			onSuccess: refreshGroups,
-			onError(_error, { pathParams: { id } }) {
-				removePendingDelete(id)
-			},
-		},
-	})
+	const { handleDeleteGroup } = useAssigneeGroupDelete()
 
-	const { mutate: restoreAssigneeGroup } = useCreateAssigneeGroup({
-		mutation: {
-			meta: { toast: { error: true } },
-			onSuccess: refreshGroups,
-		},
-	})
-
-	const visibleGroups = assigneeGroups.filter(
-		({ id }) => !pendingDeleteIds.includes(id),
-	)
-	const isEmptyState = !isLoading && visibleGroups.length === 0
+	const isEmptyState = !isLoading && assigneeGroups.length === 0
 	const isCreating = openFormId === NEW_GROUP_FORM
 
-	function refreshGroups() {
-		invalidateQueries([getListAssigneeGroupsQueryKey({ workspaceId })])
-	}
-
-	function removePendingDelete(groupId: number) {
-		setPendingDeleteIds((prev) => prev.filter((id) => id !== groupId))
-	}
-
-	// There is no restore endpoint, so undo re-creates the group from its last
-	// known name and assignees (it comes back with a new id).
-	function showDeletedToast({ name, assignees }: AssigneeGroupDto) {
-		function handleUndo() {
-			restoreAssigneeGroup({
-				data: {
-					workspaceId,
-					name,
-					assigneeIds: assignees.map(({ id }) => id),
-				},
-			})
-		}
-
-		toast.success(deleteAssigneeGroupMessage, {
-			actions: { variant: "cancel", label: UNDO_LABEL, onClick: handleUndo },
-		})
-	}
-
-	function handleDeleteGroup(groupId: number) {
-		const group = assigneeGroups.find(({ id }) => id === groupId)
-		if (!group) return
-
-		setPendingDeleteIds((prev) => [...prev, groupId])
-		deleteAssigneeGroup(
-			{ pathParams: { id: groupId } },
-			{ onSuccess: () => showDeletedToast(group) },
-		)
-	}
-
 	function handleToggleGroup(groupId: number) {
-		if (deletingGroupId !== null) return
 		setExpandedGroupId((prev) => (prev === groupId ? null : groupId))
-	}
-
-	function handleDeleteOpenChange(groupId: number, open: boolean) {
-		setDeletingGroupId(open ? groupId : null)
 	}
 
 	function handleOpenCreate() {
@@ -151,7 +78,7 @@ export function AssigneeGroups() {
 
 			<GroupList>
 				{isCreating && <AssigneeGroupFormCard onClose={handleCloseForm} />}
-				{visibleGroups.map((assigneeGroup) =>
+				{assigneeGroups.map((assigneeGroup) =>
 					assigneeGroup.id === openFormId ? (
 						<AssigneeGroupFormCard
 							key={assigneeGroup.id}
@@ -164,8 +91,6 @@ export function AssigneeGroups() {
 							assigneeGroup={assigneeGroup}
 							isExpanded={expandedGroupId === assigneeGroup.id}
 							onToggleExpanded={handleToggleGroup}
-							isDeleteOpen={deletingGroupId === assigneeGroup.id}
-							onDeleteOpenChange={handleDeleteOpenChange}
 							onDelete={handleDeleteGroup}
 							onEdit={handleEditGroup}
 						/>
