@@ -3,8 +3,10 @@ import { useNavigate } from "@tanstack/react-router"
 import { User } from "lucide-react"
 import type { MouseEvent } from "react"
 import type { AssigneesDto } from "src/api/model"
+import { WORKSPACE_STATUS_EDITABLE_DISABLED } from "src/functions/status-editable-messages"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
+import { DisabledReasonTooltip } from "../shared/DisabledReasonTooltip"
 import { OverflowRow } from "../shared/OverflowRow"
 import { Badge } from "../ui/badge"
 import {
@@ -35,7 +37,7 @@ export function AssigneeCard({
 	onStatusEditableChange,
 }: AssigneeCardProps) {
 	const {
-		workspace: { urlName },
+		workspace: { urlName, assigneeStatusEditable },
 	} = useWorkspace()
 
 	const navigate = useNavigate()
@@ -93,13 +95,25 @@ export function AssigneeCard({
 				/>
 			</CardContent>
 
-			<StatusToggleRow onClick={handleToggleClick}>
-				<Switch
-					checked={statusEditable}
-					onCheckedChange={(checked) =>
-						onStatusEditableChange(assignee.id, checked)
+			<StatusToggleRow
+				$pushToEnd={users.length === 0}
+				onClick={handleToggleClick}
+			>
+				<DisabledReasonTooltip
+					reason={
+						assigneeStatusEditable
+							? undefined
+							: WORKSPACE_STATUS_EDITABLE_DISABLED
 					}
-				/>
+				>
+					<StyledSwitch
+						checked={assigneeStatusEditable && statusEditable}
+						disabled={!assigneeStatusEditable}
+						onCheckedChange={(checked) =>
+							onStatusEditableChange(assignee.id, checked)
+						}
+					/>
+				</DisabledReasonTooltip>
 				<StatusLabel>אפשר לעדכן סטטוס</StatusLabel>
 			</StatusToggleRow>
 		</StyledCard>
@@ -189,16 +203,21 @@ const BadgeText = styled.span`
 	text-overflow: ellipsis;
 `
 
-const StatusToggleRow = styled.div`
+const StatusToggleRow = styled.div<{ $pushToEnd: boolean }>`
 	display: flex;
-	align-items: center;
+	align-items: ${({ $pushToEnd }) => ($pushToEnd ? "flex-end" : "center")};
 	justify-content: flex-start;
 	gap: 6px;
 	padding-inline: 16px;
+	flex: ${({ $pushToEnd }) => ($pushToEnd ? 1 : "initial")};
 `
 
 const StatusLabel = styled.span`
 	font-size: var(--fs-base);
 	color: var(--sea-ink-soft);
 	white-space: nowrap;
+`
+
+const StyledSwitch = styled(Switch)`
+  cursor: pointer;
 `
