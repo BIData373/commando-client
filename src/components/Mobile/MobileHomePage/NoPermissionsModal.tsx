@@ -7,16 +7,11 @@ import logoWithText from "src/assets/logo-with-text-dark.png"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
 import { Sheet, SheetContent, SheetTitle } from "src/components/ui/sheet"
 import { openUserChat } from "src/utils/redirect-utils"
-import { z } from "zod"
 
 interface NoPermissionsModalProps {
 	workspaceId: number
 	onClose: () => void
 }
-
-export const noPermissionsSearchSchema = z.object({
-	workspaceId: z.number(),
-})
 
 export default function NoPermissionsModal({
 	onClose,
