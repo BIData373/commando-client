@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { xor } from "lodash"
-import { Search } from "lucide-react"
+import { Search, X } from "lucide-react"
 import { type ReactNode, useState } from "react"
 import { Checkbox } from "../ui/checkbox"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
@@ -47,6 +47,9 @@ function FilterDropdown<T extends string | number>({
 			)
 		: options
 
+	const hasNoSearchResults = !isEmpty && filteredOptions.length === 0
+	const showEmptyMessage = isEmpty || (hasNoSearchResults && !emptyTitle)
+
 	function handleOpenChange(nextOpen: boolean) {
 		if (nextOpen) {
 			setPendingValues(activeValues)
@@ -70,6 +73,18 @@ function FilterDropdown<T extends string | number>({
 		setPendingValues([])
 	}
 
+	function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
+		setSearch(e.target.value)
+	}
+
+	function keepInputFocus(e: React.MouseEvent) {
+		e.preventDefault()
+	}
+
+	function handleClearSearch() {
+		setSearch("")
+	}
+
 	return (
 		<Popover open={open} onOpenChange={handleOpenChange}>
 			<PopoverTrigger asChild>{children}</PopoverTrigger>
@@ -82,17 +97,26 @@ function FilterDropdown<T extends string | number>({
 							<SearchField
 								placeholder={searchPlaceholder}
 								value={search}
-								onChange={(e) => setSearch(e.target.value)}
+								onChange={handleSearchChange}
 							/>
+							{search && (
+								<ClearSearchButton
+									type="button"
+									onMouseDown={keepInputFocus}
+									onClick={handleClearSearch}
+								>
+									<X size={14} />
+								</ClearSearchButton>
+							)}
 						</SearchWrapper>
 					</SearchRow>
 				)}
 
-				{isEmpty ? (
+				{showEmptyMessage ? (
 					<EmptyMessage>לא נמצאו ערכים המתאימים לסנן זה</EmptyMessage>
 				) : (
 					<OptionsList>
-						{filteredOptions.length === 0 && emptyTitle ? (
+						{hasNoSearchResults && emptyTitle ? (
 							<EmptyCardState
 								title={emptyTitle}
 								description={emptyDescription}
@@ -164,7 +188,7 @@ const SearchWrapper = styled.div`
   align-items: center;
   gap: 4px;
   height: 32px;
-  padding-inline-start: 11px;
+  padding-inline: 11px 8px;
   border: 1px solid var(--card-border);
   border-radius: 6px;
 
@@ -188,6 +212,22 @@ const SearchField = styled.input`
 
   &::placeholder {
     color: var(--Text-color-text-placeholder);
+  }
+`
+
+const ClearSearchButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--sea-ink-soft);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--sea-ink);
   }
 `
 
