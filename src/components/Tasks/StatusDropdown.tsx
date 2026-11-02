@@ -3,6 +3,9 @@ import { useToggle } from "@mantine/hooks"
 import { memo } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
+import { useIsMobile } from "src/hooks/use-mobile"
+import { MobileDrawer } from "../Mobile/MobileDrawer"
+import { MobileStatusSelect } from "../Mobile/task/MobileStatusSelect"
 import { StatusTag } from "../shared/StatusTag"
 import {
 	DropdownMenu,
@@ -23,6 +26,7 @@ interface StatusDropdownProps {
 		assigneeId: number | undefined,
 		status: WorkspaceStatusDto,
 	) => void
+	fullWidth?: boolean
 }
 
 export const StatusDropdown = memo(
@@ -34,7 +38,9 @@ export const StatusDropdown = memo(
 		editable = false,
 		isArchived,
 		onUpdate,
+		fullWidth,
 	}: StatusDropdownProps) => {
+		const isMobile = useIsMobile()
 		const [isOpen, toggleOpen] = useToggle()
 
 		const { data: fetchedStatuses = [], isLoading: isFetchingStatuses } =
@@ -55,41 +61,80 @@ export const StatusDropdown = memo(
 			}
 		}
 
+		function handleSelectStatusMobile(newStatus: WorkspaceStatusDto) {
+			handleSelectStatus(newStatus)
+			toggleOpen()
+		}
+
+		const statusTagRef = (
+			<StatusTag
+				fullWidth={fullWidth}
+				open={isOpen}
+				status={status}
+				interactive
+				editable={editable}
+				withArrow={editable}
+				tooltip={tooltip}
+			/>
+		)
+
 		return (
 			<CellCenter>
 				{editable && statusesReady ? (
-					<DropdownMenu onOpenChange={toggleOpen}>
-						<DropdownMenuTrigger asChild>
-							<TriggerWrapper tabIndex={0}>
-								<StatusTag
-									open={isOpen}
-									status={status}
-									interactive
-									editable={editable}
-									withArrow={editable}
-									tooltip={tooltip}
-								/>
-							</TriggerWrapper>
-						</DropdownMenuTrigger>
-						<StatusDropdownContent align="center" sideOffset={6}>
+					isMobile ? (
+						<MobileDrawer
+							open={isOpen}
+							onOpenChange={toggleOpen}
+							title="בחירת סטטוס"
+							trigger={statusTagRef}
+						>
 							{statuses.map((currentStatus) => (
-								<StatusDropdownItem
+								<MobileStatusSelect
 									key={currentStatus.id}
-									$selected={currentStatus.id === status.id}
-									onSelect={() => handleSelectStatus(currentStatus)}
+									selected={currentStatus.id === status.id}
+									onSelect={() => handleSelectStatusMobile(currentStatus)}
 								>
 									<StatusTag
+										fullWidth={fullWidth}
 										status={currentStatus}
 										interactive
 										editable={editable}
 										tooltip={tooltip}
 									/>
-								</StatusDropdownItem>
+								</MobileStatusSelect>
 							))}
-						</StatusDropdownContent>
-					</DropdownMenu>
+						</MobileDrawer>
+					) : (
+						<DropdownMenu onOpenChange={toggleOpen}>
+							<DropdownMenuTrigger asChild>
+								<TriggerWrapper tabIndex={0}>{statusTagRef}</TriggerWrapper>
+							</DropdownMenuTrigger>
+							<StatusDropdownContent align="center" sideOffset={6}>
+								{statuses.map((currentStatus) => (
+									<StatusDropdownItem
+										key={currentStatus.id}
+										$selected={currentStatus.id === status.id}
+										onSelect={() => handleSelectStatus(currentStatus)}
+									>
+										<StatusTag
+											fullWidth={fullWidth}
+											status={currentStatus}
+											interactive
+											editable={editable}
+											tooltip={tooltip}
+										/>
+									</StatusDropdownItem>
+								))}
+							</StatusDropdownContent>
+						</DropdownMenu>
+					)
 				) : (
-					<StatusTag status={status} editable={editable} tooltip={tooltip} />
+					<StatusTag
+						status={status}
+						editable={editable}
+						tooltip={tooltip}
+						fullWidth={fullWidth}
+					/>
 				)}
 			</CellCenter>
 		)
@@ -104,6 +149,7 @@ const CellCenter = styled.div`
 
 const TriggerWrapper = styled.span`
   cursor: pointer;
+  width: 76px;
 
   &:focus-visible {
     outline: none;

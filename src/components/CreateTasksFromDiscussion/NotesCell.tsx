@@ -28,7 +28,7 @@ function NotesCell({ row, meta }: NotesCellProps) {
 	}
 
 	return (
-		<NotesCellWrapper>
+		<NotesCellWrapper as="label">
 			<CellTextarea
 				data-row={row.index}
 				data-col={1}
@@ -78,7 +78,6 @@ const NotesCellWrapper = styled.div`
 
 const CellTextarea = styled.textarea`
   width: 100%;
-  height: 100%;
   background: transparent;
   font-size: var(--fs-btn);
   font-weight: 400;
@@ -87,7 +86,7 @@ const CellTextarea = styled.textarea`
   text-align: right;
   outline: none;
   resize: none;
- 
+  padding-inline: 12px;
   overflow-x: hidden;
   line-height: 38px;
 

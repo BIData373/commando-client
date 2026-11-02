@@ -1,11 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Outlet } from "@tanstack/react-router"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
-import MobilePersonal from "src/components/Mobile/Personal/MobilePersonal"
 import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { useIsMobile } from "src/hooks/use-mobile"
 import { useOpenTask } from "src/hooks/useOpenTask"
+import { useSaveWorkspaceVisit } from "src/hooks/useSaveWorkspaceVisit"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../providers/UserViewProvider"
 import { TASK_COLUMN_ID } from "../../utils/task-table-utils"
@@ -44,6 +44,8 @@ const PERSONAL_DEFAULT_HIDDEN = new Set<keyof TaskRowWithWorkspaceDto>([
 ])
 
 function PersonalTasksPage() {
+	useSaveWorkspaceVisit({ urlName: Route.parentRoute.fullPath })
+
 	const isMobile = useIsMobile()
 	const { openTask, editTask } = useOpenTask("/personal/tasks/$taskId")
 
@@ -58,7 +60,7 @@ function PersonalTasksPage() {
 		>
 			<TasksFiltersProvider>
 				{isMobile ? (
-					<MobilePersonal />
+					<Outlet />
 				) : (
 					<>
 						<PersonalSectionDropdown current={DropdownSection.TASKS} />

@@ -65,6 +65,9 @@ export const createAssigneeGroup = (
 	})
 }
 
+export const getCreateAssigneeGroupMutationKey = () =>
+	["createAssigneeGroup"] as const
+
 export const getCreateAssigneeGroupMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -72,16 +75,16 @@ export const getCreateAssigneeGroupMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof createAssigneeGroup>>,
 		TError,
-		{ data: CreateAssigneeGroupDto },
+		CreateAssigneeGroupMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createAssigneeGroup>>,
 	TError,
-	{ data: CreateAssigneeGroupDto },
+	CreateAssigneeGroupMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["createAssigneeGroup"]
+	const mutationKey = getCreateAssigneeGroupMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -92,7 +95,7 @@ export const getCreateAssigneeGroupMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createAssigneeGroup>>,
-		{ data: CreateAssigneeGroupDto }
+		CreateAssigneeGroupMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
@@ -107,6 +110,9 @@ export type CreateAssigneeGroupMutationResult = NonNullable<
 >
 export type CreateAssigneeGroupMutationBody = CreateAssigneeGroupDto
 export type CreateAssigneeGroupMutationError = ErrorType<unknown>
+export type CreateAssigneeGroupMutationVariables = {
+	data: CreateAssigneeGroupDto
+}
 
 export const useCreateAssigneeGroup = <
 	TError = ErrorType<unknown>,
@@ -116,7 +122,7 @@ export const useCreateAssigneeGroup = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createAssigneeGroup>>,
 			TError,
-			{ data: CreateAssigneeGroupDto },
+			CreateAssigneeGroupMutationVariables,
 			TContext
 		>
 	},
@@ -124,7 +130,7 @@ export const useCreateAssigneeGroup = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof createAssigneeGroup>>,
 	TError,
-	{ data: CreateAssigneeGroupDto },
+	CreateAssigneeGroupMutationVariables,
 	TContext
 > => {
 	return useMutation(
@@ -455,6 +461,9 @@ export const updateAssigneeGroup = (
 	})
 }
 
+export const getUpdateAssigneeGroupMutationKey = () =>
+	["updateAssigneeGroup"] as const
+
 export const getUpdateAssigneeGroupMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -462,22 +471,16 @@ export const getUpdateAssigneeGroupMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof updateAssigneeGroup>>,
 		TError,
-		{
-			pathParams: UpdateAssigneeGroupPathParameters
-			data: UpdateAssigneeGroupDto
-		},
+		UpdateAssigneeGroupMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateAssigneeGroup>>,
 	TError,
-	{
-		pathParams: UpdateAssigneeGroupPathParameters
-		data: UpdateAssigneeGroupDto
-	},
+	UpdateAssigneeGroupMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["updateAssigneeGroup"]
+	const mutationKey = getUpdateAssigneeGroupMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -488,10 +491,7 @@ export const getUpdateAssigneeGroupMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateAssigneeGroup>>,
-		{
-			pathParams: UpdateAssigneeGroupPathParameters
-			data: UpdateAssigneeGroupDto
-		}
+		UpdateAssigneeGroupMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
@@ -506,6 +506,10 @@ export type UpdateAssigneeGroupMutationResult = NonNullable<
 >
 export type UpdateAssigneeGroupMutationBody = UpdateAssigneeGroupDto
 export type UpdateAssigneeGroupMutationError = ErrorType<unknown>
+export type UpdateAssigneeGroupMutationVariables = {
+	pathParams: UpdateAssigneeGroupPathParameters
+	data: UpdateAssigneeGroupDto
+}
 
 export const useUpdateAssigneeGroup = <
 	TError = ErrorType<unknown>,
@@ -515,10 +519,7 @@ export const useUpdateAssigneeGroup = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateAssigneeGroup>>,
 			TError,
-			{
-				pathParams: UpdateAssigneeGroupPathParameters
-				data: UpdateAssigneeGroupDto
-			},
+			UpdateAssigneeGroupMutationVariables,
 			TContext
 		>
 	},
@@ -526,10 +527,7 @@ export const useUpdateAssigneeGroup = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof updateAssigneeGroup>>,
 	TError,
-	{
-		pathParams: UpdateAssigneeGroupPathParameters
-		data: UpdateAssigneeGroupDto
-	},
+	UpdateAssigneeGroupMutationVariables,
 	TContext
 > => {
 	return useMutation(
@@ -548,6 +546,9 @@ export const deleteAssigneeGroup = (
 	})
 }
 
+export const getDeleteAssigneeGroupMutationKey = () =>
+	["deleteAssigneeGroup"] as const
+
 export const getDeleteAssigneeGroupMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -555,16 +556,16 @@ export const getDeleteAssigneeGroupMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteAssigneeGroup>>,
 		TError,
-		{ pathParams: DeleteAssigneeGroupPathParameters },
+		DeleteAssigneeGroupMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteAssigneeGroup>>,
 	TError,
-	{ pathParams: DeleteAssigneeGroupPathParameters },
+	DeleteAssigneeGroupMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deleteAssigneeGroup"]
+	const mutationKey = getDeleteAssigneeGroupMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -575,7 +576,7 @@ export const getDeleteAssigneeGroupMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteAssigneeGroup>>,
-		{ pathParams: DeleteAssigneeGroupPathParameters }
+		DeleteAssigneeGroupMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
@@ -590,6 +591,9 @@ export type DeleteAssigneeGroupMutationResult = NonNullable<
 >
 
 export type DeleteAssigneeGroupMutationError = ErrorType<unknown>
+export type DeleteAssigneeGroupMutationVariables = {
+	pathParams: DeleteAssigneeGroupPathParameters
+}
 
 export const useDeleteAssigneeGroup = <
 	TError = ErrorType<unknown>,
@@ -599,7 +603,7 @@ export const useDeleteAssigneeGroup = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteAssigneeGroup>>,
 			TError,
-			{ pathParams: DeleteAssigneeGroupPathParameters },
+			DeleteAssigneeGroupMutationVariables,
 			TContext
 		>
 	},
@@ -607,7 +611,7 @@ export const useDeleteAssigneeGroup = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteAssigneeGroup>>,
 	TError,
-	{ pathParams: DeleteAssigneeGroupPathParameters },
+	DeleteAssigneeGroupMutationVariables,
 	TContext
 > => {
 	return useMutation(

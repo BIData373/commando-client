@@ -71,6 +71,8 @@ export const createTask = (
 	})
 }
 
+export const getCreateTaskMutationKey = () => ["createTask"] as const
+
 export const getCreateTaskMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -78,16 +80,16 @@ export const getCreateTaskMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof createTask>>,
 		TError,
-		{ data: CreateTaskDto },
+		CreateTaskMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createTask>>,
 	TError,
-	{ data: CreateTaskDto },
+	CreateTaskMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["createTask"]
+	const mutationKey = getCreateTaskMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -98,7 +100,7 @@ export const getCreateTaskMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createTask>>,
-		{ data: CreateTaskDto }
+		CreateTaskMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
@@ -113,13 +115,14 @@ export type CreateTaskMutationResult = NonNullable<
 >
 export type CreateTaskMutationBody = CreateTaskDto
 export type CreateTaskMutationError = ErrorType<unknown>
+export type CreateTaskMutationVariables = { data: CreateTaskDto }
 
 export const useCreateTask = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createTask>>,
 			TError,
-			{ data: CreateTaskDto },
+			CreateTaskMutationVariables,
 			TContext
 		>
 	},
@@ -127,7 +130,7 @@ export const useCreateTask = <TError = ErrorType<unknown>, TContext = unknown>(
 ): UseMutationResult<
 	Awaited<ReturnType<typeof createTask>>,
 	TError,
-	{ data: CreateTaskDto },
+	CreateTaskMutationVariables,
 	TContext
 > => {
 	return useMutation(getCreateTaskMutationOptions(options), queryClient)
@@ -836,6 +839,8 @@ export const updateTask = (
 	})
 }
 
+export const getUpdateTaskMutationKey = () => ["updateTask"] as const
+
 export const getUpdateTaskMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -843,16 +848,16 @@ export const getUpdateTaskMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof updateTask>>,
 		TError,
-		{ pathParams: UpdateTaskPathParameters; data: UpdateTaskDto },
+		UpdateTaskMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateTask>>,
 	TError,
-	{ pathParams: UpdateTaskPathParameters; data: UpdateTaskDto },
+	UpdateTaskMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["updateTask"]
+	const mutationKey = getUpdateTaskMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -863,7 +868,7 @@ export const getUpdateTaskMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateTask>>,
-		{ pathParams: UpdateTaskPathParameters; data: UpdateTaskDto }
+		UpdateTaskMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
@@ -878,13 +883,17 @@ export type UpdateTaskMutationResult = NonNullable<
 >
 export type UpdateTaskMutationBody = UpdateTaskDto
 export type UpdateTaskMutationError = ErrorType<unknown>
+export type UpdateTaskMutationVariables = {
+	pathParams: UpdateTaskPathParameters
+	data: UpdateTaskDto
+}
 
 export const useUpdateTask = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateTask>>,
 			TError,
-			{ pathParams: UpdateTaskPathParameters; data: UpdateTaskDto },
+			UpdateTaskMutationVariables,
 			TContext
 		>
 	},
@@ -892,7 +901,7 @@ export const useUpdateTask = <TError = ErrorType<unknown>, TContext = unknown>(
 ): UseMutationResult<
 	Awaited<ReturnType<typeof updateTask>>,
 	TError,
-	{ pathParams: UpdateTaskPathParameters; data: UpdateTaskDto },
+	UpdateTaskMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpdateTaskMutationOptions(options), queryClient)
@@ -908,6 +917,8 @@ export const deleteTask = (
 	})
 }
 
+export const getDeleteTaskMutationKey = () => ["deleteTask"] as const
+
 export const getDeleteTaskMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -915,16 +926,16 @@ export const getDeleteTaskMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteTask>>,
 		TError,
-		{ pathParams: DeleteTaskPathParameters },
+		DeleteTaskMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteTask>>,
 	TError,
-	{ pathParams: DeleteTaskPathParameters },
+	DeleteTaskMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deleteTask"]
+	const mutationKey = getDeleteTaskMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -935,7 +946,7 @@ export const getDeleteTaskMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteTask>>,
-		{ pathParams: DeleteTaskPathParameters }
+		DeleteTaskMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
@@ -950,13 +961,16 @@ export type DeleteTaskMutationResult = NonNullable<
 >
 
 export type DeleteTaskMutationError = ErrorType<unknown>
+export type DeleteTaskMutationVariables = {
+	pathParams: DeleteTaskPathParameters
+}
 
 export const useDeleteTask = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteTask>>,
 			TError,
-			{ pathParams: DeleteTaskPathParameters },
+			DeleteTaskMutationVariables,
 			TContext
 		>
 	},
@@ -964,7 +978,7 @@ export const useDeleteTask = <TError = ErrorType<unknown>, TContext = unknown>(
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteTask>>,
 	TError,
-	{ pathParams: DeleteTaskPathParameters },
+	DeleteTaskMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeleteTaskMutationOptions(options), queryClient)

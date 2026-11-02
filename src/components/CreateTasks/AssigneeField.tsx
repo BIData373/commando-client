@@ -56,7 +56,7 @@ function AssigneeField({
 				onGroupSelect={onGroupSelect}
 				closeOnFirstSelect
 				trigger={({ search, onSearchChange }) => (
-					<SelectTriggerButton type="button">
+					<SelectTriggerButton>
 						<SelectChevron size={12} />
 						<SearchInput
 							value={search}
@@ -118,7 +118,7 @@ const LabelText = styled.span`
   color: rgba(0, 0, 0, 0.88);
 `
 
-const SelectTriggerButton = styled.button`
+const SelectTriggerButton = styled.div`
   display: flex;
   align-items: center;
   width: 100%;

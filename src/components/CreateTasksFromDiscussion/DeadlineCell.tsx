@@ -147,7 +147,7 @@ const DeadlineTrigger = styled.button`
   justify-content: flex-start;
   width: 100%;
   height: 100%;
-  padding-inline: 0;
+  padding-inline: 12px;
   background: transparent;
   cursor: pointer;
   outline: none;
@@ -157,7 +157,7 @@ const PlaceholderText = styled.span`
   font-size: var(--fs-btn);
   font-weight: 400;
   line-height: 22px;
-  color:  var(--Components-Dropdown-Global-colorTextDescription);
+  color: var(--Text-color-text-placeholder);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -237,23 +237,6 @@ const PopoverFooter = styled.div`
   direction: ltr;
   display: flex;
   gap: 8px;
-`
-
-const SetButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 32px;
-  padding-inline: 15px;
-  border: 1px solid var(--primary);
-  border-radius: 6px;
-  background: var(--default-linear);
-  color: var(--background);
-  font-size: var(--fs-btn);
-  font-weight: 400;
-  line-height: 22px;
-  cursor: pointer;
-  white-space: nowrap;
 `
 
 const SetWithoutDateButton = styled.button`

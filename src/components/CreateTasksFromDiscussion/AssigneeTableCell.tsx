@@ -77,7 +77,7 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 				onGroupSelect={handleGroupSelect}
 				showGroupAvatars={false}
 				trigger={({ search, onSearchChange, open }) => (
-					<CompactTriggerButton type="button">
+					<CompactTriggerButton>
 						<CompactChevron size={16} />
 
 						{open || assigneeIds.length === 0 ? (
@@ -133,6 +133,7 @@ const CollapsedAssigneeButton = styled.button`
   justify-content: space-between;
   width: 100%;
   height: 100%;
+  padding-inline: 12px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -146,13 +147,14 @@ const CollapsedAssigneeLabel = styled.span`
   white-space: nowrap;
 `
 
-const CompactTriggerButton = styled.button`
+const CompactTriggerButton = styled.div`
   direction: ltr;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   height: 100%;
+  padding-inline: 12px;
   border: none;
   outline: none;
   background: transparent;
