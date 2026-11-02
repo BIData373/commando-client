@@ -66,6 +66,8 @@ export const createAssignee = (
 	})
 }
 
+export const getCreateAssigneeMutationKey = () => ["createAssignee"] as const
+
 export const getCreateAssigneeMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -73,16 +75,16 @@ export const getCreateAssigneeMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof createAssignee>>,
 		TError,
-		{ data: CreateAssigneeDto },
+		CreateAssigneeMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createAssignee>>,
 	TError,
-	{ data: CreateAssigneeDto },
+	CreateAssigneeMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["createAssignee"]
+	const mutationKey = getCreateAssigneeMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -93,7 +95,7 @@ export const getCreateAssigneeMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createAssignee>>,
-		{ data: CreateAssigneeDto }
+		CreateAssigneeMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
@@ -108,6 +110,7 @@ export type CreateAssigneeMutationResult = NonNullable<
 >
 export type CreateAssigneeMutationBody = CreateAssigneeDto
 export type CreateAssigneeMutationError = ErrorType<unknown>
+export type CreateAssigneeMutationVariables = { data: CreateAssigneeDto }
 
 export const useCreateAssignee = <
 	TError = ErrorType<unknown>,
@@ -117,7 +120,7 @@ export const useCreateAssignee = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createAssignee>>,
 			TError,
-			{ data: CreateAssigneeDto },
+			CreateAssigneeMutationVariables,
 			TContext
 		>
 	},
@@ -125,7 +128,7 @@ export const useCreateAssignee = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof createAssignee>>,
 	TError,
-	{ data: CreateAssigneeDto },
+	CreateAssigneeMutationVariables,
 	TContext
 > => {
 	return useMutation(getCreateAssigneeMutationOptions(options), queryClient)
@@ -408,6 +411,8 @@ export const updateAssignee = (
 	})
 }
 
+export const getUpdateAssigneeMutationKey = () => ["updateAssignee"] as const
+
 export const getUpdateAssigneeMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -415,16 +420,16 @@ export const getUpdateAssigneeMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof updateAssignee>>,
 		TError,
-		{ pathParams: UpdateAssigneePathParameters; data: UpdateAssigneeDto },
+		UpdateAssigneeMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateAssignee>>,
 	TError,
-	{ pathParams: UpdateAssigneePathParameters; data: UpdateAssigneeDto },
+	UpdateAssigneeMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["updateAssignee"]
+	const mutationKey = getUpdateAssigneeMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -435,7 +440,7 @@ export const getUpdateAssigneeMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateAssignee>>,
-		{ pathParams: UpdateAssigneePathParameters; data: UpdateAssigneeDto }
+		UpdateAssigneeMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
@@ -450,6 +455,10 @@ export type UpdateAssigneeMutationResult = NonNullable<
 >
 export type UpdateAssigneeMutationBody = UpdateAssigneeDto
 export type UpdateAssigneeMutationError = ErrorType<unknown>
+export type UpdateAssigneeMutationVariables = {
+	pathParams: UpdateAssigneePathParameters
+	data: UpdateAssigneeDto
+}
 
 export const useUpdateAssignee = <
 	TError = ErrorType<unknown>,
@@ -459,7 +468,7 @@ export const useUpdateAssignee = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateAssignee>>,
 			TError,
-			{ pathParams: UpdateAssigneePathParameters; data: UpdateAssigneeDto },
+			UpdateAssigneeMutationVariables,
 			TContext
 		>
 	},
@@ -467,7 +476,7 @@ export const useUpdateAssignee = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof updateAssignee>>,
 	TError,
-	{ pathParams: UpdateAssigneePathParameters; data: UpdateAssigneeDto },
+	UpdateAssigneeMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpdateAssigneeMutationOptions(options), queryClient)
@@ -483,6 +492,8 @@ export const deleteAssignee = (
 	})
 }
 
+export const getDeleteAssigneeMutationKey = () => ["deleteAssignee"] as const
+
 export const getDeleteAssigneeMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -490,16 +501,16 @@ export const getDeleteAssigneeMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteAssignee>>,
 		TError,
-		{ pathParams: DeleteAssigneePathParameters },
+		DeleteAssigneeMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteAssignee>>,
 	TError,
-	{ pathParams: DeleteAssigneePathParameters },
+	DeleteAssigneeMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deleteAssignee"]
+	const mutationKey = getDeleteAssigneeMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -510,7 +521,7 @@ export const getDeleteAssigneeMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteAssignee>>,
-		{ pathParams: DeleteAssigneePathParameters }
+		DeleteAssigneeMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
@@ -525,6 +536,9 @@ export type DeleteAssigneeMutationResult = NonNullable<
 >
 
 export type DeleteAssigneeMutationError = ErrorType<unknown>
+export type DeleteAssigneeMutationVariables = {
+	pathParams: DeleteAssigneePathParameters
+}
 
 export const useDeleteAssignee = <
 	TError = ErrorType<unknown>,
@@ -534,7 +548,7 @@ export const useDeleteAssignee = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteAssignee>>,
 			TError,
-			{ pathParams: DeleteAssigneePathParameters },
+			DeleteAssigneeMutationVariables,
 			TContext
 		>
 	},
@@ -542,7 +556,7 @@ export const useDeleteAssignee = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteAssignee>>,
 	TError,
-	{ pathParams: DeleteAssigneePathParameters },
+	DeleteAssigneeMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeleteAssigneeMutationOptions(options), queryClient)

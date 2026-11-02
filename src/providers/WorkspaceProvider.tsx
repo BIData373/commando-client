@@ -6,18 +6,21 @@ import {
 	useContext,
 	useState,
 } from "react"
-import type { UpdateWorkspaceDto, WorkspaceStatusDto } from "src/api/model"
+import type {
+	UpdateWorkspaceDto,
+	WorkspaceStatusDto,
+	WorkspaceWithPermissionDto,
+} from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { queryClient } from "src/query-client"
-import type { WorkspaceDto } from "../api/model/workspace-dto"
 import { useListWorkspaces } from "../api/workspace/workspace"
 import { Spinner } from "../components/ui/spinner"
 import { useErrorHandler } from "./ErrorModalProvider"
 import { SocketProvider } from "./SocketProvider"
 
 export interface WorkspaceContext {
-	workspace: WorkspaceDto
+	workspace: WorkspaceWithPermissionDto
 	statuses: Record<number, WorkspaceStatusDto>
 	setWorkspace(data: UpdateWorkspaceDto): void
 	activeSection: DropdownSection

@@ -62,6 +62,8 @@ export const createTag = (createTagDto: CreateTagDto, signal?: AbortSignal) => {
 	})
 }
 
+export const getCreateTagMutationKey = () => ["createTag"] as const
+
 export const getCreateTagMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -69,16 +71,16 @@ export const getCreateTagMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof createTag>>,
 		TError,
-		{ data: CreateTagDto },
+		CreateTagMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createTag>>,
 	TError,
-	{ data: CreateTagDto },
+	CreateTagMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["createTag"]
+	const mutationKey = getCreateTagMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -89,7 +91,7 @@ export const getCreateTagMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createTag>>,
-		{ data: CreateTagDto }
+		CreateTagMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
@@ -104,13 +106,14 @@ export type CreateTagMutationResult = NonNullable<
 >
 export type CreateTagMutationBody = CreateTagDto
 export type CreateTagMutationError = ErrorType<unknown>
+export type CreateTagMutationVariables = { data: CreateTagDto }
 
 export const useCreateTag = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createTag>>,
 			TError,
-			{ data: CreateTagDto },
+			CreateTagMutationVariables,
 			TContext
 		>
 	},
@@ -118,7 +121,7 @@ export const useCreateTag = <TError = ErrorType<unknown>, TContext = unknown>(
 ): UseMutationResult<
 	Awaited<ReturnType<typeof createTag>>,
 	TError,
-	{ data: CreateTagDto },
+	CreateTagMutationVariables,
 	TContext
 > => {
 	return useMutation(getCreateTagMutationOptions(options), queryClient)
@@ -382,6 +385,8 @@ export const updateTag = (
 	})
 }
 
+export const getUpdateTagMutationKey = () => ["updateTag"] as const
+
 export const getUpdateTagMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -389,16 +394,16 @@ export const getUpdateTagMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof updateTag>>,
 		TError,
-		{ pathParams: UpdateTagPathParameters; data: UpdateTagDto },
+		UpdateTagMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateTag>>,
 	TError,
-	{ pathParams: UpdateTagPathParameters; data: UpdateTagDto },
+	UpdateTagMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["updateTag"]
+	const mutationKey = getUpdateTagMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -409,7 +414,7 @@ export const getUpdateTagMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateTag>>,
-		{ pathParams: UpdateTagPathParameters; data: UpdateTagDto }
+		UpdateTagMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
@@ -424,13 +429,17 @@ export type UpdateTagMutationResult = NonNullable<
 >
 export type UpdateTagMutationBody = UpdateTagDto
 export type UpdateTagMutationError = ErrorType<unknown>
+export type UpdateTagMutationVariables = {
+	pathParams: UpdateTagPathParameters
+	data: UpdateTagDto
+}
 
 export const useUpdateTag = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateTag>>,
 			TError,
-			{ pathParams: UpdateTagPathParameters; data: UpdateTagDto },
+			UpdateTagMutationVariables,
 			TContext
 		>
 	},
@@ -438,7 +447,7 @@ export const useUpdateTag = <TError = ErrorType<unknown>, TContext = unknown>(
 ): UseMutationResult<
 	Awaited<ReturnType<typeof updateTag>>,
 	TError,
-	{ pathParams: UpdateTagPathParameters; data: UpdateTagDto },
+	UpdateTagMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpdateTagMutationOptions(options), queryClient)
@@ -450,6 +459,8 @@ export const deleteTag = (
 	return sendRequest<TagDto>({ url: `/tag/${id}`, method: "DELETE", signal })
 }
 
+export const getDeleteTagMutationKey = () => ["deleteTag"] as const
+
 export const getDeleteTagMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -457,16 +468,16 @@ export const getDeleteTagMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteTag>>,
 		TError,
-		{ pathParams: DeleteTagPathParameters },
+		DeleteTagMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteTag>>,
 	TError,
-	{ pathParams: DeleteTagPathParameters },
+	DeleteTagMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deleteTag"]
+	const mutationKey = getDeleteTagMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -477,7 +488,7 @@ export const getDeleteTagMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteTag>>,
-		{ pathParams: DeleteTagPathParameters }
+		DeleteTagMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
@@ -492,13 +503,14 @@ export type DeleteTagMutationResult = NonNullable<
 >
 
 export type DeleteTagMutationError = ErrorType<unknown>
+export type DeleteTagMutationVariables = { pathParams: DeleteTagPathParameters }
 
 export const useDeleteTag = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteTag>>,
 			TError,
-			{ pathParams: DeleteTagPathParameters },
+			DeleteTagMutationVariables,
 			TContext
 		>
 	},
@@ -506,7 +518,7 @@ export const useDeleteTag = <TError = ErrorType<unknown>, TContext = unknown>(
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteTag>>,
 	TError,
-	{ pathParams: DeleteTagPathParameters },
+	DeleteTagMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeleteTagMutationOptions(options), queryClient)

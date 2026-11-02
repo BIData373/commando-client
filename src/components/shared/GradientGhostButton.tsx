@@ -2,11 +2,14 @@ import styled from "@emotion/styled"
 import type React from "react"
 import { GradientText } from "./GradientText"
 
-interface GhostButtonProps extends React.PropsWithChildren {
+interface GradientGhostButtonProps extends React.PropsWithChildren {
 	onClick: () => void
 }
 
-export function GhostButton({ children, onClick }: GhostButtonProps) {
+export function GradientGhostButton({
+	children,
+	onClick,
+}: GradientGhostButtonProps) {
 	return (
 		<GradientBorderBtn onClick={onClick}>
 			<GradientText>{children}</GradientText>

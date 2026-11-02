@@ -18,8 +18,7 @@ export default function WorkspaceCell({
 	iconSize = 20,
 	searchQuery,
 }: WorkspaceCellProps) {
-	const { ref, isOverflowing } = useOverflow<HTMLSpanElement>({
-		content: workspace?.title,
+	const { isOverflowing, handlePointerEnter } = useOverflow<HTMLSpanElement>({
 		includeDescendants: true,
 	})
 
@@ -38,7 +37,7 @@ export default function WorkspaceCell({
 					)}
 
 					<TooltipTrigger asChild>
-						<TitleText ref={ref}>
+						<TitleText onPointerEnter={handlePointerEnter}>
 							<HighlightMatch
 								text={workspace.title}
 								query={searchQuery ?? ""}
