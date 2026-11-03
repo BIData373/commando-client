@@ -10,6 +10,8 @@ interface OverflowRowProps {
 	) => ReactElement
 	gap?: number
 	preserveOrder?: boolean
+	/** When true, items wrap into multiple rows and overflow is calculated by height */
+	wrap?: boolean
 }
 
 interface RowLayout {
@@ -122,7 +124,7 @@ export function OverflowRow({
 		.map((itemIndex) => items[itemIndex])
 
 	return (
-		<Row ref={containerRef} $gap={gap}>
+		<Row ref={containerRef} $gap={gap} data-overflow-row>
 			{layout.order.map((itemIndex, rank) => {
 				const item = items[itemIndex]
 
@@ -145,6 +147,7 @@ export function OverflowRow({
 				}}
 				$hidden={isFullyVisible}
 				aria-hidden={isFullyVisible || undefined}
+				data-overflow-indicator
 			>
 				{renderOverflow(
 					isFullyVisible ? items.length : remaining,

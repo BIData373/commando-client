@@ -479,12 +479,38 @@ const TableWrapper = styled.div`
     max-height: none;
   }
 
-  &[data-title-expanded] td:not([data-virtual-spacer]) {
+  &[data-title-expanded] tr:has([data-cell-wrapped]) td:not([data-virtual-spacer]) {
     vertical-align: top;
     padding-block-start: 10px;
 
     & > * {
       align-items: flex-start;
+    }
+  }
+
+  &[data-title-expanded] tr:has([data-cell-wrapped]) td:not([data-virtual-spacer]):not([data-column-id="title"]) {
+    max-height: none;
+
+    span, div {
+      white-space: normal;
+      text-overflow: clip;
+      -webkit-line-clamp: unset;
+      -webkit-box-orient: unset;
+      overflow-wrap: break-word;
+    }
+
+    [data-overflow-row] {
+      flex-wrap: wrap;
+
+      & > * {
+        position: static;
+        visibility: visible;
+        pointer-events: auto;
+      }
+
+      [data-overflow-indicator] {
+        display: none;
+      }
     }
   }
 `
