@@ -7,6 +7,7 @@ import {
 	getListAssigneesQueryKey,
 	useCreateAssignee,
 	useUpdateAssignee,
+	useUpdateAssigneeStatusEditable,
 } from "src/api/assignee/assignee"
 import type {
 	AssigneeDto,
@@ -49,7 +50,8 @@ import { IconDropdown } from "./IconDropdown"
 const MAX_NAME_LENGTH = 30
 
 function toFormUsers(users: AssigneeUserDto[] = []): AssigneeFormUser[] {
-	return users.map(({ user: { upn, info }, statusEditable }) => ({
+	return users.map(({ user: { id, upn, info }, statusEditable }) => ({
+		id,
 		upn,
 		info,
 		statusEditable,
@@ -137,6 +139,18 @@ export function AssigneeDialog({
 			onSuccess: handleSubmitSuccess,
 		},
 	})
+	const { mutateAsync: updateAssigneeStatus } = useUpdateAssigneeStatusEditable(
+		{
+			mutation: {
+				onSuccess(_, { params: { assigneeId } }) {
+					invalidateQueries([
+						assigneesQueryKey,
+						getGetAssigneeQueryKey({ id: assigneeId }),
+					])
+				},
+			},
+		},
+	)
 
 	const randomColor = useMemo(() => {
 		if (!open) {
@@ -153,7 +167,7 @@ export function AssigneeDialog({
 			name: assignee?.name ?? "",
 			color: assignee?.color ?? randomColor ?? PRESET_COLORS[0],
 			icon: assignee?.icon ?? "",
-			statusEditable: assignee?.statusEditable ?? true,
+			statusEditable: assignee?.statusEditable ?? assigneeStatusEditable,
 			users: toFormUsers(assignee?.users),
 		},
 		onSubmit: async ({ value }) => {
@@ -163,7 +177,7 @@ export function AssigneeDialog({
 				icon: value.icon || null,
 				iconName: selectedIcon?.heb_name ?? null,
 				statusEditable: value.statusEditable,
-				users: value.users,
+				users: value.users.map(({ id, ...user }) => user),
 			}
 
 			if (assignee) {
@@ -189,21 +203,34 @@ export function AssigneeDialog({
 
 	function handleSearchSelect(user: MirageUserDto) {
 		if (user) {
+			const statusEditable =
+				assigneeStatusEditable && form.getFieldValue("statusEditable")
+
 			form.setFieldValue("users", (prev) =>
 				prev.some(({ upn }) => upn === user.upn)
 					? prev
-					: [...prev, { ...user, statusEditable: false }],
+					: [...prev, { ...user, statusEditable }],
 			)
 			setSearchValue("")
 		}
 	}
 
-	function handleUserStatusEditableChange(upn: string, checked: boolean) {
+	function handleUserStatusEditableChange(
+		{ id: userId, upn }: AssigneeFormUser,
+		checked: boolean,
+	) {
 		form.setFieldValue("users", (prev) =>
 			prev.map((user) =>
 				user.upn === upn ? { ...user, statusEditable: checked } : user,
 			),
 		)
+
+		// Users added in this dialog have no id until the assignee is saved
+		if (assignee && userId) {
+			updateAssigneeStatus({
+				params: { statusEditable: checked, assigneeId: assignee.id, userId },
+			})
+		}
 	}
 
 	function handleSearchClear() {
@@ -212,6 +239,12 @@ export function AssigneeDialog({
 
 	function handleAssigneeStatusEditableChange(checked: boolean) {
 		form.setFieldValue("statusEditable", checked)
+
+		if (assignee) {
+			updateAssigneeStatus({
+				params: { statusEditable: checked, assigneeId: assignee.id },
+			})
+		}
 	}
 
 	function handleColorChange(color: string) {

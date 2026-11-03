@@ -8,6 +8,7 @@ import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { UserItem } from "./UserItem"
 
 export interface AssigneeFormUser extends MirageUserDto {
+	id?: number
 	statusEditable: boolean
 }
 
@@ -15,7 +16,7 @@ interface AssigneeUsersListProps {
 	users: AssigneeFormUser[]
 	disabledReason?: string
 	onRemove: (upn: string) => void
-	onStatusEditableChange: (upn: string, checked: boolean) => void
+	onStatusEditableChange: (user: AssigneeFormUser, checked: boolean) => void
 }
 
 export function AssigneeUsersList({
@@ -54,11 +55,13 @@ export function AssigneeUsersList({
 										checked={!disabledReason && user.statusEditable}
 										disabled={!!disabledReason}
 										onCheckedChange={(checked) =>
-											onStatusEditableChange(user.upn, checked)
+											onStatusEditableChange(user, checked)
 										}
 									/>
 								</DisabledReasonTooltip>
-								<StatusLabel>עדכון סטטוס</StatusLabel>
+								<StatusLabel $disabled={!!disabledReason}>
+									עדכון סטטוס
+								</StatusLabel>
 							</StatusToggle>
 							<UserCardClose type="button" onClick={() => onRemove(user.upn)}>
 								<X size={12} />
@@ -113,10 +116,11 @@ const StatusToggle = styled.div`
   flex-shrink: 0;
 `
 
-const StatusLabel = styled.span`
+const StatusLabel = styled.span<{ $disabled: boolean }>`
   font-size: var(--fs-sm);
   line-height: 20px;
-  color: var(--text-color);
+  color: ${({ $disabled }) =>
+		$disabled ? "var(--Text-color-text-placeholder)" : "var(--text-color)"};
   white-space: nowrap;
 `
 
@@ -153,4 +157,13 @@ const UserTooltipContent = styled(TooltipPrimitive.Content)`
 
 const StyledSwitch = styled(Switch)`
   cursor: pointer;
+
+  &[data-state="unchecked"] {
+    background: var(--Text-color-text-placeholder);
+  }
+
+  &[data-disabled] {
+    background: var(--input);
+    opacity: 0.65;
+  }
 `

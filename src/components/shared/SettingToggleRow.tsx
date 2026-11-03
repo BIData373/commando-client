@@ -40,8 +40,8 @@ export function SettingToggleRow({
 				/>
 			</DisabledReasonTooltip>
 			<Info>
-				<Icon>{icon}</Icon>
-				<Label>{label}</Label>
+				<Icon $disabled={!!disabled}>{icon}</Icon>
+				<Label $disabled={!!disabled}>{label}</Label>
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
@@ -60,6 +60,10 @@ export function SettingToggleRow({
 const StyledSwitch = styled(Switch)`
   cursor: pointer;
 
+  &[data-disabled] {
+    background: var(--Text-color-text-placeholder);
+    opacity: 0.65;
+  }
 `
 const Row = styled.div`
   display: flex;
@@ -74,20 +78,22 @@ const Info = styled.div`
   gap: 4px;
 `
 
-const Label = styled.span`
+const Label = styled.span<{ $disabled: boolean }>`
   font-size: var(--fs-base);
   font-weight: 400;
-  color: var(--text-color-2);
+  color: ${({ $disabled }) =>
+		$disabled ? "var(--Text-color-text-placeholder)" : "var(--text-color-2)"};
   white-space: nowrap;
 `
 
-const Icon = styled.span`
+const Icon = styled.span<{ $disabled: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 24px;
   height: 24px;
-  color: var(--sea-ink-soft);
+  color: ${({ $disabled }) =>
+		$disabled ? "var(--Text-color-text-placeholder)" : "var(--sea-ink-soft)"};
 `
 
 const HelpButton = styled.button`

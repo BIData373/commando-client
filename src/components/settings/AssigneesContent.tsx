@@ -2,11 +2,10 @@ import styled from "@emotion/styled"
 import { Mail, Pencil, Plus, Search } from "lucide-react"
 import { type ChangeEvent, useState } from "react"
 import {
-	getListAssigneesQueryKey,
+	getGetAssigneeQueryKey,
 	useListAssignees,
 	useUpdateAssigneeStatusEditable,
 } from "src/api/assignee/assignee"
-import type { AssigneesDto } from "src/api/model"
 import { useUpdateWorkspace } from "src/api/workspace/workspace"
 import { AssigneeCard } from "src/components/settings/AssigneeCard"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
@@ -19,7 +18,7 @@ import {
 import { updateEnvironmentMessage } from "src/functions/toast-messages"
 import { useFilteredAssignees } from "src/hooks/useFilteredAssignees"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries, queryClient } from "src/query-client"
+import { invalidateQueries } from "src/query-client"
 import noResultsFound from "../../assets/empty-states/no-results-found.svg"
 import chatIcon from "../../assets/icons/chat.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -44,28 +43,38 @@ export function AssigneesContent({
 		setWorkspace,
 	} = useWorkspace()
 
-	const { mutateAsync: updateSettings } = useUpdateWorkspace({
-		mutation: {
-			meta: {
-				toast: { success: updateEnvironmentMessage, error: true },
-			},
-			onSuccess(data) {
-				setWorkspace(data)
-			},
-		},
-	})
-
 	const {
 		data: assignees = [],
 		isLoading,
 		queryKey,
 	} = useListAssignees({ workspaceId })
 
+	const { mutateAsync: updateSettings } = useUpdateWorkspace({
+		mutation: {
+			meta: {
+				toast: { success: updateEnvironmentMessage, error: true },
+			},
+			onSuccess(data, { data: { assigneeStatusEditable } }) {
+				setWorkspace(data)
+
+				if (assigneeStatusEditable) {
+					invalidateQueries([
+						queryKey,
+						...assignees.map(({ id }) => getGetAssigneeQueryKey({ id })),
+					])
+				}
+			},
+		},
+	})
+
 	const { mutateAsync: updateAssigneeStatus } = useUpdateAssigneeStatusEditable(
 		{
 			mutation: {
-				onSuccess() {
-					invalidateQueries([queryKey])
+				onSuccess(_, { params: { assigneeId } }) {
+					invalidateQueries([
+						queryKey,
+						getGetAssigneeQueryKey({ id: assigneeId }),
+					])
 				},
 			},
 		},
