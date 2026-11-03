@@ -1,11 +1,9 @@
-import postcssCascadeLayers from "@csstools/postcss-cascade-layers"
-import postcssIsPseudoClass from "@csstools/postcss-is-pseudo-class"
 import tailwindcss from "@tailwindcss/vite"
 import { devtools } from "@tanstack/devtools-vite"
 import { tanstackRouter } from "@tanstack/router-plugin/vite"
 import legacy from "@vitejs/plugin-legacy"
 import viteReact from "@vitejs/plugin-react"
-import postcss from "postcss"
+import postcss, { type Root } from "postcss"
 import type { Plugin } from "vite"
 import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
@@ -15,7 +13,20 @@ const CHROME_83 = 83 << 16
 
 // Tailwind emits its CSS after Vite's PostCSS step, so legacy lowering must run on the final bundle
 function legacyCssPlugin(): Plugin {
-	const processor = postcss([postcssCascadeLayers(), postcssIsPseudoClass()])
+	const processor = postcss([
+		{
+			postcssPlugin: "unwrap-cascade-layers",
+			Once(root: Root) {
+				root.walkAtRules("layer", (rule) => {
+					if (rule.nodes) {
+						rule.replaceWith(rule.nodes)
+					} else {
+						rule.remove()
+					}
+				})
+			},
+		},
+	])
 
 	return {
 		name: "legacy-css",

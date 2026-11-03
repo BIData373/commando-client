@@ -72,8 +72,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.5",
-    "@csstools/postcss-cascade-layers": "^6.0.2",
-    "@csstools/postcss-is-pseudo-class": "^6.0.3",
     "@emotion/babel-plugin": "^11.13.5",
     "@faker-js/faker": "^10.4.0",
     "@tailwindcss/typography": "^0.5.16",
