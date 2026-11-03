@@ -1,4 +1,7 @@
-@import "tailwindcss";
+/* Unlayered Tailwind imports: Chrome 83 does not support @layer */
+@import "tailwindcss/theme.css";
+@import "tailwindcss/preflight.css";
+@import "tailwindcss/utilities.css";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/rubik";
