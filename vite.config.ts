@@ -43,10 +43,18 @@ const config = defineConfig({
 			modernPolyfills: true,
 		}),
 	],
+	css: {
+		transformer: "lightningcss",
+		lightningcss: {
+			// Lightning CSS encodes versions as major << 16 (83.0.0 -> 83 << 16)
+			targets: { chrome: 83 << 16 },
+		},
+	},
 	// Specifically for Mobile this is our target
 	build: {
 		target: "chrome83",
 		cssTarget: "chrome83",
+		cssMinify: "lightningcss",
 	},
 })
 

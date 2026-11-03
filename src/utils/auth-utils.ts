@@ -3,6 +3,7 @@ import Cookies from "js-cookie"
 import { IS_MOBILE_DEVICE } from "../hooks/use-mobile"
 import { AUTH_SERVER_URL, USE_MOCK_API, USE_SSO } from "./env-utils"
 import { TOKEN_NAME } from "./user-utils"
+import { generateUuid } from "./uuid-utils"
 
 export const AUTH_ENABLED = !USE_MOCK_API && USE_SSO
 
@@ -102,7 +103,7 @@ export async function authenticate() {
 		throw new Error("Authentication failed after redirect")
 	}
 
-	const state = crypto.randomUUID()
+	const state = generateUuid()
 	sessionStorage.setItem(SSO_STATE_KEY, state)
 
 	const comebackUrl = new URL(window.location.href)
