@@ -8,6 +8,50 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Tailwind compiles rtl:/ltr: to :where(), which Chrome 83 does not support (Chrome 88+) */
+@custom-variant rtl ([dir="rtl"] &);
+@custom-variant ltr ([dir="ltr"] &);
+
+/*
+ * Chrome 83 ignores the individual translate/rotate/scale properties (Chrome 104+)
+ * and inset (Chrome 87+) that Tailwind 4 emits.
+ * These utilities extend Tailwind's own with a variable (rotate) or longhands (inset)
+ * that the fallback below reads.
+ */
+@utility rotate-45 {
+  rotate: 45deg;
+  --chrome83-rotate: 45deg;
+}
+
+@utility rotate-90 {
+  rotate: 90deg;
+  --chrome83-rotate: 90deg;
+}
+
+@utility rotate-180 {
+  rotate: 180deg;
+  --chrome83-rotate: 180deg;
+}
+
+@utility -inset-2 {
+  inset: calc(var(--spacing) * -2);
+  top: calc(var(--spacing) * -2);
+  right: calc(var(--spacing) * -2);
+  bottom: calc(var(--spacing) * -2);
+  left: calc(var(--spacing) * -2);
+}
+
+/* One combined transform so utilities on the same element do not override each other */
+@supports not (translate: 0) {
+  [class*="translate-"],
+  [class*="rotate-"],
+  [class*="scale-"] {
+    transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))
+      rotate(var(--chrome83-rotate, 0deg))
+      scale(var(--tw-scale-x, 1), var(--tw-scale-y, 1));
+  }
+}
+
 html,
 body,
 #app {
