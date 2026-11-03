@@ -8,16 +8,18 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "src/components/ui/tooltip"
+import { useAssigneeGroupDelete } from "src/hooks/useAssigneeGroupDelete"
 
 interface AssigneeGroupActionsProps {
-	onDeleteConfirm(): void
+	groupId: number
 	onEdit(e: MouseEvent<HTMLButtonElement>): void
 }
 
 export function AssigneeGroupActions({
-	onDeleteConfirm,
+	groupId,
 	onEdit,
 }: AssigneeGroupActionsProps) {
+	const { handleDeleteGroup } = useAssigneeGroupDelete()
 	const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
 	function handleDeleteCloseAutoFocus(e: Event) {
@@ -44,7 +46,7 @@ export function AssigneeGroupActions({
 								showArrow
 								open={isDeleteOpen}
 								onOpenChange={setIsDeleteOpen}
-								onConfirm={onDeleteConfirm}
+								onConfirm={() => handleDeleteGroup(groupId)}
 								onCloseAutoFocus={handleDeleteCloseAutoFocus}
 								trigger={
 									<IconActionButton type="button" onClick={handleOpenDelete}>

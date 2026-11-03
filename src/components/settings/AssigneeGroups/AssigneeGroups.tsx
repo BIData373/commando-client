@@ -2,7 +2,6 @@ import styled from "@emotion/styled"
 import { Plus } from "lucide-react"
 import { useState } from "react"
 import { useListAssigneeGroups } from "src/api/assignee-group/assignee-group"
-import { useAssigneeGroupDelete } from "src/hooks/useAssigneeGroupDelete"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { SecondaryButton } from "../../shared/SecondaryButton"
 import { SectionTitle } from "../SectionTitle"
@@ -28,8 +27,6 @@ export function AssigneeGroups() {
 	>(null)
 
 	const [expandedGroupId, setExpandedGroupId] = useState<number | null>(null)
-
-	const { handleDeleteGroup } = useAssigneeGroupDelete()
 
 	const isEmptyState = !isLoading && assigneeGroups.length === 0
 	const isCreating = openFormId === NEW_GROUP_FORM
@@ -91,7 +88,6 @@ export function AssigneeGroups() {
 							assigneeGroup={assigneeGroup}
 							isExpanded={expandedGroupId === assigneeGroup.id}
 							onToggleExpanded={handleToggleGroup}
-							onDelete={handleDeleteGroup}
 							onEdit={handleEditGroup}
 						/>
 					),

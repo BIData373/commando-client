@@ -14,7 +14,6 @@ interface AssigneeGroupCardProps {
 	assigneeGroup: AssigneeGroupDto
 	isExpanded: boolean
 	onToggleExpanded(groupId: number): void
-	onDelete(groupId: number): void
 	onEdit(groupId: number): void
 }
 
@@ -22,7 +21,6 @@ export function AssigneeGroupCard({
 	assigneeGroup: { id, name, assignees },
 	isExpanded,
 	onToggleExpanded,
-	onDelete,
 	onEdit,
 }: AssigneeGroupCardProps) {
 	const hasAssignees = assignees.length > 0
@@ -35,10 +33,6 @@ export function AssigneeGroupCard({
 		const isPopoverTrigger = target.closest(POPOVER_TRIGGER_SELECTOR)
 		if (isFromPortal || isPopoverTrigger) return
 		onToggleExpanded(id)
-	}
-
-	function handleDeleteConfirm() {
-		onDelete(id)
 	}
 
 	function handleEditClick(e: MouseEvent<HTMLButtonElement>) {
@@ -56,10 +50,7 @@ export function AssigneeGroupCard({
 
 				<Summary>
 					{isExpanded ? (
-						<AssigneeGroupActions
-							onDeleteConfirm={handleDeleteConfirm}
-							onEdit={handleEditClick}
-						/>
+						<AssigneeGroupActions groupId={id} onEdit={handleEditClick} />
 					) : hasAssignees ? (
 						<AssigneeGroupAvatars
 							assignees={visibleAssignees}
