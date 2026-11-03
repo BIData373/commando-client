@@ -5,6 +5,7 @@ import legacy from "@vitejs/plugin-legacy"
 import viteReact from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
+import { chrome83Visitor } from "./lightningcss-visitor"
 
 const config = defineConfig({
 	server: {
@@ -48,6 +49,7 @@ const config = defineConfig({
 		lightningcss: {
 			// Lightning CSS encodes versions as major << 16 (83.0.0 -> 83 << 16)
 			targets: { chrome: 83 << 16 },
+			visitor: chrome83Visitor,
 		},
 	},
 	// Specifically for Mobile this is our target
