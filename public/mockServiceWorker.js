@@ -12,29 +12,6 @@ const INTEGRITY_CHECKSUM = '03cb67ac84128e63d7cd722a6e5b7f1e'
 const IS_MOCKED_RESPONSE = Symbol('isMockedResponse')
 const activeClientIds = new Set()
 
-// LOCAL PATCH: crypto.randomUUID requires Chrome 92+, and we support Chrome 83.
-// Re-apply if `msw init` or an msw upgrade regenerates this file.
-function createRequestId() {
-  if (typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID()
-  }
-
-  const bytes = crypto.getRandomValues(new Uint8Array(16))
-  bytes[6] = (bytes[6] & 0x0f) | 0x40
-  bytes[8] = (bytes[8] & 0x3f) | 0x80
-
-  const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0'))
-  return [
-    hex.slice(0, 4),
-    hex.slice(4, 6),
-    hex.slice(6, 8),
-    hex.slice(8, 10),
-    hex.slice(10, 16),
-  ]
-    .map((part) => part.join(''))
-    .join('-')
-}
-
 addEventListener('install', function () {
   self.skipWaiting()
 })
@@ -135,7 +112,7 @@ addEventListener('fetch', function (event) {
     return
   }
 
-  const requestId = createRequestId()
+  const requestId = crypto.randomUUID?.() ?? String(Math.random()) // randomUUID needs Chrome 92+
   event.respondWith(handleRequest(event, requestId, requestInterceptedAt))
 })
 
