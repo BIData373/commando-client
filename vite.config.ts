@@ -6,9 +6,6 @@ import viteReact from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
 
-// Lightning CSS encodes versions as major << 16
-const CHROME_83 = 83 << 16
-
 const config = defineConfig({
 	server: {
 		port: 8080,
@@ -49,7 +46,8 @@ const config = defineConfig({
 	css: {
 		transformer: "lightningcss",
 		lightningcss: {
-			targets: { chrome: CHROME_83 },
+			// Lightning CSS encodes versions as major << 16 (83.0.0 -> 83 << 16)
+			targets: { chrome: 83 << 16 },
 		},
 	},
 	// Specifically for Mobile this is our target
