@@ -23,7 +23,7 @@ export function MobileTaskAssignees({
 
 	const currentUserAssigneStatuses = assigneeStatuses.filter(
 		({ assignee: { users } }) =>
-			isAdmin || users.some(({ upn }) => upn === currentUser.upn),
+			isAdmin || users.some(({ user: { upn } }) => upn === currentUser.upn),
 	)
 
 	const otherUsersAssigneeStatuses = assigneeStatuses.filter(
