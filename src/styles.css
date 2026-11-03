@@ -25,13 +25,10 @@
   }
 }
 
-/* Chrome 83 has no flex gap (html.no-flex-gap, set in emotion-cache.ts): use child margins */
-.gap-0\.5 { --chrome83-gap: calc(var(--spacing) * 0.5); }
-.gap-1 { --chrome83-gap: var(--spacing); }
-.gap-1\.5 { --chrome83-gap: calc(var(--spacing) * 1.5); }
-.gap-2 { --chrome83-gap: calc(var(--spacing) * 2); }
-.gap-2\.5 { --chrome83-gap: calc(var(--spacing) * 2.5); }
-.gap-4 { --chrome83-gap: calc(var(--spacing) * 4); }
+/* Chrome 83 has no flex gap (html.no-flex-gap, set in flex-gap.ts): use child margins */
+@utility gap-* {
+  --chrome83-gap: calc(var(--spacing) * --value(number));
+}
 
 .no-flex-gap [class*="gap-"].flex > * + *,
 .no-flex-gap [class*="gap-"].inline-flex > * + * {
