@@ -44,7 +44,7 @@ export const AssigneeContainer = ({
 	const handleUpdateAssigneeStatus = useUpdateTaskStatus({ notify: true })
 
 	const isCurrentUserTask = assignee.users.some(
-		(user) => user.upn === currentUser.upn,
+		({ user: { upn } }) => upn === currentUser.upn,
 	)
 
 	const taskVariant = isMobile

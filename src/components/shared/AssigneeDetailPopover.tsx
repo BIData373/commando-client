@@ -32,7 +32,7 @@ export function AssigneeDetailPopover({
 						<SectionLabel>משתמשים מכותבים:</SectionLabel>
 						<UserScrollArea>
 							<UserList>
-								{assignee.users.map((u) => (
+								{assignee.users.map(({ user: u }) => (
 									<UserRow key={u.id}>
 										<UserPrimary>
 											{u.info?.name && (

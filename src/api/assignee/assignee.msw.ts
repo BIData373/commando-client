@@ -91,24 +91,31 @@ export const getCreateAssigneeResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	statusEditable: faker.datatype.boolean(),
 	users: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		id: faker.number.float({ fractionDigits: 2 }),
-		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: {
-			...{
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				name: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+		statusEditable: faker.datatype.boolean(),
+		user: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
 			},
 		},
 	})),
@@ -203,27 +210,31 @@ export const getListAssigneesResponseMock = (): AssigneesDto[] =>
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		statusEditable: faker.datatype.boolean(),
 		users: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
 		).map(() => ({
-			id: faker.number.float({ fractionDigits: 2 }),
-			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			info: {
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
+			statusEditable: faker.datatype.boolean(),
+			user: {
+				id: faker.number.float({ fractionDigits: 2 }),
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				info: {
+					...{
+						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						displayName: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						name: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						isBI: faker.helpers.arrayElement([
+							faker.datatype.boolean(),
+							undefined,
+						]),
+					},
 				},
 			},
 		})),
@@ -310,24 +321,31 @@ export const getGetAssigneeResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	statusEditable: faker.datatype.boolean(),
 	users: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		id: faker.number.float({ fractionDigits: 2 }),
-		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: {
-			...{
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				name: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+		statusEditable: faker.datatype.boolean(),
+		user: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
 			},
 		},
 	})),
@@ -414,24 +432,31 @@ export const getUpdateAssigneeResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	statusEditable: faker.datatype.boolean(),
 	users: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		id: faker.number.float({ fractionDigits: 2 }),
-		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: {
-			...{
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				name: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+		statusEditable: faker.datatype.boolean(),
+		user: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
 			},
 		},
 	})),
@@ -518,24 +543,31 @@ export const getDeleteAssigneeResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	statusEditable: faker.datatype.boolean(),
 	users: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
 	).map(() => ({
-		id: faker.number.float({ fractionDigits: 2 }),
-		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: {
-			...{
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				displayName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				name: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					undefined,
-				]),
-				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+		statusEditable: faker.datatype.boolean(),
+		user: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
 			},
 		},
 	})),
@@ -661,10 +693,32 @@ export const getDeleteAssigneeMockHandler = (
 		options,
 	)
 }
+
+export const getUpdateAssigneeStatusEditableMockHandler = (
+	overrideResponse?:
+		| void
+		| ((
+				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+		  ) => Promise<void> | void),
+	options?: RequestHandlerOptions,
+) => {
+	return http.patch(
+		"*/assignee/status-editable",
+		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+			if (typeof overrideResponse === "function") {
+				await overrideResponse(info)
+			}
+
+			return new HttpResponse(null, { status: 204 })
+		},
+		options,
+	)
+}
 export const getAssigneeMock = () => [
 	getCreateAssigneeMockHandler(),
 	getListAssigneesMockHandler(),
 	getGetAssigneeMockHandler(),
 	getUpdateAssigneeMockHandler(),
 	getDeleteAssigneeMockHandler(),
+	getUpdateAssigneeStatusEditableMockHandler(),
 ]
