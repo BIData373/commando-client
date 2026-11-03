@@ -4,7 +4,12 @@ import { Paperclip, Pencil } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useToggleUserTaskArchive } from "src/api/archived-user-assignee-task/archived-user-assignee-task"
 import { useToggleWorkspaceTaskArchive } from "src/api/archived-workspace-assignee/archived-workspace-assignee"
-import { PermissionType, type TaskWithWorkspaceDto } from "src/api/model"
+import { getListMessagesQueryKey } from "src/api/message/message"
+import {
+	PermissionType,
+	type TaskRowDto,
+	type TaskWithWorkspaceDto,
+} from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import {
 	getGetTaskQueryKey,
@@ -13,6 +18,7 @@ import {
 	useDeleteTask,
 } from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
+import { viewTasks } from "src/api/user-viewed-tasks/user-viewed-tasks"
 import type { AppMutationMeta } from "src/functions/mutation-toast-cache"
 import {
 	archiveTaskMessage,
@@ -22,7 +28,7 @@ import {
 import { useAttachmentDownload } from "src/hooks/useAttachmentDownload"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
-import { invalidateQueries } from "src/query-client"
+import { invalidateQueries, queryClient } from "src/query-client"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import EditDiscussionModal from "../CreateTasksFromDiscussion/EditDiscussionModal"
 import { CommentsDivider } from "../shared/CommentsDivider"
@@ -95,6 +101,14 @@ function TaskDetailPanel({
 	useEffect(() => {
 		requestAnimationFrame(checkCommentsDividerVisibility)
 	}, [])
+
+	useEffect(() => {
+		async function markTaskView(taskId: number) {
+			await viewTasks({ taskId })
+		}
+
+		markTaskView(id)
+	}, [onClose])
 
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const isManager = myPermission?.type === PermissionType.MANAGER
@@ -173,7 +187,26 @@ function TaskDetailPanel({
 	}
 
 	function handleOpenChange(open: boolean) {
-		if (!open) onClose()
+		if (!open) {
+			const update = (rows: TaskRowDto[] | undefined) =>
+				rows?.map((row) =>
+					row.id === id
+						? { ...row, viewedInTable: true, viewedMessages: true }
+						: row,
+				)
+
+			const workspaceKey = getListTaskRowsQueryKey(
+				...(workspaceId ? [{ workspaceId }] : []),
+			)
+			queryClient.setQueriesData({ queryKey: workspaceKey }, update)
+
+			queryClient.setQueriesData(
+				{ queryKey: getListPersonalTaskRowsQueryKey() },
+				update,
+			)
+			invalidateQueries([getListMessagesQueryKey({ taskIds: [id] })])
+			onClose()
+		}
 	}
 
 	function handleEdit() {

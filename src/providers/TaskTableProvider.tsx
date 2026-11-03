@@ -21,6 +21,7 @@ interface TaskTableContextValue {
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
 	titleExpanded: boolean
 	onToggleTitleExpanded(): void
+	showUnreadDot: boolean
 	getHandlers(): TaskTableHandlers
 }
 
@@ -30,6 +31,7 @@ interface TaskTableProviderProps extends PropsWithChildren {
 	filterOptionsMap?: Record<FilterOptions, FilterOption[]>
 	titleExpanded?: boolean
 	onToggleTitleExpanded?(): void
+	showUnreadDot?: boolean
 	handlers?: TaskRowHandlers
 }
 
@@ -41,6 +43,7 @@ export function TaskTableProvider({
 	filterOptionsMap,
 	titleExpanded = false,
 	onToggleTitleExpanded = () => {},
+	showUnreadDot = false,
 	handlers,
 	children,
 }: TaskTableProviderProps) {
@@ -58,6 +61,7 @@ export function TaskTableProvider({
 			searchQuery,
 			statuses,
 			filterOptionsMap,
+			showUnreadDot,
 			titleExpanded,
 			onToggleTitleExpanded,
 			getHandlers: () => handlersRef.current,
@@ -67,6 +71,7 @@ export function TaskTableProvider({
 			statuses,
 			filterOptionsMap,
 			titleExpanded,
+			showUnreadDot,
 			onToggleTitleExpanded,
 		],
 	)

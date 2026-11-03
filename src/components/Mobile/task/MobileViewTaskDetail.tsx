@@ -7,28 +7,30 @@ import { MobileTaskComments } from "./MobileTaskComments"
 import { MobileTaskInfo } from "./MobileTaskInfo"
 
 interface MobileViewTaskDetailProps {
-  task?: TaskWithWorkspaceDto
+	task?: TaskWithWorkspaceDto
 }
 
 export function MobileViewTaskDetail({ task }: MobileViewTaskDetailProps) {
-  const router = useRouter()
+	const router = useRouter()
 
-  function handleBackRedirect() {
-    router.history.back()
-  }
+	function handleBackRedirect() {
+		router.history.back()
+	}
 
-  return task && (
-    <PageShell>
-      <MobileHeader variant="task" onBack={handleBackRedirect} />
-      <TaskContainer>
-        <MobileTaskInfo task={task} />
-        <Wrapper>
-          <MobileTaskAssignees task={task} />
-          <MobileTaskComments task={task} />
-        </Wrapper>
-      </TaskContainer>
-    </PageShell>
-  )
+	return (
+		task && (
+			<PageShell>
+				<MobileHeader variant="task" onBack={handleBackRedirect} />
+				<TaskContainer>
+					<MobileTaskInfo task={task} />
+					<Wrapper>
+						<MobileTaskAssignees task={task} />
+						<MobileTaskComments task={task} />
+					</Wrapper>
+				</TaskContainer>
+			</PageShell>
+		)
+	)
 }
 
 const PageShell = styled.div`

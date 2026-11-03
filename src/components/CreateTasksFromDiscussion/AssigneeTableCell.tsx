@@ -68,7 +68,7 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 				selectedAssignees={assigneeIds}
 				onToggle={handleToggleAssignee}
 				trigger={({ search, onSearchChange, open }) => (
-					<CompactTriggerButton type="button">
+					<CompactTriggerButton>
 						<CompactChevron size={16} />
 
 						{open || assigneeIds.length === 0 ? (
@@ -138,7 +138,7 @@ const CollapsedAssigneeLabel = styled.span`
   white-space: nowrap;
 `
 
-const CompactTriggerButton = styled.button`
+const CompactTriggerButton = styled.div`
   direction: ltr;
   display: flex;
   align-items: center;

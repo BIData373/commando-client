@@ -4,16 +4,20 @@ import type { TaskRowDto } from "src/api/model"
 import type { AppTableFeatures } from "src/consts/table-features"
 import { useTaskTable } from "src/providers/TaskTableProvider"
 import HighlightMatch from "../../shared/HighlightMatch"
+import { UnreadDot } from "../../shared/UnreadDot"
 
 export function SerialIdCell<TTask extends TaskRowDto, TValue>({
 	row: {
-		original: { serialId },
+		original: { serialId, viewedInTable },
 	},
 }: CellContext<AppTableFeatures, TTask, TValue>) {
-	const { searchQuery } = useTaskTable()
+	const { searchQuery, showUnreadDot } = useTaskTable()
 
 	return (
 		<IdCell>
+			{showUnreadDot && !viewedInTable && (
+				<UnreadDot $right={6.5} $top={18.5} />
+			)}
 			<HighlightMatch
 				text={String(serialId)}
 				query={searchQuery}

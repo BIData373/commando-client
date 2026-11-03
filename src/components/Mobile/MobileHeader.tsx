@@ -13,7 +13,7 @@ interface MobileHeaderProps {
 
 export default function MobileHeader({
 	icon,
-	title = '',
+	title = "",
 	variant,
 	onBack,
 }: MobileHeaderProps) {

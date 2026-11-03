@@ -2,17 +2,10 @@ import { endOfDay, isWithinInterval, startOfDay, startOfToday } from "date-fns"
 import { useDeferredValue, useMemo } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { formatDateShort } from "src/functions/date-utils"
+import { normalizeSearchText } from "src/functions/search-utils"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { DATE_TYPE } from "src/utils/date-utils"
 import { matchesQuickFilter } from "src/utils/filter-utils"
-import { useFuse } from "./useFuse"
-
-const FUSE_OPTIONS = {
-	threshold: 0.3,
-	ignoreLocation: true,
-	minMatchCharLength: 1,
-	keys: ["searchText"],
-}
 
 function getTaskDate<T extends TaskRowDto>(
 	task: T,
@@ -40,7 +33,7 @@ function buildTaskSearchText<T extends TaskRowDto>(
 ): string {
 	const values = [
 		String(task.serialId),
-		task.title,
+		normalizeSearchText(task.title),
 		task.description,
 		task.source?.name,
 		task.source?.date ? formatDateShort(task.source.date) : undefined,
@@ -88,12 +81,14 @@ export function useFilteredTasks<T extends TaskRowDto>(
 		[tasks, additionalSearchValues],
 	)
 
-	const deferredSearchQuery = useDeferredValue(searchQuery)
+	const deferredSearchQuery = useDeferredValue(normalizeSearchText(searchQuery))
 
-	const searchResults = useFuse(
-		searchableTasks,
-		deferredSearchQuery,
-		FUSE_OPTIONS,
+	const searchResults = useMemo(
+		() =>
+			searchableTasks.filter((task) =>
+				task.searchText.includes(deferredSearchQuery),
+			),
+		[searchableTasks, searchQuery, deferredSearchQuery],
 	)
 
 	const searchedTasks = useMemo(

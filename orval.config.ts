@@ -48,7 +48,7 @@ export default defineConfig({
           useSuspenseQuery: false,
           useSuspenseInfiniteQuery: false,
 
-          shouldExportQueryKey: true,
+          shouldExportKeys: true,
           shouldSplitQueryKey: false,
           useOperationIdAsQueryKey: false,
         }

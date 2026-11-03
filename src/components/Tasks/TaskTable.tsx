@@ -311,6 +311,7 @@ function TaskTable<TTask extends TaskRowDto>({
 			filterOptionsMap={filterOptionsMap}
 			titleExpanded={titleExpanded}
 			onToggleTitleExpanded={handleToggleTitleExpanded}
+			showUnreadDot
 			handlers={rowHandlers as TaskRowHandlers}
 		>
 			<TableWrapper data-title-expanded={titleExpanded || undefined}>

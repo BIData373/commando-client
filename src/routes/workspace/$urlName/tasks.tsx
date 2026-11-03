@@ -38,6 +38,7 @@ function TasksPage() {
 	const { view, quickFilter, statusFilter, deadlineTypeFilter } =
 		Route.useSearch()
 	const { urlName } = Route.useParams()
+
 	const fromViewMore = useLocation({
 		select: (location) => location.state.fromViewMore,
 	})
