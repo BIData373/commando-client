@@ -16,6 +16,8 @@ probe.innerHTML = '<i style="height:1px"></i><i style="height:1px"></i>'
 document.body.appendChild(probe)
 const flexGapSupported = probe.scrollHeight === 3
 probe.remove()
+// Tells styles.css to space Tailwind gap-* flex containers with margins
+document.documentElement.classList.toggle("no-flex-gap", !flexGapSupported)
 
 // Single-value `gap` becomes margins between flex children; wrapping is not handled
 const flexGapMiddleware: Middleware = (
