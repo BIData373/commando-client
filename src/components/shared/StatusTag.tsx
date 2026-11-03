@@ -111,6 +111,7 @@ const Tag = styled.span<{
   cursor: ${({ $interactive, $editable }) =>
 		$interactive ? ($editable ? "pointer" : "not-allowed") : "default"};
   ${({ $fontColor }) => css`color: ${$fontColor};`}
+  background: var(--chip-bg);
   ${({ $backgroundColor }) => css`background:  rgb(from ${$backgroundColor} r g b / 0.1);`}
 
   :focus-visible {
