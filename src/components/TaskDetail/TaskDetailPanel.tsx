@@ -308,7 +308,7 @@ function TaskDetailPanel({
 									taskId={id}
 									editable={editable}
 									onUpdate={handleUpdateTaskStatus}
-									isArchived={!!workspaceArchivedAt}
+									isWorkspaceArchived={!!workspaceArchivedAt}
 								/>
 							</StatusTagContainer>
 						)
