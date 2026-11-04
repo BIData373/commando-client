@@ -16,12 +16,14 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { toast } from "src/components/Toast/toast-api"
+
 import type { AppTableFeatures } from "src/consts/table-features"
 import {
 	buildRowMenuActions,
 	type TaskArchiveEntry,
 	type TaskRowHandlers,
 } from "src/functions/row-actions"
+
 import {
 	deleteTaskMessage,
 	updateStatusMessage,
@@ -172,7 +174,10 @@ function TaskTable<TTask extends TaskRowDto>({
 
 		setColumnsFilters(newFilters)
 		setAssigneeFilter(tableAssigneeColumnValue)
-		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
+		onFiltersChange?.(
+			tableStatusColumnValue,
+			without(tableDeadlineColumnValue, EMPTY_FILTER_VALUE as DeadlineType),
+		)
 	}
 
 	const tasksByRowKey = useMemo(() => keyBy(tasks, "rowKey"), [tasks])
@@ -255,7 +260,10 @@ function TaskTable<TTask extends TaskRowDto>({
 		)
 	}
 
-	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
+	const filterOptionsMap = useMemo(
+		() => buildFilterOptionsMap(tasks, true),
+		[tasks],
+	)
 
 	const groupedTasks = useMemo(() => groupRowsByTask(tasks), [tasks])
 
