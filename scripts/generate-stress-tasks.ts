@@ -73,7 +73,7 @@ const rows = Array.from({ length: TASKS_COUNT }, (_, index) => {
 		...template,
 		id,
 		serialId: id,
-		rowKey: `${id}_${(template.assignee as { id?: number } | undefined)?.id ?? 0}`,
+		rowKey: `${id}_${template.assignee?.id ?? 0}`,
 		title: `Task ${id} ${template.title}`,
 		createdAt,
 		updatedAt: createdAt,
@@ -83,4 +83,5 @@ const rows = Array.from({ length: TASKS_COUNT }, (_, index) => {
 writeFileSync(OUTPUT_PATH, JSON.stringify(rows))
 console.log(`Wrote ${rows.length} tasks to ${OUTPUT_PATH}`)
 
+// vite-node keeps its dev server alive after the script finishes
 process.exit(0)
