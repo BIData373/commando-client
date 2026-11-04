@@ -7,12 +7,17 @@ import { ErrorModalProvider } from "./providers/ErrorModalProvider"
 import { queryClient } from "./query-client"
 import router from "./router"
 import { USE_MOCK_API } from "./utils/env-utils"
+import {
+	getStressTasksHandler,
+	IS_STRESS_TASKS_ENABLED,
+} from "./utils/stress-tasks"
 import { AuthenticationWrapper } from "./wrappers/AuthenticationWrapper"
 import MatomoWrapper from "./wrappers/MatomoWrapper"
 
-const handlers = Object.values(mockHandlers).flatMap((getHandlers) =>
-	getHandlers(),
-)
+const handlers = [
+	...(IS_STRESS_TASKS_ENABLED ? [getStressTasksHandler()] : []),
+	...Object.values(mockHandlers).flatMap((getHandlers) => getHandlers()),
+]
 
 async function enableMocking() {
 	if (USE_MOCK_API) {
