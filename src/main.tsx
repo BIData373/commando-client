@@ -26,6 +26,7 @@ async function enableMocking() {
 
 		return worker.start({
 			onUnhandledRequest: "bypass",
+			quiet: IS_STRESS_TASKS_ENABLED,
 		})
 	}
 }

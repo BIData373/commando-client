@@ -1,26 +1,14 @@
-import type { TaskRowDto } from "src/api/model"
-import {
-	getListTaskRowsMockHandler,
-	getListTaskRowsResponseMock,
-} from "src/api/task/task.msw"
+import { bypass, http } from "msw"
 
-const STRESS_TASKS_COUNT = Number(import.meta.env.VITE_STRESS_TASKS_COUNT ?? 0)
+const STRESS_TASKS_URL = "/mocks/stress-tasks.json"
 
-export const IS_STRESS_TASKS_ENABLED = STRESS_TASKS_COUNT > 0
+export const IS_STRESS_TASKS_ENABLED =
+	import.meta.env.VITE_STRESS_TASKS === "true"
 
-function buildStressRows(count: number): TaskRowDto[] {
-	const rows: TaskRowDto[] = []
-	while (rows.length < count) {
-		for (const row of getListTaskRowsResponseMock()) {
-			const id = rows.length + 1
-			rows.push({ ...row, id, serialId: id, title: `Task ${id} ${row.title}` })
-			if (rows.length === count) break
-		}
-	}
-	return rows
-}
-
+/**
+ * Serves the pre-generated tasks file (see `npm run stress:generate`) instead of
+ * building rows at request time, so the mock adds no CPU cost to what is measured.
+ */
 export function getStressTasksHandler() {
-	const rows = buildStressRows(STRESS_TASKS_COUNT)
-	return getListTaskRowsMockHandler(() => rows)
+	return http.get("*/task/rows", () => fetch(bypass(STRESS_TASKS_URL)))
 }
