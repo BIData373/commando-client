@@ -32,7 +32,7 @@ const TagChip = styled.span`
   background: var(--card-background);
   border: 1px solid var(--chip-line);
   color: var(--sea-ink);
-  white-space: nowrap;
+  word-break: break-word;
 
   ${MOBILE_MEDIA_QUERY} {
     font-size: var(--fs-base);
