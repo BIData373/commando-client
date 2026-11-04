@@ -83,20 +83,8 @@ export function useFilteredTasks<T extends TaskRowDto>(
 
 	const deferredSearchQuery = useDeferredValue(normalizeSearchText(searchQuery))
 
-	const searchResults = useMemo(
-		() =>
-			searchableTasks.filter((task) =>
-				task.searchText.includes(deferredSearchQuery),
-			),
-		[searchableTasks, searchQuery, deferredSearchQuery],
-	)
-
-	const searchedTasks = useMemo(
-		() => searchResults.map(({ task }) => task),
-		[searchResults],
-	)
-
-	return useMemo(() => {
+	// Quick filters and date range don't depend on the search text, so typing must not re-run them
+	const matchingFilterTasks = useMemo(() => {
 		const today = startOfToday()
 		const quickFilters = skipQuickFilters ? [] : [...activeQuickFilters]
 		const interval =
@@ -126,16 +114,28 @@ export function useFilteredTasks<T extends TaskRowDto>(
 			return date && isWithinInterval(date, interval)
 		}
 
-		return searchedTasks.filter(
-			(task) => matchesAnyFilter(task) && matchesDateRange(task),
+		return new Set(
+			tasks.filter((task) => matchesAnyFilter(task) && matchesDateRange(task)),
 		)
 	}, [
+		tasks,
 		activeQuickFilters,
 		skipQuickFilters,
-		searchedTasks,
 		additionalFilter,
 		from,
 		dateType,
 		to,
 	])
+
+	return useMemo(
+		() =>
+			searchableTasks
+				.filter(
+					({ task, searchText }) =>
+						matchingFilterTasks.has(task) &&
+						searchText.includes(deferredSearchQuery),
+				)
+				.map(({ task }) => task),
+		[searchableTasks, matchingFilterTasks, deferredSearchQuery],
+	)
 }
