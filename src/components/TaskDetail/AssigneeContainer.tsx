@@ -83,7 +83,8 @@ export const AssigneeContainer = ({
 						taskId={taskId}
 						assigneeId={assignee.id}
 						editable={editable}
-						isArchived={!!personalArchivedAt || !!workspaceArchivedAt}
+						isPersonalArchived={!!personalArchivedAt}
+						isWorkspaceArchived={!!workspaceArchivedAt}
 						onUpdate={handleUpdateAssigneeStatus}
 					/>
 				)}
