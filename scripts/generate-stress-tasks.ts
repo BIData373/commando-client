@@ -10,6 +10,7 @@ const MAX_TAGS_PER_ROW = 3
 const MAX_OTHER_ASSIGNEES_PER_ROW = 2
 const FAKER_SEED = 1
 const MS_BETWEEN_TASKS = 60_000
+const BROKEN_URL_KEYS = new Set(["icon", "iconName"])
 const AUDIT_KEYS = new Set([
 	"createdBy",
 	"updatedBy",
@@ -31,7 +32,11 @@ function pruneAudit(value: unknown): unknown {
 	return Object.fromEntries(
 		Object.entries(value)
 			.filter(([key]) => !AUDIT_KEYS.has(key))
-			.map(([key, nested]) => [key, pruneAudit(nested)]),
+			.map(([key, nested]) => [
+				key,
+				// Random strings would resolve to relative <img src> requests
+				BROKEN_URL_KEYS.has(key) ? null : pruneAudit(nested),
+			]),
 	)
 }
 

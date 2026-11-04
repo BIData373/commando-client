@@ -46,12 +46,32 @@ export const dashboardFilterDataTypeKey = `${getDashboardFilterKey}-type`
 export const dashboardFilterRangeKey = `${getDashboardFilterKey}-range`
 export const dashboardFilterAssigneeKey = `${getDashboardFilterKey}-assignee`
 
+interface DaysUntilEntry {
+	todayMs: number
+	days: number
+}
+
+/** differenceInDays is timezone-aware and costly; it ran per row on every keystroke, so cache it per due date */
+const daysUntilCache = new WeakMap<Date, DaysUntilEntry>()
+
+function getDaysUntil(dueDate: Date, today: Date): number {
+	const todayMs = today.getTime()
+	const cached = daysUntilCache.get(dueDate)
+	if (cached?.todayMs === todayMs) {
+		return cached.days
+	}
+
+	const days = differenceInDays(dueDate, today)
+	daysUntilCache.set(dueDate, { todayMs, days })
+	return days
+}
+
 export function matchesQuickFilter(
 	task: TaskRowDto,
 	filter: QuickFilter,
 	today: Date = startOfToday(),
 ): boolean {
-	const daysUntil = task.dueDate ? differenceInDays(task.dueDate, today) : null
+	const daysUntil = task.dueDate ? getDaysUntil(task.dueDate, today) : null
 	const isNotCompleted = task.status.type !== WorkspaceStatusType.COMPLETED
 	const isNotImmediate = task.deadlineType !== DeadlineType.IMMEDIATE
 
