@@ -38,6 +38,7 @@ const PageShell = styled.div`
     flex-direction: column;
     height: 100%;
     min-height: 0;
+    background: var(--background-mobile);
 `
 
 const TaskContainer = styled.div`
