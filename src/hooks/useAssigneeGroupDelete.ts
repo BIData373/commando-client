@@ -1,14 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query"
-import { useRef } from "react"
 import {
 	getListAssigneeGroupsQueryKey,
 	useDeleteAssigneeGroup,
 } from "src/api/assignee-group/assignee-group"
 import type { AssigneeGroupDto } from "src/api/model"
-import {
-	DEFAULT_TOAST_DURATION_MS,
-	toast,
-} from "src/components/Toast/toast-api"
+import { toast } from "src/components/Toast/toast-api"
 import {
 	deleteAssigneeGroupMessage,
 	UNDO_LABEL,
@@ -23,9 +19,6 @@ export function useAssigneeGroupDelete() {
 
 	const queryClient = useQueryClient()
 	const queryKey = getListAssigneeGroupsQueryKey({ workspaceId })
-	const pendingDeletes = useRef<Map<number, ReturnType<typeof setTimeout>>>(
-		new Map(),
-	)
 
 	const { mutate: deleteAssigneeGroup } = useDeleteAssigneeGroup({
 		mutation: {
@@ -42,21 +35,20 @@ export function useAssigneeGroupDelete() {
 			old.filter((group) => group.id !== groupId),
 		)
 
-		const timeoutId = setTimeout(() => {
-			pendingDeletes.current.delete(groupId)
-			deleteAssigneeGroup({ pathParams: { id: groupId } })
-		}, DEFAULT_TOAST_DURATION_MS)
-
-		pendingDeletes.current.set(groupId, timeoutId)
+		const undone = { current: false }
 
 		function handleUndo() {
-			clearTimeout(timeoutId)
-			pendingDeletes.current.delete(groupId)
+			undone.current = true
 			queryClient.setQueryData(queryKey, previous)
 		}
 
 		toast.success(deleteAssigneeGroupMessage, {
 			actions: { variant: "cancel", label: UNDO_LABEL, onClick: handleUndo },
+			onDismiss() {
+				if (!undone.current) {
+					deleteAssigneeGroup({ pathParams: { id: groupId } })
+				}
+			},
 		})
 	}
 
