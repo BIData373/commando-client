@@ -28,8 +28,8 @@ export function useSaveWorkspaceVisit({
 			)
 		}
 
-		function handleBeforeUnload() {
-			upsertUserWorkspaceVisit(
+		async function handleBeforeUnload() {
+			await upsertUserWorkspaceVisit(
 				{ workspaceId },
 				{ adapter: "fetch", fetchOptions: { keepalive: true } },
 			)

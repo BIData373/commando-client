@@ -41,7 +41,7 @@ const EMPTY_STATES: Record<EmptyStateKey, EmptyCardStateProps> = {
 	},
 	[QuickFilter.unread]: {
 		imgSrc: noResultsFound,
-		title: <>לא נמצאו הנחיות חדשות</>,
+		title: "לא נמצאו הנחיות חדשות",
 		description: "יש לנסות סינון אחר",
 	},
 	search: {
