@@ -50,6 +50,7 @@ const EmptyState = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 12px;
   padding-top: 24px;
   max-width: none;
   text-align: center;
