@@ -113,12 +113,8 @@ export function OverflowRow({
 
 		recalculate()
 
-		// Item widths can change without the container resizing
 		const ro = new ResizeObserver(recalculate)
 		ro.observe(container)
-		for (const el of itemRefs.current.slice(0, items.length)) {
-			if (el) ro.observe(el)
-		}
 
 		return () => ro.disconnect()
 	}, [itemsSignature, gap, preserveOrder])
