@@ -73,6 +73,11 @@ export function OverflowRow({
 	const itemRefs = useRef<(HTMLElement | null)[]>([])
 	const overflowEl = useRef<HTMLElement | null>(null)
 
+	// `items` is a new array on every parent render; keying the effect on it re-measured
+	// (forcing layout) and re-created the observer for every visible row on every scroll tick
+	const itemsSignature = items.map((item, index) => item.key ?? index).join("|")
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: itemsSignature stands in for `items`
 	useLayoutEffect(() => {
 		const container = containerRef.current
 		if (!container) return
@@ -108,11 +113,15 @@ export function OverflowRow({
 
 		recalculate()
 
+		// Item widths can change without the container resizing
 		const ro = new ResizeObserver(recalculate)
 		ro.observe(container)
+		for (const el of itemRefs.current.slice(0, items.length)) {
+			if (el) ro.observe(el)
+		}
 
 		return () => ro.disconnect()
-	}, [items, gap, preserveOrder])
+	}, [itemsSignature, gap, preserveOrder])
 
 	const remaining = items.length - layout.visibleCount
 	const isFullyVisible = remaining === 0
