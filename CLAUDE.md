@@ -189,8 +189,8 @@ Some users run old proprietary Android devices stuck on Chrome 83. Until we migr
 
 - **Already handled, do not redo:** logical `padding/margin/inset/border-inline|block` shorthands, flex `gap` in Emotion and numeric Tailwind `gap-*`, `translate`/`rotate` utilities, `rtl:`/`ltr:` variants. See `src/emotion-cache.ts` and `src/styles.css`.
 - **Needs a fallback declaration first:** relative colors (`rgb(from …)`, `oklch(from …)`). Put a plain value such as `var(--chip-bg)` before it.
-- **Avoid or guard:** `aspect-ratio`, `:has()`, Tailwind `group-*`/`peer-*`/`has-*` for layout, `oklch()` literals in TSX (use a token in `styles.css`), `crypto.randomUUID` (use `generateUuid` from `src/utils/uuid-utils.ts`).
-- **Generated file:** `public/mockServiceWorker.js` has a one-line `crypto.randomUUID` fallback. Re-apply it if `msw init` or an msw upgrade regenerates the file.
+- **Avoid or guard:** `aspect-ratio`, `:has()`, Tailwind `group-*`/`peer-*`/`has-*` for layout, `oklch()` literals in TSX (use a token in `styles.css`), `crypto.randomUUID` (never use it; use `generateUuid` from `src/utils/uuid-utils.ts`).
+- **Generated file:** `public/mockServiceWorker.js` has an inline `getRandomValues` UUID in place of `crypto.randomUUID`. Re-apply it if `msw init` or an msw upgrade regenerates the file.
 - **Verify:** check layout changes in Chromium 83 at iPhone size, not only in a modern browser.
 
 # Workflow (MANDATORY — follow for every file)
