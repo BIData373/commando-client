@@ -71,6 +71,9 @@ const EmptyDescription = styled.div`
   color: var(--sea-ink-soft);
   line-height: 22px;
   direction: rtl;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `
 
 const EmptyImage = styled.img`
