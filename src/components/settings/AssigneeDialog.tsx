@@ -1,13 +1,11 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
-import { Pencil } from "lucide-react"
 import { useMemo, useState } from "react"
 import {
 	getGetAssigneeQueryKey,
 	getListAssigneesQueryKey,
 	useCreateAssignee,
 	useUpdateAssignee,
-	useUpdateAssigneeStatusEditable,
 } from "src/api/assignee/assignee"
 import type {
 	AssigneeDto,
@@ -19,15 +17,13 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
-import {
-	getUserStatusEditableDisabledReason,
-	WORKSPACE_STATUS_EDITABLE_DISABLED,
-} from "src/functions/status-editable-messages"
+import { getUserStatusEditableDisabledReason } from "src/functions/status-editable-messages"
 import {
 	addResponsibleMessage,
 	updateResponsibleMessage,
 } from "src/functions/toast-messages"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
+import { useUpdateAssigneeStatus } from "src/hooks/useUpdateAssigneeStatus"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries, queryClient } from "src/query-client"
 import { CancelButton } from "../shared/CancelButton"
@@ -35,13 +31,13 @@ import { FormField } from "../shared/FormField"
 import InputWithCount from "../shared/InputWithCount"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
-import { SettingToggleRow } from "../shared/SettingToggleRow"
 import {
 	Dialog,
 	DialogClose,
 	DialogDescription,
 	DialogTitle,
 } from "../ui/dialog"
+import { AssigneeStatusEditableToggle } from "./AssigneeStatusEditableToggle"
 import { type AssigneeFormUser, AssigneeUsersList } from "./AssigneeUsersList"
 import { ColorPicker, PRESET_COLORS } from "./ColorPicker"
 import { DropdownUsers } from "./DropdownUsers"
@@ -139,18 +135,7 @@ export function AssigneeDialog({
 			onSuccess: handleSubmitSuccess,
 		},
 	})
-	const { mutateAsync: updateAssigneeStatus } = useUpdateAssigneeStatusEditable(
-		{
-			mutation: {
-				onSuccess(_, { params: { assigneeId } }) {
-					invalidateQueries([
-						assigneesQueryKey,
-						getGetAssigneeQueryKey({ id: assigneeId }),
-					])
-				},
-			},
-		},
-	)
+	const { updateAssigneeStatus } = useUpdateAssigneeStatus(workspaceId)
 
 	const randomColor = useMemo(() => {
 		if (!open) {
@@ -227,9 +212,7 @@ export function AssigneeDialog({
 
 		// Users added in this dialog have no id until the assignee is saved
 		if (assignee && userId) {
-			updateAssigneeStatus({
-				params: { statusEditable: checked, assigneeId: assignee.id, userId },
-			})
+			updateAssigneeStatus(assignee.id, checked, userId)
 		}
 	}
 
@@ -241,9 +224,7 @@ export function AssigneeDialog({
 		form.setFieldValue("statusEditable", checked)
 
 		if (assignee) {
-			updateAssigneeStatus({
-				params: { statusEditable: checked, assigneeId: assignee.id },
-			})
+			updateAssigneeStatus(assignee.id, checked)
 		}
 	}
 
@@ -340,29 +321,11 @@ export function AssigneeDialog({
 
 					<form.Subscribe selector={(s) => s.values.statusEditable}>
 						{(statusEditable) => (
-							<StatusEditableGroup>
-								<ToggleRowWrapper>
-									<SettingToggleRow
-										label="אפשר למכותבים לעדכן סטטוס"
-										tooltip={
-											<p>
-												קובע אם משתמשים המכותבים לאחראי זה רשאים לעדכן סטטוס
-												ב’איזור האישי’.
-												<br />
-												ניתן להגביל הרשאה זו לחלק מהמכותבים או לכולם.
-											</p>
-										}
-										icon={<Pencil size={18} />}
-										checked={assigneeStatusEditable && statusEditable}
-										disabled={!assigneeStatusEditable}
-										disabledTooltip={WORKSPACE_STATUS_EDITABLE_DISABLED}
-										onCheckedChange={handleAssigneeStatusEditableChange}
-									/>
-								</ToggleRowWrapper>
-								<StatusEditableDescription>
-									חל על כל המכותבים, ניתן לכבות את האפשרות למכותבים מסוימים.
-								</StatusEditableDescription>
-							</StatusEditableGroup>
+							<AssigneeStatusEditableToggle
+								checked={assigneeStatusEditable && statusEditable}
+								disabled={!assigneeStatusEditable}
+								onCheckedChange={handleAssigneeStatusEditableChange}
+							/>
 						)}
 					</form.Subscribe>
 
@@ -514,22 +477,6 @@ const ColorLabel = styled.span`
   color: var(--text-color);
   line-height: 22px;
   white-space: nowrap;
-`
-
-const StatusEditableGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`
-
-const ToggleRowWrapper = styled.div`
-  width: fit-content;
-`
-
-const StatusEditableDescription = styled.span`
-  font-size: var(--fs-btn);
-  line-height: 22px;
-  color: var(--text-color-400);
 `
 
 const SearchRow = styled.div`

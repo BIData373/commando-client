@@ -6,7 +6,7 @@ import type { AssigneesDto } from "src/api/model"
 import { WORKSPACE_STATUS_EDITABLE_DISABLED } from "src/functions/status-editable-messages"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
-import { DisabledReasonTooltip } from "../shared/DisabledReasonTooltip"
+import { DisabledReasonSwitch } from "../shared/DisabledReasonSwitch"
 import { OverflowRow } from "../shared/OverflowRow"
 import { Badge } from "../ui/badge"
 import {
@@ -17,7 +17,6 @@ import {
 	CardTitle,
 } from "../ui/card"
 import { Separator } from "../ui/separator"
-import { Switch } from "../ui/switch"
 import { DeleteAssigneePopconfirm } from "./DeleteAssigneePopconfirm"
 
 interface AssigneeCardProps {
@@ -51,6 +50,10 @@ export function AssigneeCard({
 
 	function handleToggleClick(e: MouseEvent) {
 		e.stopPropagation()
+	}
+
+	function handleStatusEditableChange(checked: boolean) {
+		onStatusEditableChange(assignee.id, checked)
 	}
 
 	return (
@@ -99,21 +102,12 @@ export function AssigneeCard({
 				$pushToEnd={users.length === 0}
 				onClick={handleToggleClick}
 			>
-				<DisabledReasonTooltip
-					reason={
-						assigneeStatusEditable
-							? undefined
-							: WORKSPACE_STATUS_EDITABLE_DISABLED
-					}
-				>
-					<StyledSwitch
-						checked={assigneeStatusEditable && statusEditable}
-						disabled={!assigneeStatusEditable}
-						onCheckedChange={(checked) =>
-							onStatusEditableChange(assignee.id, checked)
-						}
-					/>
-				</DisabledReasonTooltip>
+				<DisabledReasonSwitch
+					checked={assigneeStatusEditable && statusEditable}
+					disabled={!assigneeStatusEditable}
+					disabledReason={WORKSPACE_STATUS_EDITABLE_DISABLED}
+					onCheckedChange={handleStatusEditableChange}
+				/>
 				<StatusLabel>אפשר לעדכן סטטוס</StatusLabel>
 			</StatusToggleRow>
 		</StyledCard>
@@ -216,8 +210,4 @@ const StatusLabel = styled.span`
 	font-size: var(--fs-base);
 	color: var(--sea-ink-soft);
 	white-space: nowrap;
-`
-
-const StyledSwitch = styled(Switch)`
-  cursor: pointer;
 `

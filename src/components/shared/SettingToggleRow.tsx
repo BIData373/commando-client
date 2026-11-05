@@ -1,14 +1,13 @@
 import styled from "@emotion/styled"
 import { CircleHelp } from "lucide-react"
 import type { ReactNode } from "react"
-import { Switch } from "src/components/ui/switch"
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from "src/components/ui/tooltip"
-import { DisabledReasonTooltip } from "./DisabledReasonTooltip"
+import { DisabledReasonSwitch } from "./DisabledReasonSwitch"
 
 interface SettingToggleRowProps {
 	label?: string
@@ -31,14 +30,13 @@ export function SettingToggleRow({
 }: SettingToggleRowProps) {
 	return (
 		<Row>
-			<DisabledReasonTooltip reason={disabled ? disabledTooltip : undefined}>
-				<StyledSwitch
-					size="sm"
-					checked={checked}
-					disabled={disabled}
-					onCheckedChange={onCheckedChange}
-				/>
-			</DisabledReasonTooltip>
+			<DisabledReasonSwitch
+				size="sm"
+				checked={checked}
+				disabled={disabled}
+				disabledReason={disabledTooltip}
+				onCheckedChange={onCheckedChange}
+			/>
 			<Info>
 				<Icon $disabled={!!disabled}>{icon}</Icon>
 				<Label $disabled={!!disabled}>{label}</Label>
@@ -57,14 +55,6 @@ export function SettingToggleRow({
 	)
 }
 
-const StyledSwitch = styled(Switch)`
-  cursor: pointer;
-
-  &[data-disabled] {
-    background: var(--Text-color-text-placeholder);
-    opacity: 0.65;
-  }
-`
 const Row = styled.div`
   display: flex;
   align-items: center;

@@ -1,28 +1,11 @@
 import styled from "@emotion/styled"
-import { Mail, Pencil, Plus, Search } from "lucide-react"
-import { type ChangeEvent, useState } from "react"
-import {
-	getGetAssigneeQueryKey,
-	useListAssignees,
-	useUpdateAssigneeStatusEditable,
-} from "src/api/assignee/assignee"
-import { useUpdateWorkspace } from "src/api/workspace/workspace"
-import { AssigneeCard } from "src/components/settings/AssigneeCard"
-import { PrimaryButton } from "src/components/shared/PrimaryButton"
-import { SettingToggleRow } from "src/components/shared/SettingToggleRow"
-import {
-	InputGroup,
-	InputGroupAddon,
-	InputGroupInput,
-} from "src/components/ui/input-group"
-import { updateEnvironmentMessage } from "src/functions/toast-messages"
+import { useState } from "react"
+import { useListAssignees } from "src/api/assignee/assignee"
 import { useFilteredAssignees } from "src/hooks/useFilteredAssignees"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { invalidateQueries } from "src/query-client"
-import noResultsFound from "../../assets/empty-states/no-results-found.svg"
-import chatIcon from "../../assets/icons/chat.svg"
-import { EmptyCardState } from "../shared/EmptyCardState"
-import { Spinner } from "../ui/spinner"
+import { AssigneeCardList } from "./AssigneeCardList"
+import { AssigneesSettingsSections } from "./AssigneesSettingsSections"
+import { AssigneesToolbar } from "./AssigneesToolbar"
 
 export const assigneeStatusEditableId = "allow-status-update"
 
@@ -34,193 +17,36 @@ export function AssigneesContent({
 	onOpenCreateDialog,
 }: AssigneesContentProps) {
 	const {
-		workspace: {
-			id: workspaceId,
-			assigneeStatusEditable,
-			chatNotification,
-			mailNotification,
-		},
-		setWorkspace,
+		workspace: { id: workspaceId },
 	} = useWorkspace()
 
-	const {
-		data: assignees = [],
-		isLoading,
-		queryKey,
-	} = useListAssignees({ workspaceId })
-
-	const { mutateAsync: updateSettings } = useUpdateWorkspace({
-		mutation: {
-			meta: {
-				toast: { success: updateEnvironmentMessage, error: true },
-			},
-			onSuccess(data, { data: { assigneeStatusEditable } }) {
-				setWorkspace(data)
-
-				if (assigneeStatusEditable) {
-					invalidateQueries([
-						queryKey,
-						...assignees.map(({ id }) => getGetAssigneeQueryKey({ id })),
-					])
-				}
-			},
-		},
-	})
-
-	const { mutateAsync: updateAssigneeStatus } = useUpdateAssigneeStatusEditable(
-		{
-			mutation: {
-				onSuccess(_, { params: { assigneeId } }) {
-					invalidateQueries([
-						queryKey,
-						getGetAssigneeQueryKey({ id: assigneeId }),
-					])
-				},
-			},
-		},
-	)
+	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
 
 	const [searchQuery, setSearchQuery] = useState("")
 
 	const filteredAssignees = useFilteredAssignees(assignees, searchQuery)
 
-	function handleWorkspaceStatusEditableChange(checked: boolean) {
-		updateSettings({
-			pathParams: { id: workspaceId },
-			data: { assigneeStatusEditable: checked },
-		})
-	}
-
-	function handleAssigneeStatusEditableChange(
-		assigneeId: number,
-		checked: boolean,
-		userId?: number,
-	) {
-		updateAssigneeStatus({
-			params: {
-				statusEditable: checked,
-				assigneeId,
-				userId,
-			},
-		})
-	}
-
-	function handleChatNotificationsChange(checked: boolean) {
-		updateSettings({
-			pathParams: { id: workspaceId },
-			data: { chatNotification: checked },
-		})
-	}
-
-	function handleMailNotificationsChange(checked: boolean) {
-		updateSettings({
-			pathParams: { id: workspaceId },
-			data: { mailNotification: checked },
-		})
-	}
-
-	function handleSearchChange(e: ChangeEvent<HTMLInputElement>) {
-		setSearchQuery(e.target.value)
-	}
-
 	return (
 		<ContentRoot>
 			<StyledContent>
-				<SettingsSectionWrapper>
-					<SettingsSection>
-						<SettingToggleRow
-							label="הרשאות עריכת סטטוס מבוזרות"
-							tooltip="מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות כבויה – עדכון הסטטוס יתאפשר רק למנהלי הסביבה."
-							icon={<Pencil size={18} />}
-							checked={assigneeStatusEditable}
-							onCheckedChange={handleWorkspaceStatusEditableChange}
-						/>
-					</SettingsSection>
-					<SettingsSection>
-						<SettingToggleRow
-							label="שלח התראות בצ'אט למכותבים"
-							tooltip="שליחת התראות בצ'אט למכותבים בעת קבלת הנחיות"
-							icon={<img src={chatIcon} alt="" width={18} height={18} />}
-							checked={chatNotification}
-							onCheckedChange={handleChatNotificationsChange}
-						/>
-
-						<SettingToggleRow
-							label="שלח התראות במייל למכותבים"
-							tooltip="שליחת התראות במייל למכותבים בעת קבלת הנחיות"
-							icon={<Mail size={18} />}
-							checked={mailNotification}
-							onCheckedChange={handleMailNotificationsChange}
-						/>
-					</SettingsSection>
-				</SettingsSectionWrapper>
-				<ToolbarRow>
-					<SearchWrapper>
-						<StyledInputGroup>
-							<InputGroupAddon align="inline-start">
-								<Search size={16} />
-							</InputGroupAddon>
-							<InputGroupInput
-								value={searchQuery}
-								onChange={handleSearchChange}
-								placeholder="חפש קבוצת אחראים"
-							/>
-						</StyledInputGroup>
-					</SearchWrapper>
-					<PrimaryButton
-						onClick={onOpenCreateDialog}
-						height={32}
-						title={
-							<>
-								צור אחראי <Plus size={16} />
-							</>
-						}
-					/>
-				</ToolbarRow>
+				<AssigneesSettingsSections assignees={assignees} />
+				<AssigneesToolbar
+					searchQuery={searchQuery}
+					onSearchChange={setSearchQuery}
+					onCreate={onOpenCreateDialog}
+				/>
 			</StyledContent>
 			<CardScroller>
-				{isLoading ? (
-					<LoadingContainer>
-						<Spinner />
-					</LoadingContainer>
-				) : filteredAssignees.length === 0 ? (
-					<CenterContainer>
-						<EmptyCardState
-							imgSrc={noResultsFound}
-							title="לא נמצאו אחראים"
-							description={`לא נמצאו אחראים התואמים ל-"${searchQuery}"`}
-						/>
-					</CenterContainer>
-				) : (
-					<AssigneeCardGrid>
-						{filteredAssignees.map((assignee) => (
-							<AssigneeCard
-								key={assignee.id}
-								assignee={assignee}
-								statusEditable={assignee.statusEditable}
-								onStatusEditableChange={handleAssigneeStatusEditableChange}
-							/>
-						))}
-					</AssigneeCardGrid>
-				)}
+				<AssigneeCardList
+					assignees={filteredAssignees}
+					isLoading={isLoading}
+					searchQuery={searchQuery}
+					workspaceId={workspaceId}
+				/>
 			</CardScroller>
 		</ContentRoot>
 	)
 }
-
-const SearchWrapper = styled.div`
-  max-width: 300px;
-  flex: 1;
-`
-
-const ToolbarRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  padding-bottom: 12px;
-  margin-right: 12px;
-  gap: 12px;
-`
 
 const StyledContent = styled.div`
   display: flex;
@@ -228,31 +54,10 @@ const StyledContent = styled.div`
   gap: 32px;
 `
 
-const SettingsSectionWrapper = styled.div`
-	display: flex;
-	align-items: flex-start;
-	gap: 16px;
-`
-
-const SettingsSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 360px;
-  gap: 8px;
-  padding: 8px;
-  background: var(--background);
-  border-radius: 8px;
-`
-
 const Divider = styled.div`
   width: 100%;
   height: 1px;
   background: var(--button-hover);
-`
-
-const StyledInputGroup = styled(InputGroup)`
-  background: var(--background);
 `
 
 const ContentRoot = styled.div`
@@ -269,26 +74,4 @@ const CardScroller = styled.div`
   overflow-y: auto;
   overscroll-behavior: none;
   direction: ltr;
-`
-
-const AssigneeCardGrid = styled.div`
-  padding: 20px 10px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  direction: rtl;
-`
-
-const CenterContainer = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: center;
-`
-
-const LoadingContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  height: 100%;
 `

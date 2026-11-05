@@ -2,8 +2,7 @@ import styled from "@emotion/styled"
 import { X } from "lucide-react"
 import { Tooltip as TooltipPrimitive } from "radix-ui"
 import type { MirageUserDto } from "src/api/model"
-import { DisabledReasonTooltip } from "../shared/DisabledReasonTooltip"
-import { Switch } from "../ui/switch"
+import { DisabledReasonSwitch } from "../shared/DisabledReasonSwitch"
 import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { UserItem } from "./UserItem"
 
@@ -49,16 +48,15 @@ export function AssigneeUsersList({
 								</Tooltip>
 							</TooltipProvider>
 							<StatusToggle>
-								<DisabledReasonTooltip reason={disabledReason}>
-									<StyledSwitch
-										size="sm"
-										checked={!disabledReason && user.statusEditable}
-										disabled={!!disabledReason}
-										onCheckedChange={(checked) =>
-											onStatusEditableChange(user, checked)
-										}
-									/>
-								</DisabledReasonTooltip>
+								<DisabledReasonSwitch
+									size="sm"
+									checked={!disabledReason && user.statusEditable}
+									disabled={!!disabledReason}
+									disabledReason={disabledReason}
+									onCheckedChange={(checked) =>
+										onStatusEditableChange(user, checked)
+									}
+								/>
 								<StatusLabel $disabled={!!disabledReason}>
 									עדכון סטטוס
 								</StatusLabel>
@@ -153,17 +151,4 @@ const UserTooltipContent = styled(TooltipPrimitive.Content)`
   word-break: break-word;
   direction: rtl;
   z-index: 1000;
-`
-
-const StyledSwitch = styled(Switch)`
-  cursor: pointer;
-
-  &[data-state="unchecked"] {
-    background: var(--Text-color-text-placeholder);
-  }
-
-  &[data-disabled] {
-    background: var(--input);
-    opacity: 0.65;
-  }
 `
