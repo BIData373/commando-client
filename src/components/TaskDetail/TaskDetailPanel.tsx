@@ -102,14 +102,6 @@ function TaskDetailPanel({
 		requestAnimationFrame(checkCommentsDividerVisibility)
 	}, [])
 
-	useEffect(() => {
-		async function markTaskView(taskId: number) {
-			await viewTasks({ taskId })
-		}
-
-		markTaskView(id)
-	}, [onClose])
-
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const isManager = myPermission?.type === PermissionType.MANAGER
 	const canArchive = isPersonal || isManager
@@ -186,6 +178,11 @@ function TaskDetailPanel({
 		commentsDividerRef.current?.scrollIntoView({ behavior: "smooth" })
 	}
 
+	async function markTaskViewed() {
+		await viewTasks({ taskId: id })
+		invalidateQueries([getListMessagesQueryKey({ taskIds: [id] })])
+	}
+
 	function handleOpenChange(open: boolean) {
 		if (!open) {
 			const update = (rows: TaskRowDto[] | undefined) =>
@@ -204,7 +201,7 @@ function TaskDetailPanel({
 				{ queryKey: getListPersonalTaskRowsQueryKey() },
 				update,
 			)
-			invalidateQueries([getListMessagesQueryKey({ taskIds: [id] })])
+			markTaskViewed()
 			onClose()
 		}
 	}
