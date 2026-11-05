@@ -1,9 +1,44 @@
-@import "tailwindcss";
+/* Unlayered Tailwind imports: Chrome 83 does not support @layer */
+@import "tailwindcss/theme.css";
+@import "tailwindcss/preflight.css";
+@import "tailwindcss/utilities.css";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/rubik";
 
 @custom-variant dark (&:is(.dark *));
+
+/* Tailwind compiles rtl:/ltr: to :where(), which Chrome 83 does not support (Chrome 88+) */
+@custom-variant rtl ([dir="rtl"] &);
+@custom-variant ltr ([dir="ltr"] &);
+
+/* Chrome 83 lacks the individual translate/rotate properties (Chrome 104+): rebuild one transform */
+@utility rotate-45 { rotate: 45deg; --chrome83-rotate: 45deg; }
+@utility rotate-90 { rotate: 90deg; --chrome83-rotate: 90deg; }
+@utility rotate-180 { rotate: 180deg; --chrome83-rotate: 180deg; }
+
+@supports not (translate: 0) {
+  [class*="translate-"],
+  [class*="rotate-"] {
+    transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))
+      rotate(var(--chrome83-rotate, 0deg));
+  }
+}
+
+/* Chrome 83 has no flex gap (html.no-flex-gap, set in flex-gap.ts): use child margins */
+@utility gap-* {
+  --chrome83-gap: calc(var(--spacing) * --value(number));
+}
+
+.no-flex-gap [class*="gap-"].flex > * + *,
+.no-flex-gap [class*="gap-"].inline-flex > * + * {
+  margin-inline-start: var(--chrome83-gap, 0);
+}
+
+.no-flex-gap [class*="gap-"].flex-col > * + * {
+  margin-inline-start: 0;
+  margin-block-start: var(--chrome83-gap, 0);
+}
 
 html,
 body,
@@ -29,6 +64,7 @@ body,
 
 :root {
   --z-dropdown: 10;
+  --z-orientation-lock: 9999;
   --background: oklch(1 0 0);
   --foreground: oklch(0.14 0 0);
   --card: oklch(1 0 0);
@@ -120,6 +156,7 @@ body,
   --button-active: rgba(0, 0, 0, 0.1);
 
   --default-linear: linear-gradient(135deg, #615fff 0%, #9810fa 100%);
+  --black-to-background-linear: linear-gradient(rgba(255, 255, 255, 0), #ffffff 65%);
   --Components-Upload-Global-colorPrimary: #1677ff;
   --colors-base-neutral-11: rgba(240, 240, 240, 1);
   --colors-base-neutral-3: oklch(97.02% 0 271.15);
@@ -164,6 +201,7 @@ body,
   --Menu-Tab-Active: rgba(255, 255, 255, 0.15);
   --Menu-Tab-Text: #C7C9CB;
   --link-visited: #0958D9;
+  --drawer-status-select: rgba(230, 244, 255, 0.15);
 
   --font-sans: "Rubik Variable", ui-sans-serif, sans-serif;
   --font-serif: "Rubik Variable", ui-sans-serif, sans-serif;
@@ -192,6 +230,7 @@ body,
   --link-bg-hover: rgba(0, 0, 0, 0.04);
   --line: oklch(0.91 0 0);
   --header-bg: oklch(0.14 0.035 258);
+  --header-container-bg: oklch(0.2077 0.038 275.77);
   --table-rows-bg-hover: linear-gradient(
     0deg,
     rgba(0, 0, 0, 0.04) 0%,

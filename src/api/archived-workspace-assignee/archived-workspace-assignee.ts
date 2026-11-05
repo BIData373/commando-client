@@ -30,6 +30,9 @@ export const toggleWorkspaceTaskArchive = (
 	})
 }
 
+export const getToggleWorkspaceTaskArchiveMutationKey = () =>
+	["toggleWorkspaceTaskArchive"] as const
+
 export const getToggleWorkspaceTaskArchiveMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -37,16 +40,16 @@ export const getToggleWorkspaceTaskArchiveMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
 		TError,
-		{ params: ToggleWorkspaceTaskArchiveParams },
+		ToggleWorkspaceTaskArchiveMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
 	TError,
-	{ params: ToggleWorkspaceTaskArchiveParams },
+	ToggleWorkspaceTaskArchiveMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["toggleWorkspaceTaskArchive"]
+	const mutationKey = getToggleWorkspaceTaskArchiveMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -57,7 +60,7 @@ export const getToggleWorkspaceTaskArchiveMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
-		{ params: ToggleWorkspaceTaskArchiveParams }
+		ToggleWorkspaceTaskArchiveMutationVariables
 	> = (props) => {
 		const { params } = props ?? {}
 
@@ -72,6 +75,9 @@ export type ToggleWorkspaceTaskArchiveMutationResult = NonNullable<
 >
 
 export type ToggleWorkspaceTaskArchiveMutationError = ErrorType<unknown>
+export type ToggleWorkspaceTaskArchiveMutationVariables = {
+	params: ToggleWorkspaceTaskArchiveParams
+}
 
 export const useToggleWorkspaceTaskArchive = <
 	TError = ErrorType<unknown>,
@@ -81,7 +87,7 @@ export const useToggleWorkspaceTaskArchive = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
 			TError,
-			{ params: ToggleWorkspaceTaskArchiveParams },
+			ToggleWorkspaceTaskArchiveMutationVariables,
 			TContext
 		>
 	},
@@ -89,7 +95,7 @@ export const useToggleWorkspaceTaskArchive = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
 	TError,
-	{ params: ToggleWorkspaceTaskArchiveParams },
+	ToggleWorkspaceTaskArchiveMutationVariables,
 	TContext
 > => {
 	return useMutation(

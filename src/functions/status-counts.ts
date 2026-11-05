@@ -1,6 +1,6 @@
 import { countBy, map } from "lodash"
 import type { TaskRowDto, WorkspaceStatusDto } from "src/api/model"
-import { STATUS_DEFAULTS } from "./status-defaults"
+import { STATUS_DEFAULTS } from "../consts/status-defaults"
 
 export interface StatusTaskCount
 	extends Pick<WorkspaceStatusDto, "name" | "color"> {

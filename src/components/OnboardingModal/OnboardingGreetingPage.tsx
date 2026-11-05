@@ -1,9 +1,9 @@
 import styled from "@emotion/styled"
 import { ArrowLeft } from "lucide-react"
 import systemPreview from "../../assets/system-preview.svg"
+import { GradientText } from "../shared/GradientText"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { RootPageFooter } from "../shared/RootPageFooter"
-import { GradientText } from "./GradientText"
 
 interface OnboardingGreetingPageProps {
 	onNext: () => void

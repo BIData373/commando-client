@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Toaster as Sonner } from "sonner";
+import { MOBILE_MEDIA_QUERY } from "../../hooks/use-mobile";
 import { TOAST_CLASS, DEFAULT_TOAST_DURATION_MS, toast } from "../Toast/toast-api";
 import type { CSSProperties } from "react";
 import type { ToasterProps } from "sonner";
@@ -324,16 +325,29 @@ const StyledSonner = styled(Sonner)`
     }
   }
 
-  @media (max-width: 600px) {
-    --width: calc(100vw - 32px);
+  /*
+  * Sonner's own mobile toaster box overflows the viewport in RTL, so span the
+  * viewport ourselves and center the toast inside it.
+  */
+  ${MOBILE_MEDIA_QUERY} {
+    &[data-sonner-toaster][data-x-position="center"] {
+      left: 0;
+      right: 0;
+      width: 100%;
+      transform: none;
+    }
 
     [data-sonner-toast][data-styled="true"],
     [data-sonner-toast]:has([data-button]) {
-      width: var(--width);
+      width: calc(
+        100% - var(--mobile-offset-left) - var(--mobile-offset-right)
+      );
     }
 
     [data-sonner-toast] {
       left: 0;
+      right: 0;
+      margin-inline: auto;
     }
   }
 `;

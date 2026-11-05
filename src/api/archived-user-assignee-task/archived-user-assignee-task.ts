@@ -30,6 +30,9 @@ export const toggleUserTaskArchive = (
 	})
 }
 
+export const getToggleUserTaskArchiveMutationKey = () =>
+	["toggleUserTaskArchive"] as const
+
 export const getToggleUserTaskArchiveMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -37,16 +40,16 @@ export const getToggleUserTaskArchiveMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof toggleUserTaskArchive>>,
 		TError,
-		{ params: ToggleUserTaskArchiveParams },
+		ToggleUserTaskArchiveMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof toggleUserTaskArchive>>,
 	TError,
-	{ params: ToggleUserTaskArchiveParams },
+	ToggleUserTaskArchiveMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["toggleUserTaskArchive"]
+	const mutationKey = getToggleUserTaskArchiveMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -57,7 +60,7 @@ export const getToggleUserTaskArchiveMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof toggleUserTaskArchive>>,
-		{ params: ToggleUserTaskArchiveParams }
+		ToggleUserTaskArchiveMutationVariables
 	> = (props) => {
 		const { params } = props ?? {}
 
@@ -72,6 +75,9 @@ export type ToggleUserTaskArchiveMutationResult = NonNullable<
 >
 
 export type ToggleUserTaskArchiveMutationError = ErrorType<unknown>
+export type ToggleUserTaskArchiveMutationVariables = {
+	params: ToggleUserTaskArchiveParams
+}
 
 export const useToggleUserTaskArchive = <
 	TError = ErrorType<unknown>,
@@ -81,7 +87,7 @@ export const useToggleUserTaskArchive = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof toggleUserTaskArchive>>,
 			TError,
-			{ params: ToggleUserTaskArchiveParams },
+			ToggleUserTaskArchiveMutationVariables,
 			TContext
 		>
 	},
@@ -89,7 +95,7 @@ export const useToggleUserTaskArchive = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof toggleUserTaskArchive>>,
 	TError,
-	{ params: ToggleUserTaskArchiveParams },
+	ToggleUserTaskArchiveMutationVariables,
 	TContext
 > => {
 	return useMutation(

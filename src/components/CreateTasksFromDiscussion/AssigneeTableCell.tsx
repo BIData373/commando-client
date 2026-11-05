@@ -51,6 +51,13 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 		})
 	}
 
+	function handleGroupSelect(newIds: number[]) {
+		meta.updateRow(row.id, {
+			assigneeIds: [...assigneeIds, ...newIds],
+			assigneeDetails: row.assigneeDetails,
+		})
+	}
+
 	return hasMultiple && !isExpanded && !isLoading ? (
 		<CollapsedAssigneeButton
 			type="button"
@@ -67,11 +74,21 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 				workspaceId={workspaceId}
 				selectedAssignees={assigneeIds}
 				onToggle={handleToggleAssignee}
-				trigger={
-					<CompactTriggerButton type="button">
+				onGroupSelect={handleGroupSelect}
+				showGroupAvatars={false}
+				trigger={({ search, onSearchChange, open }) => (
+					<CompactTriggerButton>
 						<CompactChevron size={16} />
 
-						{hasMultiple ? (
+						{open || assigneeIds.length === 0 ? (
+							<CompactSearchInput
+								value={search}
+								onChange={onSearchChange}
+								placeholder="בחר אחראי"
+								dir="rtl"
+								autoFocus={open}
+							/>
+						) : hasMultiple ? (
 							<CompactAvatarStack>
 								{assigneeIds.map((id) =>
 									assigneeMap[id] ? (
@@ -83,7 +100,7 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 									) : null,
 								)}
 							</CompactAvatarStack>
-						) : assigneeIds.length === 1 && assigneeMap[assigneeIds[0]] ? (
+						) : assigneeMap[assigneeIds[0]] ? (
 							<AssigneeTag>
 								<AssigneeAvatar
 									assignee={assigneeMap[assigneeIds[0]]}
@@ -93,11 +110,9 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 									{assigneeMap[assigneeIds[0]].name}
 								</AssigneeTagName>
 							</AssigneeTag>
-						) : (
-							<CompactLabel>בחר אחראי</CompactLabel>
-						)}
+						) : null}
 					</CompactTriggerButton>
-				}
+				)}
 			/>
 		</AssigneeCellOuter>
 	)
@@ -118,6 +133,7 @@ const CollapsedAssigneeButton = styled.button`
   justify-content: space-between;
   width: 100%;
   height: 100%;
+  padding-inline: 12px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -131,13 +147,14 @@ const CollapsedAssigneeLabel = styled.span`
   white-space: nowrap;
 `
 
-const CompactTriggerButton = styled.button`
+const CompactTriggerButton = styled.div`
   direction: ltr;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   height: 100%;
+  padding-inline: 12px;
   border: none;
   outline: none;
   background: transparent;
@@ -149,12 +166,20 @@ const CompactChevron = styled(ChevronDown)`
   flex-shrink: 0;
 `
 
-const CompactLabel = styled.span`
+const CompactSearchInput = styled.input`
+  flex: 1;
+  min-width: 0;
   font-size: var(--fs-btn);
   line-height: 22px;
-  color: var(--Text-color-text-placeholder);
-  white-space: nowrap;
-  text-align: end;
+  color: var(--text-color-2);
+  text-align: start;
+  border: none;
+  outline: none;
+  background: transparent;
+
+  &::placeholder {
+    color: var(--Text-color-text-placeholder);
+  }
 `
 
 const CompactAvatarStack = styled.div`
