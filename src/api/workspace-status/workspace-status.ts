@@ -34,6 +34,8 @@ import type {
 	WorkspaceStatusDto,
 } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 const withQueryKey = <T extends object, K>(
 	query: T,
 	queryKey: K,
@@ -54,15 +56,19 @@ const withQueryKey = <T extends object, K>(
 
 export const createWorkspaceStatus = (
 	createWorkspaceStatusDto: CreateWorkspaceStatusDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<WorkspaceStatusDto>({
-		url: `/workspace-status`,
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		data: createWorkspaceStatusDto,
-		signal,
-	})
+	return sendRequest<WorkspaceStatusDto>(
+		{
+			url: `/workspace-status`,
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			data: createWorkspaceStatusDto,
+			signal,
+		},
+		options,
+	)
 }
 
 export const getCreateWorkspaceStatusMutationKey = () =>
@@ -78,6 +84,7 @@ export const getCreateWorkspaceStatusMutationOptions = <
 		CreateWorkspaceStatusMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createWorkspaceStatus>>,
 	TError,
@@ -85,13 +92,13 @@ export const getCreateWorkspaceStatusMutationOptions = <
 	TContext
 > => {
 	const mutationKey = getCreateWorkspaceStatusMutationKey()
-	const { mutation: mutationOptions } = options
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createWorkspaceStatus>>,
@@ -99,7 +106,7 @@ export const getCreateWorkspaceStatusMutationOptions = <
 	> = (props) => {
 		const { data } = props ?? {}
 
-		return createWorkspaceStatus(data)
+		return createWorkspaceStatus(data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -125,6 +132,7 @@ export const useCreateWorkspaceStatus = <
 			CreateWorkspaceStatusMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -140,14 +148,13 @@ export const useCreateWorkspaceStatus = <
 }
 export const listWorkspaceStatuses = (
 	params: ListWorkspaceStatusesParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<WorkspaceStatusDto[]>({
-		url: `/workspace-status`,
-		method: "GET",
-		params,
-		signal,
-	})
+	return sendRequest<WorkspaceStatusDto[]>(
+		{ url: `/workspace-status`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getListWorkspaceStatusesQueryKey = (
@@ -169,16 +176,17 @@ export const getListWorkspaceStatusesQueryOptions = <
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey =
 		queryOptions?.queryKey ?? getListWorkspaceStatusesQueryKey(params)
 
 	const queryFn: QueryFunction<
 		Awaited<ReturnType<typeof listWorkspaceStatuses>>
-	> = ({ signal }) => listWorkspaceStatuses(params, signal)
+	> = ({ signal }) => listWorkspaceStatuses(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listWorkspaceStatuses>>,
@@ -213,6 +221,7 @@ export function useListWorkspaceStatuses<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -239,6 +248,7 @@ export function useListWorkspaceStatuses<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -257,6 +267,7 @@ export function useListWorkspaceStatuses<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -276,6 +287,7 @@ export function useListWorkspaceStatuses<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -293,13 +305,13 @@ export function useListWorkspaceStatuses<
 
 export const getWorkspaceStatus = (
 	{ id }: GetWorkspaceStatusPathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<WorkspaceStatusDto>({
-		url: `/workspace-status/${id}`,
-		method: "GET",
-		signal,
-	})
+	return sendRequest<WorkspaceStatusDto>(
+		{ url: `/workspace-status/${id}`, method: "GET", signal },
+		options,
+	)
 }
 
 export const getGetWorkspaceStatusQueryKey = ({
@@ -321,16 +333,17 @@ export const getGetWorkspaceStatusQueryOptions = <
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey =
 		queryOptions?.queryKey ?? getGetWorkspaceStatusQueryKey({ id })
 
 	const queryFn: QueryFunction<
 		Awaited<ReturnType<typeof getWorkspaceStatus>>
-	> = ({ signal }) => getWorkspaceStatus({ id }, signal)
+	> = ({ signal }) => getWorkspaceStatus({ id }, requestOptions, signal)
 
 	return {
 		queryKey,
@@ -370,6 +383,7 @@ export function useGetWorkspaceStatus<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -396,6 +410,7 @@ export function useGetWorkspaceStatus<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -414,6 +429,7 @@ export function useGetWorkspaceStatus<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -433,6 +449,7 @@ export function useGetWorkspaceStatus<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -451,15 +468,19 @@ export function useGetWorkspaceStatus<
 export const updateWorkspaceStatus = (
 	{ id }: UpdateWorkspaceStatusPathParameters,
 	updateWorkspaceStatusDto: UpdateWorkspaceStatusDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<WorkspaceStatusDto>({
-		url: `/workspace-status/${id}`,
-		method: "PATCH",
-		headers: { "Content-Type": "application/json" },
-		data: updateWorkspaceStatusDto,
-		signal,
-	})
+	return sendRequest<WorkspaceStatusDto>(
+		{
+			url: `/workspace-status/${id}`,
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			data: updateWorkspaceStatusDto,
+			signal,
+		},
+		options,
+	)
 }
 
 export const getUpdateWorkspaceStatusMutationKey = () =>
@@ -475,6 +496,7 @@ export const getUpdateWorkspaceStatusMutationOptions = <
 		UpdateWorkspaceStatusMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateWorkspaceStatus>>,
 	TError,
@@ -482,13 +504,13 @@ export const getUpdateWorkspaceStatusMutationOptions = <
 	TContext
 > => {
 	const mutationKey = getUpdateWorkspaceStatusMutationKey()
-	const { mutation: mutationOptions } = options
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateWorkspaceStatus>>,
@@ -496,7 +518,7 @@ export const getUpdateWorkspaceStatusMutationOptions = <
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
-		return updateWorkspaceStatus(pathParams, data)
+		return updateWorkspaceStatus(pathParams, data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -523,6 +545,7 @@ export const useUpdateWorkspaceStatus = <
 			UpdateWorkspaceStatusMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -538,13 +561,13 @@ export const useUpdateWorkspaceStatus = <
 }
 export const deleteWorkspaceStatus = (
 	{ id }: DeleteWorkspaceStatusPathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<WorkspaceStatusDto>({
-		url: `/workspace-status/${id}`,
-		method: "DELETE",
-		signal,
-	})
+	return sendRequest<WorkspaceStatusDto>(
+		{ url: `/workspace-status/${id}`, method: "DELETE", signal },
+		options,
+	)
 }
 
 export const getDeleteWorkspaceStatusMutationKey = () =>
@@ -560,6 +583,7 @@ export const getDeleteWorkspaceStatusMutationOptions = <
 		DeleteWorkspaceStatusMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteWorkspaceStatus>>,
 	TError,
@@ -567,13 +591,13 @@ export const getDeleteWorkspaceStatusMutationOptions = <
 	TContext
 > => {
 	const mutationKey = getDeleteWorkspaceStatusMutationKey()
-	const { mutation: mutationOptions } = options
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteWorkspaceStatus>>,
@@ -581,7 +605,7 @@ export const getDeleteWorkspaceStatusMutationOptions = <
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
-		return deleteWorkspaceStatus(pathParams)
+		return deleteWorkspaceStatus(pathParams, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -607,6 +631,7 @@ export const useDeleteWorkspaceStatus = <
 			DeleteWorkspaceStatusMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<

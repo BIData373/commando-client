@@ -20,15 +20,19 @@ export function useSaveWorkspaceVisit({
 
 	useEffect(() => {
 		if (!location.pathname.includes(urlName)) {
-			upsertUserWorkspaceVisit({ workspaceId })
-			invalidateQueries([
-				getListTaskRowsQueryKey(...(workspaceId ? [{ workspaceId }] : [])),
-				getListPersonalTaskRowsQueryKey(),
-			])
+			upsertUserWorkspaceVisit({ workspaceId }).then(() =>
+				invalidateQueries([
+					getListTaskRowsQueryKey(...(workspaceId ? [{ workspaceId }] : [])),
+					getListPersonalTaskRowsQueryKey(),
+				]),
+			)
 		}
 
 		async function handleBeforeUnload() {
-			await upsertUserWorkspaceVisit({ workspaceId })
+			await upsertUserWorkspaceVisit(
+				{ workspaceId },
+				{ adapter: "fetch", fetchOptions: { keepalive: true } },
+			)
 		}
 		window.addEventListener("beforeunload", handleBeforeUnload)
 		return () => window.removeEventListener("beforeunload", handleBeforeUnload)

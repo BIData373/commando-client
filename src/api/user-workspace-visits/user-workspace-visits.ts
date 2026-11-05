@@ -18,16 +18,17 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import type { UpsertUserWorkspaceVisitParams } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 export const upsertUserWorkspaceVisit = (
 	params?: UpsertUserWorkspaceVisitParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<void>({
-		url: `/user-workspace-visits`,
-		method: "PATCH",
-		params,
-		signal,
-	})
+	return sendRequest<void>(
+		{ url: `/user-workspace-visits`, method: "PATCH", params, signal },
+		options,
+	)
 }
 
 export const getUpsertUserWorkspaceVisitMutationKey = () =>
@@ -43,6 +44,7 @@ export const getUpsertUserWorkspaceVisitMutationOptions = <
 		UpsertUserWorkspaceVisitMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof upsertUserWorkspaceVisit>>,
 	TError,
@@ -50,13 +52,13 @@ export const getUpsertUserWorkspaceVisitMutationOptions = <
 	TContext
 > => {
 	const mutationKey = getUpsertUserWorkspaceVisitMutationKey()
-	const { mutation: mutationOptions } = options
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof upsertUserWorkspaceVisit>>,
@@ -64,7 +66,7 @@ export const getUpsertUserWorkspaceVisitMutationOptions = <
 	> = (props) => {
 		const { params } = props ?? {}
 
-		return upsertUserWorkspaceVisit(params)
+		return upsertUserWorkspaceVisit(params, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -90,6 +92,7 @@ export const useUpsertUserWorkspaceVisit = <
 			UpsertUserWorkspaceVisitMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
