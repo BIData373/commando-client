@@ -18,6 +18,10 @@ export const EMPTY_FILTER_VALUE = "__EMPTY__"
 
 const EMPTY_FILTER_LABEL = "(ריקים)"
 
+export function isEmptyValue(value: string) {
+	return value === EMPTY_FILTER_VALUE
+}
+
 export function getDeadlineFilterValue(
 	task: Pick<Partial<TaskRowDto>, "deadlineType" | "dueDate">,
 ): string {
@@ -82,7 +86,7 @@ export function buildFilterOptionsMap(
 		assigneeSet.add(t.assignee?.name || EMPTY_FILTER_VALUE)
 		sourceSet.add(t.source ? formatSourceLabel(t.source) : EMPTY_FILTER_VALUE)
 
-		if (!t.tags.length && !t.source?.tags?.length) {
+		if (!(t.tags.length || t.source?.tags?.length)) {
 			tagsSet.add(EMPTY_FILTER_VALUE)
 		}
 
@@ -100,15 +104,11 @@ export function buildFilterOptionsMap(
 		labelMap?: Record<string, string>,
 	): FilterOption[] =>
 		[...set]
-			.filter((v) => includeEmpty || v !== EMPTY_FILTER_VALUE)
-			.sort(
-				(a, b) =>
-					Number(a === EMPTY_FILTER_VALUE) - Number(b === EMPTY_FILTER_VALUE),
-			)
+			.filter((v) => includeEmpty || !isEmptyValue(v))
+			.sort((a, b) => Number(isEmptyValue(a)) - Number(isEmptyValue(b)))
 			.map((v) => ({
 				value: v,
-				label:
-					v === EMPTY_FILTER_VALUE ? EMPTY_FILTER_LABEL : (labelMap?.[v] ?? v),
+				label: isEmptyValue(v) ? EMPTY_FILTER_LABEL : (labelMap?.[v] ?? v),
 			}))
 
 	return {

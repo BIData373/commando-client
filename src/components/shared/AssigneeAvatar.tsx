@@ -38,9 +38,7 @@ export const AssigneeAvatar = ({
 	)
 }
 
-const StyledRoot = styled(MesibaAvatarRoot, {
-	shouldForwardProp: (prop: string) => !prop.startsWith("$"),
-})<{
+const StyledRoot = styled(MesibaAvatarRoot)<{
 	$size: number
 	$cursor?: boolean
 }>`
@@ -51,9 +49,7 @@ const StyledRoot = styled(MesibaAvatarRoot, {
   cursor: ${({ $cursor }) => ($cursor ? "pointer" : "default")};
 `
 
-const ColoredFallback = styled(MesibaAvatarFallback, {
-	shouldForwardProp: (prop: string) => !prop.startsWith("$"),
-})<{
+const ColoredFallback = styled(MesibaAvatarFallback)<{
 	$color: string | null
 }>`
   background: ${({ $color }) => $color ?? "var(--chip-bg)"};

@@ -5,7 +5,7 @@ import type {
 	Row,
 	RowSelectionState,
 } from "@tanstack/react-table"
-import { chain, uniqBy, without } from "lodash"
+import { chain, uniqBy } from "lodash"
 import type React from "react"
 import { useMemo, useState } from "react"
 import type {
@@ -17,10 +17,7 @@ import type {
 import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { toast } from "src/components/Toast/toast-api"
-import {
-	buildFilterOptionsMap,
-	EMPTY_FILTER_VALUE,
-} from "src/functions/filter-utils"
+import { buildFilterOptionsMap, isEmptyValue } from "src/functions/filter-utils"
 import {
 	deleteTaskMessage,
 	updateStatusMessage,
@@ -159,7 +156,7 @@ function TaskTable<TTask extends TaskRowDto>({
 		setAssigneeFilter(tableAssigneeColumnValue)
 		onFiltersChange?.(
 			tableStatusColumnValue,
-			without(tableDeadlineColumnValue, EMPTY_FILTER_VALUE as DeadlineType),
+			tableDeadlineColumnValue.filter((v) => !isEmptyValue(v)),
 		)
 	}
 
