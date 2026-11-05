@@ -126,8 +126,13 @@ function TaskTable<TTask extends TaskRowDto>({
 
 	const [selectMode, setSelectMode] = useState(false)
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+	const [titleExpanded, setTitleExpanded] = useState(false)
 	const [contextMenu, setContextMenu] =
 		useState<ContextMenuState<TTask> | null>(null)
+
+	function handleToggleTitleExpanded() {
+		setTitleExpanded((prev) => !prev)
+	}
 
 	const columnFilters: ColumnFiltersState = useMemo(
 		() =>
@@ -304,10 +309,12 @@ function TaskTable<TTask extends TaskRowDto>({
 			searchQuery={deferredSearchQuery}
 			statuses={statuses}
 			filterOptionsMap={filterOptionsMap}
+			titleExpanded={titleExpanded}
+			onToggleTitleExpanded={handleToggleTitleExpanded}
 			showUnreadDot
 			handlers={rowHandlers as TaskRowHandlers}
 		>
-			<TableWrapper>
+			<TableWrapper data-title-expanded={titleExpanded || undefined}>
 				<DataTable
 					columns={columns}
 					data={groupedTasks}
@@ -465,5 +472,45 @@ const TableWrapper = styled.div`
     border: none;
     max-height: none;
     overflow: visible;
+  }
+
+  &[data-title-expanded] td[data-column-id="title"] {
+    height: auto;
+    max-height: none;
+  }
+
+  &[data-title-expanded] tr:has([data-cell-wrapped]) td:not([data-virtual-spacer]) {
+    vertical-align: top;
+    padding-block-start: 10px;
+
+    & > * {
+      align-items: flex-start;
+    }
+  }
+
+  &[data-title-expanded] tr:has([data-cell-wrapped]) td:not([data-virtual-spacer]):not([data-column-id="title"]) {
+    max-height: none;
+
+    span, div {
+      white-space: normal;
+      text-overflow: clip;
+      -webkit-line-clamp: unset;
+      -webkit-box-orient: unset;
+      overflow-wrap: break-word;
+    }
+
+    [data-overflow-row] {
+      flex-wrap: wrap;
+
+      & > * {
+        position: static;
+        visibility: visible;
+        pointer-events: auto;
+      }
+
+      [data-overflow-indicator] {
+        display: none;
+      }
+    }
   }
 `

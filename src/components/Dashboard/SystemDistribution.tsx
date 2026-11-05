@@ -1,8 +1,7 @@
 import styled from "@emotion/styled"
 import { isEmpty, map } from "lodash"
-import { Users } from "lucide-react"
 import { useMemo } from "react"
-import { TbHelpCircle } from "react-icons/tb"
+import { TbHelpCircle, TbUsersGroup } from "react-icons/tb"
 import { DistributionTab, type TaskRowDto } from "src/api/model"
 import { useUserView } from "src/providers/UserViewProvider"
 import addAssignee from "../../assets/icons/add-person.svg"
@@ -174,14 +173,15 @@ export default function SystemDistribution({
 							imgSrc={tabDescription.imgSrc}
 							title={tabDescription.title}
 							description={tabDescription.description}
-						>
-							{activeTab === DistributionTab.load && (
-								<Button variant="outline" size="sm" onClick={onSetAssignees}>
-									הגדרת מקבלי הנחיות
-									<Users size={16} />
-								</Button>
-							)}
-						</EmptyCardState>
+							action={
+								activeTab === DistributionTab.load ? (
+									<ActionButton variant="outline" onClick={onSetAssignees}>
+										הגדרת מקבלי הנחיות
+										<TbUsersGroup size={16} />
+									</ActionButton>
+								) : undefined
+							}
+						/>
 					)}
 				</ContentPanel>
 			</TabsWrapper>
@@ -334,4 +334,11 @@ const BarFill = styled.div<{ $pct: number }>`
   height: 100%;
   width: ${({ $pct }) => $pct}%;
   background: #bae0ff;
+`
+
+const ActionButton = styled(Button)`
+  color: var(--text-color-2);
+  font-size: var(--fs-btn);
+  font-weight: 400;
+  cursor: pointer;
 `

@@ -1,6 +1,8 @@
+import Cookies from "js-cookie"
 import type { MirageUserDto, PermissionType, UserInfoDto } from "src/api/model"
 
 export const TOKEN_NAME = "ssoUser"
+const COOKIE_POLL_INTERVAL_MS = 1000
 
 type SsoUser = Partial<UserInfoDto> & { upn: string }
 
@@ -32,15 +34,18 @@ export function onCookieChange(
 	name: string,
 	callback: (value: string | undefined) => void,
 ): () => void {
-	const handler = (event: CookieChangeEvent) => {
-		const newValue = event.changed?.find((c) => c.name === name)?.value
-		const wasDeleted = event.deleted?.some((c) => c.name === name)
-		if (newValue !== undefined || wasDeleted) {
-			callback(newValue)
+	let lastValue = Cookies.get(name)
+
+	// Cookies are modified by the server too, and Chrome 83 has no Cookie Store API
+	const intervalId = setInterval(() => {
+		const currentValue = Cookies.get(name)
+		if (currentValue !== lastValue) {
+			lastValue = currentValue
+			callback(currentValue)
 		}
-	}
-	cookieStore.addEventListener("change", handler)
-	return () => cookieStore.removeEventListener("change", handler)
+	}, COOKIE_POLL_INTERVAL_MS)
+
+	return () => clearInterval(intervalId)
 }
 
 export function concatName(user: MirageUserDto, type?: PermissionType): string {

@@ -1,4 +1,6 @@
 import styled from "@emotion/styled"
+import { useNavigate } from "@tanstack/react-router"
+import { Plus } from "lucide-react"
 import { useState } from "react"
 import type { WorkspaceWithPermissionDto } from "src/api/model"
 import {
@@ -15,7 +17,7 @@ import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
 import { MOBILE_MEDIA_QUERY, useIsMobile } from "src/hooks/use-mobile"
 import { filterByTitle } from "src/utils/workspace-utils"
 import SearchInput from "../shared/SearchInput"
-import NewWorkspaceButton from "./NewWorkspaceButton"
+import { SecondaryButton } from "../shared/SecondaryButton"
 import WorkspaceCard from "./WorkspaceCard"
 
 type TabKey = "mine" | "all"
@@ -37,6 +39,7 @@ export default function SpacesContainer() {
 	const [activeTab, setActiveTab] = useState<TabKey>("mine")
 
 	const isMobile = useIsMobile()
+	const navigate = useNavigate()
 
 	const filteredMine = filterByTitle(myWorkspaces, searchQuery)
 	const filteredAll = filterByTitle(allWorkspaces, searchQuery)
@@ -74,6 +77,10 @@ export default function SpacesContainer() {
 		},
 	} satisfies Record<string, EmptyCardStateProps>
 
+	function handleNewWorkspaceClick() {
+		navigate({ to: "/new-workspace" })
+	}
+
 	const searchInput = (
 		<WorkspaceSearchInput
 			placeholder="חפש סביבה"
@@ -88,7 +95,14 @@ export default function SpacesContainer() {
 				<HeaderRow>
 					{!isMobile && (
 						<ActionsRow>
-							<WorkspaceRequestButton />
+							<SecondaryButton
+								onClick={handleNewWorkspaceClick}
+								title={
+									<>
+										בקשה לסביבה חדשה <Plus size={16} />
+									</>
+								}
+							/>
 							{searchInput}
 						</ActionsRow>
 					)}
@@ -262,8 +276,4 @@ const LoadingSpace = styled.div`
 	flex: 1;
 	width: 100%;
 	min-height: 0;
-`
-
-const WorkspaceRequestButton = styled(NewWorkspaceButton)`
-	font-size: var(--fs-btn);
 `
