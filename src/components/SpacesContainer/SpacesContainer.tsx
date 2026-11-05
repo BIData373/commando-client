@@ -121,7 +121,7 @@ export default function SpacesContainer() {
 					))}
 				</TabsRow>
 
-				{isMobile && searchInput}
+				{isMobile && activeTab === "all" && searchInput}
 			</TopSection>
 
 			{isLoading ? (
@@ -197,6 +197,7 @@ const ActionsRow = styled.div`
 const WorkspaceSearchInput = styled(SearchInput)`
 	flex: none;
 	width: 284px;
+	direction: ltr;
 
 	${MOBILE_MEDIA_QUERY} {
 		width: 100%;
@@ -217,7 +218,6 @@ const TabsRow = styled.div`
 	justify-content: flex-end;
 	padding-inline: 8px;
 	width: auto;
-	border-bottom: 1px solid var(--line);
 `
 
 const Tab = styled.button<{ $active: boolean }>`
