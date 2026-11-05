@@ -177,7 +177,10 @@ function TaskTable<TTask extends TaskRowDto>({
 
 		setColumnsFilters(newFilters)
 		setAssigneeFilter(tableAssigneeColumnValue)
-		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
+		onFiltersChange?.(
+			tableStatusColumnValue,
+			tableDeadlineColumnValue.filter((v) => !isEmptyValue(v)),
+		)
 	}
 
 	const tasksByRowKey = useMemo(() => keyBy(tasks, "rowKey"), [tasks])
@@ -260,7 +263,10 @@ function TaskTable<TTask extends TaskRowDto>({
 		)
 	}
 
-	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
+	const filterOptionsMap = useMemo(
+		() => buildFilterOptionsMap(tasks, true),
+		[tasks],
+	)
 
 	const groupedTasks = useMemo(() => groupRowsByTask(tasks), [tasks])
 
