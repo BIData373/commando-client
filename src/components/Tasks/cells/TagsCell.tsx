@@ -1,3 +1,4 @@
+import styled from "@emotion/styled"
 import type { CellContext } from "@tanstack/react-table"
 import type { TaskRowDto } from "src/api/model"
 import type { AppTableFeatures } from "src/consts/table-features"
@@ -9,5 +10,11 @@ export function TagsCell<TTask extends TaskRowDto>({
 }: CellContext<AppTableFeatures, TTask, string[]>) {
 	const { searchQuery } = useTaskTable()
 
-	return <TopicCell tags={getValue()} searchQuery={searchQuery} />
+	return <StickyTopicCell tags={getValue()} searchQuery={searchQuery} />
 }
+
+const StickyTopicCell = styled(TopicCell)`
+  position: sticky;
+  top: var(--table-header-height, 0px);
+  height: var(--table-row-height, 100%);
+`

@@ -46,6 +46,10 @@ const CellRoot = styled.div`
   align-items: center;
   gap: 6px;
   color: var(--sea-ink-soft);
+  width: 100%;
+  height: var(--table-row-height, 100%);
+  position: sticky;
+  top: var(--table-header-height, 0px);
 `
 
 const SourceAttachmentIcon = styled(Paperclip)`
