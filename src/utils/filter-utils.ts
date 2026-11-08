@@ -21,6 +21,8 @@ import {
 	getAssigneeFilterValue,
 	getSourceFilterValue,
 	getTagFilterValues,
+	hasUnviewedMessages,
+	UNVIEWED_MESSAGES_VALUE,
 } from "./task-table-utils"
 
 export interface FilterOption {
@@ -34,11 +36,15 @@ export type FilterOptions =
 	| "deadlineType"
 	| "source"
 	| "tags"
+	| "lastMessage"
+
+const UNVIEWED_MESSAGES_LABEL = "טרם נצפו בלבד"
 
 export const ACTIVE_QUICK_FILTERS: QuickFilter[] = [
 	QuickFilter.overdue,
 	QuickFilter.approaching,
 	QuickFilter.flagged,
+	QuickFilter.unread,
 ]
 
 export const QUICK_FILTER_LABELS: Record<QuickFilter, string> = {
@@ -46,6 +52,7 @@ export const QUICK_FILTER_LABELS: Record<QuickFilter, string> = {
 	[QuickFilter.approaching]: 'תג"ב מתקרב',
 	[QuickFilter.flagged]: "במיקוד",
 	[QuickFilter.rolling]: "שוטפות",
+	[QuickFilter.unread]: "חדשות",
 }
 
 export const QUICK_FILTER_TOOLTIPS: Partial<Record<QuickFilter, string>> = {
@@ -89,6 +96,8 @@ export function matchesQuickFilter(
 			return !!task.flagged
 		case QuickFilter.rolling:
 			return task.deadlineType === DeadlineType.ROLLING
+		case QuickFilter.unread:
+			return !task.viewedInTable
 
 		default:
 			return false
@@ -103,6 +112,11 @@ export function countQuickFilters(
 	return mapValues(keyBy(Object.values(QuickFilter)), (filter) =>
 		sumBy(tasks, (task) => Number(matchesQuickFilter(task, filter, today))),
 	) as Record<QuickFilter, number>
+}
+
+export function countUnreadTasks(tasks: TaskRowDto[]): number {
+	return tasks.filter((task) => matchesQuickFilter(task, QuickFilter.unread))
+		.length
 }
 
 function toFilterOptions(
@@ -137,5 +151,8 @@ export function buildFilterOptionsMap(
 		),
 		source: toFilterOptions(tasks.map(getSourceFilterValue), includeEmpty),
 		tags: toFilterOptions(tasks.flatMap(getTagFilterValues), includeEmpty),
+		lastMessage: tasks.some(hasUnviewedMessages)
+			? [{ value: UNVIEWED_MESSAGES_VALUE, label: UNVIEWED_MESSAGES_LABEL }]
+			: [],
 	}
 }

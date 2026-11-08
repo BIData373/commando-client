@@ -113,14 +113,12 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				meta: { searchable: true },
 				cell: SourceCell,
 			}),
-			columnHelper.display({
-				id: TASK_COLUMN_ID.lastMessage,
+			definitions.lastMessage({
 				header: TaskColumnHeader,
 				size: 100,
 				minSize: 70,
 				meta: { grow: true },
 				enableSorting: false,
-				enableColumnFilter: false,
 				cell: LastMessageCell,
 			}),
 			definitions.tags({
