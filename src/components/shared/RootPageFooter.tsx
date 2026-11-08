@@ -129,7 +129,7 @@ const FooterText = styled.span`
   font-size: clamp(14px, 1vw, 20px);
   font-weight: 400;
   line-height: clamp(20px, 2.5vh, 27px);
-	color: var(--text-color);
+  color: var(--text-color);
   white-space: nowrap;
 `
 
