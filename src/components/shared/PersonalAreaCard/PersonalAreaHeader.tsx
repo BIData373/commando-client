@@ -79,11 +79,3 @@ const GreetingText = styled.span`
     font-size: clamp(16px, 1vw, 20px);
   }
 `
-
-const NewTaskCount = styled.span`
-  direction: rtl;
-  color: var(--text-color-400);
-  font-size: clamp(14px, 1vw, 20px);
-  font-weight: 400;
-  line-height: clamp(24px, 3.5vh, 38px);
-`
