@@ -447,6 +447,13 @@ const TableWrapper = styled.div`
     &[rowspan] {
       vertical-align: top;
       overflow: clip;
+
+      /* Sticky within rowspan only — overflow:hidden on regular tds blocks sticky positioning */
+      & > * {
+        position: sticky;
+        top: var(--table-header-height, 0px);
+        height: var(--table-row-height, 100%);
+      }
     }
 
     &[data-column-id="${TASK_COLUMN_ID.serialId}"],
