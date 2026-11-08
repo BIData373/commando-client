@@ -84,6 +84,12 @@ function multiSelectColumnFilter<TTask extends TaskRowDto>(
 	return !filterValue?.length || filterValue.includes(row.getValue(columnId))
 }
 
+export const UNVIEWED_MESSAGES_VALUE = "unviewed"
+
+export function hasUnviewedMessages(task: TaskRowDto): boolean {
+	return !!task.lastMessage && !task.viewedMessages
+}
+
 export function getTaskTagNames(task: TaskRowDto): string[] {
 	return map(concat(task.tags, task.source?.tags ?? []), "name")
 }
@@ -146,6 +152,11 @@ export function createTaskColumnDefinitions<TTask extends TaskRowDto>() {
 			TASK_COLUMN_ID.source,
 			(row) => row.source && formatSourceLabel(row.source),
 			{ sortFn: "text", filterFn: multiSelectColumnFilter },
+		),
+		lastMessage: defineColumn(
+			TASK_COLUMN_ID.lastMessage,
+			(row) => (hasUnviewedMessages(row) ? UNVIEWED_MESSAGES_VALUE : undefined),
+			{ filterFn: multiSelectColumnFilter },
 		),
 		createdAt: defineColumn(TASK_COLUMN_ID.createdAt, (row) => row.createdAt, {
 			sortFn: "datetime",
