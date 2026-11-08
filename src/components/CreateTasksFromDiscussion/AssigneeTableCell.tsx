@@ -51,6 +51,13 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 		})
 	}
 
+	function handleGroupSelect(newIds: number[]) {
+		meta.updateRow(row.id, {
+			assigneeIds: [...assigneeIds, ...newIds],
+			assigneeDetails: row.assigneeDetails,
+		})
+	}
+
 	return hasMultiple && !isExpanded && !isLoading ? (
 		<CollapsedAssigneeButton
 			type="button"
@@ -67,8 +74,10 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 				workspaceId={workspaceId}
 				selectedAssignees={assigneeIds}
 				onToggle={handleToggleAssignee}
+				onGroupSelect={handleGroupSelect}
+				showGroupAvatars={false}
 				trigger={({ search, onSearchChange, open }) => (
-					<CompactTriggerButton type="button">
+					<CompactTriggerButton>
 						<CompactChevron size={16} />
 
 						{open || assigneeIds.length === 0 ? (
@@ -138,7 +147,7 @@ const CollapsedAssigneeLabel = styled.span`
   white-space: nowrap;
 `
 
-const CompactTriggerButton = styled.button`
+const CompactTriggerButton = styled.div`
   direction: ltr;
   display: flex;
   align-items: center;

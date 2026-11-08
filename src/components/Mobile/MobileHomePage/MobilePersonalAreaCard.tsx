@@ -19,7 +19,7 @@ export default function MobilePersonalAreaCard() {
 
 	return (
 		<CardRoot onClick={handleNavigateToPersonal}>
-			<PersonalAreaHeader />
+			<PersonalAreaHeader taskRows={allTaskRows} />
 			<Footer>
 				{totalCount > 0 ? (
 					<StatsRow>

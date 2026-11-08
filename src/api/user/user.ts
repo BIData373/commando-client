@@ -26,6 +26,7 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import type {
 	CreateUserDto,
+	CurrentUserDto,
 	DeleteUserPathParameters,
 	GetUserPathParameters,
 	MirageUserDto,
@@ -34,6 +35,8 @@ import type {
 	UpdateUserPathParameters,
 	UserDto,
 } from "../model"
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 const withQueryKey = <T extends object, K>(
 	query: T,
@@ -55,16 +58,22 @@ const withQueryKey = <T extends object, K>(
 
 export const createUser = (
 	createUserDto: CreateUserDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<UserDto>({
-		url: `/user`,
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		data: createUserDto,
-		signal,
-	})
+	return sendRequest<UserDto>(
+		{
+			url: `/user`,
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			data: createUserDto,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getCreateUserMutationKey = () => ["createUser"] as const
 
 export const getCreateUserMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -73,31 +82,32 @@ export const getCreateUserMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof createUser>>,
 		TError,
-		{ data: CreateUserDto },
+		CreateUserMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createUser>>,
 	TError,
-	{ data: CreateUserDto },
+	CreateUserMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["createUser"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getCreateUserMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createUser>>,
-		{ data: CreateUserDto }
+		CreateUserMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
-		return createUser(data)
+		return createUser(data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -108,27 +118,35 @@ export type CreateUserMutationResult = NonNullable<
 >
 export type CreateUserMutationBody = CreateUserDto
 export type CreateUserMutationError = ErrorType<unknown>
+export type CreateUserMutationVariables = { data: CreateUserDto }
 
 export const useCreateUser = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createUser>>,
 			TError,
-			{ data: CreateUserDto },
+			CreateUserMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof createUser>>,
 	TError,
-	{ data: CreateUserDto },
+	CreateUserMutationVariables,
 	TContext
 > => {
 	return useMutation(getCreateUserMutationOptions(options), queryClient)
 }
-export const listUsers = (signal?: AbortSignal) => {
-	return sendRequest<UserDto[]>({ url: `/user`, method: "GET", signal })
+export const listUsers = (
+	options?: SecondParameter<typeof sendRequest>,
+	signal?: AbortSignal,
+) => {
+	return sendRequest<UserDto[]>(
+		{ url: `/user`, method: "GET", signal },
+		options,
+	)
 }
 
 export const getListUsersQueryKey = () => {
@@ -142,14 +160,15 @@ export const getListUsersQueryOptions = <
 	query?: Partial<
 		UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>
 	>
+	request?: SecondParameter<typeof sendRequest>
 }) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getListUsersQueryKey()
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof listUsers>>> = ({
 		signal,
-	}) => listUsers(signal)
+	}) => listUsers(requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listUsers>>,
@@ -179,6 +198,7 @@ export function useListUsers<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -200,6 +220,7 @@ export function useListUsers<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -213,6 +234,7 @@ export function useListUsers<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -227,6 +249,7 @@ export function useListUsers<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -244,14 +267,13 @@ export function useListUsers<
 
 export const searchUsers = (
 	params: SearchUsersParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<MirageUserDto[]>({
-		url: `/user/search`,
-		method: "GET",
-		params,
-		signal,
-	})
+	return sendRequest<MirageUserDto[]>(
+		{ url: `/user/search`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getSearchUsersQueryKey = (params?: SearchUsersParams) => {
@@ -267,15 +289,16 @@ export const getSearchUsersQueryOptions = <
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof searchUsers>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getSearchUsersQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof searchUsers>>> = ({
 		signal,
-	}) => searchUsers(params, signal)
+	}) => searchUsers(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof searchUsers>>,
@@ -306,6 +329,7 @@ export function useSearchUsers<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -328,6 +352,7 @@ export function useSearchUsers<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -342,6 +367,7 @@ export function useSearchUsers<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof searchUsers>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -357,6 +383,7 @@ export function useSearchUsers<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof searchUsers>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -372,11 +399,216 @@ export function useSearchUsers<
 	return withQueryKey(query, queryOptions.queryKey)
 }
 
-export const getUser = (
-	{ id }: GetUserPathParameters,
+export const getMe = (
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<UserDto>({ url: `/user/${id}`, method: "GET", signal })
+	return sendRequest<CurrentUserDto>(
+		{ url: `/user/me`, method: "GET", signal },
+		options,
+	)
+}
+
+export const getGetMeQueryKey = () => {
+	return [`/user/me`] as const
+}
+
+export const getGetMeQueryOptions = <
+	TData = Awaited<ReturnType<typeof getMe>>,
+	TError = ErrorType<unknown>,
+>(options?: {
+	query?: Partial<
+		UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
+	>
+	request?: SecondParameter<typeof sendRequest>
+}) => {
+	const { query: queryOptions, request: requestOptions } = options ?? {}
+
+	const queryKey = queryOptions?.queryKey ?? getGetMeQueryKey()
+
+	const queryFn: QueryFunction<Awaited<ReturnType<typeof getMe>>> = ({
+		signal,
+	}) => getMe(requestOptions, signal)
+
+	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+		Awaited<ReturnType<typeof getMe>>,
+		TError,
+		TData
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetMeQueryResult = NonNullable<Awaited<ReturnType<typeof getMe>>>
+export type GetMeQueryError = ErrorType<unknown>
+
+export function useGetMe<
+	TData = Awaited<ReturnType<typeof getMe>>,
+	TError = ErrorType<unknown>,
+>(
+	options: {
+		query: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
+		> &
+			Pick<
+				DefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getMe>>,
+					TError,
+					Awaited<ReturnType<typeof getMe>>
+				>,
+				"initialData"
+			>
+		request?: SecondParameter<typeof sendRequest>
+	},
+	queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetMe<
+	TData = Awaited<ReturnType<typeof getMe>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
+		> &
+			Pick<
+				UndefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getMe>>,
+					TError,
+					Awaited<ReturnType<typeof getMe>>
+				>,
+				"initialData"
+			>
+		request?: SecondParameter<typeof sendRequest>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetMe<
+	TData = Awaited<ReturnType<typeof getMe>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
+		>
+		request?: SecondParameter<typeof sendRequest>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+}
+
+export function useGetMe<
+	TData = Awaited<ReturnType<typeof getMe>>,
+	TError = ErrorType<unknown>,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
+		>
+		request?: SecondParameter<typeof sendRequest>
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>
+} {
+	const queryOptions = getGetMeQueryOptions(options)
+
+	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+		TData,
+		TError
+	> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+	return withQueryKey(query, queryOptions.queryKey)
+}
+
+export const completeOnboarding = (
+	options?: SecondParameter<typeof sendRequest>,
+	signal?: AbortSignal,
+) => {
+	return sendRequest<CurrentUserDto>(
+		{ url: `/user/complete-onboarding`, method: "PATCH", signal },
+		options,
+	)
+}
+
+export const getCompleteOnboardingMutationKey = () =>
+	["completeOnboarding"] as const
+
+export const getCompleteOnboardingMutationOptions = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(options?: {
+	mutation?: UseMutationOptions<
+		Awaited<ReturnType<typeof completeOnboarding>>,
+		TError,
+		void,
+		TContext
+	>
+	request?: SecondParameter<typeof sendRequest>
+}): UseMutationOptions<
+	Awaited<ReturnType<typeof completeOnboarding>>,
+	TError,
+	void,
+	TContext
+> => {
+	const mutationKey = getCompleteOnboardingMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
+		? options.mutation &&
+			"mutationKey" in options.mutation &&
+			options.mutation.mutationKey
+			? options
+			: { ...options, mutation: { ...options.mutation, mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
+
+	const mutationFn: MutationFunction<
+		Awaited<ReturnType<typeof completeOnboarding>>,
+		void
+	> = () => {
+		return completeOnboarding(requestOptions)
+	}
+
+	return { mutationFn, ...mutationOptions }
+}
+
+export type CompleteOnboardingMutationResult = NonNullable<
+	Awaited<ReturnType<typeof completeOnboarding>>
+>
+
+export type CompleteOnboardingMutationError = ErrorType<unknown>
+
+export const useCompleteOnboarding = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
+	options?: {
+		mutation?: UseMutationOptions<
+			Awaited<ReturnType<typeof completeOnboarding>>,
+			TError,
+			void,
+			TContext
+		>
+		request?: SecondParameter<typeof sendRequest>
+	},
+	queryClient?: QueryClient,
+): UseMutationResult<
+	Awaited<ReturnType<typeof completeOnboarding>>,
+	TError,
+	void,
+	TContext
+> => {
+	return useMutation(getCompleteOnboardingMutationOptions(options), queryClient)
+}
+export const getUser = (
+	{ id }: GetUserPathParameters,
+	options?: SecondParameter<typeof sendRequest>,
+	signal?: AbortSignal,
+) => {
+	return sendRequest<UserDto>(
+		{ url: `/user/${id}`, method: "GET", signal },
+		options,
+	)
 }
 
 export const getGetUserQueryKey = ({ id }: GetUserPathParameters) => {
@@ -392,15 +624,16 @@ export const getGetUserQueryOptions = <
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getGetUserQueryKey({ id })
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getUser>>> = ({
 		signal,
-	}) => getUser({ id }, signal)
+	}) => getUser({ id }, requestOptions, signal)
 
 	return {
 		queryKey,
@@ -434,6 +667,7 @@ export function useGetUser<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -456,6 +690,7 @@ export function useGetUser<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -470,6 +705,7 @@ export function useGetUser<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -485,6 +721,7 @@ export function useGetUser<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -503,16 +740,22 @@ export function useGetUser<
 export const updateUser = (
 	{ id }: UpdateUserPathParameters,
 	updateUserDto: UpdateUserDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<UserDto>({
-		url: `/user/${id}`,
-		method: "PATCH",
-		headers: { "Content-Type": "application/json" },
-		data: updateUserDto,
-		signal,
-	})
+	return sendRequest<UserDto>(
+		{
+			url: `/user/${id}`,
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			data: updateUserDto,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getUpdateUserMutationKey = () => ["updateUser"] as const
 
 export const getUpdateUserMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -521,31 +764,32 @@ export const getUpdateUserMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof updateUser>>,
 		TError,
-		{ pathParams: UpdateUserPathParameters; data: UpdateUserDto },
+		UpdateUserMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateUser>>,
 	TError,
-	{ pathParams: UpdateUserPathParameters; data: UpdateUserDto },
+	UpdateUserMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["updateUser"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getUpdateUserMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateUser>>,
-		{ pathParams: UpdateUserPathParameters; data: UpdateUserDto }
+		UpdateUserMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
-		return updateUser(pathParams, data)
+		return updateUser(pathParams, data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -556,31 +800,42 @@ export type UpdateUserMutationResult = NonNullable<
 >
 export type UpdateUserMutationBody = UpdateUserDto
 export type UpdateUserMutationError = ErrorType<unknown>
+export type UpdateUserMutationVariables = {
+	pathParams: UpdateUserPathParameters
+	data: UpdateUserDto
+}
 
 export const useUpdateUser = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateUser>>,
 			TError,
-			{ pathParams: UpdateUserPathParameters; data: UpdateUserDto },
+			UpdateUserMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof updateUser>>,
 	TError,
-	{ pathParams: UpdateUserPathParameters; data: UpdateUserDto },
+	UpdateUserMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpdateUserMutationOptions(options), queryClient)
 }
 export const deleteUser = (
 	{ id }: DeleteUserPathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<UserDto>({ url: `/user/${id}`, method: "DELETE", signal })
+	return sendRequest<UserDto>(
+		{ url: `/user/${id}`, method: "DELETE", signal },
+		options,
+	)
 }
+
+export const getDeleteUserMutationKey = () => ["deleteUser"] as const
 
 export const getDeleteUserMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -589,31 +844,32 @@ export const getDeleteUserMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteUser>>,
 		TError,
-		{ pathParams: DeleteUserPathParameters },
+		DeleteUserMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteUser>>,
 	TError,
-	{ pathParams: DeleteUserPathParameters },
+	DeleteUserMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deleteUser"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getDeleteUserMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteUser>>,
-		{ pathParams: DeleteUserPathParameters }
+		DeleteUserMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
-		return deleteUser(pathParams)
+		return deleteUser(pathParams, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -624,21 +880,25 @@ export type DeleteUserMutationResult = NonNullable<
 >
 
 export type DeleteUserMutationError = ErrorType<unknown>
+export type DeleteUserMutationVariables = {
+	pathParams: DeleteUserPathParameters
+}
 
 export const useDeleteUser = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteUser>>,
 			TError,
-			{ pathParams: DeleteUserPathParameters },
+			DeleteUserMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteUser>>,
 	TError,
-	{ pathParams: DeleteUserPathParameters },
+	DeleteUserMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeleteUserMutationOptions(options), queryClient)

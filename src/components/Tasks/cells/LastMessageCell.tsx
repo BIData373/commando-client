@@ -2,13 +2,16 @@ import styled from "@emotion/styled"
 import type { CellContext } from "@tanstack/react-table"
 import type { TaskRowDto } from "src/api/model"
 import type { AppTableFeatures } from "src/consts/table-features"
+import { useTaskTable } from "src/providers/TaskTableProvider"
+import { UnreadDot } from "../../shared/UnreadDot"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip"
 
 export function LastMessageCell<TTask extends TaskRowDto, TValue>({
 	row: {
-		original: { lastMessage, messageCount },
+		original: { lastMessage, messageCount, viewedMessages },
 	},
 }: CellContext<AppTableFeatures, TTask, TValue>) {
+	const { showUnreadDot } = useTaskTable()
 	const userName = lastMessage?.user?.info?.name ?? lastMessage?.user?.info?.upn
 	const text = userName
 		? `${userName}: ${lastMessage.content}`
@@ -18,7 +21,10 @@ export function LastMessageCell<TTask extends TaskRowDto, TValue>({
 		<Tooltip>
 			<TooltipTrigger asChild>
 				<CommentCell>
-					<CommentText>{text}</CommentText>
+					<CommentText>
+						{showUnreadDot && text && !viewedMessages && <InlineDot />}
+						{text}
+					</CommentText>
 					{messageCount > 1 && <CommentCount>({messageCount})</CommentCount>}
 				</CommentCell>
 			</TooltipTrigger>
@@ -26,6 +32,13 @@ export function LastMessageCell<TTask extends TaskRowDto, TValue>({
 		</Tooltip>
 	)
 }
+
+const InlineDot = styled(UnreadDot)`
+  position: static;
+  display: inline-block;
+  margin-inline-end: 4px;
+  vertical-align: middle;
+`
 
 const CommentCell = styled.div`
   display: flex;

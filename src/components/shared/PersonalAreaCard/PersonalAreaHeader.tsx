@@ -1,15 +1,27 @@
 import styled from "@emotion/styled"
+import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
+import { countUnreadTasks } from "src/utils/filter-utils"
 
-export default function PersonalAreaHeader() {
+interface PersonalAreaHeaderProps {
+	taskRows: TaskRowWithWorkspaceDto[]
+}
+
+export default function PersonalAreaHeader({
+	taskRows,
+}: PersonalAreaHeaderProps) {
 	const user = useCurrentUser()
 	const username = user.info?.name || user.upn
+	const unreadTasksCount = countUnreadTasks(taskRows)
 
 	return (
 		<Header>
 			<TitleRow>
 				<Title>אזור אישי</Title>
+				{unreadTasksCount > 0 && (
+					<UnreadCount>({unreadTasksCount} הנחיות חדשות)</UnreadCount>
+				)}
 			</TitleRow>
 			<Greeting>
 				<GreetingText>
@@ -34,14 +46,22 @@ const Header = styled.div`
 `
 
 const TitleRow = styled.div`
+  direction: rtl;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: baseline;
   gap: 8px;
 
   ${MOBILE_MEDIA_QUERY} {
     align-items: center;
   }
+`
+
+const UnreadCount = styled.span`
+  color: var(--text-color-400);
+  font-size: clamp(14px, 1vw, 20px);
+  font-weight: 400;
+  white-space: nowrap;
 `
 
 const Title = styled.span`

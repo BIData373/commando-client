@@ -40,6 +40,7 @@ const StatTag = styled.span<{ $color: string }>`
   width: 76px;
   padding: 1px 8px;
   border-radius: 35px;
+  background: var(--chip-bg);
   background: rgb(from ${({ $color }) => $color} r g b / 0.1);
   color: ${({ $color }) => $color};
   font-size: 12px;

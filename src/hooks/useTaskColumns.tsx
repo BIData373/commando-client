@@ -23,6 +23,7 @@ import { StatusCell } from "../components/Tasks/cells/StatusCell"
 import { TagsCell } from "../components/Tasks/cells/TagsCell"
 import { TaskColumnHeader } from "../components/Tasks/cells/TaskColumnHeader"
 import { TitleCell } from "../components/Tasks/cells/TitleCell"
+import { TitleColumnHeader } from "../components/Tasks/cells/TitleColumnHeader"
 
 interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	columnOrder: (keyof TTask)[]
@@ -82,7 +83,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 		const middleColumns = columnHelper.columns([
 			columnHelper.accessor((row) => row.title, {
 				id: TASK_COLUMN_ID.title,
-				header: COLUMN_LABELS.title,
+				header: TitleColumnHeader,
 				size: 300,
 				minSize: 160,
 				meta: { grow: true },
@@ -112,14 +113,12 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				meta: { searchable: true },
 				cell: SourceCell,
 			}),
-			columnHelper.display({
-				id: TASK_COLUMN_ID.lastMessage,
+			definitions.lastMessage({
 				header: TaskColumnHeader,
 				size: 100,
 				minSize: 70,
 				meta: { grow: true },
 				enableSorting: false,
-				enableColumnFilter: false,
 				cell: LastMessageCell,
 			}),
 			definitions.tags({

@@ -1,6 +1,7 @@
 import tailwindcss from "@tailwindcss/vite"
 import { devtools } from "@tanstack/devtools-vite"
 import { tanstackRouter } from "@tanstack/router-plugin/vite"
+import legacy from "@vitejs/plugin-legacy"
 import viteReact from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
@@ -35,7 +36,26 @@ const config = defineConfig({
 				],
 			},
 		}),
+		// Chrome 83 supports ES modules, so only inject polyfills into the modern bundle
+		legacy({
+			targets: ["chrome >= 83"],
+			renderLegacyChunks: false,
+			modernPolyfills: true,
+		}),
 	],
+	css: {
+		transformer: "lightningcss",
+		lightningcss: {
+			// Lightning CSS encodes versions as major << 16 (83.0.0 -> 83 << 16)
+			targets: { chrome: 83 << 16 },
+		},
+	},
+	// Specifically for Mobile this is our target
+	build: {
+		target: "chrome83",
+		cssTarget: "chrome83",
+		cssMinify: "lightningcss",
+	},
 })
 
 export default config

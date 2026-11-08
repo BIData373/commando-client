@@ -17,6 +17,7 @@ import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { toast } from "src/components/Toast/toast-api"
 import type { AppTableFeatures } from "src/consts/table-features"
+import { isEmptyValue } from "src/functions/empty-filter"
 import {
 	buildRowMenuActions,
 	type TaskArchiveEntry,
@@ -126,8 +127,13 @@ function TaskTable<TTask extends TaskRowDto>({
 
 	const [selectMode, setSelectMode] = useState(false)
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+	const [titleExpanded, setTitleExpanded] = useState(false)
 	const [contextMenu, setContextMenu] =
 		useState<ContextMenuState<TTask> | null>(null)
+
+	function handleToggleTitleExpanded() {
+		setTitleExpanded((prev) => !prev)
+	}
 
 	const columnFilters: ColumnFiltersState = useMemo(
 		() =>
@@ -172,7 +178,10 @@ function TaskTable<TTask extends TaskRowDto>({
 
 		setColumnsFilters(newFilters)
 		setAssigneeFilter(tableAssigneeColumnValue)
-		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
+		onFiltersChange?.(
+			tableStatusColumnValue,
+			tableDeadlineColumnValue.filter((v) => !isEmptyValue(v)),
+		)
 	}
 
 	const tasksByRowKey = useMemo(() => keyBy(tasks, "rowKey"), [tasks])
@@ -255,7 +264,10 @@ function TaskTable<TTask extends TaskRowDto>({
 		)
 	}
 
-	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
+	const filterOptionsMap = useMemo(
+		() => buildFilterOptionsMap(tasks, true),
+		[tasks],
+	)
 
 	const groupedTasks = useMemo(() => groupRowsByTask(tasks), [tasks])
 
@@ -304,9 +316,12 @@ function TaskTable<TTask extends TaskRowDto>({
 			searchQuery={deferredSearchQuery}
 			statuses={statuses}
 			filterOptionsMap={filterOptionsMap}
+			titleExpanded={titleExpanded}
+			onToggleTitleExpanded={handleToggleTitleExpanded}
+			showUnreadDot
 			handlers={rowHandlers as TaskRowHandlers}
 		>
-			<TableWrapper>
+			<TableWrapper data-title-expanded={titleExpanded || undefined}>
 				<DataTable
 					columns={columns}
 					data={groupedTasks}
@@ -439,6 +454,13 @@ const TableWrapper = styled.div`
     &[rowspan] {
       vertical-align: top;
       overflow: clip;
+
+      /* Sticky within rowspan only — overflow:hidden on regular tds blocks sticky positioning */
+      & > * {
+        position: sticky;
+        top: var(--table-header-height, 0px);
+        height: var(--table-row-height, 100%);
+      }
     }
 
     &[data-column-id="${TASK_COLUMN_ID.serialId}"],
@@ -464,5 +486,45 @@ const TableWrapper = styled.div`
     border: none;
     max-height: none;
     overflow: visible;
+  }
+
+  &[data-title-expanded] td[data-column-id="title"] {
+    height: auto;
+    max-height: none;
+  }
+
+  &[data-title-expanded] tr:has([data-cell-wrapped]) td:not([data-virtual-spacer]) {
+    vertical-align: top;
+    padding-block-start: 10px;
+
+    & > * {
+      align-items: flex-start;
+    }
+  }
+
+  &[data-title-expanded] tr:has([data-cell-wrapped]) td:not([data-virtual-spacer]):not([data-column-id="title"]) {
+    max-height: none;
+
+    span, div {
+      white-space: normal;
+      text-overflow: clip;
+      -webkit-line-clamp: unset;
+      -webkit-box-orient: unset;
+      overflow-wrap: break-word;
+    }
+
+    [data-overflow-row] {
+      flex-wrap: wrap;
+
+      & > * {
+        position: static;
+        visibility: visible;
+        pointer-events: auto;
+      }
+
+      [data-overflow-indicator] {
+        display: none;
+      }
+    }
   }
 `

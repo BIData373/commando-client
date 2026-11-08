@@ -1,9 +1,44 @@
-@import "tailwindcss";
+/* Unlayered Tailwind imports: Chrome 83 does not support @layer */
+@import "tailwindcss/theme.css";
+@import "tailwindcss/preflight.css";
+@import "tailwindcss/utilities.css";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/rubik";
 
 @custom-variant dark (&:is(.dark *));
+
+/* Tailwind compiles rtl:/ltr: to :where(), which Chrome 83 does not support (Chrome 88+) */
+@custom-variant rtl ([dir="rtl"] &);
+@custom-variant ltr ([dir="ltr"] &);
+
+/* Chrome 83 lacks the individual translate/rotate properties (Chrome 104+): rebuild one transform */
+@utility rotate-45 { rotate: 45deg; --chrome83-rotate: 45deg; }
+@utility rotate-90 { rotate: 90deg; --chrome83-rotate: 90deg; }
+@utility rotate-180 { rotate: 180deg; --chrome83-rotate: 180deg; }
+
+@supports not (translate: 0) {
+  [class*="translate-"],
+  [class*="rotate-"] {
+    transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 0))
+      rotate(var(--chrome83-rotate, 0deg));
+  }
+}
+
+/* Chrome 83 has no flex gap (html.no-flex-gap, set in flex-gap.ts): use child margins */
+@utility gap-* {
+  --chrome83-gap: calc(var(--spacing) * --value(number));
+}
+
+.no-flex-gap [class*="gap-"].flex > * + *,
+.no-flex-gap [class*="gap-"].inline-flex > * + * {
+  margin-inline-start: var(--chrome83-gap, 0);
+}
+
+.no-flex-gap [class*="gap-"].flex-col > * + * {
+  margin-inline-start: 0;
+  margin-block-start: var(--chrome83-gap, 0);
+}
 
 html,
 body,
@@ -203,6 +238,7 @@ body,
   --link-bg-hover: rgba(0, 0, 0, 0.04);
   --line: oklch(0.91 0 0);
   --header-bg: oklch(0.14 0.035 258);
+  --header-container-bg: oklch(0.2077 0.038 275.77);
   --table-rows-bg-hover: linear-gradient(
     0deg,
     rgba(0, 0, 0, 0.04) 0%,

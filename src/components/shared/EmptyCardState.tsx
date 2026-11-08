@@ -6,6 +6,8 @@ export interface EmptyCardStateProps extends PropsWithChildren {
 	title: ReactNode
 	description?: string
 	isChildTitleIcon?: boolean
+	action?: ReactNode
+	className?: string
 }
 
 export const EmptyCardState = ({
@@ -14,9 +16,11 @@ export const EmptyCardState = ({
 	description,
 	children,
 	isChildTitleIcon = false,
+	action,
+	className,
 }: EmptyCardStateProps) => {
 	return (
-		<EmptyState>
+		<EmptyState className={className}>
 			{imgSrc && <EmptyImage src={imgSrc} alt="" />}
 			{isChildTitleIcon ? (
 				<TitleContainer>
@@ -35,6 +39,8 @@ export const EmptyCardState = ({
 				</EmptyDescription>
 			)}
 
+			{action}
+
 			{isChildTitleIcon && children}
 		</EmptyState>
 	)
@@ -44,6 +50,7 @@ const EmptyState = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 12px;
   padding-top: 24px;
   max-width: none;
   text-align: center;
@@ -64,6 +71,9 @@ const EmptyDescription = styled.div`
   color: var(--sea-ink-soft);
   line-height: 22px;
   direction: rtl;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `
 
 const EmptyImage = styled.img`

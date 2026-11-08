@@ -3,6 +3,7 @@ import { MoreVertical, Trash2 } from "lucide-react"
 import type { MessageDto } from "src/api/model"
 import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
+import { UnreadDot } from "../shared/UnreadDot"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -27,6 +28,7 @@ function TaskComment({ message, canDelete, onDelete }: TaskCommentProps) {
 
 	return (
 		<Card>
+			{!message.viewed && <UnreadDot />}
 			<MainRow>
 				{canDelete && (
 					<DropdownMenu>
@@ -70,6 +72,7 @@ const Card = styled.div`
   background: var(--card-background);
   width: 100%;
   direction: ltr;
+  position: relative;
 `
 
 const MainRow = styled.div`
@@ -146,6 +149,7 @@ const UserDetails = styled.div`
   min-width: 0;
   flex: 1;
   direction: rtl;
+  overflow: hidden;
 
   ${MOBILE_MEDIA_QUERY} {
     display: block;
