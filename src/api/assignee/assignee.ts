@@ -35,6 +35,8 @@ import type {
 	UpdateAssigneePathParameters,
 } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 const withQueryKey = <T extends object, K>(
 	query: T,
 	queryKey: K,
@@ -55,16 +57,22 @@ const withQueryKey = <T extends object, K>(
 
 export const createAssignee = (
 	createAssigneeDto: CreateAssigneeDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneeDto>({
-		url: `/assignee`,
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		data: createAssigneeDto,
-		signal,
-	})
+	return sendRequest<AssigneeDto>(
+		{
+			url: `/assignee`,
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			data: createAssigneeDto,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getCreateAssigneeMutationKey = () => ["createAssignee"] as const
 
 export const getCreateAssigneeMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -73,31 +81,32 @@ export const getCreateAssigneeMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof createAssignee>>,
 		TError,
-		{ data: CreateAssigneeDto },
+		CreateAssigneeMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createAssignee>>,
 	TError,
-	{ data: CreateAssigneeDto },
+	CreateAssigneeMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["createAssignee"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getCreateAssigneeMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createAssignee>>,
-		{ data: CreateAssigneeDto }
+		CreateAssigneeMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
-		return createAssignee(data)
+		return createAssignee(data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -108,6 +117,7 @@ export type CreateAssigneeMutationResult = NonNullable<
 >
 export type CreateAssigneeMutationBody = CreateAssigneeDto
 export type CreateAssigneeMutationError = ErrorType<unknown>
+export type CreateAssigneeMutationVariables = { data: CreateAssigneeDto }
 
 export const useCreateAssignee = <
 	TError = ErrorType<unknown>,
@@ -117,29 +127,29 @@ export const useCreateAssignee = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createAssignee>>,
 			TError,
-			{ data: CreateAssigneeDto },
+			CreateAssigneeMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof createAssignee>>,
 	TError,
-	{ data: CreateAssigneeDto },
+	CreateAssigneeMutationVariables,
 	TContext
 > => {
 	return useMutation(getCreateAssigneeMutationOptions(options), queryClient)
 }
 export const listAssignees = (
 	params: ListAssigneesParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneesDto[]>({
-		url: `/assignee`,
-		method: "GET",
-		params,
-		signal,
-	})
+	return sendRequest<AssigneesDto[]>(
+		{ url: `/assignee`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getListAssigneesQueryKey = (params?: ListAssigneesParams) => {
@@ -155,15 +165,16 @@ export const getListAssigneesQueryOptions = <
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listAssignees>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getListAssigneesQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof listAssignees>>> = ({
 		signal,
-	}) => listAssignees(params, signal)
+	}) => listAssignees(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listAssignees>>,
@@ -194,6 +205,7 @@ export function useListAssignees<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -216,6 +228,7 @@ export function useListAssignees<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -230,6 +243,7 @@ export function useListAssignees<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listAssignees>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -245,6 +259,7 @@ export function useListAssignees<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listAssignees>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -262,13 +277,13 @@ export function useListAssignees<
 
 export const getAssignee = (
 	{ id }: GetAssigneePathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneeDto>({
-		url: `/assignee/${id}`,
-		method: "GET",
-		signal,
-	})
+	return sendRequest<AssigneeDto>(
+		{ url: `/assignee/${id}`, method: "GET", signal },
+		options,
+	)
 }
 
 export const getGetAssigneeQueryKey = ({ id }: GetAssigneePathParameters) => {
@@ -284,15 +299,16 @@ export const getGetAssigneeQueryOptions = <
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getAssignee>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getGetAssigneeQueryKey({ id })
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getAssignee>>> = ({
 		signal,
-	}) => getAssignee({ id }, signal)
+	}) => getAssignee({ id }, requestOptions, signal)
 
 	return {
 		queryKey,
@@ -328,6 +344,7 @@ export function useGetAssignee<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -350,6 +367,7 @@ export function useGetAssignee<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -364,6 +382,7 @@ export function useGetAssignee<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getAssignee>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -379,6 +398,7 @@ export function useGetAssignee<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getAssignee>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -397,16 +417,22 @@ export function useGetAssignee<
 export const updateAssignee = (
 	{ id }: UpdateAssigneePathParameters,
 	updateAssigneeDto: UpdateAssigneeDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneeDto>({
-		url: `/assignee/${id}`,
-		method: "PATCH",
-		headers: { "Content-Type": "application/json" },
-		data: updateAssigneeDto,
-		signal,
-	})
+	return sendRequest<AssigneeDto>(
+		{
+			url: `/assignee/${id}`,
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			data: updateAssigneeDto,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getUpdateAssigneeMutationKey = () => ["updateAssignee"] as const
 
 export const getUpdateAssigneeMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -415,31 +441,32 @@ export const getUpdateAssigneeMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof updateAssignee>>,
 		TError,
-		{ pathParams: UpdateAssigneePathParameters; data: UpdateAssigneeDto },
+		UpdateAssigneeMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateAssignee>>,
 	TError,
-	{ pathParams: UpdateAssigneePathParameters; data: UpdateAssigneeDto },
+	UpdateAssigneeMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["updateAssignee"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getUpdateAssigneeMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateAssignee>>,
-		{ pathParams: UpdateAssigneePathParameters; data: UpdateAssigneeDto }
+		UpdateAssigneeMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
-		return updateAssignee(pathParams, data)
+		return updateAssignee(pathParams, data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -450,6 +477,10 @@ export type UpdateAssigneeMutationResult = NonNullable<
 >
 export type UpdateAssigneeMutationBody = UpdateAssigneeDto
 export type UpdateAssigneeMutationError = ErrorType<unknown>
+export type UpdateAssigneeMutationVariables = {
+	pathParams: UpdateAssigneePathParameters
+	data: UpdateAssigneeDto
+}
 
 export const useUpdateAssignee = <
 	TError = ErrorType<unknown>,
@@ -459,29 +490,32 @@ export const useUpdateAssignee = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateAssignee>>,
 			TError,
-			{ pathParams: UpdateAssigneePathParameters; data: UpdateAssigneeDto },
+			UpdateAssigneeMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof updateAssignee>>,
 	TError,
-	{ pathParams: UpdateAssigneePathParameters; data: UpdateAssigneeDto },
+	UpdateAssigneeMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpdateAssigneeMutationOptions(options), queryClient)
 }
 export const deleteAssignee = (
 	{ id }: DeleteAssigneePathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneeDto>({
-		url: `/assignee/${id}`,
-		method: "DELETE",
-		signal,
-	})
+	return sendRequest<AssigneeDto>(
+		{ url: `/assignee/${id}`, method: "DELETE", signal },
+		options,
+	)
 }
+
+export const getDeleteAssigneeMutationKey = () => ["deleteAssignee"] as const
 
 export const getDeleteAssigneeMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -490,31 +524,32 @@ export const getDeleteAssigneeMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteAssignee>>,
 		TError,
-		{ pathParams: DeleteAssigneePathParameters },
+		DeleteAssigneeMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteAssignee>>,
 	TError,
-	{ pathParams: DeleteAssigneePathParameters },
+	DeleteAssigneeMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deleteAssignee"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getDeleteAssigneeMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteAssignee>>,
-		{ pathParams: DeleteAssigneePathParameters }
+		DeleteAssigneeMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
-		return deleteAssignee(pathParams)
+		return deleteAssignee(pathParams, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -525,6 +560,9 @@ export type DeleteAssigneeMutationResult = NonNullable<
 >
 
 export type DeleteAssigneeMutationError = ErrorType<unknown>
+export type DeleteAssigneeMutationVariables = {
+	pathParams: DeleteAssigneePathParameters
+}
 
 export const useDeleteAssignee = <
 	TError = ErrorType<unknown>,
@@ -534,15 +572,16 @@ export const useDeleteAssignee = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteAssignee>>,
 			TError,
-			{ pathParams: DeleteAssigneePathParameters },
+			DeleteAssigneeMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteAssignee>>,
 	TError,
-	{ pathParams: DeleteAssigneePathParameters },
+	DeleteAssigneeMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeleteAssigneeMutationOptions(options), queryClient)

@@ -1,8 +1,11 @@
-import { createFileRoute, useLocation } from "@tanstack/react-router"
+import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router"
 import { useEffect } from "react"
 import { DeadlineType, QuickFilter, WorkspaceStatusType } from "src/api/model"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { WorkspaceTabs } from "src/components/WorkspaceTabs"
+import { useIsMobile } from "src/hooks/use-mobile"
+import { useSaveWorkspaceVisit } from "src/hooks/useSaveWorkspaceVisit"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { z } from "zod"
 import TasksLayout from "../../../components/Tasks/TasksLayout"
 import { TasksFiltersProvider } from "../../../providers/TasksFiltersProvider"
@@ -33,9 +36,16 @@ export const Route = createFileRoute("/workspace/$urlName/tasks")({
 })
 
 function TasksPage() {
+	const isMobile = useIsMobile()
 	const { view, quickFilter, statusFilter, deadlineTypeFilter } =
 		Route.useSearch()
 	const { urlName } = Route.useParams()
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+
+	useSaveWorkspaceVisit({ workspaceId, urlName })
+
 	const fromViewMore = useLocation({
 		select: (location) => location.state.fromViewMore,
 	})
@@ -64,7 +74,11 @@ function TasksPage() {
 			}
 		: undefined
 
-	return (
+	return isMobile ? (
+		<TasksFiltersProvider>
+			<Outlet />
+		</TasksFiltersProvider>
+	) : (
 		<TasksFiltersProvider initialPageFilters={viewMoreFilters}>
 			<WorkspaceTabs section={DropdownSection.TASKS} />
 			<TasksLayout

@@ -4,7 +4,7 @@ import type {
 	TaskRowWithWorkspaceDto,
 	WorkspaceStatusType,
 } from "src/api/model"
-import { STATUS_DEFAULTS } from "src/functions/status-defaults"
+import { STATUS_DEFAULTS } from "src/consts/status-defaults"
 
 type PersonalAreaStatsProps = {
 	taskRows: TaskRowWithWorkspaceDto[]
@@ -37,6 +37,7 @@ const StatTag = styled.span<{ $color: string }>`
   width: 76px;
   padding: 1px 8px;
   border-radius: 35px;
+  background: var(--chip-bg);
   background: rgb(from ${({ $color }) => $color} r g b / 0.1);
   color: ${({ $color }) => $color};
   font-size: 12px;

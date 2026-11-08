@@ -30,6 +30,8 @@ import type {
 	UserViewDto,
 } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 const withQueryKey = <T extends object, K>(
 	query: T,
 	queryKey: K,
@@ -50,14 +52,13 @@ const withQueryKey = <T extends object, K>(
 
 export const getUserView = (
 	params?: GetUserViewParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<UserViewDto>({
-		url: `/user-views`,
-		method: "GET",
-		params,
-		signal,
-	})
+	return sendRequest<UserViewDto>(
+		{ url: `/user-views`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getGetUserViewQueryKey = (params?: GetUserViewParams) => {
@@ -73,15 +74,16 @@ export const getGetUserViewQueryOptions = <
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getUserView>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getGetUserViewQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getUserView>>> = ({
 		signal,
-	}) => getUserView(params, signal)
+	}) => getUserView(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof getUserView>>,
@@ -112,6 +114,7 @@ export function useGetUserView<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -134,6 +137,7 @@ export function useGetUserView<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -148,6 +152,7 @@ export function useGetUserView<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getUserView>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -163,6 +168,7 @@ export function useGetUserView<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getUserView>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -180,16 +186,22 @@ export function useGetUserView<
 
 export const upsertUserView = (
 	upsertUserViewDto: UpsertUserViewDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<UserViewDto>({
-		url: `/user-views`,
-		method: "PATCH",
-		headers: { "Content-Type": "application/json" },
-		data: upsertUserViewDto,
-		signal,
-	})
+	return sendRequest<UserViewDto>(
+		{
+			url: `/user-views`,
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			data: upsertUserViewDto,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getUpsertUserViewMutationKey = () => ["upsertUserView"] as const
 
 export const getUpsertUserViewMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -198,31 +210,32 @@ export const getUpsertUserViewMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof upsertUserView>>,
 		TError,
-		{ data: UpsertUserViewDto },
+		UpsertUserViewMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof upsertUserView>>,
 	TError,
-	{ data: UpsertUserViewDto },
+	UpsertUserViewMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["upsertUserView"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getUpsertUserViewMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof upsertUserView>>,
-		{ data: UpsertUserViewDto }
+		UpsertUserViewMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
-		return upsertUserView(data)
+		return upsertUserView(data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -233,6 +246,7 @@ export type UpsertUserViewMutationResult = NonNullable<
 >
 export type UpsertUserViewMutationBody = UpsertUserViewDto
 export type UpsertUserViewMutationError = ErrorType<unknown>
+export type UpsertUserViewMutationVariables = { data: UpsertUserViewDto }
 
 export const useUpsertUserView = <
 	TError = ErrorType<unknown>,
@@ -242,15 +256,16 @@ export const useUpsertUserView = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof upsertUserView>>,
 			TError,
-			{ data: UpsertUserViewDto },
+			UpsertUserViewMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof upsertUserView>>,
 	TError,
-	{ data: UpsertUserViewDto },
+	UpsertUserViewMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpsertUserViewMutationOptions(options), queryClient)

@@ -39,6 +39,8 @@ import type {
 	UpdateSourcePathParameters,
 } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 const withQueryKey = <T extends object, K>(
 	query: T,
 	queryKey: K,
@@ -59,17 +61,23 @@ const withQueryKey = <T extends object, K>(
 
 export const createSource = (
 	createSourceDto: CreateSourceDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
 	const formData = serializeFormData(createSourceDto)
-	return sendRequest<SourceDto>({
-		url: `/source`,
-		method: "POST",
-		headers: { "Content-Type": "multipart/form-data" },
-		data: formData,
-		signal,
-	})
+	return sendRequest<SourceDto>(
+		{
+			url: `/source`,
+			method: "POST",
+			headers: { "Content-Type": "multipart/form-data" },
+			data: formData,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getCreateSourceMutationKey = () => ["createSource"] as const
 
 export const getCreateSourceMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -78,31 +86,32 @@ export const getCreateSourceMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof createSource>>,
 		TError,
-		{ data: CreateSourceDto },
+		CreateSourceMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createSource>>,
 	TError,
-	{ data: CreateSourceDto },
+	CreateSourceMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["createSource"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getCreateSourceMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createSource>>,
-		{ data: CreateSourceDto }
+		CreateSourceMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
-		return createSource(data)
+		return createSource(data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -113,6 +122,7 @@ export type CreateSourceMutationResult = NonNullable<
 >
 export type CreateSourceMutationBody = CreateSourceDto
 export type CreateSourceMutationError = ErrorType<unknown>
+export type CreateSourceMutationVariables = { data: CreateSourceDto }
 
 export const useCreateSource = <
 	TError = ErrorType<unknown>,
@@ -122,29 +132,29 @@ export const useCreateSource = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createSource>>,
 			TError,
-			{ data: CreateSourceDto },
+			CreateSourceMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof createSource>>,
 	TError,
-	{ data: CreateSourceDto },
+	CreateSourceMutationVariables,
 	TContext
 > => {
 	return useMutation(getCreateSourceMutationOptions(options), queryClient)
 }
 export const listSources = (
 	params: ListSourcesParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<SourceDto[]>({
-		url: `/source`,
-		method: "GET",
-		params,
-		signal,
-	})
+	return sendRequest<SourceDto[]>(
+		{ url: `/source`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getListSourcesQueryKey = (params?: ListSourcesParams) => {
@@ -160,15 +170,16 @@ export const getListSourcesQueryOptions = <
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listSources>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getListSourcesQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof listSources>>> = ({
 		signal,
-	}) => listSources(params, signal)
+	}) => listSources(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listSources>>,
@@ -199,6 +210,7 @@ export function useListSources<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -221,6 +233,7 @@ export function useListSources<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -235,6 +248,7 @@ export function useListSources<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listSources>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -250,6 +264,7 @@ export function useListSources<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listSources>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -267,13 +282,13 @@ export function useListSources<
 
 export const getSource = (
 	{ id }: GetSourcePathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<SourceWithTasksDto>({
-		url: `/source/${id}`,
-		method: "GET",
-		signal,
-	})
+	return sendRequest<SourceWithTasksDto>(
+		{ url: `/source/${id}`, method: "GET", signal },
+		options,
+	)
 }
 
 export const getGetSourceQueryKey = ({ id }: GetSourcePathParameters) => {
@@ -289,15 +304,16 @@ export const getGetSourceQueryOptions = <
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getSource>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getGetSourceQueryKey({ id })
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getSource>>> = ({
 		signal,
-	}) => getSource({ id }, signal)
+	}) => getSource({ id }, requestOptions, signal)
 
 	return {
 		queryKey,
@@ -331,6 +347,7 @@ export function useGetSource<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -353,6 +370,7 @@ export function useGetSource<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -367,6 +385,7 @@ export function useGetSource<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getSource>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -382,6 +401,7 @@ export function useGetSource<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getSource>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -400,17 +420,23 @@ export function useGetSource<
 export const updateSource = (
 	{ id }: UpdateSourcePathParameters,
 	updateSourceDto: UpdateSourceDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
 	const formData = serializeFormData(updateSourceDto)
-	return sendRequest<SourceDto>({
-		url: `/source/${id}`,
-		method: "PATCH",
-		headers: { "Content-Type": "multipart/form-data" },
-		data: formData,
-		signal,
-	})
+	return sendRequest<SourceDto>(
+		{
+			url: `/source/${id}`,
+			method: "PATCH",
+			headers: { "Content-Type": "multipart/form-data" },
+			data: formData,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getUpdateSourceMutationKey = () => ["updateSource"] as const
 
 export const getUpdateSourceMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -419,31 +445,32 @@ export const getUpdateSourceMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof updateSource>>,
 		TError,
-		{ pathParams: UpdateSourcePathParameters; data: UpdateSourceDto },
+		UpdateSourceMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateSource>>,
 	TError,
-	{ pathParams: UpdateSourcePathParameters; data: UpdateSourceDto },
+	UpdateSourceMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["updateSource"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getUpdateSourceMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateSource>>,
-		{ pathParams: UpdateSourcePathParameters; data: UpdateSourceDto }
+		UpdateSourceMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
-		return updateSource(pathParams, data)
+		return updateSource(pathParams, data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -454,6 +481,10 @@ export type UpdateSourceMutationResult = NonNullable<
 >
 export type UpdateSourceMutationBody = UpdateSourceDto
 export type UpdateSourceMutationError = ErrorType<unknown>
+export type UpdateSourceMutationVariables = {
+	pathParams: UpdateSourcePathParameters
+	data: UpdateSourceDto
+}
 
 export const useUpdateSource = <
 	TError = ErrorType<unknown>,
@@ -463,29 +494,32 @@ export const useUpdateSource = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateSource>>,
 			TError,
-			{ pathParams: UpdateSourcePathParameters; data: UpdateSourceDto },
+			UpdateSourceMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof updateSource>>,
 	TError,
-	{ pathParams: UpdateSourcePathParameters; data: UpdateSourceDto },
+	UpdateSourceMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpdateSourceMutationOptions(options), queryClient)
 }
 export const deleteSource = (
 	{ id }: DeleteSourcePathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<SourceDto>({
-		url: `/source/${id}`,
-		method: "DELETE",
-		signal,
-	})
+	return sendRequest<SourceDto>(
+		{ url: `/source/${id}`, method: "DELETE", signal },
+		options,
+	)
 }
+
+export const getDeleteSourceMutationKey = () => ["deleteSource"] as const
 
 export const getDeleteSourceMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -494,31 +528,32 @@ export const getDeleteSourceMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteSource>>,
 		TError,
-		{ pathParams: DeleteSourcePathParameters },
+		DeleteSourceMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteSource>>,
 	TError,
-	{ pathParams: DeleteSourcePathParameters },
+	DeleteSourceMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deleteSource"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getDeleteSourceMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteSource>>,
-		{ pathParams: DeleteSourcePathParameters }
+		DeleteSourceMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
-		return deleteSource(pathParams)
+		return deleteSource(pathParams, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -529,6 +564,9 @@ export type DeleteSourceMutationResult = NonNullable<
 >
 
 export type DeleteSourceMutationError = ErrorType<unknown>
+export type DeleteSourceMutationVariables = {
+	pathParams: DeleteSourcePathParameters
+}
 
 export const useDeleteSource = <
 	TError = ErrorType<unknown>,
@@ -538,29 +576,32 @@ export const useDeleteSource = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteSource>>,
 			TError,
-			{ pathParams: DeleteSourcePathParameters },
+			DeleteSourceMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteSource>>,
 	TError,
-	{ pathParams: DeleteSourcePathParameters },
+	DeleteSourceMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeleteSourceMutationOptions(options), queryClient)
 }
 export const extractSource = (
 	{ id }: ExtractSourcePathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<SourceDto>({
-		url: `/source/${id}/extract`,
-		method: "POST",
-		signal,
-	})
+	return sendRequest<SourceDto>(
+		{ url: `/source/${id}/extract`, method: "POST", signal },
+		options,
+	)
 }
+
+export const getExtractSourceMutationKey = () => ["extractSource"] as const
 
 export const getExtractSourceMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -569,31 +610,32 @@ export const getExtractSourceMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof extractSource>>,
 		TError,
-		{ pathParams: ExtractSourcePathParameters },
+		ExtractSourceMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof extractSource>>,
 	TError,
-	{ pathParams: ExtractSourcePathParameters },
+	ExtractSourceMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["extractSource"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getExtractSourceMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof extractSource>>,
-		{ pathParams: ExtractSourcePathParameters }
+		ExtractSourceMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
-		return extractSource(pathParams)
+		return extractSource(pathParams, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -604,6 +646,9 @@ export type ExtractSourceMutationResult = NonNullable<
 >
 
 export type ExtractSourceMutationError = ErrorType<unknown>
+export type ExtractSourceMutationVariables = {
+	pathParams: ExtractSourcePathParameters
+}
 
 export const useExtractSource = <
 	TError = ErrorType<unknown>,
@@ -613,15 +658,16 @@ export const useExtractSource = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof extractSource>>,
 			TError,
-			{ pathParams: ExtractSourcePathParameters },
+			ExtractSourceMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof extractSource>>,
 	TError,
-	{ pathParams: ExtractSourcePathParameters },
+	ExtractSourceMutationVariables,
 	TContext
 > => {
 	return useMutation(getExtractSourceMutationOptions(options), queryClient)
@@ -629,16 +675,23 @@ export const useExtractSource = <
 export const aiExtractionCallback = (
 	{ id }: AiExtractionCallbackPathParameters,
 	getAIExtractionCallbackDto: GetAIExtractionCallbackDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<SourceWithTasksDto>({
-		url: `/source/${id}/ai-result`,
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		data: getAIExtractionCallbackDto,
-		signal,
-	})
+	return sendRequest<SourceWithTasksDto>(
+		{
+			url: `/source/${id}/ai-result`,
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			data: getAIExtractionCallbackDto,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getAiExtractionCallbackMutationKey = () =>
+	["aiExtractionCallback"] as const
 
 export const getAiExtractionCallbackMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -647,40 +700,32 @@ export const getAiExtractionCallbackMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof aiExtractionCallback>>,
 		TError,
-		{
-			pathParams: AiExtractionCallbackPathParameters
-			data: GetAIExtractionCallbackDto
-		},
+		AiExtractionCallbackMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof aiExtractionCallback>>,
 	TError,
-	{
-		pathParams: AiExtractionCallbackPathParameters
-		data: GetAIExtractionCallbackDto
-	},
+	AiExtractionCallbackMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["aiExtractionCallback"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getAiExtractionCallbackMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof aiExtractionCallback>>,
-		{
-			pathParams: AiExtractionCallbackPathParameters
-			data: GetAIExtractionCallbackDto
-		}
+		AiExtractionCallbackMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
-		return aiExtractionCallback(pathParams, data)
+		return aiExtractionCallback(pathParams, data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -691,6 +736,10 @@ export type AiExtractionCallbackMutationResult = NonNullable<
 >
 export type AiExtractionCallbackMutationBody = GetAIExtractionCallbackDto
 export type AiExtractionCallbackMutationError = ErrorType<unknown>
+export type AiExtractionCallbackMutationVariables = {
+	pathParams: AiExtractionCallbackPathParameters
+	data: GetAIExtractionCallbackDto
+}
 
 export const useAiExtractionCallback = <
 	TError = ErrorType<unknown>,
@@ -700,21 +749,16 @@ export const useAiExtractionCallback = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof aiExtractionCallback>>,
 			TError,
-			{
-				pathParams: AiExtractionCallbackPathParameters
-				data: GetAIExtractionCallbackDto
-			},
+			AiExtractionCallbackMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof aiExtractionCallback>>,
 	TError,
-	{
-		pathParams: AiExtractionCallbackPathParameters
-		data: GetAIExtractionCallbackDto
-	},
+	AiExtractionCallbackMutationVariables,
 	TContext
 > => {
 	return useMutation(

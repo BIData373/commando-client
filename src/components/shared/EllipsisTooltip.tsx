@@ -18,15 +18,18 @@ export default function EllipsisTooltip({
 	dir,
 	side,
 }: EllipsisTooltipProps) {
-	const { ref, isOverflowing } = useOverflow<HTMLSpanElement>({
-		content: tooltip,
+	const { isOverflowing, handlePointerEnter } = useOverflow<HTMLSpanElement>({
 		includeDescendants: true,
 	})
 
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
-				<Text ref={ref} className={className} dir={dir}>
+				<Text
+					className={className}
+					dir={dir}
+					onPointerEnter={handlePointerEnter}
+				>
 					{children}
 				</Text>
 			</TooltipTrigger>

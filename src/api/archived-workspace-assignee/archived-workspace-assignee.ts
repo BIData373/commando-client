@@ -18,17 +18,26 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import type { ToggleWorkspaceTaskArchiveParams } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 export const toggleWorkspaceTaskArchive = (
 	params: ToggleWorkspaceTaskArchiveParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<void>({
-		url: `/archived-workspace-assignee-task`,
-		method: "PATCH",
-		params,
-		signal,
-	})
+	return sendRequest<void>(
+		{
+			url: `/archived-workspace-assignee-task`,
+			method: "PATCH",
+			params,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getToggleWorkspaceTaskArchiveMutationKey = () =>
+	["toggleWorkspaceTaskArchive"] as const
 
 export const getToggleWorkspaceTaskArchiveMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -37,31 +46,32 @@ export const getToggleWorkspaceTaskArchiveMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
 		TError,
-		{ params: ToggleWorkspaceTaskArchiveParams },
+		ToggleWorkspaceTaskArchiveMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
 	TError,
-	{ params: ToggleWorkspaceTaskArchiveParams },
+	ToggleWorkspaceTaskArchiveMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["toggleWorkspaceTaskArchive"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getToggleWorkspaceTaskArchiveMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
-		{ params: ToggleWorkspaceTaskArchiveParams }
+		ToggleWorkspaceTaskArchiveMutationVariables
 	> = (props) => {
 		const { params } = props ?? {}
 
-		return toggleWorkspaceTaskArchive(params)
+		return toggleWorkspaceTaskArchive(params, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -72,6 +82,9 @@ export type ToggleWorkspaceTaskArchiveMutationResult = NonNullable<
 >
 
 export type ToggleWorkspaceTaskArchiveMutationError = ErrorType<unknown>
+export type ToggleWorkspaceTaskArchiveMutationVariables = {
+	params: ToggleWorkspaceTaskArchiveParams
+}
 
 export const useToggleWorkspaceTaskArchive = <
 	TError = ErrorType<unknown>,
@@ -81,15 +94,16 @@ export const useToggleWorkspaceTaskArchive = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
 			TError,
-			{ params: ToggleWorkspaceTaskArchiveParams },
+			ToggleWorkspaceTaskArchiveMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof toggleWorkspaceTaskArchive>>,
 	TError,
-	{ params: ToggleWorkspaceTaskArchiveParams },
+	ToggleWorkspaceTaskArchiveMutationVariables,
 	TContext
 > => {
 	return useMutation(

@@ -2,7 +2,8 @@ import axios, { type AxiosError, type AxiosRequestConfig } from "axios"
 import createAuthRefreshInterceptor from "axios-auth-refresh"
 import { parseISO } from "date-fns"
 import qs from "qs"
-import { AUTH_ENABLED, authenticate } from "./utils/auth-utils"
+import { IS_MOBILE_DEVICE } from "./hooks/use-mobile"
+import { AUTH_ENABLED, authenticate, getStoredToken } from "./utils/auth-utils"
 import {
 	API_BASE_URL,
 	API_PREFIX,
@@ -52,6 +53,16 @@ if (STATIC_TOKEN) {
 	})
 }
 
+if (AUTH_ENABLED && IS_MOBILE_DEVICE) {
+	axiosInstance.interceptors.request.use(async (config) => {
+		const token = await getStoredToken()
+		if (token) {
+			config.headers.Authorization = `Bearer ${token}`
+		}
+		return config
+	})
+}
+
 axiosInstance.interceptors.response.use((originalResponse) => {
 	handleDates(originalResponse.data)
 	return originalResponse
@@ -68,8 +79,11 @@ if (USE_SSO) {
 	)
 }
 
-export async function sendRequest<T>(config: AxiosRequestConfig) {
-	return (await axiosInstance<T>(config)).data
+export async function sendRequest<T>(
+	config: AxiosRequestConfig,
+	options?: AxiosRequestConfig,
+) {
+	return (await axiosInstance<T>({ ...config, ...options })).data
 }
 
 const isoDateFormat =

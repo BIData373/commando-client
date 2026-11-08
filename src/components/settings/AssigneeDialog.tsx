@@ -25,6 +25,7 @@ import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { invalidateQueries, queryClient } from "src/query-client"
 import { CancelButton } from "../shared/CancelButton"
 import { FormField } from "../shared/FormField"
+import InputWithCount from "../shared/InputWithCount"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import {
@@ -33,7 +34,6 @@ import {
 	DialogDescription,
 	DialogTitle,
 } from "../ui/dialog"
-import { Input } from "../ui/input"
 import { AssigneeUsersList } from "./AssigneeUsersList"
 import { ColorPicker, PRESET_COLORS } from "./ColorPicker"
 import { DropdownUsers } from "./DropdownUsers"
@@ -102,22 +102,24 @@ export function AssigneeDialog({
 		])
 	}
 
-	const { mutateAsync: createAssignee } = useCreateAssignee({
-		mutation: {
-			meta: {
-				toast: { success: addResponsibleMessage, error: true },
+	const { mutateAsync: createAssignee, isPending: isCreating } =
+		useCreateAssignee({
+			mutation: {
+				meta: {
+					toast: { success: addResponsibleMessage, error: true },
+				},
+				onSuccess: handleSubmitSuccess,
 			},
-			onSuccess: handleSubmitSuccess,
-		},
-	})
-	const { mutateAsync: updateAssignee } = useUpdateAssignee({
-		mutation: {
-			meta: {
-				toast: { success: updateResponsibleMessage, error: true },
+		})
+	const { mutateAsync: updateAssignee, isPending: isUpdating } =
+		useUpdateAssignee({
+			mutation: {
+				meta: {
+					toast: { success: updateResponsibleMessage, error: true },
+				},
+				onSuccess: handleSubmitSuccess,
 			},
-			onSuccess: handleSubmitSuccess,
-		},
-	})
+		})
 
 	const randomColor = useMemo(() => {
 		if (!open) {
@@ -159,15 +161,6 @@ export function AssigneeDialog({
 			onOpenChange(false)
 		},
 	})
-
-	function handleKeyChange(e: React.KeyboardEvent<HTMLInputElement>) {
-		if (
-			e.code !== "Backspace" &&
-			e.currentTarget.value.length >= MAX_NAME_LENGTH
-		) {
-			e.preventDefault()
-		}
-	}
 
 	function handleRemoveAssignee(upn: string) {
 		form.setFieldValue("users", (prev) =>
@@ -242,10 +235,10 @@ export function AssigneeDialog({
 							<FieldGroup>
 								<FieldLabel>שם אחראי</FieldLabel>
 								<FormField field={field}>
-									<Input
-										value={field.state.value}
-										onKeyDown={handleKeyChange}
-										onChange={(e) => field.handleChange(e.target.value)}
+									<InputWithCount
+										text={field.state.value}
+										onChange={field.handleChange}
+										maxLength={MAX_NAME_LENGTH}
 										placeholder='לדוגמה: מג"ד, רע"ן מפקדים, קמב"צ...'
 									/>
 								</FormField>
@@ -309,6 +302,7 @@ export function AssigneeDialog({
 					<PrimaryButton
 						title={isUpdate ? "שמור" : "צור"}
 						onClick={form.handleSubmit}
+						loading={isCreating || isUpdating}
 					/>
 				</DialogActions>
 			</AssigneeDialogContent>

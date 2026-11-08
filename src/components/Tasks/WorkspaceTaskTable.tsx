@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { Outlet } from "@tanstack/react-router"
-import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table"
-import { without } from "lodash"
+import type { ColumnDef } from "@tanstack/react-table"
+import { values, without } from "lodash"
 import { useMemo } from "react"
 import type {
 	DeadlineType,
@@ -15,6 +15,7 @@ import {
 	getListTaskRowsQueryKey,
 	useListTaskRows,
 } from "src/api/task/task"
+import type { AppTableFeatures } from "src/consts/table-features"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useTaskArchive } from "src/hooks/useTaskArchive"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -24,7 +25,12 @@ import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
 } from "src/utils/filter-utils"
-import { TASK_COLUMN_ID, type TaskColumnMeta } from "src/utils/task-table-utils"
+import {
+	buildUrlColumnFilters,
+	EMPTY_LIST,
+	TASK_COLUMN_ID,
+	type TaskColumnMeta,
+} from "src/utils/task-table-utils"
 import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
@@ -39,7 +45,7 @@ export interface WorkspaceTaskTableProps {
 	deadlineTypeFilter?: DeadlineType[]
 	isArchived?: boolean
 	extraColumnsMeta?: TaskColumnMeta[]
-	extraColumns?: ColumnDef<TaskRowDto>[]
+	extraColumns?: ColumnDef<AppTableFeatures, TaskRowDto>[]
 	onEdit?(taskId: number): void
 	clearColumnFilters?(): void
 	onColumnFilterChange?(
@@ -51,8 +57,8 @@ export interface WorkspaceTaskTableProps {
 
 function WorkspaceTaskTable({
 	view = TasksView.TABLE,
-	statusFilter = [],
-	deadlineTypeFilter = [],
+	statusFilter = EMPTY_LIST,
+	deadlineTypeFilter = EMPTY_LIST,
 	isArchived = false,
 	extraColumns,
 	extraColumnsMeta,
@@ -81,15 +87,13 @@ function WorkspaceTaskTable({
 		workspaceId,
 	})
 
-	const urlColumnFilters: ColumnFiltersState = [
-		...(statusFilter.length ? [{ id: "status", value: statusFilter }] : []),
-		...(deadlineTypeFilter.length
-			? [{ id: "deadlineType", value: deadlineTypeFilter }]
-			: []),
-		...(assigneeFilter.length
-			? [{ id: "assignee", value: assigneeFilter }]
-			: []),
-	]
+	const urlColumnFilters = useMemo(
+		() =>
+			buildUrlColumnFilters(statusFilter, deadlineTypeFilter, assigneeFilter),
+		[statusFilter, deadlineTypeFilter, assigneeFilter],
+	)
+
+	const statusList = useMemo(() => values(statuses), [statuses])
 
 	const noWorkspaceColumnOrder = useMemo(
 		() =>
@@ -134,7 +138,7 @@ function WorkspaceTaskTable({
 					quickFilters={
 						isArchived ? ARCHIVE_QUICK_FILTERS : ACTIVE_QUICK_FILTERS
 					}
-					urlColumnFilters={urlColumnFilters ?? []}
+					urlColumnFilters={urlColumnFilters}
 					startSlot={<TasksDatePicker />}
 					baseMessagesParams={{
 						workspaceId,
@@ -162,7 +166,7 @@ function WorkspaceTaskTable({
 						<TaskTable
 							onChangeSuccess={handleChangeSuccess}
 							tasks={filteredTaskRows}
-							statuses={Object.values(statuses)}
+							statuses={statusList}
 							onEdit={onEdit}
 							statusFilter={statusFilter}
 							deadlineTypeFilter={deadlineTypeFilter}

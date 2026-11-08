@@ -169,6 +169,8 @@ const StatusBadge = styled.span<{ $color: string }>`
   font-size: var(--fs-xl);
   font-weight: 400;
   white-space: nowrap;
+  background: var(--chip-bg);
+  ${({ $color }) => `color: ${$color};`}
   ${({ $color }) => `color: oklch(from ${$color} clamp(0, l, 0.5) c h);`}
   ${({ $color }) => `background: rgb(from ${$color} r g b / 0.1);`}
 `

@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import type { AssigneeDto } from "src/api/model"
 import { isColorVarDark } from "src/functions/contrast-color"
+import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { getInitials } from "src/utils/avatar-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import {
@@ -59,4 +60,8 @@ const ColoredFallback = styled(MesibaAvatarFallback)<{
   width: 100%;
   height: 100%;
   border-radius: 50%;
+
+  ${MOBILE_MEDIA_QUERY} {
+    font-size: 11px;
+  }
 `

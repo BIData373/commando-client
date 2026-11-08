@@ -1,17 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router"
-import type { ColumnDef } from "@tanstack/react-table"
-import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
+import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { DropdownSection } from "src/components/shared/ArchiveDropdown"
-import { DateText } from "src/components/shared/DateText"
-import { ColumnHeaderWithActions } from "src/components/Tasks/ColumnHeaderWithActions"
 import WorkspaceTaskTable from "src/components/Tasks/WorkspaceTaskTable"
 import { WorkspaceTabs } from "src/components/WorkspaceTabs"
-import { formatDateShort } from "src/functions/date-utils"
 import { useOpenTask } from "src/hooks/useOpenTask"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
+import { WORKSPACE_ARCHIVE_EXTRA_COLUMNS } from "src/utils/task-extra-columns"
 import {
 	ARCHIVE_DEFAULT_HIDDEN,
-	COLUMN_LABELS,
 	TASK_COLUMN_ID,
 	WORKSPACE_ARCHIVED_COLUMN_META,
 } from "src/utils/task-table-utils"
@@ -43,30 +39,6 @@ const WORKSPACE_ARCHIVE_DEFAULT_COLUMN_ORDER: (keyof TaskRowWithWorkspaceDto)[] 
 		TASK_COLUMN_ID.updatedAt,
 	]
 
-const ARCHIVE_EXTRA_COLUMNS = [
-	{
-		id: TASK_COLUMN_ID.workspaceArchivedAt,
-		header: ({ column }) => (
-			<ColumnHeaderWithActions
-				label={COLUMN_LABELS.workspaceArchivedAt}
-				column={column}
-			/>
-		),
-		size: 140,
-		enableColumnFilter: false,
-		accessorFn: (row) => row.workspaceArchivedAt,
-		cell: ({
-			row: {
-				original: { workspaceArchivedAt },
-			},
-		}) => (
-			<DateText>
-				{workspaceArchivedAt && formatDateShort(workspaceArchivedAt)}
-			</DateText>
-		),
-	},
-] as ColumnDef<TaskRowDto>[]
-
 function WorkspaceArchivePage() {
 	const {
 		workspace: { id: workspaceId },
@@ -84,7 +56,7 @@ function WorkspaceArchivePage() {
 				<WorkspaceTaskTable
 					onOpenTask={openTask}
 					isArchived={true}
-					extraColumns={ARCHIVE_EXTRA_COLUMNS}
+					extraColumns={WORKSPACE_ARCHIVE_EXTRA_COLUMNS}
 					extraColumnsMeta={WORKSPACE_ARCHIVED_COLUMN_META}
 				/>
 			</TasksFiltersProvider>
