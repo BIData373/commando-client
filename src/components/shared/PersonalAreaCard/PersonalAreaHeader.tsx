@@ -1,15 +1,18 @@
 import styled from "@emotion/styled"
+import type { TaskRowWithWorkspaceDto } from "src/api/model"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
+import { countUnreadTasks } from "src/utils/filter-utils"
 
 interface PersonalAreaHeaderProps {
-	unreadTasksCount: number
+	taskRows: TaskRowWithWorkspaceDto[]
 }
 
 export default function PersonalAreaHeader({
-	unreadTasksCount,
+	taskRows,
 }: PersonalAreaHeaderProps) {
 	const user = useCurrentUser()
 	const username = user.info?.name || user.upn
+	const unreadTasksCount = countUnreadTasks(taskRows)
 
 	return (
 		<Header>
