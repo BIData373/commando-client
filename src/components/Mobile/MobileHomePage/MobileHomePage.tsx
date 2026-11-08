@@ -21,7 +21,7 @@ export default function MobileHomePage() {
 }
 
 const PageRoot = styled.div`
-	background: var(--background-mobile);
+  background: var(--background-mobile);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
