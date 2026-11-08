@@ -60,9 +60,9 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: clamp(16px, 4.4vh, 48px);
+  gap: 16px;
   align-self: stretch;
   flex: 1;
   min-height: 0;
-  padding: clamp(16px, 5.0vh, 100px) clamp(16px, 5.0vw, 150px);
+  padding: 16px;
 `
