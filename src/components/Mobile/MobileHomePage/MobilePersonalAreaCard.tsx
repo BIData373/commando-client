@@ -63,8 +63,12 @@ const Footer = styled.span`
 
 const StatsRow = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 8px;
+
+  > * {
+    flex: 1;
+  }
 `
 
 const EmptyText = styled.span`

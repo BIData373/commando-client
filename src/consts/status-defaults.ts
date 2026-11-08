@@ -12,3 +12,9 @@ export const STATUS_DEFAULTS: Record<
 	[StatusType.IN_PROGRESS]: { name: "בעבודה", color: "#2F54EB" },
 	[StatusType.COMPLETED]: { name: "בוצע", color: "#52c41a" },
 }
+
+export const STATUS_DISPLAY_ORDER: WorkspaceStatusType[] = [
+	StatusType.COMPLETED,
+	StatusType.IN_PROGRESS,
+	StatusType.NOT_STARTED,
+]

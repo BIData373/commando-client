@@ -50,9 +50,9 @@ const Logo = styled.img`
 `
 
 const MainTitle = styled.span`
-  font-size: clamp(20px, 3.3vw, 64px);
+  font-size: 20px;
   font-weight: 500;
-  line-height: clamp(24px, 4.3vh, 46px);
+  line-height: 20px;
   white-space: nowrap;
 `
 

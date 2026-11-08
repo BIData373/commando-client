@@ -27,6 +27,10 @@ const Header = styled.div`
   justify-content: center;
   align-items: flex-end;
   gap: 4px;
+
+  ${MOBILE_MEDIA_QUERY} {
+    gap: 12px;
+  }
 `
 
 const TitleRow = styled.div`
@@ -47,8 +51,9 @@ const Title = styled.span`
   line-height: clamp(30px, 4.3vh, 46px);
 
   ${MOBILE_MEDIA_QUERY} {
-    font-size: clamp(20px, 1.6vw, 30px);
+    font-size: 20px;
     font-weight: 700;
+    line-height: normal;
   }
 `
 
@@ -69,6 +74,10 @@ const GreetingText = styled.span`
   font-size: clamp(14px, 1vw, 20px);
   font-weight: 400;
   line-height: clamp(20px, 2.6vh, 28px);
+
+  ${MOBILE_MEDIA_QUERY} {
+    font-size: clamp(16px, 1vw, 20px);
+  }
 `
 
 const NewTaskCount = styled.span`
