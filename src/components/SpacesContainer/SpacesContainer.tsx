@@ -79,7 +79,9 @@ export default function SpacesContainer() {
 
 	function handleSearchChange(query: string) {
 		setSearchQuery(query)
-		if (query && activeTab === "mine") setActiveTab("all")
+		if (query && activeTab === "mine") {
+			setActiveTab("all")
+		}
 	}
 
 	function handleNewWorkspaceClick() {
