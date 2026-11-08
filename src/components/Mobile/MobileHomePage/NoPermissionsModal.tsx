@@ -1,8 +1,8 @@
 import styled from "@emotion/styled"
+import { TbCircleX } from "react-icons/tb"
 import { PermissionType } from "src/api/model"
 import { useListPermissions } from "src/api/permission/permission"
 import { useGetWorkspace } from "src/api/workspace/workspace"
-import denyIcon from "src/assets/icons/deny.svg"
 import logoWithText from "src/assets/logo-with-text-dark.png"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
 import { Sheet, SheetContent, SheetTitle } from "src/components/ui/sheet"
@@ -38,7 +38,7 @@ export default function NoPermissionsModal({
 				<Body>
 					<Logo src={logoWithText} />
 					<MessageRow>
-						<DeniedIcon alt="No Permissions" src={denyIcon} />
+						<DeniedIcon />
 						<MessageContent>
 							<Title>אין לך הרשאות לסביבת {workspace?.title}</Title>
 							<Subtitle>פנה למנהל הסביבה לקבלת הרשאות</Subtitle>
@@ -91,8 +91,11 @@ const MessageRow = styled.div`
   gap: var(--Space-Margin-marginXS);
 `
 
-const DeniedIcon = styled.img`
-  margin: 2px;
+const DeniedIcon = styled(TbCircleX)`
+	margin: 2px;
+	color: var(--alert-error-global-error);
+	min-width: 21px;
+	min-height: 21px;
 `
 
 const MessageContent = styled.div`
