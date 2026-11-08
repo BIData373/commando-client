@@ -1,11 +1,26 @@
 import { differenceInDays, startOfToday } from "date-fns"
-import { compact, keyBy, map, mapValues, sumBy, uniq, uniqBy } from "lodash"
+import {
+	compact,
+	keyBy,
+	map,
+	mapValues,
+	sortBy,
+	sumBy,
+	uniq,
+	uniqBy,
+} from "lodash"
 import type { TaskRowDto } from "src/api/model"
 import { DeadlineType, QuickFilter, WorkspaceStatusType } from "src/api/model"
 import { DEADLINE_LABELS } from "../components/shared/DeadlineTag"
-import { formatSourceLabel } from "../functions/source-utils"
 import {
-	getTaskTagNames,
+	EMPTY_FILTER_LABEL,
+	getDeadlineFilterValue,
+	isEmptyValue,
+} from "../functions/empty-filter"
+import {
+	getAssigneeFilterValue,
+	getSourceFilterValue,
+	getTagFilterValues,
 	hasUnviewedMessages,
 	UNVIEWED_MESSAGES_VALUE,
 } from "./task-table-utils"
@@ -106,31 +121,36 @@ export function countUnreadTasks(tasks: TaskRowDto[]): number {
 
 function toFilterOptions(
 	values: string[],
+	includeEmpty: boolean,
 	labels?: Record<string, string>,
 ): FilterOption[] {
-	return uniq(values).map((value) => ({
+	return sortBy(
+		uniq(values).filter((value) => includeEmpty || !isEmptyValue(value)),
+		isEmptyValue,
+	).map((value) => ({
 		value,
-		label: labels?.[value] ?? value,
+		label: isEmptyValue(value)
+			? EMPTY_FILTER_LABEL
+			: (labels?.[value] ?? value),
 	}))
 }
 
 export function buildFilterOptionsMap(
 	tasks: TaskRowDto[],
+	includeEmpty = false,
 ): Record<FilterOptions, FilterOption[]> {
 	return {
-		assignee: toFilterOptions(
-			compact(tasks.map((task) => task.assignee?.name)),
-		),
+		assignee: toFilterOptions(tasks.map(getAssigneeFilterValue), includeEmpty),
 		status: uniqBy(compact(map(tasks, "status")), "type").map(
 			({ type, name }) => ({ value: type, label: name }),
 		),
-		deadlineType: toFilterOptions(map(tasks, "deadlineType"), DEADLINE_LABELS),
-		source: toFilterOptions(
-			compact(
-				tasks.map((task) => task.source && formatSourceLabel(task.source)),
-			),
+		deadlineType: toFilterOptions(
+			tasks.map(getDeadlineFilterValue),
+			includeEmpty,
+			DEADLINE_LABELS,
 		),
-		tags: toFilterOptions(tasks.flatMap(getTaskTagNames)),
+		source: toFilterOptions(tasks.map(getSourceFilterValue), includeEmpty),
+		tags: toFilterOptions(tasks.flatMap(getTagFilterValues), includeEmpty),
 		lastMessage: tasks.some(hasUnviewedMessages)
 			? [{ value: UNVIEWED_MESSAGES_VALUE, label: UNVIEWED_MESSAGES_LABEL }]
 			: [],
