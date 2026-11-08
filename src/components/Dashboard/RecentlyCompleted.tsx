@@ -2,12 +2,17 @@ import styled from "@emotion/styled"
 import { useMemo } from "react"
 import { type TaskRowDto, WorkspaceStatusType } from "src/api/model"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
+import { hiddenColumnsExcept } from "src/utils/task-table-utils"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { DashboardSection } from "./DashboardSection"
 import { TaskPreviewTable } from "./TaskPreviewTable"
 import { ViewMoreInstructions } from "./ViewMoreInstructions"
 
-const VISIBLE_COLUMNS: (keyof TaskRowDto)[] = ["title", "status", "assignee"]
+const HIDDEN_COLUMNS = hiddenColumnsExcept<keyof TaskRowDto>([
+	"title",
+	"status",
+	"assignee",
+])
 
 interface RecentlyCompletedProps {
 	tasks: TaskRowDto[]
@@ -35,7 +40,7 @@ export default function RecentlyCompleted({
 		>
 			<TaskPreviewTable
 				tasks={completedTasks}
-				visibleColumns={VISIBLE_COLUMNS}
+				hiddenColumns={HIDDEN_COLUMNS}
 				onClick={onClick}
 				emptyState={<EmptyCardState {...DASHBOARD_EMPTY_STATES.completed} />}
 			/>

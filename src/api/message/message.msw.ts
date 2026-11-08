@@ -18,92 +18,49 @@ export const getCreateMessageResponseMock = (
 	createdBy: {
 		id: faker.number.float({ fractionDigits: 2 }),
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
-			null,
-		]),
+		},
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
 		id: faker.number.float({ fractionDigits: 2 }),
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
-			null,
-		]),
+		},
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		null,
 	]),
-	deletedBy: faker.helpers.arrayElement([
-		{
-			...{
-				id: faker.number.float({ fractionDigits: 2 }),
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				info: faker.helpers.arrayElement([
-					{
-						...{
-							upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-							displayName: faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								undefined,
-							]),
-							name: faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								undefined,
-							]),
-							isBI: faker.helpers.arrayElement([
-								faker.datatype.boolean(),
-								undefined,
-							]),
-						},
-					},
-					null,
-				]),
-			},
-		},
-		null,
-	]),
-	id: faker.number.float({ fractionDigits: 2 }),
-	content: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	user: {
-		id: faker.number.float({ fractionDigits: 2 }),
-		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
+	deletedBy: {
+		...{
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
 				...{
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 					displayName: faker.helpers.arrayElement([
@@ -120,10 +77,30 @@ export const getCreateMessageResponseMock = (
 					]),
 				},
 			},
-			null,
-		]),
+		},
+	},
+	id: faker.number.float({ fractionDigits: 2 }),
+	content: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	user: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+			},
+		},
 	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
+	viewed: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -136,92 +113,55 @@ export const getListMessagesResponseMock = (): MessageDto[] =>
 		createdBy: {
 			id: faker.number.float({ fractionDigits: 2 }),
 			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			info: faker.helpers.arrayElement([
-				{
-					...{
-						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-						displayName: faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							undefined,
-						]),
-						name: faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							undefined,
-						]),
-						isBI: faker.helpers.arrayElement([
-							faker.datatype.boolean(),
-							undefined,
-						]),
-					},
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
 				},
-				null,
-			]),
+			},
 		},
 		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		updatedBy: {
 			id: faker.number.float({ fractionDigits: 2 }),
 			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			info: faker.helpers.arrayElement([
-				{
-					...{
-						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-						displayName: faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							undefined,
-						]),
-						name: faker.helpers.arrayElement([
-							faker.string.alpha({ length: { min: 10, max: 20 } }),
-							undefined,
-						]),
-						isBI: faker.helpers.arrayElement([
-							faker.datatype.boolean(),
-							undefined,
-						]),
-					},
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
 				},
-				null,
-			]),
+			},
 		},
 		deletedAt: faker.helpers.arrayElement([
 			new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			null,
 		]),
-		deletedBy: faker.helpers.arrayElement([
-			{
-				...{
-					id: faker.number.float({ fractionDigits: 2 }),
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					info: faker.helpers.arrayElement([
-						{
-							...{
-								upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-								displayName: faker.helpers.arrayElement([
-									faker.string.alpha({ length: { min: 10, max: 20 } }),
-									undefined,
-								]),
-								name: faker.helpers.arrayElement([
-									faker.string.alpha({ length: { min: 10, max: 20 } }),
-									undefined,
-								]),
-								isBI: faker.helpers.arrayElement([
-									faker.datatype.boolean(),
-									undefined,
-								]),
-							},
-						},
-						null,
-					]),
-				},
-			},
-			null,
-		]),
-		id: faker.number.float({ fractionDigits: 2 }),
-		content: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		user: {
-			id: faker.number.float({ fractionDigits: 2 }),
-			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-			info: faker.helpers.arrayElement([
-				{
+		deletedBy: {
+			...{
+				id: faker.number.float({ fractionDigits: 2 }),
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				info: {
 					...{
 						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 						displayName: faker.helpers.arrayElement([
@@ -238,10 +178,33 @@ export const getListMessagesResponseMock = (): MessageDto[] =>
 						]),
 					},
 				},
-				null,
-			]),
+			},
+		},
+		id: faker.number.float({ fractionDigits: 2 }),
+		content: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		user: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
 		},
 		taskId: faker.number.float({ fractionDigits: 2 }),
+		viewed: faker.datatype.boolean(),
 	}))
 
 export const getGetMessageResponseMock = (
@@ -251,92 +214,49 @@ export const getGetMessageResponseMock = (
 	createdBy: {
 		id: faker.number.float({ fractionDigits: 2 }),
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
-			null,
-		]),
+		},
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
 		id: faker.number.float({ fractionDigits: 2 }),
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
-			null,
-		]),
+		},
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		null,
 	]),
-	deletedBy: faker.helpers.arrayElement([
-		{
-			...{
-				id: faker.number.float({ fractionDigits: 2 }),
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				info: faker.helpers.arrayElement([
-					{
-						...{
-							upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-							displayName: faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								undefined,
-							]),
-							name: faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								undefined,
-							]),
-							isBI: faker.helpers.arrayElement([
-								faker.datatype.boolean(),
-								undefined,
-							]),
-						},
-					},
-					null,
-				]),
-			},
-		},
-		null,
-	]),
-	id: faker.number.float({ fractionDigits: 2 }),
-	content: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	user: {
-		id: faker.number.float({ fractionDigits: 2 }),
-		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
+	deletedBy: {
+		...{
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
 				...{
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 					displayName: faker.helpers.arrayElement([
@@ -353,10 +273,30 @@ export const getGetMessageResponseMock = (
 					]),
 				},
 			},
-			null,
-		]),
+		},
+	},
+	id: faker.number.float({ fractionDigits: 2 }),
+	content: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	user: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+			},
+		},
 	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
+	viewed: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -367,92 +307,49 @@ export const getUpdateMessageResponseMock = (
 	createdBy: {
 		id: faker.number.float({ fractionDigits: 2 }),
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
-			null,
-		]),
+		},
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
 		id: faker.number.float({ fractionDigits: 2 }),
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
-			null,
-		]),
+		},
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		null,
 	]),
-	deletedBy: faker.helpers.arrayElement([
-		{
-			...{
-				id: faker.number.float({ fractionDigits: 2 }),
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				info: faker.helpers.arrayElement([
-					{
-						...{
-							upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-							displayName: faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								undefined,
-							]),
-							name: faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								undefined,
-							]),
-							isBI: faker.helpers.arrayElement([
-								faker.datatype.boolean(),
-								undefined,
-							]),
-						},
-					},
-					null,
-				]),
-			},
-		},
-		null,
-	]),
-	id: faker.number.float({ fractionDigits: 2 }),
-	content: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	user: {
-		id: faker.number.float({ fractionDigits: 2 }),
-		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
+	deletedBy: {
+		...{
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
 				...{
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 					displayName: faker.helpers.arrayElement([
@@ -469,10 +366,30 @@ export const getUpdateMessageResponseMock = (
 					]),
 				},
 			},
-			null,
-		]),
+		},
+	},
+	id: faker.number.float({ fractionDigits: 2 }),
+	content: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	user: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+			},
+		},
 	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
+	viewed: faker.datatype.boolean(),
 	...overrideResponse,
 })
 
@@ -483,92 +400,49 @@ export const getDeleteMessageResponseMock = (
 	createdBy: {
 		id: faker.number.float({ fractionDigits: 2 }),
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
-			null,
-		]),
+		},
 	},
 	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	updatedBy: {
 		id: faker.number.float({ fractionDigits: 2 }),
 		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
-				...{
-					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-					displayName: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					name: faker.helpers.arrayElement([
-						faker.string.alpha({ length: { min: 10, max: 20 } }),
-						undefined,
-					]),
-					isBI: faker.helpers.arrayElement([
-						faker.datatype.boolean(),
-						undefined,
-					]),
-				},
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
 			},
-			null,
-		]),
+		},
 	},
 	deletedAt: faker.helpers.arrayElement([
 		new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		null,
 	]),
-	deletedBy: faker.helpers.arrayElement([
-		{
-			...{
-				id: faker.number.float({ fractionDigits: 2 }),
-				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-				info: faker.helpers.arrayElement([
-					{
-						...{
-							upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-							displayName: faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								undefined,
-							]),
-							name: faker.helpers.arrayElement([
-								faker.string.alpha({ length: { min: 10, max: 20 } }),
-								undefined,
-							]),
-							isBI: faker.helpers.arrayElement([
-								faker.datatype.boolean(),
-								undefined,
-							]),
-						},
-					},
-					null,
-				]),
-			},
-		},
-		null,
-	]),
-	id: faker.number.float({ fractionDigits: 2 }),
-	content: faker.string.alpha({ length: { min: 10, max: 20 } }),
-	user: {
-		id: faker.number.float({ fractionDigits: 2 }),
-		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
-		info: faker.helpers.arrayElement([
-			{
+	deletedBy: {
+		...{
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
 				...{
 					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
 					displayName: faker.helpers.arrayElement([
@@ -585,10 +459,30 @@ export const getDeleteMessageResponseMock = (
 					]),
 				},
 			},
-			null,
-		]),
+		},
+	},
+	id: faker.number.float({ fractionDigits: 2 }),
+	content: faker.string.alpha({ length: { min: 10, max: 20 } }),
+	user: {
+		id: faker.number.float({ fractionDigits: 2 }),
+		upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		info: {
+			...{
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				displayName: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				name: faker.helpers.arrayElement([
+					faker.string.alpha({ length: { min: 10, max: 20 } }),
+					undefined,
+				]),
+				isBI: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+			},
+		},
 	},
 	taskId: faker.number.float({ fractionDigits: 2 }),
+	viewed: faker.datatype.boolean(),
 	...overrideResponse,
 })
 

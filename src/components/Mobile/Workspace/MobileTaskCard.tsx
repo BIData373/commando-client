@@ -152,6 +152,8 @@ const TextBlock = styled.div`
 	flex-direction: column;
 	gap: 4px;
 	align-items: flex-end;
+	align-self: stretch;
+	overflow: hidden;
 `
 
 const TaskText = styled.p`
@@ -184,6 +186,8 @@ const InfoRow = styled.div`
 	display: flex;
 	align-items: center;
 	gap: 4px;
+	max-width: 100%;
+	overflow: hidden;
 `
 
 const InfoLabel = styled.span`
@@ -191,12 +195,17 @@ const InfoLabel = styled.span`
 	font-size: var(--fs-btn);
 	font-weight: 400;
 	color: var(--text-color-400);
+	white-space: nowrap;
 `
 
 const AssigneeName = styled.span`
+	direction: rtl;
 	font-size: var(--fs-btn);
 	font-weight: 400;
 	color: var(--Colors-Neutral-Bg-colorBgSolidHover);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 `
 
 const WorkspaceLabel = styled.span`
@@ -205,13 +214,18 @@ const WorkspaceLabel = styled.span`
 	font-weight: 400;
 	line-height: 24px;
 	color: var(--text-color-400);
+	white-space: nowrap;
 `
 
 const WorkspaceName = styled.span`
+	direction: rtl;
 	font-size: var(--fs-lg);
 	font-weight: 400;
 	line-height: 22px;
 	color: var(--text-color-2);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 `
 
 const ExtraBadge = styled.div`

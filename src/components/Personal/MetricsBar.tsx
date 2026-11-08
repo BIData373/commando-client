@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import { useState } from "react"
 import { WorkspaceStatusType } from "src/api/model"
-import { STATUS_DEFAULTS } from "../../functions/status-defaults"
+import { STATUS_DEFAULTS } from "../../consts/status-defaults"
 import { StatusTag } from "../shared/StatusTag"
 
 interface MetricsBarProps {

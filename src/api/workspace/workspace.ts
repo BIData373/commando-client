@@ -68,6 +68,8 @@ export const createWorkspace = (
 	})
 }
 
+export const getCreateWorkspaceMutationKey = () => ["createWorkspace"] as const
+
 export const getCreateWorkspaceMutationOptions = <
 	TError = ErrorType<CreateWorkspaceErrorDto>,
 	TContext = unknown,
@@ -75,16 +77,16 @@ export const getCreateWorkspaceMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof createWorkspace>>,
 		TError,
-		{ data: CreateWorkspaceDto },
+		CreateWorkspaceMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createWorkspace>>,
 	TError,
-	{ data: CreateWorkspaceDto },
+	CreateWorkspaceMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["createWorkspace"]
+	const mutationKey = getCreateWorkspaceMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -95,7 +97,7 @@ export const getCreateWorkspaceMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createWorkspace>>,
-		{ data: CreateWorkspaceDto }
+		CreateWorkspaceMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
@@ -110,6 +112,7 @@ export type CreateWorkspaceMutationResult = NonNullable<
 >
 export type CreateWorkspaceMutationBody = CreateWorkspaceDto
 export type CreateWorkspaceMutationError = ErrorType<CreateWorkspaceErrorDto>
+export type CreateWorkspaceMutationVariables = { data: CreateWorkspaceDto }
 
 export const useCreateWorkspace = <
 	TError = ErrorType<CreateWorkspaceErrorDto>,
@@ -119,7 +122,7 @@ export const useCreateWorkspace = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createWorkspace>>,
 			TError,
-			{ data: CreateWorkspaceDto },
+			CreateWorkspaceMutationVariables,
 			TContext
 		>
 	},
@@ -127,7 +130,7 @@ export const useCreateWorkspace = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof createWorkspace>>,
 	TError,
-	{ data: CreateWorkspaceDto },
+	CreateWorkspaceMutationVariables,
 	TContext
 > => {
 	return useMutation(getCreateWorkspaceMutationOptions(options), queryClient)
@@ -549,6 +552,8 @@ export const updateWorkspace = (
 	})
 }
 
+export const getUpdateWorkspaceMutationKey = () => ["updateWorkspace"] as const
+
 export const getUpdateWorkspaceMutationOptions = <
 	TError = ErrorType<UpdateWorkspaceErrorDto>,
 	TContext = unknown,
@@ -556,16 +561,16 @@ export const getUpdateWorkspaceMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof updateWorkspace>>,
 		TError,
-		{ pathParams: UpdateWorkspacePathParameters; data: UpdateWorkspaceDto },
+		UpdateWorkspaceMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateWorkspace>>,
 	TError,
-	{ pathParams: UpdateWorkspacePathParameters; data: UpdateWorkspaceDto },
+	UpdateWorkspaceMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["updateWorkspace"]
+	const mutationKey = getUpdateWorkspaceMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -576,7 +581,7 @@ export const getUpdateWorkspaceMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateWorkspace>>,
-		{ pathParams: UpdateWorkspacePathParameters; data: UpdateWorkspaceDto }
+		UpdateWorkspaceMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
@@ -591,6 +596,10 @@ export type UpdateWorkspaceMutationResult = NonNullable<
 >
 export type UpdateWorkspaceMutationBody = UpdateWorkspaceDto
 export type UpdateWorkspaceMutationError = ErrorType<UpdateWorkspaceErrorDto>
+export type UpdateWorkspaceMutationVariables = {
+	pathParams: UpdateWorkspacePathParameters
+	data: UpdateWorkspaceDto
+}
 
 export const useUpdateWorkspace = <
 	TError = ErrorType<UpdateWorkspaceErrorDto>,
@@ -600,7 +609,7 @@ export const useUpdateWorkspace = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateWorkspace>>,
 			TError,
-			{ pathParams: UpdateWorkspacePathParameters; data: UpdateWorkspaceDto },
+			UpdateWorkspaceMutationVariables,
 			TContext
 		>
 	},
@@ -608,7 +617,7 @@ export const useUpdateWorkspace = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof updateWorkspace>>,
 	TError,
-	{ pathParams: UpdateWorkspacePathParameters; data: UpdateWorkspaceDto },
+	UpdateWorkspaceMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpdateWorkspaceMutationOptions(options), queryClient)
@@ -624,6 +633,8 @@ export const deleteWorkspace = (
 	})
 }
 
+export const getDeleteWorkspaceMutationKey = () => ["deleteWorkspace"] as const
+
 export const getDeleteWorkspaceMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -631,16 +642,16 @@ export const getDeleteWorkspaceMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteWorkspace>>,
 		TError,
-		{ pathParams: DeleteWorkspacePathParameters },
+		DeleteWorkspaceMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteWorkspace>>,
 	TError,
-	{ pathParams: DeleteWorkspacePathParameters },
+	DeleteWorkspaceMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deleteWorkspace"]
+	const mutationKey = getDeleteWorkspaceMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -651,7 +662,7 @@ export const getDeleteWorkspaceMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteWorkspace>>,
-		{ pathParams: DeleteWorkspacePathParameters }
+		DeleteWorkspaceMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
@@ -666,6 +677,9 @@ export type DeleteWorkspaceMutationResult = NonNullable<
 >
 
 export type DeleteWorkspaceMutationError = ErrorType<unknown>
+export type DeleteWorkspaceMutationVariables = {
+	pathParams: DeleteWorkspacePathParameters
+}
 
 export const useDeleteWorkspace = <
 	TError = ErrorType<unknown>,
@@ -675,7 +689,7 @@ export const useDeleteWorkspace = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteWorkspace>>,
 			TError,
-			{ pathParams: DeleteWorkspacePathParameters },
+			DeleteWorkspaceMutationVariables,
 			TContext
 		>
 	},
@@ -683,7 +697,7 @@ export const useDeleteWorkspace = <
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteWorkspace>>,
 	TError,
-	{ pathParams: DeleteWorkspacePathParameters },
+	DeleteWorkspaceMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeleteWorkspaceMutationOptions(options), queryClient)

@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { TbFilter } from "react-icons/tb"
-import type { FilterOption } from "../../functions/filter-utils"
+import type { FilterOption } from "../../utils/filter-utils"
 import { FilterDropdown } from "../shared/FilterDropdown"
 
 interface ColumnFilterDropdownProps {

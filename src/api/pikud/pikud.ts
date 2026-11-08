@@ -64,6 +64,8 @@ export const createPikud = (
 	})
 }
 
+export const getCreatePikudMutationKey = () => ["createPikud"] as const
+
 export const getCreatePikudMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -71,16 +73,16 @@ export const getCreatePikudMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof createPikud>>,
 		TError,
-		{ data: CreatePikudDto },
+		CreatePikudMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createPikud>>,
 	TError,
-	{ data: CreatePikudDto },
+	CreatePikudMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["createPikud"]
+	const mutationKey = getCreatePikudMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -91,7 +93,7 @@ export const getCreatePikudMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createPikud>>,
-		{ data: CreatePikudDto }
+		CreatePikudMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
@@ -106,13 +108,14 @@ export type CreatePikudMutationResult = NonNullable<
 >
 export type CreatePikudMutationBody = CreatePikudDto
 export type CreatePikudMutationError = ErrorType<unknown>
+export type CreatePikudMutationVariables = { data: CreatePikudDto }
 
 export const useCreatePikud = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createPikud>>,
 			TError,
-			{ data: CreatePikudDto },
+			CreatePikudMutationVariables,
 			TContext
 		>
 	},
@@ -120,7 +123,7 @@ export const useCreatePikud = <TError = ErrorType<unknown>, TContext = unknown>(
 ): UseMutationResult<
 	Awaited<ReturnType<typeof createPikud>>,
 	TError,
-	{ data: CreatePikudDto },
+	CreatePikudMutationVariables,
 	TContext
 > => {
 	return useMutation(getCreatePikudMutationOptions(options), queryClient)
@@ -382,6 +385,8 @@ export const updatePikud = (
 	})
 }
 
+export const getUpdatePikudMutationKey = () => ["updatePikud"] as const
+
 export const getUpdatePikudMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -389,16 +394,16 @@ export const getUpdatePikudMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof updatePikud>>,
 		TError,
-		{ pathParams: UpdatePikudPathParameters; data: UpdatePikudDto },
+		UpdatePikudMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updatePikud>>,
 	TError,
-	{ pathParams: UpdatePikudPathParameters; data: UpdatePikudDto },
+	UpdatePikudMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["updatePikud"]
+	const mutationKey = getUpdatePikudMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -409,7 +414,7 @@ export const getUpdatePikudMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updatePikud>>,
-		{ pathParams: UpdatePikudPathParameters; data: UpdatePikudDto }
+		UpdatePikudMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
@@ -424,13 +429,17 @@ export type UpdatePikudMutationResult = NonNullable<
 >
 export type UpdatePikudMutationBody = UpdatePikudDto
 export type UpdatePikudMutationError = ErrorType<unknown>
+export type UpdatePikudMutationVariables = {
+	pathParams: UpdatePikudPathParameters
+	data: UpdatePikudDto
+}
 
 export const useUpdatePikud = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updatePikud>>,
 			TError,
-			{ pathParams: UpdatePikudPathParameters; data: UpdatePikudDto },
+			UpdatePikudMutationVariables,
 			TContext
 		>
 	},
@@ -438,7 +447,7 @@ export const useUpdatePikud = <TError = ErrorType<unknown>, TContext = unknown>(
 ): UseMutationResult<
 	Awaited<ReturnType<typeof updatePikud>>,
 	TError,
-	{ pathParams: UpdatePikudPathParameters; data: UpdatePikudDto },
+	UpdatePikudMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpdatePikudMutationOptions(options), queryClient)
@@ -454,6 +463,8 @@ export const deletePikud = (
 	})
 }
 
+export const getDeletePikudMutationKey = () => ["deletePikud"] as const
+
 export const getDeletePikudMutationOptions = <
 	TError = ErrorType<unknown>,
 	TContext = unknown,
@@ -461,16 +472,16 @@ export const getDeletePikudMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deletePikud>>,
 		TError,
-		{ pathParams: DeletePikudPathParameters },
+		DeletePikudMutationVariables,
 		TContext
 	>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deletePikud>>,
 	TError,
-	{ pathParams: DeletePikudPathParameters },
+	DeletePikudMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deletePikud"]
+	const mutationKey = getDeletePikudMutationKey()
 	const { mutation: mutationOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
@@ -481,7 +492,7 @@ export const getDeletePikudMutationOptions = <
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deletePikud>>,
-		{ pathParams: DeletePikudPathParameters }
+		DeletePikudMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
@@ -496,13 +507,16 @@ export type DeletePikudMutationResult = NonNullable<
 >
 
 export type DeletePikudMutationError = ErrorType<unknown>
+export type DeletePikudMutationVariables = {
+	pathParams: DeletePikudPathParameters
+}
 
 export const useDeletePikud = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deletePikud>>,
 			TError,
-			{ pathParams: DeletePikudPathParameters },
+			DeletePikudMutationVariables,
 			TContext
 		>
 	},
@@ -510,7 +524,7 @@ export const useDeletePikud = <TError = ErrorType<unknown>, TContext = unknown>(
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deletePikud>>,
 	TError,
-	{ pathParams: DeletePikudPathParameters },
+	DeletePikudMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeletePikudMutationOptions(options), queryClient)
