@@ -1,7 +1,6 @@
 import styled from "@emotion/styled"
 import type { AssigneesDto } from "src/api/model"
 import { useUpdateAssigneeStatus } from "src/hooks/useUpdateAssigneeStatus"
-import { useWorkspace } from "src/providers/WorkspaceProvider"
 import noResultsFound from "../../assets/empty-states/no-results-found.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
 import { Spinner } from "../ui/spinner"

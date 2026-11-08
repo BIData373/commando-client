@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
 import { useListAssignees } from "src/api/assignee/assignee"
+import { AssigneeGroups } from "src/components/settings/AssigneeGroups/AssigneeGroups"
 import { AssigneesContent } from "src/components/settings/AssigneesContent"
 import { AssigneesEmptyState } from "src/components/settings/AssigneesEmptyState"
 import { CircleHelpButton } from "src/components/settings/CircleHelpButton"
@@ -14,6 +15,8 @@ export const Route = createFileRoute("/workspace/$urlName/settings/assignees")({
 
 const activeTab = SETTINGS_TABS[SettingTabPath.ASSIGNEES]
 
+const MIN_ASSIGNEES_FOR_ASSIGNEE_GROUPS = 2
+
 function SettingsAssignees() {
 	const {
 		workspace: { id: workspaceId, urlName },
@@ -21,6 +24,8 @@ function SettingsAssignees() {
 	const { data: assignees = [] } = useListAssignees({ workspaceId })
 
 	const isEmptyState = assignees.length === 0
+	const showAssigneeGroups =
+		assignees.length >= MIN_ASSIGNEES_FOR_ASSIGNEE_GROUPS
 
 	const navigate = useNavigate()
 
@@ -40,29 +45,38 @@ function SettingsAssignees() {
 
 	return (
 		<AssigneesRoot>
-			{!isEmptyState && (
-				<TitleWrapper>
-					<TitleContainer>
-						<SectionTitle title={`ניהול אחראים - ${activeTab}`} />
-						<CircleHelpButton onClick={handleInfoModalOpen} />
-					</TitleContainer>
-					<SectionDescription>
-						‘אחראי’ אליו ניתן לשייך הנחיות. לכל אחראי ניתן לכתב מספר משתמשים,
-						אשר יקבלו את ההנחיות לאזור האישי שלהם.
-					</SectionDescription>
-				</TitleWrapper>
-			)}
-
-			<CardScrollArea>
-				{isEmptyState ? (
-					<AssigneesEmptyState
-						onOpenCreateDialog={handleOpenCreateDialog}
-						onOpenInfoModal={handleInfoModalOpen}
-					/>
-				) : (
-					<AssigneesContent onOpenCreateDialog={handleOpenCreateDialog} />
+			<AssigneesMain>
+				{!isEmptyState && (
+					<TitleWrapper>
+						<TitleContainer>
+							<SectionTitle title={`ניהול אחראים - ${activeTab}`} />
+							<CircleHelpButton onClick={handleInfoModalOpen} />
+						</TitleContainer>
+						<SectionDescription>
+							‘אחראי’ אליו ניתן לשייך הנחיות. לכל אחראי ניתן לכתב מספר משתמשים,
+							אשר יקבלו את ההנחיות לאזור האישי שלהם.
+						</SectionDescription>
+					</TitleWrapper>
 				)}
-			</CardScrollArea>
+
+				<CardScrollArea>
+					{isEmptyState ? (
+						<AssigneesEmptyState
+							onOpenCreateDialog={handleOpenCreateDialog}
+							onOpenInfoModal={handleInfoModalOpen}
+						/>
+					) : (
+						<AssigneesContent onOpenCreateDialog={handleOpenCreateDialog} />
+					)}
+				</CardScrollArea>
+			</AssigneesMain>
+
+			{showAssigneeGroups && (
+				<>
+					<VerticalDivider />
+					<AssigneeGroups />
+				</>
+			)}
 
 			<Outlet />
 		</AssigneesRoot>
@@ -74,16 +88,32 @@ const AssigneesRoot = styled.div`
   min-height: 0;
   overflow: hidden;
   display: flex;
+  gap: 32px;
+`
+
+const AssigneesMain = styled.div`
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
   flex-direction: column;
   gap: 32px;
 `
 
+const VerticalDivider = styled.div`
+  width: 1px;
+  flex-shrink: 0;
+  align-self: stretch;
+  background: var(--line);
+`
+
 const TitleWrapper = styled.div`
-	display: flex;
-	align-items: flex-start;
-	justify-content: center;
-	flex-direction: column;
-	gap: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0;
 `
 
 const SectionDescription = styled.p`
@@ -103,6 +133,7 @@ const CardScrollArea = styled.div`
   display: flex;
   flex-direction: column;
 `
+
 const TitleContainer = styled.div`
   display: flex;
   align-items: center;

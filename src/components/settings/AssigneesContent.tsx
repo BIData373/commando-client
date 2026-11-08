@@ -54,12 +54,6 @@ const StyledContent = styled.div`
   gap: 32px;
 `
 
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background: var(--button-hover);
-`
-
 const ContentRoot = styled.div`
   display: flex;
   flex-direction: column;

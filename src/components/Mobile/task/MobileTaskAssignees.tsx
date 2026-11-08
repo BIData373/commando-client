@@ -23,7 +23,7 @@ export function MobileTaskAssignees({
 
 	const currentUserAssigneStatuses = assigneeStatuses.filter(
 		({ assignee: { users } }) =>
-			isAdmin || users.some(({ user: { upn } }) => upn === currentUser.upn),
+			users.some(({ user: { upn } }) => upn === currentUser.upn),
 	)
 
 	const otherUsersAssigneeStatuses = assigneeStatuses.filter(
@@ -44,7 +44,7 @@ export function MobileTaskAssignees({
 				isAdmin={isAdmin}
 			/>
 			<MobileTaskAssigneeSection
-				title="אחראים אחרים לביצוע"
+				title="אחראים נוספים לביצוע"
 				assigneeStatuses={otherUsersAssigneeStatuses}
 				taskId={id}
 				workspaceId={workspaceId}

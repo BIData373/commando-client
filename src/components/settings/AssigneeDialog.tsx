@@ -119,22 +119,24 @@ export function AssigneeDialog({
 		])
 	}
 
-	const { mutateAsync: createAssignee } = useCreateAssignee({
-		mutation: {
-			meta: {
-				toast: { success: addResponsibleMessage, error: true },
+	const { mutateAsync: createAssignee, isPending: isCreating } =
+		useCreateAssignee({
+			mutation: {
+				meta: {
+					toast: { success: addResponsibleMessage, error: true },
+				},
+				onSuccess: handleSubmitSuccess,
 			},
-			onSuccess: handleSubmitSuccess,
-		},
-	})
-	const { mutateAsync: updateAssignee } = useUpdateAssignee({
-		mutation: {
-			meta: {
-				toast: { success: updateResponsibleMessage, error: true },
+		})
+	const { mutateAsync: updateAssignee, isPending: isUpdating } =
+		useUpdateAssignee({
+			mutation: {
+				meta: {
+					toast: { success: updateResponsibleMessage, error: true },
+				},
+				onSuccess: handleSubmitSuccess,
 			},
-			onSuccess: handleSubmitSuccess,
-		},
-	})
+		})
 	const { updateAssigneeStatus } = useUpdateAssigneeStatus(workspaceId)
 
 	const randomColor = useMemo(() => {
@@ -368,6 +370,7 @@ export function AssigneeDialog({
 					<PrimaryButton
 						title={isUpdate ? "שמור" : "צור"}
 						onClick={form.handleSubmit}
+						loading={isCreating || isUpdating}
 					/>
 				</DialogActions>
 			</AssigneeDialogContent>
