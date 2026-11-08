@@ -149,6 +149,7 @@ const UserDetails = styled.div`
   min-width: 0;
   flex: 1;
   direction: rtl;
+  overflow: hidden;
 
   ${MOBILE_MEDIA_QUERY} {
     display: block;
