@@ -17,7 +17,6 @@ import {
 } from "src/api/task/task"
 import type { AppTableFeatures } from "src/consts/table-features"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
-import { useSaveWorkspaceVisit } from "src/hooks/useSaveWorkspaceVisit"
 import { useTaskArchive } from "src/hooks/useTaskArchive"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"
@@ -71,11 +70,9 @@ function WorkspaceTaskTable({
 	const { columnOrder, hiddenColumns, assigneeFilter } = useTasksFilters()
 
 	const {
-		workspace: { id: workspaceId, title: workspaceTitle, urlName },
+		workspace: { id: workspaceId, title: workspaceTitle },
 		statuses,
 	} = useWorkspace()
-
-	useSaveWorkspaceVisit({ workspaceId, urlName })
 
 	const {
 		data: tasks = [],

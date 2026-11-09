@@ -34,6 +34,8 @@ import type {
 	UpdateAssigneeGroupPathParameters,
 } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 const withQueryKey = <T extends object, K>(
 	query: T,
 	queryKey: K,
@@ -54,15 +56,19 @@ const withQueryKey = <T extends object, K>(
 
 export const createAssigneeGroup = (
 	createAssigneeGroupDto: CreateAssigneeGroupDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneeGroupDto>({
-		url: `/assignee-group`,
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		data: createAssigneeGroupDto,
-		signal,
-	})
+	return sendRequest<AssigneeGroupDto>(
+		{
+			url: `/assignee-group`,
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			data: createAssigneeGroupDto,
+			signal,
+		},
+		options,
+	)
 }
 
 export const getCreateAssigneeGroupMutationKey = () =>
@@ -78,6 +84,7 @@ export const getCreateAssigneeGroupMutationOptions = <
 		CreateAssigneeGroupMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createAssigneeGroup>>,
 	TError,
@@ -85,13 +92,13 @@ export const getCreateAssigneeGroupMutationOptions = <
 	TContext
 > => {
 	const mutationKey = getCreateAssigneeGroupMutationKey()
-	const { mutation: mutationOptions } = options
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createAssigneeGroup>>,
@@ -99,7 +106,7 @@ export const getCreateAssigneeGroupMutationOptions = <
 	> = (props) => {
 		const { data } = props ?? {}
 
-		return createAssigneeGroup(data)
+		return createAssigneeGroup(data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -125,6 +132,7 @@ export const useCreateAssigneeGroup = <
 			CreateAssigneeGroupMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -140,14 +148,13 @@ export const useCreateAssigneeGroup = <
 }
 export const listAssigneeGroups = (
 	params: ListAssigneeGroupsParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneeGroupDto[]>({
-		url: `/assignee-group`,
-		method: "GET",
-		params,
-		signal,
-	})
+	return sendRequest<AssigneeGroupDto[]>(
+		{ url: `/assignee-group`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getListAssigneeGroupsQueryKey = (
@@ -169,16 +176,17 @@ export const getListAssigneeGroupsQueryOptions = <
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey =
 		queryOptions?.queryKey ?? getListAssigneeGroupsQueryKey(params)
 
 	const queryFn: QueryFunction<
 		Awaited<ReturnType<typeof listAssigneeGroups>>
-	> = ({ signal }) => listAssigneeGroups(params, signal)
+	> = ({ signal }) => listAssigneeGroups(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listAssigneeGroups>>,
@@ -213,6 +221,7 @@ export function useListAssigneeGroups<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -239,6 +248,7 @@ export function useListAssigneeGroups<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -257,6 +267,7 @@ export function useListAssigneeGroups<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -276,6 +287,7 @@ export function useListAssigneeGroups<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -293,13 +305,13 @@ export function useListAssigneeGroups<
 
 export const getAssigneeGroup = (
 	{ id }: GetAssigneeGroupPathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneeGroupDto>({
-		url: `/assignee-group/${id}`,
-		method: "GET",
-		signal,
-	})
+	return sendRequest<AssigneeGroupDto>(
+		{ url: `/assignee-group/${id}`, method: "GET", signal },
+		options,
+	)
 }
 
 export const getGetAssigneeGroupQueryKey = ({
@@ -321,15 +333,16 @@ export const getGetAssigneeGroupQueryOptions = <
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getGetAssigneeGroupQueryKey({ id })
 
 	const queryFn: QueryFunction<
 		Awaited<ReturnType<typeof getAssigneeGroup>>
-	> = ({ signal }) => getAssigneeGroup({ id }, signal)
+	> = ({ signal }) => getAssigneeGroup({ id }, requestOptions, signal)
 
 	return {
 		queryKey,
@@ -369,6 +382,7 @@ export function useGetAssigneeGroup<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -395,6 +409,7 @@ export function useGetAssigneeGroup<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -413,6 +428,7 @@ export function useGetAssigneeGroup<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -432,6 +448,7 @@ export function useGetAssigneeGroup<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -450,15 +467,19 @@ export function useGetAssigneeGroup<
 export const updateAssigneeGroup = (
 	{ id }: UpdateAssigneeGroupPathParameters,
 	updateAssigneeGroupDto: UpdateAssigneeGroupDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneeGroupDto>({
-		url: `/assignee-group/${id}`,
-		method: "PATCH",
-		headers: { "Content-Type": "application/json" },
-		data: updateAssigneeGroupDto,
-		signal,
-	})
+	return sendRequest<AssigneeGroupDto>(
+		{
+			url: `/assignee-group/${id}`,
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			data: updateAssigneeGroupDto,
+			signal,
+		},
+		options,
+	)
 }
 
 export const getUpdateAssigneeGroupMutationKey = () =>
@@ -474,6 +495,7 @@ export const getUpdateAssigneeGroupMutationOptions = <
 		UpdateAssigneeGroupMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateAssigneeGroup>>,
 	TError,
@@ -481,13 +503,13 @@ export const getUpdateAssigneeGroupMutationOptions = <
 	TContext
 > => {
 	const mutationKey = getUpdateAssigneeGroupMutationKey()
-	const { mutation: mutationOptions } = options
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateAssigneeGroup>>,
@@ -495,7 +517,7 @@ export const getUpdateAssigneeGroupMutationOptions = <
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
-		return updateAssigneeGroup(pathParams, data)
+		return updateAssigneeGroup(pathParams, data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -522,6 +544,7 @@ export const useUpdateAssigneeGroup = <
 			UpdateAssigneeGroupMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
@@ -537,13 +560,13 @@ export const useUpdateAssigneeGroup = <
 }
 export const deleteAssigneeGroup = (
 	{ id }: DeleteAssigneeGroupPathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneeGroupDto>({
-		url: `/assignee-group/${id}`,
-		method: "DELETE",
-		signal,
-	})
+	return sendRequest<AssigneeGroupDto>(
+		{ url: `/assignee-group/${id}`, method: "DELETE", signal },
+		options,
+	)
 }
 
 export const getDeleteAssigneeGroupMutationKey = () =>
@@ -559,6 +582,7 @@ export const getDeleteAssigneeGroupMutationOptions = <
 		DeleteAssigneeGroupMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteAssigneeGroup>>,
 	TError,
@@ -566,13 +590,13 @@ export const getDeleteAssigneeGroupMutationOptions = <
 	TContext
 > => {
 	const mutationKey = getDeleteAssigneeGroupMutationKey()
-	const { mutation: mutationOptions } = options
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteAssigneeGroup>>,
@@ -580,7 +604,7 @@ export const getDeleteAssigneeGroupMutationOptions = <
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
-		return deleteAssigneeGroup(pathParams)
+		return deleteAssigneeGroup(pathParams, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -606,6 +630,7 @@ export const useDeleteAssigneeGroup = <
 			DeleteAssigneeGroupMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
