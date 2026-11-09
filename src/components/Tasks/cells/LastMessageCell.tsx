@@ -21,8 +21,10 @@ export function LastMessageCell<TTask extends TaskRowDto, TValue>({
 		<Tooltip>
 			<TooltipTrigger asChild>
 				<CommentCell>
-					{showUnreadDot && text && !viewedMessages && <UnreadDot />}
-					<CommentText>{text}</CommentText>
+					<CommentText>
+						{showUnreadDot && text && !viewedMessages && <InlineDot />}
+						{text}
+					</CommentText>
 					{messageCount > 1 && <CommentCount>({messageCount})</CommentCount>}
 				</CommentCell>
 			</TooltipTrigger>
@@ -30,6 +32,13 @@ export function LastMessageCell<TTask extends TaskRowDto, TValue>({
 		</Tooltip>
 	)
 }
+
+const InlineDot = styled(UnreadDot)`
+  position: static;
+  display: inline-block;
+  margin-inline-end: 4px;
+  vertical-align: middle;
+`
 
 const CommentCell = styled.div`
   display: flex;
