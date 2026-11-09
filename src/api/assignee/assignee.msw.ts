@@ -6,10 +6,20 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type { RequestHandlerOptions } from "msw"
+import type {
+	HttpResponseResolver,
+	PathParams,
+	RequestHandlerOptions,
+} from "msw"
 import { HttpResponse, http } from "msw"
 
-import type { AssigneeDto, AssigneesDto } from "../model"
+import type {
+	AssigneeDto,
+	AssigneesDto,
+	CreateAssigneeDto,
+	GetStatusEditableDto,
+	UpdateAssigneeDto,
+} from "../model"
 
 export const getCreateAssigneeResponseMock = (
 	overrideResponse: Partial<Extract<AssigneeDto, object>> = {},
@@ -578,13 +588,17 @@ export const getCreateAssigneeMockHandler = (
 	overrideResponse?:
 		| AssigneeDto
 		| ((
-				info: Parameters<Parameters<typeof http.post>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<PathParams, CreateAssigneeDto>
+				>[0],
 		  ) => Promise<AssigneeDto> | AssigneeDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post(
+	return http.post<PathParams, CreateAssigneeDto>(
 		"*/assignee",
-		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+		async (
+			info: Parameters<HttpResponseResolver<PathParams, CreateAssigneeDto>>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -602,13 +616,13 @@ export const getListAssigneesMockHandler = (
 	overrideResponse?:
 		| AssigneesDto[]
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) => Promise<AssigneesDto[]> | AssigneesDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/assignee",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -626,13 +640,13 @@ export const getGetAssigneeMockHandler = (
 	overrideResponse?:
 		| AssigneeDto
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<AssigneeDto> | AssigneeDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get(
+	return http.get<{ id: string }>(
 		"*/assignee/:id",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -650,13 +664,19 @@ export const getUpdateAssigneeMockHandler = (
 	overrideResponse?:
 		| AssigneeDto
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<{ id: string }, UpdateAssigneeDto>
+				>[0],
 		  ) => Promise<AssigneeDto> | AssigneeDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.patch<{ id: string }, UpdateAssigneeDto>(
 		"*/assignee/:id",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<{ id: string }, UpdateAssigneeDto>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -674,13 +694,13 @@ export const getDeleteAssigneeMockHandler = (
 	overrideResponse?:
 		| AssigneeDto
 		| ((
-				info: Parameters<Parameters<typeof http.delete>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<AssigneeDto> | AssigneeDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.delete(
+	return http.delete<{ id: string }>(
 		"*/assignee/:id",
-		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -698,13 +718,19 @@ export const getUpdateAssigneeStatusEditableMockHandler = (
 	overrideResponse?:
 		| void
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<PathParams, GetStatusEditableDto>
+				>[0],
 		  ) => Promise<void> | void),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.patch<PathParams, GetStatusEditableDto>(
 		"*/assignee/status-editable",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<PathParams, GetStatusEditableDto>
+			>[0],
+		) => {
 			if (typeof overrideResponse === "function") {
 				await overrideResponse(info)
 			}

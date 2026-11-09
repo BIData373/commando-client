@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type { RequestHandlerOptions } from "msw"
+import type { HttpResponseResolver, RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 
 import type { SignedUrlDto } from "../model"
@@ -25,13 +25,13 @@ export const getGetAttachmentSignedUrlMockHandler = (
 	overrideResponse?:
 		| SignedUrlDto
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) => Promise<SignedUrlDto> | SignedUrlDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/attachment/signed-url",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

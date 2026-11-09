@@ -6,9 +6,19 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type { RequestHandlerOptions } from "msw"
+import type {
+	HttpResponseResolver,
+	PathParams,
+	RequestHandlerOptions,
+} from "msw"
 import { HttpResponse, http } from "msw"
-import type { SourceDto, SourceWithTasksDto } from "../model"
+import type {
+	CreateSourceDto,
+	GetAIExtractionCallbackDto,
+	SourceDto,
+	SourceWithTasksDto,
+	UpdateSourceDto,
+} from "../model"
 import {
 	DeadlineType,
 	ExtractionStatus,
@@ -2120,13 +2130,15 @@ export const getCreateSourceMockHandler = (
 	overrideResponse?:
 		| SourceDto
 		| ((
-				info: Parameters<Parameters<typeof http.post>[1]>[0],
+				info: Parameters<HttpResponseResolver<PathParams, CreateSourceDto>>[0],
 		  ) => Promise<SourceDto> | SourceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post(
+	return http.post<PathParams, CreateSourceDto>(
 		"*/source",
-		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+		async (
+			info: Parameters<HttpResponseResolver<PathParams, CreateSourceDto>>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2144,13 +2156,13 @@ export const getListSourcesMockHandler = (
 	overrideResponse?:
 		| SourceDto[]
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) => Promise<SourceDto[]> | SourceDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/source",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2168,13 +2180,13 @@ export const getGetSourceMockHandler = (
 	overrideResponse?:
 		| SourceWithTasksDto
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<SourceWithTasksDto> | SourceWithTasksDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get(
+	return http.get<{ id: string }>(
 		"*/source/:id",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2192,13 +2204,19 @@ export const getUpdateSourceMockHandler = (
 	overrideResponse?:
 		| SourceDto
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<{ id: string }, UpdateSourceDto>
+				>[0],
 		  ) => Promise<SourceDto> | SourceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.patch<{ id: string }, UpdateSourceDto>(
 		"*/source/:id",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<{ id: string }, UpdateSourceDto>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2216,13 +2234,13 @@ export const getDeleteSourceMockHandler = (
 	overrideResponse?:
 		| SourceDto
 		| ((
-				info: Parameters<Parameters<typeof http.delete>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<SourceDto> | SourceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.delete(
+	return http.delete<{ id: string }>(
 		"*/source/:id",
-		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2240,13 +2258,13 @@ export const getExtractSourceMockHandler = (
 	overrideResponse?:
 		| SourceDto
 		| ((
-				info: Parameters<Parameters<typeof http.post>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<SourceDto> | SourceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post(
+	return http.post<{ id: string }>(
 		"*/source/:id/extract",
-		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2264,13 +2282,19 @@ export const getAiExtractionCallbackMockHandler = (
 	overrideResponse?:
 		| SourceWithTasksDto
 		| ((
-				info: Parameters<Parameters<typeof http.post>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<{ id: string }, GetAIExtractionCallbackDto>
+				>[0],
 		  ) => Promise<SourceWithTasksDto> | SourceWithTasksDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post(
+	return http.post<{ id: string }, GetAIExtractionCallbackDto>(
 		"*/source/:id/ai-result",
-		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<{ id: string }, GetAIExtractionCallbackDto>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

@@ -13,5 +13,4 @@ export const QuickFilter = {
 	approaching: "approaching",
 	flagged: "flagged",
 	rolling: "rolling",
-	unread: "unread",
 } as const

@@ -6,20 +6,18 @@
  * OpenAPI spec version: 1.0
  */
 
-import type { RequestHandlerOptions } from "msw"
+import type { HttpResponseResolver, RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 
 export const getGetSsoParamsMockHandler = (
 	overrideResponse?:
 		| void
-		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
-		  ) => Promise<void> | void),
+		| ((info: Parameters<HttpResponseResolver>[0]) => Promise<void> | void),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/sso/params",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			if (typeof overrideResponse === "function") {
 				await overrideResponse(info)
 			}

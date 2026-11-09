@@ -13,7 +13,7 @@ export function useUpdateAssigneeStatus() {
 
 	const { mutateAsync } = useUpdateAssigneeStatusEditable({
 		mutation: {
-			onSuccess(_, { params: { assigneeId } }) {
+			onSuccess(_, { data: { assigneeId } }) {
 				invalidateQueries([
 					getListAssigneesQueryKey({ workspaceId }),
 					getGetAssigneeQueryKey({ id: assigneeId }),
@@ -27,7 +27,7 @@ export function useUpdateAssigneeStatus() {
 		statusEditable: boolean,
 		userId?: number,
 	) {
-		return mutateAsync({ params: { assigneeId, statusEditable, userId } })
+		return mutateAsync({ data: { assigneeId, statusEditable, userId } })
 	}
 
 	return { updateAssigneeStatus }

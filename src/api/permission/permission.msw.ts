@@ -6,9 +6,13 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type { RequestHandlerOptions } from "msw"
+import type {
+	HttpResponseResolver,
+	PathParams,
+	RequestHandlerOptions,
+} from "msw"
 import { HttpResponse, http } from "msw"
-import type { PermissionDto } from "../model"
+import type { PermissionDto, UpsertPermissionDto } from "../model"
 import { PermissionType } from "../model"
 
 export const getListPermissionsResponseMock = (): PermissionDto[] =>
@@ -123,13 +127,13 @@ export const getListPermissionsMockHandler = (
 	overrideResponse?:
 		| PermissionDto[]
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) => Promise<PermissionDto[]> | PermissionDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/permission",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -147,13 +151,19 @@ export const getUpsertPermissionMockHandler = (
 	overrideResponse?:
 		| PermissionDto
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<PathParams, UpsertPermissionDto>
+				>[0],
 		  ) => Promise<PermissionDto> | PermissionDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.patch<PathParams, UpsertPermissionDto>(
 		"*/permission",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<PathParams, UpsertPermissionDto>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -171,13 +181,13 @@ export const getDeletePermissionMockHandler = (
 	overrideResponse?:
 		| PermissionDto
 		| ((
-				info: Parameters<Parameters<typeof http.delete>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) => Promise<PermissionDto> | PermissionDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.delete(
 		"*/permission",
-		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -195,13 +205,13 @@ export const getGetMyPermissionMockHandler = (
 	overrideResponse?:
 		| PermissionDto
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) => Promise<PermissionDto> | PermissionDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/permission/me",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

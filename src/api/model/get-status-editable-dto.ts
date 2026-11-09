@@ -6,8 +6,8 @@
  * OpenAPI spec version: 1.0
  */
 
-export type UpdateAssigneeStatusEditableParams = {
-	statusEditable: boolean
+export interface GetStatusEditableDto {
 	assigneeId: number
+	statusEditable: boolean
 	userId?: number
 }
