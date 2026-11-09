@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
+import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { countUnreadTasks } from "src/utils/filter-utils"
 
@@ -38,6 +39,10 @@ const Header = styled.div`
   justify-content: center;
   align-items: flex-end;
   gap: 4px;
+
+  ${MOBILE_MEDIA_QUERY} {
+    gap: 12px;
+  }
 `
 
 const TitleRow = styled.div`
@@ -46,6 +51,10 @@ const TitleRow = styled.div`
   justify-content: center;
   align-items: baseline;
   gap: 8px;
+
+  ${MOBILE_MEDIA_QUERY} {
+    align-items: center;
+  }
 `
 
 const UnreadCount = styled.span`
@@ -60,6 +69,12 @@ const Title = styled.span`
   font-size: clamp(22px, 1.6vw, 30px);
   font-weight: 400;
   line-height: clamp(30px, 4.3vh, 46px);
+
+  ${MOBILE_MEDIA_QUERY} {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: normal;
+  }
 `
 
 const Greeting = styled.div`
@@ -79,4 +94,8 @@ const GreetingText = styled.span`
   font-size: clamp(14px, 1vw, 20px);
   font-weight: 400;
   line-height: clamp(20px, 2.6vh, 28px);
+
+  ${MOBILE_MEDIA_QUERY} {
+    font-size: clamp(16px, 1vw, 20px);
+  }
 `

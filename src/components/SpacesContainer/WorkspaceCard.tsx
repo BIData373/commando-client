@@ -11,6 +11,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "src/components/ui/tooltip"
+import { useIsMobile } from "src/hooks/use-mobile"
 import { getInitials } from "src/utils/avatar-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import { PERMISSION_LABEL } from "src/utils/permissions-utils"
@@ -22,15 +23,25 @@ interface WorkspaceCardProps {
 
 export default function WorkspaceCard({
 	className,
-	workspace: { title, urlName, icon, permissionType },
+	workspace: { title, urlName, icon, permissionType, id },
 }: WorkspaceCardProps) {
 	const navigate = useNavigate()
+	const isMobile = useIsMobile()
 
 	function handleWorkspaceClick() {
-		navigate({
-			to: "/workspace/$urlName",
-			params: { urlName },
-		})
+		if (permissionType || !isMobile) {
+			navigate({
+				to: "/workspace/$urlName",
+				params: { urlName },
+			})
+		} else {
+			navigate({
+				to: "/no-permissions",
+				search: {
+					workspaceId: id,
+				},
+			})
+		}
 	}
 
 	return (
