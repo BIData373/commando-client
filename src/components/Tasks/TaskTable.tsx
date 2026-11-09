@@ -7,13 +7,12 @@ import type {
 import { keyBy, uniqBy } from "lodash"
 import type React from "react"
 import { useDeferredValue, useMemo, useState } from "react"
-import type {
+import type { TaskRowDto, WorkspaceStatusDto } from "src/api/model"
+import {
 	DeadlineType,
-	TaskRowDto,
-	WorkspaceStatusDto,
+	PermissionType,
 	WorkspaceStatusType,
 } from "src/api/model"
-import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { toast } from "src/components/Toast/toast-api"
 
@@ -39,6 +38,8 @@ import {
 	buildUrlColumnFilters,
 	DISABLED_CLICK_COLUMNS,
 	EMPTY_LIST,
+	getEnumColumnFilter,
+	getStringColumnFilter,
 	groupRowsByTask,
 	TASK_COLUMN_ID,
 	TASK_ROW_ID_SEPARATOR,
@@ -152,36 +153,25 @@ function TaskTable<TTask extends TaskRowDto>({
 		[statusFilter, deadlineTypeFilter, assigneeFilter, columnsFilters],
 	)
 
-	function getColumnFilter(columnFilters: ColumnFiltersState, id: string) {
-		return columnFilters.find((column) => column.id === id)?.value ?? []
-	}
-
 	function handleColumnFiltersChange(
 		updater: React.SetStateAction<ColumnFiltersState>,
 	) {
 		const newFilters =
 			typeof updater === "function" ? updater(columnFilters) : updater
 
-		const tableStatusColumnValue = getColumnFilter(
-			newFilters,
-			"status",
-		) as WorkspaceStatusType[]
-
-		const tableDeadlineColumnValue = getColumnFilter(
-			newFilters,
-			"deadlineType",
-		) as DeadlineType[]
-
-		const tableAssigneeColumnValue = getColumnFilter(
-			newFilters,
-			"assignee",
-		) as string[]
-
 		setColumnsFilters(newFilters)
-		setAssigneeFilter(tableAssigneeColumnValue)
+		setAssigneeFilter(getStringColumnFilter(newFilters, "assignee"))
 		onFiltersChange?.(
-			tableStatusColumnValue,
-			without(tableDeadlineColumnValue, EMPTY_FILTER_VALUE as DeadlineType),
+			getEnumColumnFilter(
+				newFilters,
+				"status",
+				Object.values(WorkspaceStatusType),
+			),
+			getEnumColumnFilter(
+				newFilters,
+				"deadlineType",
+				Object.values(DeadlineType),
+			),
 		)
 	}
 
@@ -265,10 +255,7 @@ function TaskTable<TTask extends TaskRowDto>({
 		)
 	}
 
-	const filterOptionsMap = useMemo(
-		() => buildFilterOptionsMap(tasks, true),
-		[tasks],
-	)
+	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
 
 	const groupedTasks = useMemo(() => groupRowsByTask(tasks), [tasks])
 
@@ -320,7 +307,7 @@ function TaskTable<TTask extends TaskRowDto>({
 			titleExpanded={titleExpanded}
 			onToggleTitleExpanded={handleToggleTitleExpanded}
 			showUnreadDot
-			handlers={rowHandlers as TaskRowHandlers}
+			handlers={rowHandlers}
 		>
 			<TableWrapper data-title-expanded={titleExpanded || undefined}>
 				<DataTable
