@@ -12,11 +12,7 @@ export function DisabledReasonTooltip({
 	reason,
 	children,
 }: DisabledReasonTooltipProps) {
-	if (!reason) {
-		return children
-	}
-
-	return (
+	return reason ? (
 		<TooltipProvider>
 			<Tooltip>
 				<TooltipTrigger asChild>
@@ -30,6 +26,8 @@ export function DisabledReasonTooltip({
 				</TooltipPrimitive.Portal>
 			</Tooltip>
 		</TooltipProvider>
+	) : (
+		children
 	)
 }
 
