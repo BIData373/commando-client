@@ -5,7 +5,15 @@ import {
 	type IdentifiedColumnDef,
 	type Row,
 } from "@tanstack/react-table"
-import { concat, groupBy, intersection, map, uniq, zipObject } from "lodash"
+import {
+	concat,
+	groupBy,
+	intersection,
+	isString,
+	map,
+	uniq,
+	zipObject,
+} from "lodash"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
 import type { AppTableFeatures } from "../consts/table-features"
 import {
@@ -209,6 +217,26 @@ export function groupRowsByTask<TTask extends TaskRowDto>(
 	const rowsByTaskId = groupBy(tasks, "id")
 
 	return uniq(map(tasks, "id")).flatMap((id) => rowsByTaskId[id])
+}
+
+export function getColumnFilterStrings(
+	columnFilters: ColumnFiltersState,
+	id: string,
+): string[] {
+	const value = columnFilters.find((column) => column.id === id)?.value
+
+	return Array.isArray(value) ? value.filter(isString) : []
+}
+
+/** return column filter only with allowed values */
+export function getEnumColumnFilter<T extends string>(
+	columnFilters: ColumnFiltersState,
+	id: string,
+	allowedValues: readonly T[],
+): T[] {
+	const values = getColumnFilterStrings(columnFilters, id)
+
+	return allowedValues.filter((allowed) => values.includes(allowed))
 }
 
 export function buildUrlColumnFilters(
