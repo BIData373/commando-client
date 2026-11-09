@@ -56,7 +56,6 @@ function toFormUsers(users: AssigneeUserDto[] = []): AssigneeFormUser[] {
 
 interface AssigneeDialogProps {
 	open: boolean
-	workspaceId: number
 	assignee?: AssigneeDto
 	onOpenChange(open: boolean): void
 	onCreate?(assignee: AssigneeDto): void
@@ -64,7 +63,6 @@ interface AssigneeDialogProps {
 
 export function AssigneeDialog({
 	assignee,
-	workspaceId,
 	open,
 	onOpenChange,
 	onCreate,
@@ -72,7 +70,7 @@ export function AssigneeDialog({
 	const isUpdate = !!assignee
 
 	const {
-		workspace: { assigneeStatusEditable },
+		workspace: { id: workspaceId, assigneeStatusEditable },
 	} = useWorkspace()
 
 	const [searchValue, setSearchValue] = useState<string>("")
@@ -137,7 +135,7 @@ export function AssigneeDialog({
 				onSuccess: handleSubmitSuccess,
 			},
 		})
-	const { updateAssigneeStatus } = useUpdateAssigneeStatus(workspaceId)
+	const { updateAssigneeStatus } = useUpdateAssigneeStatus()
 
 	const randomColor = useMemo(() => {
 		if (!open) {

@@ -3,9 +3,14 @@ import {
 	getListAssigneesQueryKey,
 	useUpdateAssigneeStatusEditable,
 } from "src/api/assignee/assignee"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"
 
-export function useUpdateAssigneeStatus(workspaceId: number) {
+export function useUpdateAssigneeStatus() {
+	const {
+		workspace: { id: workspaceId },
+	} = useWorkspace()
+
 	const { mutateAsync } = useUpdateAssigneeStatusEditable({
 		mutation: {
 			onSuccess(_, { params: { assigneeId } }) {

@@ -7,8 +7,6 @@ import { AssigneeCardList } from "./AssigneeCardList"
 import { AssigneesSettingsSections } from "./AssigneesSettingsSections"
 import { AssigneesToolbar } from "./AssigneesToolbar"
 
-export const assigneeStatusEditableId = "allow-status-update"
-
 interface AssigneesContentProps {
 	onOpenCreateDialog(): void
 }
@@ -41,7 +39,6 @@ export function AssigneesContent({
 					assignees={filteredAssignees}
 					isLoading={isLoading}
 					searchQuery={searchQuery}
-					workspaceId={workspaceId}
 				/>
 			</CardScroller>
 		</ContentRoot>

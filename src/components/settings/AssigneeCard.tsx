@@ -4,6 +4,7 @@ import { User } from "lucide-react"
 import type { MouseEvent } from "react"
 import type { AssigneesDto } from "src/api/model"
 import { WORKSPACE_STATUS_EDITABLE_DISABLED } from "src/functions/status-editable-messages"
+import { useUpdateAssigneeStatus } from "src/hooks/useUpdateAssigneeStatus"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import { DisabledReasonSwitch } from "../shared/DisabledReasonSwitch"
@@ -21,23 +22,17 @@ import { DeleteAssigneePopconfirm } from "./DeleteAssigneePopconfirm"
 
 interface AssigneeCardProps {
 	assignee: AssigneesDto
-	statusEditable: boolean
-	onStatusEditableChange(
-		assigneeId: number,
-		checked: boolean,
-		userId?: number,
-	): void
 }
 
 export function AssigneeCard({
 	assignee,
-	assignee: { users, tasksCount },
-	statusEditable,
-	onStatusEditableChange,
+	assignee: { users, tasksCount, statusEditable },
 }: AssigneeCardProps) {
 	const {
 		workspace: { urlName, assigneeStatusEditable },
 	} = useWorkspace()
+
+	const { updateAssigneeStatus } = useUpdateAssigneeStatus()
 
 	const navigate = useNavigate()
 
@@ -53,7 +48,7 @@ export function AssigneeCard({
 	}
 
 	function handleStatusEditableChange(checked: boolean) {
-		onStatusEditableChange(assignee.id, checked)
+		updateAssigneeStatus(assignee.id, checked)
 	}
 
 	return (
