@@ -47,10 +47,16 @@ function SettingsAssignees() {
 		<AssigneesRoot>
 			<AssigneesMain>
 				{!isEmptyState && (
-					<TitleContainer>
-						<SectionTitle title={`ניהול אחראים - ${activeTab}`} />
-						<CircleHelpButton onClick={handleInfoModalOpen} />
-					</TitleContainer>
+					<TitleWrapper>
+						<TitleContainer>
+							<SectionTitle title={`ניהול אחראים - ${activeTab}`} />
+							<CircleHelpButton onClick={handleInfoModalOpen} />
+						</TitleContainer>
+						<SectionDescription>
+							‘אחראי’ אליו ניתן לשייך הנחיות. לכל אחראי ניתן לכתב מספר משתמשים,
+							אשר יקבלו את ההנחיות לאזור האישי שלהם.
+						</SectionDescription>
+					</TitleWrapper>
 				)}
 
 				<CardScrollArea>
@@ -102,6 +108,24 @@ const VerticalDivider = styled.div`
   background: var(--line);
 `
 
+const TitleWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0;
+`
+
+const SectionDescription = styled.p`
+  direction: rtl;
+  text-align: start;
+  font-size: var(--fs-base);
+  color: var(--text-color);
+  font-weight: 400;
+  line-height: 1.4;
+  margin: 0 12px;
+`
+
 const CardScrollArea = styled.div`
   flex: 1;
   min-height: 0;
@@ -109,6 +133,7 @@ const CardScrollArea = styled.div`
   display: flex;
   flex-direction: column;
 `
+
 const TitleContainer = styled.div`
   display: flex;
   align-items: center;

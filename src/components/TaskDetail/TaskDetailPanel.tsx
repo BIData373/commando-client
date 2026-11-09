@@ -112,7 +112,7 @@ function TaskDetailPanel({
 
 	const currentUser = useCurrentUser()
 	const myAssigneeId = assigneeStatuses.find(({ assignee }) =>
-		assignee.users.some((user) => user.upn === currentUser.upn),
+		assignee.users.some(({ user: { upn } }) => upn === currentUser.upn),
 	)?.assignee.id
 
 	const taskRowKeys = [

@@ -33,6 +33,8 @@ import type {
 	ListAssigneesParams,
 	UpdateAssigneeDto,
 	UpdateAssigneePathParameters,
+	UpdateAssigneeStatusEditablePathParameters,
+	UpdateStatusEditableDto,
 } from "../model"
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
@@ -585,4 +587,98 @@ export const useDeleteAssignee = <
 	TContext
 > => {
 	return useMutation(getDeleteAssigneeMutationOptions(options), queryClient)
+}
+export const updateAssigneeStatusEditable = (
+	{ id }: UpdateAssigneeStatusEditablePathParameters,
+	updateStatusEditableDto: UpdateStatusEditableDto,
+	options?: SecondParameter<typeof sendRequest>,
+	signal?: AbortSignal,
+) => {
+	return sendRequest<void>(
+		{
+			url: `/assignee/${id}/status-editable`,
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			data: updateStatusEditableDto,
+			signal,
+		},
+		options,
+	)
+}
+
+export const getUpdateAssigneeStatusEditableMutationKey = () =>
+	["updateAssigneeStatusEditable"] as const
+
+export const getUpdateAssigneeStatusEditableMutationOptions = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(options?: {
+	mutation?: UseMutationOptions<
+		Awaited<ReturnType<typeof updateAssigneeStatusEditable>>,
+		TError,
+		UpdateAssigneeStatusEditableMutationVariables,
+		TContext
+	>
+	request?: SecondParameter<typeof sendRequest>
+}): UseMutationOptions<
+	Awaited<ReturnType<typeof updateAssigneeStatusEditable>>,
+	TError,
+	UpdateAssigneeStatusEditableMutationVariables,
+	TContext
+> => {
+	const mutationKey = getUpdateAssigneeStatusEditableMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
+		? options.mutation &&
+			"mutationKey" in options.mutation &&
+			options.mutation.mutationKey
+			? options
+			: { ...options, mutation: { ...options.mutation, mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
+
+	const mutationFn: MutationFunction<
+		Awaited<ReturnType<typeof updateAssigneeStatusEditable>>,
+		UpdateAssigneeStatusEditableMutationVariables
+	> = (props) => {
+		const { pathParams, data } = props ?? {}
+
+		return updateAssigneeStatusEditable(pathParams, data, requestOptions)
+	}
+
+	return { mutationFn, ...mutationOptions }
+}
+
+export type UpdateAssigneeStatusEditableMutationResult = NonNullable<
+	Awaited<ReturnType<typeof updateAssigneeStatusEditable>>
+>
+export type UpdateAssigneeStatusEditableMutationBody = UpdateStatusEditableDto
+export type UpdateAssigneeStatusEditableMutationError = ErrorType<unknown>
+export type UpdateAssigneeStatusEditableMutationVariables = {
+	pathParams: UpdateAssigneeStatusEditablePathParameters
+	data: UpdateStatusEditableDto
+}
+
+export const useUpdateAssigneeStatusEditable = <
+	TError = ErrorType<unknown>,
+	TContext = unknown,
+>(
+	options?: {
+		mutation?: UseMutationOptions<
+			Awaited<ReturnType<typeof updateAssigneeStatusEditable>>,
+			TError,
+			UpdateAssigneeStatusEditableMutationVariables,
+			TContext
+		>
+		request?: SecondParameter<typeof sendRequest>
+	},
+	queryClient?: QueryClient,
+): UseMutationResult<
+	Awaited<ReturnType<typeof updateAssigneeStatusEditable>>,
+	TError,
+	UpdateAssigneeStatusEditableMutationVariables,
+	TContext
+> => {
+	return useMutation(
+		getUpdateAssigneeStatusEditableMutationOptions(options),
+		queryClient,
+	)
 }
