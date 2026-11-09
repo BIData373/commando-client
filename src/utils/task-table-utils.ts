@@ -219,7 +219,7 @@ export function groupRowsByTask<TTask extends TaskRowDto>(
 	return uniq(map(tasks, "id")).flatMap((id) => rowsByTaskId[id])
 }
 
-function getColumnFilterStrings(
+export function getColumnFilterStrings(
 	columnFilters: ColumnFiltersState,
 	id: string,
 ): string[] {
@@ -237,13 +237,6 @@ export function getEnumColumnFilter<T extends string>(
 	const values = getColumnFilterStrings(columnFilters, id)
 
 	return allowedValues.filter((allowed) => values.includes(allowed))
-}
-
-export function getStringColumnFilter(
-	columnFilters: ColumnFiltersState,
-	id: string,
-): string[] {
-	return getColumnFilterStrings(columnFilters, id)
 }
 
 export function buildUrlColumnFilters(

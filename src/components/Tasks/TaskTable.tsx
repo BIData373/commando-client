@@ -38,8 +38,8 @@ import {
 	buildUrlColumnFilters,
 	DISABLED_CLICK_COLUMNS,
 	EMPTY_LIST,
+	getColumnFilterStrings,
 	getEnumColumnFilter,
-	getStringColumnFilter,
 	groupRowsByTask,
 	TASK_COLUMN_ID,
 	TASK_ROW_ID_SEPARATOR,
@@ -160,7 +160,7 @@ function TaskTable<TTask extends TaskRowDto>({
 			typeof updater === "function" ? updater(columnFilters) : updater
 
 		setColumnsFilters(newFilters)
-		setAssigneeFilter(getStringColumnFilter(newFilters, "assignee"))
+		setAssigneeFilter(getColumnFilterStrings(newFilters, "assignee"))
 		onFiltersChange?.(
 			getEnumColumnFilter(
 				newFilters,
