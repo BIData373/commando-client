@@ -6,18 +6,20 @@
  * OpenAPI spec version: 1.0
  */
 
-import type { HttpResponseResolver, RequestHandlerOptions } from "msw"
+import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 
 export const getUpsertUserWorkspaceVisitMockHandler = (
 	overrideResponse?:
 		| void
-		| ((info: Parameters<HttpResponseResolver>[0]) => Promise<void> | void),
+		| ((
+				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+		  ) => Promise<void> | void),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.patch(
 		"*/user-workspace-visits",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
 			if (typeof overrideResponse === "function") {
 				await overrideResponse(info)
 			}

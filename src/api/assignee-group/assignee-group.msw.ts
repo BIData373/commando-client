@@ -6,18 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type {
-	HttpResponseResolver,
-	PathParams,
-	RequestHandlerOptions,
-} from "msw"
+import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 
-import type {
-	AssigneeGroupDto,
-	CreateAssigneeGroupDto,
-	UpdateAssigneeGroupDto,
-} from "../model"
+import type { AssigneeGroupDto } from "../model"
 
 export const getCreateAssigneeGroupResponseMock = (
 	overrideResponse: Partial<Extract<AssigneeGroupDto, object>> = {},
@@ -980,19 +972,13 @@ export const getCreateAssigneeGroupMockHandler = (
 	overrideResponse?:
 		| AssigneeGroupDto
 		| ((
-				info: Parameters<
-					HttpResponseResolver<PathParams, CreateAssigneeGroupDto>
-				>[0],
+				info: Parameters<Parameters<typeof http.post>[1]>[0],
 		  ) => Promise<AssigneeGroupDto> | AssigneeGroupDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post<PathParams, CreateAssigneeGroupDto>(
+	return http.post(
 		"*/assignee-group",
-		async (
-			info: Parameters<
-				HttpResponseResolver<PathParams, CreateAssigneeGroupDto>
-			>[0],
-		) => {
+		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -1010,13 +996,13 @@ export const getListAssigneeGroupsMockHandler = (
 	overrideResponse?:
 		| AssigneeGroupDto[]
 		| ((
-				info: Parameters<HttpResponseResolver>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<AssigneeGroupDto[]> | AssigneeGroupDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/assignee-group",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -1034,13 +1020,13 @@ export const getGetAssigneeGroupMockHandler = (
 	overrideResponse?:
 		| AssigneeGroupDto
 		| ((
-				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<AssigneeGroupDto> | AssigneeGroupDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get<{ id: string }>(
+	return http.get(
 		"*/assignee-group/:id",
-		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -1058,19 +1044,13 @@ export const getUpdateAssigneeGroupMockHandler = (
 	overrideResponse?:
 		| AssigneeGroupDto
 		| ((
-				info: Parameters<
-					HttpResponseResolver<{ id: string }, UpdateAssigneeGroupDto>
-				>[0],
+				info: Parameters<Parameters<typeof http.patch>[1]>[0],
 		  ) => Promise<AssigneeGroupDto> | AssigneeGroupDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch<{ id: string }, UpdateAssigneeGroupDto>(
+	return http.patch(
 		"*/assignee-group/:id",
-		async (
-			info: Parameters<
-				HttpResponseResolver<{ id: string }, UpdateAssigneeGroupDto>
-			>[0],
-		) => {
+		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -1088,13 +1068,13 @@ export const getDeleteAssigneeGroupMockHandler = (
 	overrideResponse?:
 		| AssigneeGroupDto
 		| ((
-				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
+				info: Parameters<Parameters<typeof http.delete>[1]>[0],
 		  ) => Promise<AssigneeGroupDto> | AssigneeGroupDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.delete<{ id: string }>(
+	return http.delete(
 		"*/assignee-group/:id",
-		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
+		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

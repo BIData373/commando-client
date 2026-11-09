@@ -6,14 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type {
-	HttpResponseResolver,
-	PathParams,
-	RequestHandlerOptions,
-} from "msw"
+import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 
-import type { CreatePikudDto, PikudDto, UpdatePikudDto } from "../model"
+import type { PikudDto } from "../model"
 
 export const getCreatePikudResponseMock = (
 	overrideResponse: Partial<Extract<PikudDto, object>> = {},
@@ -411,15 +407,13 @@ export const getCreatePikudMockHandler = (
 	overrideResponse?:
 		| PikudDto
 		| ((
-				info: Parameters<HttpResponseResolver<PathParams, CreatePikudDto>>[0],
+				info: Parameters<Parameters<typeof http.post>[1]>[0],
 		  ) => Promise<PikudDto> | PikudDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post<PathParams, CreatePikudDto>(
+	return http.post(
 		"*/pikud",
-		async (
-			info: Parameters<HttpResponseResolver<PathParams, CreatePikudDto>>[0],
-		) => {
+		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -437,13 +431,13 @@ export const getListPikudsMockHandler = (
 	overrideResponse?:
 		| PikudDto[]
 		| ((
-				info: Parameters<HttpResponseResolver>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<PikudDto[]> | PikudDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/pikud",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -461,13 +455,13 @@ export const getGetPikudMockHandler = (
 	overrideResponse?:
 		| PikudDto
 		| ((
-				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<PikudDto> | PikudDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get<{ id: string }>(
+	return http.get(
 		"*/pikud/:id",
-		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -485,17 +479,13 @@ export const getUpdatePikudMockHandler = (
 	overrideResponse?:
 		| PikudDto
 		| ((
-				info: Parameters<
-					HttpResponseResolver<{ id: string }, UpdatePikudDto>
-				>[0],
+				info: Parameters<Parameters<typeof http.patch>[1]>[0],
 		  ) => Promise<PikudDto> | PikudDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch<{ id: string }, UpdatePikudDto>(
+	return http.patch(
 		"*/pikud/:id",
-		async (
-			info: Parameters<HttpResponseResolver<{ id: string }, UpdatePikudDto>>[0],
-		) => {
+		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -513,13 +503,13 @@ export const getDeletePikudMockHandler = (
 	overrideResponse?:
 		| PikudDto
 		| ((
-				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
+				info: Parameters<Parameters<typeof http.delete>[1]>[0],
 		  ) => Promise<PikudDto> | PikudDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.delete<{ id: string }>(
+	return http.delete(
 		"*/pikud/:id",
-		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
+		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

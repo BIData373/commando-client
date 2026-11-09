@@ -6,20 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type {
-	HttpResponseResolver,
-	PathParams,
-	RequestHandlerOptions,
-} from "msw"
+import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 
-import type {
-	CreateUserDto,
-	CurrentUserDto,
-	MirageUserDto,
-	UpdateUserDto,
-	UserDto,
-} from "../model"
+import type { CurrentUserDto, MirageUserDto, UserDto } from "../model"
 
 export const getCreateUserResponseMock = (
 	overrideResponse: Partial<Extract<UserDto, object>> = {},
@@ -212,15 +202,13 @@ export const getCreateUserMockHandler = (
 	overrideResponse?:
 		| UserDto
 		| ((
-				info: Parameters<HttpResponseResolver<PathParams, CreateUserDto>>[0],
+				info: Parameters<Parameters<typeof http.post>[1]>[0],
 		  ) => Promise<UserDto> | UserDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post<PathParams, CreateUserDto>(
+	return http.post(
 		"*/user",
-		async (
-			info: Parameters<HttpResponseResolver<PathParams, CreateUserDto>>[0],
-		) => {
+		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -238,13 +226,13 @@ export const getListUsersMockHandler = (
 	overrideResponse?:
 		| UserDto[]
 		| ((
-				info: Parameters<HttpResponseResolver>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<UserDto[]> | UserDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/user",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -262,13 +250,13 @@ export const getSearchUsersMockHandler = (
 	overrideResponse?:
 		| MirageUserDto[]
 		| ((
-				info: Parameters<HttpResponseResolver>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<MirageUserDto[]> | MirageUserDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/user/search",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -286,13 +274,13 @@ export const getGetMeMockHandler = (
 	overrideResponse?:
 		| CurrentUserDto
 		| ((
-				info: Parameters<HttpResponseResolver>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<CurrentUserDto> | CurrentUserDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/user/me",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -310,13 +298,13 @@ export const getCompleteOnboardingMockHandler = (
 	overrideResponse?:
 		| CurrentUserDto
 		| ((
-				info: Parameters<HttpResponseResolver>[0],
+				info: Parameters<Parameters<typeof http.patch>[1]>[0],
 		  ) => Promise<CurrentUserDto> | CurrentUserDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.patch(
 		"*/user/complete-onboarding",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -334,13 +322,13 @@ export const getGetUserMockHandler = (
 	overrideResponse?:
 		| UserDto
 		| ((
-				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<UserDto> | UserDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get<{ id: string }>(
+	return http.get(
 		"*/user/:id",
-		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -358,17 +346,13 @@ export const getUpdateUserMockHandler = (
 	overrideResponse?:
 		| UserDto
 		| ((
-				info: Parameters<
-					HttpResponseResolver<{ id: string }, UpdateUserDto>
-				>[0],
+				info: Parameters<Parameters<typeof http.patch>[1]>[0],
 		  ) => Promise<UserDto> | UserDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch<{ id: string }, UpdateUserDto>(
+	return http.patch(
 		"*/user/:id",
-		async (
-			info: Parameters<HttpResponseResolver<{ id: string }, UpdateUserDto>>[0],
-		) => {
+		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -386,13 +370,13 @@ export const getDeleteUserMockHandler = (
 	overrideResponse?:
 		| UserDto
 		| ((
-				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
+				info: Parameters<Parameters<typeof http.delete>[1]>[0],
 		  ) => Promise<UserDto> | UserDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.delete<{ id: string }>(
+	return http.delete(
 		"*/user/:id",
-		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
+		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

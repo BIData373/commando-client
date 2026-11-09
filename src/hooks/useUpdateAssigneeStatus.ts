@@ -13,21 +13,24 @@ export function useUpdateAssigneeStatus() {
 
 	const { mutateAsync } = useUpdateAssigneeStatusEditable({
 		mutation: {
-			onSuccess(_, { data: { assigneeId } }) {
+			onSuccess(_, { pathParams: { id } }) {
 				invalidateQueries([
 					getListAssigneesQueryKey({ workspaceId }),
-					getGetAssigneeQueryKey({ id: assigneeId }),
+					getGetAssigneeQueryKey({ id }),
 				])
 			},
 		},
 	})
 
 	function updateAssigneeStatus(
-		assigneeId: number,
+		id: number,
 		statusEditable: boolean,
 		userId?: number,
 	) {
-		return mutateAsync({ data: { assigneeId, statusEditable, userId } })
+		return mutateAsync({
+			pathParams: { id },
+			data: { statusEditable, userId },
+		})
 	}
 
 	return { updateAssigneeStatus }

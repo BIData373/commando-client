@@ -6,16 +6,9 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type {
-	HttpResponseResolver,
-	PathParams,
-	RequestHandlerOptions,
-} from "msw"
+import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
-import type {
-	AssigneeTaskStatusDto,
-	UpdateAssigneeTaskStatusDto,
-} from "../model"
+import type { AssigneeTaskStatusDto } from "../model"
 import {
 	DeadlineType,
 	ExtractionStatus,
@@ -2179,13 +2172,13 @@ export const getListAssigneeTaskStatusesMockHandler = (
 	overrideResponse?:
 		| AssigneeTaskStatusDto[]
 		| ((
-				info: Parameters<HttpResponseResolver<{ taskId: string }>>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<AssigneeTaskStatusDto[]> | AssigneeTaskStatusDto[]),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get<{ taskId: string }>(
+	return http.get(
 		"*/assignee-task-status/:taskId",
-		async (info: Parameters<HttpResponseResolver<{ taskId: string }>>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2203,19 +2196,13 @@ export const getUpsertAssigneeTaskStatusMockHandler = (
 	overrideResponse?:
 		| AssigneeTaskStatusDto
 		| ((
-				info: Parameters<
-					HttpResponseResolver<PathParams, UpdateAssigneeTaskStatusDto>
-				>[0],
+				info: Parameters<Parameters<typeof http.put>[1]>[0],
 		  ) => Promise<AssigneeTaskStatusDto> | AssigneeTaskStatusDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.put<PathParams, UpdateAssigneeTaskStatusDto>(
+	return http.put(
 		"*/assignee-task-status",
-		async (
-			info: Parameters<
-				HttpResponseResolver<PathParams, UpdateAssigneeTaskStatusDto>
-			>[0],
-		) => {
+		async (info: Parameters<Parameters<typeof http.put>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2233,13 +2220,13 @@ export const getDeleteAssigneeTaskStatusMockHandler = (
 	overrideResponse?:
 		| AssigneeTaskStatusDto
 		| ((
-				info: Parameters<HttpResponseResolver>[0],
+				info: Parameters<Parameters<typeof http.delete>[1]>[0],
 		  ) => Promise<AssigneeTaskStatusDto> | AssigneeTaskStatusDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.delete(
 		"*/assignee-task-status",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

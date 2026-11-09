@@ -30,10 +30,11 @@ import type {
 	CreateAssigneeDto,
 	DeleteAssigneePathParameters,
 	GetAssigneePathParameters,
-	GetStatusEditableDto,
 	ListAssigneesParams,
 	UpdateAssigneeDto,
 	UpdateAssigneePathParameters,
+	UpdateAssigneeStatusEditablePathParameters,
+	UpdateStatusEditableDto,
 } from "../model"
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
@@ -588,16 +589,17 @@ export const useDeleteAssignee = <
 	return useMutation(getDeleteAssigneeMutationOptions(options), queryClient)
 }
 export const updateAssigneeStatusEditable = (
-	getStatusEditableDto: GetStatusEditableDto,
+	{ id }: UpdateAssigneeStatusEditablePathParameters,
+	updateStatusEditableDto: UpdateStatusEditableDto,
 	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<void>(
 		{
-			url: `/assignee/status-editable`,
+			url: `/assignee/${id}/status-editable`,
 			method: "PATCH",
 			headers: { "Content-Type": "application/json" },
-			data: getStatusEditableDto,
+			data: updateStatusEditableDto,
 			signal,
 		},
 		options,
@@ -637,9 +639,9 @@ export const getUpdateAssigneeStatusEditableMutationOptions = <
 		Awaited<ReturnType<typeof updateAssigneeStatusEditable>>,
 		UpdateAssigneeStatusEditableMutationVariables
 	> = (props) => {
-		const { data } = props ?? {}
+		const { pathParams, data } = props ?? {}
 
-		return updateAssigneeStatusEditable(data, requestOptions)
+		return updateAssigneeStatusEditable(pathParams, data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -648,10 +650,11 @@ export const getUpdateAssigneeStatusEditableMutationOptions = <
 export type UpdateAssigneeStatusEditableMutationResult = NonNullable<
 	Awaited<ReturnType<typeof updateAssigneeStatusEditable>>
 >
-export type UpdateAssigneeStatusEditableMutationBody = GetStatusEditableDto
+export type UpdateAssigneeStatusEditableMutationBody = UpdateStatusEditableDto
 export type UpdateAssigneeStatusEditableMutationError = ErrorType<unknown>
 export type UpdateAssigneeStatusEditableMutationVariables = {
-	data: GetStatusEditableDto
+	pathParams: UpdateAssigneeStatusEditablePathParameters
+	data: UpdateStatusEditableDto
 }
 
 export const useUpdateAssigneeStatusEditable = <

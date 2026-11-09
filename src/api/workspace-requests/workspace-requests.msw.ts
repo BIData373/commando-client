@@ -6,18 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type {
-	HttpResponseResolver,
-	PathParams,
-	RequestHandlerOptions,
-} from "msw"
+import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 
-import type {
-	CreateWorkspaceRequestDto,
-	UpdateWorkspaceRequestDto,
-	WorkspaceRequestDto,
-} from "../model"
+import type { WorkspaceRequestDto } from "../model"
 
 export const getCreateWorkspaceRequestResponseMock = (
 	overrideResponse: Partial<Extract<WorkspaceRequestDto, object>> = {},
@@ -490,19 +482,13 @@ export const getCreateWorkspaceRequestMockHandler = (
 	overrideResponse?:
 		| WorkspaceRequestDto
 		| ((
-				info: Parameters<
-					HttpResponseResolver<PathParams, CreateWorkspaceRequestDto>
-				>[0],
+				info: Parameters<Parameters<typeof http.post>[1]>[0],
 		  ) => Promise<WorkspaceRequestDto> | WorkspaceRequestDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post<PathParams, CreateWorkspaceRequestDto>(
+	return http.post(
 		"*/workspace-requests",
-		async (
-			info: Parameters<
-				HttpResponseResolver<PathParams, CreateWorkspaceRequestDto>
-			>[0],
-		) => {
+		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -520,13 +506,13 @@ export const getListWorkspaceRequestsMockHandler = (
 	overrideResponse?:
 		| WorkspaceRequestDto[]
 		| ((
-				info: Parameters<HttpResponseResolver>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<WorkspaceRequestDto[]> | WorkspaceRequestDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/workspace-requests",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -544,13 +530,13 @@ export const getGetWorkspaceRequestMockHandler = (
 	overrideResponse?:
 		| WorkspaceRequestDto
 		| ((
-				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<WorkspaceRequestDto> | WorkspaceRequestDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get<{ id: string }>(
+	return http.get(
 		"*/workspace-requests/:id",
-		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -568,19 +554,13 @@ export const getUpdateWorkspaceRequestMockHandler = (
 	overrideResponse?:
 		| WorkspaceRequestDto
 		| ((
-				info: Parameters<
-					HttpResponseResolver<{ id: string }, UpdateWorkspaceRequestDto>
-				>[0],
+				info: Parameters<Parameters<typeof http.patch>[1]>[0],
 		  ) => Promise<WorkspaceRequestDto> | WorkspaceRequestDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch<{ id: string }, UpdateWorkspaceRequestDto>(
+	return http.patch(
 		"*/workspace-requests/:id",
-		async (
-			info: Parameters<
-				HttpResponseResolver<{ id: string }, UpdateWorkspaceRequestDto>
-			>[0],
-		) => {
+		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -598,13 +578,13 @@ export const getDeleteWorkspaceRequestMockHandler = (
 	overrideResponse?:
 		| WorkspaceRequestDto
 		| ((
-				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
+				info: Parameters<Parameters<typeof http.delete>[1]>[0],
 		  ) => Promise<WorkspaceRequestDto> | WorkspaceRequestDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.delete<{ id: string }>(
+	return http.delete(
 		"*/workspace-requests/:id",
-		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
+		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

@@ -6,19 +6,13 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type {
-	HttpResponseResolver,
-	PathParams,
-	RequestHandlerOptions,
-} from "msw"
+import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 import type {
-	CreateTaskDto,
 	TaskDto,
 	TaskRowDto,
 	TaskRowWithWorkspaceDto,
 	TaskWithWorkspaceDto,
-	UpdateTaskDto,
 } from "../model"
 import {
 	DeadlineType,
@@ -5161,15 +5155,13 @@ export const getCreateTaskMockHandler = (
 	overrideResponse?:
 		| TaskWithWorkspaceDto
 		| ((
-				info: Parameters<HttpResponseResolver<PathParams, CreateTaskDto>>[0],
+				info: Parameters<Parameters<typeof http.post>[1]>[0],
 		  ) => Promise<TaskWithWorkspaceDto> | TaskWithWorkspaceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post<PathParams, CreateTaskDto>(
+	return http.post(
 		"*/task",
-		async (
-			info: Parameters<HttpResponseResolver<PathParams, CreateTaskDto>>[0],
-		) => {
+		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -5187,13 +5179,13 @@ export const getListTasksMockHandler = (
 	overrideResponse?:
 		| TaskDto[]
 		| ((
-				info: Parameters<HttpResponseResolver>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<TaskDto[]> | TaskDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/task",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -5211,13 +5203,13 @@ export const getListTaskRowsMockHandler = (
 	overrideResponse?:
 		| TaskRowDto[]
 		| ((
-				info: Parameters<HttpResponseResolver>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<TaskRowDto[]> | TaskRowDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/task/rows",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -5235,13 +5227,13 @@ export const getListPersonalTasksMockHandler = (
 	overrideResponse?:
 		| TaskWithWorkspaceDto[]
 		| ((
-				info: Parameters<HttpResponseResolver>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<TaskWithWorkspaceDto[]> | TaskWithWorkspaceDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/task/personal",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -5259,13 +5251,13 @@ export const getListPersonalTaskRowsMockHandler = (
 	overrideResponse?:
 		| TaskRowWithWorkspaceDto[]
 		| ((
-				info: Parameters<HttpResponseResolver>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<TaskRowWithWorkspaceDto[]> | TaskRowWithWorkspaceDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/task/personal/rows",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -5283,13 +5275,13 @@ export const getGetTaskMockHandler = (
 	overrideResponse?:
 		| TaskWithWorkspaceDto
 		| ((
-				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<TaskWithWorkspaceDto> | TaskWithWorkspaceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get<{ id: string }>(
+	return http.get(
 		"*/task/:id",
-		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -5307,17 +5299,13 @@ export const getUpdateTaskMockHandler = (
 	overrideResponse?:
 		| TaskWithWorkspaceDto
 		| ((
-				info: Parameters<
-					HttpResponseResolver<{ id: string }, UpdateTaskDto>
-				>[0],
+				info: Parameters<Parameters<typeof http.patch>[1]>[0],
 		  ) => Promise<TaskWithWorkspaceDto> | TaskWithWorkspaceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch<{ id: string }, UpdateTaskDto>(
+	return http.patch(
 		"*/task/:id",
-		async (
-			info: Parameters<HttpResponseResolver<{ id: string }, UpdateTaskDto>>[0],
-		) => {
+		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -5335,13 +5323,13 @@ export const getDeleteTaskMockHandler = (
 	overrideResponse?:
 		| TaskWithWorkspaceDto
 		| ((
-				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
+				info: Parameters<Parameters<typeof http.delete>[1]>[0],
 		  ) => Promise<TaskWithWorkspaceDto> | TaskWithWorkspaceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.delete<{ id: string }>(
+	return http.delete(
 		"*/task/:id",
-		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
+		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

@@ -6,13 +6,9 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type {
-	HttpResponseResolver,
-	PathParams,
-	RequestHandlerOptions,
-} from "msw"
+import type { RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
-import type { UpsertUserViewDto, UserViewDto } from "../model"
+import type { UserViewDto } from "../model"
 import { DistributionTab, QuickFilter } from "../model"
 
 export const getGetUserViewResponseMock = (
@@ -103,13 +99,13 @@ export const getGetUserViewMockHandler = (
 	overrideResponse?:
 		| UserViewDto
 		| ((
-				info: Parameters<HttpResponseResolver>[0],
+				info: Parameters<Parameters<typeof http.get>[1]>[0],
 		  ) => Promise<UserViewDto> | UserViewDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/user-views",
-		async (info: Parameters<HttpResponseResolver>[0]) => {
+		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -127,17 +123,13 @@ export const getUpsertUserViewMockHandler = (
 	overrideResponse?:
 		| UserViewDto
 		| ((
-				info: Parameters<
-					HttpResponseResolver<PathParams, UpsertUserViewDto>
-				>[0],
+				info: Parameters<Parameters<typeof http.patch>[1]>[0],
 		  ) => Promise<UserViewDto> | UserViewDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch<PathParams, UpsertUserViewDto>(
+	return http.patch(
 		"*/user-views",
-		async (
-			info: Parameters<HttpResponseResolver<PathParams, UpsertUserViewDto>>[0],
-		) => {
+		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
