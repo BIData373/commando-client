@@ -12,6 +12,14 @@ import { invalidateQueries } from "src/query-client"
 import chatIcon from "../../assets/icons/chat.svg"
 import { SettingToggleRow } from "../shared/SettingToggleRow"
 
+type BooleanSettingKey = keyof {
+	[K in keyof UpdateWorkspaceDto as UpdateWorkspaceDto[K] extends
+		| boolean
+		| undefined
+		? K
+		: never]: unknown
+}
+
 interface AssigneesSettingsSectionsProps {
 	assignees: AssigneesDto[]
 }
@@ -47,20 +55,12 @@ export function AssigneesSettingsSections({
 		},
 	})
 
-	function updateWorkspaceSetting(data: UpdateWorkspaceDto) {
-		updateSettings({ pathParams: { id: workspaceId }, data })
-	}
-
-	function handleWorkspaceStatusEditableChange(checked: boolean) {
-		updateWorkspaceSetting({ assigneeStatusEditable: checked })
-	}
-
-	function handleChatNotificationsChange(checked: boolean) {
-		updateWorkspaceSetting({ chatNotification: checked })
-	}
-
-	function handleMailNotificationsChange(checked: boolean) {
-		updateWorkspaceSetting({ mailNotification: checked })
+	function handleToggleSetting(key: BooleanSettingKey) {
+		return (checked: boolean) =>
+			updateSettings({
+				pathParams: { id: workspaceId },
+				data: { [key]: checked },
+			})
 	}
 
 	return (
@@ -71,7 +71,7 @@ export function AssigneesSettingsSections({
 					tooltip="מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות כבויה – עדכון הסטטוס יתאפשר רק למנהלי הסביבה."
 					icon={<Pencil size={18} />}
 					checked={assigneeStatusEditable}
-					onCheckedChange={handleWorkspaceStatusEditableChange}
+					onCheckedChange={handleToggleSetting("assigneeStatusEditable")}
 				/>
 			</SettingsSection>
 			<SettingsSection>
@@ -80,7 +80,7 @@ export function AssigneesSettingsSections({
 					tooltip="שליחת התראות בצ'אט למכותבים בעת קבלת הנחיות"
 					icon={<img src={chatIcon} alt="" width={18} height={18} />}
 					checked={chatNotification}
-					onCheckedChange={handleChatNotificationsChange}
+					onCheckedChange={handleToggleSetting("chatNotification")}
 				/>
 
 				<SettingToggleRow
@@ -88,7 +88,7 @@ export function AssigneesSettingsSections({
 					tooltip="שליחת התראות במייל למכותבים בעת קבלת הנחיות"
 					icon={<Mail size={18} />}
 					checked={mailNotification}
-					onCheckedChange={handleMailNotificationsChange}
+					onCheckedChange={handleToggleSetting("mailNotification")}
 				/>
 			</SettingsSection>
 		</SettingsSectionWrapper>
