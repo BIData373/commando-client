@@ -2,11 +2,11 @@ import styled from "@emotion/styled"
 import type { MouseEvent } from "react"
 import { TbChevronDown, TbChevronUp, TbUsersGroup } from "react-icons/tb"
 import type { AssigneeGroupDto } from "src/api/model"
+import { getVisibleAvatars } from "src/functions/avatar-overflow"
 import { AssigneeGroupActions } from "./AssigneeGroupActions"
 import { AssigneeGroupAvatars } from "./AssigneeGroupAvatars"
 import { AssigneeGroupExpandedList } from "./AssigneeGroupExpandedList"
 
-const MAX_VISIBLE_AVATARS = 3
 const NO_ASSIGNEES_TEXT = "טרם נוספו אחראים"
 const POPOVER_TRIGGER_SELECTOR = "[data-assignee-popover]"
 
@@ -24,8 +24,8 @@ export function AssigneeGroupCard({
 	onEdit,
 }: AssigneeGroupCardProps) {
 	const hasAssignees = assignees.length > 0
-	const visibleAssignees = assignees.slice(0, MAX_VISIBLE_AVATARS)
-	const hiddenCount = assignees.length - visibleAssignees.length
+	const { visible: visibleAssignees, hiddenCount } =
+		getVisibleAvatars(assignees)
 
 	function handleCardClick(e: MouseEvent<HTMLDivElement>) {
 		const target = e.target as Element
