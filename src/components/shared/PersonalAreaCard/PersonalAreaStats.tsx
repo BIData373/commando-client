@@ -13,22 +13,24 @@ type PersonalAreaStatsProps = {
 export default function PersonalAreaStats({
 	taskRows,
 }: PersonalAreaStatsProps) {
-	const groupedTaskRows = countBy(taskRows, (row) => row.status.type)
+	const countByStatus = countBy(taskRows, (row) => row.status.type)
+
+	const stats = STATUS_DISPLAY_ORDER.filter(
+		(statusType) => countByStatus[statusType],
+	).map((statusType) => ({
+		statusType,
+		count: countByStatus[statusType],
+		...STATUS_DEFAULTS[statusType],
+	}))
 
 	return (
 		<>
-			{STATUS_DISPLAY_ORDER.filter(
-				(statusType) => groupedTaskRows[statusType],
-			).map((statusType) => {
-				const status = STATUS_DEFAULTS[statusType]
-
-				return (
-					<StatItem key={statusType}>
-						<StatNumber>{groupedTaskRows[statusType]}</StatNumber>
-						<StatTag $color={status.color}>{status.name}</StatTag>
-					</StatItem>
-				)
-			})}
+			{stats.map(({ statusType, count, color, name }) => (
+				<StatItem key={statusType}>
+					<StatNumber>{count}</StatNumber>
+					<StatTag $color={color}>{name}</StatTag>
+				</StatItem>
+			))}
 		</>
 	)
 }
