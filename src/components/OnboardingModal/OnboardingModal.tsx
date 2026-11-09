@@ -103,11 +103,9 @@ const FullScreenPanel = styled(DialogContent)`
 	direction: rtl;
 	
 	background: var(--background-area);
-
 `
 
 const ContentWrapper = styled.div`
-
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
