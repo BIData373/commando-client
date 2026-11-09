@@ -83,7 +83,6 @@ export function useFilteredTasks<T extends TaskRowDto>(
 
 	const deferredSearchQuery = useDeferredValue(normalizeSearchText(searchQuery))
 
-	// Quick filters and date range don't depend on the search text, so typing must not re-run them
 	const matchingFilterTasks = useMemo(() => {
 		const today = startOfToday()
 		const quickFilters = skipQuickFilters ? [] : [...activeQuickFilters]
