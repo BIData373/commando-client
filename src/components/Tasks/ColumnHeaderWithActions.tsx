@@ -24,9 +24,9 @@ function ColumnHeaderWithActions<TData extends RowData, TValue>({
 	const isFilterable = column.getCanFilter() && filterOptions !== undefined
 	const isSearchable = column.columnDef.meta?.searchable ?? false
 
-	const availableValues = isFilterable
-		? column.getFacetedUniqueValues()
-		: undefined
+	// Faceting walks every row (and every tag), so only pay for it while the options are visible
+	const availableValues =
+		isFilterable && filterOpen ? column.getFacetedUniqueValues() : undefined
 
 	const visibleFilterOptions =
 		availableValues && filterOptions
