@@ -79,8 +79,11 @@ if (USE_SSO) {
 	)
 }
 
-export async function sendRequest<T>(config: AxiosRequestConfig) {
-	return (await axiosInstance<T>(config)).data
+export async function sendRequest<T>(
+	config: AxiosRequestConfig,
+	options?: AxiosRequestConfig,
+) {
+	return (await axiosInstance<T>({ ...config, ...options })).data
 }
 
 const isoDateFormat =

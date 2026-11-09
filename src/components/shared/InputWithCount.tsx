@@ -56,6 +56,10 @@ const InputWrapper = styled.div`
   background: var(--background);
   cursor: text;
 
+  &:hover:not(:focus-within) {
+    border-color: var(--color-blue-300);
+  }
+
   &:focus-within {
     border-color: var(--button-color-hover);
     box-shadow: var(--shadow-textarea-focus);

@@ -18,13 +18,17 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import type { ViewTasksParams } from "../model"
 
-export const viewTasks = (params: ViewTasksParams, signal?: AbortSignal) => {
-	return sendRequest<void>({
-		url: `/user-viewed-tasks`,
-		method: "PATCH",
-		params,
-		signal,
-	})
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
+export const viewTasks = (
+	params: ViewTasksParams,
+	options?: SecondParameter<typeof sendRequest>,
+	signal?: AbortSignal,
+) => {
+	return sendRequest<void>(
+		{ url: `/user-viewed-tasks`, method: "PATCH", params, signal },
+		options,
+	)
 }
 
 export const getViewTasksMutationKey = () => ["viewTasks"] as const
@@ -39,6 +43,7 @@ export const getViewTasksMutationOptions = <
 		ViewTasksMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof viewTasks>>,
 	TError,
@@ -46,13 +51,13 @@ export const getViewTasksMutationOptions = <
 	TContext
 > => {
 	const mutationKey = getViewTasksMutationKey()
-	const { mutation: mutationOptions } = options
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof viewTasks>>,
@@ -60,7 +65,7 @@ export const getViewTasksMutationOptions = <
 	> = (props) => {
 		const { params } = props ?? {}
 
-		return viewTasks(params)
+		return viewTasks(params, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -81,6 +86,7 @@ export const useViewTasks = <TError = ErrorType<unknown>, TContext = unknown>(
 			ViewTasksMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<

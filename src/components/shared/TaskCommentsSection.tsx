@@ -53,7 +53,9 @@ const Wrapper = styled.div`
   ${MOBILE_MEDIA_QUERY} {
     gap: 0;
     padding-bottom: 0;
-    min-height: 70vh;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
   }
 `
 

@@ -23,6 +23,8 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import type { GetAttachmentSignedUrlParams, SignedUrlDto } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 const withQueryKey = <T extends object, K>(
 	query: T,
 	queryKey: K,
@@ -43,14 +45,13 @@ const withQueryKey = <T extends object, K>(
 
 export const getAttachmentSignedUrl = (
 	params: GetAttachmentSignedUrlParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<SignedUrlDto>({
-		url: `/attachment/signed-url`,
-		method: "GET",
-		params,
-		signal,
-	})
+	return sendRequest<SignedUrlDto>(
+		{ url: `/attachment/signed-url`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getGetAttachmentSignedUrlQueryKey = (
@@ -72,16 +73,17 @@ export const getGetAttachmentSignedUrlQueryOptions = <
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey =
 		queryOptions?.queryKey ?? getGetAttachmentSignedUrlQueryKey(params)
 
 	const queryFn: QueryFunction<
 		Awaited<ReturnType<typeof getAttachmentSignedUrl>>
-	> = ({ signal }) => getAttachmentSignedUrl(params, signal)
+	> = ({ signal }) => getAttachmentSignedUrl(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof getAttachmentSignedUrl>>,
@@ -116,6 +118,7 @@ export function useGetAttachmentSignedUrl<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -142,6 +145,7 @@ export function useGetAttachmentSignedUrl<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -160,6 +164,7 @@ export function useGetAttachmentSignedUrl<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -179,6 +184,7 @@ export function useGetAttachmentSignedUrl<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
