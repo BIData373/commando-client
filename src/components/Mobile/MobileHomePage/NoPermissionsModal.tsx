@@ -18,9 +18,7 @@ export default function NoPermissionsModal({
 	workspaceId,
 }: NoPermissionsModalProps) {
 	const { data: workspace } = useGetWorkspace({ id: workspaceId })
-	const { data: permissions = [] } = useListPermissions({
-		workspaceId,
-	})
+	const { data: permissions = [] } = useListPermissions({ workspaceId })
 
 	const managers = permissions
 		.filter(({ type }) => type === PermissionType.MANAGER)
