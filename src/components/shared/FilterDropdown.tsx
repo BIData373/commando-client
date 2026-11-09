@@ -200,6 +200,7 @@ const SearchWrapper = styled.div`
 const SearchField = styled.input`
   flex: 1;
   height: 100%;
+  width: 100%;
   border: none;
   outline: none;
   background: transparent;
