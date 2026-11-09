@@ -14,6 +14,7 @@ import { AssigneesCell } from "../components/Tasks/cells/AssigneesCell"
 import { DateCell } from "../components/Tasks/cells/DateCell"
 import { DeadlineCell } from "../components/Tasks/cells/DeadlineCell"
 import { LastMessageCell } from "../components/Tasks/cells/LastMessageCell"
+import { LastMessageColumnHeader } from "../components/Tasks/cells/LastMessageColumnHeader"
 import { NotesCell } from "../components/Tasks/cells/NotesCell"
 import { SelectAllHeader } from "../components/Tasks/cells/SelectAllHeader"
 import { SelectCell } from "../components/Tasks/cells/SelectCell"
@@ -114,7 +115,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				cell: SourceCell,
 			}),
 			definitions.lastMessage({
-				header: TaskColumnHeader,
+				header: LastMessageColumnHeader,
 				size: 100,
 				minSize: 70,
 				meta: { grow: true },
