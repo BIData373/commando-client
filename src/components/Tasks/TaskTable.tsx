@@ -17,6 +17,7 @@ import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { toast } from "src/components/Toast/toast-api"
 import type { AppTableFeatures } from "src/consts/table-features"
+import { isEmptyValue } from "src/functions/empty-filter"
 import {
 	buildRowMenuActions,
 	type TaskArchiveEntry,
@@ -177,7 +178,10 @@ function TaskTable<TTask extends TaskRowDto>({
 
 		setColumnsFilters(newFilters)
 		setAssigneeFilter(tableAssigneeColumnValue)
-		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
+		onFiltersChange?.(
+			tableStatusColumnValue,
+			tableDeadlineColumnValue.filter((v) => !isEmptyValue(v)),
+		)
 	}
 
 	const tasksByRowKey = useMemo(() => keyBy(tasks, "rowKey"), [tasks])
@@ -260,7 +264,10 @@ function TaskTable<TTask extends TaskRowDto>({
 		)
 	}
 
-	const filterOptionsMap = useMemo(() => buildFilterOptionsMap(tasks), [tasks])
+	const filterOptionsMap = useMemo(
+		() => buildFilterOptionsMap(tasks, true),
+		[tasks],
+	)
 
 	const groupedTasks = useMemo(() => groupRowsByTask(tasks), [tasks])
 
@@ -447,6 +454,13 @@ const TableWrapper = styled.div`
     &[rowspan] {
       vertical-align: top;
       overflow: clip;
+
+      /* Sticky within rowspan only — overflow:hidden on regular tds blocks sticky positioning */
+      & > * {
+        position: sticky;
+        top: var(--table-header-height, 0px);
+        height: var(--table-row-height, 100%);
+      }
     }
 
     &[data-column-id="${TASK_COLUMN_ID.serialId}"],

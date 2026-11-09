@@ -21,6 +21,8 @@ import { useQuery } from "@tanstack/react-query"
 import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 const withQueryKey = <T extends object, K>(
 	query: T,
 	queryKey: K,
@@ -39,8 +41,14 @@ const withQueryKey = <T extends object, K>(
 	return result
 }
 
-export const getSsoParams = (signal?: AbortSignal) => {
-	return sendRequest<void>({ url: `/sso/params`, method: "GET", signal })
+export const getSsoParams = (
+	options?: SecondParameter<typeof sendRequest>,
+	signal?: AbortSignal,
+) => {
+	return sendRequest<void>(
+		{ url: `/sso/params`, method: "GET", signal },
+		options,
+	)
 }
 
 export const getGetSsoParamsQueryKey = () => {
@@ -54,14 +62,15 @@ export const getGetSsoParamsQueryOptions = <
 	query?: Partial<
 		UseQueryOptions<Awaited<ReturnType<typeof getSsoParams>>, TError, TData>
 	>
+	request?: SecondParameter<typeof sendRequest>
 }) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getGetSsoParamsQueryKey()
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getSsoParams>>> = ({
 		signal,
-	}) => getSsoParams(signal)
+	}) => getSsoParams(requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof getSsoParams>>,
@@ -91,6 +100,7 @@ export function useGetSsoParams<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -112,6 +122,7 @@ export function useGetSsoParams<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -125,6 +136,7 @@ export function useGetSsoParams<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getSsoParams>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -139,6 +151,7 @@ export function useGetSsoParams<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getSsoParams>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
