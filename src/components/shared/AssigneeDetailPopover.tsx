@@ -120,12 +120,15 @@ const RoleText = styled.span`
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+  flex: 1;
 `
 
 const SectionLabel = styled.span`
   font-size: var(--fs-base);
   line-height: 24px;
   color: var(--text-subtitle-color);
+  flex-shrink: 0;
+  white-space: nowrap;
 `
 
 const UserScrollArea = styled.div`

@@ -205,7 +205,6 @@ const SectionTitle = styled.h2`
 const WorkspaceSearchInput = styled(SearchInput)`
 	flex: none;
 	width: 284px;
-	direction: ltr;
 
 	${MOBILE_MEDIA_QUERY} {
 		width: 100%;
