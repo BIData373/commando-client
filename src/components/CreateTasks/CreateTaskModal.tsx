@@ -157,10 +157,10 @@ function CreateTaskModal({
 		},
 	})
 
-	const { values, isSubmitting } = useStore(form.store, (state) => ({
-		values: state.values,
-		isSubmitting: state.isSubmitting,
-	}))
+	const [values, isSubmitting] = useStore(
+		form.store,
+		(state): [FormState, boolean] => [state.values, state.isSubmitting],
+	)
 	const hasChanges = !form.state.isDefaultValue
 
 	// ─── Handlers ──────────────────────────────────────────────────────────────
