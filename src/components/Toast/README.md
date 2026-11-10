@@ -45,6 +45,7 @@ toast.success("הסטטוס עודכן בהצלחה", {
 | `actions`          | —          | One action or an array. `variant`: `primary \| cancel \| danger`. Suppresses the × |
 | `actionsDirection` | `"column"` | Use `"row"` for banners                                          |
 | `onCancel`         | —          | Fires on user-initiated dismissal, not auto-close                |
+| `onCommit`         | —          | Fires once when the toast closes uncancelled (timeout or non-cancel action). Pair with `onCancel` for deferred actions with undo |
 | `banner`           | `false`    | Full-width, pinned top, no radius/shadow                         |
 | `bannerAlign`      | `"center"` | `"right"` starts the content at the inline edge                  |
 | `border`           | `true`     |                                                                  |

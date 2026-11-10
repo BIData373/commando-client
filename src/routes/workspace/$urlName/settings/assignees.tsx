@@ -21,9 +21,9 @@ function SettingsAssignees() {
 	const {
 		workspace: { id: workspaceId, urlName },
 	} = useWorkspace()
-	const { data: assignees = [] } = useListAssignees({ workspaceId })
+	const { data: assignees = [], isLoading } = useListAssignees({ workspaceId })
 
-	const isEmptyState = assignees.length === 0
+	const isEmptyState = !isLoading && assignees.length === 0
 	const showAssigneeGroups =
 		assignees.length >= MIN_ASSIGNEES_FOR_ASSIGNEE_GROUPS
 
