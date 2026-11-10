@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
-import { differenceBy, omit, uniq } from "lodash"
+import { differenceBy, omit, pick, uniq } from "lodash"
 import { useRef, useState } from "react"
 import {
 	type CreateTaskDto,
@@ -152,14 +152,13 @@ function CreateTaskModal({
 					})
 					rest.sourceId = newSource.id
 				}
-				saveTasks([{ workspaceId, ...rest }])
+				await saveTasks([{ workspaceId, ...rest }])
 			}
 		},
 	})
 
-	const [values, isSubmitting] = useStore(
-		form.store,
-		(state): [FormState, boolean] => [state.values, state.isSubmitting],
+	const { values, isSubmitting } = useStore(form.store, (state) =>
+		pick(state, ["values", "isSubmitting"]),
 	)
 	const hasChanges = !form.state.isDefaultValue
 
