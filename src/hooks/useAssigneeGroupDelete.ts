@@ -35,20 +35,18 @@ export function useAssigneeGroupDelete() {
 			old.filter((group) => group.id !== groupId),
 		)
 
-		const undone = { current: false }
-
-		function handleUndo() {
-			undone.current = true
+		function onCancel() {
 			queryClient.setQueryData(queryKey, previous)
 		}
 
+		function onCommit() {
+			deleteAssigneeGroup({ pathParams: { id: groupId } })
+		}
+
 		toast.success(deleteAssigneeGroupMessage, {
-			actions: { variant: "cancel", label: UNDO_LABEL, onClick: handleUndo },
-			onDismiss() {
-				if (!undone.current) {
-					deleteAssigneeGroup({ pathParams: { id: groupId } })
-				}
-			},
+			actions: { variant: "cancel", label: UNDO_LABEL },
+			onCancel,
+			onCommit,
 		})
 	}
 

@@ -37,6 +37,9 @@ export type AppToastOptions = Omit<
 	closeable?: boolean
 	closeText?: boolean | ReactNode
 	icon?: boolean | ReactNode
+	// fires when the notification closes without being cancelled
+	onCommit?(): void
+	// fires on swipe, cancel, or undo action
 	onCancel?(): void
 	progressBar?: boolean
 }
@@ -70,7 +73,9 @@ function showToast(
 		closeable = true,
 		closeText,
 		icon = true,
+		onAutoClose,
 		onCancel,
+		onCommit,
 		onDismiss,
 		progressBar = true,
 		style,
@@ -106,7 +111,7 @@ function showToast(
 	}
 
 	function handleAction(action: ToastAction) {
-		action.onClick()
+		action.onClick?.()
 		if (action.dismissOnClick === false) {
 			return
 		}
@@ -132,9 +137,15 @@ function showToast(
 				: style,
 		closeButton: showCloseIcon,
 		icon: resolveIcon(icon),
+		onAutoClose: (autoClosedToast) => {
+			onCommit?.()
+			onAutoClose?.(autoClosedToast)
+		},
 		onDismiss: (dismissedToast) => {
 			if (dismissal.isCancel) {
 				onCancel?.()
+			} else {
+				onCommit?.()
 			}
 
 			onDismiss?.(dismissedToast)
