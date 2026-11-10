@@ -117,7 +117,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 			definitions.lastMessage({
 				header: LastMessageColumnHeader,
 				size: 100,
-				minSize: 70,
+				minSize: 100,
 				meta: { grow: true },
 				enableSorting: false,
 				cell: LastMessageCell,
