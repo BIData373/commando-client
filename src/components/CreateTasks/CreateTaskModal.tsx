@@ -76,7 +76,7 @@ function CreateTaskModal({
 	})
 	const statusById = Object.fromEntries(workspaceStatuses.map((s) => [s.id, s]))
 
-	const { saveTasks, isPending } = useSaveTasks(workspaceId, onClose)
+	const { saveTasks } = useSaveTasks(workspaceId, onClose)
 
 	const { mutateAsync: createSource } = useCreateSource({
 		mutation: {
@@ -86,7 +86,7 @@ function CreateTaskModal({
 			},
 		},
 	})
-	const { mutateAsync: updateTask, isPending: isUpdatingTask } = useUpdateTask({
+	const { mutateAsync: updateTask } = useUpdateTask({
 		mutation: {
 			meta: { toast: { success: updateTaskMessage, error: true } },
 			onSuccess: handleUpdateSuccess,
@@ -153,12 +153,14 @@ function CreateTaskModal({
 					rest.sourceId = newSource.id
 				}
 				saveTasks([{ workspaceId, ...rest }])
-				onClose()
 			}
 		},
 	})
 
-	const values = useStore(form.store, (state) => state.values)
+	const { values, isSubmitting } = useStore(form.store, (state) => ({
+		values: state.values,
+		isSubmitting: state.isSubmitting,
+	}))
 	const hasChanges = !form.state.isDefaultValue
 
 	// ─── Handlers ──────────────────────────────────────────────────────────────
@@ -481,7 +483,7 @@ function CreateTaskModal({
 							title="שמור"
 							onClick={form.handleSubmit}
 							disabled={!values.title.trim() || (isEditMode && !hasChanges)}
-							loading={isPending || isUpdatingTask}
+							loading={isSubmitting}
 							width={133}
 						/>
 						<CancelButton title="ביטול" onClick={onCancel} />
