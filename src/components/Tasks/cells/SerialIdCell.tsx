@@ -15,17 +15,28 @@ export function SerialIdCell<TTask extends TaskRowDto, TValue>({
 
 	return (
 		<IdCell>
-			{showUnreadDot && !viewedInTable && (
-				<UnreadDot $right={6.5} $top={18.5} />
-			)}
-			<HighlightMatch
-				text={String(serialId)}
-				query={searchQuery}
-				variant="mark"
-			/>
+			<IdContent>
+				{showUnreadDot && !viewedInTable && <InlineDot />}
+				<HighlightMatch
+					text={String(serialId)}
+					query={searchQuery}
+					variant="mark"
+				/>
+			</IdContent>
 		</IdCell>
 	)
 }
+
+const InlineDot = styled(UnreadDot)`
+  position: absolute;
+  inset-inline-start: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+`
+
+const IdContent = styled.span`
+  position: relative;
+`
 
 const IdCell = styled.span`
   display: flex;
