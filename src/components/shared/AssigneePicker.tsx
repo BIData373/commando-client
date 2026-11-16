@@ -43,7 +43,7 @@ function AssigneePicker({
 	const { data: assigneeGroups = [] } = useListAssigneeGroups({ workspaceId })
 
 	const filteredGroups = assigneeGroups.filter(
-		(group) => group.assignees.length > 0,
+		(group) => group.assignees.length > 0 && group.name.includes(search),
 	)
 
 	const filteredAssignees = assignees
