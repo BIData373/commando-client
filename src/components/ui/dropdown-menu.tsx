@@ -5,6 +5,7 @@ import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
 
 import { cn } from "src/lib/utils"
 import { CheckIcon, ChevronRightIcon } from "lucide-react"
+import { usePortalContainer } from "./portal-container-context"
 
 function DropdownMenu({
   ...props
@@ -37,8 +38,11 @@ function DropdownMenuContent({
   sideOffset = 4,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
+  // TODO: chrome-83 - revert to plain Portal when min browser version is raised
+  const portalContainer = usePortalContainer()
+
   return (
-    <DropdownMenuPrimitive.Portal>
+    <DropdownMenuPrimitive.Portal container={portalContainer}>
       <DropdownMenuPrimitive.Content
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}

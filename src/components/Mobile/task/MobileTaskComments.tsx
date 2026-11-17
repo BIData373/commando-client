@@ -15,6 +15,8 @@ interface MobileTaskCommentsProps {
 	task: TaskWithWorkspaceDto
 }
 
+type DrawerMode = "closed" | "view" | "add"
+
 export function MobileTaskComments({
 	task: {
 		id,
@@ -22,7 +24,7 @@ export function MobileTaskComments({
 		workspace: { id: workspaceId },
 	},
 }: MobileTaskCommentsProps) {
-	const [isCommentsOpen, setIsCommentsOpen] = useState(false)
+	const [drawerMode, setDrawerMode] = useState<DrawerMode>("closed")
 	const { data: messages = [] } = useListMessages({ taskIds: [id] })
 
 	const currentUser = useCurrentUser()
@@ -30,10 +32,6 @@ export function MobileTaskComments({
 	const { data: permission } = useGetMyPermission({ workspaceId })
 
 	const isManager = permission?.type === PermissionType.MANAGER
-
-	function handleOpenChange() {
-		setIsCommentsOpen(!isCommentsOpen)
-	}
 	const { mutate: deleteMessage } = useDeleteMessage({
 		mutation: {
 			meta: { toast: { error: true } },
@@ -52,7 +50,7 @@ export function MobileTaskComments({
 			{assigneeStatuses.length !== 0 && <Seperator />}
 			<Header>
 				<Title>{headerText}</Title>
-				<GradientGhostButton onClick={handleOpenChange}>
+				<GradientGhostButton onClick={() => setDrawerMode("add")}>
 					הוספת תגובה
 				</GradientGhostButton>
 			</Header>
@@ -63,18 +61,22 @@ export function MobileTaskComments({
 						message={messages[0]}
 						onDelete={handleDeleteComment}
 					/>
-					<ShowMoreButton onClick={handleOpenChange}>
+					<ShowMoreButton onClick={() => setDrawerMode("view")}>
 						<GradientText>הצג עוד</GradientText>
 					</ShowMoreButton>
 				</>
 			)}
-			<MobileDrawer
-				open={isCommentsOpen}
-				onOpenChange={handleOpenChange}
+			<CommentsDrawer
+				open={drawerMode !== "closed"}
+				onOpenChange={() => setDrawerMode("closed")}
 				title={headerText}
 			>
-				<TaskCommentsSection isManager={isManager} taskId={id} />
-			</MobileDrawer>
+				<TaskCommentsSection
+					isManager={isManager}
+					taskId={id}
+					showInput={drawerMode === "add"}
+				/>
+			</CommentsDrawer>
 		</Wrapper>
 	)
 }
@@ -110,6 +112,12 @@ const ShowMoreButton = styled.button`
     padding-bottom: 1rem;
     transform: translateX(-50%);
     background: var(--black-to-background-linear);
+`
+
+// TODO: chrome-83 - min-height fallback for dvh not supported
+const CommentsDrawer = styled(MobileDrawer)`
+	min-height: 80vh;
+	min-height: 80dvh;
 `
 
 const Seperator = styled.div`

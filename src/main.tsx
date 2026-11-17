@@ -54,3 +54,7 @@ enableMocking().then(() => {
 		)
 	}
 })
+
+if (import.meta.env.DEV) {
+	import("core-js/stable").then(console.log)
+}
