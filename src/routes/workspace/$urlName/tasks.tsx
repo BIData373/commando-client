@@ -26,6 +26,7 @@ const TasksSearchSchema = z.object({
 	quickFilter: queryArray(z.enum(QuickFilter)).optional(),
 	statusFilter: queryArray(z.enum(WorkspaceStatusType)).default([]),
 	deadlineTypeFilter: queryArray(z.enum(DeadlineType)).default([]),
+	assigneeFilter: queryArray(z.string()).default([]),
 })
 
 export type TasksSearchSchemaType = z.infer<typeof TasksSearchSchema>
@@ -37,8 +38,13 @@ export const Route = createFileRoute("/workspace/$urlName/tasks")({
 
 function TasksPage() {
 	const isMobile = useIsMobile()
-	const { view, quickFilter, statusFilter, deadlineTypeFilter } =
-		Route.useSearch()
+	const {
+		view,
+		quickFilter,
+		statusFilter,
+		deadlineTypeFilter,
+		assigneeFilter,
+	} = Route.useSearch()
 	const { urlName } = Route.useParams()
 	const {
 		workspace: { id: workspaceId },
@@ -70,6 +76,9 @@ function TasksPage() {
 					...(deadlineTypeFilter.length
 						? [{ id: "deadlineType", value: deadlineTypeFilter }]
 						: []),
+					...(assigneeFilter.length
+						? [{ id: "assignee", value: assigneeFilter }]
+						: []),
 				],
 			}
 		: undefined
@@ -86,6 +95,7 @@ function TasksPage() {
 				urlName={urlName}
 				statusFilter={fromViewMore ? statusFilter : []}
 				deadlineTypeFilter={fromViewMore ? deadlineTypeFilter : []}
+				assigneeFilter={fromViewMore ? assigneeFilter : []}
 			/>
 		</TasksFiltersProvider>
 	)

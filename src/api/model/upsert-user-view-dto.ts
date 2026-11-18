@@ -5,9 +5,11 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
+import type { Device } from "./device"
 import type { UserViewDto } from "./user-view-dto"
 
 export interface UpsertUserViewDto {
 	workspaceId?: number
+	device: Device
 	view: UserViewDto
 }

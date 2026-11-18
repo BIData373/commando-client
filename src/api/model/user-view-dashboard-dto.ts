@@ -11,4 +11,5 @@ import type { QuickFilter } from "./quick-filter"
 export interface UserViewDashboardDto {
 	distributionTab: DistributionTab
 	focusedInstructionsTab: QuickFilter
+	assigneeFilter: string[]
 }

@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { ChevronLeft } from "lucide-react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import type { QuickFilter } from "src/api/model/quick-filter"
+import { useUserView } from "src/providers/UserViewProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
@@ -20,6 +21,7 @@ export const ViewMoreInstructions = ({
 	const {
 		workspace: { urlName },
 	} = useWorkspace()
+	const { view } = useUserView()
 
 	const navigate = useNavigate()
 
@@ -32,6 +34,7 @@ export const ViewMoreInstructions = ({
 				quickFilter: quickFilter ? [quickFilter] : [],
 				statusFilter,
 				deadlineTypeFilter,
+				assigneeFilter: view.dashboard.assigneeFilter,
 			},
 			state: { fromViewMore: true },
 		})

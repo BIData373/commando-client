@@ -6,10 +6,14 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type { RequestHandlerOptions } from "msw"
+import type {
+	HttpResponseResolver,
+	PathParams,
+	RequestHandlerOptions,
+} from "msw"
 import { HttpResponse, http } from "msw"
 
-import type { MessageDto } from "../model"
+import type { CreateMessageDto, MessageDto, UpdateMessageDto } from "../model"
 
 export const getCreateMessageResponseMock = (
 	overrideResponse: Partial<Extract<MessageDto, object>> = {},
@@ -490,13 +494,15 @@ export const getCreateMessageMockHandler = (
 	overrideResponse?:
 		| MessageDto
 		| ((
-				info: Parameters<Parameters<typeof http.post>[1]>[0],
+				info: Parameters<HttpResponseResolver<PathParams, CreateMessageDto>>[0],
 		  ) => Promise<MessageDto> | MessageDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post(
+	return http.post<PathParams, CreateMessageDto>(
 		"*/message",
-		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+		async (
+			info: Parameters<HttpResponseResolver<PathParams, CreateMessageDto>>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -514,13 +520,13 @@ export const getListMessagesMockHandler = (
 	overrideResponse?:
 		| MessageDto[]
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) => Promise<MessageDto[]> | MessageDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/message",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -538,13 +544,13 @@ export const getGetMessageMockHandler = (
 	overrideResponse?:
 		| MessageDto
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<MessageDto> | MessageDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get(
+	return http.get<{ id: string }>(
 		"*/message/:id",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -562,13 +568,19 @@ export const getUpdateMessageMockHandler = (
 	overrideResponse?:
 		| MessageDto
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<{ id: string }, UpdateMessageDto>
+				>[0],
 		  ) => Promise<MessageDto> | MessageDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.patch<{ id: string }, UpdateMessageDto>(
 		"*/message/:id",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<{ id: string }, UpdateMessageDto>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -586,13 +598,13 @@ export const getDeleteMessageMockHandler = (
 	overrideResponse?:
 		| MessageDto
 		| ((
-				info: Parameters<Parameters<typeof http.delete>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<MessageDto> | MessageDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.delete(
+	return http.delete<{ id: string }>(
 		"*/message/:id",
-		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

@@ -5,7 +5,9 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
+import type { Device } from "./device"
 
 export type GetUserViewParams = {
 	workspaceId?: number
+	device: Device
 }

@@ -14,6 +14,7 @@ export interface TasksLayoutProps {
 	urlName: string
 	statusFilter: WorkspaceStatusType[]
 	deadlineTypeFilter: DeadlineType[]
+	assigneeFilter: string[]
 }
 
 function TasksLayout({
@@ -21,6 +22,7 @@ function TasksLayout({
 	urlName,
 	statusFilter = [],
 	deadlineTypeFilter = [],
+	assigneeFilter = [],
 }: TasksLayoutProps) {
 	const navigate = useNavigate()
 	const { openTask, editTask } = useOpenTask(
@@ -67,6 +69,7 @@ function TasksLayout({
 				onColumnFilterChange={handleColumnFiltersChange}
 				deadlineTypeFilter={deadlineTypeFilter}
 				statusFilter={statusFilter}
+				assigneeFilter={assigneeFilter}
 			/>
 		</>
 	)

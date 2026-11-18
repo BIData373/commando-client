@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type { RequestHandlerOptions } from "msw"
+import type { HttpResponseResolver, RequestHandlerOptions } from "msw"
 import { HttpResponse, http } from "msw"
 import type { TaskHistoryDto } from "../model"
 import { TaskHistoryAction } from "../model"
@@ -33,13 +33,13 @@ export const getListTaskHistoryMockHandler = (
 	overrideResponse?:
 		| TaskHistoryDto[]
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) => Promise<TaskHistoryDto[]> | TaskHistoryDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/task-history",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
