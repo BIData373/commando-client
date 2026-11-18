@@ -41,6 +41,7 @@ const config = defineConfig({
 			targets: ["chrome >= 83"],
 			renderLegacyChunks: false,
 			modernPolyfills: true,
+			polyfills: true,
 		}),
 	],
 	css: {
@@ -55,6 +56,17 @@ const config = defineConfig({
 		target: "chrome83",
 		cssTarget: "chrome83",
 		cssMinify: "lightningcss",
+	},
+
+	esbuild: {
+		target: "chrome83",
+	},
+
+	optimizeDeps: {
+		include: ["@tanstack/react-virtual"],
+		esbuildOptions: {
+			target: "chrome83",
+		},
 	},
 })
 

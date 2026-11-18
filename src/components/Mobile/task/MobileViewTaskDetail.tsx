@@ -46,6 +46,7 @@ const TaskContainer = styled.div`
     display: flex;
     flex-direction: column;
     padding: 1rem;
+    padding-bottom: 2rem; /* TODO: chrome-83 */
     gap: 0.5rem;
 	overflow-y: auto;
 	min-height: 0;
