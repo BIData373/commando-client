@@ -1,16 +1,19 @@
 import styled from "@emotion/styled"
+import { compact } from "lodash"
 import { ChevronDown } from "lucide-react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import type { AssigneeDto } from "src/api/model"
+import { getVisibleAvatars } from "src/functions/avatar-overflow"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import type {
 	NewTaskRow,
 	TaskTableMeta,
 } from "../CreateTasksFromDiscussion/TasksColumns"
+import { AssigneeGroupAvatars } from "../settings/AssigneeGroups/AssigneeGroupAvatars"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
 import AssigneePicker from "../shared/AssigneePicker"
 
-const ASSIGNEE_AVATAR_SIZE = 22
+const ASSIGNEE_AVATAR_SIZE = 29
 
 interface AssigneeTableCellProps {
 	row: NewTaskRow
@@ -30,6 +33,9 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 	const assigneeIds = row.assigneeIds
 	const hasMultiple = assigneeIds.length > 1
 	const isExpanded = meta.expandedRows.has(row.id)
+	const { visible: visibleAssignees, hiddenCount } = getVisibleAvatars(
+		compact(assigneeIds.map((id) => assigneeMap[id])),
+	)
 
 	function handleToggleAssignee(assigneeId: number) {
 		const isRemoving = assigneeIds.includes(assigneeId)
@@ -89,26 +95,16 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 								autoFocus={open}
 							/>
 						) : hasMultiple ? (
-							<CompactAvatarStack>
-								{assigneeIds.map((id) =>
-									assigneeMap[id] ? (
-										<StackedAssigneeAvatar
-											key={id}
-											assignee={assigneeMap[id]}
-											size={ASSIGNEE_AVATAR_SIZE}
-										/>
-									) : null,
-								)}
-							</CompactAvatarStack>
+							<AssigneeGroupAvatars
+								assignees={visibleAssignees}
+								hiddenCount={hiddenCount}
+							/>
 						) : assigneeMap[assigneeIds[0]] ? (
 							<AssigneeTag>
 								<AssigneeAvatar
 									assignee={assigneeMap[assigneeIds[0]]}
 									size={ASSIGNEE_AVATAR_SIZE}
 								/>
-								<AssigneeTagName>
-									{assigneeMap[assigneeIds[0]].name}
-								</AssigneeTagName>
 							</AssigneeTag>
 						) : null}
 					</CompactTriggerButton>
@@ -182,20 +178,6 @@ const CompactSearchInput = styled.input`
   }
 `
 
-const CompactAvatarStack = styled.div`
-  display: flex;
-  align-items: center;
-  flex-direction: row-reverse;
-`
-
-const StackedAssigneeAvatar = styled(AssigneeAvatar)`
-  margin-inline-start: -14px;
-
-  &:last-of-type {
-    margin-inline-start: 0;
-  }
-`
-
 const AssigneeTag = styled.div`
   display: flex;
   align-items: center;
@@ -203,17 +185,6 @@ const AssigneeTag = styled.div`
   gap: 4px;
   padding: 2px 4px;
   width: 100%;
-  min-width: 0;
-  direction: rtl;
-`
-
-const AssigneeTagName = styled.span`
-  font-size: var(--fs-sm);
-  line-height: 20px;
-  color: var(--text-color-2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   min-width: 0;
   direction: rtl;
 `
