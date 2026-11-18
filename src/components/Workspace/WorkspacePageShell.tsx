@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { type PropsWithChildren, useEffect } from "react"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
+import { IS_MOBILE_DEVICE } from "src/hooks/use-mobile"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { PageShell } from "../shared/PageShell"
 
@@ -29,7 +30,7 @@ export function WorkspacePageShell({
 
 		const isManager = myPermission?.type === PermissionType.MANAGER
 
-		if (!hasEnteredWorkspace && isManager) {
+		if (!hasEnteredWorkspace && isManager && !IS_MOBILE_DEVICE) {
 			navigate({
 				to: "/workspace/$urlName/settings/assignees/help",
 				params: { urlName },
