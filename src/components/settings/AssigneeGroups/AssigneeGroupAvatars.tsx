@@ -29,6 +29,7 @@ export function AssigneeGroupAvatars({
 }
 
 const Avatars = styled.div`
+  direction: rtl;
   display: flex;
   align-items: center;
 `
