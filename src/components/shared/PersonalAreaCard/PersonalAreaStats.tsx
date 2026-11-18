@@ -5,6 +5,7 @@ import {
 	STATUS_DEFAULTS,
 	STATUS_DISPLAY_ORDER,
 } from "src/consts/status-defaults"
+import { colorWithAlpha } from "src/functions/contrast-color" // chrome83
 import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 
 type PersonalAreaStatsProps = {
@@ -42,7 +43,7 @@ const StatTag = styled.span<{ $color: string }>`
   width: 76px;
   padding: 1px 8px;
   border-radius: 35px;
-  background: var(--chip-bg);
+  background: ${({ $color }) => colorWithAlpha($color, 0.1)}; /* chrome83 */
   background: rgb(from ${({ $color }) => $color} r g b / 0.1);
   color: ${({ $color }) => $color};
   font-size: 12px;

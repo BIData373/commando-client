@@ -40,6 +40,30 @@
   margin-block-start: var(--chrome83-gap, 0);
 }
 
+/* chrome83 */
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* chrome83 */
+*:focus {
+  outline: none;
+}
+
+/* chrome83 — checkbox fallback (:where() and oklch() unsupported) */
+[data-slot="checkbox"] {
+  border: 1px solid #d9d9d9;
+}
+
+/* chrome83 */
+[data-slot="checkbox"][data-state="checked"] {
+  border-color: #1677ff;
+  background-color: #1677ff;
+  color: #fff;
+}
+
 html,
 body,
 #app {
