@@ -10,6 +10,7 @@ import FlagIcon from "src/components/shared/FlagIcon"
 import HighlightMatch from "src/components/shared/HighlightMatch"
 import { StatusTag } from "src/components/shared/StatusTag"
 import { formatDateShort } from "src/functions/date-utils"
+import { getStatusTimeLabel } from "src/functions/status-time"
 import { useOpenTask } from "src/hooks/useOpenTask"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { COLUMN_LABELS } from "src/utils/task-table-utils"
@@ -64,7 +65,7 @@ export default function MobileTaskCard({ type, task }: MobileTaskCardProps) {
 						</DeadlineTag>
 					)}
 				</DateInfo>
-				<StatusTag status={status} />
+				<StatusTag status={status} timeTooltip={getStatusTimeLabel(status)} />
 			</TopRow>
 
 			<TextBlock>

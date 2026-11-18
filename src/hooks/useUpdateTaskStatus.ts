@@ -11,6 +11,7 @@ import {
 	getGetTaskQueryKey,
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
+	getUpdateTaskMutationKey,
 	updateTask,
 } from "src/api/task/task"
 import { updateStatusMessage } from "src/functions/toast-messages"
@@ -81,6 +82,7 @@ export function useUpdateTaskStatus({
 	}
 
 	const { mutateAsync } = useMutation({
+		mutationKey: getUpdateTaskMutationKey(),
 		meta: notify
 			? { toast: { success: updateStatusMessage, error: true } }
 			: undefined,
@@ -124,7 +126,13 @@ export function useUpdateTaskStatus({
 			_error: Error | null,
 			{ taskId, status }: UpdateStatusVariables,
 		) => {
-			invalidateQueries(getAffectedQueryKeys(taskId, status).all)
+			const { task, rows } = getAffectedQueryKeys(taskId, status)
+
+			const isLastPending =
+				queryClient.isMutating({ mutationKey: getUpdateTaskMutationKey() }) ===
+				1
+
+			invalidateQueries(isLastPending ? [task, ...rows] : [task])
 		},
 	})
 

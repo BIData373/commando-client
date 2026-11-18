@@ -6,9 +6,18 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type { RequestHandlerOptions } from "msw"
+import type {
+	HttpResponseResolver,
+	PathParams,
+	RequestHandlerOptions,
+} from "msw"
 import { HttpResponse, http } from "msw"
-import type { WorkspaceDto, WorkspaceWithPermissionDto } from "../model"
+import type {
+	CreateWorkspaceDto,
+	UpdateWorkspaceDto,
+	WorkspaceDto,
+	WorkspaceWithPermissionDto,
+} from "../model"
 import { PermissionType } from "../model"
 
 export const getCreateWorkspaceResponseMock = (
@@ -532,13 +541,17 @@ export const getCreateWorkspaceMockHandler = (
 	overrideResponse?:
 		| WorkspaceDto
 		| ((
-				info: Parameters<Parameters<typeof http.post>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<PathParams, CreateWorkspaceDto>
+				>[0],
 		  ) => Promise<WorkspaceDto> | WorkspaceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post(
+	return http.post<PathParams, CreateWorkspaceDto>(
 		"*/workspace",
-		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+		async (
+			info: Parameters<HttpResponseResolver<PathParams, CreateWorkspaceDto>>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -556,7 +569,7 @@ export const getListWorkspacesMockHandler = (
 	overrideResponse?:
 		| WorkspaceWithPermissionDto[]
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) =>
 				| Promise<WorkspaceWithPermissionDto[]>
 				| WorkspaceWithPermissionDto[]),
@@ -564,7 +577,7 @@ export const getListWorkspacesMockHandler = (
 ) => {
 	return http.get(
 		"*/workspace",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -582,7 +595,7 @@ export const getGetPermittedWorkspacesMockHandler = (
 	overrideResponse?:
 		| WorkspaceWithPermissionDto[]
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) =>
 				| Promise<WorkspaceWithPermissionDto[]>
 				| WorkspaceWithPermissionDto[]),
@@ -590,7 +603,7 @@ export const getGetPermittedWorkspacesMockHandler = (
 ) => {
 	return http.get(
 		"*/workspace/permitted",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -608,13 +621,13 @@ export const getGetWorkspaceMockHandler = (
 	overrideResponse?:
 		| WorkspaceDto
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<WorkspaceDto> | WorkspaceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get(
+	return http.get<{ id: string }>(
 		"*/workspace/:id",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -632,13 +645,19 @@ export const getUpdateWorkspaceMockHandler = (
 	overrideResponse?:
 		| WorkspaceDto
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<{ id: string }, UpdateWorkspaceDto>
+				>[0],
 		  ) => Promise<WorkspaceDto> | WorkspaceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.patch<{ id: string }, UpdateWorkspaceDto>(
 		"*/workspace/:id",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<{ id: string }, UpdateWorkspaceDto>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -656,13 +675,13 @@ export const getDeleteWorkspaceMockHandler = (
 	overrideResponse?:
 		| WorkspaceDto
 		| ((
-				info: Parameters<Parameters<typeof http.delete>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<WorkspaceDto> | WorkspaceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.delete(
+	return http.delete<{ id: string }>(
 		"*/workspace/:id",
-		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

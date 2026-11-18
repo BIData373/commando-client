@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { Flag } from "lucide-react"
 import { DeadlineType, type TaskRowDto } from "src/api/model"
 import { formatDateShort } from "../../functions/date-utils"
+import { getStatusTimeLabel } from "../../functions/status-time"
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import { StatusTag } from "../shared/StatusTag"
 import {
@@ -30,7 +31,12 @@ function TaskCardGrid({ taskRows }: TaskCardGridProps) {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						{task.status && <StatusTag status={task.status} />}
+						{task.status && (
+							<StatusTag
+								status={task.status}
+								timeTooltip={getStatusTimeLabel(task.status)}
+							/>
+						)}
 					</CardContent>
 					<CardFooter>
 						{task.deadlineType !== DeadlineType.DATE && (

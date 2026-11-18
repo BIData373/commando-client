@@ -4,6 +4,7 @@ import { Popover as PopoverPrimitive } from "radix-ui"
 import { memo } from "react"
 import type { TaskRowDto } from "src/api/model"
 import type { AppTableFeatures } from "src/consts/table-features"
+import { getStatusTimeLabel } from "src/functions/status-time"
 import { AssigneeAvatar } from "../../shared/AssigneeAvatar"
 import { AssigneeDetailPopover } from "../../shared/AssigneeDetailPopover"
 import { StatusTag } from "../../shared/StatusTag"
@@ -37,7 +38,11 @@ function AssigneesCellContent<TTask extends TaskRowDto, TValue>({
 						<CompactList>
 							{otherAssignees.map((otherAssignee) => (
 								<CompactRow key={otherAssignee.assignee.id}>
-									<StatusTag status={otherAssignee.status} />
+									<StatusTag
+										editable={otherAssignee.editable}
+										status={otherAssignee.status}
+										timeTooltip={getStatusTimeLabel(otherAssignee.status)}
+									/>
 									<CompactRole>{otherAssignee.assignee.name}</CompactRole>
 									<AssigneeAvatar assignee={otherAssignee.assignee} />
 								</CompactRow>

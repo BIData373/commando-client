@@ -6,9 +6,16 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type { RequestHandlerOptions } from "msw"
+import type {
+	HttpResponseResolver,
+	PathParams,
+	RequestHandlerOptions,
+} from "msw"
 import { HttpResponse, http } from "msw"
-import type { AssigneeTaskStatusDto } from "../model"
+import type {
+	AssigneeTaskStatusDto,
+	UpdateAssigneeTaskStatusDto,
+} from "../model"
 import {
 	DeadlineType,
 	ExtractionStatus,
@@ -169,6 +176,12 @@ export const getListAssigneeTaskStatusesResponseMock =
 					color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 					type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 					workspaceId: faker.number.float({ fractionDigits: 2 }),
+					createdAt: new Date(
+						faker.date.past().toISOString().slice(0, 19) + "Z",
+					),
+					updatedAt: new Date(
+						faker.date.past().toISOString().slice(0, 19) + "Z",
+					),
 				},
 				source: {
 					...{
@@ -616,6 +629,12 @@ export const getListAssigneeTaskStatusesResponseMock =
 							Object.values(WorkspaceStatusType),
 						),
 						workspaceId: faker.number.float({ fractionDigits: 2 }),
+						createdAt: new Date(
+							faker.date.past().toISOString().slice(0, 19) + "Z",
+						),
+						updatedAt: new Date(
+							faker.date.past().toISOString().slice(0, 19) + "Z",
+						),
 					},
 					description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 					personalArchivedAt: faker.helpers.arrayElement([
@@ -748,6 +767,8 @@ export const getListAssigneeTaskStatusesResponseMock =
 				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
+				createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			},
 			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		}))
@@ -894,6 +915,8 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
+			createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		},
 		source: {
 			...{
@@ -1323,6 +1346,8 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
+				createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			},
 			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			personalArchivedAt: faker.helpers.arrayElement([
@@ -1455,6 +1480,8 @@ export const getUpsertAssigneeTaskStatusResponseMock = (
 		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	},
 	description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	...overrideResponse,
@@ -1602,6 +1629,8 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 			color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 			workspaceId: faker.number.float({ fractionDigits: 2 }),
+			createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 		},
 		source: {
 			...{
@@ -2031,6 +2060,8 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 				color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 				type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
+				createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+				updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 			},
 			description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 			personalArchivedAt: faker.helpers.arrayElement([
@@ -2163,6 +2194,8 @@ export const getDeleteAssigneeTaskStatusResponseMock = (
 		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	},
 	description: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	...overrideResponse,
@@ -2172,13 +2205,13 @@ export const getListAssigneeTaskStatusesMockHandler = (
 	overrideResponse?:
 		| AssigneeTaskStatusDto[]
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ taskId: string }>>[0],
 		  ) => Promise<AssigneeTaskStatusDto[]> | AssigneeTaskStatusDto[]),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get(
+	return http.get<{ taskId: string }>(
 		"*/assignee-task-status/:taskId",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ taskId: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2196,13 +2229,19 @@ export const getUpsertAssigneeTaskStatusMockHandler = (
 	overrideResponse?:
 		| AssigneeTaskStatusDto
 		| ((
-				info: Parameters<Parameters<typeof http.put>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<PathParams, UpdateAssigneeTaskStatusDto>
+				>[0],
 		  ) => Promise<AssigneeTaskStatusDto> | AssigneeTaskStatusDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.put(
+	return http.put<PathParams, UpdateAssigneeTaskStatusDto>(
 		"*/assignee-task-status",
-		async (info: Parameters<Parameters<typeof http.put>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<PathParams, UpdateAssigneeTaskStatusDto>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2220,13 +2259,13 @@ export const getDeleteAssigneeTaskStatusMockHandler = (
 	overrideResponse?:
 		| AssigneeTaskStatusDto
 		| ((
-				info: Parameters<Parameters<typeof http.delete>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) => Promise<AssigneeTaskStatusDto> | AssigneeTaskStatusDto),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.delete(
 		"*/assignee-task-status",
-		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

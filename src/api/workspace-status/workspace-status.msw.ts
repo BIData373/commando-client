@@ -6,9 +6,17 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type { RequestHandlerOptions } from "msw"
+import type {
+	HttpResponseResolver,
+	PathParams,
+	RequestHandlerOptions,
+} from "msw"
 import { HttpResponse, http } from "msw"
-import type { WorkspaceStatusDto } from "../model"
+import type {
+	CreateWorkspaceStatusDto,
+	UpdateWorkspaceStatusDto,
+	WorkspaceStatusDto,
+} from "../model"
 import { WorkspaceStatusType } from "../model"
 
 export const getCreateWorkspaceStatusResponseMock = (
@@ -19,6 +27,8 @@ export const getCreateWorkspaceStatusResponseMock = (
 	color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	...overrideResponse,
 })
 
@@ -32,6 +42,8 @@ export const getListWorkspaceStatusesResponseMock = (): WorkspaceStatusDto[] =>
 		color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 		type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	}))
 
 export const getGetWorkspaceStatusResponseMock = (
@@ -42,6 +54,8 @@ export const getGetWorkspaceStatusResponseMock = (
 	color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	...overrideResponse,
 })
 
@@ -53,6 +67,8 @@ export const getUpdateWorkspaceStatusResponseMock = (
 	color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	...overrideResponse,
 })
 
@@ -64,6 +80,8 @@ export const getDeleteWorkspaceStatusResponseMock = (
 	color: faker.string.alpha({ length: { min: 10, max: 20 } }),
 	type: faker.helpers.arrayElement(Object.values(WorkspaceStatusType)),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
+	createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+	updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
 	...overrideResponse,
 })
 
@@ -71,13 +89,19 @@ export const getCreateWorkspaceStatusMockHandler = (
 	overrideResponse?:
 		| WorkspaceStatusDto
 		| ((
-				info: Parameters<Parameters<typeof http.post>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<PathParams, CreateWorkspaceStatusDto>
+				>[0],
 		  ) => Promise<WorkspaceStatusDto> | WorkspaceStatusDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post(
+	return http.post<PathParams, CreateWorkspaceStatusDto>(
 		"*/workspace-status",
-		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<PathParams, CreateWorkspaceStatusDto>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -95,13 +119,13 @@ export const getListWorkspaceStatusesMockHandler = (
 	overrideResponse?:
 		| WorkspaceStatusDto[]
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) => Promise<WorkspaceStatusDto[]> | WorkspaceStatusDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/workspace-status",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -119,13 +143,13 @@ export const getGetWorkspaceStatusMockHandler = (
 	overrideResponse?:
 		| WorkspaceStatusDto
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<WorkspaceStatusDto> | WorkspaceStatusDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get(
+	return http.get<{ id: string }>(
 		"*/workspace-status/:id",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -143,13 +167,19 @@ export const getUpdateWorkspaceStatusMockHandler = (
 	overrideResponse?:
 		| WorkspaceStatusDto
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<{ id: string }, UpdateWorkspaceStatusDto>
+				>[0],
 		  ) => Promise<WorkspaceStatusDto> | WorkspaceStatusDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.patch<{ id: string }, UpdateWorkspaceStatusDto>(
 		"*/workspace-status/:id",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<{ id: string }, UpdateWorkspaceStatusDto>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -167,13 +197,13 @@ export const getDeleteWorkspaceStatusMockHandler = (
 	overrideResponse?:
 		| WorkspaceStatusDto
 		| ((
-				info: Parameters<Parameters<typeof http.delete>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<WorkspaceStatusDto> | WorkspaceStatusDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.delete(
+	return http.delete<{ id: string }>(
 		"*/workspace-status/:id",
-		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

@@ -3,6 +3,7 @@ import { useToggle } from "@mantine/hooks"
 import { memo } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
+import { getStatusTimeLabel } from "src/functions/status-time"
 import { useIsMobile } from "src/hooks/use-mobile"
 import { MobileDrawer } from "../Mobile/MobileDrawer"
 import { MobileStatusSelect } from "../Mobile/task/MobileStatusSelect"
@@ -58,6 +59,7 @@ export const StatusDropdown = memo(
 			: isWorkspaceArchived
 				? "ההנחיה נמצאת בארכיון סביבת המפקד - לא ניתן לערוך סטטוס"
 				: undefined
+		const timeTooltip = getStatusTimeLabel(status)
 
 		function handleSelectStatus(newStatus: WorkspaceStatusDto) {
 			if (newStatus.id !== status.id) {
@@ -79,6 +81,7 @@ export const StatusDropdown = memo(
 				editable={editable}
 				withArrow={editable}
 				tooltip={tooltip}
+				timeTooltip={timeTooltip}
 			/>
 		)
 
@@ -137,6 +140,7 @@ export const StatusDropdown = memo(
 						status={status}
 						editable={editable}
 						tooltip={tooltip}
+						timeTooltip={timeTooltip}
 						fullWidth={fullWidth}
 					/>
 				)}
