@@ -99,7 +99,19 @@ function showToast(
 
 	// Sonner reports every dismissal through onDismiss, including the ones we
 	// trigger from an action button. Only user-initiated closes are cancels.
-	const dismissal = { isCancel: true }
+	// A toast resolves once: a cancel landing while the auto-close is already
+	// running must not fire onCancel after onCommit.
+	const dismissal = { isCancel: true, isSettled: false }
+
+	function settle(isCancel: boolean) {
+		if (dismissal.isSettled) return
+		dismissal.isSettled = true
+		if (isCancel) {
+			onCancel?.()
+		} else {
+			onCommit?.()
+		}
+	}
 
 	function dismissToast() {
 		sonnerToast.dismiss(toastId)
@@ -138,16 +150,11 @@ function showToast(
 		closeButton: showCloseIcon,
 		icon: resolveIcon(icon),
 		onAutoClose: (autoClosedToast) => {
-			onCommit?.()
+			settle(false)
 			onAutoClose?.(autoClosedToast)
 		},
 		onDismiss: (dismissedToast) => {
-			if (dismissal.isCancel) {
-				onCancel?.()
-			} else {
-				onCommit?.()
-			}
-
+			settle(dismissal.isCancel)
 			onDismiss?.(dismissedToast)
 		},
 		action: hasActions ? (

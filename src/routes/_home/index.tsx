@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { getGetMeQueryOptions } from "src/api/user/user"
+import { IS_MOBILE_DEVICE } from "src/hooks/use-mobile"
 import { queryClient } from "../../query-client"
 
 export const Route = createFileRoute("/_home/")({
@@ -9,7 +10,7 @@ export const Route = createFileRoute("/_home/")({
 			getGetMeQueryOptions(),
 		)
 
-		if (!hasOnboarded) {
+		if (!(hasOnboarded || IS_MOBILE_DEVICE)) {
 			throw redirect({
 				to: "/onboarding",
 			})
