@@ -51,7 +51,7 @@ const withQueryKey = <T extends object, K>(
 }
 
 export const getUserView = (
-	params?: GetUserViewParams,
+	params: GetUserViewParams,
 	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
@@ -69,7 +69,7 @@ export const getGetUserViewQueryOptions = <
 	TData = Awaited<ReturnType<typeof getUserView>>,
 	TError = ErrorType<unknown>,
 >(
-	params?: GetUserViewParams,
+	params: GetUserViewParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getUserView>>, TError, TData>
@@ -101,7 +101,7 @@ export function useGetUserView<
 	TData = Awaited<ReturnType<typeof getUserView>>,
 	TError = ErrorType<unknown>,
 >(
-	params: undefined | GetUserViewParams,
+	params: GetUserViewParams,
 	options: {
 		query: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getUserView>>, TError, TData>
@@ -124,7 +124,7 @@ export function useGetUserView<
 	TData = Awaited<ReturnType<typeof getUserView>>,
 	TError = ErrorType<unknown>,
 >(
-	params?: GetUserViewParams,
+	params: GetUserViewParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getUserView>>, TError, TData>
@@ -147,7 +147,7 @@ export function useGetUserView<
 	TData = Awaited<ReturnType<typeof getUserView>>,
 	TError = ErrorType<unknown>,
 >(
-	params?: GetUserViewParams,
+	params: GetUserViewParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getUserView>>, TError, TData>
@@ -163,7 +163,7 @@ export function useGetUserView<
 	TData = Awaited<ReturnType<typeof getUserView>>,
 	TError = ErrorType<unknown>,
 >(
-	params?: GetUserViewParams,
+	params: GetUserViewParams,
 	options?: {
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getUserView>>, TError, TData>

@@ -6,10 +6,18 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type { RequestHandlerOptions } from "msw"
+import type {
+	HttpResponseResolver,
+	PathParams,
+	RequestHandlerOptions,
+} from "msw"
 import { HttpResponse, http } from "msw"
 
-import type { WorkspaceRequestDto } from "../model"
+import type {
+	CreateWorkspaceRequestDto,
+	UpdateWorkspaceRequestDto,
+	WorkspaceRequestDto,
+} from "../model"
 
 export const getCreateWorkspaceRequestResponseMock = (
 	overrideResponse: Partial<Extract<WorkspaceRequestDto, object>> = {},
@@ -482,13 +490,19 @@ export const getCreateWorkspaceRequestMockHandler = (
 	overrideResponse?:
 		| WorkspaceRequestDto
 		| ((
-				info: Parameters<Parameters<typeof http.post>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<PathParams, CreateWorkspaceRequestDto>
+				>[0],
 		  ) => Promise<WorkspaceRequestDto> | WorkspaceRequestDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post(
+	return http.post<PathParams, CreateWorkspaceRequestDto>(
 		"*/workspace-requests",
-		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<PathParams, CreateWorkspaceRequestDto>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -506,13 +520,13 @@ export const getListWorkspaceRequestsMockHandler = (
 	overrideResponse?:
 		| WorkspaceRequestDto[]
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) => Promise<WorkspaceRequestDto[]> | WorkspaceRequestDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/workspace-requests",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -530,13 +544,13 @@ export const getGetWorkspaceRequestMockHandler = (
 	overrideResponse?:
 		| WorkspaceRequestDto
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<WorkspaceRequestDto> | WorkspaceRequestDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get(
+	return http.get<{ id: string }>(
 		"*/workspace-requests/:id",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -554,13 +568,19 @@ export const getUpdateWorkspaceRequestMockHandler = (
 	overrideResponse?:
 		| WorkspaceRequestDto
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<{ id: string }, UpdateWorkspaceRequestDto>
+				>[0],
 		  ) => Promise<WorkspaceRequestDto> | WorkspaceRequestDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.patch<{ id: string }, UpdateWorkspaceRequestDto>(
 		"*/workspace-requests/:id",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<{ id: string }, UpdateWorkspaceRequestDto>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -578,13 +598,13 @@ export const getDeleteWorkspaceRequestMockHandler = (
 	overrideResponse?:
 		| WorkspaceRequestDto
 		| ((
-				info: Parameters<Parameters<typeof http.delete>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<WorkspaceRequestDto> | WorkspaceRequestDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.delete(
+	return http.delete<{ id: string }>(
 		"*/workspace-requests/:id",
-		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

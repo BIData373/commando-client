@@ -6,7 +6,7 @@ import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTaskRows } from "src/api/task/task"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useOpenTask } from "src/hooks/useOpenTask"
-import { useTasksFilters } from "src/providers/TasksFiltersProvider"
+import { useUserView } from "src/providers/UserViewProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
@@ -24,7 +24,8 @@ export function DashboardContent() {
 	const navigate = useNavigate()
 	const { openTask } = useOpenTask("/workspace/$urlName/dashboard/$taskId")
 
-	const { assigneeFilter, setAssigneeFilter } = useTasksFilters()
+	const { view, updateView } = useUserView()
+	const assigneeFilter = view.dashboard.assigneeFilter ?? []
 
 	const { data: taskRows = [] } = useListTaskRows({
 		workspaceId: id,
@@ -66,7 +67,13 @@ export function DashboardContent() {
 			.filter((assignee) => ids.includes(assignee.id))
 			.map((assignee) => assignee.name)
 
-		setAssigneeFilter(names)
+		updateView({
+			...view,
+			dashboard: {
+				...view.dashboard,
+				assigneeFilter: names,
+			},
+		})
 	}
 
 	return (

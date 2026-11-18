@@ -38,7 +38,6 @@ import {
 	buildUrlColumnFilters,
 	DISABLED_CLICK_COLUMNS,
 	EMPTY_LIST,
-	getColumnFilterStrings,
 	getEnumColumnFilter,
 	groupRowsByTask,
 	TASK_COLUMN_ID,
@@ -62,6 +61,7 @@ interface TaskTableProps<TTask extends TaskRowDto> {
 	showHeader?: boolean
 	statusFilter?: WorkspaceStatusType[]
 	deadlineTypeFilter?: DeadlineType[]
+	assigneeFilter?: string[]
 	onFiltersChange?: (
 		statusFilter: WorkspaceStatusType[],
 		deadlineTypeFilter: DeadlineType[],
@@ -98,6 +98,7 @@ function TaskTable<TTask extends TaskRowDto>({
 	showHeader = true,
 	statusFilter = EMPTY_LIST,
 	deadlineTypeFilter = EMPTY_LIST,
+	assigneeFilter = EMPTY_LIST,
 	onFiltersChange,
 	onChangeSuccess,
 	isLoading,
@@ -115,8 +116,6 @@ function TaskTable<TTask extends TaskRowDto>({
 		setSorting,
 		columnsFilters,
 		setColumnsFilters,
-		assigneeFilter,
-		setAssigneeFilter,
 	} = useTasksFilters()
 
 	const deferredSearchQuery = useDeferredValue(searchQuery)
@@ -160,7 +159,6 @@ function TaskTable<TTask extends TaskRowDto>({
 			typeof updater === "function" ? updater(columnFilters) : updater
 
 		setColumnsFilters(newFilters)
-		setAssigneeFilter(getColumnFilterStrings(newFilters, "assignee"))
 		onFiltersChange?.(
 			getEnumColumnFilter(
 				newFilters,

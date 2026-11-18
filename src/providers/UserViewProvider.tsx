@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { useQueryClient } from "@tanstack/react-query"
 import { createContext, type PropsWithChildren, useContext } from "react"
 import type { TaskRowWithWorkspaceDto, UserViewDto } from "src/api/model"
+import { Device } from "src/api/model/device"
 import { DistributionTab } from "src/api/model/distribution-tab"
 import { QuickFilter } from "src/api/model/quick-filter"
 import {
@@ -10,6 +11,7 @@ import {
 	useUpsertUserView as useMutateUserView,
 } from "src/api/user-view/user-view"
 import { Spinner } from "src/components/ui/spinner"
+import { IS_MOBILE_DEVICE } from "src/hooks/use-mobile"
 
 export interface UserViewContext {
 	view: UserViewDto
@@ -32,7 +34,9 @@ export function UserViewProvider({
 	defaultHiddenColumns,
 }: UserViewProviderProps) {
 	const queryClient = useQueryClient()
-	const userViewQueryKey = getGetUserViewQueryKey({ workspaceId })
+	const device = IS_MOBILE_DEVICE ? Device.MOBILE : Device.DESKTOP
+	const queryParams = { workspaceId, device }
+	const userViewQueryKey = getGetUserViewQueryKey(queryParams)
 	const defaultView = {
 		table: {
 			sorting: [],
@@ -46,20 +50,18 @@ export function UserViewProvider({
 		dashboard: {
 			distributionTab: DistributionTab.load,
 			focusedInstructionsTab: QuickFilter.flagged,
+			assigneeFilter: [],
 		},
 	}
 
-	const { data, isLoading } = useGetUserView(
-		{ workspaceId },
-		{
-			query: {
-				select: (data) => ({
-					table: { ...defaultView.table, ...data.table },
-					dashboard: { ...defaultView.dashboard, ...data.dashboard },
-				}),
-			},
+	const { data, isLoading } = useGetUserView(queryParams, {
+		query: {
+			select: (data) => ({
+				table: { ...defaultView.table, ...data.table },
+				dashboard: { ...defaultView.dashboard, ...data.dashboard },
+			}),
 		},
-	)
+	})
 
 	const view = data ?? defaultView
 
@@ -83,7 +85,7 @@ export function UserViewProvider({
 	})
 
 	function updateView(nextView: UserViewDto) {
-		mutateUserView({ data: { workspaceId, view: nextView } })
+		mutateUserView({ data: { workspaceId, device, view: nextView } })
 	}
 
 	return isLoading ? (
