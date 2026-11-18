@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { compact } from "lodash"
 import { ChevronDown } from "lucide-react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import type { AssigneeDto } from "src/api/model"
@@ -33,7 +34,7 @@ function AssigneeTableCell({ row, meta }: AssigneeTableCellProps) {
 	const hasMultiple = assigneeIds.length > 1
 	const isExpanded = meta.expandedRows.has(row.id)
 	const { visible: visibleAssignees, hiddenCount } = getVisibleAvatars(
-		assigneeIds.map((id) => assigneeMap[id]).filter(Boolean),
+		compact(assigneeIds.map((id) => assigneeMap[id])),
 	)
 
 	function handleToggleAssignee(assigneeId: number) {
