@@ -121,13 +121,9 @@ export function countUnreadTasks(tasks: TaskRowDto[]): number {
 
 function toFilterOptions(
 	values: string[],
-	includeEmpty: boolean,
 	labels?: Record<string, string>,
 ): FilterOption[] {
-	return sortBy(
-		uniq(values).filter((value) => includeEmpty || !isEmptyValue(value)),
-		isEmptyValue,
-	).map((value) => ({
+	return sortBy(uniq(values), isEmptyValue).map((value) => ({
 		value,
 		label: isEmptyValue(value)
 			? EMPTY_FILTER_LABEL
@@ -137,20 +133,18 @@ function toFilterOptions(
 
 export function buildFilterOptionsMap(
 	tasks: TaskRowDto[],
-	includeEmpty = false,
 ): Record<FilterOptions, FilterOption[]> {
 	return {
-		assignee: toFilterOptions(tasks.map(getAssigneeFilterValue), includeEmpty),
+		assignee: toFilterOptions(tasks.map(getAssigneeFilterValue)),
 		status: uniqBy(compact(map(tasks, "status")), "type").map(
 			({ type, name }) => ({ value: type, label: name }),
 		),
 		deadlineType: toFilterOptions(
 			tasks.map(getDeadlineFilterValue),
-			includeEmpty,
 			DEADLINE_LABELS,
 		),
-		source: toFilterOptions(tasks.map(getSourceFilterValue), includeEmpty),
-		tags: toFilterOptions(tasks.flatMap(getTagFilterValues), includeEmpty),
+		source: toFilterOptions(tasks.map(getSourceFilterValue)),
+		tags: toFilterOptions(tasks.flatMap(getTagFilterValues)),
 		lastMessage: tasks.some(hasUnviewedMessages)
 			? [{ value: UNVIEWED_MESSAGES_VALUE, label: UNVIEWED_MESSAGES_LABEL }]
 			: [],
