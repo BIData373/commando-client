@@ -43,7 +43,7 @@ const StyledDrawerContent = styled(DrawerContent)`
     border: none;
     outline: none;
 	padding-bottom: 1rem;
-	height: 80dvh;
+	max-height: 80dvh;
 `
 
 const StyledDrawerTrigger = styled(DrawerTrigger)`
