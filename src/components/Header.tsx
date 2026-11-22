@@ -9,6 +9,7 @@ import { UserDropdown } from "./UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Separator } from "./ui/separator"
 import { TooltipProvider } from "./ui/tooltip"
+import { WorkspaceHeaderActions } from "./WorkspaceHeaderActions"
 
 interface HeaderProps {
 	variant?: "workspace" | "personal"
@@ -34,6 +35,7 @@ export default function Header({ variant = "workspace" }: HeaderProps) {
 					</CenterSection>
 
 					<EndSection>
+						{variant === "workspace" && <WorkspaceHeaderActions />}
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<UserMenuButton>
@@ -79,15 +81,9 @@ export const headerVariants = {
       --icon-hover-color: var(--colors-base-neutral-11);
 
       --header-button-hover: var(--Menu-Tab-Hover);
-
-      --archive-section-button-bg-active: var(--Menu-Tab-Active);
-
-      --dropdown-menu-bg: var(--header-bg);
-      --dropdown-item-bg-hover: var(--Menu-Tab-Hover);
-      --dropdown-item-text-hover: var(--Menu-Tab-Text);
     `,
 	personal: css`
-      --root-padding: 20px 32px;
+      --root-padding:   12px 32px;
       --root-border-bottom: 2px var(--active-color-button) solid;
       --root-border-image: var(--default-linear) 1;
 
@@ -108,12 +104,6 @@ export const headerVariants = {
       --icon-hover-color: var(--text-color);
 
       --header-button-hover: var(--button-hover);
-
-      --archive-section-button-bg-active: var(--Components-Dropdown-Global-controlItemBgHover);
-
-      --dropdown-menu-bg: var(--background-area);
-      --dropdown-item-bg-hover: var(--Components-Dropdown-Global-controlItemBgHover);
-      --dropdown-item-text-hover: var(--text-color-2);
     `,
 } as const
 
@@ -131,7 +121,7 @@ const HeaderContainer = styled.header`
   background: var(--container-background);
   border-bottom: var(--container-border-bottom);
   border-radius: var(--radius-lg);
-  padding-inline: 24px;
+  padding: 0 24px;
   z-index: var(--z-dropdown);
   box-shadow: var(--container-box-shadow);
   color: var(--header-text-color);
@@ -181,6 +171,7 @@ const EndSection = styled.div`
   align-items: center;
   justify-content: flex-end;
   min-width: 0;
+  gap: 8px;
 `
 
 const EndSectionSeparator = styled(Separator)`

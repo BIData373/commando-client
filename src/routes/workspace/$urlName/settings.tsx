@@ -42,7 +42,7 @@ function SettingsLayout() {
 			type={PermissionType.MANAGER}
 			workspaceId={workspace.id}
 		>
-			<WorkspaceTabs isActive={false} />
+			<WorkspaceTabs />
 			<SettingsRoot>
 				<Tabs value={activeTab} onValueChange={handleTabChange}>
 					<FullWidthTabsList variant="line">

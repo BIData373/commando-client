@@ -1,11 +1,8 @@
 import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
-import { useLayoutEffect, useMemo } from "react"
-import { PermissionType } from "src/api/model"
-import { useGetMyPermission } from "src/api/permission/permission"
+import { useMemo } from "react"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { ArchiveDropdown, type DropdownSection } from "./shared/ArchiveDropdown"
 import { HeaderNavTab } from "./shared/HeaderNavTab"
 import {
 	NavigationMenu,
@@ -13,56 +10,30 @@ import {
 	NavigationMenuList,
 } from "./ui/navigation-menu"
 
-interface WorkspaceTabsProps {
-	section?: DropdownSection
-	isActive?: boolean
-}
-
-export function WorkspaceTabs({
-	section,
-	isActive = true,
-}: WorkspaceTabsProps) {
+export function WorkspaceTabs() {
 	const {
-		workspace: { id: workspaceId, urlName },
-		activeSection,
-		setActiveSection,
+		workspace: { urlName },
 	} = useWorkspace()
-
-	const { data: myPermission } = useGetMyPermission({ workspaceId })
-	const isManager = myPermission?.type === PermissionType.MANAGER
-
-	useLayoutEffect(() => {
-		if (isActive && section) setActiveSection(section)
-	}, [isActive, section, setActiveSection])
-
-	const displaySection = isActive && section ? section : activeSection
 
 	const headerTabs = useMemo(
 		() => (
 			<NavigationMenu viewport={false}>
 				<NavigationMenuList>
-					{isManager && (
-						<NavigationMenuItem>
+					{/* <NavigationMenuItem>
 							<NavMenuLink asChild>
-								<Link to="/workspace/$urlName/settings" params={{ urlName }}>
-									הגדרות סביבה
+								<Link to="/workspace/$urlName/discussions" params={{ urlName }}>
+									דיונים
 								</Link>
 							</NavMenuLink>
-						</NavigationMenuItem>
-					)}
-					<ArchiveDropdown
-						variant="workspace"
-						tasksRoute={{
-							to: "/workspace/$urlName/tasks",
-							params: { urlName },
-						}}
-						archiveRoute={{
-							to: "/workspace/$urlName/archive",
-							params: { urlName },
-						}}
-						isActive={isActive}
-						section={displaySection}
-					/>
+						</NavigationMenuItem> */}
+
+					<NavigationMenuItem>
+						<NavMenuLink asChild>
+							<Link to="/workspace/$urlName/tasks" params={{ urlName }}>
+								הנחיות
+							</Link>
+						</NavMenuLink>
+					</NavigationMenuItem>
 					<NavigationMenuItem>
 						<NavMenuLink asChild>
 							<Link to="/workspace/$urlName/dashboard" params={{ urlName }}>
@@ -73,7 +44,7 @@ export function WorkspaceTabs({
 				</NavigationMenuList>
 			</NavigationMenu>
 		),
-		[isManager, displaySection, isActive, urlName],
+		[urlName],
 	)
 
 	useRenderInHeader("right", headerTabs)

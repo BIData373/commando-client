@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
-import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import WorkspaceTaskTable from "src/components/Tasks/WorkspaceTaskTable"
 import { WorkspaceTabs } from "src/components/WorkspaceTabs"
 import { useOpenTask } from "src/hooks/useOpenTask"
@@ -52,7 +51,7 @@ function WorkspaceArchivePage() {
 			defaultHiddenColumns={ARCHIVE_DEFAULT_HIDDEN}
 		>
 			<TasksFiltersProvider>
-				<WorkspaceTabs section={DropdownSection.ARCHIVE} />
+				<WorkspaceTabs />
 				<WorkspaceTaskTable
 					onOpenTask={openTask}
 					isArchived={true}

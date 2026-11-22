@@ -1,8 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
-import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
+import { PersonalHeaderTabs } from "src/components/Personal/PersonalHeaderTabs"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
-import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { useIsMobile } from "src/hooks/use-mobile"
 import { useOpenTask } from "src/hooks/useOpenTask"
 import { useSaveWorkspaceVisit } from "src/hooks/useSaveWorkspaceVisit"
@@ -63,7 +62,7 @@ function PersonalTasksPage() {
 					<Outlet />
 				) : (
 					<>
-						<PersonalSectionDropdown current={DropdownSection.TASKS} />
+						<PersonalHeaderTabs />
 						<PersonalTaskTable
 							filePrefix="אזור אישי"
 							onOpenTask={openTask}

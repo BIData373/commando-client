@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
-import { PersonalSectionDropdown } from "src/components/Personal/PersonalSectionDropdown"
+import { PersonalHeaderTabs } from "src/components/Personal/PersonalHeaderTabs"
 import PersonalTaskTable from "src/components/Personal/PersonalTaskTable"
-import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { useOpenTask } from "src/hooks/useOpenTask"
 import { PERSONAL_ARCHIVE_EXTRA_COLUMNS } from "src/utils/task-extra-columns"
 import {
@@ -52,7 +51,7 @@ function PersonalArchivePage() {
 			defaultHiddenColumns={ARCHIVE_DEFAULT_HIDDEN}
 		>
 			<TasksFiltersProvider>
-				<PersonalSectionDropdown current={DropdownSection.ARCHIVE} />
+				<PersonalHeaderTabs />
 				<PersonalTaskTable
 					filePrefix="ארכיון אישי"
 					onOpenTask={openTask}

@@ -26,7 +26,7 @@ export default function MobilePersonalAreaCard() {
 						<PersonalAreaStats taskRows={allTaskRows} />
 					</StatsRow>
 				) : (
-					<EmptyText>טרם שויכו אליך משימות</EmptyText>
+					<EmptyText>טרם קיבלת הנחיות</EmptyText>
 				)}
 				<PersonalAreaButton />
 			</Footer>
