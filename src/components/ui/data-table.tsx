@@ -225,8 +225,9 @@ const StyledTable = styled(Table) <{ $minWidth?: number }>`
     background: var(--background);
   }
 
+  tr:hover > td[rowspan],
   tr[data-highlighted] > td[rowspan] {
-    background: inherit;
+    background: transparent !important;
   }
 `
 

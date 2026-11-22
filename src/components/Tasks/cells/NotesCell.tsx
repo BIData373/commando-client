@@ -17,4 +17,7 @@ const NotesText = styled(EllipsisTooltip)`
   line-height: 20px;
   color: var(--sea-ink-soft);
   text-align: right;
+  position: sticky;
+  top: var(--table-header-height, 0px);
+  height: var(--table-row-height, 100%);
 `

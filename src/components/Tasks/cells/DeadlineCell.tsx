@@ -95,6 +95,10 @@ const CellRoot = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
+  width: 100%;
+  height: var(--table-row-height, 100%);
+  position: sticky;
+  top: var(--table-header-height, 0px);
 `
 
 const DeadlineDateText = styled.span<{ $urgency: DeadlineUrgency }>`
