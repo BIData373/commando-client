@@ -1,4 +1,3 @@
-import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import type { AssigneeDto } from "src/api/model"
 import { AssigneeAvatar } from "src/components/shared/AssigneeAvatar"
@@ -13,25 +12,21 @@ export function AssigneeGroupExpandedList({
 	assignees,
 }: AssigneeGroupExpandedListProps) {
 	return (
-		<ExpandableContent>
-			<ContentInner>
-				<Divider />
-				{assignees.length > 0 ? (
-					<AssigneeList>
-						{assignees.map((assignee) => (
-							<AssigneeRow key={assignee.id}>
-								<AssigneeAvatar assignee={assignee} size={24} />
-								<AssigneeName title={assignee.name}>
-									{assignee.name}
-								</AssigneeName>
-							</AssigneeRow>
-						))}
-					</AssigneeList>
-				) : (
-					<EmptyListText>{NO_ASSIGNEES_TEXT}</EmptyListText>
-				)}
-			</ContentInner>
-		</ExpandableContent>
+		<ContentInner>
+			<Divider />
+			{assignees.length > 0 ? (
+				<AssigneeList>
+					{assignees.map((assignee) => (
+						<AssigneeRow key={assignee.id}>
+							<AssigneeAvatar assignee={assignee} size={24} />
+							<AssigneeName title={assignee.name}>{assignee.name}</AssigneeName>
+						</AssigneeRow>
+					))}
+				</AssigneeList>
+			) : (
+				<EmptyListText>{NO_ASSIGNEES_TEXT}</EmptyListText>
+			)}
+		</ContentInner>
 	)
 }
 
@@ -41,18 +36,8 @@ const Divider = styled.div`
   background: var(--line);
 `
 
-const expandDown = keyframes`
-  from { grid-template-rows: 0fr; }
-  to { grid-template-rows: 1fr; }
-`
-
-const ExpandableContent = styled.div`
-  display: grid;
-  animation: ${expandDown} 200ms ease-out forwards;
-`
-
 const ContentInner = styled.div`
-  overflow: hidden;
+  padding-top: 12px;
 `
 
 const EmptyListText = styled.span`

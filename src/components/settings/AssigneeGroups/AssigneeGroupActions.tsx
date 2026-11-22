@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { type MouseEvent, useState } from "react"
+import { useState } from "react"
 import { TbPencil, TbTrash } from "react-icons/tb"
 import { DeletePopover } from "src/components/Tasks/DeletePopover"
 import {
@@ -12,7 +12,7 @@ import { useAssigneeGroupDelete } from "src/hooks/useAssigneeGroupDelete"
 
 interface AssigneeGroupActionsProps {
 	groupId: number
-	onEdit(e: MouseEvent<HTMLButtonElement>): void
+	onEdit(): void
 }
 
 export function AssigneeGroupActions({
@@ -24,11 +24,6 @@ export function AssigneeGroupActions({
 
 	function handleDeleteCloseAutoFocus(e: Event) {
 		e.preventDefault()
-	}
-
-	function handleOpenDelete(e: MouseEvent<HTMLButtonElement>) {
-		e.stopPropagation()
-		setIsDeleteOpen(true)
 	}
 
 	return (
@@ -44,12 +39,13 @@ export function AssigneeGroupActions({
 								side="top"
 								align="end"
 								showArrow
+								openManually={false}
 								open={isDeleteOpen}
 								onOpenChange={setIsDeleteOpen}
 								onConfirm={() => handleDeleteGroup(groupId)}
 								onCloseAutoFocus={handleDeleteCloseAutoFocus}
 								trigger={
-									<IconActionButton type="button" onClick={handleOpenDelete}>
+									<IconActionButton type="button">
 										<TbTrash size={14} />
 									</IconActionButton>
 								}
