@@ -14,6 +14,7 @@ import { AssigneesCell } from "../components/Tasks/cells/AssigneesCell"
 import { DateCell } from "../components/Tasks/cells/DateCell"
 import { DeadlineCell } from "../components/Tasks/cells/DeadlineCell"
 import { LastMessageCell } from "../components/Tasks/cells/LastMessageCell"
+import { LastMessageColumnHeader } from "../components/Tasks/cells/LastMessageColumnHeader"
 import { NotesCell } from "../components/Tasks/cells/NotesCell"
 import { SelectAllHeader } from "../components/Tasks/cells/SelectAllHeader"
 import { SelectCell } from "../components/Tasks/cells/SelectCell"
@@ -23,6 +24,7 @@ import { StatusCell } from "../components/Tasks/cells/StatusCell"
 import { TagsCell } from "../components/Tasks/cells/TagsCell"
 import { TaskColumnHeader } from "../components/Tasks/cells/TaskColumnHeader"
 import { TitleCell } from "../components/Tasks/cells/TitleCell"
+import { TitleColumnHeader } from "../components/Tasks/cells/TitleColumnHeader"
 
 interface UseTaskColumnsOptions<TTask extends TaskRowDto> {
 	columnOrder: (keyof TTask)[]
@@ -91,7 +93,7 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 		const middleColumns = columnHelper.columns([
 			columnHelper.accessor((row) => row.title, {
 				id: TASK_COLUMN_ID.title,
-				header: COLUMN_LABELS.title,
+				header: TitleColumnHeader,
 				size: 300,
 				minSize: 160,
 				meta: { grow: true },
@@ -129,11 +131,10 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 				spanRows: spanByTask,
 				cell: SourceCell,
 			}),
-			columnHelper.display({
-				id: TASK_COLUMN_ID.lastMessage,
-				header: TaskColumnHeader,
+			definitions.lastMessage({
+				header: LastMessageColumnHeader,
 				size: 100,
-				minSize: 70,
+				minSize: 100,
 				meta: { grow: true },
 				enableSorting: false,
 				enableColumnFilter: false,

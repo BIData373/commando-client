@@ -14,7 +14,7 @@ export interface UpdateSourceDto {
 	date?: Date | null
 	tags?: string[]
 	/** @nullable */
-	attachment?: Blob | null
+	attachment?: Blob | File | null
 	aiExtraction?: boolean
 	draft?: boolean
 	tasks?: CreateSourceTaskDto[]

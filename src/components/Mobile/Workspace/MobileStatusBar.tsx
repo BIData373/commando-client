@@ -1,5 +1,16 @@
 import styled from "@emotion/styled"
+import { STATUS_DEFAULTS } from "src/consts/status-defaults"
 import type { StatusTaskCount } from "src/functions/status-counts"
+
+const BAR_COLORS: Record<string, string> = {
+	[STATUS_DEFAULTS.NOT_STARTED.name]: "var(--Colors-Base-Volcano-4)",
+	[STATUS_DEFAULTS.IN_PROGRESS.name]: "var(--Colors-Base-Geekblue-4)",
+	[STATUS_DEFAULTS.COMPLETED.name]: "var(--Colors-Base-Green-4)",
+}
+
+function getBarColor(seg: StatusTaskCount): string {
+	return BAR_COLORS[seg.name] ?? seg.color
+}
 
 interface MobileStatusBarProps {
 	segments: StatusTaskCount[]
@@ -18,13 +29,15 @@ export default function MobileStatusBar({
 			</TitleRow>
 
 			<BarTrack>
-				{segments.map((seg) => (
-					<BarSegment
-						key={seg.id}
-						$color={seg.color}
-						$pct={totalTaskCount > 0 ? (seg.count / totalTaskCount) * 100 : 0}
-					/>
-				))}
+				{segments
+					.filter((seg) => seg.count > 0)
+					.map((seg) => (
+						<BarSegment
+							key={seg.id}
+							$color={getBarColor(seg)}
+							$pct={(seg.count / totalTaskCount) * 100}
+						/>
+					))}
 			</BarTrack>
 
 			<LegendRow>
@@ -32,7 +45,7 @@ export default function MobileStatusBar({
 					<LegendItem key={seg.id}>
 						<LegendLabel dir="auto">{seg.name}</LegendLabel>
 						<LegendCount>{seg.count}</LegendCount>
-						<LegendDot $color={seg.color} />
+						<LegendDot $color={getBarColor(seg)} />
 					</LegendItem>
 				))}
 			</LegendRow>
@@ -76,10 +89,10 @@ const BarTrack = styled.div`
 	display: flex;
 	height: 16px;
 	border-radius: 8px;
-	justify-content: space-between;
 	align-items: flex-start;
 	align-self: stretch;
 	overflow: hidden;
+	gap: 3px;
 	background: var(--status-bar-empty);
 `
 

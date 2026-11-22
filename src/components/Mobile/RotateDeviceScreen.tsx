@@ -26,6 +26,8 @@ const Overlay = styled.div`
   padding-inline: 16px;
   background: var(--background-mobile);
   text-align: center;
+  overflow: hidden;
+  touch-action: none;
 `
 
 const Illustration = styled.img`

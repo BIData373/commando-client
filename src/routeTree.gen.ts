@@ -14,11 +14,13 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PersonalRouteImport } from './routes/personal'
 import { Route as HomeIndexRouteImport } from './routes/_home/index'
 import { Route as HomeNewWorkspaceRouteImport } from './routes/_home/new-workspace'
+import { Route as HomeNoPermissionsRouteImport } from './routes/_home/no-permissions'
 import { Route as PersonalIndexRouteImport } from './routes/personal/index'
 import { Route as PersonalArchiveRouteImport } from './routes/personal/archive'
 import { Route as PersonalTasksRouteImport } from './routes/personal/tasks'
 import { Route as WorkspaceUrlNameRouteRouteImport } from './routes/workspace/$urlName/route'
 import { Route as PersonalArchiveTaskIdRouteImport } from './routes/personal/archive/$taskId'
+import { Route as PersonalTasksIndexRouteImport } from './routes/personal/tasks/index'
 import { Route as PersonalTasksTaskIdRouteImport } from './routes/personal/tasks/$taskId'
 import { Route as WorkspaceUrlNameIndexRouteImport } from './routes/workspace/$urlName/index'
 import { Route as WorkspaceUrlNameArchiveRouteImport } from './routes/workspace/$urlName/archive'
@@ -74,6 +76,11 @@ const HomeNewWorkspaceRoute = HomeNewWorkspaceRouteImport.update({
   path: '/new-workspace',
   getParentRoute: () => HomeRoute,
 } as any)
+const HomeNoPermissionsRoute = HomeNoPermissionsRouteImport.update({
+  id: '/no-permissions',
+  path: '/no-permissions',
+  getParentRoute: () => HomeRoute,
+} as any)
 const PersonalIndexRoute = PersonalIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -98,6 +105,11 @@ const PersonalArchiveTaskIdRoute = PersonalArchiveTaskIdRouteImport.update({
   id: '/$taskId',
   path: '/$taskId',
   getParentRoute: () => PersonalArchiveRoute,
+} as any)
+const PersonalTasksIndexRoute = PersonalTasksIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PersonalTasksRoute,
 } as any)
 const PersonalTasksTaskIdRoute = PersonalTasksTaskIdRouteImport.update({
   id: '/$taskId',
@@ -279,6 +291,7 @@ export interface FileRoutesByFullPath {
   '/personal': typeof PersonalRouteWithChildren
   '/workspace/$urlName': typeof WorkspaceUrlNameRouteRouteWithChildren
   '/new-workspace': typeof HomeNewWorkspaceRoute
+  '/no-permissions': typeof HomeNoPermissionsRoute
   '/personal/archive': typeof PersonalArchiveRouteWithChildren
   '/personal/tasks': typeof PersonalTasksRouteWithChildren
   '/personal/': typeof PersonalIndexRoute
@@ -288,6 +301,7 @@ export interface FileRoutesByFullPath {
   '/workspace/$urlName/dashboard': typeof WorkspaceUrlNameDashboardRouteWithChildren
   '/workspace/$urlName/settings': typeof WorkspaceUrlNameSettingsRouteWithChildren
   '/workspace/$urlName/tasks': typeof WorkspaceUrlNameTasksRouteWithChildren
+  '/personal/tasks/': typeof PersonalTasksIndexRoute
   '/workspace/$urlName/': typeof WorkspaceUrlNameIndexRoute
   '/personal/task/$taskId/edit': typeof PersonalTaskTaskIdEditRoute
   '/personal/tasks/$taskId/edit': typeof PersonalTasksTaskIdEditRoute
@@ -317,12 +331,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/new-workspace': typeof HomeNewWorkspaceRoute
+  '/no-permissions': typeof HomeNoPermissionsRoute
   '/personal/archive': typeof PersonalArchiveRouteWithChildren
-  '/personal/tasks': typeof PersonalTasksRouteWithChildren
   '/': typeof HomeIndexRoute
   '/personal': typeof PersonalIndexRoute
   '/workspace/$urlName/archive': typeof WorkspaceUrlNameArchiveRouteWithChildren
   '/workspace/$urlName/dashboard': typeof WorkspaceUrlNameDashboardRouteWithChildren
+  '/personal/tasks': typeof PersonalTasksIndexRoute
   '/workspace/$urlName': typeof WorkspaceUrlNameIndexRoute
   '/personal/task/$taskId/edit': typeof PersonalTaskTaskIdEditRoute
   '/personal/tasks/$taskId/edit': typeof PersonalTasksTaskIdEditRoute
@@ -352,6 +367,7 @@ export interface FileRoutesById {
   '/personal': typeof PersonalRouteWithChildren
   '/workspace/$urlName': typeof WorkspaceUrlNameRouteRouteWithChildren
   '/_home/new-workspace': typeof HomeNewWorkspaceRoute
+  '/_home/no-permissions': typeof HomeNoPermissionsRoute
   '/personal/archive': typeof PersonalArchiveRouteWithChildren
   '/personal/tasks': typeof PersonalTasksRouteWithChildren
   '/_home/': typeof HomeIndexRoute
@@ -362,6 +378,7 @@ export interface FileRoutesById {
   '/workspace/$urlName/dashboard': typeof WorkspaceUrlNameDashboardRouteWithChildren
   '/workspace/$urlName/settings': typeof WorkspaceUrlNameSettingsRouteWithChildren
   '/workspace/$urlName/tasks': typeof WorkspaceUrlNameTasksRouteWithChildren
+  '/personal/tasks/': typeof PersonalTasksIndexRoute
   '/workspace/$urlName/': typeof WorkspaceUrlNameIndexRoute
   '/personal/task/$taskId/edit': typeof PersonalTaskTaskIdEditRoute
   '/personal/tasks/$taskId/edit': typeof PersonalTasksTaskIdEditRoute
@@ -396,6 +413,7 @@ export interface FileRouteTypes {
     | '/personal'
     | '/workspace/$urlName'
     | '/new-workspace'
+    | '/no-permissions'
     | '/personal/archive'
     | '/personal/tasks'
     | '/personal/'
@@ -405,6 +423,7 @@ export interface FileRouteTypes {
     | '/workspace/$urlName/dashboard'
     | '/workspace/$urlName/settings'
     | '/workspace/$urlName/tasks'
+    | '/personal/tasks/'
     | '/workspace/$urlName/'
     | '/personal/task/$taskId/edit'
     | '/personal/tasks/$taskId/edit'
@@ -434,12 +453,13 @@ export interface FileRouteTypes {
   to:
     | '/onboarding'
     | '/new-workspace'
+    | '/no-permissions'
     | '/personal/archive'
-    | '/personal/tasks'
     | '/'
     | '/personal'
     | '/workspace/$urlName/archive'
     | '/workspace/$urlName/dashboard'
+    | '/personal/tasks'
     | '/workspace/$urlName'
     | '/personal/task/$taskId/edit'
     | '/personal/tasks/$taskId/edit'
@@ -468,6 +488,7 @@ export interface FileRouteTypes {
     | '/personal'
     | '/workspace/$urlName'
     | '/_home/new-workspace'
+    | '/_home/no-permissions'
     | '/personal/archive'
     | '/personal/tasks'
     | '/_home/'
@@ -478,6 +499,7 @@ export interface FileRouteTypes {
     | '/workspace/$urlName/dashboard'
     | '/workspace/$urlName/settings'
     | '/workspace/$urlName/tasks'
+    | '/personal/tasks/'
     | '/workspace/$urlName/'
     | '/personal/task/$taskId/edit'
     | '/personal/tasks/$taskId/edit'
@@ -549,6 +571,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeNewWorkspaceRouteImport
       parentRoute: typeof HomeRoute
     }
+    '/_home/no-permissions': {
+      id: '/_home/no-permissions'
+      path: '/no-permissions'
+      fullPath: '/no-permissions'
+      preLoaderRoute: typeof HomeNoPermissionsRouteImport
+      parentRoute: typeof HomeRoute
+    }
     '/personal/': {
       id: '/personal/'
       path: '/'
@@ -583,6 +612,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/personal/archive/$taskId'
       preLoaderRoute: typeof PersonalArchiveTaskIdRouteImport
       parentRoute: typeof PersonalArchiveRoute
+    }
+    '/personal/tasks/': {
+      id: '/personal/tasks/'
+      path: '/'
+      fullPath: '/personal/tasks/'
+      preLoaderRoute: typeof PersonalTasksIndexRouteImport
+      parentRoute: typeof PersonalTasksRoute
     }
     '/personal/tasks/$taskId': {
       id: '/personal/tasks/$taskId'
@@ -799,11 +835,13 @@ declare module '@tanstack/react-router' {
 
 interface HomeRouteChildren {
   HomeNewWorkspaceRoute: typeof HomeNewWorkspaceRoute
+  HomeNoPermissionsRoute: typeof HomeNoPermissionsRoute
   HomeIndexRoute: typeof HomeIndexRoute
 }
 
 const HomeRouteChildren: HomeRouteChildren = {
   HomeNewWorkspaceRoute: HomeNewWorkspaceRoute,
+  HomeNoPermissionsRoute: HomeNoPermissionsRoute,
   HomeIndexRoute: HomeIndexRoute,
 }
 
@@ -849,10 +887,12 @@ const PersonalTasksTaskIdRouteWithChildren =
 
 interface PersonalTasksRouteChildren {
   PersonalTasksTaskIdRoute: typeof PersonalTasksTaskIdRouteWithChildren
+  PersonalTasksIndexRoute: typeof PersonalTasksIndexRoute
 }
 
 const PersonalTasksRouteChildren: PersonalTasksRouteChildren = {
   PersonalTasksTaskIdRoute: PersonalTasksTaskIdRouteWithChildren,
+  PersonalTasksIndexRoute: PersonalTasksIndexRoute,
 }
 
 const PersonalTasksRouteWithChildren = PersonalTasksRoute._addFileChildren(

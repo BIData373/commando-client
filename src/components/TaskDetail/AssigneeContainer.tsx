@@ -44,11 +44,11 @@ export const AssigneeContainer = ({
 	const handleUpdateAssigneeStatus = useUpdateTaskStatus({ notify: true })
 
 	const isCurrentUserTask = assignee.users.some(
-		(user) => user.upn === currentUser.upn,
+		({ user: { upn } }) => upn === currentUser.upn,
 	)
 
 	const taskVariant = isMobile
-		? isAdmin || isCurrentUserTask
+		? isCurrentUserTask
 			? CardVariant.CurrentUserMobile
 			: CardVariant.OtherUserMobile
 		: CardVariant.Default
@@ -59,7 +59,6 @@ export const AssigneeContainer = ({
 			$isMobile={isMobile}
 			$isCurrentUserTask={isCurrentUserTask}
 			$variant={taskVariant}
-			$isAdmin={isAdmin}
 		>
 			<AssigneeInfoBlock>
 				<AssigneeDetailPopover assignee={assignee}>
@@ -83,7 +82,8 @@ export const AssigneeContainer = ({
 						taskId={taskId}
 						assigneeId={assignee.id}
 						editable={editable}
-						isArchived={!!personalArchivedAt || !!workspaceArchivedAt}
+						isPersonalArchived={!!personalArchivedAt}
+						isWorkspaceArchived={!!workspaceArchivedAt}
 						onUpdate={handleUpdateAssigneeStatus}
 					/>
 				)}
@@ -150,7 +150,6 @@ const AssigneeRowContainer = styled.div<{
 	$enabled?: boolean
 	$isMobile?: boolean
 	$isCurrentUserTask?: boolean
-	$isAdmin?: boolean
 }>`
   ${({ $variant }) => cardVariants[$variant]}
 
@@ -160,8 +159,8 @@ const AssigneeRowContainer = styled.div<{
   justify-content: flex-start;
   gap: var(--container-gap);
   padding: 7px 12px;
-  background: ${({ $enabled, $isMobile, $isCurrentUserTask, $isAdmin }) =>
-		($isMobile ? $isAdmin || $isCurrentUserTask : $enabled)
+  background: ${({ $enabled, $isMobile, $isCurrentUserTask }) =>
+		($isMobile ? $isCurrentUserTask : $enabled)
 			? "var(--background)"
 			: "var(--background-area)"};
   border: var(--container-border);

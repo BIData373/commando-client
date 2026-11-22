@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { useForm } from "@tanstack/react-form"
 import { useStore } from "@tanstack/react-store"
-import { omit, uniq } from "lodash"
+import { differenceBy, omit, pick, uniq } from "lodash"
 import { useRef, useState } from "react"
 import {
 	type CreateTaskDto,
@@ -76,7 +76,7 @@ function CreateTaskModal({
 	})
 	const statusById = Object.fromEntries(workspaceStatuses.map((s) => [s.id, s]))
 
-	const { saveTasks, isPending } = useSaveTasks(workspaceId, onClose)
+	const { saveTasks } = useSaveTasks(workspaceId, onClose)
 
 	const { mutateAsync: createSource } = useCreateSource({
 		mutation: {
@@ -86,7 +86,7 @@ function CreateTaskModal({
 			},
 		},
 	})
-	const { mutateAsync: updateTask, isPending: isUpdatingTask } = useUpdateTask({
+	const { mutateAsync: updateTask } = useUpdateTask({
 		mutation: {
 			meta: { toast: { success: updateTaskMessage, error: true } },
 			onSuccess: handleUpdateSuccess,
@@ -152,13 +152,14 @@ function CreateTaskModal({
 					})
 					rest.sourceId = newSource.id
 				}
-				saveTasks([{ workspaceId, ...rest }])
-				onClose()
+				await saveTasks([{ workspaceId, ...rest }])
 			}
 		},
 	})
 
-	const values = useStore(form.store, (state) => state.values)
+	const { values, isSubmitting } = useStore(form.store, (state) =>
+		pick(state, ["values", "isSubmitting"]),
+	)
 	const hasChanges = !form.state.isDefaultValue
 
 	// ─── Handlers ──────────────────────────────────────────────────────────────
@@ -174,6 +175,13 @@ function CreateTaskModal({
 		form.setFieldValue("dueDate", date)
 	}
 
+	function getDefaultStatusId() {
+		if (!isEditMode) return undefined
+		return Object.values(statusById).find(
+			(s) => s.type === WorkspaceStatusType.NOT_STARTED,
+		)?.id
+	}
+
 	function handleAssigneeToggle(id: number) {
 		const current = values.assignees ?? []
 		const isRemoving = current.some((a) => a.id === id)
@@ -184,16 +192,21 @@ function CreateTaskModal({
 				current.filter((a) => a.id !== id),
 			)
 		} else {
-			const defaultStatusId = isEditMode
-				? Object.values(statusById).find(
-						(s) => s.type === WorkspaceStatusType.NOT_STARTED,
-					)?.id
-				: undefined
 			form.setFieldValue("assignees", [
 				...current,
-				{ id, statusId: defaultStatusId },
+				{ id, statusId: getDefaultStatusId() },
 			])
 		}
+	}
+
+	function handleAssigneeGroupSelect(assigneeIds: number[]) {
+		const current = values.assignees ?? []
+		const newEntries = differenceBy(
+			assigneeIds.map((id) => ({ id, statusId: getDefaultStatusId() })),
+			current,
+			"id",
+		)
+		form.setFieldValue("assignees", [...current, ...newEntries])
 	}
 
 	function handleRemoveAssignee(id: number) {
@@ -387,6 +400,7 @@ function CreateTaskModal({
 								selectedAssignees={(values.assignees ?? []).map((a) => a.id)}
 								directiveTitle={values.title}
 								onToggle={handleAssigneeToggle}
+								onGroupSelect={handleAssigneeGroupSelect}
 								onRemove={handleRemoveAssignee}
 								onDetailChange={handleAssigneeDetailChange}
 								assigneeExtras={assigneeExtras}
@@ -468,7 +482,7 @@ function CreateTaskModal({
 							title="שמור"
 							onClick={form.handleSubmit}
 							disabled={!values.title.trim() || (isEditMode && !hasChanges)}
-							loading={isPending || isUpdatingTask}
+							loading={isSubmitting}
 							width={133}
 						/>
 						<CancelButton title="ביטול" onClick={onCancel} />

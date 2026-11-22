@@ -60,6 +60,7 @@ const Wrapper = styled.div`
 	align-items: center;
 	flex: 1;
 	min-width: 0;
+	direction: rtl;
 `
 
 const Input = styled.input`
@@ -93,7 +94,7 @@ const Input = styled.input`
 
 const IconWrapper = styled.span`
 	position: absolute;
-	inset-inline-end: 12px;
+	inset-inline-start: 12px;
 	display: flex;
 	color: var(--Text-color-text-placeholder);
 	pointer-events: none;
@@ -101,7 +102,7 @@ const IconWrapper = styled.span`
 
 const ClearButton = styled.button`
 	position: absolute;
-	inset-inline-end: 12px;
+	inset-inline-start: 12px;
 	display: flex;
 	align-items: center;
 	justify-content: center;

@@ -4,7 +4,7 @@ import type { ReactNode } from "react"
 
 export interface ToastAction {
 	label: ReactNode
-	onClick(): void
+	onClick?(): void
 	variant: "primary" | "cancel" | "danger"
 	/** Dismiss the toast after the handler runs. Defaults to `true`. */
 	dismissOnClick?: boolean

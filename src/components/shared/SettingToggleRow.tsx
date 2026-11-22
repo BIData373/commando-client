@@ -1,39 +1,45 @@
 import styled from "@emotion/styled"
 import { CircleHelp } from "lucide-react"
 import type { ReactNode } from "react"
-import { Switch } from "src/components/ui/switch"
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from "src/components/ui/tooltip"
+import { DisabledReasonSwitch } from "./DisabledReasonSwitch"
 
 interface SettingToggleRowProps {
 	label?: string
-	tooltip?: string
+	tooltip?: ReactNode
+	disabledTooltip?: string
 	icon?: ReactNode
 	checked?: boolean
+	disabled?: boolean
 	onCheckedChange?: (checked: boolean) => void
 }
 
 export function SettingToggleRow({
 	label,
 	tooltip,
+	disabledTooltip,
 	icon,
 	checked,
+	disabled,
 	onCheckedChange,
 }: SettingToggleRowProps) {
 	return (
 		<Row>
-			<StyledSwitch
+			<DisabledReasonSwitch
 				size="sm"
 				checked={checked}
+				disabled={disabled}
+				disabledReason={disabledTooltip}
 				onCheckedChange={onCheckedChange}
 			/>
 			<Info>
-				<Icon>{icon}</Icon>
-				<Label>{label}</Label>
+				<Icon $disabled={!!disabled}>{icon}</Icon>
+				<Label $disabled={!!disabled}>{label}</Label>
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
@@ -49,10 +55,6 @@ export function SettingToggleRow({
 	)
 }
 
-const StyledSwitch = styled(Switch)`
-  cursor: pointer;
-
-`
 const Row = styled.div`
   display: flex;
   align-items: center;
@@ -66,20 +68,22 @@ const Info = styled.div`
   gap: 4px;
 `
 
-const Label = styled.span`
+const Label = styled.span<{ $disabled: boolean }>`
   font-size: var(--fs-base);
   font-weight: 400;
-  color: var(--text-color-2);
+  color: ${({ $disabled }) =>
+		$disabled ? "var(--Text-color-text-placeholder)" : "var(--text-color-2)"};
   white-space: nowrap;
 `
 
-const Icon = styled.span`
+const Icon = styled.span<{ $disabled: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 24px;
   height: 24px;
-  color: var(--sea-ink-soft);
+  color: ${({ $disabled }) =>
+		$disabled ? "var(--Text-color-text-placeholder)" : "var(--sea-ink-soft)"};
 `
 
 const HelpButton = styled.button`
@@ -95,10 +99,11 @@ const HelpButton = styled.button`
 const StyledTooltipContent = styled(TooltipContent)`
   background: var(--background);
   color: var(--text-color-2);
-  box-shadow: var(--card-shadow-hover);
   border-radius: 8px;
   padding: 12px;
-  font-size: var(--fs-sm);
+  max-width: 320px;
+  font-size: var(--fs-btn);
+  line-height: 22px;
 
   svg {
     opacity: 0;

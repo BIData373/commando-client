@@ -9,9 +9,10 @@ import { SpinIcon } from "./SpinIcon"
 
 interface TaskCommentInputProps {
 	taskId: number
+	autoFocus?: boolean
 }
 
-function TaskCommentInput({ taskId }: TaskCommentInputProps) {
+function TaskCommentInput({ taskId, autoFocus }: TaskCommentInputProps) {
 	const isMobile = useIsMobile()
 	const [commentValue, setCommentValue] = useState("")
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -67,6 +68,7 @@ function TaskCommentInput({ taskId }: TaskCommentInputProps) {
 				disabled={isSendingComment}
 				dir="rtl"
 				rows={1}
+				autoFocus={autoFocus}
 			/>
 			{isMobile && commentValue && (
 				<CommentSendButton

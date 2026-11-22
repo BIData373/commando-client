@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { Cell, Pie, PieChart } from "recharts"
 import type { TaskRowDto } from "src/api/model"
+import { colorWithAlpha } from "src/functions/contrast-color" // chrome83
 import {
 	countTasksByStatus,
 	type StatusTaskCount,
@@ -169,6 +170,8 @@ const StatusBadge = styled.span<{ $color: string }>`
   font-size: var(--fs-xl);
   font-weight: 400;
   white-space: nowrap;
+  ${({ $color }) => `color: ${$color};`}
   ${({ $color }) => `color: oklch(from ${$color} clamp(0, l, 0.5) c h);`}
+  ${({ $color }) => `background: ${colorWithAlpha($color, 0.1)};`} /* chrome83 */
   ${({ $color }) => `background: rgb(from ${$color} r g b / 0.1);`}
 `

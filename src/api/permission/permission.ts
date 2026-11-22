@@ -32,6 +32,8 @@ import type {
 	UpsertPermissionDto,
 } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 const withQueryKey = <T extends object, K>(
 	query: T,
 	queryKey: K,
@@ -52,14 +54,13 @@ const withQueryKey = <T extends object, K>(
 
 export const listPermissions = (
 	params: ListPermissionsParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<PermissionDto[]>({
-		url: `/permission`,
-		method: "GET",
-		params,
-		signal,
-	})
+	return sendRequest<PermissionDto[]>(
+		{ url: `/permission`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getListPermissionsQueryKey = (params?: ListPermissionsParams) => {
@@ -79,15 +80,16 @@ export const getListPermissionsQueryOptions = <
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getListPermissionsQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof listPermissions>>> = ({
 		signal,
-	}) => listPermissions(params, signal)
+	}) => listPermissions(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listPermissions>>,
@@ -122,6 +124,7 @@ export function useListPermissions<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -148,6 +151,7 @@ export function useListPermissions<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -166,6 +170,7 @@ export function useListPermissions<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -185,6 +190,7 @@ export function useListPermissions<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -202,16 +208,23 @@ export function useListPermissions<
 
 export const upsertPermission = (
 	upsertPermissionDto: UpsertPermissionDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<PermissionDto>({
-		url: `/permission`,
-		method: "PATCH",
-		headers: { "Content-Type": "application/json" },
-		data: upsertPermissionDto,
-		signal,
-	})
+	return sendRequest<PermissionDto>(
+		{
+			url: `/permission`,
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			data: upsertPermissionDto,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getUpsertPermissionMutationKey = () =>
+	["upsertPermission"] as const
 
 export const getUpsertPermissionMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -220,31 +233,32 @@ export const getUpsertPermissionMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof upsertPermission>>,
 		TError,
-		{ data: UpsertPermissionDto },
+		UpsertPermissionMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof upsertPermission>>,
 	TError,
-	{ data: UpsertPermissionDto },
+	UpsertPermissionMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["upsertPermission"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getUpsertPermissionMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof upsertPermission>>,
-		{ data: UpsertPermissionDto }
+		UpsertPermissionMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
-		return upsertPermission(data)
+		return upsertPermission(data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -255,6 +269,7 @@ export type UpsertPermissionMutationResult = NonNullable<
 >
 export type UpsertPermissionMutationBody = UpsertPermissionDto
 export type UpsertPermissionMutationError = ErrorType<unknown>
+export type UpsertPermissionMutationVariables = { data: UpsertPermissionDto }
 
 export const useUpsertPermission = <
 	TError = ErrorType<unknown>,
@@ -264,30 +279,33 @@ export const useUpsertPermission = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof upsertPermission>>,
 			TError,
-			{ data: UpsertPermissionDto },
+			UpsertPermissionMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof upsertPermission>>,
 	TError,
-	{ data: UpsertPermissionDto },
+	UpsertPermissionMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpsertPermissionMutationOptions(options), queryClient)
 }
 export const deletePermission = (
 	params: DeletePermissionParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<PermissionDto>({
-		url: `/permission`,
-		method: "DELETE",
-		params,
-		signal,
-	})
+	return sendRequest<PermissionDto>(
+		{ url: `/permission`, method: "DELETE", params, signal },
+		options,
+	)
 }
+
+export const getDeletePermissionMutationKey = () =>
+	["deletePermission"] as const
 
 export const getDeletePermissionMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -296,31 +314,32 @@ export const getDeletePermissionMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deletePermission>>,
 		TError,
-		{ params: DeletePermissionParams },
+		DeletePermissionMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deletePermission>>,
 	TError,
-	{ params: DeletePermissionParams },
+	DeletePermissionMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deletePermission"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getDeletePermissionMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deletePermission>>,
-		{ params: DeletePermissionParams }
+		DeletePermissionMutationVariables
 	> = (props) => {
 		const { params } = props ?? {}
 
-		return deletePermission(params)
+		return deletePermission(params, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -331,6 +350,9 @@ export type DeletePermissionMutationResult = NonNullable<
 >
 
 export type DeletePermissionMutationError = ErrorType<unknown>
+export type DeletePermissionMutationVariables = {
+	params: DeletePermissionParams
+}
 
 export const useDeletePermission = <
 	TError = ErrorType<unknown>,
@@ -340,29 +362,29 @@ export const useDeletePermission = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deletePermission>>,
 			TError,
-			{ params: DeletePermissionParams },
+			DeletePermissionMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deletePermission>>,
 	TError,
-	{ params: DeletePermissionParams },
+	DeletePermissionMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeletePermissionMutationOptions(options), queryClient)
 }
 export const getMyPermission = (
 	params: GetMyPermissionParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<PermissionDto>({
-		url: `/permission/me`,
-		method: "GET",
-		params,
-		signal,
-	})
+	return sendRequest<PermissionDto>(
+		{ url: `/permission/me`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getGetMyPermissionQueryKey = (params?: GetMyPermissionParams) => {
@@ -382,15 +404,16 @@ export const getGetMyPermissionQueryOptions = <
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getGetMyPermissionQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyPermission>>> = ({
 		signal,
-	}) => getMyPermission(params, signal)
+	}) => getMyPermission(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof getMyPermission>>,
@@ -425,6 +448,7 @@ export function useGetMyPermission<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -451,6 +475,7 @@ export function useGetMyPermission<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -469,6 +494,7 @@ export function useGetMyPermission<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -488,6 +514,7 @@ export function useGetMyPermission<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {

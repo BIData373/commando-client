@@ -14,7 +14,7 @@ function EditAssignee() {
 	const { assigneeId } = Route.useParams()
 
 	const {
-		workspace: { id: workspaceId, urlName },
+		workspace: { urlName },
 	} = useWorkspace()
 
 	const navigate = useNavigate()
@@ -34,12 +34,7 @@ function EditAssignee() {
 
 	return (
 		assignee && (
-			<AssigneeDialog
-				open
-				workspaceId={workspaceId}
-				assignee={assignee}
-				onOpenChange={handleClose}
-			/>
+			<AssigneeDialog open assignee={assignee} onOpenChange={handleClose} />
 		)
 	)
 }

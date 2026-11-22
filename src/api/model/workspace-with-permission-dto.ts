@@ -27,4 +27,5 @@ export interface WorkspaceWithPermissionDto {
 	mailNotification: boolean
 	pikudId: number
 	permissionType: PermissionType | null
+	hasEnteredWorkspace: boolean
 }

@@ -2,6 +2,7 @@ import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import { TbChevronDown } from "react-icons/tb"
 import type { WorkspaceStatusDto } from "src/api/model"
+import { colorWithAlpha } from "src/functions/contrast-color" // chrome83
 import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
@@ -111,7 +112,8 @@ const Tag = styled.span<{
   cursor: ${({ $interactive, $editable }) =>
 		$interactive ? ($editable ? "pointer" : "not-allowed") : "default"};
   ${({ $fontColor }) => css`color: ${$fontColor};`}
-  ${({ $backgroundColor }) => css`background:  rgb(from ${$backgroundColor} r g b / 0.1);`}
+  ${({ $backgroundColor }) => css`background: ${colorWithAlpha($backgroundColor, 0.1)};`} /* chrome83 */
+  ${({ $backgroundColor }) => css`background: rgb(from ${$backgroundColor} r g b / 0.1);`}
 
   :focus-visible {
     outline: none;
@@ -125,6 +127,7 @@ const Tag = styled.span<{
 		$editable &&
 		css`
   :hover {
+    background: ${colorWithAlpha($backgroundColor, 0.2)}; /* chrome83 */
     background: rgb(from ${$backgroundColor} r g b / 0.2);
   }
   `}

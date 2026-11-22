@@ -1,14 +1,27 @@
 import styled from "@emotion/styled"
+import type { TaskRowWithWorkspaceDto } from "src/api/model"
+import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
+import { countUnreadTasks } from "src/utils/filter-utils"
 
-export default function PersonalAreaHeader() {
+interface PersonalAreaHeaderProps {
+	taskRows: TaskRowWithWorkspaceDto[]
+}
+
+export default function PersonalAreaHeader({
+	taskRows,
+}: PersonalAreaHeaderProps) {
 	const user = useCurrentUser()
 	const username = user.info?.name || user.upn
+	const unreadTasksCount = countUnreadTasks(taskRows)
 
 	return (
 		<Header>
 			<TitleRow>
 				<Title>אזור אישי</Title>
+				{unreadTasksCount > 0 && (
+					<UnreadCount>({unreadTasksCount} הנחיות חדשות)</UnreadCount>
+				)}
 			</TitleRow>
 			<Greeting>
 				<GreetingText>
@@ -26,13 +39,29 @@ const Header = styled.div`
   justify-content: center;
   align-items: flex-end;
   gap: 4px;
+
+  ${MOBILE_MEDIA_QUERY} {
+    gap: 12px;
+  }
 `
 
 const TitleRow = styled.div`
+  direction: rtl;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: baseline;
   gap: 8px;
+
+  ${MOBILE_MEDIA_QUERY} {
+    align-items: center;
+  }
+`
+
+const UnreadCount = styled.span`
+  color: var(--text-color-400);
+  font-size: clamp(14px, 1vw, 20px);
+  font-weight: 400;
+  white-space: nowrap;
 `
 
 const Title = styled.span`
@@ -40,6 +69,12 @@ const Title = styled.span`
   font-size: clamp(22px, 1.6vw, 30px);
   font-weight: 400;
   line-height: clamp(30px, 4.3vh, 46px);
+
+  ${MOBILE_MEDIA_QUERY} {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: normal;
+  }
 `
 
 const Greeting = styled.div`
@@ -59,4 +94,8 @@ const GreetingText = styled.span`
   font-size: clamp(14px, 1vw, 20px);
   font-weight: 400;
   line-height: clamp(20px, 2.6vh, 28px);
+
+  ${MOBILE_MEDIA_QUERY} {
+    font-size: clamp(16px, 1vw, 20px);
+  }
 `

@@ -1,10 +1,11 @@
 import { type PropsWithChildren, useEffect } from "react"
+import { getStoredToken } from "src/utils/auth-utils"
 import { MATOMO_ENABLED, MATOMO_SITE_ID } from "src/utils/env-utils"
 import {
-	COOKIE_NAME,
 	decodeSsoUserJwt,
 	normalizeUpn,
 	onCookieChange,
+	TOKEN_NAME,
 } from "src/utils/user-utils"
 
 declare global {
@@ -13,23 +14,21 @@ declare global {
 	}
 }
 
-function pushMatomoUserId(cookieValue?: string): void {
-	const user = cookieValue ? decodeSsoUserJwt(cookieValue) : null
-	const displayName = user?.displayName
+function getUserId(token: string): string | null {
+	const user = decodeSsoUserJwt(token)
 	const upn = user?.upn
 
-	window._paq = window._paq || []
-
-	window._paq.push([
-		"setUserId",
-		upn ? `${normalizeUpn(upn)}\n${displayName ?? ""}` : "",
-	])
+	if (!upn) {
+		return null
+	}
+	return `${normalizeUpn(upn)}\n${user?.displayName ?? ""}`
 }
 
-function loadMatomoTracker(): void {
+function loadMatomoTracker(userId: string): void {
 	window._paq = window._paq || []
 	const _paq = window._paq
 
+	_paq.push(["setUserId", userId])
 	_paq.push(["setDocumentTitle", `${document.domain}/${document.title}`])
 	_paq.push(["setCookieDomain", "*.vector.idf.cts"])
 	_paq.push(["trackPageView"])
@@ -55,21 +54,22 @@ export default function MatomoWrapper({ children }: PropsWithChildren) {
 			return
 		}
 
-		// setUserId must be queued before trackPageView, otherwise the
-		// tracked pageview is not attributed to the user.
-		cookieStore
-			.get(COOKIE_NAME)
-			.then((cookie) => {
-				pushMatomoUserId(cookie?.value)
-			})
-			.catch(() => {
-				pushMatomoUserId()
-			})
-			.finally(() => {
-				loadMatomoTracker()
-			})
+		// Only load Matomo after successfully identifying the user — avoids anonymous visits.
+		function identifyAndTrack(token?: string): void {
+			if (!token) {
+				return
+			}
+			const userId = getUserId(token)
+			if (!userId) {
+				return
+			}
+			loadMatomoTracker(userId)
+		}
 
-		return onCookieChange(COOKIE_NAME, pushMatomoUserId)
+		// Try immediately; if the token isn't set yet, wait for SSO to complete.
+		getStoredToken().then(identifyAndTrack)
+
+		return onCookieChange(TOKEN_NAME, identifyAndTrack)
 	}, [])
 
 	return children

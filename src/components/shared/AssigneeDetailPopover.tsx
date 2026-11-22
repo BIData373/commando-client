@@ -32,22 +32,20 @@ export function AssigneeDetailPopover({
 						<SectionLabel>משתמשים מכותבים:</SectionLabel>
 						<UserScrollArea>
 							<UserList>
-								{assignee.users.map((u) => (
-									<UserRow key={u.id}>
+								{assignee.users.map(({ user: { id, info, upn } }) => (
+									<UserRow key={id}>
 										<UserPrimary>
-											{u.info?.name && (
+											{info?.name && (
 												<>
-													<UserName title={u.info?.name}>
-														{u.info?.name}
-													</UserName>
+													<UserName title={info?.name}>{info?.name}</UserName>
 													<UserDash>{" - "}</UserDash>
 												</>
 											)}
 
-											<UserUpn title={u.upn}>{u.upn}</UserUpn>
+											<UserUpn title={upn}>{upn}</UserUpn>
 										</UserPrimary>
-										<UserMeta title={u.info?.displayName}>
-											{u.info?.displayName ?? ""}
+										<UserMeta title={info?.displayName}>
+											{info?.displayName ?? ""}
 										</UserMeta>
 									</UserRow>
 								))}
@@ -122,12 +120,15 @@ const RoleText = styled.span`
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+  flex: 1;
 `
 
 const SectionLabel = styled.span`
   font-size: var(--fs-base);
   line-height: 24px;
   color: var(--text-subtitle-color);
+  flex-shrink: 0;
+  white-space: nowrap;
 `
 
 const UserScrollArea = styled.div`

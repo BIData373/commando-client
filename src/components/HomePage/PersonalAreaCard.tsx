@@ -20,7 +20,7 @@ export default function PersonalAreaCard() {
 
 	return (
 		<CardRoot onClick={handleNavigateToPersonal}>
-			<PersonalAreaHeader />
+			<PersonalAreaHeader taskRows={allTaskRows} />
 			<Footer>
 				<PersonalAreaButton onClick={handleNavigateToPersonal} />
 				{totalCount > 0 ? (

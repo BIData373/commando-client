@@ -16,8 +16,8 @@ export function AssigneesInfoModal({
 					<StyledDialogClose />
 				</DialogBody>
 				<DialogActions>
-					<DialogClose>
-						<PrimaryButton title="הבנתי, תודה"></PrimaryButton>
+					<DialogClose asChild>
+						<PrimaryButton title="הבנתי, תודה" />
 					</DialogClose>
 				</DialogActions>
 			</StyledModalContent>

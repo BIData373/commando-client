@@ -1,6 +1,9 @@
 import { HttpStatusCode } from "axios"
+import Cookies from "js-cookie"
+import { IS_MOBILE_DEVICE } from "../hooks/use-mobile"
 import { AUTH_SERVER_URL, USE_MOCK_API, USE_SSO } from "./env-utils"
-import { COOKIE_NAME } from "./user-utils"
+import { TOKEN_NAME } from "./user-utils"
+import { generateUuid } from "./uuid-utils"
 
 export const AUTH_ENABLED = !USE_MOCK_API && USE_SSO
 
@@ -9,7 +12,11 @@ export const REFRESH_BUFFER_SECONDS = 70
 export const SSO_PATH = "sso"
 
 export async function getStoredToken() {
-	return (await cookieStore.get(COOKIE_NAME).catch(() => null))?.value
+	if (IS_MOBILE_DEVICE) {
+		return localStorage.getItem(TOKEN_NAME) ?? undefined
+	}
+
+	return Cookies.get(TOKEN_NAME)
 }
 
 export function getTokenExpiry(token: string): number | null {
@@ -47,6 +54,29 @@ const codesForReauthentication = [
 ]
 
 export async function authenticate() {
+	if (IS_MOBILE_DEVICE) {
+		const response = await fetch(
+			new URL(`${SSO_PATH}/issue`, AUTH_SERVER_URL).href,
+			{
+				method: "POST",
+				credentials: "include",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(
+					Object.fromEntries(new URLSearchParams(window.location.search)),
+				),
+			},
+		)
+
+		if (!response.ok) {
+			throw new Error("SSO Internal error")
+		}
+
+		const data = (await response.json()) as { ssoUser: string }
+		localStorage.setItem(TOKEN_NAME, data.ssoUser)
+
+		return data.ssoUser
+	}
+
 	const response = await fetch(new URL("sso/cookies", AUTH_SERVER_URL).href, {
 		method: "GET",
 		credentials: "include",
@@ -56,12 +86,7 @@ export async function authenticate() {
 		const data = (await response.json()) as { ssoUser: string }
 		const newToken = data?.ssoUser
 
-		await cookieStore.set({
-			name: COOKIE_NAME,
-			value: newToken,
-			path: "/",
-			sameSite: "lax",
-		})
+		Cookies.set(TOKEN_NAME, newToken)
 
 		consumeSSOState()
 
@@ -72,13 +97,13 @@ export async function authenticate() {
 		throw new Error("SSO Internal error")
 	}
 
-	await cookieStore.delete(COOKIE_NAME)
+	Cookies.remove(TOKEN_NAME)
 
 	if (consumeSSOState()) {
 		throw new Error("Authentication failed after redirect")
 	}
 
-	const state = crypto.randomUUID()
+	const state = generateUuid()
 	sessionStorage.setItem(SSO_STATE_KEY, state)
 
 	const comebackUrl = new URL(window.location.href)

@@ -18,17 +18,21 @@ import type { ErrorType } from "../../axios"
 import { sendRequest } from "../../axios"
 import type { ToggleUserTaskArchiveParams } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 export const toggleUserTaskArchive = (
 	params: ToggleUserTaskArchiveParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<void>({
-		url: `/archived-user-assignee-task`,
-		method: "PATCH",
-		params,
-		signal,
-	})
+	return sendRequest<void>(
+		{ url: `/archived-user-assignee-task`, method: "PATCH", params, signal },
+		options,
+	)
 }
+
+export const getToggleUserTaskArchiveMutationKey = () =>
+	["toggleUserTaskArchive"] as const
 
 export const getToggleUserTaskArchiveMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -37,31 +41,32 @@ export const getToggleUserTaskArchiveMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof toggleUserTaskArchive>>,
 		TError,
-		{ params: ToggleUserTaskArchiveParams },
+		ToggleUserTaskArchiveMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof toggleUserTaskArchive>>,
 	TError,
-	{ params: ToggleUserTaskArchiveParams },
+	ToggleUserTaskArchiveMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["toggleUserTaskArchive"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getToggleUserTaskArchiveMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof toggleUserTaskArchive>>,
-		{ params: ToggleUserTaskArchiveParams }
+		ToggleUserTaskArchiveMutationVariables
 	> = (props) => {
 		const { params } = props ?? {}
 
-		return toggleUserTaskArchive(params)
+		return toggleUserTaskArchive(params, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -72,6 +77,9 @@ export type ToggleUserTaskArchiveMutationResult = NonNullable<
 >
 
 export type ToggleUserTaskArchiveMutationError = ErrorType<unknown>
+export type ToggleUserTaskArchiveMutationVariables = {
+	params: ToggleUserTaskArchiveParams
+}
 
 export const useToggleUserTaskArchive = <
 	TError = ErrorType<unknown>,
@@ -81,15 +89,16 @@ export const useToggleUserTaskArchive = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof toggleUserTaskArchive>>,
 			TError,
-			{ params: ToggleUserTaskArchiveParams },
+			ToggleUserTaskArchiveMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof toggleUserTaskArchive>>,
 	TError,
-	{ params: ToggleUserTaskArchiveParams },
+	ToggleUserTaskArchiveMutationVariables,
 	TContext
 > => {
 	return useMutation(

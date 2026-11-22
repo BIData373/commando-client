@@ -11,7 +11,7 @@ export function DeletePopover({ count, title, ...props }: DeletePopoverProps) {
 	return (
 		<ConfirmPopover
 			title={title ?? (count === 1 ? "מחיקת הנחיה" : `מחיקת ${count} הנחיות`)}
-			description=".שים לב לא ניתן לבטל פעולה זו"
+			description=".שים לב, לא ניתן לבטל פעולה זאת"
 			confirmLabel={count === 1 ? "מחק הנחיה" : "מחק הנחיות"}
 			openManually={true}
 			{...props}

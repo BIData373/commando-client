@@ -10,21 +10,25 @@ import {
 import type {
 	AssigneeDto,
 	AssigneesDto,
+	AssigneeUserDto,
 	MirageUserDto,
-	UserDto,
 } from "src/api/model"
 import {
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
+import { getUserStatusEditableDisabledReason } from "src/functions/status-editable-messages"
 import {
 	addResponsibleMessage,
 	updateResponsibleMessage,
 } from "src/functions/toast-messages"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
+import { useUpdateAssigneeStatus } from "src/hooks/useUpdateAssigneeStatus"
+import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries, queryClient } from "src/query-client"
 import { CancelButton } from "../shared/CancelButton"
 import { FormField } from "../shared/FormField"
+import InputWithCount from "../shared/InputWithCount"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import {
@@ -33,17 +37,25 @@ import {
 	DialogDescription,
 	DialogTitle,
 } from "../ui/dialog"
-import { Input } from "../ui/input"
-import { AssigneeUsersList } from "./AssigneeUsersList"
+import { AssigneeStatusEditableToggle } from "./AssigneeStatusEditableToggle"
+import { type AssigneeFormUser, AssigneeUsersList } from "./AssigneeUsersList"
 import { ColorPicker, PRESET_COLORS } from "./ColorPicker"
 import { DropdownUsers } from "./DropdownUsers"
 import { IconDropdown } from "./IconDropdown"
 
 const MAX_NAME_LENGTH = 30
 
+function toFormUsers(users: AssigneeUserDto[] = []): AssigneeFormUser[] {
+	return users.map(({ user: { id, upn, info }, statusEditable }) => ({
+		id,
+		upn,
+		info,
+		statusEditable,
+	}))
+}
+
 interface AssigneeDialogProps {
 	open: boolean
-	workspaceId: number
 	assignee?: AssigneeDto
 	onOpenChange(open: boolean): void
 	onCreate?(assignee: AssigneeDto): void
@@ -51,12 +63,15 @@ interface AssigneeDialogProps {
 
 export function AssigneeDialog({
 	assignee,
-	workspaceId,
 	open,
 	onOpenChange,
 	onCreate,
 }: AssigneeDialogProps) {
 	const isUpdate = !!assignee
+
+	const {
+		workspace: { id: workspaceId, assigneeStatusEditable },
+	} = useWorkspace()
 
 	const [searchValue, setSearchValue] = useState<string>("")
 	const [iconSearch, setIconSearch] = useState("")
@@ -102,22 +117,25 @@ export function AssigneeDialog({
 		])
 	}
 
-	const { mutateAsync: createAssignee } = useCreateAssignee({
-		mutation: {
-			meta: {
-				toast: { success: addResponsibleMessage, error: true },
+	const { mutateAsync: createAssignee, isPending: isCreating } =
+		useCreateAssignee({
+			mutation: {
+				meta: {
+					toast: { success: addResponsibleMessage, error: true },
+				},
+				onSuccess: handleSubmitSuccess,
 			},
-			onSuccess: handleSubmitSuccess,
-		},
-	})
-	const { mutateAsync: updateAssignee } = useUpdateAssignee({
-		mutation: {
-			meta: {
-				toast: { success: updateResponsibleMessage, error: true },
+		})
+	const { mutateAsync: updateAssignee, isPending: isUpdating } =
+		useUpdateAssignee({
+			mutation: {
+				meta: {
+					toast: { success: updateResponsibleMessage, error: true },
+				},
+				onSuccess: handleSubmitSuccess,
 			},
-			onSuccess: handleSubmitSuccess,
-		},
-	})
+		})
+	const { updateAssigneeStatus } = useUpdateAssigneeStatus()
 
 	const randomColor = useMemo(() => {
 		if (!open) {
@@ -134,7 +152,8 @@ export function AssigneeDialog({
 			name: assignee?.name ?? "",
 			color: assignee?.color ?? randomColor ?? PRESET_COLORS[0],
 			icon: assignee?.icon ?? "",
-			users: assignee?.users ?? [],
+			statusEditable: assignee?.statusEditable ?? assigneeStatusEditable,
+			users: toFormUsers(assignee?.users),
 		},
 		onSubmit: async ({ value }) => {
 			const payload = {
@@ -142,7 +161,8 @@ export function AssigneeDialog({
 				color: value.color,
 				icon: value.icon || null,
 				iconName: selectedIcon?.heb_name ?? null,
-				users: value.users,
+				statusEditable: value.statusEditable,
+				users: value.users.map(({ id, ...user }) => user),
 			}
 
 			if (assignee) {
@@ -160,15 +180,6 @@ export function AssigneeDialog({
 		},
 	})
 
-	function handleKeyChange(e: React.KeyboardEvent<HTMLInputElement>) {
-		if (
-			e.code !== "Backspace" &&
-			e.currentTarget.value.length >= MAX_NAME_LENGTH
-		) {
-			e.preventDefault()
-		}
-	}
-
 	function handleRemoveAssignee(upn: string) {
 		form.setFieldValue("users", (prev) =>
 			prev.filter((user) => user.upn !== upn),
@@ -177,17 +188,44 @@ export function AssigneeDialog({
 
 	function handleSearchSelect(user: MirageUserDto) {
 		if (user) {
+			const statusEditable =
+				assigneeStatusEditable && form.getFieldValue("statusEditable")
+
 			form.setFieldValue("users", (prev) =>
 				prev.some(({ upn }) => upn === user.upn)
 					? prev
-					: [...prev, user as UserDto],
+					: [...prev, { ...user, statusEditable }],
 			)
 			setSearchValue("")
 		}
 	}
 
+	function handleUserStatusEditableChange(
+		{ id: userId, upn }: AssigneeFormUser,
+		checked: boolean,
+	) {
+		form.setFieldValue("users", (prev) =>
+			prev.map((user) =>
+				user.upn === upn ? { ...user, statusEditable: checked } : user,
+			),
+		)
+
+		// Users added in this dialog have no id until the assignee is saved
+		if (assignee && userId) {
+			updateAssigneeStatus(assignee.id, checked, userId)
+		}
+	}
+
 	function handleSearchClear() {
 		setSearchValue("")
+	}
+
+	function handleAssigneeStatusEditableChange(checked: boolean) {
+		form.setFieldValue("statusEditable", checked)
+
+		if (assignee) {
+			updateAssigneeStatus(assignee.id, checked)
+		}
 	}
 
 	function handleColorChange(color: string) {
@@ -207,7 +245,7 @@ export function AssigneeDialog({
 	}
 
 	function resetForm() {
-		form.setFieldValue("users", assignee?.users ?? [])
+		form.setFieldValue("users", toFormUsers(assignee?.users))
 		setIconSearch("")
 		setSelectedIcon(null)
 		form.reset()
@@ -242,10 +280,10 @@ export function AssigneeDialog({
 							<FieldGroup>
 								<FieldLabel>שם אחראי</FieldLabel>
 								<FormField field={field}>
-									<Input
-										value={field.state.value}
-										onKeyDown={handleKeyChange}
-										onChange={(e) => field.handleChange(e.target.value)}
+									<InputWithCount
+										text={field.state.value}
+										onChange={field.handleChange}
+										maxLength={MAX_NAME_LENGTH}
 										placeholder='לדוגמה: מג"ד, רע"ן מפקדים, קמב"צ...'
 									/>
 								</FormField>
@@ -268,16 +306,28 @@ export function AssigneeDialog({
 							</form.Subscribe>
 							<OrSeparator>או</OrSeparator>
 							<EmblemSection>
+								<ColorLabel>סמל</ColorLabel>
 								<IconDropdown
 									value={iconSearch}
 									onChange={setIconSearch}
 									onSelect={handleIconSelect}
 									onClear={handleIconClear}
 									selectedItem={selectedIcon ?? undefined}
+									placeholder="בחר סמל"
 								/>
 							</EmblemSection>
 						</EitherOrRow>
 					</FieldGroup>
+
+					<form.Subscribe selector={(s) => s.values.statusEditable}>
+						{(statusEditable) => (
+							<AssigneeStatusEditableToggle
+								checked={assigneeStatusEditable && statusEditable}
+								disabled={!assigneeStatusEditable}
+								onCheckedChange={handleAssigneeStatusEditableChange}
+							/>
+						)}
+					</form.Subscribe>
 
 					<form.Field name="users">
 						{(field) => (
@@ -293,10 +343,19 @@ export function AssigneeDialog({
 										placeholder="חפש שם/ תפקיד/ מספר אישי"
 									/>
 								</SearchRow>
-								<AssigneeUsersList
-									users={field.state.value}
-									onRemove={handleRemoveAssignee}
-								/>
+								<form.Subscribe selector={(s) => s.values.statusEditable}>
+									{(statusEditable) => (
+										<AssigneeUsersList
+											users={field.state.value}
+											disabledReason={getUserStatusEditableDisabledReason(
+												assigneeStatusEditable,
+												statusEditable,
+											)}
+											onRemove={handleRemoveAssignee}
+											onStatusEditableChange={handleUserStatusEditableChange}
+										/>
+									)}
+								</form.Subscribe>
 							</UsersFieldGroup>
 						)}
 					</form.Field>
@@ -309,6 +368,7 @@ export function AssigneeDialog({
 					<PrimaryButton
 						title={isUpdate ? "שמור" : "צור"}
 						onClick={form.handleSubmit}
+						loading={isCreating || isUpdating}
 					/>
 				</DialogActions>
 			</AssigneeDialogContent>
@@ -318,7 +378,7 @@ export function AssigneeDialog({
 
 const AssigneeDialogContent = styled(ModalContent)`
   width: 700px;
-  height: 800px;
+  min-height: 740px;
   max-width: calc(100vw - 2rem);
   max-height: calc(100vh - 2rem);
   max-height: 70vh;
@@ -374,7 +434,7 @@ const UsersFieldGroup = styled(FieldGroup)`
 const FieldLabel = styled.span`
   font-size: var(--fs-xl);
   font-weight: 400;
-  color: var(--sea-ink);
+  color: var(--text-color-2);
   line-height: 1.4;
 `
 
@@ -387,12 +447,16 @@ const EitherOrRow = styled.div`
 `
 
 const EmblemSection = styled.div`
-  max-width: 200px;
+  width: 225px;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
+  align-items: center;
+  gap: 8px;
   min-width: 0;
+
+  > :last-child {
+    flex: 1;
+    min-width: 0;
+  }
 `
 
 const OrSeparator = styled.span`

@@ -3,6 +3,7 @@ import {
 	getListAssigneesQueryKey,
 	useDeleteAssignee,
 } from "src/api/assignee/assignee"
+import { getListAssigneeGroupsQueryKey } from "src/api/assignee-group/assignee-group"
 import {
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
@@ -33,6 +34,7 @@ export function DeleteAssigneePopconfirm({
 			onSuccess: () => {
 				invalidateQueries([
 					getListAssigneesQueryKey({ workspaceId }),
+					getListAssigneeGroupsQueryKey({ workspaceId }),
 					getListTaskRowsQueryKey({ workspaceId }),
 					getListPersonalTaskRowsQueryKey(),
 				])

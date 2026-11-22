@@ -9,12 +9,14 @@ interface TaskCommentsSectionProps {
 	taskId: number
 	isManager: boolean
 	commentsDividerRef?: RefObject<HTMLDivElement | null>
+	showInput?: boolean
 }
 
 function TaskCommentsSection({
 	taskId,
 	isManager,
 	commentsDividerRef,
+	showInput = true,
 }: TaskCommentsSectionProps) {
 	const isMobile = useIsMobile()
 
@@ -29,7 +31,7 @@ function TaskCommentsSection({
 					<CommentsSection>
 						<TaskCommentList taskId={taskId} isManager={isManager} />
 					</CommentsSection>
-					<TaskCommentInput taskId={taskId} />
+					{showInput && <TaskCommentInput taskId={taskId} autoFocus />}
 				</>
 			) : (
 				<>
@@ -53,7 +55,9 @@ const Wrapper = styled.div`
   ${MOBILE_MEDIA_QUERY} {
     gap: 0;
     padding-bottom: 0;
-    min-height: 70vh;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
   }
 `
 

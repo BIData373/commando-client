@@ -20,7 +20,8 @@ interface StatusDropdownProps {
 	taskId: number
 	assigneeId?: number
 	editable?: boolean
-	isArchived?: boolean
+	isPersonalArchived?: boolean
+	isWorkspaceArchived?: boolean
 	onUpdate: (
 		taskId: number,
 		assigneeId: number | undefined,
@@ -36,7 +37,8 @@ export const StatusDropdown = memo(
 		taskId,
 		assigneeId,
 		editable = false,
-		isArchived,
+		isPersonalArchived,
+		isWorkspaceArchived,
 		onUpdate,
 		fullWidth,
 	}: StatusDropdownProps) => {
@@ -51,9 +53,11 @@ export const StatusDropdown = memo(
 
 		const statuses = providedStatuses ?? fetchedStatuses
 		const statusesReady = statuses !== undefined && !isFetchingStatuses
-		const tooltip = isArchived
-			? "ההנחיה נמצאת בארכיון סביבת המפקד - לא ניתן לערוך סטטוס"
-			: undefined
+		const tooltip = isPersonalArchived
+			? "ההנחיה נמצאת בארכיון האישי - לא ניתן לערוך סטטוס"
+			: isWorkspaceArchived
+				? "ההנחיה נמצאת בארכיון סביבת המפקד - לא ניתן לערוך סטטוס"
+				: undefined
 
 		function handleSelectStatus(newStatus: WorkspaceStatusDto) {
 			if (newStatus.id !== status.id) {

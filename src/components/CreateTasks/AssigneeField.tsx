@@ -12,6 +12,7 @@ interface AssigneeFieldProps {
 	selectedAssignees: number[]
 	directiveTitle: string
 	onToggle: (id: number) => void
+	onGroupSelect?: (assigneeIds: number[]) => void
 	onRemove: (id: number) => void
 	onDetailChange: (id: number, value: string) => void
 	assigneeExtras?: Record<number, Partial<AssigneeStatusDto>>
@@ -30,6 +31,7 @@ function AssigneeField({
 	selectedAssignees,
 	directiveTitle,
 	onToggle,
+	onGroupSelect,
 	onRemove,
 	onDetailChange,
 	assigneeExtras,
@@ -51,9 +53,10 @@ function AssigneeField({
 				workspaceId={workspaceId}
 				selectedAssignees={selectedAssignees}
 				onToggle={onToggle}
+				onGroupSelect={onGroupSelect}
 				closeOnFirstSelect
 				trigger={({ search, onSearchChange }) => (
-					<SelectTriggerButton type="button">
+					<SelectTriggerButton>
 						<SelectChevron size={12} />
 						<SearchInput
 							value={search}
@@ -115,7 +118,7 @@ const LabelText = styled.span`
   color: rgba(0, 0, 0, 0.88);
 `
 
-const SelectTriggerButton = styled.button`
+const SelectTriggerButton = styled.div`
   display: flex;
   align-items: center;
   width: 100%;

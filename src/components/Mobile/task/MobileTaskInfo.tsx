@@ -58,12 +58,12 @@ export function MobileTaskInfo({
 					{!!source && (
 						<SectionWrapper>
 							<SectionLabel>מקור</SectionLabel>
-							<SectionDescription>
+							<SourceDescription>
 								{source.name}
 								<LightSectionDescriptionText>
 									{source.date && <>{formatDateMonthYear(source.date)}</>}
 								</LightSectionDescriptionText>
-							</SectionDescription>
+							</SourceDescription>
 						</SectionWrapper>
 					)}
 					{allTags.length > 0 && (
@@ -127,10 +127,16 @@ const SectionLabel = styled.h2`
 `
 
 const SectionDescription = styled.p`
+    color: var(--text-color-2);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+`
+
+const SourceDescription = styled(SectionDescription)`
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
-    color: var(--text-color-2);
 `
 
 const LightSectionDescriptionText = styled.span`

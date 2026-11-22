@@ -40,6 +40,8 @@ import type {
 	UpdateTaskPathParameters,
 } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 const withQueryKey = <T extends object, K>(
 	query: T,
 	queryKey: K,
@@ -60,16 +62,22 @@ const withQueryKey = <T extends object, K>(
 
 export const createTask = (
 	createTaskDto: CreateTaskDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskWithWorkspaceDto>({
-		url: `/task`,
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		data: createTaskDto,
-		signal,
-	})
+	return sendRequest<TaskWithWorkspaceDto>(
+		{
+			url: `/task`,
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			data: createTaskDto,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getCreateTaskMutationKey = () => ["createTask"] as const
 
 export const getCreateTaskMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -78,31 +86,32 @@ export const getCreateTaskMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof createTask>>,
 		TError,
-		{ data: CreateTaskDto },
+		CreateTaskMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createTask>>,
 	TError,
-	{ data: CreateTaskDto },
+	CreateTaskMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["createTask"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getCreateTaskMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createTask>>,
-		{ data: CreateTaskDto }
+		CreateTaskMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
-		return createTask(data)
+		return createTask(data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -113,27 +122,36 @@ export type CreateTaskMutationResult = NonNullable<
 >
 export type CreateTaskMutationBody = CreateTaskDto
 export type CreateTaskMutationError = ErrorType<unknown>
+export type CreateTaskMutationVariables = { data: CreateTaskDto }
 
 export const useCreateTask = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createTask>>,
 			TError,
-			{ data: CreateTaskDto },
+			CreateTaskMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof createTask>>,
 	TError,
-	{ data: CreateTaskDto },
+	CreateTaskMutationVariables,
 	TContext
 > => {
 	return useMutation(getCreateTaskMutationOptions(options), queryClient)
 }
-export const listTasks = (params?: ListTasksParams, signal?: AbortSignal) => {
-	return sendRequest<TaskDto[]>({ url: `/task`, method: "GET", params, signal })
+export const listTasks = (
+	params?: ListTasksParams,
+	options?: SecondParameter<typeof sendRequest>,
+	signal?: AbortSignal,
+) => {
+	return sendRequest<TaskDto[]>(
+		{ url: `/task`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getListTasksQueryKey = (params?: ListTasksParams) => {
@@ -149,15 +167,16 @@ export const getListTasksQueryOptions = <
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTasks>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getListTasksQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof listTasks>>> = ({
 		signal,
-	}) => listTasks(params, signal)
+	}) => listTasks(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listTasks>>,
@@ -188,6 +207,7 @@ export function useListTasks<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -210,6 +230,7 @@ export function useListTasks<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -224,6 +245,7 @@ export function useListTasks<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTasks>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -239,6 +261,7 @@ export function useListTasks<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTasks>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -256,14 +279,13 @@ export function useListTasks<
 
 export const listTaskRows = (
 	params: ListTaskRowsParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskRowDto[]>({
-		url: `/task/rows`,
-		method: "GET",
-		params,
-		signal,
-	})
+	return sendRequest<TaskRowDto[]>(
+		{ url: `/task/rows`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getListTaskRowsQueryKey = (params?: ListTaskRowsParams) => {
@@ -279,15 +301,16 @@ export const getListTaskRowsQueryOptions = <
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTaskRows>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getListTaskRowsQueryKey(params)
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof listTaskRows>>> = ({
 		signal,
-	}) => listTaskRows(params, signal)
+	}) => listTaskRows(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listTaskRows>>,
@@ -318,6 +341,7 @@ export function useListTaskRows<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -340,6 +364,7 @@ export function useListTaskRows<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -354,6 +379,7 @@ export function useListTaskRows<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTaskRows>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -369,6 +395,7 @@ export function useListTaskRows<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listTaskRows>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -386,14 +413,13 @@ export function useListTaskRows<
 
 export const listPersonalTasks = (
 	params?: ListPersonalTasksParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskWithWorkspaceDto[]>({
-		url: `/task/personal`,
-		method: "GET",
-		params,
-		signal,
-	})
+	return sendRequest<TaskWithWorkspaceDto[]>(
+		{ url: `/task/personal`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getListPersonalTasksQueryKey = (
@@ -415,16 +441,17 @@ export const getListPersonalTasksQueryOptions = <
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey =
 		queryOptions?.queryKey ?? getListPersonalTasksQueryKey(params)
 
 	const queryFn: QueryFunction<
 		Awaited<ReturnType<typeof listPersonalTasks>>
-	> = ({ signal }) => listPersonalTasks(params, signal)
+	> = ({ signal }) => listPersonalTasks(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listPersonalTasks>>,
@@ -459,6 +486,7 @@ export function useListPersonalTasks<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -485,6 +513,7 @@ export function useListPersonalTasks<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -503,6 +532,7 @@ export function useListPersonalTasks<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -522,6 +552,7 @@ export function useListPersonalTasks<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -539,14 +570,13 @@ export function useListPersonalTasks<
 
 export const listPersonalTaskRows = (
 	params?: ListPersonalTaskRowsParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskRowWithWorkspaceDto[]>({
-		url: `/task/personal/rows`,
-		method: "GET",
-		params,
-		signal,
-	})
+	return sendRequest<TaskRowWithWorkspaceDto[]>(
+		{ url: `/task/personal/rows`, method: "GET", params, signal },
+		options,
+	)
 }
 
 export const getListPersonalTaskRowsQueryKey = (
@@ -568,16 +598,17 @@ export const getListPersonalTaskRowsQueryOptions = <
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey =
 		queryOptions?.queryKey ?? getListPersonalTaskRowsQueryKey(params)
 
 	const queryFn: QueryFunction<
 		Awaited<ReturnType<typeof listPersonalTaskRows>>
-	> = ({ signal }) => listPersonalTaskRows(params, signal)
+	> = ({ signal }) => listPersonalTaskRows(params, requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listPersonalTaskRows>>,
@@ -612,6 +643,7 @@ export function useListPersonalTaskRows<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -638,6 +670,7 @@ export function useListPersonalTaskRows<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -656,6 +689,7 @@ export function useListPersonalTaskRows<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -675,6 +709,7 @@ export function useListPersonalTaskRows<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -692,13 +727,13 @@ export function useListPersonalTaskRows<
 
 export const getTask = (
 	{ id }: GetTaskPathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskWithWorkspaceDto>({
-		url: `/task/${id}`,
-		method: "GET",
-		signal,
-	})
+	return sendRequest<TaskWithWorkspaceDto>(
+		{ url: `/task/${id}`, method: "GET", signal },
+		options,
+	)
 }
 
 export const getGetTaskQueryKey = ({ id }: GetTaskPathParameters) => {
@@ -714,15 +749,16 @@ export const getGetTaskQueryOptions = <
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTask>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getGetTaskQueryKey({ id })
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getTask>>> = ({
 		signal,
-	}) => getTask({ id }, signal)
+	}) => getTask({ id }, requestOptions, signal)
 
 	return {
 		queryKey,
@@ -756,6 +792,7 @@ export function useGetTask<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -778,6 +815,7 @@ export function useGetTask<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -792,6 +830,7 @@ export function useGetTask<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTask>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -807,6 +846,7 @@ export function useGetTask<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getTask>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -825,16 +865,22 @@ export function useGetTask<
 export const updateTask = (
 	{ id }: UpdateTaskPathParameters,
 	updateTaskDto: UpdateTaskDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskWithWorkspaceDto>({
-		url: `/task/${id}`,
-		method: "PATCH",
-		headers: { "Content-Type": "application/json" },
-		data: updateTaskDto,
-		signal,
-	})
+	return sendRequest<TaskWithWorkspaceDto>(
+		{
+			url: `/task/${id}`,
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			data: updateTaskDto,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getUpdateTaskMutationKey = () => ["updateTask"] as const
 
 export const getUpdateTaskMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -843,31 +889,32 @@ export const getUpdateTaskMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof updateTask>>,
 		TError,
-		{ pathParams: UpdateTaskPathParameters; data: UpdateTaskDto },
+		UpdateTaskMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updateTask>>,
 	TError,
-	{ pathParams: UpdateTaskPathParameters; data: UpdateTaskDto },
+	UpdateTaskMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["updateTask"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getUpdateTaskMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updateTask>>,
-		{ pathParams: UpdateTaskPathParameters; data: UpdateTaskDto }
+		UpdateTaskMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
-		return updateTask(pathParams, data)
+		return updateTask(pathParams, data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -878,35 +925,42 @@ export type UpdateTaskMutationResult = NonNullable<
 >
 export type UpdateTaskMutationBody = UpdateTaskDto
 export type UpdateTaskMutationError = ErrorType<unknown>
+export type UpdateTaskMutationVariables = {
+	pathParams: UpdateTaskPathParameters
+	data: UpdateTaskDto
+}
 
 export const useUpdateTask = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updateTask>>,
 			TError,
-			{ pathParams: UpdateTaskPathParameters; data: UpdateTaskDto },
+			UpdateTaskMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof updateTask>>,
 	TError,
-	{ pathParams: UpdateTaskPathParameters; data: UpdateTaskDto },
+	UpdateTaskMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpdateTaskMutationOptions(options), queryClient)
 }
 export const deleteTask = (
 	{ id }: DeleteTaskPathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<TaskWithWorkspaceDto>({
-		url: `/task/${id}`,
-		method: "DELETE",
-		signal,
-	})
+	return sendRequest<TaskWithWorkspaceDto>(
+		{ url: `/task/${id}`, method: "DELETE", signal },
+		options,
+	)
 }
+
+export const getDeleteTaskMutationKey = () => ["deleteTask"] as const
 
 export const getDeleteTaskMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -915,31 +969,32 @@ export const getDeleteTaskMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteTask>>,
 		TError,
-		{ pathParams: DeleteTaskPathParameters },
+		DeleteTaskMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteTask>>,
 	TError,
-	{ pathParams: DeleteTaskPathParameters },
+	DeleteTaskMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deleteTask"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getDeleteTaskMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteTask>>,
-		{ pathParams: DeleteTaskPathParameters }
+		DeleteTaskMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
-		return deleteTask(pathParams)
+		return deleteTask(pathParams, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -950,21 +1005,25 @@ export type DeleteTaskMutationResult = NonNullable<
 >
 
 export type DeleteTaskMutationError = ErrorType<unknown>
+export type DeleteTaskMutationVariables = {
+	pathParams: DeleteTaskPathParameters
+}
 
 export const useDeleteTask = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteTask>>,
 			TError,
-			{ pathParams: DeleteTaskPathParameters },
+			DeleteTaskMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteTask>>,
 	TError,
-	{ pathParams: DeleteTaskPathParameters },
+	DeleteTaskMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeleteTaskMutationOptions(options), queryClient)

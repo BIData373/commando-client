@@ -108,7 +108,8 @@ function AssigneeRowList({
 									taskId={taskId}
 									assigneeId={assignee.id}
 									editable={editable}
-									isArchived={!!personalArchivedAt || !!workspaceArchivedAt}
+									isPersonalArchived={!!personalArchivedAt}
+									isWorkspaceArchived={!!workspaceArchivedAt}
 									onUpdate={onStatusChange}
 								/>
 							)}

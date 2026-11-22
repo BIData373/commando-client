@@ -62,7 +62,7 @@ export const headerVariants = {
       --root-border-bottom: none;
       --root-border-image: none;
 
-      --container-background: oklch(0.2077 0.038 275.77);
+      --container-background: var(--header-container-bg);
       --container-border-bottom: 1px solid var(--line);
       --container-box-shadow: var(--card-shadow);
       --container-icon-color: white;

@@ -10,7 +10,7 @@ export const Route = createFileRoute(
 
 function NewAssignee() {
 	const {
-		workspace: { id: workspaceId, urlName },
+		workspace: { urlName },
 	} = useWorkspace()
 
 	const navigate = useNavigate()
@@ -22,7 +22,5 @@ function NewAssignee() {
 		})
 	}
 
-	return (
-		<AssigneeDialog workspaceId={workspaceId} open onOpenChange={handleClose} />
-	)
+	return <AssigneeDialog open onOpenChange={handleClose} />
 }

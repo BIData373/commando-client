@@ -2,45 +2,69 @@ import styled from "@emotion/styled"
 import { X } from "lucide-react"
 import { Tooltip as TooltipPrimitive } from "radix-ui"
 import type { MirageUserDto } from "src/api/model"
+import { DisabledReasonSwitch } from "../shared/DisabledReasonSwitch"
 import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { UserItem } from "./UserItem"
 
-interface AssigneeUsersListProps {
-	users: MirageUserDto[]
-	onRemove: (upn: string) => void
+export interface AssigneeFormUser extends MirageUserDto {
+	id?: number
+	statusEditable: boolean
 }
 
-export function AssigneeUsersList({ users, onRemove }: AssigneeUsersListProps) {
+interface AssigneeUsersListProps {
+	users: AssigneeFormUser[]
+	disabledReason?: string
+	onRemove: (upn: string) => void
+	onStatusEditableChange: (user: AssigneeFormUser, checked: boolean) => void
+}
+
+export function AssigneeUsersList({
+	users,
+	disabledReason,
+	onRemove,
+	onStatusEditableChange,
+}: AssigneeUsersListProps) {
 	return (
 		<UserListArea>
 			{users.length > 0 && (
 				<UserCard>
 					{users.map((user) => (
-						<TooltipProvider key={user.upn}>
-							<Tooltip>
-								<TooltipTrigger asChild>
-									<UserCardItem>
+						<UserCardItem key={user.upn}>
+							<TooltipProvider>
+								<Tooltip>
+									<TooltipTrigger asChild>
 										<UserCardInfo>
 											<UserItem user={user} />
 										</UserCardInfo>
-										<UserCardClose
-											type="button"
-											onClick={() => onRemove(user.upn)}
-										>
-											<X size={12} />
-										</UserCardClose>
-									</UserCardItem>
-								</TooltipTrigger>
-								<TooltipPrimitive.Portal>
-									{user.info?.displayName && (
-										<UserTooltipContent side="bottom" sideOffset={6}>
-											{user.info?.displayName}
-											<TooltipPrimitive.Arrow width={10} height={5} />
-										</UserTooltipContent>
-									)}
-								</TooltipPrimitive.Portal>
-							</Tooltip>
-						</TooltipProvider>
+									</TooltipTrigger>
+									<TooltipPrimitive.Portal>
+										{user.info?.displayName && (
+											<UserTooltipContent side="bottom" sideOffset={6}>
+												{user.info?.displayName}
+												<TooltipPrimitive.Arrow width={10} height={5} />
+											</UserTooltipContent>
+										)}
+									</TooltipPrimitive.Portal>
+								</Tooltip>
+							</TooltipProvider>
+							<StatusToggle>
+								<DisabledReasonSwitch
+									size="sm"
+									checked={!disabledReason && user.statusEditable}
+									disabled={!!disabledReason}
+									disabledReason={disabledReason}
+									onCheckedChange={(checked) =>
+										onStatusEditableChange(user, checked)
+									}
+								/>
+								<StatusLabel $disabled={!!disabledReason}>
+									עדכון סטטוס
+								</StatusLabel>
+							</StatusToggle>
+							<UserCardClose type="button" onClick={() => onRemove(user.upn)}>
+								<X size={12} />
+							</UserCardClose>
+						</UserCardItem>
 					))}
 				</UserCard>
 			)}
@@ -49,8 +73,8 @@ export function AssigneeUsersList({ users, onRemove }: AssigneeUsersListProps) {
 }
 
 const UserListArea = styled.div`
+  flex: 1;
   min-height: 0;
-  max-height: 290px;
   width: 100%;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -66,9 +90,11 @@ const UserCard = styled.div`
 
 const UserCardItem = styled.div`
   display: flex;
+  align-items: center;
   width: 100%;
-  gap: 6px;
-  padding-right: 8px;
+  gap: 12px;
+  padding-block: 1px;
+  padding-inline: 8px 4px;
   background: var(--card-background);
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -81,6 +107,21 @@ const UserCardInfo = styled.div`
   overflow: hidden;
 `
 
+const StatusToggle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+`
+
+const StatusLabel = styled.span<{ $disabled: boolean }>`
+  font-size: var(--fs-sm);
+  line-height: 20px;
+  color: ${({ $disabled }) =>
+		$disabled ? "var(--Text-color-text-placeholder)" : "var(--text-color)"};
+  white-space: nowrap;
+`
+
 const UserCardClose = styled.button`
   display: flex;
   align-items: center;
@@ -89,9 +130,8 @@ const UserCardClose = styled.button`
   border: none;
   cursor: pointer;
   padding: 2px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-color-400);
   flex-shrink: 0;
-  align-self: flex-start;
 
   &:hover {
     color: var(--sea-ink);

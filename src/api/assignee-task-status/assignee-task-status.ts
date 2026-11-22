@@ -31,6 +31,8 @@ import type {
 	UpdateAssigneeTaskStatusDto,
 } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 const withQueryKey = <T extends object, K>(
 	query: T,
 	queryKey: K,
@@ -51,13 +53,13 @@ const withQueryKey = <T extends object, K>(
 
 export const listAssigneeTaskStatuses = (
 	{ taskId }: ListAssigneeTaskStatusesPathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneeTaskStatusDto[]>({
-		url: `/assignee-task-status/${taskId}`,
-		method: "GET",
-		signal,
-	})
+	return sendRequest<AssigneeTaskStatusDto[]>(
+		{ url: `/assignee-task-status/${taskId}`, method: "GET", signal },
+		options,
+	)
 }
 
 export const getListAssigneeTaskStatusesQueryKey = ({
@@ -79,16 +81,18 @@ export const getListAssigneeTaskStatusesQueryOptions = <
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey =
 		queryOptions?.queryKey ?? getListAssigneeTaskStatusesQueryKey({ taskId })
 
 	const queryFn: QueryFunction<
 		Awaited<ReturnType<typeof listAssigneeTaskStatuses>>
-	> = ({ signal }) => listAssigneeTaskStatuses({ taskId }, signal)
+	> = ({ signal }) =>
+		listAssigneeTaskStatuses({ taskId }, requestOptions, signal)
 
 	return {
 		queryKey,
@@ -128,6 +132,7 @@ export function useListAssigneeTaskStatuses<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -154,6 +159,7 @@ export function useListAssigneeTaskStatuses<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -172,6 +178,7 @@ export function useListAssigneeTaskStatuses<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -191,6 +198,7 @@ export function useListAssigneeTaskStatuses<
 				TData
 			>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -211,16 +219,23 @@ export function useListAssigneeTaskStatuses<
 
 export const upsertAssigneeTaskStatus = (
 	updateAssigneeTaskStatusDto: UpdateAssigneeTaskStatusDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneeTaskStatusDto>({
-		url: `/assignee-task-status`,
-		method: "PUT",
-		headers: { "Content-Type": "application/json" },
-		data: updateAssigneeTaskStatusDto,
-		signal,
-	})
+	return sendRequest<AssigneeTaskStatusDto>(
+		{
+			url: `/assignee-task-status`,
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			data: updateAssigneeTaskStatusDto,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getUpsertAssigneeTaskStatusMutationKey = () =>
+	["upsertAssigneeTaskStatus"] as const
 
 export const getUpsertAssigneeTaskStatusMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -229,31 +244,32 @@ export const getUpsertAssigneeTaskStatusMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof upsertAssigneeTaskStatus>>,
 		TError,
-		{ data: UpdateAssigneeTaskStatusDto },
+		UpsertAssigneeTaskStatusMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof upsertAssigneeTaskStatus>>,
 	TError,
-	{ data: UpdateAssigneeTaskStatusDto },
+	UpsertAssigneeTaskStatusMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["upsertAssigneeTaskStatus"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getUpsertAssigneeTaskStatusMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof upsertAssigneeTaskStatus>>,
-		{ data: UpdateAssigneeTaskStatusDto }
+		UpsertAssigneeTaskStatusMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
-		return upsertAssigneeTaskStatus(data)
+		return upsertAssigneeTaskStatus(data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -264,6 +280,9 @@ export type UpsertAssigneeTaskStatusMutationResult = NonNullable<
 >
 export type UpsertAssigneeTaskStatusMutationBody = UpdateAssigneeTaskStatusDto
 export type UpsertAssigneeTaskStatusMutationError = ErrorType<unknown>
+export type UpsertAssigneeTaskStatusMutationVariables = {
+	data: UpdateAssigneeTaskStatusDto
+}
 
 export const useUpsertAssigneeTaskStatus = <
 	TError = ErrorType<unknown>,
@@ -273,15 +292,16 @@ export const useUpsertAssigneeTaskStatus = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof upsertAssigneeTaskStatus>>,
 			TError,
-			{ data: UpdateAssigneeTaskStatusDto },
+			UpsertAssigneeTaskStatusMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof upsertAssigneeTaskStatus>>,
 	TError,
-	{ data: UpdateAssigneeTaskStatusDto },
+	UpsertAssigneeTaskStatusMutationVariables,
 	TContext
 > => {
 	return useMutation(
@@ -291,15 +311,17 @@ export const useUpsertAssigneeTaskStatus = <
 }
 export const deleteAssigneeTaskStatus = (
 	params: DeleteAssigneeTaskStatusParams,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<AssigneeTaskStatusDto>({
-		url: `/assignee-task-status`,
-		method: "DELETE",
-		params,
-		signal,
-	})
+	return sendRequest<AssigneeTaskStatusDto>(
+		{ url: `/assignee-task-status`, method: "DELETE", params, signal },
+		options,
+	)
 }
+
+export const getDeleteAssigneeTaskStatusMutationKey = () =>
+	["deleteAssigneeTaskStatus"] as const
 
 export const getDeleteAssigneeTaskStatusMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -308,31 +330,32 @@ export const getDeleteAssigneeTaskStatusMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
 		TError,
-		{ params: DeleteAssigneeTaskStatusParams },
+		DeleteAssigneeTaskStatusMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
 	TError,
-	{ params: DeleteAssigneeTaskStatusParams },
+	DeleteAssigneeTaskStatusMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deleteAssigneeTaskStatus"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getDeleteAssigneeTaskStatusMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
-		{ params: DeleteAssigneeTaskStatusParams }
+		DeleteAssigneeTaskStatusMutationVariables
 	> = (props) => {
 		const { params } = props ?? {}
 
-		return deleteAssigneeTaskStatus(params)
+		return deleteAssigneeTaskStatus(params, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -343,6 +366,9 @@ export type DeleteAssigneeTaskStatusMutationResult = NonNullable<
 >
 
 export type DeleteAssigneeTaskStatusMutationError = ErrorType<unknown>
+export type DeleteAssigneeTaskStatusMutationVariables = {
+	params: DeleteAssigneeTaskStatusParams
+}
 
 export const useDeleteAssigneeTaskStatus = <
 	TError = ErrorType<unknown>,
@@ -352,15 +378,16 @@ export const useDeleteAssigneeTaskStatus = <
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
 			TError,
-			{ params: DeleteAssigneeTaskStatusParams },
+			DeleteAssigneeTaskStatusMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deleteAssigneeTaskStatus>>,
 	TError,
-	{ params: DeleteAssigneeTaskStatusParams },
+	DeleteAssigneeTaskStatusMutationVariables,
 	TContext
 > => {
 	return useMutation(

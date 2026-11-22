@@ -34,7 +34,8 @@ export function StatusCell<TTask extends TaskRowDto, TValue>({
 				assigneeId={assignee?.id}
 				editable={editable}
 				taskId={id}
-				isArchived={!!personalArchivedAt || !!workspaceArchivedAt}
+				isPersonalArchived={!!personalArchivedAt}
+				isWorkspaceArchived={!!workspaceArchivedAt}
 				onUpdate={handleUpdate}
 			/>
 		)

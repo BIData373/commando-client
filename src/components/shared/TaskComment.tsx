@@ -3,6 +3,7 @@ import { MoreVertical, Trash2 } from "lucide-react"
 import type { MessageDto } from "src/api/model"
 import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
+import { UnreadDot } from "../shared/UnreadDot"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -27,6 +28,7 @@ function TaskComment({ message, canDelete, onDelete }: TaskCommentProps) {
 
 	return (
 		<Card>
+			{!message.viewed && <UnreadDot />}
 			<MainRow>
 				{canDelete && (
 					<DropdownMenu>
@@ -35,12 +37,12 @@ function TaskComment({ message, canDelete, onDelete }: TaskCommentProps) {
 								<MoreVertical size={14} />
 							</MenuButton>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent align="start" side="bottom">
+						<StyledMenuContent align="start" side="bottom">
 							<DeleteMenuItem onClick={handleDelete}>
 								מחק תגובה
 								<Trash2 size={16} />
 							</DeleteMenuItem>
-						</DropdownMenuContent>
+						</StyledMenuContent>
 					</DropdownMenu>
 				)}
 				<Content>{message.content}</Content>
@@ -70,6 +72,7 @@ const Card = styled.div`
   background: var(--card-background);
   width: 100%;
   direction: ltr;
+  position: relative;
 `
 
 const MainRow = styled.div`
@@ -98,10 +101,24 @@ const MenuButton = styled.button`
   }
 `
 
+const StyledMenuContent = styled(DropdownMenuContent)`
+  width: 133px;
+  padding: 4px;
+  flex-direction: column;
+  align-items: flex-end;
+  border-radius: 8px;
+  box-shadow: var(--card-shadow);
+`
+
 const DeleteMenuItem = styled(DropdownMenuItem)`
   color: var(--Components-Form-Component-labelRequiredMarkColor);
-  gap: 8px;
+  height: 32px;
+  padding: 5px 12px;
   justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  align-self: stretch;
+  border-radius: 4px;
   cursor: pointer;
 `
 
@@ -146,6 +163,7 @@ const UserDetails = styled.div`
   min-width: 0;
   flex: 1;
   direction: rtl;
+  overflow: hidden;
 
   ${MOBILE_MEDIA_QUERY} {
     display: block;

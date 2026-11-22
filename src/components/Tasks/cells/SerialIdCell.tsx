@@ -4,24 +4,39 @@ import type { TaskRowDto } from "src/api/model"
 import type { AppTableFeatures } from "src/consts/table-features"
 import { useTaskTable } from "src/providers/TaskTableProvider"
 import HighlightMatch from "../../shared/HighlightMatch"
+import { UnreadDot } from "../../shared/UnreadDot"
 
 export function SerialIdCell<TTask extends TaskRowDto, TValue>({
 	row: {
-		original: { serialId },
+		original: { serialId, viewedInTable },
 	},
 }: CellContext<AppTableFeatures, TTask, TValue>) {
-	const { searchQuery } = useTaskTable()
+	const { searchQuery, showUnreadDot } = useTaskTable()
 
 	return (
 		<IdCell>
-			<HighlightMatch
-				text={String(serialId)}
-				query={searchQuery}
-				variant="mark"
-			/>
+			<IdContent>
+				{showUnreadDot && !viewedInTable && <InlineDot />}
+				<HighlightMatch
+					text={String(serialId)}
+					query={searchQuery}
+					variant="mark"
+				/>
+			</IdContent>
 		</IdCell>
 	)
 }
+
+const InlineDot = styled(UnreadDot)`
+  position: absolute;
+  inset-inline-start: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+`
+
+const IdContent = styled.span`
+  position: relative;
+`
 
 const IdCell = styled.span`
   display: flex;
@@ -32,9 +47,5 @@ const IdCell = styled.span`
   line-height: 24px;
   color: var(--text-color);
   width: 100%;
-  height: var(--table-row-height, 100%);
   cursor: pointer;
-  /* Stays visible below the header while its spanned cell scrolls */
-  position: sticky;
-  top: var(--table-header-height, 0px);
 `

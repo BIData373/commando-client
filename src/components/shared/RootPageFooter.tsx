@@ -17,6 +17,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip"
+import { SecondaryButton } from "./SecondaryButton"
 
 interface RootPageFooterProps {
 	className?: string
@@ -37,10 +38,14 @@ export function RootPageFooter({ className }: RootPageFooterProps) {
 
 			<Actions>
 				{!isMobile && (
-					<OutlineGradientButton onClick={openUserGuide}>
-						<GradientText>מארז הדרכה</GradientText>
-						<GradientBookIcon size={18} />
-					</OutlineGradientButton>
+					<UserGuideButton
+						onClick={openUserGuide}
+						title={
+							<>
+								מארז הדרכה <TbBook size={18} />
+							</>
+						}
+					/>
 				)}
 
 				{!isMobile && (
@@ -93,6 +98,7 @@ const FooterRoot = styled.footer`
   flex-shrink: 0;
 
   ${MOBILE_MEDIA_QUERY} {
+    padding-top: 0;
     flex-direction: column-reverse;
     align-items: center;
     gap: 32px;
@@ -115,10 +121,6 @@ const CreditsText = styled.div`
   display: flex;
   align-items: flex-end;
   gap: 12px;
-
-  ${MOBILE_MEDIA_QUERY} {
-    gap: 8px;
-  }
 `
 
 const FooterIcon = styled.img`
@@ -132,7 +134,7 @@ const FooterText = styled.span`
   font-size: clamp(14px, 1vw, 20px);
   font-weight: 400;
   line-height: clamp(20px, 2.5vh, 27px);
-  color: var(--text-color-2);
+  color: var(--text-color);
   white-space: nowrap;
 `
 
@@ -146,36 +148,8 @@ const Actions = styled.div`
   }
 `
 
-const OutlineGradientButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 40px;
-  padding-inline: 16px;
-  background: var(--background);
-  border: 1px solid var(--primary);
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: var(--shadow-button-hover);
-  color: var(--primary);
-
-  &:hover {
-    border-color: var(--hover-primary);
-    color: var(--hover-primary);
-  }
-`
-
-const GradientText = styled.span`
+const UserGuideButton = styled(SecondaryButton)`
   font-size: var(--fs-base);
-  font-weight: 400;
-  line-height: 24px;
-  color: inherit;
-  white-space: nowrap;
-`
-
-const GradientBookIcon = styled(TbBook)`
-  color: inherit;
 `
 
 const IconButton = styled.button`
@@ -202,7 +176,7 @@ const ContactButton = styled(IconButton)`
     width: auto;
     gap: 8px;
     padding-inline: 15px;
-    background: var(--muted);
+    background: var(--Components-Button-Global-colorFillTertiary);
     border: none;
     box-shadow: none;
   }

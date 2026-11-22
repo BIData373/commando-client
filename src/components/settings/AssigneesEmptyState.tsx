@@ -30,7 +30,8 @@ export function AssigneesEmptyState({
 				height={32}
 				title={
 					<>
-						צור אחראי <Plus size={16} />
+						<Plus size={16} />
+						צור אחראי
 					</>
 				}
 			/>

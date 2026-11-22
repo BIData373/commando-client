@@ -39,6 +39,11 @@ const EMPTY_STATES: Record<EmptyStateKey, EmptyCardStateProps> = {
 		title: <>לא נמצאו הנחיות שוטפות</>,
 		description: "יש לנסות סינון אחר",
 	},
+	[QuickFilter.unread]: {
+		imgSrc: noResultsFound,
+		title: "לא נמצאו הנחיות חדשות",
+		description: "יש לנסות סינון אחר",
+	},
 	search: {
 		imgSrc: noResultsFound,
 		title: "לא הצלחנו למצוא הנחיות",
@@ -111,6 +116,11 @@ export const DASHBOARD_EMPTY_STATES: Record<
 		imgSrc: noResultsFound,
 		title: "לא נמצאו הנחיות שוטפות",
 		description: "הנחיות שוטפות יופיעו כאן",
+	},
+	[QuickFilter.unread]: {
+		imgSrc: noResultsFound,
+		title: "לא נמצאו הנחיות חדשות",
+		description: "הנחיות חדשות יופיעו כאן",
 	},
 	completed: {
 		imgSrc: emptyState,

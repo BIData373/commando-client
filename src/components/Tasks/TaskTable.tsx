@@ -7,21 +7,22 @@ import type {
 import { keyBy, uniqBy } from "lodash"
 import type React from "react"
 import { useDeferredValue, useMemo, useState } from "react"
-import type {
+import type { TaskRowDto, WorkspaceStatusDto } from "src/api/model"
+import {
 	DeadlineType,
-	TaskRowDto,
-	WorkspaceStatusDto,
+	PermissionType,
 	WorkspaceStatusType,
 } from "src/api/model"
-import { PermissionType } from "src/api/model"
 import { useDeleteTask } from "src/api/task/task"
 import { toast } from "src/components/Toast/toast-api"
+
 import type { AppTableFeatures } from "src/consts/table-features"
 import {
 	buildRowMenuActions,
 	type TaskArchiveEntry,
 	type TaskRowHandlers,
 } from "src/functions/row-actions"
+
 import {
 	deleteTaskMessage,
 	updateStatusMessage,
@@ -37,6 +38,8 @@ import {
 	buildUrlColumnFilters,
 	DISABLED_CLICK_COLUMNS,
 	EMPTY_LIST,
+	getColumnFilterStrings,
+	getEnumColumnFilter,
 	groupRowsByTask,
 	TASK_COLUMN_ID,
 	TASK_ROW_ID_SEPARATOR,
@@ -126,8 +129,13 @@ function TaskTable<TTask extends TaskRowDto>({
 
 	const [selectMode, setSelectMode] = useState(false)
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+	const [titleExpanded, setTitleExpanded] = useState(false)
 	const [contextMenu, setContextMenu] =
 		useState<ContextMenuState<TTask> | null>(null)
+
+	function handleToggleTitleExpanded() {
+		setTitleExpanded((prev) => !prev)
+	}
 
 	const columnFilters: ColumnFiltersState = useMemo(
 		() =>
@@ -145,34 +153,26 @@ function TaskTable<TTask extends TaskRowDto>({
 		[statusFilter, deadlineTypeFilter, assigneeFilter, columnsFilters],
 	)
 
-	function getColumnFilter(columnFilters: ColumnFiltersState, id: string) {
-		return columnFilters.find((column) => column.id === id)?.value ?? []
-	}
-
 	function handleColumnFiltersChange(
 		updater: React.SetStateAction<ColumnFiltersState>,
 	) {
 		const newFilters =
 			typeof updater === "function" ? updater(columnFilters) : updater
 
-		const tableStatusColumnValue = getColumnFilter(
-			newFilters,
-			"status",
-		) as WorkspaceStatusType[]
-
-		const tableDeadlineColumnValue = getColumnFilter(
-			newFilters,
-			"deadlineType",
-		) as DeadlineType[]
-
-		const tableAssigneeColumnValue = getColumnFilter(
-			newFilters,
-			"assignee",
-		) as string[]
-
 		setColumnsFilters(newFilters)
-		setAssigneeFilter(tableAssigneeColumnValue)
-		onFiltersChange?.(tableStatusColumnValue, tableDeadlineColumnValue)
+		setAssigneeFilter(getColumnFilterStrings(newFilters, "assignee"))
+		onFiltersChange?.(
+			getEnumColumnFilter(
+				newFilters,
+				"status",
+				Object.values(WorkspaceStatusType),
+			),
+			getEnumColumnFilter(
+				newFilters,
+				"deadlineType",
+				Object.values(DeadlineType),
+			),
+		)
 	}
 
 	const tasksByRowKey = useMemo(() => keyBy(tasks, "rowKey"), [tasks])
@@ -304,9 +304,12 @@ function TaskTable<TTask extends TaskRowDto>({
 			searchQuery={deferredSearchQuery}
 			statuses={statuses}
 			filterOptionsMap={filterOptionsMap}
-			handlers={rowHandlers as TaskRowHandlers}
+			titleExpanded={titleExpanded}
+			onToggleTitleExpanded={handleToggleTitleExpanded}
+			showUnreadDot
+			handlers={rowHandlers}
 		>
-			<TableWrapper>
+			<TableWrapper data-title-expanded={titleExpanded || undefined}>
 				<DataTable
 					columns={columns}
 					data={groupedTasks}
@@ -439,6 +442,13 @@ const TableWrapper = styled.div`
     &[rowspan] {
       vertical-align: top;
       overflow: clip;
+
+      /* Sticky within rowspan only — overflow:hidden on regular tds blocks sticky positioning */
+      & > * {
+        position: sticky;
+        top: var(--table-header-height, 0px);
+        height: var(--table-row-height, 100%);
+      }
     }
 
     &[data-column-id="${TASK_COLUMN_ID.serialId}"],
@@ -464,5 +474,45 @@ const TableWrapper = styled.div`
     border: none;
     max-height: none;
     overflow: visible;
+  }
+
+  &[data-title-expanded] td[data-column-id="title"] {
+    height: auto;
+    max-height: none;
+  }
+
+  &[data-title-expanded] tr:has([data-cell-wrapped]) td:not([data-virtual-spacer]) {
+    vertical-align: top;
+    padding-block-start: 10px;
+
+    & > * {
+      align-items: flex-start;
+    }
+  }
+
+  &[data-title-expanded] tr:has([data-cell-wrapped]) td:not([data-virtual-spacer]):not([data-column-id="title"]) {
+    max-height: none;
+
+    span, div {
+      white-space: normal;
+      text-overflow: clip;
+      -webkit-line-clamp: unset;
+      -webkit-box-orient: unset;
+      overflow-wrap: break-word;
+    }
+
+    [data-overflow-row] {
+      flex-wrap: wrap;
+
+      & > * {
+        position: static;
+        visibility: visible;
+        pointer-events: auto;
+      }
+
+      [data-overflow-indicator] {
+        display: none;
+      }
+    }
   }
 `

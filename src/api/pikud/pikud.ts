@@ -33,6 +33,8 @@ import type {
 	UpdatePikudPathParameters,
 } from "../model"
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+
 const withQueryKey = <T extends object, K>(
 	query: T,
 	queryKey: K,
@@ -53,16 +55,22 @@ const withQueryKey = <T extends object, K>(
 
 export const createPikud = (
 	createPikudDto: CreatePikudDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<PikudDto>({
-		url: `/pikud`,
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		data: createPikudDto,
-		signal,
-	})
+	return sendRequest<PikudDto>(
+		{
+			url: `/pikud`,
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			data: createPikudDto,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getCreatePikudMutationKey = () => ["createPikud"] as const
 
 export const getCreatePikudMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -71,31 +79,32 @@ export const getCreatePikudMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof createPikud>>,
 		TError,
-		{ data: CreatePikudDto },
+		CreatePikudMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof createPikud>>,
 	TError,
-	{ data: CreatePikudDto },
+	CreatePikudMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["createPikud"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getCreatePikudMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof createPikud>>,
-		{ data: CreatePikudDto }
+		CreatePikudMutationVariables
 	> = (props) => {
 		const { data } = props ?? {}
 
-		return createPikud(data)
+		return createPikud(data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -106,27 +115,35 @@ export type CreatePikudMutationResult = NonNullable<
 >
 export type CreatePikudMutationBody = CreatePikudDto
 export type CreatePikudMutationError = ErrorType<unknown>
+export type CreatePikudMutationVariables = { data: CreatePikudDto }
 
 export const useCreatePikud = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof createPikud>>,
 			TError,
-			{ data: CreatePikudDto },
+			CreatePikudMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof createPikud>>,
 	TError,
-	{ data: CreatePikudDto },
+	CreatePikudMutationVariables,
 	TContext
 > => {
 	return useMutation(getCreatePikudMutationOptions(options), queryClient)
 }
-export const listPikuds = (signal?: AbortSignal) => {
-	return sendRequest<PikudDto[]>({ url: `/pikud`, method: "GET", signal })
+export const listPikuds = (
+	options?: SecondParameter<typeof sendRequest>,
+	signal?: AbortSignal,
+) => {
+	return sendRequest<PikudDto[]>(
+		{ url: `/pikud`, method: "GET", signal },
+		options,
+	)
 }
 
 export const getListPikudsQueryKey = () => {
@@ -140,14 +157,15 @@ export const getListPikudsQueryOptions = <
 	query?: Partial<
 		UseQueryOptions<Awaited<ReturnType<typeof listPikuds>>, TError, TData>
 	>
+	request?: SecondParameter<typeof sendRequest>
 }) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getListPikudsQueryKey()
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof listPikuds>>> = ({
 		signal,
-	}) => listPikuds(signal)
+	}) => listPikuds(requestOptions, signal)
 
 	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
 		Awaited<ReturnType<typeof listPikuds>>,
@@ -177,6 +195,7 @@ export function useListPikuds<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -198,6 +217,7 @@ export function useListPikuds<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -211,6 +231,7 @@ export function useListPikuds<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listPikuds>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -225,6 +246,7 @@ export function useListPikuds<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof listPikuds>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -242,9 +264,13 @@ export function useListPikuds<
 
 export const getPikud = (
 	{ id }: GetPikudPathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<PikudDto>({ url: `/pikud/${id}`, method: "GET", signal })
+	return sendRequest<PikudDto>(
+		{ url: `/pikud/${id}`, method: "GET", signal },
+		options,
+	)
 }
 
 export const getGetPikudQueryKey = ({ id }: GetPikudPathParameters) => {
@@ -260,15 +286,16 @@ export const getGetPikudQueryOptions = <
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getPikud>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 ) => {
-	const { query: queryOptions } = options ?? {}
+	const { query: queryOptions, request: requestOptions } = options ?? {}
 
 	const queryKey = queryOptions?.queryKey ?? getGetPikudQueryKey({ id })
 
 	const queryFn: QueryFunction<Awaited<ReturnType<typeof getPikud>>> = ({
 		signal,
-	}) => getPikud({ id }, signal)
+	}) => getPikud({ id }, requestOptions, signal)
 
 	return {
 		queryKey,
@@ -302,6 +329,7 @@ export function useGetPikud<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -324,6 +352,7 @@ export function useGetPikud<
 				>,
 				"initialData"
 			>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -338,6 +367,7 @@ export function useGetPikud<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getPikud>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -353,6 +383,7 @@ export function useGetPikud<
 		query?: Partial<
 			UseQueryOptions<Awaited<ReturnType<typeof getPikud>>, TError, TData>
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -371,16 +402,22 @@ export function useGetPikud<
 export const updatePikud = (
 	{ id }: UpdatePikudPathParameters,
 	updatePikudDto: UpdatePikudDto,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<PikudDto>({
-		url: `/pikud/${id}`,
-		method: "PATCH",
-		headers: { "Content-Type": "application/json" },
-		data: updatePikudDto,
-		signal,
-	})
+	return sendRequest<PikudDto>(
+		{
+			url: `/pikud/${id}`,
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			data: updatePikudDto,
+			signal,
+		},
+		options,
+	)
 }
+
+export const getUpdatePikudMutationKey = () => ["updatePikud"] as const
 
 export const getUpdatePikudMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -389,31 +426,32 @@ export const getUpdatePikudMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof updatePikud>>,
 		TError,
-		{ pathParams: UpdatePikudPathParameters; data: UpdatePikudDto },
+		UpdatePikudMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof updatePikud>>,
 	TError,
-	{ pathParams: UpdatePikudPathParameters; data: UpdatePikudDto },
+	UpdatePikudMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["updatePikud"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getUpdatePikudMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof updatePikud>>,
-		{ pathParams: UpdatePikudPathParameters; data: UpdatePikudDto }
+		UpdatePikudMutationVariables
 	> = (props) => {
 		const { pathParams, data } = props ?? {}
 
-		return updatePikud(pathParams, data)
+		return updatePikud(pathParams, data, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -424,35 +462,42 @@ export type UpdatePikudMutationResult = NonNullable<
 >
 export type UpdatePikudMutationBody = UpdatePikudDto
 export type UpdatePikudMutationError = ErrorType<unknown>
+export type UpdatePikudMutationVariables = {
+	pathParams: UpdatePikudPathParameters
+	data: UpdatePikudDto
+}
 
 export const useUpdatePikud = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof updatePikud>>,
 			TError,
-			{ pathParams: UpdatePikudPathParameters; data: UpdatePikudDto },
+			UpdatePikudMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof updatePikud>>,
 	TError,
-	{ pathParams: UpdatePikudPathParameters; data: UpdatePikudDto },
+	UpdatePikudMutationVariables,
 	TContext
 > => {
 	return useMutation(getUpdatePikudMutationOptions(options), queryClient)
 }
 export const deletePikud = (
 	{ id }: DeletePikudPathParameters,
+	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	return sendRequest<PikudDto>({
-		url: `/pikud/${id}`,
-		method: "DELETE",
-		signal,
-	})
+	return sendRequest<PikudDto>(
+		{ url: `/pikud/${id}`, method: "DELETE", signal },
+		options,
+	)
 }
+
+export const getDeletePikudMutationKey = () => ["deletePikud"] as const
 
 export const getDeletePikudMutationOptions = <
 	TError = ErrorType<unknown>,
@@ -461,31 +506,32 @@ export const getDeletePikudMutationOptions = <
 	mutation?: UseMutationOptions<
 		Awaited<ReturnType<typeof deletePikud>>,
 		TError,
-		{ pathParams: DeletePikudPathParameters },
+		DeletePikudMutationVariables,
 		TContext
 	>
+	request?: SecondParameter<typeof sendRequest>
 }): UseMutationOptions<
 	Awaited<ReturnType<typeof deletePikud>>,
 	TError,
-	{ pathParams: DeletePikudPathParameters },
+	DeletePikudMutationVariables,
 	TContext
 > => {
-	const mutationKey = ["deletePikud"]
-	const { mutation: mutationOptions } = options
+	const mutationKey = getDeletePikudMutationKey()
+	const { mutation: mutationOptions, request: requestOptions } = options
 		? options.mutation &&
 			"mutationKey" in options.mutation &&
 			options.mutation.mutationKey
 			? options
 			: { ...options, mutation: { ...options.mutation, mutationKey } }
-		: { mutation: { mutationKey } }
+		: { mutation: { mutationKey }, request: undefined }
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof deletePikud>>,
-		{ pathParams: DeletePikudPathParameters }
+		DeletePikudMutationVariables
 	> = (props) => {
 		const { pathParams } = props ?? {}
 
-		return deletePikud(pathParams)
+		return deletePikud(pathParams, requestOptions)
 	}
 
 	return { mutationFn, ...mutationOptions }
@@ -496,21 +542,25 @@ export type DeletePikudMutationResult = NonNullable<
 >
 
 export type DeletePikudMutationError = ErrorType<unknown>
+export type DeletePikudMutationVariables = {
+	pathParams: DeletePikudPathParameters
+}
 
 export const useDeletePikud = <TError = ErrorType<unknown>, TContext = unknown>(
 	options?: {
 		mutation?: UseMutationOptions<
 			Awaited<ReturnType<typeof deletePikud>>,
 			TError,
-			{ pathParams: DeletePikudPathParameters },
+			DeletePikudMutationVariables,
 			TContext
 		>
+		request?: SecondParameter<typeof sendRequest>
 	},
 	queryClient?: QueryClient,
 ): UseMutationResult<
 	Awaited<ReturnType<typeof deletePikud>>,
 	TError,
-	{ pathParams: DeletePikudPathParameters },
+	DeletePikudMutationVariables,
 	TContext
 > => {
 	return useMutation(getDeletePikudMutationOptions(options), queryClient)

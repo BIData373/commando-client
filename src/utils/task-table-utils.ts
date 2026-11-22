@@ -5,9 +5,21 @@ import {
 	type IdentifiedColumnDef,
 	type Row,
 } from "@tanstack/react-table"
-import { concat, groupBy, intersection, map, uniq, zipObject } from "lodash"
+import {
+	concat,
+	groupBy,
+	intersection,
+	isString,
+	map,
+	uniq,
+	zipObject,
+} from "lodash"
 import type { TaskRowDto, TaskRowWithWorkspaceDto } from "src/api/model"
 import type { AppTableFeatures } from "../consts/table-features"
+import {
+	EMPTY_FILTER_VALUE,
+	getDeadlineFilterValue,
+} from "../functions/empty-filter"
 import { formatSourceLabel } from "../functions/source-utils"
 
 export interface TaskColumnMeta {
@@ -81,11 +93,31 @@ function multiSelectColumnFilter<TTask extends TaskRowDto>(
 	columnId: string,
 	filterValue: string[],
 ): boolean {
-	return !filterValue?.length || filterValue.includes(row.getValue(columnId))
+	const rowValues = row.getUniqueValues(columnId)
+	return !filterValue?.length || filterValue.some((v) => rowValues.includes(v))
+}
+
+export const UNVIEWED_MESSAGES_VALUE = "unviewed"
+
+export function hasUnviewedMessages(task: TaskRowDto): boolean {
+	return !!task.lastMessage && !task.viewedMessages
 }
 
 export function getTaskTagNames(task: TaskRowDto): string[] {
 	return map(concat(task.tags, task.source?.tags ?? []), "name")
+}
+
+export function getAssigneeFilterValue(task: TaskRowDto): string {
+	return task.assignee?.name || EMPTY_FILTER_VALUE
+}
+
+export function getSourceFilterValue(task: TaskRowDto): string {
+	return (task.source && formatSourceLabel(task.source)) || EMPTY_FILTER_VALUE
+}
+
+export function getTagFilterValues(task: TaskRowDto): string[] {
+	const tagNames = getTaskTagNames(task)
+	return tagNames.length ? tagNames : [EMPTY_FILTER_VALUE]
 }
 
 function compareDueDates(dueDateA: Date | null, dueDateB: Date | null) {
@@ -122,6 +154,7 @@ export function createTaskColumnDefinitions<TTask extends TaskRowDto>() {
 			(row) => row.assignee?.name,
 			{
 				sortFn: "text",
+				getUniqueValues: (row) => [getAssigneeFilterValue(row)],
 				filterFn: multiSelectColumnFilter,
 			},
 		),
@@ -129,8 +162,8 @@ export function createTaskColumnDefinitions<TTask extends TaskRowDto>() {
 			TASK_COLUMN_ID.tags,
 			(row) => uniq(getTaskTagNames(row)),
 			{
-				filterFn: "arrIncludesSome",
-				getUniqueValues: getTaskTagNames,
+				filterFn: multiSelectColumnFilter,
+				getUniqueValues: getTagFilterValues,
 			},
 		),
 		deadlineType: defineColumn(
@@ -139,13 +172,23 @@ export function createTaskColumnDefinitions<TTask extends TaskRowDto>() {
 			{
 				sortFn: (rowA, rowB) =>
 					compareDueDates(rowA.original.dueDate, rowB.original.dueDate),
+				getUniqueValues: (row) => [getDeadlineFilterValue(row)],
 				filterFn: multiSelectColumnFilter,
 			},
 		),
 		source: defineColumn(
 			TASK_COLUMN_ID.source,
 			(row) => row.source && formatSourceLabel(row.source),
-			{ sortFn: "text", filterFn: multiSelectColumnFilter },
+			{
+				sortFn: "text",
+				getUniqueValues: (row) => [getSourceFilterValue(row)],
+				filterFn: multiSelectColumnFilter,
+			},
+		),
+		lastMessage: defineColumn(
+			TASK_COLUMN_ID.lastMessage,
+			(row) => (hasUnviewedMessages(row) ? UNVIEWED_MESSAGES_VALUE : undefined),
+			{ filterFn: multiSelectColumnFilter },
 		),
 		createdAt: defineColumn(TASK_COLUMN_ID.createdAt, (row) => row.createdAt, {
 			sortFn: "datetime",
@@ -174,6 +217,26 @@ export function groupRowsByTask<TTask extends TaskRowDto>(
 	const rowsByTaskId = groupBy(tasks, "id")
 
 	return uniq(map(tasks, "id")).flatMap((id) => rowsByTaskId[id])
+}
+
+export function getColumnFilterStrings(
+	columnFilters: ColumnFiltersState,
+	id: string,
+): string[] {
+	const value = columnFilters.find((column) => column.id === id)?.value
+
+	return Array.isArray(value) ? value.filter(isString) : []
+}
+
+/** return column filter only with allowed values */
+export function getEnumColumnFilter<T extends string>(
+	columnFilters: ColumnFiltersState,
+	id: string,
+	allowedValues: readonly T[],
+): T[] {
+	const values = getColumnFilterStrings(columnFilters, id)
+
+	return allowedValues.filter((allowed) => values.includes(allowed))
 }
 
 export function buildUrlColumnFilters(

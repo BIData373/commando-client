@@ -1,9 +1,13 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { User } from "lucide-react"
+import type { MouseEvent } from "react"
 import type { AssigneesDto } from "src/api/model"
+import { WORKSPACE_STATUS_EDITABLE_DISABLED } from "src/functions/status-editable-messages"
+import { useUpdateAssigneeStatus } from "src/hooks/useUpdateAssigneeStatus"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AssigneeAvatar } from "../shared/AssigneeAvatar"
+import { DisabledReasonSwitch } from "../shared/DisabledReasonSwitch"
 import { OverflowRow } from "../shared/OverflowRow"
 import { Badge } from "../ui/badge"
 import {
@@ -22,11 +26,13 @@ interface AssigneeCardProps {
 
 export function AssigneeCard({
 	assignee,
-	assignee: { users, tasksCount },
+	assignee: { users, tasksCount, statusEditable },
 }: AssigneeCardProps) {
 	const {
-		workspace: { urlName },
+		workspace: { urlName, assigneeStatusEditable },
 	} = useWorkspace()
+
+	const { updateAssigneeStatus } = useUpdateAssigneeStatus()
 
 	const navigate = useNavigate()
 
@@ -35,6 +41,14 @@ export function AssigneeCard({
 			to: "/workspace/$urlName/settings/assignees/$assigneeId",
 			params: { urlName, assigneeId: String(assignee.id) },
 		})
+	}
+
+	function handleToggleClick(e: MouseEvent) {
+		e.stopPropagation()
+	}
+
+	function handleStatusEditableChange(checked: boolean) {
+		updateAssigneeStatus(assignee.id, checked)
 	}
 
 	return (
@@ -54,7 +68,7 @@ export function AssigneeCard({
 						</CardMeta>
 
 						<StyledCardDescription>
-							{users.length} משתמשים
+							{users.length} מכותבים
 						</StyledCardDescription>
 					</CardWrapper>
 				</CardHeaderRow>
@@ -64,7 +78,7 @@ export function AssigneeCard({
 				{users.length > 0 && <StyledSeparator />}
 
 				<OverflowRow
-					items={users.map(({ id, info, upn }) => (
+					items={users.map(({ user: { id, info, upn } }) => (
 						<StyledBadge key={id} variant="secondary">
 							<User size={16} />
 
@@ -78,6 +92,19 @@ export function AssigneeCard({
 					)}
 				/>
 			</CardContent>
+
+			<StatusToggleRow
+				$pushToEnd={users.length === 0}
+				onClick={handleToggleClick}
+			>
+				<DisabledReasonSwitch
+					checked={assigneeStatusEditable && statusEditable}
+					disabled={!assigneeStatusEditable}
+					disabledReason={WORKSPACE_STATUS_EDITABLE_DISABLED}
+					onCheckedChange={handleStatusEditableChange}
+				/>
+				<StatusLabel>אפשר לעדכן סטטוס</StatusLabel>
+			</StatusToggleRow>
 		</StyledCard>
 	)
 }
@@ -91,14 +118,14 @@ const StyledCard = styled(Card)`
   transition: box-shadow 0.3s ease-in-out;
   width: 275px;
 
-  button {
+  button:not([data-slot="switch"]) {
     opacity: 0;
   }
 
   &:hover {
     box-shadow: var(--card-shadow-hover);
 
-    button {
+    button:not([data-slot="switch"]) {
         opacity: 1;
     }
   }
@@ -163,4 +190,19 @@ const BadgeText = styled.span`
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+`
+
+const StatusToggleRow = styled.div<{ $pushToEnd: boolean }>`
+	display: flex;
+	align-items: ${({ $pushToEnd }) => ($pushToEnd ? "flex-end" : "center")};
+	justify-content: flex-start;
+	gap: 6px;
+	padding-inline: 16px;
+	flex: ${({ $pushToEnd }) => ($pushToEnd ? 1 : "initial")};
+`
+
+const StatusLabel = styled.span`
+	font-size: var(--fs-base);
+	color: var(--sea-ink-soft);
+	white-space: nowrap;
 `

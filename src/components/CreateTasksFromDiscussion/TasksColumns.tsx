@@ -95,6 +95,8 @@ const columns = columnHelper.columns([
 	columnHelper.display({
 		id: "title",
 		size: 583,
+		minSize: 120,
+		meta: { grow: true },
 		header: () => (
 			<HeaderLabelGroup>
 				<RequiredMark>*</RequiredMark>
@@ -127,6 +129,8 @@ const columns = columnHelper.columns([
 	columnHelper.display({
 		id: "deadline",
 		size: 138,
+		minSize: 120,
+		meta: { grow: true },
 		header: () => <HeaderLabel>{`תג"ב`}</HeaderLabel>,
 		cell: ({
 			row: {
@@ -150,6 +154,8 @@ const columns = columnHelper.columns([
 	columnHelper.display({
 		id: "assignee",
 		size: 170,
+		minSize: 110,
+		meta: { grow: true },
 		header: () => <HeaderLabel>אחראי</HeaderLabel>,
 		cell: ({ row, table }) => (
 			<AssigneeTableCell
@@ -161,6 +167,8 @@ const columns = columnHelper.columns([
 	columnHelper.display({
 		id: "notes",
 		size: 274,
+		minSize: 90,
+		meta: { grow: true },
 		header: () => <HeaderLabel>הערה</HeaderLabel>,
 		cell: ({ row, table }) => (
 			<NotesCell row={row} meta={table.options.meta as TaskTableMeta} />
@@ -169,6 +177,8 @@ const columns = columnHelper.columns([
 	columnHelper.display({
 		id: "tags",
 		size: 224,
+		minSize: 90,
+		meta: { grow: true },
 		header: () => <HeaderLabel>תגיות</HeaderLabel>,
 		cell: ({ row, table }) => (
 			<TagsTableCell
