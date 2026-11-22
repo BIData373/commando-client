@@ -36,10 +36,6 @@ export function AssigneeGroups() {
 		setExpandedGroupId((prev) => (prev === groupId ? null : groupId))
 	}
 
-	function handleExpandedChange(value: string) {
-		setExpandedGroupId(value ? Number(value) : null)
-	}
-
 	function handleOpenCreate() {
 		setOpenFormId(NEW_GROUP_FORM)
 	}
@@ -82,7 +78,6 @@ export function AssigneeGroups() {
 				type="single"
 				collapsible
 				value={expandedGroupId === null ? "" : String(expandedGroupId)}
-				onValueChange={handleExpandedChange}
 			>
 				{isCreating && <AssigneeGroupFormCard onClose={handleCloseForm} />}
 				{assigneeGroups.map((assigneeGroup) =>

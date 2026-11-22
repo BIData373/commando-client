@@ -5,12 +5,14 @@ import type { MouseEvent } from "react"
 import { TbChevronDown, TbUsersGroup } from "react-icons/tb"
 import type { AssigneeGroupDto } from "src/api/model"
 import { getVisibleAvatars } from "src/functions/avatar-overflow"
+import { STATE_CLOSED, STATE_OPEN } from "src/functions/radix-state"
 import { AssigneeGroupActions } from "./AssigneeGroupActions"
 import { AssigneeGroupAvatars } from "./AssigneeGroupAvatars"
 import { AssigneeGroupExpandedList } from "./AssigneeGroupExpandedList"
 
 const NO_ASSIGNEES_TEXT = "טרם נוספו אחראים"
-const INTERACTIVE_SELECTOR = "button, a, [data-assignee-popover]"
+const INTERACTIVE_SELECTOR =
+	"button:not([data-chevron]), a, [data-assignee-popover]"
 
 interface AssigneeGroupCardProps {
 	assigneeGroup: AssigneeGroupDto
@@ -61,7 +63,7 @@ export function AssigneeGroupCard({
 					) : (
 						<NoAssigneesText>{NO_ASSIGNEES_TEXT}</NoAssigneesText>
 					)}
-					<ChevronTrigger>
+					<ChevronTrigger data-chevron>
 						<TbChevronDown size={14} />
 					</ChevronTrigger>
 				</Summary>
@@ -140,7 +142,7 @@ const ChevronTrigger = styled(Accordion.Trigger)`
     transition: transform 0.2s;
   }
 
-  &[data-state="open"] > svg {
+  ${STATE_OPEN} > svg {
     transform: rotate(180deg);
   }
 
@@ -163,11 +165,11 @@ const Content = styled(Accordion.Content)`
   overflow: hidden;
   cursor: default;
 
-  &[data-state="open"] {
+  ${STATE_OPEN} {
     animation: ${slideDown} 200ms ease-out;
   }
 
-  &[data-state="closed"] {
+  ${STATE_CLOSED} {
     animation: ${slideUp} 200ms ease-out;
   }
 `
