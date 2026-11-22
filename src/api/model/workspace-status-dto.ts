@@ -13,4 +13,6 @@ export interface WorkspaceStatusDto {
 	color: string
 	type: WorkspaceStatusType
 	workspaceId: number
+	createdAt: Date
+	updatedAt: Date
 }

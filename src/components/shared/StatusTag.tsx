@@ -13,6 +13,7 @@ interface StatusTagProps {
 	withArrow?: boolean
 	open?: boolean
 	tooltip?: string
+	timeTooltip?: string
 	fullWidth?: boolean
 }
 
@@ -23,6 +24,7 @@ export function StatusTag({
 	withArrow = false,
 	open = false,
 	tooltip = "לא קיימת הרשאת שינוי סטטוס",
+	timeTooltip,
 	fullWidth = false,
 }: StatusTagProps) {
 	const tag = (
@@ -42,15 +44,25 @@ export function StatusTag({
 		</Tag>
 	)
 
-	return editable ? (
+	const content = (editable ? [timeTooltip] : [tooltip]).filter(Boolean)
+
+	return content.length === 0 ? (
 		tag
 	) : (
 		<Tooltip>
 			<TooltipTrigger asChild>{tag}</TooltipTrigger>
-			<TooltipContent>{tooltip}</TooltipContent>
+			<TooltipContent>
+				{content.map((line) => (
+					<TooltipLine key={line}>{line}</TooltipLine>
+				))}
+			</TooltipContent>
 		</Tooltip>
 	)
 }
+
+const TooltipLine = styled.div`
+  direction: rtl;
+`
 
 const Arrow = styled(TbChevronDown)<{ $open: boolean }>`
   flex-shrink: 0;

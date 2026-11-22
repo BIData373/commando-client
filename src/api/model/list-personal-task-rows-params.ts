@@ -7,8 +7,6 @@
  */
 
 export type ListPersonalTaskRowsParams = {
-	/**
-	 * @nullable
-	 */
+	/** @nullable */
 	isArchived?: boolean | null
 }
