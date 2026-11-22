@@ -50,24 +50,30 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 		const columnHelper = createColumnHelper<AppTableFeatures, TTask>()
 		const definitions = createTaskColumnDefinitions<TTask>()
 
-		const pinnedStartColumn = selectable
-			? columnHelper.display({
-					id: TASK_COLUMN_ID.select,
-					size: 61,
-					enableSorting: false,
-					enableColumnFilter: false,
-					header: SelectAllHeader,
-					cell: SelectCell,
-				})
-			: columnHelper.accessor((row) => row.serialId, {
-					id: TASK_COLUMN_ID.serialId,
-					header: TaskColumnHeader,
-					size: 70,
-					enableColumnFilter: false,
-					spanRows: ({ anchorRow, row }) =>
-						anchorRow.original.id === row.original.id,
-					cell: SerialIdCell,
-				})
+		const serialIdColumn = columnHelper.accessor((row) => row.serialId, {
+			id: TASK_COLUMN_ID.serialId,
+			header: TaskColumnHeader,
+			size: 70,
+			enableColumnFilter: false,
+			spanRows: ({ anchorRow, row }) =>
+				anchorRow.original.id === row.original.id,
+			cell: SerialIdCell,
+		})
+
+		// Select mode hides the serial id column (see `columnVisibility`) instead of dropping it, so a sort on it stays applied
+		const pinnedStartColumns = selectable
+			? [
+					columnHelper.display({
+						id: TASK_COLUMN_ID.select,
+						size: 61,
+						enableSorting: false,
+						enableColumnFilter: false,
+						header: SelectAllHeader,
+						cell: SelectCell,
+					}),
+					serialIdColumn,
+				]
+			: [serialIdColumn]
 
 		const pinnedEndColumns = showMenuColumn
 			? [
@@ -164,11 +170,16 @@ export function useTaskColumns<TTask extends TaskRowDto>({
 			.filter((column) => column !== undefined)
 
 		return columnHelper.columns([
-			pinnedStartColumn,
+			...pinnedStartColumns,
 			...orderedColumns,
 			...pinnedEndColumns,
 		])
 	}, [columnOrder, hiddenColumns, extraColumns, selectable, showMenuColumn])
 
-	return { columns }
+	const columnVisibility = useMemo(
+		() => ({ [TASK_COLUMN_ID.serialId]: !selectable }),
+		[selectable],
+	)
+
+	return { columns, columnVisibility }
 }

@@ -259,7 +259,7 @@ function TaskTable<TTask extends TaskRowDto>({
 
 	const groupedTasks = useMemo(() => groupRowsByTask(tasks), [tasks])
 
-	const { columns } = useTaskColumns({
+	const { columns, columnVisibility } = useTaskColumns({
 		columnOrder,
 		hiddenColumns,
 		extraColumns,
@@ -319,6 +319,7 @@ function TaskTable<TTask extends TaskRowDto>({
 					onColumnFiltersChange={handleColumnFiltersChange}
 					sorting={sorting}
 					onSortingChange={setSorting}
+					columnVisibility={columnVisibility}
 					getRowId={getTaskRowId}
 					highlightedRowIds={
 						contextMenu ? new Set([contextMenu.task.rowKey]) : undefined
