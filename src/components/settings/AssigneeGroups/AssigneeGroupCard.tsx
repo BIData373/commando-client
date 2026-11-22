@@ -1,14 +1,18 @@
+import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
+import { Accordion } from "radix-ui"
 import type { MouseEvent } from "react"
-import { TbChevronDown, TbChevronUp, TbUsersGroup } from "react-icons/tb"
+import { TbChevronDown, TbUsersGroup } from "react-icons/tb"
 import type { AssigneeGroupDto } from "src/api/model"
 import { getVisibleAvatars } from "src/functions/avatar-overflow"
+import { STATE_CLOSED, STATE_OPEN } from "src/functions/radix-state"
 import { AssigneeGroupActions } from "./AssigneeGroupActions"
 import { AssigneeGroupAvatars } from "./AssigneeGroupAvatars"
 import { AssigneeGroupExpandedList } from "./AssigneeGroupExpandedList"
 
 const NO_ASSIGNEES_TEXT = "טרם נוספו אחראים"
-const POPOVER_TRIGGER_SELECTOR = "[data-assignee-popover]"
+const INTERACTIVE_SELECTOR =
+	"button:not([data-chevron]), a, [data-assignee-popover]"
 
 interface AssigneeGroupCardProps {
 	assigneeGroup: AssigneeGroupDto
@@ -27,21 +31,21 @@ export function AssigneeGroupCard({
 	const { visible: visibleAssignees, hiddenCount } =
 		getVisibleAvatars(assignees)
 
+	// Portal content (delete popover, assignee popover) bubbles through React
+	// but sits outside the card DOM, so it must not toggle the card either.
 	function handleCardClick(e: MouseEvent<HTMLDivElement>) {
 		const target = e.target as Element
 		const isFromPortal = !e.currentTarget.contains(target)
-		const isPopoverTrigger = target.closest(POPOVER_TRIGGER_SELECTOR)
-		if (isFromPortal || isPopoverTrigger) return
+		if (isFromPortal || target.closest(INTERACTIVE_SELECTOR)) return
 		onToggleExpanded(id)
 	}
 
-	function handleEditClick(e: MouseEvent<HTMLButtonElement>) {
-		e.stopPropagation()
+	function handleEdit() {
 		onEdit(id)
 	}
 
 	return (
-		<Card onClick={handleCardClick}>
+		<Card value={String(id)} onClick={handleCardClick}>
 			<Header>
 				<Title>
 					<TbUsersGroup size={24} />
@@ -50,7 +54,7 @@ export function AssigneeGroupCard({
 
 				<Summary>
 					{isExpanded ? (
-						<AssigneeGroupActions groupId={id} onEdit={handleEditClick} />
+						<AssigneeGroupActions groupId={id} onEdit={handleEdit} />
 					) : hasAssignees ? (
 						<AssigneeGroupAvatars
 							assignees={visibleAssignees}
@@ -59,26 +63,23 @@ export function AssigneeGroupCard({
 					) : (
 						<NoAssigneesText>{NO_ASSIGNEES_TEXT}</NoAssigneesText>
 					)}
-					<ChevronButton type="button" aria-expanded={isExpanded}>
-						{isExpanded ? (
-							<TbChevronUp size={14} />
-						) : (
-							<TbChevronDown size={14} />
-						)}
-					</ChevronButton>
+					<ChevronTrigger data-chevron>
+						<TbChevronDown size={14} />
+					</ChevronTrigger>
 				</Summary>
 			</Header>
 
-			{isExpanded && <AssigneeGroupExpandedList assignees={assignees} />}
+			<Content>
+				<AssigneeGroupExpandedList assignees={assignees} />
+			</Content>
 		</Card>
 	)
 }
 
-const Card = styled.div`
+const Card = styled(Accordion.Item)`
   display: flex;
   flex-direction: column;
   align-self: stretch;
-  gap: 12px;
   padding: 12px 12px 8px 12px;
   background: var(--background);
   border: 1px solid var(--line);
@@ -92,7 +93,8 @@ const Card = styled.div`
   }
 `
 
-const Header = styled.div`
+const Header = styled(Accordion.Header)`
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -123,7 +125,7 @@ const Summary = styled.div`
   flex-shrink: 0;
 `
 
-const ChevronButton = styled.button`
+const ChevronTrigger = styled(Accordion.Trigger)`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -136,8 +138,39 @@ const ChevronButton = styled.button`
   color: var(--sea-ink-soft);
   cursor: pointer;
 
+  & > svg {
+    transition: transform 0.2s;
+  }
+
+  ${STATE_OPEN} > svg {
+    transform: rotate(180deg);
+  }
+
   &:hover {
     background: var(--button-hover);
+  }
+`
+
+const slideDown = keyframes`
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+`
+
+const slideUp = keyframes`
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+`
+
+const Content = styled(Accordion.Content)`
+  overflow: hidden;
+  cursor: default;
+
+  ${STATE_OPEN} {
+    animation: ${slideDown} 200ms ease-out;
+  }
+
+  ${STATE_CLOSED} {
+    animation: ${slideUp} 200ms ease-out;
   }
 `
 

@@ -1,3 +1,4 @@
+import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
 import { TbUsersGroup } from "react-icons/tb"
 import type { AssigneeGroupDto } from "src/api/model"
@@ -30,43 +31,67 @@ export function AssigneeGroupFormCard({
 	} = useAssigneeGroupForm(assigneeGroup, onClose)
 
 	return (
-		<Card>
-			<Header>
-				<TbUsersGroup size={24} />
-				<InputWithCount
-					text={name}
-					onChange={setName}
-					maxLength={NAME_MAX_LENGTH}
-					placeholder="שם הרשימה"
-				/>
-			</Header>
+		<Expand>
+			<Clip>
+				<Card>
+					<Header>
+						<TbUsersGroup size={24} />
+						<InputWithCount
+							text={name}
+							onChange={setName}
+							maxLength={NAME_MAX_LENGTH}
+							placeholder="שם הרשימה"
+						/>
+					</Header>
 
-			<Divider />
+					<Divider />
 
-			<AssigneeSearchList
-				assignees={assignees}
-				selectedIds={selectedIds}
-				onToggle={handleToggleAssignee}
-			/>
+					<AssigneeSearchList
+						assignees={assignees}
+						selectedIds={selectedIds}
+						onToggle={handleToggleAssignee}
+					/>
 
-			<Divider />
+					<Divider />
 
-			<Footer>
-				<TextButton type="button" onClick={onClose}>
-					ביטול
-				</TextButton>
-				<PrimaryButton
-					title="שמור"
-					height={32}
-					width={80}
-					disabled={!canSave}
-					loading={isPending}
-					onClick={handleSave}
-				/>
-			</Footer>
-		</Card>
+					<Footer>
+						<TextButton type="button" onClick={onClose}>
+							ביטול
+						</TextButton>
+						<PrimaryButton
+							title="שמור"
+							height={32}
+							width={80}
+							disabled={!canSave}
+							loading={isPending}
+							onClick={handleSave}
+						/>
+					</Footer>
+				</Card>
+			</Clip>
+		</Expand>
 	)
 }
+
+const expandDown = keyframes`
+  from { grid-template-rows: 0fr; }
+  to { grid-template-rows: 1fr; }
+`
+
+// Clipping only while animating keeps the card shadow intact afterwards.
+const clipWhileExpanding = keyframes`
+  from, to { overflow: hidden; }
+`
+
+const Expand = styled.div`
+  display: grid;
+  animation: ${expandDown} 200ms ease-out;
+`
+
+const Clip = styled.div`
+  min-height: 0;
+  animation: ${clipWhileExpanding} 200ms;
+`
 
 const Card = styled.div`
   display: flex;
