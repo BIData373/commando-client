@@ -562,13 +562,13 @@ export const getUpdateMessageMockHandler = (
 	overrideResponse?:
 		| MessageDto
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<Parameters<typeof http.put>[1]>[0],
 		  ) => Promise<MessageDto> | MessageDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.put(
 		"*/message/:id",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (info: Parameters<Parameters<typeof http.put>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

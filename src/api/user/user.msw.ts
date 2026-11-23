@@ -298,13 +298,13 @@ export const getCompleteOnboardingMockHandler = (
 	overrideResponse?:
 		| CurrentUserDto
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<Parameters<typeof http.put>[1]>[0],
 		  ) => Promise<CurrentUserDto> | CurrentUserDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.put(
 		"*/user/complete-onboarding",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (info: Parameters<Parameters<typeof http.put>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -346,13 +346,13 @@ export const getUpdateUserMockHandler = (
 	overrideResponse?:
 		| UserDto
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<Parameters<typeof http.put>[1]>[0],
 		  ) => Promise<UserDto> | UserDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.put(
 		"*/user/:id",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (info: Parameters<Parameters<typeof http.put>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

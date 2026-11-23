@@ -650,13 +650,13 @@ export const getUpdateAssigneeMockHandler = (
 	overrideResponse?:
 		| AssigneeDto
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<Parameters<typeof http.put>[1]>[0],
 		  ) => Promise<AssigneeDto> | AssigneeDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.put(
 		"*/assignee/:id",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (info: Parameters<Parameters<typeof http.put>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -698,13 +698,13 @@ export const getUpdateAssigneeStatusEditableMockHandler = (
 	overrideResponse?:
 		| void
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<Parameters<typeof http.put>[1]>[0],
 		  ) => Promise<void> | void),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.put(
 		"*/assignee/:id/status-editable",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (info: Parameters<Parameters<typeof http.put>[1]>[0]) => {
 			if (typeof overrideResponse === "function") {
 				await overrideResponse(info)
 			}

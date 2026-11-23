@@ -415,7 +415,7 @@ export const updateTag = (
 	return sendRequest<TagDto>(
 		{
 			url: `/tag/${id}`,
-			method: "PATCH",
+			method: "PUT",
 			headers: { "Content-Type": "application/json" },
 			data: updateTagDto,
 			signal,

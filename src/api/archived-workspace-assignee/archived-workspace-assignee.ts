@@ -26,12 +26,7 @@ export const toggleWorkspaceTaskArchive = (
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<void>(
-		{
-			url: `/archived-workspace-assignee-task`,
-			method: "PATCH",
-			params,
-			signal,
-		},
+		{ url: `/archived-workspace-assignee-task`, method: "PUT", params, signal },
 		options,
 	)
 }

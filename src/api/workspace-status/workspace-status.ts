@@ -474,7 +474,7 @@ export const updateWorkspaceStatus = (
 	return sendRequest<WorkspaceStatusDto>(
 		{
 			url: `/workspace-status/${id}`,
-			method: "PATCH",
+			method: "PUT",
 			headers: { "Content-Type": "application/json" },
 			data: updateWorkspaceStatusDto,
 			signal,

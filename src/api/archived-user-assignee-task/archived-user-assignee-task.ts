@@ -26,7 +26,7 @@ export const toggleUserTaskArchive = (
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<void>(
-		{ url: `/archived-user-assignee-task`, method: "PATCH", params, signal },
+		{ url: `/archived-user-assignee-task`, method: "PUT", params, signal },
 		options,
 	)
 }

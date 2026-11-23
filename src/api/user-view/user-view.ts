@@ -192,7 +192,7 @@ export const upsertUserView = (
 	return sendRequest<UserViewDto>(
 		{
 			url: `/user-views`,
-			method: "PATCH",
+			method: "PUT",
 			headers: { "Content-Type": "application/json" },
 			data: upsertUserViewDto,
 			signal,

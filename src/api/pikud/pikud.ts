@@ -408,7 +408,7 @@ export const updatePikud = (
 	return sendRequest<PikudDto>(
 		{
 			url: `/pikud/${id}`,
-			method: "PATCH",
+			method: "PUT",
 			headers: { "Content-Type": "application/json" },
 			data: updatePikudDto,
 			signal,

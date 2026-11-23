@@ -528,7 +528,7 @@ export const completeOnboarding = (
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<CurrentUserDto>(
-		{ url: `/user/complete-onboarding`, method: "PATCH", signal },
+		{ url: `/user/complete-onboarding`, method: "PUT", signal },
 		options,
 	)
 }
@@ -746,7 +746,7 @@ export const updateUser = (
 	return sendRequest<UserDto>(
 		{
 			url: `/user/${id}`,
-			method: "PATCH",
+			method: "PUT",
 			headers: { "Content-Type": "application/json" },
 			data: updateUserDto,
 			signal,
