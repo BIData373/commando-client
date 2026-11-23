@@ -8,6 +8,7 @@ import {
 	InputGroupAddon,
 	InputGroupInput,
 } from "src/components/ui/input-group"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useFilteredAssignees } from "src/hooks/useFilteredAssignees"
 
 interface AssigneeSearchListProps {
@@ -35,6 +36,7 @@ export function AssigneeSearchList({
 					<Search size={16} />
 				</InputGroupAddon>
 				<SearchInput
+					data-testid={TEST_IDS.assigneeGroups.formSearch}
 					value={searchQuery}
 					onChange={handleSearchChange}
 					placeholder="חפש אחראי"

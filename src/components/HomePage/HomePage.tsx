@@ -2,12 +2,13 @@ import styled from "@emotion/styled"
 import backgroundImage from "src/assets/Background-home-page.png"
 import logoWithText from "src/assets/logo-with-text-dark.png"
 import SpacesContainer from "src/components/SpacesContainer/SpacesContainer"
+import { TEST_IDS } from "src/consts/test-ids"
 import { RootPageFooter } from "../shared/RootPageFooter"
 import PersonalAreaCard from "./PersonalAreaCard"
 
 export default function HomePage() {
 	return (
-		<PageRoot>
+		<PageRoot data-testid={TEST_IDS.home.page}>
 			<TopBar>
 				<TitleGroup>
 					<MainTitle>וקטור המפקד</MainTitle>

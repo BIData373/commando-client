@@ -21,6 +21,7 @@ import styled from "@emotion/styled"
 import { Columns3 } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import type { TaskRowWithWorkspaceDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import {
 	CONFIGURABLE_COLUMNS,
@@ -90,11 +91,15 @@ function ColumnVisibilityDropdown({
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<TriggerButton>
+				<TriggerButton data-testid={TEST_IDS.tasks.columnVisibilityTrigger}>
 					<Columns3 size={18} />
 				</TriggerButton>
 			</PopoverTrigger>
-			<StyledPopoverContent align="end" sideOffset={4}>
+			<StyledPopoverContent
+				data-testid={TEST_IDS.tasks.columnVisibilityMenu}
+				align="end"
+				sideOffset={4}
+			>
 				<DndContext
 					sensors={sensors}
 					collisionDetection={closestCenter}

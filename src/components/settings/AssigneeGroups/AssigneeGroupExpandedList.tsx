@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import type { AssigneeDto } from "src/api/model"
 import { AssigneeAvatar } from "src/components/shared/AssigneeAvatar"
+import { TEST_IDS } from "src/consts/test-ids"
 
 const NO_ASSIGNEES_TEXT = "טרם נוספו אחראים"
 
@@ -17,7 +18,11 @@ export function AssigneeGroupExpandedList({
 			{assignees.length > 0 ? (
 				<AssigneeList>
 					{assignees.map((assignee) => (
-						<AssigneeRow key={assignee.id}>
+						<AssigneeRow
+							key={assignee.id}
+							data-testid={TEST_IDS.assigneeGroups.member}
+							data-entity-id={assignee.id}
+						>
 							<AssigneeAvatar assignee={assignee} size={24} />
 							<AssigneeName title={assignee.name}>{assignee.name}</AssigneeName>
 						</AssigneeRow>

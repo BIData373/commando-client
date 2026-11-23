@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { BookOpen, ChevronLeft, Grip, MessageSquareText } from "lucide-react"
 import type { PermissionType } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { PERMISSION_LABEL } from "src/utils/permissions-utils"
@@ -41,7 +42,7 @@ export function UserDropdown({
 	}
 
 	return (
-		<UserDropdownContent>
+		<UserDropdownContent data-testid={TEST_IDS.header.userMenu}>
 			<UserInfo>
 				<UserInfoRow>
 					<UserName>{displayName}</UserName>-<UserUpn>{user.upn}</UserUpn>
@@ -57,7 +58,10 @@ export function UserDropdown({
 
 			{showPersonalArea && (
 				<>
-					<UserDropdownItem onSelect={handleNavigateToPersonal}>
+					<UserDropdownItem
+						data-testid={TEST_IDS.header.userMenuPersonal}
+						onSelect={handleNavigateToPersonal}
+					>
 						<PersonalAreaNavItem>
 							מעבר לאזור אישי
 							<PersonalAreaIcon />
@@ -67,21 +71,30 @@ export function UserDropdown({
 				</>
 			)}
 
-			<UserDropdownItem onSelect={openUserGuide}>
+			<UserDropdownItem
+				data-testid={TEST_IDS.header.userMenuGuide}
+				onSelect={openUserGuide}
+			>
 				<NavItem>
 					<BookOpen size={16} />
 					מארז הדרכה
 				</NavItem>
 			</UserDropdownItem>
 
-			<UserDropdownItem onSelect={openSupportChat}>
+			<UserDropdownItem
+				data-testid={TEST_IDS.header.userMenuSupport}
+				onSelect={openSupportChat}
+			>
 				<NavItem>
 					<MessageSquareText size={16} />
 					צור קשר
 				</NavItem>
 			</UserDropdownItem>
 
-			<UserDropdownItem onSelect={openMoreOfUs}>
+			<UserDropdownItem
+				data-testid={TEST_IDS.header.userMenuMore}
+				onSelect={openMoreOfUs}
+			>
 				<NavItem>
 					<Grip size={16} />
 					עוד מאיתנו

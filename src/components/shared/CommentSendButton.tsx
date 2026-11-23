@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Send } from "lucide-react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { SpinIcon } from "./SpinIcon"
 
 interface CommentSendButtonProps {
@@ -13,6 +14,7 @@ export function CommentSendButton({
 }: CommentSendButtonProps) {
 	return (
 		<IconContainer
+			data-testid={TEST_IDS.comments.send}
 			$withBorder={!isSending}
 			disabled={isSending}
 			onClick={onSend}

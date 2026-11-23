@@ -2,6 +2,7 @@ import { clsx } from "clsx"
 import type { CSSProperties, ReactNode } from "react"
 import type { ExternalToast } from "sonner"
 import { toast as sonnerToast } from "sonner"
+import { TEST_IDS } from "../../consts/test-ids"
 import {
 	count,
 	TECHNICAL_FAILURE,
@@ -133,6 +134,7 @@ function showToast(
 	}
 
 	const toastId = sonnerToast[type](message, {
+		testId: TEST_IDS.feedback.toast,
 		...options,
 		className:
 			clsx(

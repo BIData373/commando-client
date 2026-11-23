@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import type { RefObject } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { MOBILE_MEDIA_QUERY, useIsMobile } from "src/hooks/use-mobile"
 import { CommentsDivider } from "./CommentsDivider"
 import TaskCommentInput from "./TaskCommentInput"
@@ -21,7 +22,7 @@ function TaskCommentsSection({
 	const isMobile = useIsMobile()
 
 	return (
-		<Wrapper>
+		<Wrapper data-testid={TEST_IDS.comments.section}>
 			{commentsDividerRef && (
 				<CommentsDivider taskId={taskId} dividerRef={commentsDividerRef} />
 			)}

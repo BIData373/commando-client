@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { Archive, ArchiveX, Trash2, X } from "lucide-react"
 import { useState } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { StatusTag } from "../shared/StatusTag"
 import {
 	DropdownMenu,
@@ -45,7 +46,7 @@ export function BulkActionsBar({
 	}
 
 	return (
-		<Bar $visible={isVisible}>
+		<Bar data-testid={TEST_IDS.tasks.bulkBar} $visible={isVisible}>
 			<ActionsSection>
 				{onDelete && (
 					<>
@@ -56,6 +57,7 @@ export function BulkActionsBar({
 							onOpenChange={setPopoverOpen}
 							trigger={
 								<GhostButton
+									data-testid={TEST_IDS.tasks.bulkDelete}
 									$danger
 									$disabled={deleteDisabled}
 									onClick={handleDeleteClick}
@@ -71,13 +73,19 @@ export function BulkActionsBar({
 				{
 					<>
 						{onArchive && (
-							<GhostButton onClick={onArchive}>
+							<GhostButton
+								data-testid={TEST_IDS.tasks.bulkArchive}
+								onClick={onArchive}
+							>
 								העבר לארכיון
 								<Archive size={16} />
 							</GhostButton>
 						)}
 						{onUnarchive && (
-							<GhostButton onClick={onUnarchive}>
+							<GhostButton
+								data-testid={TEST_IDS.tasks.bulkUnarchive}
+								onClick={onUnarchive}
+							>
 								הוצא מארכיון
 								<ArchiveX size={16} />
 							</GhostButton>
@@ -89,11 +97,21 @@ export function BulkActionsBar({
 						<BarDivider />
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild disabled={statusDisabled}>
-								<GhostButton $disabled={statusDisabled}>עדכן סטטוס</GhostButton>
+								<GhostButton
+									data-testid={TEST_IDS.tasks.bulkStatusTrigger}
+									$disabled={statusDisabled}
+								>
+									עדכן סטטוס
+								</GhostButton>
 							</DropdownMenuTrigger>
 							<StatusContent align="start" sideOffset={12}>
 								{statuses.map((s) => (
-									<StatusItem key={s.id} onSelect={() => onChangeStatus(s)}>
+									<StatusItem
+										key={s.id}
+										data-testid={TEST_IDS.tasks.bulkStatusOption}
+										data-entity-id={s.id}
+										onSelect={() => onChangeStatus(s)}
+									>
 										<StatusTag status={s} editable />
 									</StatusItem>
 								))}
@@ -102,7 +120,10 @@ export function BulkActionsBar({
 					</>
 				)}
 			</ActionsSection>
-			<SelectedButton onClick={onExitSelect}>
+			<SelectedButton
+				data-testid={TEST_IDS.tasks.bulkExit}
+				onClick={onExitSelect}
+			>
 				<X size={16} />
 				{selectedCount} משימות נבחרו
 			</SelectedButton>

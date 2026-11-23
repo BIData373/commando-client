@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { Calendar as CalendarIcon, X as ClearIcon } from "lucide-react"
 import { useState } from "react"
 import { DeadlineType } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { formatDate } from "src/functions/date-utils"
 import type { DatePickerValue } from "src/utils/date-utils"
 import DatePicker, { CalendarMode } from "../shared/DatePicker"
@@ -54,18 +55,24 @@ function DeadlineField({
 			<DeadlineRow>
 				<SegmentedControl>
 					<SegmentedItem
+						data-testid={TEST_IDS.deadlineField.typeOption}
+						data-entity-id={DeadlineType.DATE}
 						$selected={deadlineType === DeadlineType.DATE}
 						onClick={() => onDeadlineTypeChange(DeadlineType.DATE)}
 					>
 						תאריך
 					</SegmentedItem>
 					<SegmentedItem
+						data-testid={TEST_IDS.deadlineField.typeOption}
+						data-entity-id={DeadlineType.IMMEDIATE}
 						$selected={deadlineType === DeadlineType.IMMEDIATE}
 						onClick={() => onDeadlineTypeChange(DeadlineType.IMMEDIATE)}
 					>
 						מיידי
 					</SegmentedItem>
 					<SegmentedItem
+						data-testid={TEST_IDS.deadlineField.typeOption}
+						data-entity-id={DeadlineType.ROLLING}
 						$selected={deadlineType === DeadlineType.ROLLING}
 						onClick={() => onDeadlineTypeChange(DeadlineType.ROLLING)}
 					>
@@ -81,12 +88,17 @@ function DeadlineField({
 				{showDatePicker && (
 					<Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
 						<PopoverTrigger asChild>
-							<DatePickerButton>
+							<DatePickerButton
+								data-testid={TEST_IDS.deadlineField.dateTrigger}
+							>
 								<DatePickerText $hasValue={!!dueDate}>
 									{dueDate ? formatDate(dueDate) : "בחר תאריך"}
 								</DatePickerText>
 								{dueDate ? (
-									<ClearButton onClick={handleClearDate}>
+									<ClearButton
+										data-testid={TEST_IDS.deadlineField.dateClear}
+										onClick={handleClearDate}
+									>
 										<ClearIcon size={14} />
 									</ClearButton>
 								) : (
@@ -94,7 +106,11 @@ function DeadlineField({
 								)}
 							</DatePickerButton>
 						</PopoverTrigger>
-						<DatePopoverContent align="start" sideOffset={4}>
+						<DatePopoverContent
+							data-testid={TEST_IDS.deadlineField.datePopover}
+							align="start"
+							sideOffset={4}
+						>
 							<DatePicker
 								mode={CalendarMode.Single}
 								selected={dueDate ?? undefined}

@@ -15,6 +15,7 @@ import {
 	useUpdateWorkspace,
 } from "src/api/workspace/workspace"
 import { toast } from "src/components/Toast/toast-api"
+import { TEST_IDS } from "src/consts/test-ids"
 import {
 	DUPLICATE_ENVIRONMENT_NAME,
 	REQUIRED_ENVIRONMENT_NAME,
@@ -130,13 +131,14 @@ export function SettingsForm() {
 	}
 
 	return (
-		<FormRoot>
+		<FormRoot data-testid={TEST_IDS.settings.generalForm}>
 			<FormField label="שם סביבה">
 				<InputWithCount
 					text={values.title ?? ""}
 					onChange={handleTitleChange}
 					maxLength={NAME_MAX_LENGTH}
 					placeholder="הזן שם סביבה"
+					testId={TEST_IDS.settings.generalName}
 				/>
 			</FormField>
 
@@ -153,11 +155,16 @@ export function SettingsForm() {
 					onChange={setIconSearch}
 					onClear={handleIconSearchClear}
 					onSelect={handleIconSelect}
+					testId={TEST_IDS.settings.iconPicker}
 				/>
 				<IconPreview>
 					{values.icon ? (
 						<>
-							<IconClearButton type="button" onClick={handleIconClear}>
+							<IconClearButton
+								data-testid={TEST_IDS.settings.iconClear}
+								type="button"
+								onClick={handleIconClear}
+							>
 								<X size={16} />
 							</IconClearButton>
 							<IconImg

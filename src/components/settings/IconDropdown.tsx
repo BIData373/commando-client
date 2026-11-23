@@ -9,6 +9,7 @@ interface IconDropdownProps {
 	onClear(): void
 	selectedItem?: IMesibaIcon
 	placeholder?: string
+	testId?: string
 }
 
 export function IconDropdown({
@@ -18,6 +19,7 @@ export function IconDropdown({
 	onClear,
 	selectedItem,
 	placeholder,
+	testId,
 }: IconDropdownProps) {
 	const { data: icons = [], isFetching } = useSearchMesibaIcons(value)
 
@@ -33,6 +35,7 @@ export function IconDropdown({
 			selectedItem={selectedItem}
 			renderItem={(item) => <MesibaIcon icon={item} />}
 			getItemKey={({ id }) => id}
+			testId={testId}
 		/>
 	)
 }

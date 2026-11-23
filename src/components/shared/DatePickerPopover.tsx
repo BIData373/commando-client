@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { Popover } from "radix-ui"
 import type { ReactNode } from "react"
 import { useEffect, useState } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 import type { DatePickerValue } from "src/utils/date-utils"
 import DatePicker, { type CalendarMode } from "./DatePicker"
 
@@ -27,6 +28,7 @@ interface DatePickerPopoverProps {
 	side?: "top" | "right" | "bottom" | "left"
 	sideOffset?: number
 	showWeekNumber?: boolean
+	testId?: string
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -44,6 +46,7 @@ function DatePickerPopover({
 	side,
 	sideOffset = 8,
 	showWeekNumber,
+	testId = TEST_IDS.datePicker.popover,
 }: DatePickerPopoverProps) {
 	const [uncontrolledOpen, setUncontrolledOpen] = useState(false)
 	const [value, setValue] = useState<DatePickerValue | undefined>(initialValue)
@@ -83,6 +86,7 @@ function DatePickerPopover({
 			<Popover.Trigger asChild>{triggerButton(slotProps)}</Popover.Trigger>
 			<Popover.Portal>
 				<PopoverContent
+					data-testid={testId}
 					data-lang="he"
 					align={align}
 					side={side}

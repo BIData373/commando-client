@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { debounce } from "lodash"
 import { type ChangeEvent, useEffect, useMemo, useState } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 export const PRESET_COLORS = [
@@ -58,7 +59,10 @@ export function ColorPicker({ selectedColor, onChange }: ColorPickerProps) {
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<ColorSwatchContainer>
+				<ColorSwatchContainer
+					data-testid={TEST_IDS.settings.assigneeDialogColorTrigger}
+					data-entity-id={selectedColor}
+				>
 					<ColorSwatch $color={selectedColor} />
 				</ColorSwatchContainer>
 			</PopoverTrigger>
@@ -68,6 +72,8 @@ export function ColorPicker({ selectedColor, onChange }: ColorPickerProps) {
 						{PRESET_COLORS.map((color) => (
 							<ColorOption
 								key={color}
+								data-testid={TEST_IDS.settings.assigneeDialogColorOption}
+								data-entity-id={color}
 								$color={color}
 								$selected={selectedColor === color}
 								onClick={() => handlePresetClick(color)}
@@ -76,6 +82,7 @@ export function ColorPicker({ selectedColor, onChange }: ColorPickerProps) {
 					</ColorGrid>
 					<OtherColorLabel>
 						<HiddenColorInput
+							data-testid={TEST_IDS.settings.assigneeDialogColorCustom}
 							type="color"
 							value={localColor}
 							onChange={handleCustomColorChange}

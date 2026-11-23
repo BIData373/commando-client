@@ -6,6 +6,7 @@ interface InputWithCountProps {
 	maxLength: number
 	placeholder?: string
 	isTextArea?: boolean
+	testId?: string
 }
 
 function InputWithCount({
@@ -14,8 +15,10 @@ function InputWithCount({
 	maxLength,
 	placeholder,
 	isTextArea,
+	testId,
 }: InputWithCountProps) {
 	const inputProps = {
+		"data-testid": testId,
 		value: text,
 		onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
 			onChange(e.target.value),

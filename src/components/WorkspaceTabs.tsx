@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router"
 import { useLayoutEffect, useMemo } from "react"
 import { PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { ArchiveDropdown, type DropdownSection } from "./shared/ArchiveDropdown"
@@ -44,7 +45,11 @@ export function WorkspaceTabs({
 					{isManager && (
 						<NavigationMenuItem>
 							<NavMenuLink asChild>
-								<Link to="/workspace/$urlName/settings" params={{ urlName }}>
+								<Link
+									data-testid={TEST_IDS.header.tabSettings}
+									to="/workspace/$urlName/settings"
+									params={{ urlName }}
+								>
 									הגדרות סביבה
 								</Link>
 							</NavMenuLink>
@@ -65,7 +70,11 @@ export function WorkspaceTabs({
 					/>
 					<NavigationMenuItem>
 						<NavMenuLink asChild>
-							<Link to="/workspace/$urlName/dashboard" params={{ urlName }}>
+							<Link
+								data-testid={TEST_IDS.header.tabDashboard}
+								to="/workspace/$urlName/dashboard"
+								params={{ urlName }}
+							>
 								מסך המפקד
 							</Link>
 						</NavMenuLink>

@@ -15,6 +15,7 @@ import {
 	useGetSource,
 } from "src/api/source/source"
 import aiLoadingSvg from "src/assets/icons/ai-loading.svg"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useSocketHandler } from "src/hooks/useSocketHandler"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"
@@ -247,7 +248,7 @@ function CreateTasksTable({
 	}
 
 	return isExtracting ? (
-		<ExtractionWrapper>
+		<ExtractionWrapper data-testid={TEST_IDS.discussion.extracting}>
 			<LoaderContainer>
 				<LoaderImage src={aiLoadingSvg} alt="" />
 				<SpinnerRing />
@@ -261,6 +262,7 @@ function CreateTasksTable({
 
 			<FooterRow>
 				<PrimaryButton
+					data-testid={TEST_IDS.discussion.save}
 					onClick={handleSave}
 					disabled={!hasAnyTask}
 					title="שמור"
@@ -269,7 +271,7 @@ function CreateTasksTable({
 			</FooterRow>
 		</ExtractionWrapper>
 	) : (
-		<TableWrapper>
+		<TableWrapper data-testid={TEST_IDS.discussion.tasksTable}>
 			{finalStatus !== null && !alertDismissed && (
 				<AIExtractionAlert
 					status={finalStatus}
@@ -304,13 +306,16 @@ function CreateTasksTable({
 
 			<FooterRow>
 				<PrimaryButton
+					data-testid={TEST_IDS.discussion.save}
 					onClick={handleSave}
 					disabled={!hasAnyTask}
 					title={`שמור${hasAnyTask ? ` (${filledCount})` : ""}`}
 					width={123}
 					loading={isLoading}
 				/>
-				<BackButton onClick={onBack}>חזור</BackButton>
+				<BackButton data-testid={TEST_IDS.discussion.back} onClick={onBack}>
+					חזור
+				</BackButton>
 			</FooterRow>
 		</TableWrapper>
 	)

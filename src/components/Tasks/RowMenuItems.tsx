@@ -8,6 +8,7 @@ import {
 	Trash2,
 } from "lucide-react"
 import { type ReactNode, useMemo } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu"
 import { DeletePopover } from "./DeletePopover"
 
@@ -52,7 +53,10 @@ export function RowMenuItems({
 						{
 							key: "comment",
 							node: (
-								<MenuItem onSelect={onAddComment}>
+								<MenuItem
+									data-testid={TEST_IDS.rowMenu.comment}
+									onSelect={onAddComment}
+								>
 									<MessageCircle size={16} />
 									הוספת תגובה
 								</MenuItem>
@@ -68,7 +72,7 @@ export function RowMenuItems({
 						{
 							key: "edit",
 							node: (
-								<MenuItem onSelect={onEdit}>
+								<MenuItem data-testid={TEST_IDS.rowMenu.edit} onSelect={onEdit}>
 									<Pencil size={16} />
 									עריכה
 								</MenuItem>
@@ -81,7 +85,10 @@ export function RowMenuItems({
 						{
 							key: "archive",
 							node: (
-								<MenuItem onSelect={onArchive}>
+								<MenuItem
+									data-testid={TEST_IDS.rowMenu.archive}
+									onSelect={onArchive}
+								>
 									<Archive size={16} />
 									העבר לארכיון
 								</MenuItem>
@@ -94,7 +101,10 @@ export function RowMenuItems({
 						{
 							key: "unarchive",
 							node: (
-								<MenuItem onSelect={onUnarchive}>
+								<MenuItem
+									data-testid={TEST_IDS.rowMenu.unarchive}
+									onSelect={onUnarchive}
+								>
 									<ArchiveX size={16} />
 									הוצא מארכיון
 								</MenuItem>
@@ -107,7 +117,10 @@ export function RowMenuItems({
 						{
 							key: "select",
 							node: (
-								<MenuItem onSelect={onEnterSelect}>
+								<MenuItem
+									data-testid={TEST_IDS.rowMenu.select}
+									onSelect={onEnterSelect}
+								>
 									<CheckCircle2 size={16} />
 									סמן
 								</MenuItem>
@@ -132,6 +145,7 @@ export function RowMenuItems({
 									onOpenChange={onPopoverOpenChange}
 									trigger={
 										<DestructiveMenuItem
+											data-testid={TEST_IDS.rowMenu.delete}
 											onClick={() => onPopoverOpenChange(true)}
 										>
 											<Trash2 size={16} />
@@ -158,7 +172,11 @@ export function RowMenuItems({
 	])
 
 	return (
-		<MenuContent align="start" sideOffset={4}>
+		<MenuContent
+			data-testid={TEST_IDS.rowMenu.content}
+			align="start"
+			sideOffset={4}
+		>
 			{groups.map((group) => (
 				<Group key={group[0].key}>
 					{group.map((item) => (

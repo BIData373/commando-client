@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import { PermissionType } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -32,7 +33,13 @@ export function DropdownPermission({
 
 	return (
 		<DropdownMenu>
-			<RoleTrigger $ghost={ghost} disabled={disabled} $enabled={!disabled}>
+			<RoleTrigger
+				data-testid={TEST_IDS.settings.permissionTypeTrigger}
+				data-entity-id={value}
+				$ghost={ghost}
+				disabled={disabled}
+				$enabled={!disabled}
+			>
 				{permissionTypeNames[value]}
 				<StyledChevronDown $visible={!disabled || ghost} size={16} />
 			</RoleTrigger>
@@ -40,6 +47,8 @@ export function DropdownPermission({
 				{Object.entries(permissionTypeNames).map(([key, value]) => (
 					<StyledDropdownMenuItem
 						key={key}
+						data-testid={TEST_IDS.settings.permissionTypeOption}
+						data-entity-id={key}
 						onSelect={() => onSelectPermission(key)}
 					>
 						{value}

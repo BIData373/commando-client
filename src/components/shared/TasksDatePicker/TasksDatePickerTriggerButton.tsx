@@ -7,6 +7,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "src/components/ui/tooltip"
+import { TEST_IDS } from "src/consts/test-ids"
 import { formatDateMonth, formatDateMonthFullYear } from "src/utils/time-format"
 
 interface TasksDatePickerTriggerButtonProps {
@@ -29,7 +30,13 @@ export const TasksDatePickerTriggerButton = ({
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
-				<TriggerButton ref={ref} $active={hasRangeLabel} {...props}>
+				<TriggerButton
+					ref={ref}
+					data-testid={TEST_IDS.datePicker.tasksTrigger}
+					data-active={hasRangeLabel || undefined}
+					$active={hasRangeLabel}
+					{...props}
+				>
 					<CalendarDays size={18} />
 					{hasRangeLabel ? (
 						<RangeLabel>

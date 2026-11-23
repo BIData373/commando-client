@@ -17,6 +17,7 @@ import { useDeleteTask } from "src/api/task/task"
 import { toast } from "src/components/Toast/toast-api"
 
 import type { AppTableFeatures } from "src/consts/table-features"
+import { TEST_IDS } from "src/consts/test-ids"
 import {
 	buildRowMenuActions,
 	type TaskArchiveEntry,
@@ -309,7 +310,10 @@ function TaskTable<TTask extends TaskRowDto>({
 			showUnreadDot
 			handlers={rowHandlers}
 		>
-			<TableWrapper data-title-expanded={titleExpanded || undefined}>
+			<TableWrapper
+				data-testid={TEST_IDS.tasks.table}
+				data-title-expanded={titleExpanded || undefined}
+			>
 				<DataTable
 					columns={columns}
 					data={groupedTasks}

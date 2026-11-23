@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { xor } from "lodash"
 import { Search, X } from "lucide-react"
 import { type ReactNode, useState } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { Checkbox } from "../ui/checkbox"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { EmptyCardState } from "./EmptyCardState"
@@ -22,6 +23,7 @@ interface FilterDropdownProps<T extends string | number> {
 	emptyTitle?: string
 	emptyDescription?: string
 	children: ReactNode
+	testId?: string
 }
 
 function FilterDropdown<T extends string | number>({
@@ -34,6 +36,7 @@ function FilterDropdown<T extends string | number>({
 	emptyTitle,
 	emptyDescription,
 	children,
+	testId = TEST_IDS.shared.filterDropdown,
 }: FilterDropdownProps<T>) {
 	const [open, setOpen] = useState(false)
 	const [search, setSearch] = useState("")
@@ -89,12 +92,13 @@ function FilterDropdown<T extends string | number>({
 		<Popover open={open} onOpenChange={handleOpenChange}>
 			<PopoverTrigger asChild>{children}</PopoverTrigger>
 
-			<StyledPopoverContent align="start" sideOffset={4}>
+			<StyledPopoverContent data-testid={testId} align="start" sideOffset={4}>
 				{searchable && !isEmpty && (
 					<SearchRow>
 						<SearchWrapper>
 							<Search opacity={0.5} size={14} />
 							<SearchField
+								data-testid={TEST_IDS.shared.filterDropdownSearch}
 								placeholder={searchPlaceholder}
 								value={search}
 								onChange={handleSearchChange}
@@ -125,6 +129,8 @@ function FilterDropdown<T extends string | number>({
 							filteredOptions.map((option) => (
 								<OptionItem
 									key={option.value}
+									data-testid={TEST_IDS.shared.filterDropdownOption}
+									data-entity-id={option.value}
 									onClick={() => handleToggle(option.value)}
 								>
 									<OptionRow>
@@ -142,12 +148,16 @@ function FilterDropdown<T extends string | number>({
 					</OptionsList>
 				)}
 				<Footer>
-					<ApplyButton onClick={handleApply}>
+					<ApplyButton
+						data-testid={TEST_IDS.shared.filterDropdownApply}
+						onClick={handleApply}
+					>
 						החל
 						{(isEmpty || pendingValues.length > 0) &&
 							` (${pendingValues.length})`}
 					</ApplyButton>
 					<ResetButton
+						data-testid={TEST_IDS.shared.filterDropdownReset}
 						type="button"
 						disabled={pendingValues.length === 0}
 						onClick={handleReset}

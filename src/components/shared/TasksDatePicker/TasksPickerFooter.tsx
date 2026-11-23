@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import type { DatePickerSlotProps } from "src/components/shared/DatePickerPopover"
+import { TEST_IDS } from "src/consts/test-ids"
 
 interface TasksDatePickerFooterProps {
 	slots: DatePickerSlotProps
@@ -14,8 +15,18 @@ export function TasksDatePickerFooter({
 
 	return (
 		<PopupFooter>
-			<ClearButton onClick={handleClear}>נקה בחירה</ClearButton>
-			<ConfirmButton onClick={onConfirm}>אישור</ConfirmButton>
+			<ClearButton
+				data-testid={TEST_IDS.datePicker.tasksClear}
+				onClick={handleClear}
+			>
+				נקה בחירה
+			</ClearButton>
+			<ConfirmButton
+				data-testid={TEST_IDS.datePicker.tasksConfirm}
+				onClick={onConfirm}
+			>
+				אישור
+			</ConfirmButton>
 		</PopupFooter>
 	)
 }

@@ -6,6 +6,7 @@ import { AssigneeAvatar } from "src/components/shared/AssigneeAvatar"
 import SearchInput from "src/components/shared/SearchInput"
 import { Checkbox } from "src/components/ui/checkbox"
 import type { AppTableFeatures } from "src/consts/table-features"
+import { TEST_IDS } from "src/consts/test-ids"
 import type { FilterOption } from "src/utils/filter-utils"
 
 interface MobileListFilterProps {
@@ -51,6 +52,7 @@ export default function MobileListFilter({
 		<Wrapper>
 			<SearchInputWrapper>
 				<SearchInput
+					testId={TEST_IDS.mobile.filterSearch}
 					value={search}
 					onChange={setSearch}
 					placeholder={placeholder}
@@ -59,7 +61,13 @@ export default function MobileListFilter({
 
 			<List>
 				{filtered.map((option) => (
-					<ListItem key={option.value} onClick={() => onToggle(option.value)}>
+					<ListItem
+						key={option.value}
+						data-testid={TEST_IDS.mobile.filterOption}
+						data-entity-id={option.value}
+						data-selected={selected.includes(option.value) || undefined}
+						onClick={() => onToggle(option.value)}
+					>
 						<Item>
 							<StyledCheckbox
 								checked={selected.includes(option.value)}
