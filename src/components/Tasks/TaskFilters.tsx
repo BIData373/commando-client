@@ -6,6 +6,7 @@ import { type ReactNode, useMemo } from "react"
 import type { ListMessagesParams, TaskRowDto } from "src/api/model"
 import type { QuickFilter } from "src/api/model/quick-filter"
 import type { AppTableFeatures } from "src/consts/table-features"
+import { TEST_IDS } from "src/consts/test-ids"
 import {
 	countQuickFilters,
 	QUICK_FILTER_LABELS,
@@ -126,6 +127,9 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		const pill = (
 			<FilterPill
 				key={filter}
+				data-testid={TEST_IDS.tasks.quickFilter}
+				data-entity-id={filter}
+				data-active={activeQuickFilters.has(filter) || undefined}
 				$active={activeQuickFilters.has(filter)}
 				onClick={() => toggleQuickFilter(filter)}
 			>
@@ -147,7 +151,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 	}
 
 	return (
-		<BarRoot>
+		<BarRoot data-testid={TEST_IDS.tasks.filters}>
 			<BarStart>
 				{startSlot}
 
@@ -163,6 +167,7 @@ export function TaskFilters<TTask extends TaskRowDto>({
 				/>
 
 				<TaskSearchInput
+					testId={TEST_IDS.tasks.search}
 					placeholder="חפש הנחיה"
 					value={searchQuery}
 					onChange={setSearchQuery}
@@ -173,6 +178,8 @@ export function TaskFilters<TTask extends TaskRowDto>({
 				{extraButtons}
 
 				<FilterPill
+					data-testid={TEST_IDS.tasks.quickFilterAll}
+					data-active={activeQuickFilters.size === 0 || undefined}
 					$active={activeQuickFilters.size === 0}
 					onClick={clearQuickFilters}
 				>
@@ -187,7 +194,10 @@ export function TaskFilters<TTask extends TaskRowDto>({
 					<>
 						<FilterSeparator />
 
-						<ClearButton onClick={clearAllColumnFilters}>
+						<ClearButton
+							data-testid={TEST_IDS.tasks.clearColumnFilters}
+							onClick={clearAllColumnFilters}
+						>
 							<FilterX size={18} />
 							נקה סננים
 						</ClearButton>

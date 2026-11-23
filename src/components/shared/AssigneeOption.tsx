@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { Check } from "lucide-react"
 import type { AssigneeDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { AssigneeAvatar } from "./AssigneeAvatar"
 
 interface AssigneeOptionProps {
@@ -19,7 +20,14 @@ export function AssigneeOption({
 	}
 
 	return (
-		<OptionButton type="button" $selected={selected} onClick={handleClick}>
+		<OptionButton
+			type="button"
+			data-testid={TEST_IDS.assigneePicker.option}
+			data-entity-id={assignee.id}
+			data-selected={selected || undefined}
+			$selected={selected}
+			onClick={handleClick}
+		>
 			<OptionContent>
 				<AssigneeAvatar assignee={assignee} size={22} />
 				<OptionName title={assignee.name} $selected={selected}>

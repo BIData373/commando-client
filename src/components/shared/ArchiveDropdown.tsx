@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { Link, type LinkProps } from "@tanstack/react-router"
 import { ChevronDown } from "lucide-react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { headerVariants } from "../Header"
 import {
 	DropdownMenu,
@@ -45,18 +46,30 @@ export const ArchiveDropdown = ({
 		<NavigationMenuItem>
 			<SectionButton $active={isActive}>
 				<HeaderNavTab asChild>
-					<Link {...routeByKey[section]}>{DROPDOWN_ITEMS[section]}</Link>
+					<Link
+						data-testid={TEST_IDS.header.tabSection}
+						data-entity-id={section}
+						{...routeByKey[section]}
+					>
+						{DROPDOWN_ITEMS[section]}
+					</Link>
 				</HeaderNavTab>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<ChevronButton>
+						<ChevronButton data-testid={TEST_IDS.header.sectionChevron}>
 							<StyledChevronDown size={14} />
 						</ChevronButton>
 					</DropdownMenuTrigger>
 					<SectionDropdownContent $variant={variant} side="bottom">
 						{Object.values(DropdownSection).map((key) => (
 							<SectionDropdownItem key={key} asChild>
-								<Link {...routeByKey[key]}>{DROPDOWN_ITEMS[key]}</Link>
+								<Link
+									data-testid={TEST_IDS.header.sectionOption}
+									data-entity-id={key}
+									{...routeByKey[key]}
+								>
+									{DROPDOWN_ITEMS[key]}
+								</Link>
 							</SectionDropdownItem>
 						))}
 					</SectionDropdownContent>

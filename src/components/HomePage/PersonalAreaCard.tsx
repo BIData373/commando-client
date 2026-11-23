@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { useListPersonalTaskRows } from "src/api/task/task"
+import { TEST_IDS } from "src/consts/test-ids"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import PersonalAreaButton from "../shared/PersonalAreaCard/PersonalAreaButton"
 import PersonalAreaHeader from "../shared/PersonalAreaCard/PersonalAreaHeader"
@@ -19,7 +20,10 @@ export default function PersonalAreaCard() {
 	}
 
 	return (
-		<CardRoot onClick={handleNavigateToPersonal}>
+		<CardRoot
+			data-testid={TEST_IDS.home.personalCard}
+			onClick={handleNavigateToPersonal}
+		>
 			<PersonalAreaHeader taskRows={allTaskRows} />
 			<Footer>
 				<PersonalAreaButton onClick={handleNavigateToPersonal} />

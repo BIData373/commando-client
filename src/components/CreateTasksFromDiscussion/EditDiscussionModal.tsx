@@ -4,6 +4,7 @@ import { useStore } from "@tanstack/react-store"
 import { AlertCircle } from "lucide-react"
 import { Popover as PopoverPrimitive } from "radix-ui"
 import { useState } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { updateDiscussionMessage } from "src/functions/toast-messages"
 import { invalidateQueries } from "src/query-client"
 import type { UpdateSourceDto } from "../../api/model"
@@ -144,7 +145,10 @@ function EditDiscussionModal({
 
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
-			<ModalCard closable={!hasChanges}>
+			<ModalCard
+				data-testid={TEST_IDS.discussion.editModal}
+				closable={!hasChanges}
+			>
 				<ModalBody>
 					<HeaderSection>
 						<ModalTitle>עריכת פרטי דיון</ModalTitle>
@@ -169,12 +173,18 @@ function EditDiscussionModal({
 						>
 							<PopoverTrigger asChild>
 								<PrimaryButton
+									data-testid={TEST_IDS.discussion.editSave}
 									title="שמור שינויים"
 									disabled={!hasChanges}
 									loading={isSubmitting}
 								/>
 							</PopoverTrigger>
-							<ConfirmationContent side="top" align="start" sideOffset={13}>
+							<ConfirmationContent
+								data-testid={TEST_IDS.discussion.editConfirm}
+								side="top"
+								align="start"
+								sideOffset={13}
+							>
 								<ConfirmationHeader>
 									<AlertCircleIcon size={16} />
 									<TextWrapper>
@@ -187,16 +197,24 @@ function EditDiscussionModal({
 									</TextWrapper>
 								</ConfirmationHeader>
 								<ConfirmationActions>
-									<ConfirmButton onClick={handleEditConfirm}>
+									<ConfirmButton
+										data-testid={TEST_IDS.shared.confirmPopoverConfirm}
+										onClick={handleEditConfirm}
+									>
 										בטוח
 									</ConfirmButton>
-									<CancelConfirmButton onClick={handleEditCancel}>
+									<CancelConfirmButton
+										data-testid={TEST_IDS.shared.confirmPopoverCancel}
+										onClick={handleEditCancel}
+									>
 										לא
 									</CancelConfirmButton>
 								</ConfirmationActions>
 							</ConfirmationContent>
 						</Popover>
-						<CancelButton onClick={onClose}>ביטול</CancelButton>
+						<CancelButton data-testid={TEST_IDS.form.cancel} onClick={onClose}>
+							ביטול
+						</CancelButton>
 					</EditFooter>
 				</ModalBody>
 			</ModalCard>

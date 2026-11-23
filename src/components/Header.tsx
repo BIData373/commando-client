@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router"
 import { User } from "lucide-react"
 import logoWithText from "../assets/logo-with-text.svg"
 import logoWithTextDark from "../assets/logo-with-text-dark.png"
+import { TEST_IDS } from "../consts/test-ids"
 import { useHeader } from "../providers/HeaderProvider"
 import { UserDropdown } from "./UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "./ui/dropdown-menu"
@@ -22,7 +23,7 @@ export default function Header({ variant = "workspace" }: HeaderProps) {
 	const logoSource = variant === "workspace" ? logoWithText : logoWithTextDark
 
 	return (
-		<HeaderRoot $variant={variant}>
+		<HeaderRoot data-testid={TEST_IDS.header.root} $variant={variant}>
 			<HeaderContainer>
 				<HeaderInner>
 					<StartSection>{right}</StartSection>
@@ -36,7 +37,7 @@ export default function Header({ variant = "workspace" }: HeaderProps) {
 					<EndSection>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<UserMenuButton>
+								<UserMenuButton data-testid={TEST_IDS.header.userMenuTrigger}>
 									<UserMenuIcon />
 								</UserMenuButton>
 							</DropdownMenuTrigger>
@@ -45,7 +46,7 @@ export default function Header({ variant = "workspace" }: HeaderProps) {
 
 						<EndSectionSeparator orientation="vertical" />
 
-						<StyledLink to="/">
+						<StyledLink data-testid={TEST_IDS.header.homeLink} to="/">
 							<BiData>by BI DATA</BiData>
 							<StyledLogo src={logoSource} alt="Logo" />
 						</StyledLink>

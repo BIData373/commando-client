@@ -3,6 +3,7 @@ import { useToggle } from "@mantine/hooks"
 import { memo } from "react"
 import type { WorkspaceStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useIsMobile } from "src/hooks/use-mobile"
 import { MobileDrawer } from "../Mobile/MobileDrawer"
 import { MobileStatusSelect } from "../Mobile/task/MobileStatusSelect"
@@ -82,19 +83,27 @@ export const StatusDropdown = memo(
 			/>
 		)
 
+		const isEditable = editable && statusesReady
+
 		return (
-			<CellCenter>
-				{editable && statusesReady ? (
+			<CellCenter
+				data-testid={isEditable ? undefined : TEST_IDS.statusDropdown.readonly}
+				data-entity-id={isEditable ? undefined : status.id}
+			>
+				{isEditable ? (
 					isMobile ? (
 						<MobileDrawer
 							open={isOpen}
 							onOpenChange={toggleOpen}
 							title="בחירת סטטוס"
+							testId={TEST_IDS.mobile.statusDrawer}
 							trigger={statusTagRef}
 						>
 							{statuses.map((currentStatus) => (
 								<MobileStatusSelect
 									key={currentStatus.id}
+									testId={TEST_IDS.statusDropdown.option}
+									entityId={currentStatus.id}
 									selected={currentStatus.id === status.id}
 									onSelect={() => handleSelectStatusMobile(currentStatus)}
 								>
@@ -111,12 +120,24 @@ export const StatusDropdown = memo(
 					) : (
 						<DropdownMenu onOpenChange={toggleOpen}>
 							<DropdownMenuTrigger asChild>
-								<TriggerWrapper tabIndex={0}>{statusTagRef}</TriggerWrapper>
+								<TriggerWrapper
+									data-testid={TEST_IDS.statusDropdown.trigger}
+									data-entity-id={status.id}
+									tabIndex={0}
+								>
+									{statusTagRef}
+								</TriggerWrapper>
 							</DropdownMenuTrigger>
-							<StatusDropdownContent align="center" sideOffset={6}>
+							<StatusDropdownContent
+								data-testid={TEST_IDS.statusDropdown.content}
+								align="center"
+								sideOffset={6}
+							>
 								{statuses.map((currentStatus) => (
 									<StatusDropdownItem
 										key={currentStatus.id}
+										data-testid={TEST_IDS.statusDropdown.option}
+										data-entity-id={currentStatus.id}
 										$selected={currentStatus.id === status.id}
 										onSelect={() => handleSelectStatus(currentStatus)}
 									>

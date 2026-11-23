@@ -19,6 +19,7 @@ import {
 } from "src/api/task/task"
 import { useListTaskHistory } from "src/api/task-history/task-history"
 import { viewTasks } from "src/api/user-viewed-tasks/user-viewed-tasks"
+import { TEST_IDS } from "src/consts/test-ids"
 import type { AppMutationMeta } from "src/functions/mutation-toast-cache"
 import {
 	archiveTaskMessage,
@@ -231,9 +232,13 @@ function TaskDetailPanel({
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
 			<Panel
+				data-testid={TEST_IDS.taskDetail.panel}
+				data-entity-id={id}
 				headerActions={
 					<>
-						<TaskIdLabel>#{serialId}</TaskIdLabel>
+						<TaskIdLabel data-testid={TEST_IDS.taskDetail.serialId}>
+							#{serialId}
+						</TaskIdLabel>
 						<RowActionsMenu
 							workspaceId={workspaceId}
 							actions={{
@@ -263,8 +268,12 @@ function TaskDetailPanel({
 
 					<TitleRow $shadow={scrollShadowTop}>
 						<TextWrapper>
-							{flagged && <FlagIcon size={20} />}
-							<TitleText title={title}>{title}</TitleText>
+							{flagged && (
+								<FlagIcon size={20} data-testid={TEST_IDS.taskDetail.flagged} />
+							)}
+							<TitleText data-testid={TEST_IDS.taskDetail.title} title={title}>
+								{title}
+							</TitleText>
 						</TextWrapper>
 					</TitleRow>
 				</HeaderRow>
@@ -314,7 +323,9 @@ function TaskDetailPanel({
 					{!!notes && (
 						<NotesBlock>
 							<SectionLabel>הערה</SectionLabel>
-							<NotesValue>{notes}</NotesValue>
+							<NotesValue data-testid={TEST_IDS.taskDetail.notes}>
+								{notes}
+							</NotesValue>
 						</NotesBlock>
 					)}
 					<InfoGrid>
@@ -323,11 +334,16 @@ function TaskDetailPanel({
 								<SectionLabel>מקור הנחיה</SectionLabel>
 								<SourceRow>
 									{permissionType === PermissionType.MANAGER && (
-										<PencilButton onClick={() => setShowEditDiscussion(true)}>
+										<PencilButton
+											data-testid={TEST_IDS.taskDetail.editSource}
+											onClick={() => setShowEditDiscussion(true)}
+										>
 											<Pencil size={14} />
 										</PencilButton>
 									)}
-									<SourceName>{source.name}</SourceName>
+									<SourceName data-testid={TEST_IDS.taskDetail.sourceName}>
+										{source.name}
+									</SourceName>
 									{source.date && (
 										<SourceDate>{formatDateMonthYear(source.date)}</SourceDate>
 									)}
@@ -337,6 +353,7 @@ function TaskDetailPanel({
 										<>
 											<Paperclip size={16} />
 											<AttachmentDownloadButton
+												data-testid={TEST_IDS.taskDetail.attachmentDownload}
 												onClick={handleAttachmentDownload}
 												disabled={isDownloading}
 											>

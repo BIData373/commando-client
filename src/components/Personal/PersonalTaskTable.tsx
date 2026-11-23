@@ -13,6 +13,7 @@ import {
 	useListPersonalTaskRows,
 } from "src/api/task/task"
 import type { AppTableFeatures } from "src/consts/table-features"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useTaskArchive } from "src/hooks/useTaskArchive"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
@@ -132,7 +133,10 @@ function PersonalTaskTable({
 
 	return (
 		<TooltipProvider>
-			<PageRoot>
+			<PageRoot
+				data-testid={TEST_IDS.personal.page}
+				data-archived={isArchived || undefined}
+			>
 				{isArchived && <ArchiveHeader>ארכיון</ArchiveHeader>}
 
 				<MetricsBar {...getPersonalTaskMetrics(tasks)} />
@@ -178,6 +182,8 @@ function PersonalTaskTable({
 							$active={activeWorkspaceFilters.size > 0}
 							emptyTitle="טרם הוגדרו סביבות"
 							emptyDescription="לאחר שסביבות יוצרו, הן יופיעו כאן"
+							triggerTestId={TEST_IDS.personal.workspaceFilterTrigger}
+							dropdownTestId={TEST_IDS.personal.workspaceFilterDropdown}
 						/>
 					}
 				/>

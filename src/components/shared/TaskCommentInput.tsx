@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { useSearch } from "@tanstack/react-router"
 import { useEffect, useRef, useState } from "react"
 import { useCreateMessage } from "src/api/message/message"
+import { TEST_IDS } from "src/consts/test-ids"
 import { invalidateTaskComments } from "src/functions/comment-utils"
 import { MOBILE_MEDIA_QUERY, useIsMobile } from "src/hooks/use-mobile"
 import { CommentSendButton } from "./CommentSendButton"
@@ -60,6 +61,7 @@ function TaskCommentInput({ taskId, autoFocus }: TaskCommentInputProps) {
 	return (
 		<TextareaRow>
 			<CommentsTextarea
+				data-testid={TEST_IDS.comments.input}
 				ref={textareaRef}
 				value={commentValue}
 				onChange={handleCommentInput}

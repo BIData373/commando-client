@@ -11,6 +11,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "src/components/ui/tooltip"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useIsMobile } from "src/hooks/use-mobile"
 import { getInitials } from "src/utils/avatar-utils"
 import { formatMesibaIcon } from "src/utils/icon-utils"
@@ -45,7 +46,12 @@ export default function WorkspaceCard({
 	}
 
 	return (
-		<CardRoot onClick={handleWorkspaceClick} className={className}>
+		<CardRoot
+			data-testid={TEST_IDS.home.workspaceCard}
+			data-entity-id={urlName}
+			onClick={handleWorkspaceClick}
+			className={className}
+		>
 			<PermissionRow>
 				{permissionType && (
 					<PermissionBadge>

@@ -3,6 +3,7 @@ import { Search, X } from "lucide-react"
 import { Popover as PopoverPrimitive } from "radix-ui"
 import type { ReactNode } from "react"
 import { useRef, useState } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group"
 import { Spinner } from "../ui/spinner"
 
@@ -17,6 +18,7 @@ interface SearchDropdownProps<T> {
 	onClear?: () => void
 	selectedItem?: T
 	getItemKey: (item: T) => string | number
+	testId?: string
 }
 
 export function SearchDropdown<T>({
@@ -30,6 +32,7 @@ export function SearchDropdown<T>({
 	onClear,
 	selectedItem,
 	getItemKey,
+	testId = TEST_IDS.searchDropdown.root,
 }: SearchDropdownProps<T>) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [isFocused, setIsFocused] = useState(false)
@@ -75,7 +78,7 @@ export function SearchDropdown<T>({
 	return (
 		<PopoverPrimitive.Root open={isOpen} onOpenChange={setIsOpen}>
 			<PopoverPrimitive.Trigger asChild>
-				<Root onClick={handleRootClick}>
+				<Root data-testid={testId} onClick={handleRootClick}>
 					<StyledInputGroup onFocus={handleFocus}>
 						<InputGroupAddon align="inline-start">
 							{isLoading && isFocused ? <Spinner /> : <Search size={16} />}
@@ -84,12 +87,16 @@ export function SearchDropdown<T>({
 							<SelectedDisplay>
 								<SelectedItem>{renderItem(selectedItem)}</SelectedItem>
 								<InputGroupAddon align="inline-end">
-									<StyledX onMouseDown={handleClear} />
+									<StyledX
+										data-testid={TEST_IDS.searchDropdown.clear}
+										onMouseDown={handleClear}
+									/>
 								</InputGroupAddon>
 							</SelectedDisplay>
 						) : (
 							<>
 								<InputGroupInput
+									data-testid={TEST_IDS.searchDropdown.input}
 									value={value}
 									onChange={handleChange}
 									onBlur={handleBlur}
@@ -97,7 +104,10 @@ export function SearchDropdown<T>({
 								/>
 								{onClear && value.length > 0 && (
 									<InputGroupAddon align="inline-end">
-										<StyledX onMouseDown={handleClear} />
+										<StyledX
+											data-testid={TEST_IDS.searchDropdown.clear}
+											onMouseDown={handleClear}
+										/>
 									</InputGroupAddon>
 								)}
 							</>
@@ -108,6 +118,7 @@ export function SearchDropdown<T>({
 			{isOpen && !isLoading && (
 				<PopoverPrimitive.Portal>
 					<DropdownContent
+						data-testid={TEST_IDS.searchDropdown.content}
 						ref={handleContentRef}
 						align="start"
 						sideOffset={4}
@@ -118,6 +129,8 @@ export function SearchDropdown<T>({
 							items.map((item) => (
 								<DropdownItem
 									key={getItemKey(item)}
+									data-testid={TEST_IDS.searchDropdown.item}
+									data-entity-id={getItemKey(item)}
 									onMouseDown={() => handleSelect(item)}
 								>
 									{renderItem(item)}

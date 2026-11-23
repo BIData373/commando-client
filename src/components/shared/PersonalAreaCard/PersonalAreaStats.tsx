@@ -5,6 +5,7 @@ import {
 	STATUS_DEFAULTS,
 	STATUS_DISPLAY_ORDER,
 } from "src/consts/status-defaults"
+import { TEST_IDS } from "src/consts/test-ids"
 import { colorWithAlpha } from "src/functions/contrast-color" // chrome83
 import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 
@@ -27,7 +28,11 @@ export default function PersonalAreaStats({
 	return (
 		<>
 			{stats.map(({ statusType, count, color, name }) => (
-				<StatItem key={statusType}>
+				<StatItem
+					key={statusType}
+					data-testid={TEST_IDS.home.personalStat}
+					data-entity-id={statusType}
+				>
 					<StatNumber>{count}</StatNumber>
 					<StatTag $color={color}>{name}</StatTag>
 				</StatItem>

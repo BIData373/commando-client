@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { TbFilter } from "react-icons/tb"
+import { TEST_IDS } from "src/consts/test-ids"
 import type { FilterOption } from "../../utils/filter-utils"
 import { FilterDropdown } from "../shared/FilterDropdown"
 
@@ -32,8 +33,13 @@ function ColumnFilterDropdown({
 			onOpenChange={onOpenChange}
 			searchable={searchable}
 			searchPlaceholder="חפש..."
+			testId={TEST_IDS.tasks.columnFilterDropdown}
 		>
-			<IconButton $active={isActive}>
+			<IconButton
+				data-testid={TEST_IDS.tasks.columnFilterTrigger}
+				data-active={isActive || undefined}
+				$active={isActive}
+			>
 				<TbFilter size={16} />
 				{isActive && <ActiveBadge />}
 			</IconButton>

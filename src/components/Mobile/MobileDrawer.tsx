@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { X } from "lucide-react"
 import type { ReactNode } from "react"
 import { Drawer, DrawerContent, DrawerTrigger } from "src/components/ui/drawer"
+import { TEST_IDS } from "src/consts/test-ids"
 
 interface MobileDrawerProps extends React.PropsWithChildren {
 	open?: boolean
@@ -9,6 +10,7 @@ interface MobileDrawerProps extends React.PropsWithChildren {
 	title: string
 	trigger?: ReactNode
 	className?: string
+	testId?: string
 }
 
 export function MobileDrawer({
@@ -18,6 +20,7 @@ export function MobileDrawer({
 	children,
 	trigger = null,
 	className,
+	testId = TEST_IDS.mobile.drawer,
 }: MobileDrawerProps) {
 	function handleClose() {
 		onOpenChange?.(false)
@@ -26,10 +29,13 @@ export function MobileDrawer({
 	return (
 		<Drawer open={open} onOpenChange={onOpenChange}>
 			{trigger && <StyledDrawerTrigger>{trigger}</StyledDrawerTrigger>}
-			<StyledDrawerContent className={className}>
+			<StyledDrawerContent data-testid={testId} className={className}>
 				<Header>
 					<HeaderTitle>{title}</HeaderTitle>
-					<CloseButton onClick={handleClose}>
+					<CloseButton
+						data-testid={TEST_IDS.mobile.drawerClose}
+						onClick={handleClose}
+					>
 						<X size={16} />
 					</CloseButton>
 				</Header>

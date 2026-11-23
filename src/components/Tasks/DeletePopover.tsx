@@ -1,3 +1,4 @@
+import { TEST_IDS } from "src/consts/test-ids"
 import {
 	ConfirmPopover,
 	type ConfirmPopoverProps,
@@ -14,6 +15,7 @@ export function DeletePopover({ count, title, ...props }: DeletePopoverProps) {
 			description=".שים לב, לא ניתן לבטל פעולה זאת"
 			confirmLabel={count === 1 ? "מחק הנחיה" : "מחק הנחיות"}
 			openManually={true}
+			testId={TEST_IDS.tasks.deleteConfirm}
 			{...props}
 		/>
 	)

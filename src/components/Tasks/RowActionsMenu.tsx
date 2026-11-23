@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { MoreVertical } from "lucide-react"
 import { type ReactNode, useState } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { RowMenu } from "./RowMenu"
 import type { RowMenuActions } from "./RowMenuItems"
 
@@ -17,7 +18,7 @@ export function RowActionsMenu({ trigger, actions }: RowActionsMenuProps) {
 		<RowMenu
 			trigger={
 				trigger ?? (
-					<RowActionsTrigger>
+					<RowActionsTrigger data-testid={TEST_IDS.rowMenu.trigger}>
 						<MoreVertical size={16} />
 					</RowActionsTrigger>
 				)

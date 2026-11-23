@@ -7,6 +7,7 @@ import { GradientGhostButton } from "src/components/shared/GradientGhostButton"
 import { GradientText } from "src/components/shared/GradientText"
 import TaskComment from "src/components/shared/TaskComment"
 import TaskCommentsSection from "src/components/shared/TaskCommentsSection"
+import { TEST_IDS } from "src/consts/test-ids"
 import { invalidateTaskComments } from "src/functions/comment-utils"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { MobileDrawer } from "../MobileDrawer"
@@ -50,7 +51,10 @@ export function MobileTaskComments({
 			{assigneeStatuses.length !== 0 && <Seperator />}
 			<Header>
 				<Title>{headerText}</Title>
-				<GradientGhostButton onClick={() => setDrawerMode("add")}>
+				<GradientGhostButton
+					testId={TEST_IDS.mobile.commentsAdd}
+					onClick={() => setDrawerMode("add")}
+				>
 					הוספת תגובה
 				</GradientGhostButton>
 			</Header>
@@ -61,12 +65,16 @@ export function MobileTaskComments({
 						message={messages[0]}
 						onDelete={handleDeleteComment}
 					/>
-					<ShowMoreButton onClick={() => setDrawerMode("view")}>
+					<ShowMoreButton
+						data-testid={TEST_IDS.mobile.commentsShowMore}
+						onClick={() => setDrawerMode("view")}
+					>
 						<GradientText>הצג עוד</GradientText>
 					</ShowMoreButton>
 				</>
 			)}
 			<CommentsDrawer
+				testId={TEST_IDS.mobile.commentsDrawer}
 				open={drawerMode !== "closed"}
 				onOpenChange={() => setDrawerMode("closed")}
 				title={headerText}

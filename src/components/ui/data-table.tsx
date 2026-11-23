@@ -21,6 +21,7 @@ import {
   type ReactNode
 } from 'react'
 import { appTableFeatures, type AppTableFeatures } from '../../consts/table-features'
+import { TEST_IDS } from '../../consts/test-ids'
 import { DataTableBody } from './data-table-body'
 import { Table, TableHead, TableHeader, TableRow } from './table'
 
@@ -193,7 +194,11 @@ export function DataTable<TData extends RowData>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  key={header.id}
+                  data-testid={TEST_IDS.table.headerCell}
+                  data-column-id={header.column.id}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(header.column.columnDef.header, header.getContext())}

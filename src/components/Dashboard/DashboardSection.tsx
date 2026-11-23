@@ -6,15 +6,17 @@ interface DashboardSectionProps {
 	tabButtons: ReactNode
 	children: ReactNode
 	gap: number
+	testId?: string
 }
 
 export function DashboardSection({
 	tabButtons,
 	children,
 	gap,
+	testId,
 }: DashboardSectionProps) {
 	return (
-		<Section $gap={gap}>
+		<Section data-testid={testId} $gap={gap}>
 			{tabButtons}
 			<ContentPanel>{children}</ContentPanel>
 		</Section>

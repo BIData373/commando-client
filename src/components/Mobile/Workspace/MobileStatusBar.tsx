@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { STATUS_DEFAULTS } from "src/consts/status-defaults"
+import { TEST_IDS } from "src/consts/test-ids"
 import type { StatusTaskCount } from "src/functions/status-counts"
 
 const BAR_COLORS: Record<string, string> = {
@@ -22,10 +23,12 @@ export default function MobileStatusBar({
 	totalTaskCount,
 }: MobileStatusBarProps) {
 	return (
-		<Root>
+		<Root data-testid={TEST_IDS.mobile.statusBar}>
 			<TitleRow>
 				<Label dir="auto">הנחיות בסביבה</Label>
-				<Count>{totalTaskCount}</Count>
+				<Count data-testid={TEST_IDS.mobile.statusBarTotal}>
+					{totalTaskCount}
+				</Count>
 			</TitleRow>
 
 			<BarTrack>
@@ -42,7 +45,11 @@ export default function MobileStatusBar({
 
 			<LegendRow>
 				{segments.map((seg) => (
-					<LegendItem key={seg.id}>
+					<LegendItem
+						key={seg.id}
+						data-testid={TEST_IDS.mobile.statusBarItem}
+						data-entity-id={seg.id}
+					>
 						<LegendLabel dir="auto">{seg.name}</LegendLabel>
 						<LegendCount>{seg.count}</LegendCount>
 						<LegendDot $color={getBarColor(seg)} />

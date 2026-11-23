@@ -4,14 +4,16 @@ import { GradientText } from "./GradientText"
 
 interface GradientGhostButtonProps extends React.PropsWithChildren {
 	onClick: () => void
+	testId?: string
 }
 
 export function GradientGhostButton({
 	children,
 	onClick,
+	testId,
 }: GradientGhostButtonProps) {
 	return (
-		<GradientBorderBtn onClick={onClick}>
+		<GradientBorderBtn data-testid={testId} onClick={onClick}>
 			<GradientText>{children}</GradientText>
 		</GradientBorderBtn>
 	)

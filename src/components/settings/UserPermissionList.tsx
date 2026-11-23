@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { type MirageUserDto, PermissionType } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { openUserChat } from "src/utils/redirect-utils"
 import noUsersFound from "../../assets/empty-states/no-users-found.svg"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -55,7 +56,11 @@ export function UserPermissionList<T>({
 					const typeChangeable = canChangeType?.(item) ?? true
 
 					return (
-						<UserRow key={user.upn}>
+						<UserRow
+							key={user.upn}
+							data-testid={TEST_IDS.settings.permissionUser}
+							data-entity-id={user.upn}
+						>
 							<UserInfo
 								$type={type}
 								onClick={() => handleClickUserInfo(item, type)}
@@ -90,6 +95,7 @@ export function UserPermissionList<T>({
 								<TooltipTrigger asChild>
 									<span>
 										<TrashButton
+											data-testid={TEST_IDS.settings.permissionUserDelete}
 											visible={deletable}
 											onClick={() => onDelete(item)}
 											size={22}

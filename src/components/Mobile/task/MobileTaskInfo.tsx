@@ -4,6 +4,7 @@ import { History } from "lucide-react"
 import type { TaskWithWorkspaceDto } from "src/api/model"
 import { DueDateGroup } from "src/components/shared/DueDateGroup"
 import { TagsRow } from "src/components/shared/TagsRow"
+import { TEST_IDS } from "src/consts/test-ids"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 
 interface MobileTaskInfoProps {
@@ -30,13 +31,15 @@ export function MobileTaskInfo({
 		<Wrapper>
 			<TaskHeader as="header" $isTaskDetailsExist={isTaskDetailsExist}>
 				<MetaData>
-					<TaskIdLabel>#{serialId}</TaskIdLabel>
+					<TaskIdLabel data-testid={TEST_IDS.mobile.taskSerialId}>
+						#{serialId}
+					</TaskIdLabel>
 					<LastUpdate>
 						<History size={18} />
 						{formatMinutesHours(updatedAt)} - {formatDateMonthYear(updatedAt)}
 					</LastUpdate>
 				</MetaData>
-				<TaskTitle>{title}</TaskTitle>
+				<TaskTitle data-testid={TEST_IDS.mobile.taskTitle}>{title}</TaskTitle>
 				<SectionWrapper>
 					<SectionLabel>תג"ב</SectionLabel>
 					<DueDateGroup
@@ -52,13 +55,15 @@ export function MobileTaskInfo({
 					{!!notes && (
 						<SectionWrapper>
 							<SectionLabel>הערה</SectionLabel>
-							<SectionDescription>{notes}</SectionDescription>
+							<SectionDescription data-testid={TEST_IDS.mobile.taskNotes}>
+								{notes}
+							</SectionDescription>
 						</SectionWrapper>
 					)}
 					{!!source && (
 						<SectionWrapper>
 							<SectionLabel>מקור</SectionLabel>
-							<SourceDescription>
+							<SourceDescription data-testid={TEST_IDS.mobile.taskSource}>
 								{source.name}
 								<LightSectionDescriptionText>
 									{source.date && <>{formatDateMonthYear(source.date)}</>}

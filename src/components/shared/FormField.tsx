@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import type { AnyFieldApi } from "@tanstack/form-core"
 import type { ReactNode } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 
 interface FormFieldProps {
 	label?: ReactNode
@@ -33,7 +34,7 @@ export function FormField({
 			)}
 			{children}
 			{renderError && (
-				<ErrorText $error={showError}>
+				<ErrorText data-testid={TEST_IDS.form.fieldError} $error={showError}>
 					{showError && String(errors[0])}
 				</ErrorText>
 			)}

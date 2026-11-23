@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Pencil } from "lucide-react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { WORKSPACE_STATUS_EDITABLE_DISABLED } from "src/functions/status-editable-messages"
 import { SettingToggleRow } from "../shared/SettingToggleRow"
 
@@ -18,6 +19,7 @@ export function AssigneeStatusEditableToggle({
 		<StatusEditableGroup>
 			<ToggleRowWrapper>
 				<SettingToggleRow
+					testId={TEST_IDS.settings.assigneeDialogStatusEditable}
 					label="אפשר למכותבים לעדכן סטטוס"
 					tooltip={
 						<p>

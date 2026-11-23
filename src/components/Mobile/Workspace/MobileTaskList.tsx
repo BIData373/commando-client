@@ -8,6 +8,7 @@ import {
 	useState,
 } from "react"
 import type { TaskRowDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 
 const ESTIMATED_CARD_HEIGHT = 160
 const CARD_GAP = 12
@@ -50,7 +51,7 @@ export default function MobileTaskList<T extends TaskRowDto>({
 		: 0
 
 	return (
-		<List ref={listRef}>
+		<List data-testid={TEST_IDS.mobile.taskList} ref={listRef}>
 			<Spacer $height={paddingTop} />
 			{virtualItems.map(({ key, index }) => (
 				<CardSlot key={key} data-index={index} ref={virtualizer.measureElement}>

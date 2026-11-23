@@ -6,6 +6,7 @@ import { useGetWorkspace } from "src/api/workspace/workspace"
 import logoWithText from "src/assets/logo-with-text-dark.png"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
 import { Sheet, SheetContent, SheetTitle } from "src/components/ui/sheet"
+import { TEST_IDS } from "src/consts/test-ids"
 import { openUserChat } from "src/utils/redirect-utils"
 
 interface NoPermissionsModalProps {
@@ -32,7 +33,12 @@ export default function NoPermissionsModal({
 
 	return (
 		<Sheet open onOpenChange={handleOpenChange}>
-			<Panel side="bottom" showCloseButton={false} aria-describedby={undefined}>
+			<Panel
+				data-testid={TEST_IDS.mobile.noPermissions}
+				side="bottom"
+				showCloseButton={false}
+				aria-describedby={undefined}
+			>
 				<Body>
 					<Logo src={logoWithText} />
 					<MessageRow>
@@ -44,6 +50,8 @@ export default function NoPermissionsModal({
 								{managers.map((user) => (
 									<li key={user.id}>
 										<ManagerLink
+											data-testid={TEST_IDS.mobile.noPermissionsManager}
+											data-entity-id={user.upn}
 											type="button"
 											onClick={() => openUserChat(user)}
 										>
@@ -54,7 +62,11 @@ export default function NoPermissionsModal({
 							</ManagerList>
 						</MessageContent>
 					</MessageRow>
-					<PrimaryButton onClick={onClose} title="הבנתי, תודה" />
+					<PrimaryButton
+						data-testid={TEST_IDS.mobile.noPermissionsClose}
+						onClick={onClose}
+						title="הבנתי, תודה"
+					/>
 				</Body>
 			</Panel>
 		</Sheet>

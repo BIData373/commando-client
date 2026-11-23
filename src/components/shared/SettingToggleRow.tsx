@@ -17,6 +17,7 @@ interface SettingToggleRowProps {
 	checked?: boolean
 	disabled?: boolean
 	onCheckedChange?: (checked: boolean) => void
+	testId?: string
 }
 
 export function SettingToggleRow({
@@ -27,9 +28,10 @@ export function SettingToggleRow({
 	checked,
 	disabled,
 	onCheckedChange,
+	testId,
 }: SettingToggleRowProps) {
 	return (
-		<Row>
+		<Row data-testid={testId}>
 			<DisabledReasonSwitch
 				size="sm"
 				checked={checked}

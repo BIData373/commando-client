@@ -1,14 +1,21 @@
 import styled from "@emotion/styled"
+import { TEST_IDS } from "src/consts/test-ids"
 
 interface CancleButtonProps {
 	title: string
 	onClick?(): void
 	ref?: React.Ref<HTMLButtonElement>
+	testId?: string
 }
 
-export const CancelButton = ({ title, onClick, ref }: CancleButtonProps) => {
+export const CancelButton = ({
+	title,
+	onClick,
+	ref,
+	testId = TEST_IDS.form.cancel,
+}: CancleButtonProps) => {
 	return (
-		<Button onClick={onClick} ref={ref}>
+		<Button data-testid={testId} onClick={onClick} ref={ref}>
 			{title}
 		</Button>
 	)

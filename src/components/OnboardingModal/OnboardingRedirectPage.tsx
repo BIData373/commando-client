@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
+import { TEST_IDS } from "src/consts/test-ids"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { openUserGuide } from "src/utils/redirect-utils"
 import createWorkspace from "../../assets/create-workspace.svg"
@@ -26,13 +27,18 @@ export function OnboardingRedirectPage({
 				</SubTitle>
 				<CardGroup>
 					<Link
+						data-testid={TEST_IDS.onboarding.toPersonal}
 						to="/personal/tasks"
 						search={{ view: TasksView.TABLE }}
 						onClick={onRedirect}
 					>
 						<Card src={toPersonalSpace} />
 					</Link>
-					<Link to="/new-workspace" onClick={onRedirect}>
+					<Link
+						data-testid={TEST_IDS.onboarding.toNewWorkspace}
+						to="/new-workspace"
+						onClick={onRedirect}
+					>
 						<Card src={createWorkspace} />
 					</Link>
 				</CardGroup>
@@ -44,12 +50,26 @@ export function OnboardingRedirectPage({
 			<Footer>
 				<Help>
 					עדיין לא הבנתם? לא לדאוג יש לנו מארז הדרכה{" "}
-					<GuideLink onClick={openUserGuide}>למארז ההדרכה</GuideLink>
+					<GuideLink
+						data-testid={TEST_IDS.onboarding.guideLink}
+						onClick={openUserGuide}
+					>
+						למארז ההדרכה
+					</GuideLink>
 				</Help>
 				<ButtonGroup>
-					<GradientGhostButton onClick={onPrevious}>חזור</GradientGhostButton>
+					<GradientGhostButton
+						testId={TEST_IDS.onboarding.previous}
+						onClick={onPrevious}
+					>
+						חזור
+					</GradientGhostButton>
 					<Link to="/">
-						<PrimaryBtn onClick={onRedirect} title="למסך הראשי"></PrimaryBtn>
+						<PrimaryBtn
+							data-testid={TEST_IDS.onboarding.toHome}
+							onClick={onRedirect}
+							title="למסך הראשי"
+						></PrimaryBtn>
 					</Link>
 				</ButtonGroup>
 			</Footer>

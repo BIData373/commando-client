@@ -14,6 +14,7 @@ import {
 	type EmptyCardStateProps,
 } from "src/components/shared/EmptyCardState"
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
+import { TEST_IDS } from "src/consts/test-ids"
 import { MOBILE_MEDIA_QUERY, useIsMobile } from "src/hooks/use-mobile"
 import { filterByTitle } from "src/utils/workspace-utils"
 import SearchInput from "../shared/SearchInput"
@@ -90,6 +91,7 @@ export default function SpacesContainer() {
 
 	const searchInput = (
 		<WorkspaceSearchInput
+			testId={TEST_IDS.home.workspaceSearch}
 			placeholder="חפש סביבה"
 			value={searchQuery}
 			onChange={handleSearchChange}
@@ -97,11 +99,12 @@ export default function SpacesContainer() {
 	)
 
 	return (
-		<SpaceContainerCard>
+		<SpaceContainerCard data-testid={TEST_IDS.home.workspaces}>
 			<TopSection>
 				<HeaderRow>
 					{!isMobile && (
 						<SecondaryButton
+							data-testid={TEST_IDS.home.newWorkspace}
 							onClick={handleNewWorkspaceClick}
 							title={
 								<>
@@ -120,6 +123,9 @@ export default function SpacesContainer() {
 					{tabKeys.map((key) => (
 						<Tab
 							key={key}
+							data-testid={TEST_IDS.home.workspacesTab}
+							data-entity-id={key}
+							data-active={activeTab === key || undefined}
 							$active={activeTab === key}
 							onClick={() => setActiveTab(key)}
 						>

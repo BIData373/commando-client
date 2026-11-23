@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { X } from "lucide-react"
 import type { ReactNode } from "react"
 import { ExtractionStatus } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -55,18 +56,29 @@ function AIExtractionAlert({
 }: AIExtractionAlertProps) {
 	const type = alertTypeByStatus[status]
 	return (
-		<ExtractionAlert $type={type}>
+		<ExtractionAlert
+			data-testid={TEST_IDS.discussion.aiAlert}
+			data-entity-id={status}
+			$type={type}
+		>
 			<AlertBody>
 				<AlertTitle>{alertTitleByType[type](count)}</AlertTitle>
 				<AlertText>{alertTextByType[type]}</AlertText>
 			</AlertBody>
 			<AlertActions>
 				{type === AlertType.Error && (
-					<RetryButton onClick={onRetry} disabled={isRetrying}>
+					<RetryButton
+						data-testid={TEST_IDS.discussion.aiRetry}
+						onClick={onRetry}
+						disabled={isRetrying}
+					>
 						נסה שנית
 					</RetryButton>
 				)}
-				<AlertDismiss onClick={onDismiss}>
+				<AlertDismiss
+					data-testid={TEST_IDS.discussion.aiDismiss}
+					onClick={onDismiss}
+				>
 					<X size={16} />
 				</AlertDismiss>
 			</AlertActions>

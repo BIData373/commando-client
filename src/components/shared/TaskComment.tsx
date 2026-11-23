@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { MoreVertical, Trash2 } from "lucide-react"
 import type { MessageDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { formatDateMonthYear, formatMinutesHours } from "src/utils/time-format"
 import { UnreadDot } from "../shared/UnreadDot"
@@ -27,25 +28,34 @@ function TaskComment({ message, canDelete, onDelete }: TaskCommentProps) {
 	}
 
 	return (
-		<Card>
+		<Card
+			data-testid={TEST_IDS.comments.comment}
+			data-entity-id={message.id}
+			data-unread={!message.viewed || undefined}
+		>
 			{!message.viewed && <UnreadDot />}
 			<MainRow>
 				{canDelete && (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
-							<MenuButton>
+							<MenuButton data-testid={TEST_IDS.comments.menuTrigger}>
 								<MoreVertical size={14} />
 							</MenuButton>
 						</DropdownMenuTrigger>
 						<StyledMenuContent align="start" side="bottom">
-							<DeleteMenuItem onClick={handleDelete}>
+							<DeleteMenuItem
+								data-testid={TEST_IDS.comments.delete}
+								onClick={handleDelete}
+							>
 								מחק תגובה
 								<Trash2 size={16} />
 							</DeleteMenuItem>
 						</StyledMenuContent>
 					</DropdownMenu>
 				)}
-				<Content>{message.content}</Content>
+				<Content data-testid={TEST_IDS.comments.content}>
+					{message.content}
+				</Content>
 			</MainRow>
 			<Footer>
 				<Timestamp>

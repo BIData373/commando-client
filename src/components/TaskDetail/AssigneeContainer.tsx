@@ -2,6 +2,7 @@ import { css, type SerializedStyles } from "@emotion/react"
 import styled from "@emotion/styled"
 import type { AssigneeStatusDto } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useIsMobile } from "src/hooks/use-mobile"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { useUpdateTaskStatus } from "src/hooks/useUpdateTaskStatus"
@@ -55,6 +56,8 @@ export const AssigneeContainer = ({
 
 	return (
 		<AssigneeRowContainer
+			data-testid={TEST_IDS.taskDetail.assignee}
+			data-entity-id={assignee.id}
 			$enabled={editable && !isAdmin}
 			$isMobile={isMobile}
 			$isCurrentUserTask={isCurrentUserTask}

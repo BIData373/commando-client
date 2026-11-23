@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { TEST_IDS } from "src/consts/test-ids"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
 interface ViewToggleProps {
@@ -10,12 +11,14 @@ export function ViewToggle({ view, onViewChange }: ViewToggleProps) {
 	return (
 		<SegmentedControl>
 			<SegmentedItem
+				data-testid={TEST_IDS.shared.viewToggleCards}
 				$selected={view === TasksView.CARDS}
 				onClick={() => onViewChange(TasksView.CARDS)}
 			>
 				כרטיסיות
 			</SegmentedItem>
 			<SegmentedItem
+				data-testid={TEST_IDS.shared.viewToggleTable}
 				$selected={view === TasksView.TABLE}
 				onClick={() => onViewChange(TasksView.TABLE)}
 			>

@@ -110,6 +110,65 @@ All variables are `VITE_*`, read in `src/utils/env-utils.ts`. They are inlined a
 
 Set `VITE_USE_MOCK_API=true` to run without a backend. `main.tsx` starts an MSW service worker (`public/mockServiceWorker.js`) with the Orval-generated handlers; unhandled requests pass through.
 
+## Test ids (`data-testid` / `data-entity-id`)
+
+The external Playwright e2e project selects elements by `data-testid`. All values live in [`src/consts/test-ids.ts`](./src/consts/test-ids.ts) as `TEST_IDS`, grouped by feature (`header`, `home`, `tasks`, `taskDetail`, `settings`, `mobile`, ...).
+
+- **Renaming or removing a value is a breaking change** for the e2e project. Coordinate before changing one.
+- Always reference `TEST_IDS.<group>.<key>`, never a string literal. Values are `kebab-case`, prefixed with the group (e.g. `tasks-bulk-delete`).
+- **Items in a list share one static `data-testid`.** The specific item is identified by `data-entity-id`. Never build ids like `` `task-${id}` ``.
+- Components that only pass a test id through take a `testId` (and `entityId`) prop, e.g. `MobileDrawer` and `MobileStatusSelect`.
+
+```tsx
+<Card data-testid={TEST_IDS.tasks.card} data-entity-id={task.id} />
+```
+
+```ts
+page.getByTestId('tasks-card').and(page.locator('[data-entity-id="42"]'))
+```
+
+### Entity ids
+
+| Entity | `data-entity-id` value | Test ids |
+| ------ | ---------------------- | -------- |
+| Task row (task × assignee) | `task.rowKey` | `table.row`, `tasks.card`, `mobile.taskCard` |
+| Task | `task.id` | `taskDetail.panel`, `mobile.taskDetail` |
+| Task status | `status.id` | `statusDropdown.trigger` / `.option` / `.readonly`, `tasks.bulkStatusOption`, `dashboard.statusItem`, `mobile.statusBarItem` |
+| Assignee | `assignee.id` | `assigneePicker.option`, `assigneeRows.row`, `taskDetail.assignee`, `settings.assigneeCard`, `assigneeGroups.member` |
+| Assignee group | `group.id` | `assigneePicker.groupOption`, `assigneeGroups.card`, `assigneeGroups.form` (empty when creating) |
+| User | `user.upn` | `settings.permissionUser`, `settings.assigneeDialogUser`, `mobile.noPermissionsManager` |
+| Workspace | `urlName` | `home.workspaceCard` |
+| Comment | `message.id` | `comments.comment` |
+| Tag | tag name | `tagField.chip`, `tagField.option` |
+| Source | source id | `sourceField.option` |
+| Filter / option | option value | `shared.filterDropdownOption`, `searchDropdown.item`, `shared.commandSelectOption`, `mobile.filterOption`, `mobile.filterSection` |
+| Quick filter | filter key | `tasks.quickFilter` |
+| Tab | tab id / key | `home.workspacesTab`, `header.tabSection`, `header.sectionOption`, `settings.permissionsTab`, `dashboard.focusedTab`, `dashboard.distributionTab` |
+| Distribution row | row name for the active tab | `dashboard.distributionRow` |
+| Column | `column.id` | `tasks.columnVisibilityItem` |
+| Permission type | permission key | `settings.permissionTypeTrigger`, `settings.permissionTypeOption` |
+| Color | color value | `settings.assigneeDialogColorTrigger`, `settings.assigneeDialogColorOption` |
+| Deadline type | `DeadlineType` (`DATE`, `IMMEDIATE`, `ROLLING`) | `deadlineField.typeOption` |
+| Date type | date type | `datePicker.tasksDateTypeOption` |
+| Metric | `WorkspaceStatusType` or `TOTAL` | `personal.metric`, `home.personalStat` |
+| AI extraction | alert status | `discussion.aiAlert` |
+| Error | error code | `feedback.errorModal` |
+| Toast action | action variant | `feedback.toastAction` |
+
+### State attributes
+
+Boolean UI state is exposed as `data-*` attributes that are present only when true (assert with `toHaveAttribute('data-active')`, not a value).
+
+| Attribute | Meaning | On |
+| --------- | ------- | -- |
+| `data-active` | Tab, quick filter or filter trigger is active | `tasks.quickFilter`, `tasks.quickFilterAll`, `tasks.columnFilterTrigger`, `datePicker.tasksTrigger`, `home.workspacesTab`, `dashboard.focusedTab`, `dashboard.distributionTab` |
+| `data-selected` | Option is selected | `assigneePicker.option`, `statusDropdown.option` (mobile), `mobile.filterOption` |
+| `data-hidden` | Column is hidden | `tasks.columnVisibilityItem` |
+| `data-archived` | Personal archive view is shown | `personal.page` |
+| `data-unread` | Comment not yet viewed | `comments.comment` |
+| `data-step` | Current wizard step (value) | `discussion.modal`, `newWorkspace.modal`, `onboarding.modal` |
+| `data-column-id` | Column id (value) | `table.headerCell` and table cells |
+
 ## Deployment
 
 The build output is a static SPA in `dist/`. Any unknown path must fall back to `index.html`.

@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { ArrowLeft } from "lucide-react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 import { PrimaryButton } from "../PrimaryButton"
 
@@ -12,6 +13,7 @@ export default function PersonalAreaButton({
 }: PersonalAreaButtonProps) {
 	return (
 		<StyledPrimaryButton
+			data-testid={TEST_IDS.home.personalButton}
 			title={
 				<>
 					כניסה לאזור האישי

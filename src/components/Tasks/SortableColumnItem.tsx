@@ -2,6 +2,7 @@ import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import styled from "@emotion/styled"
 import { Eye, EyeOff, GripVertical } from "lucide-react"
+import { TEST_IDS } from "src/consts/test-ids"
 import type { TaskColumnMeta } from "src/utils/task-table-utils"
 
 interface SortableColumnItemProps {
@@ -32,10 +33,18 @@ function SortableColumnItem({
 	}
 
 	return (
-		<ItemRow ref={setNodeRef} style={style} $isDragging={isDragging}>
+		<ItemRow
+			ref={setNodeRef}
+			style={style}
+			data-testid={TEST_IDS.tasks.columnVisibilityItem}
+			data-entity-id={column.id}
+			data-hidden={isHidden || undefined}
+			$isDragging={isDragging}
+		>
 			<ItemLabel>{column.label}</ItemLabel>
 			<ItemActions>
 				<IconButton
+					data-testid={TEST_IDS.tasks.columnVisibilityToggle}
 					onClick={isLocked ? undefined : onToggle}
 					type="button"
 					disabled={isLocked}
