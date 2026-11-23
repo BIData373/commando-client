@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Plus } from "lucide-react"
+import { TEST_IDS } from "src/consts/test-ids"
 import assigneeGroupsIcon from "../../../assets/icons/assignee-groups.svg"
 import { EmptyCardState } from "../../shared/EmptyCardState"
 import { SecondaryButton } from "../../shared/SecondaryButton"
@@ -18,6 +19,7 @@ export function AssigneeGroupsEmptyState({
 			description={"הוסף רשימת אחראים כדי לשייך בקלות מספר\nאחראים להנחיה"}
 			action={
 				<CreateButton
+					data-testid={TEST_IDS.assigneeGroups.add}
 					onClick={onOpenCreateDialog}
 					height={32}
 					title={

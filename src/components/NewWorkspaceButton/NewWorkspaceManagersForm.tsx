@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { useState } from "react"
 import type { MirageUserDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { concatName } from "src/utils/user-utils"
 import { DropdownUsers } from "../settings/DropdownUsers"
 import { UserPermissionList } from "../settings/UserPermissionList"
@@ -80,6 +81,7 @@ export function NewWorkspaceManagersForm({
 					}
 					showAddButton
 					placeholder="חפש שם/ תפקיד/ מספר אישי"
+					testId={TEST_IDS.newWorkspace.managerSearch}
 				/>
 			</Section>
 

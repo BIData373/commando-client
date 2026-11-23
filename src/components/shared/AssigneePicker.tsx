@@ -4,6 +4,7 @@ import { type ReactNode, useRef, useState } from "react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { useListAssigneeGroups } from "src/api/assignee-group/assignee-group"
 import type { AssigneeDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { AssigneeDialog } from "../settings/AssigneeDialog"
 import { Popover, PopoverAnchor, PopoverContent } from "../ui/popover"
 import { AssigneeGroupOption } from "./AssigneeGroupOption"
@@ -116,6 +117,7 @@ function AssigneePicker({
 				</PopoverAnchor>
 
 				<AssigneeDropdown
+					data-testid={TEST_IDS.assigneePicker.dropdown}
 					sideOffset={4}
 					onOpenAutoFocus={(e) => e.preventDefault()}
 					onInteractOutside={handleInteractOutside}
@@ -145,7 +147,11 @@ function AssigneePicker({
 						/>
 					))}
 
-					<CreateNewButton type="button" onClick={handleCreateNew}>
+					<CreateNewButton
+						type="button"
+						data-testid={TEST_IDS.assigneePicker.createNew}
+						onClick={handleCreateNew}
+					>
 						צור אחראי חדש
 						<Plus size={14} />
 					</CreateNewButton>

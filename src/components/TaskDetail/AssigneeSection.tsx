@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { type AssigneeStatusDto, PermissionType } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { AssigneeContainer } from "./AssigneeContainer"
 
@@ -37,7 +38,7 @@ export const AssigneeSection = ({
 	const isMultiple = assigneeStatuses.length >= 2
 
 	return (
-		<Section>
+		<Section data-testid={TEST_IDS.taskDetail.assigneeSection}>
 			<SectionLabel>
 				{isAdmin
 					? isMultiple

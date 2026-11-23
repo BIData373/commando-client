@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
+import { TEST_IDS } from "src/consts/test-ids"
 import systemDescription from "../../assets/system-description.svg"
 import { GradientGhostButton } from "../shared/GradientGhostButton"
 import { PrimaryButton } from "../shared/PrimaryButton"
@@ -21,11 +22,22 @@ export function OnboardingSysDescPage({
 			<Main src={systemDescription}></Main>
 			<Footer>
 				<Link to="/">
-					<SkipBtn onClick={onSkip}>דלג</SkipBtn>
+					<SkipBtn data-testid={TEST_IDS.onboarding.skip} onClick={onSkip}>
+						דלג
+					</SkipBtn>
 				</Link>
 				<ButtonGroup>
-					<GradientGhostButton onClick={onPrevious}>חזור</GradientGhostButton>
-					<PrimaryBtn onClick={onNext} title="המשך"></PrimaryBtn>
+					<GradientGhostButton
+						testId={TEST_IDS.onboarding.previous}
+						onClick={onPrevious}
+					>
+						חזור
+					</GradientGhostButton>
+					<PrimaryBtn
+						data-testid={TEST_IDS.onboarding.next}
+						onClick={onNext}
+						title="המשך"
+					></PrimaryBtn>
 				</ButtonGroup>
 			</Footer>
 		</>

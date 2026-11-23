@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { isDateRange } from "react-day-picker"
 import { CalendarMode } from "src/components/shared/DatePicker"
 import DatePickerPopover from "src/components/shared/DatePickerPopover"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import type { DatePickerValue } from "src/utils/date-utils"
 import { TasksDatePickerHeader } from "./TasksDatePickerHeader"
@@ -31,6 +32,7 @@ export function TasksDatePicker({ showPlaceholder }: TasksDatePickerProps) {
 			mode={CalendarMode.Range}
 			hasConfirm
 			onChange={handleConfirm}
+			testId={TEST_IDS.datePicker.tasksPopover}
 			triggerButton={({ value }) => (
 				<TasksDatePickerTriggerButton
 					label={dateType}

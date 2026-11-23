@@ -3,6 +3,7 @@ import { CircleUser } from "lucide-react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import { AssigneeAvatar } from "src/components/shared/AssigneeAvatar"
 import { FilterDropdown } from "src/components/shared/FilterDropdown"
+import { TEST_IDS } from "src/consts/test-ids"
 
 interface AssigneeFilterDropdownProps {
 	workspaceId: number
@@ -29,8 +30,12 @@ function AssigneeFilterDropdown({
 			activeValues={selectedIds}
 			onApply={onApply}
 			searchPlaceholder="חפש אחראי"
+			testId={TEST_IDS.dashboard.assigneeFilterDropdown}
 		>
-			<TriggerButton $active={selectedIds.length > 0}>
+			<TriggerButton
+				data-testid={TEST_IDS.dashboard.assigneeFilterTrigger}
+				$active={selectedIds.length > 0}
+			>
 				<CircleUser size={18} />
 				{selectedIds.length > 0 ? (
 					<TriggerLabel>אחראי ({selectedIds.length})</TriggerLabel>

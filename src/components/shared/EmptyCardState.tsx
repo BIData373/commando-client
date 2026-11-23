@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import type { PropsWithChildren, ReactNode } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 
 export interface EmptyCardStateProps extends PropsWithChildren {
 	imgSrc?: string
@@ -20,7 +21,10 @@ export const EmptyCardState = ({
 	className,
 }: EmptyCardStateProps) => {
 	return (
-		<EmptyState className={className}>
+		<EmptyState
+			data-testid={TEST_IDS.feedback.emptyState}
+			className={className}
+		>
 			{imgSrc && <EmptyImage src={imgSrc} alt="" />}
 			{isChildTitleIcon ? (
 				<TitleContainer>

@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { Flag } from "lucide-react"
 import { DeadlineType, type TaskRowDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { formatDateShort } from "../../functions/date-utils"
 import DeadlineTag, { DEADLINE_LABELS } from "../shared/DeadlineTag"
 import { StatusTag } from "../shared/StatusTag"
@@ -18,9 +19,13 @@ interface TaskCardGridProps {
 
 function TaskCardGrid({ taskRows }: TaskCardGridProps) {
 	return (
-		<CardGridContainer>
+		<CardGridContainer data-testid={TEST_IDS.tasks.cardGrid}>
 			{taskRows.map((task) => (
-				<Card key={task.id}>
+				<Card
+					key={task.id}
+					data-testid={TEST_IDS.tasks.card}
+					data-entity-id={task.rowKey}
+				>
 					<CardHeader>
 						<CardTitle>
 							<CardTitleRow>

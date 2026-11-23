@@ -6,6 +6,7 @@ import {
 } from "src/api/assignee/assignee"
 import type { AssigneesDto, UpdateWorkspaceDto } from "src/api/model"
 import { useUpdateWorkspace } from "src/api/workspace/workspace"
+import { TEST_IDS } from "src/consts/test-ids"
 import { updateEnvironmentMessage } from "src/functions/toast-messages"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"
@@ -67,6 +68,7 @@ export function AssigneesSettingsSections({
 		<SettingsSectionWrapper>
 			<SettingsSection>
 				<SettingToggleRow
+					testId={TEST_IDS.settings.settingStatusEditable}
 					label="הרשאות עריכת סטטוס מבוזרות"
 					tooltip="מאפשר לאחראים שקיבלו את ההנחיה לעדכן את הסטטוס שלה. אם האפשרות כבויה – עדכון הסטטוס יתאפשר רק למנהלי הסביבה."
 					icon={<Pencil size={18} />}
@@ -76,6 +78,7 @@ export function AssigneesSettingsSections({
 			</SettingsSection>
 			<SettingsSection>
 				<SettingToggleRow
+					testId={TEST_IDS.settings.settingChatNotification}
 					label="שלח התראות בצ'אט למכותבים"
 					tooltip="שליחת התראות בצ'אט למכותבים בעת קבלת הנחיות"
 					icon={<img src={chatIcon} alt="" width={18} height={18} />}
@@ -84,6 +87,7 @@ export function AssigneesSettingsSections({
 				/>
 
 				<SettingToggleRow
+					testId={TEST_IDS.settings.settingMailNotification}
 					label="שלח התראות במייל למכותבים"
 					tooltip="שליחת התראות במייל למכותבים בעת קבלת הנחיות"
 					icon={<Mail size={18} />}

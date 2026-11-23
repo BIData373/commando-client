@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { TbUsersGroup } from "react-icons/tb"
 import type { AssigneeGroupDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { getVisibleAvatars } from "src/functions/avatar-overflow"
 import { AssigneeAvatar } from "./AssigneeAvatar"
 
@@ -26,7 +27,12 @@ export function AssigneeGroupOption({
 	}
 
 	return (
-		<OptionButton type="button" onClick={handleClick}>
+		<OptionButton
+			type="button"
+			data-testid={TEST_IDS.assigneePicker.groupOption}
+			data-entity-id={group.id}
+			onClick={handleClick}
+		>
 			<OptionContent>
 				<GroupIcon size={18} />
 				<GroupName title={name}>'{name}'</GroupName>

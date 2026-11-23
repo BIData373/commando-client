@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { X } from "lucide-react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { DialogClose } from "../ui/dialog"
 
 interface ModalCloseButtonProps {
@@ -8,7 +9,7 @@ interface ModalCloseButtonProps {
 
 export function ModalCloseButton({ className }: ModalCloseButtonProps) {
 	return (
-		<CloseButton className={className}>
+		<CloseButton className={className} data-testid={TEST_IDS.shared.modalClose}>
 			<X size={16} />
 		</CloseButton>
 	)

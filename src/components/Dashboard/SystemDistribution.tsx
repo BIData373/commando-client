@@ -4,6 +4,7 @@ import { useMemo } from "react"
 import { TbHelpCircle, TbUsersGroup } from "react-icons/tb"
 import { DistributionTab, type TaskRowDto } from "src/api/model"
 import { ContentLoader } from "src/components/ui/content-loader"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useUserView } from "src/providers/UserViewProvider"
 import addAssignee from "../../assets/icons/add-person.svg"
 import subject from "../../assets/icons/subjects.svg"
@@ -121,12 +122,15 @@ export default function SystemDistribution({
 	}
 
 	return (
-		<Section>
+		<Section data-testid={TEST_IDS.dashboard.distribution}>
 			<TabsWrapper>
 				<TabsHeader>
 					{TABS.map((tab) => (
 						<TabItem
 							key={tab.id}
+							data-testid={TEST_IDS.dashboard.distributionTab}
+							data-entity-id={tab.id}
+							data-active={tab.id === activeTab || undefined}
 							$active={tab.id === activeTab}
 							onClick={() => handleTabClick(tab.id)}
 						>
@@ -155,7 +159,11 @@ export default function SystemDistribution({
 								</ChartHeader>
 								<BarList>
 									{activeData.map(([name, count]) => (
-										<BarRow key={name}>
+										<BarRow
+											key={name}
+											data-testid={TEST_IDS.dashboard.distributionRow}
+											data-entity-id={name}
+										>
 											<TooltipProvider>
 												<Tooltip>
 													<TooltipTrigger asChild>
@@ -179,7 +187,11 @@ export default function SystemDistribution({
 								description={tabDescription.description}
 								action={
 									activeTab === DistributionTab.load ? (
-										<ActionButton variant="outline" onClick={onSetAssignees}>
+										<ActionButton
+											data-testid={TEST_IDS.dashboard.distributionSetAssignees}
+											variant="outline"
+											onClick={onSetAssignees}
+										>
 											הגדרת מקבלי הנחיות
 											<TbUsersGroup size={16} />
 										</ActionButton>

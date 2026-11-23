@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
 import { useMemo } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { HeaderNavTab } from "./shared/HeaderNavTab"
@@ -21,7 +22,11 @@ export function WorkspaceTabs() {
 				<NavigationMenuList>
 					{/* <NavigationMenuItem>
 							<NavMenuLink asChild>
-								<Link to="/workspace/$urlName/discussions" params={{ urlName }}>
+								<Link 
+								data-testid={TEST_IDS.header.tabSettings}
+								to="/workspace/$urlName/discussions" 
+								params={{ urlName }}
+								>
 									דיונים
 								</Link>
 							</NavMenuLink>
@@ -36,7 +41,11 @@ export function WorkspaceTabs() {
 					</NavigationMenuItem>
 					<NavigationMenuItem>
 						<NavMenuLink asChild>
-							<Link to="/workspace/$urlName/dashboard" params={{ urlName }}>
+							<Link
+								data-testid={TEST_IDS.header.tabDashboard}
+								to="/workspace/$urlName/dashboard"
+								params={{ urlName }}
+							>
 								מסך המפקד
 							</Link>
 						</NavMenuLink>

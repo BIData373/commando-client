@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Search, X } from "lucide-react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { MOBILE_MEDIA_QUERY } from "src/hooks/use-mobile"
 
 // TODO - migrate this to use InputElement Props
@@ -10,6 +11,7 @@ interface SearchInputProps {
 	onFocus?: () => void
 	onBlur?: () => void
 	className?: string
+	testId?: string
 }
 
 export default function SearchInput({
@@ -19,6 +21,7 @@ export default function SearchInput({
 	onFocus,
 	onBlur,
 	className,
+	testId = TEST_IDS.shared.searchInput,
 }: SearchInputProps) {
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		onChange(e.target.value)
@@ -35,6 +38,7 @@ export default function SearchInput({
 	return (
 		<Wrapper className={className}>
 			<Input
+				data-testid={testId}
 				placeholder={placeholder}
 				value={value}
 				onChange={handleChange}
@@ -42,7 +46,11 @@ export default function SearchInput({
 				onBlur={onBlur}
 			/>
 			{value ? (
-				<ClearButton onMouseDown={keepInputFocus} onClick={handleClear}>
+				<ClearButton
+					data-testid={TEST_IDS.shared.searchInputClear}
+					onMouseDown={keepInputFocus}
+					onClick={handleClear}
+				>
 					<X size={18} />
 				</ClearButton>
 			) : (

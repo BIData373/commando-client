@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { ArrowLeft, ChevronRight } from "lucide-react"
 import logoIcon from "src/assets/logo-with-text.svg"
 import WorkspaceIconTitle from "src/components/shared/WorkspaceIconTitle"
+import { TEST_IDS } from "src/consts/test-ids"
 
 interface MobileHeaderProps {
 	icon?: string | null
@@ -26,16 +27,22 @@ export default function MobileHeader({
 	switch (variant) {
 		case "minimal":
 			return (
-				<MinimalRoot>
-					<ChevronButton onMouseDown={onBack}>
+				<MinimalRoot data-testid={TEST_IDS.mobile.header}>
+					<ChevronButton
+						data-testid={TEST_IDS.mobile.searchBack}
+						onMouseDown={onBack}
+					>
 						<ChevronRight size={18} />
 					</ChevronButton>
 				</MinimalRoot>
 			)
 		case "task":
 			return (
-				<BackOnlyHeaderRoot>
-					<BackRedirect onClick={onBack}>
+				<BackOnlyHeaderRoot data-testid={TEST_IDS.mobile.header}>
+					<BackRedirect
+						data-testid={TEST_IDS.mobile.headerBack}
+						onClick={onBack}
+					>
 						חזרה
 						<ArrowLeft size={18} />
 					</BackRedirect>
@@ -43,14 +50,19 @@ export default function MobileHeader({
 			)
 		default:
 			return (
-				<HeaderRoot>
+				<HeaderRoot data-testid={TEST_IDS.mobile.header}>
 					<StyledWorkspaceIconTitle
 						icon={icon}
 						title={title}
 						iconSize={28}
 						rounded
 					/>
-					<Logo src={logoIcon} alt="Vector" onClick={handleLogoClick} />
+					<Logo
+						data-testid={TEST_IDS.mobile.headerLogo}
+						src={logoIcon}
+						alt="Vector"
+						onClick={handleLogoClick}
+					/>
 				</HeaderRoot>
 			)
 	}

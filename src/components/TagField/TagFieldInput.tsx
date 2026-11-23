@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { ChevronDown, Tag, X } from "lucide-react"
 import { useRef, useState } from "react"
 import { useListTags } from "src/api/tag/tag"
+import { TEST_IDS } from "src/consts/test-ids"
 import HighlightMatch from "../shared/HighlightMatch"
 import { Popover, PopoverAnchor, PopoverContent } from "../ui/popover"
 
@@ -114,10 +115,15 @@ function TagFieldInput({
 						<InputScroll>
 							<InputContent>
 								{tags.map((tag) => (
-									<TagChip key={tag}>
+									<TagChip
+										key={tag}
+										data-testid={TEST_IDS.tagField.chip}
+										data-entity-id={tag}
+									>
 										<TagText>{tag}</TagText>
 										{!lockedTags.includes(tag) && (
 											<TagRemoveButton
+												data-testid={TEST_IDS.tagField.chipRemove}
 												onMouseDown={(e) => handleRemoveTag(e, tag)}
 											>
 												<X size={12} />
@@ -127,6 +133,7 @@ function TagFieldInput({
 								))}
 
 								<TagInputField
+									data-testid={TEST_IDS.tagField.input}
 									$flush={isFlush}
 									ref={inputRef}
 									value={tagQuery}
@@ -149,6 +156,7 @@ function TagFieldInput({
 				</PopoverAnchor>
 			</TagFieldWrapper>
 			<TagDropdown
+				data-testid={TEST_IDS.tagField.dropdown}
 				sideOffset={4}
 				align="start"
 				onOpenAutoFocus={(e) => e.preventDefault()}
@@ -160,6 +168,8 @@ function TagFieldInput({
 				{filteredTags.map(({ name }) => (
 					<TagOption
 						key={name}
+						data-testid={TEST_IDS.tagField.option}
+						data-entity-id={name}
 						onMouseDown={(e) => handleSelectMouseDown(e, name)}
 					>
 						<TagOptionText>
@@ -174,7 +184,10 @@ function TagFieldInput({
 				{isNewTag && (
 					<>
 						{filteredTags.length > 0 && <Divider />}
-						<TagOption onMouseDown={handleCreateNewMouseDown}>
+						<TagOption
+							data-testid={TEST_IDS.tagField.createNew}
+							onMouseDown={handleCreateNewMouseDown}
+						>
 							<HighlightedText>{tagQuery}</HighlightedText>
 							<span> (חדש)</span>
 						</TagOption>

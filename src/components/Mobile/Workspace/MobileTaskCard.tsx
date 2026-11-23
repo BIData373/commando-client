@@ -9,6 +9,7 @@ import DeadlineTag, { DEADLINE_LABELS } from "src/components/shared/DeadlineTag"
 import FlagIcon from "src/components/shared/FlagIcon"
 import HighlightMatch from "src/components/shared/HighlightMatch"
 import { StatusTag } from "src/components/shared/StatusTag"
+import { TEST_IDS } from "src/consts/test-ids"
 import { formatDateShort } from "src/functions/date-utils"
 import { useOpenTask } from "src/hooks/useOpenTask"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
@@ -52,7 +53,11 @@ export default function MobileTaskCard({ type, task }: MobileTaskCardProps) {
 	}
 
 	return (
-		<CardRoot onClick={handleClick}>
+		<CardRoot
+			data-testid={TEST_IDS.mobile.taskCard}
+			data-entity-id={task.rowKey}
+			onClick={handleClick}
+		>
 			<TopRow>
 				<DateInfo>
 					{dueDate && <DateValue>{formatDateShort(dueDate)}</DateValue>}

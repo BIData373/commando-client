@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { TEST_IDS } from "src/consts/test-ids"
 import { PrimaryButton } from "../shared/PrimaryButton"
 
 interface StepFooterProps {
@@ -21,11 +22,19 @@ export function StepFooter({
 			{footnote && <Footnote>{footnote}</Footnote>}
 			<FooterRow>
 				{secondaryLabel && (
-					<SecondaryButton onClick={onSecondary}>
+					<SecondaryButton
+						data-testid={TEST_IDS.newWorkspace.stepSecondary}
+						onClick={onSecondary}
+					>
 						{secondaryLabel}
 					</SecondaryButton>
 				)}
-				<PrimaryButton height={30} title={primaryLabel} onClick={onPrimary} />
+				<PrimaryButton
+					data-testid={TEST_IDS.newWorkspace.stepPrimary}
+					height={30}
+					title={primaryLabel}
+					onClick={onPrimary}
+				/>
 			</FooterRow>
 		</Root>
 	)

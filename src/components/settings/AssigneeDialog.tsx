@@ -17,6 +17,7 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
+import { TEST_IDS } from "src/consts/test-ids"
 import { getUserStatusEditableDisabledReason } from "src/functions/status-editable-messages"
 import {
 	addResponsibleMessage,
@@ -258,7 +259,10 @@ export function AssigneeDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
-			<AssigneeDialogContent closable={false}>
+			<AssigneeDialogContent
+				data-testid={TEST_IDS.settings.assigneeDialog}
+				closable={false}
+			>
 				<DialogTitleLarge>
 					{isUpdate ? "עריכת אחראי" : "יצירת אחראי"}
 				</DialogTitleLarge>
@@ -285,6 +289,7 @@ export function AssigneeDialog({
 										onChange={field.handleChange}
 										maxLength={MAX_NAME_LENGTH}
 										placeholder='לדוגמה: מג"ד, רע"ן מפקדים, קמב"צ...'
+										testId={TEST_IDS.settings.assigneeDialogName}
 									/>
 								</FormField>
 							</FieldGroup>
@@ -314,6 +319,7 @@ export function AssigneeDialog({
 									onClear={handleIconClear}
 									selectedItem={selectedIcon ?? undefined}
 									placeholder="בחר סמל"
+									testId={TEST_IDS.settings.assigneeDialogIcon}
 								/>
 							</EmblemSection>
 						</EitherOrRow>
@@ -341,6 +347,7 @@ export function AssigneeDialog({
 										onClear={handleSearchClear}
 										showAddButton={false}
 										placeholder="חפש שם/ תפקיד/ מספר אישי"
+										testId={TEST_IDS.settings.assigneeDialogUserSearch}
 									/>
 								</SearchRow>
 								<form.Subscribe selector={(s) => s.values.statusEditable}>
@@ -366,6 +373,7 @@ export function AssigneeDialog({
 						<CancelButton title="ביטול" />
 					</DialogClose>
 					<PrimaryButton
+						data-testid={TEST_IDS.settings.assigneeDialogSubmit}
 						title={isUpdate ? "שמור" : "צור"}
 						onClick={form.handleSubmit}
 						loading={isCreating || isUpdating}

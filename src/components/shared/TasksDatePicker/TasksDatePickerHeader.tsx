@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { DATE_TYPE } from "src/utils/date-utils"
 import {
 	DropdownMenu,
@@ -21,7 +22,7 @@ export function TasksDatePickerHeader({
 		<PopupHeader>
 			<FilterLabel>סנן לפי:</FilterLabel>
 			<DropdownMenu>
-				<DateTypeTrigger>
+				<DateTypeTrigger data-testid={TEST_IDS.datePicker.tasksDateTypeTrigger}>
 					{dateType}
 					<ChevronDown size={16} />
 				</DateTypeTrigger>
@@ -29,6 +30,8 @@ export function TasksDatePickerHeader({
 					{Object.values(DATE_TYPE).map((type) => (
 						<DateTypeItem
 							key={type}
+							data-testid={TEST_IDS.datePicker.tasksDateTypeOption}
+							data-entity-id={type}
 							$selected={type === dateType}
 							dir="rtl"
 							onSelect={() => onDateTypeChange(type)}

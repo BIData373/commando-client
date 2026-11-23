@@ -26,6 +26,7 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "src/components/ui/tabs"
+import { TEST_IDS } from "src/consts/test-ids"
 import type { AppMutationMeta } from "src/functions/mutation-toast-cache"
 import { updatePermissionsMessage } from "src/functions/toast-messages"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
@@ -193,6 +194,7 @@ export function PermissionsContent() {
 					onAdd={() => handleUserAdd(type)}
 					selectedUser={selectedUser}
 					placeholder="חפש שם/ תפקיד/ מספר אישי"
+					testId={TEST_IDS.settings.permissionsUserSearch}
 					showAddButton={
 						!userPermissionExist && !!selectedUser && !isSelectedUserMe
 					}
@@ -207,6 +209,7 @@ export function PermissionsContent() {
 							/>
 							{userPermissionExist && !isSelectedUserMe && (
 								<UpdateButton
+									data-testid={TEST_IDS.settings.permissionsUpdate}
 									disabled={userPermissionExist?.type === type}
 									onClick={handleUserUpdate}
 								>
@@ -221,7 +224,12 @@ export function PermissionsContent() {
 			<StyledTabs value={activeTab} onValueChange={handleTabChange}>
 				<StyledTabsList variant="line">
 					{Object.entries(PermissionTabNames).map(([key, value]) => (
-						<StyledTabsTrigger key={key} value={key}>
+						<StyledTabsTrigger
+							key={key}
+							data-testid={TEST_IDS.settings.permissionsTab}
+							data-entity-id={key}
+							value={key}
+						>
 							{value}
 						</StyledTabsTrigger>
 					))}

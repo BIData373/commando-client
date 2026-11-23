@@ -4,6 +4,7 @@ import { UserPlus } from "lucide-react"
 import type { PropsWithChildren } from "react"
 import type { MirageUserDto } from "src/api/model"
 import { useSearchUsers } from "src/api/user/user"
+import { TEST_IDS } from "src/consts/test-ids"
 import { SearchDropdown } from "./SearchDropdown"
 import { UserItem } from "./UserItem"
 
@@ -17,6 +18,7 @@ interface DropdownUsersProps extends PropsWithChildren {
 	isAddDisabled?: boolean
 	showAddButton?: boolean
 	placeholder?: string
+	testId?: string
 }
 
 export function DropdownUsers({
@@ -30,6 +32,7 @@ export function DropdownUsers({
 	placeholder,
 	showAddButton,
 	children,
+	testId,
 }: DropdownUsersProps) {
 	const [search] = useDebouncedValue(value, 300)
 
@@ -58,10 +61,12 @@ export function DropdownUsers({
 				isLoading={isLoading}
 				getItemKey={(item) => item.upn}
 				renderItem={(item) => <UserItem user={item} />}
+				testId={testId}
 			/>
 			{children}
 			{onAdd && showAddButton && (
 				<AddButton
+					data-testid={TEST_IDS.searchDropdown.add}
 					type="button"
 					$active={!!selectedUser && !isAddDisabled}
 					disabled={!selectedUser || isAddDisabled}

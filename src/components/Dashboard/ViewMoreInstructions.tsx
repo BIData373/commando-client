@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { ChevronLeft } from "lucide-react"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import type { QuickFilter } from "src/api/model/quick-filter"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
@@ -38,7 +39,10 @@ export const ViewMoreInstructions = ({
 	}
 
 	return (
-		<ViewMoreButton onClick={handleViewMore}>
+		<ViewMoreButton
+			data-testid={TEST_IDS.dashboard.viewMore}
+			onClick={handleViewMore}
+		>
 			פרטים נוספים
 			<ChevronLeft size={16} />
 		</ViewMoreButton>

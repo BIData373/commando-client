@@ -8,6 +8,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "src/components/ui/tooltip"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useAssigneeGroupDelete } from "src/hooks/useAssigneeGroupDelete"
 
 interface AssigneeGroupActionsProps {
@@ -44,8 +45,12 @@ export function AssigneeGroupActions({
 								onOpenChange={setIsDeleteOpen}
 								onConfirm={() => handleDeleteGroup(groupId)}
 								onCloseAutoFocus={handleDeleteCloseAutoFocus}
+								testId={TEST_IDS.assigneeGroups.deleteConfirm}
 								trigger={
-									<IconActionButton type="button">
+									<IconActionButton
+										data-testid={TEST_IDS.assigneeGroups.cardDelete}
+										type="button"
+									>
 										<TbTrash size={14} />
 									</IconActionButton>
 								}
@@ -57,7 +62,11 @@ export function AssigneeGroupActions({
 					)}
 				</Tooltip>
 			</TooltipProvider>
-			<ActionButton type="button" onClick={onEdit}>
+			<ActionButton
+				data-testid={TEST_IDS.assigneeGroups.cardEdit}
+				type="button"
+				onClick={onEdit}
+			>
 				עריכה
 				<TbPencil size={14} />
 			</ActionButton>

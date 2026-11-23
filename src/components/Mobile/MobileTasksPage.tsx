@@ -3,6 +3,7 @@ import { useDisclosure } from "@mantine/hooks"
 import { type ReactNode, useRef } from "react"
 import type { TaskRowDto } from "src/api/model"
 import { LoadingSpinner } from "src/components/shared/LoadingSpinner"
+import { TEST_IDS } from "src/consts/test-ids"
 import type { StatusTaskCount } from "src/functions/status-counts"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useHeadlessTable } from "src/hooks/useHeadlessTable"
@@ -54,7 +55,7 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 	const contentRef = useRef<HTMLDivElement>(null)
 
 	return (
-		<PageRoot>
+		<PageRoot data-testid={TEST_IDS.mobile.tasksPage}>
 			<MobileHeader
 				icon={icon}
 				title={title}
@@ -79,7 +80,9 @@ export default function MobileTasksPage<T extends TaskRowDto>({
 							<LoadingSpinner />
 						</CenteredState>
 					) : rows.length === 0 ? (
-						<EmptyState>לא נמצאו הנחיות</EmptyState>
+						<EmptyState data-testid={TEST_IDS.mobile.noTasks}>
+							לא נמצאו הנחיות
+						</EmptyState>
 					) : (
 						<MobileTaskList
 							tasks={rows.map(({ original }) => original as T)}

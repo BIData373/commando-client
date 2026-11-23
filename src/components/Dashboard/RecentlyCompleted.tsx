@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { useMemo } from "react"
 import { type TaskRowDto, WorkspaceStatusType } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
 import { hiddenColumnsExcept } from "src/utils/task-table-utils"
 import { EmptyCardState } from "../shared/EmptyCardState"
@@ -32,6 +33,7 @@ export default function RecentlyCompleted({
 
 	return (
 		<DashboardSection
+			testId={TEST_IDS.dashboard.recentlyCompleted}
 			gap={20}
 			isLoading={isLoading}
 			tabButtons={

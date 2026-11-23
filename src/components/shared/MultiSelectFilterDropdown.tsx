@@ -17,6 +17,8 @@ interface MultiSelectFilterDropdownProps<T extends string | number> {
 	$active: boolean
 	emptyTitle: string
 	emptyDescription: string
+	triggerTestId?: string
+	dropdownTestId?: string
 }
 
 function MultiSelectFilterDropdown<T extends string | number>({
@@ -27,6 +29,8 @@ function MultiSelectFilterDropdown<T extends string | number>({
 	$active,
 	emptyTitle,
 	emptyDescription,
+	triggerTestId,
+	dropdownTestId,
 }: MultiSelectFilterDropdownProps<T>) {
 	function handleApply(values: T[]) {
 		onApply(new Set(values))
@@ -40,8 +44,9 @@ function MultiSelectFilterDropdown<T extends string | number>({
 			searchPlaceholder="חפש..."
 			emptyTitle={emptyTitle}
 			emptyDescription={emptyDescription}
+			testId={dropdownTestId}
 		>
-			<TriggerPill $active={$active}>
+			<TriggerPill data-testid={triggerTestId} $active={$active}>
 				<ChevronDown size={16} />
 				{label}
 			</TriggerPill>

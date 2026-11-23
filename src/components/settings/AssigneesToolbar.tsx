@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { Plus, Search } from "lucide-react"
 import type { ChangeEvent } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group"
 
@@ -27,6 +28,7 @@ export function AssigneesToolbar({
 						<Search size={16} />
 					</InputGroupAddon>
 					<InputGroupInput
+						data-testid={TEST_IDS.settings.assigneesSearch}
 						value={searchQuery}
 						onChange={handleSearchChange}
 						placeholder="חפש קבוצת אחראים"
@@ -34,6 +36,7 @@ export function AssigneesToolbar({
 				</StyledInputGroup>
 			</SearchWrapper>
 			<PrimaryButton
+				data-testid={TEST_IDS.settings.assigneesCreate}
 				onClick={onCreate}
 				height={32}
 				title={

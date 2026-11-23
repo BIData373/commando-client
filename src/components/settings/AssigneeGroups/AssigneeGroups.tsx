@@ -3,6 +3,7 @@ import { Plus } from "lucide-react"
 import { Accordion } from "radix-ui"
 import { useState } from "react"
 import { useListAssigneeGroups } from "src/api/assignee-group/assignee-group"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { SecondaryButton } from "../../shared/SecondaryButton"
 import { SectionTitle } from "../SectionTitle"
@@ -49,7 +50,7 @@ export function AssigneeGroups() {
 	}
 
 	return (
-		<AssigneeGroupsRoot>
+		<AssigneeGroupsRoot data-testid={TEST_IDS.assigneeGroups.root}>
 			<Header>
 				<SectionTitle title="רשימות תפוצה" />
 				<Description>
@@ -63,6 +64,7 @@ export function AssigneeGroups() {
 
 			{!isEmptyState && !isCreating && (
 				<AddButton
+					data-testid={TEST_IDS.assigneeGroups.add}
 					onClick={handleOpenCreate}
 					height={32}
 					title={

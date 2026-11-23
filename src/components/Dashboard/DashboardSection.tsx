@@ -8,6 +8,7 @@ interface DashboardSectionProps {
 	children: ReactNode
 	gap: number
 	isLoading?: boolean
+	testId?: string
 }
 
 export function DashboardSection({
@@ -15,9 +16,10 @@ export function DashboardSection({
 	children,
 	gap,
 	isLoading,
+	testId,
 }: DashboardSectionProps) {
 	return (
-		<Section $gap={gap}>
+		<Section data-testid={testId} $gap={gap}>
 			{tabButtons}
 			<ContentPanel>
 				<ContentLoader isLoading={isLoading}>{children}</ContentLoader>

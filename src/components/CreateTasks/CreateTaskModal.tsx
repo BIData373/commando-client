@@ -20,6 +20,7 @@ import {
 	useUpdateTask,
 } from "src/api/task/task"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
+import { TEST_IDS } from "src/consts/test-ids"
 import { updateTaskMessage } from "src/functions/toast-messages"
 import { invalidateQueries } from "src/query-client"
 import { getImmediateReferenceDate } from "src/utils/deadline-utils"
@@ -345,7 +346,7 @@ function CreateTaskModal({
 
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
-			<ModalCard closable={!hasChanges}>
+			<ModalCard data-testid={TEST_IDS.createTask.modal} closable={!hasChanges}>
 				<ModalBody>
 					<ModalHeader $shadow={scrollShadow.top}>
 						<ModalTitle>
@@ -371,6 +372,7 @@ function CreateTaskModal({
 										renderError={false}
 									>
 										<DirectiveTextarea
+											data-testid={TEST_IDS.createTask.title}
 											value={field.state.value}
 											onChange={(e) => field.handleChange(e.target.value)}
 											placeholder="תיאור הנחיה"
@@ -419,6 +421,7 @@ function CreateTaskModal({
 										<CheckboxRow>
 											<CheckboxLabelText>הגדר כהנחיה במיקוד</CheckboxLabelText>
 											<Checkbox
+												data-testid={TEST_IDS.createTask.flagged}
 												checked={field.state.value}
 												onCheckedChange={(checked) =>
 													field.handleChange(checked === true)
@@ -440,6 +443,7 @@ function CreateTaskModal({
 										maxLength={NOTES_MAX_LENGTH}
 										isTextArea={true}
 										placeholder="הערה"
+										testId={TEST_IDS.createTask.notes}
 									/>
 
 									{/* Tag field */}
@@ -479,13 +483,18 @@ function CreateTaskModal({
 					{/* ─── Action Buttons ──────────────────────────────────────── */}
 					<ActionRow $shadow={scrollShadow.bottom}>
 						<PrimaryButton
+							data-testid={TEST_IDS.createTask.submit}
 							title="שמור"
 							onClick={form.handleSubmit}
 							disabled={!values.title.trim() || (isEditMode && !hasChanges)}
 							loading={isSubmitting}
 							width={133}
 						/>
-						<CancelButton title="ביטול" onClick={onCancel} />
+						<CancelButton
+							title="ביטול"
+							onClick={onCancel}
+							testId={TEST_IDS.createTask.cancel}
+						/>
 					</ActionRow>
 				</ModalBody>
 			</ModalCard>

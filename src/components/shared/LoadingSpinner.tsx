@@ -1,5 +1,6 @@
 import { keyframes } from "@emotion/react"
 import styled from "@emotion/styled"
+import { TEST_IDS } from "src/consts/test-ids"
 
 const spin = keyframes`
   to { transform: rotate(360deg); }
@@ -7,7 +8,7 @@ const spin = keyframes`
 
 export const LoadingSpinner = () => {
 	return (
-		<Container>
+		<Container data-testid={TEST_IDS.feedback.loadingSpinner}>
 			<Spinner />
 		</Container>
 	)

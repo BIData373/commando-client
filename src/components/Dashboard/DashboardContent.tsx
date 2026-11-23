@@ -4,6 +4,7 @@ import { useListAssignees } from "src/api/assignee/assignee"
 import { PermissionType, type TaskRowDto } from "src/api/model"
 import { useGetMyPermission } from "src/api/permission/permission"
 import { useListTaskRows } from "src/api/task/task"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useOpenTask } from "src/hooks/useOpenTask"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
@@ -70,7 +71,7 @@ export function DashboardContent() {
 	}
 
 	return (
-		<ContentArea>
+		<ContentArea data-testid={TEST_IDS.dashboard.content}>
 			<ButtonGroup>
 				{myPermission?.type === PermissionType.MANAGER && (
 					<CreateTaskButton context="dashboard" />

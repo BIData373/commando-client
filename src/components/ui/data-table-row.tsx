@@ -3,6 +3,7 @@ import { flexRender, type Cell, type Row, type RowData } from '@tanstack/react-t
 import { isEqual, isEqualWith } from 'lodash'
 import { Fragment, memo, type MouseEvent, type ReactNode } from 'react'
 import type { AppTableFeatures } from '../../consts/table-features'
+import { TEST_IDS } from '../../consts/test-ids'
 import { TableCell, TableRow } from './table'
 
 export const EXPANSION_ROW_ATTR = 'data-expansion-row'
@@ -81,6 +82,8 @@ function DataTableRowInner<TData extends RowData>({
     <Fragment>
       <TableRow
         ref={rowRef}
+        data-testid={TEST_IDS.table.row}
+        data-entity-id={row.id}
         data-index={index}
         data-state={isSelected ? 'selected' : undefined}
         data-highlighted={isHighlighted ? '' : undefined}
