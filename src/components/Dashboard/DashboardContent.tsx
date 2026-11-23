@@ -26,7 +26,7 @@ export function DashboardContent() {
 
 	const { assigneeFilter, setAssigneeFilter } = useTasksFilters()
 
-	const { data: taskRows = [] } = useListTaskRows({
+	const { data: taskRows = [], isLoading } = useListTaskRows({
 		workspaceId: id,
 		isArchived: false,
 	})
@@ -90,10 +90,22 @@ export function DashboardContent() {
 			</ButtonGroup>
 
 			<GridLayout>
-				<FocusedInstructions onClick={openTask} taskRows={tasks} />
-				<StatusCard tasks={tasks} />
-				<RecentlyCompleted onClick={openTask} tasks={tasks} />
-				<SystemDistribution onSetAssignees={handleSetAssignees} tasks={tasks} />
+				<FocusedInstructions
+					onClick={openTask}
+					taskRows={tasks}
+					isLoading={isLoading}
+				/>
+				<StatusCard tasks={tasks} isLoading={isLoading} />
+				<RecentlyCompleted
+					onClick={openTask}
+					tasks={tasks}
+					isLoading={isLoading}
+				/>
+				<SystemDistribution
+					onSetAssignees={handleSetAssignees}
+					tasks={tasks}
+					isLoading={isLoading}
+				/>
 			</GridLayout>
 		</ContentArea>
 	)

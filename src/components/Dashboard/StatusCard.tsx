@@ -1,7 +1,11 @@
 import styled from "@emotion/styled"
+import Skeleton from "react-loading-skeleton"
 import { Cell, Pie, PieChart } from "recharts"
+import "react-loading-skeleton/dist/skeleton.css"
 import type { TaskRowDto } from "src/api/model"
+import { ContentLoader } from "src/components/ui/content-loader"
 import { colorWithAlpha } from "src/functions/contrast-color" // chrome83
+
 import {
 	countTasksByStatus,
 	type StatusTaskCount,
@@ -10,6 +14,7 @@ import { useWorkspace } from "src/providers/WorkspaceProvider"
 
 interface StatusCardProps {
 	tasks: TaskRowDto[]
+	isLoading?: boolean
 }
 
 const CHART_EMPTY_COLOR = "var(--chip-bg)"
@@ -20,7 +25,7 @@ const EMPTY_STATUS = {
 	color: CHART_EMPTY_COLOR, //  'black'
 }
 
-export default function StatusCard({ tasks }: StatusCardProps) {
+export default function StatusCard({ tasks, isLoading }: StatusCardProps) {
 	const { statuses } = useWorkspace()
 
 	const unassignedCount = tasks.filter((t) => t.status == null).length
@@ -44,35 +49,44 @@ export default function StatusCard({ tasks }: StatusCardProps) {
 	return (
 		<Section>
 			<Card>
-				<ChartWrapper>
-					<StyledPieChart width={250} height={300}>
-						<Pie
-							style={{ outline: "none" }}
-							data={chartData}
-							innerRadius={88}
-							outerRadius={130}
-							dataKey="value"
-							startAngle={0}
-							endAngle={360}
-						>
-							{chartData.map(({ key }, i) => (
-								<Cell key={key} fill={cellFills[i] ?? CHART_EMPTY_COLOR} />
-							))}
-						</Pie>
-					</StyledPieChart>
-					<ChartCenter>
-						<CenterCount>{total}</CenterCount>
-						<CenterLabel>הנחיות בסביבה</CenterLabel>
-					</ChartCenter>
-				</ChartWrapper>
-				<StatusRow>
-					{statusList.map((status) => (
-						<StatusItem key={status.id}>
-							<StatusCount>{status.count}</StatusCount>
-							<StatusBadge $color={status.color}>{status.name}</StatusBadge>
-						</StatusItem>
-					))}
-				</StatusRow>
+				<ContentLoader
+					isLoading={isLoading}
+					fallback={
+						<SkeletonWrapper>
+							<Skeleton circle width={260} height={260} />
+						</SkeletonWrapper>
+					}
+				>
+					<ChartWrapper>
+						<StyledPieChart width={250} height={300}>
+							<Pie
+								style={{ outline: "none" }}
+								data={chartData}
+								innerRadius={88}
+								outerRadius={130}
+								dataKey="value"
+								startAngle={0}
+								endAngle={360}
+							>
+								{chartData.map(({ key }, i) => (
+									<Cell key={key} fill={cellFills[i] ?? CHART_EMPTY_COLOR} />
+								))}
+							</Pie>
+						</StyledPieChart>
+						<ChartCenter>
+							<CenterCount>{total}</CenterCount>
+							<CenterLabel>הנחיות בסביבה</CenterLabel>
+						</ChartCenter>
+					</ChartWrapper>
+					<StatusRow>
+						{statusList.map((status) => (
+							<StatusItem key={status.id}>
+								<StatusCount>{status.count}</StatusCount>
+								<StatusBadge $color={status.color}>{status.name}</StatusBadge>
+							</StatusItem>
+						))}
+					</StatusRow>
+				</ContentLoader>
 			</Card>
 		</Section>
 	)
@@ -174,4 +188,11 @@ const StatusBadge = styled.span<{ $color: string }>`
   ${({ $color }) => `color: oklch(from ${$color} clamp(0, l, 0.5) c h);`}
   ${({ $color }) => `background: ${colorWithAlpha($color, 0.1)};`} /* chrome83 */
   ${({ $color }) => `background: rgb(from ${$color} r g b / 0.1);`}
+`
+
+const SkeletonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
 `

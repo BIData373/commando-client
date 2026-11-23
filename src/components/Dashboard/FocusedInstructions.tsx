@@ -75,11 +75,13 @@ function compareByDeadlineDate(a: TaskRowDto, b: TaskRowDto): number {
 interface FocusedInstructionProps {
 	taskRows: TaskRowDto[]
 	onClick?(taskId: number): void
+	isLoading?: boolean
 }
 
 export default function FocusedInstructions({
 	taskRows,
 	onClick,
+	isLoading,
 }: FocusedInstructionProps) {
 	const { view, updateView } = useUserView()
 
@@ -118,6 +120,7 @@ export default function FocusedInstructions({
 	return (
 		<DashboardSection
 			gap={0}
+			isLoading={isLoading}
 			tabButtons={
 				<TabsButtons>
 					<TabsHeader>
@@ -184,7 +187,7 @@ const TabItem = styled.button<{ $active: boolean }>`
   align-items: flex-start;
   background: ${({ $active }) => $active && "var(--background)"};
   border-color: ${({ $active }) => $active && "var(--Tabs-border-color)"};
-  
+
   &:first-child {
 	border-radius: 0 8px 0 0;
   }

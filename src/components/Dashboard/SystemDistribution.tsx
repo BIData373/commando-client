@@ -3,6 +3,7 @@ import { isEmpty, map } from "lodash"
 import { useMemo } from "react"
 import { TbHelpCircle, TbUsersGroup } from "react-icons/tb"
 import { DistributionTab, type TaskRowDto } from "src/api/model"
+import { ContentLoader } from "src/components/ui/content-loader"
 import { useUserView } from "src/providers/UserViewProvider"
 import addAssignee from "../../assets/icons/add-person.svg"
 import subject from "../../assets/icons/subjects.svg"
@@ -70,11 +71,13 @@ function buildDistribution(
 interface SystemDistributionProps {
 	onSetAssignees?: () => void
 	tasks: TaskRowDto[]
+	isLoading?: boolean
 }
 
 export default function SystemDistribution({
 	onSetAssignees,
 	tasks,
+	isLoading,
 }: SystemDistributionProps) {
 	const { view, updateView } = useUserView()
 
@@ -143,46 +146,48 @@ export default function SystemDistribution({
 					</Tooltip>
 				</TabsHeader>
 				<ContentPanel $hasData={hasData}>
-					{hasData ? (
-						<ChartWrapper>
-							<ChartHeader>
-								<HeaderLabel>{headerLabels.name}</HeaderLabel>
-								<HeaderLabel>{headerLabels.count}</HeaderLabel>
-							</ChartHeader>
-							<BarList>
-								{activeData.map(([name, count]) => (
-									<BarRow key={name}>
-										<TooltipProvider>
-											<Tooltip>
-												<TooltipTrigger asChild>
-													<AssigneeName>{name}</AssigneeName>
-												</TooltipTrigger>
-												<TooltipContent>{name}</TooltipContent>
-											</Tooltip>
-										</TooltipProvider>
-										<BarTrack>
-											<BarFill $pct={(count / maxCount) * 100} />
-										</BarTrack>
-										<CountLabel>{count}</CountLabel>
-									</BarRow>
-								))}
-							</BarList>
-						</ChartWrapper>
-					) : (
-						<EmptyCardState
-							imgSrc={tabDescription.imgSrc}
-							title={tabDescription.title}
-							description={tabDescription.description}
-							action={
-								activeTab === DistributionTab.load ? (
-									<ActionButton variant="outline" onClick={onSetAssignees}>
-										הגדרת מקבלי הנחיות
-										<TbUsersGroup size={16} />
-									</ActionButton>
-								) : undefined
-							}
-						/>
-					)}
+					<ContentLoader isLoading={isLoading}>
+						{hasData ? (
+							<ChartWrapper>
+								<ChartHeader>
+									<HeaderLabel>{headerLabels.name}</HeaderLabel>
+									<HeaderLabel>{headerLabels.count}</HeaderLabel>
+								</ChartHeader>
+								<BarList>
+									{activeData.map(([name, count]) => (
+										<BarRow key={name}>
+											<TooltipProvider>
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<AssigneeName>{name}</AssigneeName>
+													</TooltipTrigger>
+													<TooltipContent>{name}</TooltipContent>
+												</Tooltip>
+											</TooltipProvider>
+											<BarTrack>
+												<BarFill $pct={(count / maxCount) * 100} />
+											</BarTrack>
+											<CountLabel>{count}</CountLabel>
+										</BarRow>
+									))}
+								</BarList>
+							</ChartWrapper>
+						) : (
+							<EmptyCardState
+								imgSrc={tabDescription.imgSrc}
+								title={tabDescription.title}
+								description={tabDescription.description}
+								action={
+									activeTab === DistributionTab.load ? (
+										<ActionButton variant="outline" onClick={onSetAssignees}>
+											הגדרת מקבלי הנחיות
+											<TbUsersGroup size={16} />
+										</ActionButton>
+									) : undefined
+								}
+							/>
+						)}
+					</ContentLoader>
 				</ContentPanel>
 			</TabsWrapper>
 		</Section>
