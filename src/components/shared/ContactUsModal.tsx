@@ -17,7 +17,8 @@ export function ContactUsModal({ trigger }: ContactUsModalProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>{trigger}</DialogTrigger>
-			<Panel headerPadding={0}>
+			{/* Opened from the user menu, which stays open underneath */}
+			<Panel headerPadding={0} aboveDropdowns>
 				<Illustration src={contactUsIllustration} alt="" />
 
 				<Body>
