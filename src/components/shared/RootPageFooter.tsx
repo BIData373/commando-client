@@ -4,11 +4,7 @@ import { TbBook, TbGridDots, TbMessage } from "react-icons/tb"
 import BIDataIcon from "src/assets/biData.png"
 import { MOBILE_MEDIA_QUERY, useIsMobile } from "src/hooks/use-mobile"
 import { STATIC_TOKEN } from "src/utils/env-utils"
-import {
-	openMoreOfUs,
-	openSupportChat,
-	openUserGuide,
-} from "src/utils/redirect-utils"
+import { openMoreOfUs, openUserGuide } from "src/utils/redirect-utils"
 import { UserDropdown } from "../UserDropdown"
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import {
@@ -17,6 +13,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip"
+import { ContactUsModal } from "./ContactUsModal"
 import { SecondaryButton } from "./SecondaryButton"
 
 interface RootPageFooterProps {
@@ -63,12 +60,16 @@ export function RootPageFooter({ className }: RootPageFooterProps) {
 
 				<TooltipProvider>
 					<Tooltip>
-						<TooltipTrigger asChild>
-							<ContactButton onClick={openSupportChat}>
-								<TbMessage size={18} />
-								{isMobile && "צור קשר"}
-							</ContactButton>
-						</TooltipTrigger>
+						<ContactUsModal
+							trigger={
+								<TooltipTrigger asChild>
+									<ContactButton>
+										<TbMessage size={18} />
+										{isMobile && "צור קשר"}
+									</ContactButton>
+								</TooltipTrigger>
+							}
+						/>
 						<TooltipContent side="top">צור קשר</TooltipContent>
 					</Tooltip>
 				</TooltipProvider>

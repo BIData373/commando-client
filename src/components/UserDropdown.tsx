@@ -6,12 +6,9 @@ import { TEST_IDS } from "src/consts/test-ids"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { PERMISSION_LABEL } from "src/utils/permissions-utils"
-import {
-	openMoreOfUs,
-	openSupportChat,
-	openUserGuide,
-} from "src/utils/redirect-utils"
+import { openMoreOfUs, openUserGuide } from "src/utils/redirect-utils"
 import { BIHeaderBypass } from "./BIHeaderBypass"
+import { ContactUsModal } from "./shared/ContactUsModal"
 import {
 	DropdownMenuContent,
 	DropdownMenuItem,
@@ -39,6 +36,11 @@ export function UserDropdown({
 				view: TasksView.TABLE,
 			},
 		})
+	}
+
+	// Closing the menu would unmount the contact modal rendered inside it
+	function keepMenuMounted(event: Event) {
+		event.preventDefault()
 	}
 
 	return (
@@ -81,15 +83,19 @@ export function UserDropdown({
 				</NavItem>
 			</UserDropdownItem>
 
-			<UserDropdownItem
-				data-testid={TEST_IDS.header.userMenuSupport}
-				onSelect={openSupportChat}
-			>
-				<NavItem>
-					<MessageSquareText size={16} />
-					צור קשר
-				</NavItem>
-			</UserDropdownItem>
+			<ContactUsModal
+				trigger={
+					<UserDropdownItem
+						data-testid={TEST_IDS.header.userMenuSupport}
+						onSelect={keepMenuMounted}
+					>
+						<NavItem>
+							<MessageSquareText size={16} />
+							צור קשר
+						</NavItem>
+					</UserDropdownItem>
+				}
+			/>
 
 			<UserDropdownItem
 				data-testid={TEST_IDS.header.userMenuMore}

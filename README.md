@@ -86,6 +86,7 @@ All variables are `VITE_*`, read in `src/utils/env-utils.ts`. They are inlined a
 | Auth | `VITE_STATIC_TOKEN` | Dev-only static token, see [Auth](#auth) |
 | Mesiba | `VITE_MESIBA_BASE_URL_API`, `VITE_MESIBA_S3_URL` | Mesiba API and S3 URLs; when empty (or mock mode), Mesiba features are off |
 | Links | `VITE_CHAT_URL`, `VITE_CHAT_SUPPORT_PATH` | Support chat link |
+| Links | `VITE_SUPPORT_PHONE` | Support phone in the contact modal; hidden when empty |
 | Links | `VITE_USER_GUIDE_URL`, `VITE_PORTAL_CATALOG_URL` | External links |
 | Features | `VITE_AI_ENABLED` | Toggle AI features |
 | Features | `VITE_SOCKET_ENABLED` | Toggle Socket.IO |

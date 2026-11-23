@@ -15,6 +15,7 @@ interface ModalContentProps
 	closable?: boolean
 	showCloseButton?: boolean
 	headerPadding?: number
+	aboveDropdowns?: boolean
 }
 
 export function ModalContent({
@@ -25,6 +26,7 @@ export function ModalContent({
 	showCloseButton = true,
 	onPointerDownOutside,
 	headerPadding,
+	aboveDropdowns = false,
 	...props
 }: ModalContentProps) {
 	useHotkeys(closable ? [] : [["Escape", (e) => e.stopPropagation()]])
@@ -35,9 +37,10 @@ export function ModalContent({
 
 	return (
 		<DialogPortal>
-			<DialogOverlay />
+			{aboveDropdowns ? <AboveDropdownsOverlay /> : <DialogOverlay />}
 			<ModalRoot
 				className={className}
+				data-above-dropdowns={aboveDropdowns || undefined}
 				onEscapeKeyDown={closable ? undefined : preventClose}
 				onPointerDownOutside={closable ? onPointerDownOutside : preventClose}
 				{...props}
@@ -60,7 +63,16 @@ export function ModalContent({
 	)
 }
 
+// DialogOverlay sets z-index inline from --z-dropdown, so redefining the variable on it lifts the overlay
+const AboveDropdownsOverlay = styled(DialogOverlay)`
+  --z-dropdown: calc(var(--z-menu) + 10);
+`
+
 const ModalRoot = styled(DialogContentPrimitive)`
+  &[data-above-dropdowns] {
+    --z-dropdown: calc(var(--z-menu) + 10);
+  }
+
   position: fixed;
   top: 50%;
   left: 50%;

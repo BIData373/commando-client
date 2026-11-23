@@ -43,7 +43,7 @@ export default function MobileFilterSheet({
 		setDateRange,
 		columnsFilters,
 		setColumnsFilters,
-		clearMobileFilters,
+		clearAllFilters,
 	} = useTasksFilters()
 
 	const [expandedKey, setExpandedKey] = useState("")
@@ -129,7 +129,7 @@ export default function MobileFilterSheet({
 				<ClearText
 					data-testid={TEST_IDS.mobile.filterClear}
 					disabled={columnsFilters.length === 0 && !dateRange}
-					onClick={clearMobileFilters}
+					onClick={clearAllFilters}
 				>
 					נקה בחירה
 				</ClearText>
