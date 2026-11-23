@@ -4,6 +4,7 @@ import {
   useTable,
   type ColumnDef,
   type ColumnFiltersState,
+  type ColumnVisibilityState,
   type OnChangeFn,
   type Row,
   type RowData,
@@ -35,6 +36,7 @@ interface DataTableProps<TData extends RowData> {
   onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>
   sorting?: SortingState
   onSortingChange?: OnChangeFn<SortingState>
+  columnVisibility?: ColumnVisibilityState
   getRowId?: (row: TData) => string
   highlightedRowIds?: Set<string>
   meta?: TableMeta<AppTableFeatures, TData>
@@ -60,6 +62,7 @@ export function DataTable<TData extends RowData>({
   onColumnFiltersChange,
   sorting,
   onSortingChange,
+  columnVisibility,
   getRowId,
   highlightedRowIds,
   meta,
@@ -79,6 +82,7 @@ export function DataTable<TData extends RowData>({
       ...(rowSelection !== undefined && { rowSelection }),
       ...(columnFilters !== undefined && { columnFilters }),
       ...(sorting !== undefined && { sorting }),
+      ...(columnVisibility !== undefined && { columnVisibility }),
     },
     onRowSelectionChange,
     onColumnFiltersChange,

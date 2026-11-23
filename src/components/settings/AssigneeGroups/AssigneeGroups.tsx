@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Plus } from "lucide-react"
+import { Accordion } from "radix-ui"
 import { useState } from "react"
 import { useListAssigneeGroups } from "src/api/assignee-group/assignee-group"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -73,7 +74,11 @@ export function AssigneeGroups() {
 				/>
 			)}
 
-			<GroupList>
+			<GroupList
+				type="single"
+				collapsible
+				value={expandedGroupId === null ? "" : String(expandedGroupId)}
+			>
 				{isCreating && <AssigneeGroupFormCard onClose={handleCloseForm} />}
 				{assigneeGroups.map((assigneeGroup) =>
 					assigneeGroup.id === openFormId ? (
@@ -101,7 +106,7 @@ const AddButton = styled(SecondaryButton)`
   align-self: flex-start;
 `
 
-const GroupList = styled.div`
+const GroupList = styled(Accordion.Root)`
   display: flex;
   flex-direction: column;
   gap: 12px;
