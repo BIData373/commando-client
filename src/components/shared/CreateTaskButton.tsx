@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { useNavigate, useParams } from "@tanstack/react-router"
 import { ChevronDown, Plus } from "lucide-react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import {
 	DropdownMenu,
@@ -45,6 +46,7 @@ export function CreateTaskButton({
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<PrimaryButton
+					data-testid={TEST_IDS.shared.createTaskButton}
 					title={
 						<>
 							<Plus size={18} color="white" />
@@ -55,10 +57,16 @@ export function CreateTaskButton({
 				/>
 			</DropdownMenuTrigger>
 			<StyledDropdownContent align="end" sideOffset={6}>
-				<StyledDropdownItem onSelect={handleCreateFromDiscussion}>
+				<StyledDropdownItem
+					data-testid={TEST_IDS.shared.createTaskDiscussion}
+					onSelect={handleCreateFromDiscussion}
+				>
 					הנחיות מתוך דיון
 				</StyledDropdownItem>
-				<StyledDropdownItem onSelect={handleCreateSingle}>
+				<StyledDropdownItem
+					data-testid={TEST_IDS.shared.createTaskSingle}
+					onSelect={handleCreateSingle}
+				>
 					הנחיה בודדת
 				</StyledDropdownItem>
 			</StyledDropdownContent>

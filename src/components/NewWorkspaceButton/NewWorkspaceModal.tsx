@@ -10,6 +10,7 @@ import {
 } from "src/api/workspace-requests/workspace-requests"
 import { toast } from "src/components/Toast/toast-api"
 import { Dialog } from "src/components/ui/dialog"
+import { TEST_IDS } from "src/consts/test-ids"
 import { TECHNICAL_FAILURE } from "src/functions/toast-messages"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { invalidateQueries } from "src/query-client"
@@ -200,7 +201,12 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 
 	return (
 		<Dialog open onOpenChange={onClose}>
-			<ModalContent headerPadding={0} showCloseButton={false}>
+			<ModalContent
+				data-testid={TEST_IDS.newWorkspace.modal}
+				data-step={step}
+				headerPadding={0}
+				showCloseButton={false}
+			>
 				<Panel>
 					<FormPanel>
 						<FormPanelInner>
@@ -244,7 +250,11 @@ export function NewWorkspaceModal({ onClose }: NewWorkspaceModalProps) {
 							<ScreenshotImg src={quickPage} />
 						</ScreenshotGroup>
 
-						<CloseButton type="button" onClick={onClose}>
+						<CloseButton
+							data-testid={TEST_IDS.newWorkspace.close}
+							type="button"
+							onClick={onClose}
+						>
 							✕
 						</CloseButton>
 					</BrandingPanel>

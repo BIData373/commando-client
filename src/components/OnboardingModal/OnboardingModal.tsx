@@ -3,6 +3,7 @@ import { useNavigate, useSearch } from "@tanstack/react-router"
 import type { UserDto } from "src/api/model"
 import { getGetMeQueryKey, useCompleteOnboarding } from "src/api/user/user"
 import logoWithText from "src/assets/logo-with-text-dark.png"
+import { TEST_IDS } from "src/consts/test-ids"
 import { queryClient } from "src/query-client"
 import { OnboardingSteps } from "src/routes/onboarding"
 import { Dialog, DialogContent } from "../ui/dialog"
@@ -75,7 +76,12 @@ export function OnboardingModal() {
 
 	return (
 		<Dialog open>
-			<FullScreenPanel closable={false} showCloseButton={false}>
+			<FullScreenPanel
+				data-testid={TEST_IDS.onboarding.modal}
+				data-step={step}
+				closable={false}
+				showCloseButton={false}
+			>
 				<ContentWrapper>
 					<Header>
 						<Logo src={logoWithText} alt="Vector" />

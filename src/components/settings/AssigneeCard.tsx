@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { User } from "lucide-react"
 import type { MouseEvent } from "react"
 import type { AssigneesDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { WORKSPACE_STATUS_EDITABLE_DISABLED } from "src/functions/status-editable-messages"
 import { useUpdateAssigneeStatus } from "src/hooks/useUpdateAssigneeStatus"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -52,7 +53,11 @@ export function AssigneeCard({
 	}
 
 	return (
-		<StyledCard onClick={onCardClick}>
+		<StyledCard
+			data-testid={TEST_IDS.settings.assigneeCard}
+			data-entity-id={assignee.id}
+			onClick={onCardClick}
+		>
 			<StyledCardHeader>
 				<CardHeaderRow>
 					<AssigneeAvatar assignee={assignee} />
@@ -98,6 +103,7 @@ export function AssigneeCard({
 				onClick={handleToggleClick}
 			>
 				<DisabledReasonSwitch
+					testId={TEST_IDS.settings.assigneeCardStatusToggle}
 					checked={assigneeStatusEditable && statusEditable}
 					disabled={!assigneeStatusEditable}
 					disabledReason={WORKSPACE_STATUS_EDITABLE_DISABLED}

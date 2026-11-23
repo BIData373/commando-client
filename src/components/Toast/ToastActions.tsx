@@ -1,6 +1,7 @@
 import { css } from "@emotion/react"
 import styled from "@emotion/styled"
 import type { ReactNode } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 
 export interface ToastAction {
 	label: ReactNode
@@ -34,6 +35,8 @@ export function ToastActions({
 		<ActionsGroup $direction={direction}>
 			{actions.map((action, index) => (
 				<ActionButton
+					data-testid={TEST_IDS.feedback.toastAction}
+					data-entity-id={action.variant}
 					$variant={action.variant}
 					type="button"
 					key={`${action.variant}-${index}`}
@@ -44,7 +47,11 @@ export function ToastActions({
 			))}
 
 			{closeLabel != null && (
-				<CloseTextButton type="button" onClick={onClose}>
+				<CloseTextButton
+					data-testid={TEST_IDS.feedback.toastClose}
+					type="button"
+					onClick={onClose}
+				>
 					{closeLabel}
 				</CloseTextButton>
 			)}

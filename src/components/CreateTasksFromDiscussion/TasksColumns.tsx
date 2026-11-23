@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { createColumnHelper } from "@tanstack/react-table"
 import type { CreateTaskDto } from "src/api/model"
 import type { AppTableFeatures } from "../../consts/table-features"
+import { TEST_IDS } from "../../consts/test-ids"
 import FlagIcon from "../shared/FlagIcon"
 import ImportantFlagTooltip from "../shared/ImportantFlagTooltip"
 import { TrashButton } from "../shared/TrashButton"
@@ -111,6 +112,7 @@ const columns = columnHelper.columns([
 				<TextareaCellWrapper as="label">
 					<CellTextarea
 						id={uniqueTextareaId}
+						data-testid={TEST_IDS.discussion.rowTitle}
 						$color="var(--text-color-2)"
 						data-row={row.index}
 						data-col={0}
@@ -206,6 +208,7 @@ const columns = columnHelper.columns([
 			return (
 				<CheckboxWrapper>
 					<Checkbox
+						data-testid={TEST_IDS.discussion.rowFlagged}
 						checked={flagged}
 						onCheckedChange={(checked) =>
 							handleImportantChange(checked as boolean, id, updateRow)
@@ -225,6 +228,7 @@ const columns = columnHelper.columns([
 			return !row.original.title.trim().length ||
 				isLastRow(row.index) ? null : (
 				<StyledTrashButton
+					data-testid={TEST_IDS.discussion.rowDelete}
 					onClick={() => handleDelete(row.original.id, deleteRow)}
 					size={14}
 				/>

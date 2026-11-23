@@ -8,6 +8,7 @@ import {
 	getListPersonalTaskRowsQueryKey,
 	getListTaskRowsQueryKey,
 } from "src/api/task/task"
+import { TEST_IDS } from "src/consts/test-ids"
 import { removeResponsibleMessage } from "src/functions/toast-messages"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"
@@ -60,7 +61,13 @@ export function DeleteAssigneePopconfirm({
 		<ConfirmPopover
 			open={open}
 			onOpenChange={setOpen}
-			trigger={<TrashButton onClick={handleTriggerClick} />}
+			trigger={
+				<TrashButton
+					data-testid={TEST_IDS.settings.assigneeCardDelete}
+					onClick={handleTriggerClick}
+				/>
+			}
+			testId={TEST_IDS.settings.assigneeDeleteConfirm}
 			title="למחוק את האחראי"
 			description={
 				<>

@@ -11,6 +11,7 @@ import error500 from "src/assets/error_500.svg"
 import logoSvg from "src/assets/logo-with-text.svg"
 import { ModalContent } from "src/components/shared/ModalContent"
 import { Dialog } from "src/components/ui/dialog"
+import { TEST_IDS } from "src/consts/test-ids"
 import {
 	TECHNICAL_FAILURE,
 	TECHNICAL_FAILURE_SUBTITLE,
@@ -88,7 +89,12 @@ export function ErrorModal() {
 
 	return (
 		<Dialog open={!!content} onOpenChange={(open) => !open && handleClose()}>
-			<FullScreenPanel closable={false} showCloseButton={false}>
+			<FullScreenPanel
+				data-testid={TEST_IDS.feedback.errorModal}
+				data-entity-id={errorCode ?? undefined}
+				closable={false}
+				showCloseButton={false}
+			>
 				<PageHeader>
 					<Logo src={logoSvg} />
 					<Logo src={biData} />
@@ -117,17 +123,25 @@ export function ErrorModal() {
 							</AdminContactsContent>
 						)}
 						<ButtonsRow>
-							<SecondaryButton onClick={openSupportChat}>
+							<SecondaryButton
+								data-testid={TEST_IDS.feedback.errorModalSupport}
+								onClick={openSupportChat}
+							>
 								לערוץ תמיכה
 							</SecondaryButton>
-							<PrimaryButton onClick={navigateToHomePage}>
+							<PrimaryButton
+								data-testid={TEST_IDS.feedback.errorModalHome}
+								onClick={navigateToHomePage}
+							>
 								חזרה למסך הבית
 							</PrimaryButton>
 						</ButtonsRow>
 					</TextColumn>
 					<ImageColumn>
 						<ErrorImage src={content?.errorImage} />
-						<ErrorCodeDisplay>{errorCode}</ErrorCodeDisplay>
+						<ErrorCodeDisplay data-testid={TEST_IDS.feedback.errorModalCode}>
+							{errorCode}
+						</ErrorCodeDisplay>
 					</ImageColumn>
 				</MainContent>
 			</FullScreenPanel>

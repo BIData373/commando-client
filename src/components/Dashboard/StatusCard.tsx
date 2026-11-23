@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { Cell, Pie, PieChart } from "recharts"
 import type { TaskRowDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { colorWithAlpha } from "src/functions/contrast-color" // chrome83
 import {
 	countTasksByStatus,
@@ -42,7 +43,7 @@ export default function StatusCard({ tasks }: StatusCardProps) {
 		total === 0 ? [CHART_EMPTY_COLOR] : statusList.map(({ color }) => color)
 
 	return (
-		<Section>
+		<Section data-testid={TEST_IDS.dashboard.statusCard}>
 			<Card>
 				<ChartWrapper>
 					<StyledPieChart width={250} height={300}>
@@ -61,13 +62,19 @@ export default function StatusCard({ tasks }: StatusCardProps) {
 						</Pie>
 					</StyledPieChart>
 					<ChartCenter>
-						<CenterCount>{total}</CenterCount>
+						<CenterCount data-testid={TEST_IDS.dashboard.statusTotal}>
+							{total}
+						</CenterCount>
 						<CenterLabel>הנחיות בסביבה</CenterLabel>
 					</ChartCenter>
 				</ChartWrapper>
 				<StatusRow>
 					{statusList.map((status) => (
-						<StatusItem key={status.id}>
+						<StatusItem
+							key={status.id}
+							data-testid={TEST_IDS.dashboard.statusItem}
+							data-entity-id={status.id}
+						>
 							<StatusCount>{status.count}</StatusCount>
 							<StatusBadge $color={status.color}>{status.name}</StatusBadge>
 						</StatusItem>

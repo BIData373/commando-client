@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { useListPikuds } from "src/api/pikud/pikud"
+import { TEST_IDS } from "src/consts/test-ids"
 import {
 	Select,
 	SelectContent,
@@ -36,12 +37,17 @@ export function SelectCommand({
 
 	return (
 		<Select value={value ? String(value) : ""} onValueChange={handleChange}>
-			<StyledSelectTrigger>
+			<StyledSelectTrigger data-testid={TEST_IDS.shared.commandSelectTrigger}>
 				<SelectValue placeholder={placeholder ?? "בחר פיקוד"} />
 			</StyledSelectTrigger>
 			<StyledSelectContent position="popper" side="bottom">
 				{pikuds?.map(({ id, name }) => (
-					<StyledSelectItem key={id} value={String(id)}>
+					<StyledSelectItem
+						key={id}
+						data-testid={TEST_IDS.shared.commandSelectOption}
+						data-entity-id={id}
+						value={String(id)}
+					>
 						{name}
 					</StyledSelectItem>
 				))}

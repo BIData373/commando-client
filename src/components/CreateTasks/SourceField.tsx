@@ -4,6 +4,7 @@ import { Calendar as CalendarIcon, ChevronDown, Paperclip } from "lucide-react"
 import { useState } from "react"
 import type { SourceDto } from "src/api/model"
 import { useListSources } from "src/api/source/source"
+import { TEST_IDS } from "src/consts/test-ids"
 import type { DatePickerValue } from "src/utils/date-utils"
 import { formatDate, formatDateShort } from "../../functions/date-utils"
 import DatePicker, { CalendarMode } from "../shared/DatePicker"
@@ -130,6 +131,7 @@ export default function SourceField({
 							>
 								<SourceChevron size={16} />
 								<SourceInputField
+									data-testid={TEST_IDS.sourceField.input}
 									value={sourceQuery}
 									onChange={handleInputChange}
 									onFocus={openDropdown}
@@ -143,6 +145,7 @@ export default function SourceField({
 							</SourceInputBox>
 						</PopoverAnchor>
 						<SourceDropdown
+							data-testid={TEST_IDS.sourceField.dropdown}
 							sideOffset={4}
 							align="start"
 							onOpenAutoFocus={(e) => e.preventDefault()}
@@ -154,6 +157,8 @@ export default function SourceField({
 									{filteredDiscussions.map((d) => (
 										<SourceOption
 											key={uniqueNames ? d.name : d.id}
+											data-testid={TEST_IDS.sourceField.option}
+											data-entity-id={d.id}
 											onMouseDown={(e) => handleOptionMouseDown(e, d)}
 										>
 											{!uniqueNames && d.date && (
@@ -175,7 +180,10 @@ export default function SourceField({
 							{sourceQuery && (
 								<>
 									<DropdownDivider />
-									<CreateNewOption onMouseDown={handleCreateNewMouseDown}>
+									<CreateNewOption
+										data-testid={TEST_IDS.sourceField.createNew}
+										onMouseDown={handleCreateNewMouseDown}
+									>
 										<CreateNewText>
 											<HighlightedText>{sourceQuery}</HighlightedText>
 											{" (חדש)"}
@@ -199,6 +207,7 @@ export default function SourceField({
 								<TooltipTrigger asChild>
 									<PopoverTrigger asChild>
 										<DatePickerButton
+											data-testid={TEST_IDS.sourceField.dateTrigger}
 											$disabled={isSourceLinked}
 											$error={!!fields?.date?.state.meta.errors.length}
 										>
@@ -217,7 +226,11 @@ export default function SourceField({
 							</Tooltip>
 						</TooltipProvider>
 						{!isSourceLinked && (
-							<DatePopoverContent align="start" sideOffset={4}>
+							<DatePopoverContent
+								data-testid={TEST_IDS.sourceField.datePopover}
+								align="start"
+								sideOffset={4}
+							>
 								<DatePicker
 									mode={CalendarMode.Single}
 									selected={selectedDate}

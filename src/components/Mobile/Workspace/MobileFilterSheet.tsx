@@ -6,6 +6,7 @@ import type { TaskRowDto } from "src/api/model"
 import { MobileDrawer } from "src/components/Mobile/MobileDrawer"
 import { Accordion } from "src/components/ui/accordion"
 import type { AppTableFeatures } from "src/consts/table-features"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import { buildFilterOptionsMap } from "src/utils/filter-utils"
 import MobileDateFilter from "./MobileDateFilter"
@@ -86,7 +87,12 @@ export default function MobileFilterSheet({
 	}
 
 	return (
-		<FilterDrawer open={open} onOpenChange={handleOpenChange} title="מסננים">
+		<FilterDrawer
+			testId={TEST_IDS.mobile.filterSheet}
+			open={open}
+			onOpenChange={handleOpenChange}
+			title="מסננים"
+		>
 			<OptionsList
 				type="single"
 				collapsible
@@ -121,12 +127,17 @@ export default function MobileFilterSheet({
 
 			<Footer>
 				<ClearText
+					data-testid={TEST_IDS.mobile.filterClear}
 					disabled={columnsFilters.length === 0 && !dateRange}
 					onClick={clearAllFilters}
 				>
 					נקה בחירה
 				</ClearText>
-				<ShowButton disabled={filteredCount === 0} onClick={onClose}>
+				<ShowButton
+					data-testid={TEST_IDS.mobile.filterShow}
+					disabled={filteredCount === 0}
+					onClick={onClose}
+				>
 					להציג {filteredCount > 100 ? "100+" : filteredCount} הנחיות
 				</ShowButton>
 			</Footer>

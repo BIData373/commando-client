@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { CircleAlert } from "lucide-react"
 import { Popover as PopoverPrimitive } from "radix-ui"
 import type { MouseEvent, ReactNode } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 export interface ConfirmPopoverProps {
@@ -20,6 +21,7 @@ export interface ConfirmPopoverProps {
 	sideOffset?: number
 	onCloseAutoFocus?: (e: Event) => void
 	showArrow?: boolean
+	testId?: string
 }
 
 export function ConfirmPopover({
@@ -38,6 +40,7 @@ export function ConfirmPopover({
 	onCloseAutoFocus,
 	openManually = false,
 	showArrow = false,
+	testId = TEST_IDS.shared.confirmPopover,
 }: ConfirmPopoverProps) {
 	function handleCancel(e: MouseEvent) {
 		e.stopPropagation()
@@ -58,6 +61,7 @@ export function ConfirmPopover({
 			{trigger && <PopoverTrigger asChild>{trigger}</PopoverTrigger>}
 
 			<Content
+				data-testid={testId}
 				side={side}
 				sideOffset={sideOffset}
 				align={align}
@@ -77,9 +81,18 @@ export function ConfirmPopover({
 				</Head>
 
 				<Actions>
-					<CancelButton onClick={handleCancel}>{cancelLabel}</CancelButton>
+					<CancelButton
+						data-testid={TEST_IDS.shared.confirmPopoverCancel}
+						onClick={handleCancel}
+					>
+						{cancelLabel}
+					</CancelButton>
 
-					<DeleteButton onClick={handleConfirm} disabled={isPending}>
+					<DeleteButton
+						data-testid={TEST_IDS.shared.confirmPopoverConfirm}
+						onClick={handleConfirm}
+						disabled={isPending}
+					>
 						{confirmLabel}
 					</DeleteButton>
 				</Actions>

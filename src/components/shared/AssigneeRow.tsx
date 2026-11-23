@@ -7,6 +7,7 @@ import type {
 	WorkspaceStatusDto,
 } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
+import { TEST_IDS } from "src/consts/test-ids"
 import { StatusDropdown } from "../Tasks/StatusDropdown"
 import { AssigneeAvatar } from "./AssigneeAvatar"
 
@@ -74,8 +75,15 @@ function AssigneeRowList({
 					assigneeExtras?.[assignee.id] || {}
 
 				return (
-					<RowItem key={assignee.id}>
-						<RemoveButton onClick={() => onRemove(assignee.id)}>
+					<RowItem
+						key={assignee.id}
+						data-testid={TEST_IDS.assigneeRows.row}
+						data-entity-id={assignee.id}
+					>
+						<RemoveButton
+							data-testid={TEST_IDS.assigneeRows.remove}
+							onClick={() => onRemove(assignee.id)}
+						>
 							<X size={14} />
 						</RemoveButton>
 
@@ -91,6 +99,7 @@ function AssigneeRowList({
 									)}
 
 									<DetailEditable
+										data-testid={TEST_IDS.assigneeRows.detail}
 										ref={(el) => handleDetailRef(assignee.id, el)}
 										contentEditable
 										suppressContentEditableWarning

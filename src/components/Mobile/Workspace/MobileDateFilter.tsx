@@ -5,6 +5,7 @@ import {
 	NativeSelect,
 	NativeSelectOption,
 } from "src/components/ui/native-select"
+import { TEST_IDS } from "src/consts/test-ids"
 import { DATE_TYPE, type DatePickerValue } from "src/utils/date-utils"
 
 interface MobileDateFilterProps {
@@ -29,6 +30,7 @@ export default function MobileDateFilter({
 			<FilterRow>
 				<FilterLabel>סנן לפי:</FilterLabel>
 				<StyledNativeSelect
+					data-testid={TEST_IDS.mobile.filterDateType}
 					value={dateType}
 					onChange={(e) => onDateTypeChange(e.target.value as DATE_TYPE)}
 				>

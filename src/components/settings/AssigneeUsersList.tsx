@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { X } from "lucide-react"
 import { Tooltip as TooltipPrimitive } from "radix-ui"
 import type { MirageUserDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { DisabledReasonSwitch } from "../shared/DisabledReasonSwitch"
 import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { UserItem } from "./UserItem"
@@ -29,7 +30,11 @@ export function AssigneeUsersList({
 			{users.length > 0 && (
 				<UserCard>
 					{users.map((user) => (
-						<UserCardItem key={user.upn}>
+						<UserCardItem
+							key={user.upn}
+							data-testid={TEST_IDS.settings.assigneeDialogUser}
+							data-entity-id={user.upn}
+						>
 							<TooltipProvider>
 								<Tooltip>
 									<TooltipTrigger asChild>
@@ -61,7 +66,11 @@ export function AssigneeUsersList({
 									עדכון סטטוס
 								</StatusLabel>
 							</StatusToggle>
-							<UserCardClose type="button" onClick={() => onRemove(user.upn)}>
+							<UserCardClose
+								data-testid={TEST_IDS.settings.assigneeDialogUserRemove}
+								type="button"
+								onClick={() => onRemove(user.upn)}
+							>
 								<X size={12} />
 							</UserCardClose>
 						</UserCardItem>

@@ -3,6 +3,7 @@ import { useForm, useStore } from "@tanstack/react-form"
 import { CircleHelp, X } from "lucide-react"
 import { useState } from "react"
 import type { CreateWorkspaceRequestDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import type { IMesibaIcon } from "src/hooks/useMesiba"
 import { formatMesibaIcon } from "src/utils/icon-utils"
 import {
@@ -117,6 +118,7 @@ export function NewWorkspaceDetailsForm({
 					onChange={handleTitleChange}
 					maxLength={NAME_MAX_LENGTH}
 					placeholder="למשל 'לשכת אלוף פד&quot;ם'"
+					testId={TEST_IDS.newWorkspace.title}
 				/>
 			</FormField>
 
@@ -149,6 +151,7 @@ export function NewWorkspaceDetailsForm({
 					onChange={handleUrlNameChange}
 					maxLength={NAME_MAX_LENGTH}
 					placeholder='למשל "lishkat_padam"'
+					testId={TEST_IDS.newWorkspace.urlName}
 				/>
 			</FormField>
 
@@ -171,11 +174,16 @@ export function NewWorkspaceDetailsForm({
 					onClear={handleIconSearchClear}
 					onSelect={handleIconSelect}
 					placeholder="חפש יחידה"
+					testId={TEST_IDS.newWorkspace.iconPicker}
 				/>
 				<IconPreview>
 					{values.icon ? (
 						<>
-							<IconClearButton type="button" onClick={handleIconClear}>
+							<IconClearButton
+								data-testid={TEST_IDS.newWorkspace.iconClear}
+								type="button"
+								onClick={handleIconClear}
+							>
 								<X size={16} />
 							</IconClearButton>
 							<IconImg

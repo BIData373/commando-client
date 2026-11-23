@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { ArrowLeft } from "lucide-react"
+import { TEST_IDS } from "src/consts/test-ids"
 import systemPreview from "../../assets/system-preview.svg"
 import { GradientText } from "../shared/GradientText"
 import { PrimaryButton } from "../shared/PrimaryButton"
@@ -29,6 +30,7 @@ export function OnboardingGreetingPage({
 						המפקד והפקודים
 					</Description>
 					<PrimaryBtn
+						data-testid={TEST_IDS.onboarding.next}
 						onClick={onNext}
 						title={
 							<>

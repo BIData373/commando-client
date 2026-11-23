@@ -4,6 +4,7 @@ import { useListPersonalTaskRows } from "src/api/task/task"
 import PersonalAreaButton from "src/components/shared/PersonalAreaCard/PersonalAreaButton"
 import PersonalAreaHeader from "src/components/shared/PersonalAreaCard/PersonalAreaHeader"
 import PersonalAreaStats from "src/components/shared/PersonalAreaCard/PersonalAreaStats"
+import { TEST_IDS } from "src/consts/test-ids"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
 export default function MobilePersonalAreaCard() {
@@ -18,7 +19,10 @@ export default function MobilePersonalAreaCard() {
 	const totalCount = allTaskRows.length
 
 	return (
-		<CardRoot onClick={handleNavigateToPersonal}>
+		<CardRoot
+			data-testid={TEST_IDS.home.personalCard}
+			onClick={handleNavigateToPersonal}
+		>
 			<PersonalAreaHeader taskRows={allTaskRows} />
 			<Footer>
 				{totalCount > 0 ? (

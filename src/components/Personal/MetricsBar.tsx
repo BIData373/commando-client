@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import { useState } from "react"
 import { WorkspaceStatusType } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { STATUS_DEFAULTS } from "../../consts/status-defaults"
 import { StatusTag } from "../shared/StatusTag"
 
@@ -28,7 +29,10 @@ function MetricsBar({
 		<MetricsSection>
 			<CardsWrapper $open={open}>
 				<CardsRow>
-					<MetricCard>
+					<MetricCard
+						data-testid={TEST_IDS.personal.metric}
+						data-entity-id={WorkspaceStatusType.IN_PROGRESS}
+					>
 						<CardHeader>
 							<CardLabel>בעבודה</CardLabel>
 							<StatusTag
@@ -38,7 +42,10 @@ function MetricsBar({
 						<CardNumber>{inProgressCount}</CardNumber>
 					</MetricCard>
 
-					<MetricCard>
+					<MetricCard
+						data-testid={TEST_IDS.personal.metric}
+						data-entity-id={WorkspaceStatusType.NOT_STARTED}
+					>
 						<CardHeader>
 							<CardLabel>טרם בוצעו</CardLabel>
 							<StatusTag
@@ -48,7 +55,11 @@ function MetricsBar({
 						<CardNumber>{notStartedCount}</CardNumber>
 					</MetricCard>
 
-					<MetricCard $highlighted>
+					<MetricCard
+						data-testid={TEST_IDS.personal.metric}
+						data-entity-id="TOTAL"
+						$highlighted
+					>
 						<CardHeader>
 							<CardLabel>סה"כ הנחיות שקיבלתי</CardLabel>
 						</CardHeader>
@@ -64,7 +75,10 @@ function MetricsBar({
 			</CardsWrapper>
 			<CollapseToggle>
 				<DividerLine />
-				<CollapseButton onClick={toggleOpen}>
+				<CollapseButton
+					data-testid={TEST_IDS.personal.metricsToggle}
+					onClick={toggleOpen}
+				>
 					<CollapseIcon size={14} $open={open} />
 				</CollapseButton>
 				<DividerLine />

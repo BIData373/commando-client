@@ -2,11 +2,12 @@ import styled from "@emotion/styled"
 import logoWithText from "src/assets/logo-with-text-dark.png"
 import SpacesContainer from "src/components/SpacesContainer/SpacesContainer"
 import { RootPageFooter } from "src/components/shared/RootPageFooter"
+import { TEST_IDS } from "src/consts/test-ids"
 import MobilePersonalAreaCard from "./MobilePersonalAreaCard"
 
 export default function MobileHomePage() {
 	return (
-		<PageRoot>
+		<PageRoot data-testid={TEST_IDS.mobile.homePage}>
 			<TopBar>
 				<MainTitle>וקטור המפקד</MainTitle>
 				<Logo src={logoWithText} alt="Vector" />

@@ -4,6 +4,7 @@ import { TbUsersGroup } from "react-icons/tb"
 import type { AssigneeGroupDto } from "src/api/model"
 import InputWithCount from "src/components/shared/InputWithCount"
 import { PrimaryButton } from "src/components/shared/PrimaryButton"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useAssigneeGroupForm } from "src/hooks/useAssigneeGroupForm"
 import { AssigneeSearchList } from "./AssigneeSearchList"
 
@@ -33,7 +34,10 @@ export function AssigneeGroupFormCard({
 	return (
 		<Expand>
 			<Clip>
-				<Card>
+				<Card
+					data-testid={TEST_IDS.assigneeGroups.form}
+					data-entity-id={assigneeGroup?.id}
+				>
 					<Header>
 						<TbUsersGroup size={24} />
 						<InputWithCount
@@ -41,6 +45,7 @@ export function AssigneeGroupFormCard({
 							onChange={setName}
 							maxLength={NAME_MAX_LENGTH}
 							placeholder="שם הרשימה"
+							testId={TEST_IDS.assigneeGroups.formName}
 						/>
 					</Header>
 
@@ -55,10 +60,15 @@ export function AssigneeGroupFormCard({
 					<Divider />
 
 					<Footer>
-						<TextButton type="button" onClick={onClose}>
+						<TextButton
+							data-testid={TEST_IDS.assigneeGroups.formCancel}
+							type="button"
+							onClick={onClose}
+						>
 							ביטול
 						</TextButton>
 						<PrimaryButton
+							data-testid={TEST_IDS.assigneeGroups.formSave}
 							title="שמור"
 							height={32}
 							width={80}

@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { ChevronDown } from "lucide-react"
 import { useListAssignees } from "src/api/assignee/assignee"
 import type { AssigneeStatusDto, WorkspaceStatusDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import AssigneePicker from "../shared/AssigneePicker"
 import AssigneeRowList from "../shared/AssigneeRow"
 
@@ -56,9 +57,10 @@ function AssigneeField({
 				onGroupSelect={onGroupSelect}
 				closeOnFirstSelect
 				trigger={({ search, onSearchChange }) => (
-					<SelectTriggerButton>
+					<SelectTriggerButton data-testid={TEST_IDS.assigneePicker.trigger}>
 						<SelectChevron size={12} />
 						<SearchInput
+							data-testid={TEST_IDS.assigneePicker.search}
 							value={search}
 							onChange={onSearchChange}
 							placeholder="בחירה"

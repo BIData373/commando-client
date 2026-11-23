@@ -5,6 +5,7 @@ import { useState } from "react"
 import { getListMessagesQueryOptions } from "src/api/message/message"
 import type { ListMessagesParams, MessageDto, TaskRowDto } from "src/api/model"
 import { SpinIcon } from "src/components/shared/SpinIcon"
+import { TEST_IDS } from "src/consts/test-ids"
 import { exportTasksToExcel } from "src/functions/export-excel"
 import { TASK_COLUMN_ID } from "src/utils/task-table-utils"
 
@@ -65,7 +66,11 @@ function ExportButton<TTask extends TaskRowDto>({
 	}
 
 	return (
-		<ActionButton onClick={handleExport} disabled={isExporting}>
+		<ActionButton
+			data-testid={TEST_IDS.tasks.export}
+			onClick={handleExport}
+			disabled={isExporting}
+		>
 			{isExporting ? <SpinIcon size={18} /> : <Download size={18} />}
 		</ActionButton>
 	)

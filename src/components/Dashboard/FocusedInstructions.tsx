@@ -7,6 +7,7 @@ import {
 	WorkspaceStatusType,
 } from "src/api/model"
 import { QuickFilter } from "src/api/model/quick-filter"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useUserView } from "src/providers/UserViewProvider"
 import { getDeadlineDisplayDate } from "src/utils/deadline-utils"
 import { DASHBOARD_EMPTY_STATES } from "src/utils/empty-state-utils"
@@ -117,6 +118,7 @@ export default function FocusedInstructions({
 
 	return (
 		<DashboardSection
+			testId={TEST_IDS.dashboard.focused}
 			gap={0}
 			tabButtons={
 				<TabsButtons>
@@ -124,6 +126,9 @@ export default function FocusedInstructions({
 						{tabs.map((tab) => (
 							<TabItem
 								key={tab.id}
+								data-testid={TEST_IDS.dashboard.focusedTab}
+								data-entity-id={tab.id}
+								data-active={tab.id === activeTab || undefined}
 								$active={tab.id === activeTab}
 								onClick={() => handleTabClick(tab.id)}
 							>

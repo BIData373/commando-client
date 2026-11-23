@@ -5,6 +5,7 @@ import { useStore } from "@tanstack/react-store"
 import { Check, Paperclip, Sparkles } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "src/components/Toast/toast-api"
+import { TEST_IDS } from "src/consts/test-ids"
 import { count, createTaskMessage } from "src/functions/toast-messages"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { AI_ENABLED } from "src/utils/env-utils"
@@ -301,7 +302,12 @@ function CreateDiscussionModal({
 
 	return (
 		<Dialog open onOpenChange={handleOpenChange}>
-			<ModalCard $step={step} closable={false}>
+			<ModalCard
+				data-testid={TEST_IDS.discussion.modal}
+				data-step={step}
+				$step={step}
+				closable={false}
+			>
 				<ModalBody>
 					<HeaderSection>
 						<ModalTitle>יצירת הנחיות מתוך דיון</ModalTitle>
@@ -363,6 +369,7 @@ function CreateDiscussionModal({
 
 						<ModalFooter>
 							<ContinueButton
+								data-testid={TEST_IDS.discussion.continue}
 								onClick={handleContinue}
 								disabled={isDiscussionIncomplete}
 							>
@@ -374,6 +381,7 @@ function CreateDiscussionModal({
 									<Tooltip>
 										<TooltipTrigger asChild>
 											<AiExtractButton
+												data-testid={TEST_IDS.discussion.aiExtract}
 												onClick={handleAiExtract}
 												disabled={isAiExtractDisabled}
 											>

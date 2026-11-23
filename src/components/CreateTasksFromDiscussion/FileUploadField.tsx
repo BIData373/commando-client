@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { FileText, Inbox, Trash2 } from "lucide-react"
 import { useRef, useState } from "react"
+import { TEST_IDS } from "src/consts/test-ids"
 import { useAttachmentDownload } from "../../hooks/useAttachmentDownload"
 import { SpinIcon } from "../shared/SpinIcon"
 
@@ -105,10 +106,18 @@ function FileUploadField({
 			</FormLabelRow>
 			{showExisting ? (
 				<FilePreview>
-					<FileRemoveButton onClick={handleRemoveFile} disabled={isDownloading}>
+					<FileRemoveButton
+						data-testid={TEST_IDS.discussion.fileRemove}
+						onClick={handleRemoveFile}
+						disabled={isDownloading}
+					>
 						<Trash2 size={22} />
 					</FileRemoveButton>
-					<FileDownloadButton onClick={handleDownload} disabled={isDownloading}>
+					<FileDownloadButton
+						data-testid={TEST_IDS.discussion.fileDownload}
+						onClick={handleDownload}
+						disabled={isDownloading}
+					>
 						{existingAttachmentName}
 						{isDownloading ? <SpinIcon size={14} /> : null}
 					</FileDownloadButton>
@@ -118,16 +127,22 @@ function FileUploadField({
 				</FilePreview>
 			) : file instanceof File ? (
 				<FilePreview>
-					<FileRemoveButton onClick={handleRemoveFile}>
+					<FileRemoveButton
+						data-testid={TEST_IDS.discussion.fileRemove}
+						onClick={handleRemoveFile}
+					>
 						<Trash2 size={22} />
 					</FileRemoveButton>
-					<FileName>{file.name}</FileName>
+					<FileName data-testid={TEST_IDS.discussion.fileName}>
+						{file.name}
+					</FileName>
 					<FileThumbnail>
 						<FileText size={24} />
 					</FileThumbnail>
 				</FilePreview>
 			) : (
 				<UploadDropZone
+					data-testid={TEST_IDS.discussion.fileDropZone}
 					$isDragOver={isDragOver}
 					onClick={handleUploadClick}
 					onDragOver={handleDragOver}
@@ -145,8 +160,13 @@ function FileUploadField({
 					</UploadTextsWrapper>
 				</UploadDropZone>
 			)}
-			{fileError && <FileErrorText>{fileError}</FileErrorText>}
+			{fileError && (
+				<FileErrorText data-testid={TEST_IDS.discussion.fileError}>
+					{fileError}
+				</FileErrorText>
+			)}
 			<HiddenFileInput
+				data-testid={TEST_IDS.discussion.fileInput}
 				ref={fileInputRef}
 				type="file"
 				accept=".pdf,.doc,.docx"

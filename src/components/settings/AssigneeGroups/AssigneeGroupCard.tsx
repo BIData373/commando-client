@@ -4,6 +4,7 @@ import { Accordion } from "radix-ui"
 import type { MouseEvent } from "react"
 import { TbChevronDown, TbUsersGroup } from "react-icons/tb"
 import type { AssigneeGroupDto } from "src/api/model"
+import { TEST_IDS } from "src/consts/test-ids"
 import { getVisibleAvatars } from "src/functions/avatar-overflow"
 import { STATE_CLOSED, STATE_OPEN } from "src/functions/radix-state"
 import { AssigneeGroupActions } from "./AssigneeGroupActions"
@@ -45,7 +46,12 @@ export function AssigneeGroupCard({
 	}
 
 	return (
-		<Card value={String(id)} onClick={handleCardClick}>
+		<Card
+			data-testid={TEST_IDS.assigneeGroups.card}
+			data-entity-id={id}
+			value={String(id)}
+			onClick={handleCardClick}
+		>
 			<Header>
 				<Title>
 					<TbUsersGroup size={24} />
@@ -63,7 +69,10 @@ export function AssigneeGroupCard({
 					) : (
 						<NoAssigneesText>{NO_ASSIGNEES_TEXT}</NoAssigneesText>
 					)}
-					<ChevronTrigger data-chevron>
+					<ChevronTrigger
+						data-chevron
+						data-testid={TEST_IDS.assigneeGroups.cardChevron}
+					>
 						<TbChevronDown size={14} />
 					</ChevronTrigger>
 				</Summary>

@@ -6,6 +6,7 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from "src/components/ui/accordion"
+import { TEST_IDS } from "src/consts/test-ids"
 
 interface MobileFilterSectionProps extends PropsWithChildren {
 	value: string
@@ -18,7 +19,11 @@ export default function MobileFilterSection({
 	children,
 }: MobileFilterSectionProps) {
 	return (
-		<Section value={value}>
+		<Section
+			data-testid={TEST_IDS.mobile.filterSection}
+			data-entity-id={value}
+			value={value}
+		>
 			<SectionHeader icon={<SectionChevron size={16} />}>{label}</SectionHeader>
 			<SectionContent>{children}</SectionContent>
 		</Section>

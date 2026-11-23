@@ -3,6 +3,7 @@ import { TbFilter, TbFilterOff } from "react-icons/tb"
 import type { TaskRowDto } from "src/api/model"
 import SearchInput from "src/components/shared/SearchInput"
 import { FilterPill } from "src/components/Tasks/TaskFilters"
+import { TEST_IDS } from "src/consts/test-ids"
 import type { StatusTaskCount } from "src/functions/status-counts"
 import { useTasksFilters } from "src/providers/TasksFiltersProvider"
 import {
@@ -48,15 +49,23 @@ export default function MobileTasksToolbar({
 		return (
 			<>
 				<ActiveFiltersBar>
-					<ActiveFiltersLabel onClick={onOpenFilters}>
+					<ActiveFiltersLabel
+						data-testid={TEST_IDS.mobile.activeFilters}
+						onClick={onOpenFilters}
+					>
 						סננים פעילים ({activeFilterCount})
 					</ActiveFiltersLabel>
-					<ClearFiltersButton onClick={clearAllFilters}>
+					<ClearFiltersButton
+						data-testid={TEST_IDS.mobile.clearFilters}
+						onClick={clearAllFilters}
+					>
 						<TbFilterOff size={16} />
 						נקה סננים
 					</ClearFiltersButton>
 				</ActiveFiltersBar>
-				<MatchCount>נמצאו {matchCount} הנחיות תואמות</MatchCount>
+				<MatchCount data-testid={TEST_IDS.mobile.matchCount}>
+					נמצאו {matchCount} הנחיות תואמות
+				</MatchCount>
 			</>
 		)
 	}
@@ -74,6 +83,7 @@ export default function MobileTasksToolbar({
 
 			<HeaderRow>
 				<SearchInput
+					testId={TEST_IDS.mobile.search}
 					value={searchQuery}
 					onChange={setSearchQuery}
 					placeholder="חפש הנחייה"
@@ -81,7 +91,10 @@ export default function MobileTasksToolbar({
 					onBlur={onSearchBlur}
 				/>
 				{!searchFocused && (
-					<FilterButton onClick={onOpenFilters}>
+					<FilterButton
+						data-testid={TEST_IDS.mobile.openFilters}
+						onClick={onOpenFilters}
+					>
 						<TbFilter size={18} />
 					</FilterButton>
 				)}
@@ -89,6 +102,8 @@ export default function MobileTasksToolbar({
 
 			<ChipsRow>
 				<FilterPill
+					data-testid={TEST_IDS.tasks.quickFilterAll}
+					data-active={activeQuickFilters.size === 0 || undefined}
 					$active={activeQuickFilters.size === 0}
 					onClick={clearQuickFilters}
 				>
@@ -97,6 +112,9 @@ export default function MobileTasksToolbar({
 				{ACTIVE_QUICK_FILTERS.map((filter) => (
 					<FilterPill
 						key={filter}
+						data-testid={TEST_IDS.tasks.quickFilter}
+						data-entity-id={filter}
+						data-active={activeQuickFilters.has(filter) || undefined}
 						$active={activeQuickFilters.has(filter)}
 						onClick={() => toggleQuickFilter(filter)}
 					>
