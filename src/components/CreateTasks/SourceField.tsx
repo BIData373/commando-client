@@ -71,11 +71,13 @@ export default function SourceField({
 		setSourceQuery(discussion.name)
 		setIsDropdownOpen(false)
 		onSourceSelect(discussion.name, discussion)
+		if (!isSourceLinked) setIsDateOpen(true)
 	}
 
 	function handleCreateNew() {
 		setIsDropdownOpen(false)
 		onSourceSelect(sourceQuery)
+		setIsDateOpen(true)
 	}
 
 	const selectedDate = sourceDate ?? undefined

@@ -12,6 +12,8 @@ export const CHAT_SUPPORT_PATH = import.meta.env.VITE_CHAT_SUPPORT_PATH
 export const CHAT_CHANNEL_URL =
 	CHAT_URL && CHAT_SUPPORT_PATH && new URL(CHAT_SUPPORT_PATH, CHAT_URL)
 
+export const SUPPORT_PHONE = import.meta.env.VITE_SUPPORT_PHONE
+
 export const USER_GUIDE_URL = import.meta.env.VITE_USER_GUIDE_URL
 export const PORTAL_CATALOG_URL = import.meta.env.VITE_PORTAL_CATALOG_URL
 

@@ -5,12 +5,9 @@ import type { PermissionType } from "src/api/model"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
 import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { PERMISSION_LABEL } from "src/utils/permissions-utils"
-import {
-	openMoreOfUs,
-	openSupportChat,
-	openUserGuide,
-} from "src/utils/redirect-utils"
+import { openMoreOfUs, openUserGuide } from "src/utils/redirect-utils"
 import { BIHeaderBypass } from "./BIHeaderBypass"
+import { ContactUsModal } from "./shared/ContactUsModal"
 import {
 	DropdownMenuContent,
 	DropdownMenuItem,
@@ -38,6 +35,11 @@ export function UserDropdown({
 				view: TasksView.TABLE,
 			},
 		})
+	}
+
+	// Closing the menu would unmount the contact modal rendered inside it
+	function keepMenuMounted(event: Event) {
+		event.preventDefault()
 	}
 
 	return (
@@ -74,12 +76,16 @@ export function UserDropdown({
 				</NavItem>
 			</UserDropdownItem>
 
-			<UserDropdownItem onSelect={openSupportChat}>
-				<NavItem>
-					<MessageSquareText size={16} />
-					צור קשר
-				</NavItem>
-			</UserDropdownItem>
+			<ContactUsModal
+				trigger={
+					<UserDropdownItem onSelect={keepMenuMounted}>
+						<NavItem>
+							<MessageSquareText size={16} />
+							צור קשר
+						</NavItem>
+					</UserDropdownItem>
+				}
+			/>
 
 			<UserDropdownItem onSelect={openMoreOfUs}>
 				<NavItem>

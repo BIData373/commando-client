@@ -39,7 +39,7 @@ export default function MobileTasksToolbar({
 		clearQuickFilters,
 		columnsFilters,
 		dateRange,
-		clearMobileFilters,
+		clearAllFilters,
 	} = useTasksFilters()
 
 	const activeFilterCount = columnsFilters.length + (dateRange ? 1 : 0)
@@ -51,7 +51,7 @@ export default function MobileTasksToolbar({
 					<ActiveFiltersLabel onClick={onOpenFilters}>
 						סננים פעילים ({activeFilterCount})
 					</ActiveFiltersLabel>
-					<ClearFiltersButton onClick={clearMobileFilters}>
+					<ClearFiltersButton onClick={clearAllFilters}>
 						<TbFilterOff size={16} />
 						נקה סננים
 					</ClearFiltersButton>

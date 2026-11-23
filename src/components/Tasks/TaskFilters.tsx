@@ -61,17 +61,18 @@ export function TaskFilters<TTask extends TaskRowDto>({
 		toggleQuickFilter,
 		clearQuickFilters,
 		columnsFilters,
-		resetColumnFilters,
+		dateRange,
+		clearAllFilters,
 		sorting,
 		searchQuery,
 		setSearchQuery,
 	} = useTasksFilters()
 
-	const hasActiveColumnFilters =
-		columnsFilters.length > 0 || urlColumnFilters.length > 0
+	const hasActiveFilters =
+		columnsFilters.length > 0 || urlColumnFilters.length > 0 || !!dateRange
 
-	function clearAllColumnFilters() {
-		resetColumnFilters()
+	function handleClearFilters() {
+		clearAllFilters()
 		onClearColumnFilters?.()
 	}
 
@@ -183,11 +184,11 @@ export function TaskFilters<TTask extends TaskRowDto>({
 
 				{extraFilters}
 
-				{hasActiveColumnFilters && (
+				{hasActiveFilters && (
 					<>
 						<FilterSeparator />
 
-						<ClearButton onClick={clearAllColumnFilters}>
+						<ClearButton onClick={handleClearFilters}>
 							<FilterX size={18} />
 							נקה סננים
 						</ClearButton>
