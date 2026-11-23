@@ -425,7 +425,7 @@ export const updateAssignee = (
 	return sendRequest<AssigneeDto>(
 		{
 			url: `/assignee/${id}`,
-			method: "PATCH",
+			method: "PUT",
 			headers: { "Content-Type": "application/json" },
 			data: updateAssigneeDto,
 			signal,
@@ -597,7 +597,7 @@ export const updateAssigneeStatusEditable = (
 	return sendRequest<void>(
 		{
 			url: `/assignee/${id}/status-editable`,
-			method: "PATCH",
+			method: "PUT",
 			headers: { "Content-Type": "application/json" },
 			data: updateStatusEditableDto,
 			signal,

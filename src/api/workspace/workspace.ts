@@ -571,7 +571,7 @@ export const updateWorkspace = (
 	return sendRequest<WorkspaceDto>(
 		{
 			url: `/workspace/${id}`,
-			method: "PATCH",
+			method: "PUT",
 			headers: { "Content-Type": "application/json" },
 			data: updateWorkspaceDto,
 			signal,

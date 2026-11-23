@@ -5299,13 +5299,13 @@ export const getUpdateTaskMockHandler = (
 	overrideResponse?:
 		| TaskWithWorkspaceDto
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<Parameters<typeof http.put>[1]>[0],
 		  ) => Promise<TaskWithWorkspaceDto> | TaskWithWorkspaceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.put(
 		"*/task/:id",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (info: Parameters<Parameters<typeof http.put>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

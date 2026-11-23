@@ -13,13 +13,13 @@ export const getViewTasksMockHandler = (
 	overrideResponse?:
 		| void
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<Parameters<typeof http.put>[1]>[0],
 		  ) => Promise<void> | void),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.put(
 		"*/user-viewed-tasks",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (info: Parameters<Parameters<typeof http.put>[1]>[0]) => {
 			if (typeof overrideResponse === "function") {
 				await overrideResponse(info)
 			}

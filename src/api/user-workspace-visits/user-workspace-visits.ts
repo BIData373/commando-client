@@ -26,7 +26,7 @@ export const upsertUserWorkspaceVisit = (
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<void>(
-		{ url: `/user-workspace-visits`, method: "PATCH", params, signal },
+		{ url: `/user-workspace-visits`, method: "PUT", params, signal },
 		options,
 	)
 }
