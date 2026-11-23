@@ -93,7 +93,7 @@ export function DashboardContent() {
 			<GridLayout>
 				<FocusedInstructions
 					onClick={openTask}
-					taskRows={tasks}
+					tasks={tasks}
 					isLoading={isLoading}
 				/>
 				<StatusCard tasks={tasks} isLoading={isLoading} />

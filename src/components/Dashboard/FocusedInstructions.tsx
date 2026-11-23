@@ -74,13 +74,13 @@ function compareByDeadlineDate(a: TaskRowDto, b: TaskRowDto): number {
 }
 
 interface FocusedInstructionProps {
-	taskRows: TaskRowDto[]
+	tasks: TaskRowDto[]
 	onClick?(taskId: number): void
 	isLoading?: boolean
 }
 
 export default function FocusedInstructions({
-	taskRows,
+	tasks,
 	onClick,
 	isLoading,
 }: FocusedInstructionProps) {
@@ -97,7 +97,7 @@ export default function FocusedInstructions({
 			},
 		})
 	}
-	const notCompletedTasks = taskRows.filter(
+	const notCompletedTasks = tasks.filter(
 		({ status }) => status?.type !== WorkspaceStatusType.COMPLETED,
 	)
 
