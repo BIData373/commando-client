@@ -74,13 +74,15 @@ function compareByDeadlineDate(a: TaskRowDto, b: TaskRowDto): number {
 }
 
 interface FocusedInstructionProps {
-	taskRows: TaskRowDto[]
+	tasks: TaskRowDto[]
 	onClick?(taskId: number): void
+	isLoading?: boolean
 }
 
 export default function FocusedInstructions({
-	taskRows,
+	tasks,
 	onClick,
+	isLoading,
 }: FocusedInstructionProps) {
 	const { view, updateView } = useUserView()
 
@@ -95,7 +97,7 @@ export default function FocusedInstructions({
 			},
 		})
 	}
-	const notCompletedTasks = taskRows.filter(
+	const notCompletedTasks = tasks.filter(
 		({ status }) => status?.type !== WorkspaceStatusType.COMPLETED,
 	)
 
@@ -120,6 +122,7 @@ export default function FocusedInstructions({
 		<DashboardSection
 			testId={TEST_IDS.dashboard.focused}
 			gap={0}
+			isLoading={isLoading}
 			tabButtons={
 				<TabsButtons>
 					<TabsHeader>
@@ -189,7 +192,7 @@ const TabItem = styled.button<{ $active: boolean }>`
   align-items: flex-start;
   background: ${({ $active }) => $active && "var(--background)"};
   border-color: ${({ $active }) => $active && "var(--Tabs-border-color)"};
-  
+
   &:first-child {
 	border-radius: 0 8px 0 0;
   }

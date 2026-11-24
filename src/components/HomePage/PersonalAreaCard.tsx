@@ -32,7 +32,7 @@ export default function PersonalAreaCard() {
 						<PersonalAreaStats taskRows={allTaskRows} />
 					</StatsRow>
 				) : (
-					<EmptyText>טרם שויכו אליך משימות</EmptyText>
+					<EmptyText>טרם קיבלת הנחיות</EmptyText>
 				)}
 			</Footer>
 		</CardRoot>

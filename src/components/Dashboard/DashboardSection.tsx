@@ -1,11 +1,13 @@
 import styled from "@emotion/styled"
 import type { ReactNode } from "react"
+import { ContentLoader } from "src/components/ui/content-loader"
 import { TASK_COLUMN_ID } from "../../utils/task-table-utils"
 
 interface DashboardSectionProps {
 	tabButtons: ReactNode
 	children: ReactNode
 	gap: number
+	isLoading?: boolean
 	testId?: string
 }
 
@@ -13,12 +15,15 @@ export function DashboardSection({
 	tabButtons,
 	children,
 	gap,
+	isLoading,
 	testId,
 }: DashboardSectionProps) {
 	return (
 		<Section data-testid={testId} $gap={gap}>
 			{tabButtons}
-			<ContentPanel>{children}</ContentPanel>
+			<ContentPanel>
+				<ContentLoader isLoading={isLoading}>{children}</ContentLoader>
+			</ContentPanel>
 		</Section>
 	)
 }

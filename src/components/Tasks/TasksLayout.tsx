@@ -5,7 +5,6 @@ import {
 	type TasksSearchSchemaType,
 	TasksView,
 } from "src/routes/workspace/$urlName/tasks"
-import { DropdownSection } from "../shared/ArchiveDropdown"
 import { WorkspaceTabs } from "../WorkspaceTabs"
 import WorkspaceTaskTable from "./WorkspaceTaskTable"
 
@@ -59,7 +58,7 @@ function TasksLayout({
 
 	return (
 		<>
-			<WorkspaceTabs section={DropdownSection.TASKS} />
+			<WorkspaceTabs />
 			<WorkspaceTaskTable
 				onOpenTask={openTask}
 				onEdit={editTask}

@@ -1,18 +1,12 @@
 import styled from "@emotion/styled"
 import { useParams } from "@tanstack/react-router"
-import {
-	createContext,
-	type PropsWithChildren,
-	useContext,
-	useState,
-} from "react"
+import { createContext, type PropsWithChildren, useContext } from "react"
 import type {
 	UpdateWorkspaceDto,
 	WorkspaceStatusDto,
 	WorkspaceWithPermissionDto,
 } from "src/api/model"
 import { useListWorkspaceStatuses } from "src/api/workspace-status/workspace-status"
-import { DropdownSection } from "src/components/shared/ArchiveDropdown"
 import { queryClient } from "src/query-client"
 import { useListWorkspaces } from "../api/workspace/workspace"
 import { Spinner } from "../components/ui/spinner"
@@ -23,16 +17,12 @@ export interface WorkspaceContext {
 	workspace: WorkspaceWithPermissionDto
 	statuses: Record<number, WorkspaceStatusDto>
 	setWorkspace(data: UpdateWorkspaceDto): void
-	activeSection: DropdownSection
-	setActiveSection(section: DropdownSection): void
 }
 
 const WorkspaceContext = createContext<WorkspaceContext | null>(null)
 
 export function WorkspaceProvider({ children }: PropsWithChildren) {
 	const { urlName } = useParams({ from: "/workspace/$urlName" })
-	const [activeSection, setActiveSection] = useState(DropdownSection.TASKS)
-
 	const {
 		data,
 		isLoading: isWorkspaceLoading,
@@ -82,8 +72,6 @@ export function WorkspaceProvider({ children }: PropsWithChildren) {
 					workspace,
 					statuses,
 					setWorkspace,
-					activeSection,
-					setActiveSection,
 				}}
 			>
 				<SocketProvider urlName={urlName}>{children}</SocketProvider>

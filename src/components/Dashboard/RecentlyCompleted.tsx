@@ -18,11 +18,13 @@ const HIDDEN_COLUMNS = hiddenColumnsExcept<keyof TaskRowDto>([
 interface RecentlyCompletedProps {
 	tasks: TaskRowDto[]
 	onClick?(taskId: number): void
+	isLoading?: boolean
 }
 
 export default function RecentlyCompleted({
 	tasks,
 	onClick,
+	isLoading,
 }: RecentlyCompletedProps) {
 	const completedTasks = useMemo(
 		() => tasks.filter((t) => t.status?.type === WorkspaceStatusType.COMPLETED),
@@ -33,6 +35,7 @@ export default function RecentlyCompleted({
 		<DashboardSection
 			testId={TEST_IDS.dashboard.recentlyCompleted}
 			gap={20}
+			isLoading={isLoading}
 			tabButtons={
 				<TabsButtons>
 					<SectionTitle>הנחיות שבוצעו</SectionTitle>

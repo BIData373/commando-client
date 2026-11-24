@@ -22,7 +22,7 @@ function Dashboard() {
 		</>
 	) : (
 		<TasksFiltersProvider>
-			<WorkspaceTabs isActive={false} />
+			<WorkspaceTabs />
 			<PageWrapper>
 				<DashboardContent />
 			</PageWrapper>
