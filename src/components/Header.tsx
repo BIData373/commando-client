@@ -61,7 +61,7 @@ export default function Header({ variant = "workspace" }: HeaderProps) {
 
 export const headerVariants = {
 	workspace: css`
-      --root-padding: 20px 32px 0 32px;
+      --root-padding: 20px 24px 0 24px;
       --root-border-bottom: none;
       --root-border-image: none;
 
