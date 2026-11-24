@@ -871,7 +871,7 @@ export const updateTask = (
 	return sendRequest<TaskWithWorkspaceDto>(
 		{
 			url: `/task/${id}`,
-			method: "PATCH",
+			method: "PUT",
 			headers: { "Content-Type": "application/json" },
 			data: updateTaskDto,
 			signal,

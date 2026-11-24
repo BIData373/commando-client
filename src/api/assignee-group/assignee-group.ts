@@ -473,7 +473,7 @@ export const updateAssigneeGroup = (
 	return sendRequest<AssigneeGroupDto>(
 		{
 			url: `/assignee-group/${id}`,
-			method: "PATCH",
+			method: "PUT",
 			headers: { "Content-Type": "application/json" },
 			data: updateAssigneeGroupDto,
 			signal,

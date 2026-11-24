@@ -26,7 +26,7 @@ export const viewTasks = (
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<void>(
-		{ url: `/user-viewed-tasks`, method: "PATCH", params, signal },
+		{ url: `/user-viewed-tasks`, method: "PUT", params, signal },
 		options,
 	)
 }

@@ -427,7 +427,7 @@ export const updateSource = (
 	return sendRequest<SourceDto>(
 		{
 			url: `/source/${id}`,
-			method: "PATCH",
+			method: "PUT",
 			headers: { "Content-Type": "multipart/form-data" },
 			data: formData,
 			signal,

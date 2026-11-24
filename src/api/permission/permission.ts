@@ -214,7 +214,7 @@ export const upsertPermission = (
 	return sendRequest<PermissionDto>(
 		{
 			url: `/permission`,
-			method: "PATCH",
+			method: "PUT",
 			headers: { "Content-Type": "application/json" },
 			data: upsertPermissionDto,
 			signal,

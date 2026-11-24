@@ -123,13 +123,13 @@ export const getUpsertUserViewMockHandler = (
 	overrideResponse?:
 		| UserViewDto
 		| ((
-				info: Parameters<Parameters<typeof http.patch>[1]>[0],
+				info: Parameters<Parameters<typeof http.put>[1]>[0],
 		  ) => Promise<UserViewDto> | UserViewDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.patch(
+	return http.put(
 		"*/user-views",
-		async (info: Parameters<Parameters<typeof http.patch>[1]>[0]) => {
+		async (info: Parameters<Parameters<typeof http.put>[1]>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

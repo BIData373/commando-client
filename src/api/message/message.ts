@@ -422,7 +422,7 @@ export const updateMessage = (
 	return sendRequest<MessageDto>(
 		{
 			url: `/message/${id}`,
-			method: "PATCH",
+			method: "PUT",
 			headers: { "Content-Type": "application/json" },
 			data: updateMessageDto,
 			signal,
