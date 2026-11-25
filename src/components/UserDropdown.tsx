@@ -4,7 +4,6 @@ import { BookOpen, ChevronLeft, Grip, MessageSquareText } from "lucide-react"
 import type { PermissionType } from "src/api/model"
 import { TEST_IDS } from "src/consts/test-ids"
 import { useCurrentUser } from "src/hooks/useCurrentUser"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { PERMISSION_LABEL } from "src/utils/permissions-utils"
 import { openMoreOfUs, openUserGuide } from "src/utils/redirect-utils"
 import { BIHeaderBypass } from "./BIHeaderBypass"
@@ -30,12 +29,7 @@ export function UserDropdown({
 	const displayName = user.info?.name || user.info?.displayName || user.upn
 
 	function handleNavigateToPersonal() {
-		navigate({
-			to: "/personal",
-			search: {
-				view: TasksView.TABLE,
-			},
-		})
+		navigate({ to: "/personal" })
 	}
 
 	// Closing the menu would unmount the contact modal rendered inside it

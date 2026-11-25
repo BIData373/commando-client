@@ -1,26 +1,21 @@
 import styled from "@emotion/styled"
 import { useNavigate, useParams } from "@tanstack/react-router"
-import { ChevronDown, Plus } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { TEST_IDS } from "src/consts/test-ids"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
+import { CreateButton } from "./CreateButton"
 import { NewTaskMode } from "./NewTaskModal"
-import { PrimaryButton } from "./PrimaryButton"
 
 interface CreateTaskButtonProps {
-	view?: TasksView
 	context?: "tasks" | "dashboard"
 }
 
-export function CreateTaskButton({
-	view = TasksView.TABLE,
-	context = "tasks",
-}: CreateTaskButtonProps) {
+export function CreateTaskButton({ context = "tasks" }: CreateTaskButtonProps) {
 	const { urlName = "" } =
 		useParams({ from: "/workspace/$urlName", shouldThrow: false }) ?? {}
 	const navigate = useNavigate()
@@ -31,7 +26,7 @@ export function CreateTaskButton({
 			: "/workspace/$urlName/tasks/new"
 
 	function navigateToNew(mode: NewTaskMode) {
-		navigate({ to: newTaskTo, params: { urlName }, search: { view, mode } })
+		navigate({ to: newTaskTo, params: { urlName }, search: { mode } })
 	}
 
 	function handleCreateSingle() {
@@ -45,15 +40,10 @@ export function CreateTaskButton({
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<PrimaryButton
+				<CreateButton
 					data-testid={TEST_IDS.shared.createTaskButton}
-					title={
-						<>
-							<Plus size={18} color="white" />
-							צור הנחיה
-							<ChevronDown size={18} color="white" />
-						</>
-					}
+					label="צור הנחיה"
+					endIcon={<ChevronDown size={18} />}
 				/>
 			</DropdownMenuTrigger>
 			<StyledDropdownContent align="end" sideOffset={6}>

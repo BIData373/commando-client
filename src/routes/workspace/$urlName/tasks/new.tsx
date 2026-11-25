@@ -11,14 +11,13 @@ export const Route = createFileRoute("/workspace/$urlName/tasks/new")({
 
 function NewTask() {
 	const { urlName } = Route.useParams()
-	const { view, mode, sourceId } = Route.useSearch()
+	const { mode, sourceId } = Route.useSearch()
 	const navigate = useNavigate()
 
 	function handleClose() {
 		navigate({
 			to: "/workspace/$urlName/tasks",
 			params: { urlName },
-			search: { view },
 		})
 	}
 

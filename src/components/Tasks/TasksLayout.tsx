@@ -1,22 +1,17 @@
 import { useNavigate } from "@tanstack/react-router"
 import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import { useOpenTask } from "src/hooks/useOpenTask"
-import {
-	type TasksSearchSchemaType,
-	TasksView,
-} from "src/routes/workspace/$urlName/tasks"
+import type { TasksSearchSchemaType } from "src/routes/workspace/$urlName/tasks"
 import { WorkspaceTabs } from "../WorkspaceTabs"
 import WorkspaceTaskTable from "./WorkspaceTaskTable"
 
 export interface TasksLayoutProps {
-	view: TasksView
 	urlName: string
 	statusFilter: WorkspaceStatusType[]
 	deadlineTypeFilter: DeadlineType[]
 }
 
 function TasksLayout({
-	view = TasksView.TABLE,
 	urlName,
 	statusFilter = [],
 	deadlineTypeFilter = [],
@@ -31,7 +26,6 @@ function TasksLayout({
 			to: "/workspace/$urlName/tasks",
 			params: { urlName },
 			search: {
-				view,
 				statusFilter,
 				deadlineTypeFilter,
 				...taskFilter,

@@ -9,11 +9,6 @@ import { z } from "zod"
 import TasksLayout from "../../../components/Tasks/TasksLayout"
 import { TasksFiltersProvider } from "../../../providers/TasksFiltersProvider"
 
-export enum TasksView {
-	CARDS = "CARDS",
-	TABLE = "TABLE",
-}
-
 const queryArray = <T extends z.ZodTypeAny>(schema: T) =>
 	z.preprocess(
 		(v) => (Array.isArray(v) ? v : v == null ? [] : [v]),
@@ -21,7 +16,6 @@ const queryArray = <T extends z.ZodTypeAny>(schema: T) =>
 	)
 
 const TasksSearchSchema = z.object({
-	view: z.enum(TasksView).default(TasksView.TABLE),
 	quickFilter: queryArray(z.enum(QuickFilter)).optional(),
 	statusFilter: queryArray(z.enum(WorkspaceStatusType)).default([]),
 	deadlineTypeFilter: queryArray(z.enum(DeadlineType)).default([]),
@@ -36,8 +30,7 @@ export const Route = createFileRoute("/workspace/$urlName/tasks")({
 
 function TasksPage() {
 	const isMobile = useIsMobile()
-	const { view, quickFilter, statusFilter, deadlineTypeFilter } =
-		Route.useSearch()
+	const { quickFilter, statusFilter, deadlineTypeFilter } = Route.useSearch()
 	const { urlName } = Route.useParams()
 	const {
 		workspace: { id: workspaceId },
@@ -81,7 +74,6 @@ function TasksPage() {
 		<TasksFiltersProvider initialPageFilters={viewMoreFilters}>
 			<WorkspaceTabs />
 			<TasksLayout
-				view={view}
 				urlName={urlName}
 				statusFilter={fromViewMore ? statusFilter : []}
 				deadlineTypeFilter={fromViewMore ? deadlineTypeFilter : []}

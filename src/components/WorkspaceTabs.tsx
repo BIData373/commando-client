@@ -20,17 +20,17 @@ export function WorkspaceTabs() {
 		() => (
 			<NavigationMenu viewport={false}>
 				<NavigationMenuList>
-					{/* <NavigationMenuItem>
-							<NavMenuLink asChild>
-								<Link 
-								data-testid={TEST_IDS.header.tabSettings}
-								to="/workspace/$urlName/discussions" 
+					<NavigationMenuItem>
+						<NavMenuLink asChild>
+							<Link
+								data-testid={TEST_IDS.header.tabDiscussions}
+								to="/workspace/$urlName/discussions"
 								params={{ urlName }}
-								>
-									דיונים
-								</Link>
-							</NavMenuLink>
-						</NavigationMenuItem> */}
+							>
+								דיונים
+							</Link>
+						</NavMenuLink>
+					</NavigationMenuItem>
 
 					<NavigationMenuItem>
 						<NavMenuLink asChild>

@@ -5,12 +5,11 @@ import PersonalAreaButton from "src/components/shared/PersonalAreaCard/PersonalA
 import PersonalAreaHeader from "src/components/shared/PersonalAreaCard/PersonalAreaHeader"
 import PersonalAreaStats from "src/components/shared/PersonalAreaCard/PersonalAreaStats"
 import { TEST_IDS } from "src/consts/test-ids"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
 export default function MobilePersonalAreaCard() {
 	const navigate = useNavigate()
 	function handleNavigateToPersonal() {
-		navigate({ to: "/personal", search: { view: TasksView.TABLE } })
+		navigate({ to: "/personal" })
 	}
 
 	const { data: allTaskRows = [] } = useListPersonalTaskRows({

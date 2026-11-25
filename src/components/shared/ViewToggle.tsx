@@ -1,29 +1,34 @@
 import styled from "@emotion/styled"
-import { TEST_IDS } from "src/consts/test-ids"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
-interface ViewToggleProps {
-	view: TasksView
-	onViewChange: (view: TasksView) => void
+export interface ViewToggleOption<TView extends string> {
+	value: TView
+	label: string
+	testId?: string
 }
 
-export function ViewToggle({ view, onViewChange }: ViewToggleProps) {
+interface ViewToggleProps<TView extends string> {
+	options: ViewToggleOption<TView>[]
+	view: TView
+	onViewChange: (view: TView) => void
+}
+
+export function ViewToggle<TView extends string>({
+	options,
+	view,
+	onViewChange,
+}: ViewToggleProps<TView>) {
 	return (
 		<SegmentedControl>
-			<SegmentedItem
-				data-testid={TEST_IDS.shared.viewToggleCards}
-				$selected={view === TasksView.CARDS}
-				onClick={() => onViewChange(TasksView.CARDS)}
-			>
-				כרטיסיות
-			</SegmentedItem>
-			<SegmentedItem
-				data-testid={TEST_IDS.shared.viewToggleTable}
-				$selected={view === TasksView.TABLE}
-				onClick={() => onViewChange(TasksView.TABLE)}
-			>
-				טבלה
-			</SegmentedItem>
+			{options.map(({ value, label, testId }) => (
+				<SegmentedItem
+					key={value}
+					data-testid={testId}
+					$selected={view === value}
+					onClick={() => onViewChange(value)}
+				>
+					{label}
+				</SegmentedItem>
+			))}
 		</SegmentedControl>
 	)
 }
@@ -55,9 +60,9 @@ const SegmentedItem = styled.button<{ $selected: boolean }>`
   cursor: pointer;
   transition: background 0.15s, box-shadow 0.15s;
   background: ${({ $selected }) => ($selected ? "var(--background)" : "transparent")};
-  color: ${({ $selected }) => ($selected ? "rgba(0, 0, 0, 0.88)" : "var(--text-color)")};
+  color: ${({ $selected }) => ($selected ? "var(--text-color-2)" : "var(--text-color)")};
   box-shadow: ${({ $selected }) => ($selected ? "var(--card-shadow-default)" : "none")};
   &:hover {
-    background: ${({ $selected }) => ($selected ? "var(--background)" : "rgba(0, 0, 0, 0.06)")};
+    background: ${({ $selected }) => ($selected ? "var(--background)" : "var(--button-hover)")};
   }
 `

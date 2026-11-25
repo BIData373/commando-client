@@ -8,14 +8,12 @@ import { useSaveWorkspaceVisit } from "src/hooks/useSaveWorkspaceVisit"
 import { TasksFiltersProvider } from "../../providers/TasksFiltersProvider"
 import { UserViewProvider } from "../../providers/UserViewProvider"
 import { TASK_COLUMN_ID } from "../../utils/task-table-utils"
-import { TasksView } from "../workspace/$urlName/tasks"
 
 export const Route = createFileRoute("/personal/tasks")({
 	component: PersonalTasksPage,
 	validateSearch: (
 		search: Record<string, unknown>,
-	): { view: TasksView; focusComment?: boolean } => ({
-		view: search.view === TasksView.CARDS ? TasksView.CARDS : TasksView.TABLE,
+	): { focusComment?: boolean } => ({
 		focusComment: search.focusComment
 			? Boolean(search.focusComment)
 			: undefined,

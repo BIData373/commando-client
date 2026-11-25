@@ -2,7 +2,6 @@ import styled from "@emotion/styled"
 import { useNavigate } from "@tanstack/react-router"
 import { useListPersonalTaskRows } from "src/api/task/task"
 import { TEST_IDS } from "src/consts/test-ids"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import PersonalAreaButton from "../shared/PersonalAreaCard/PersonalAreaButton"
 import PersonalAreaHeader from "../shared/PersonalAreaCard/PersonalAreaHeader"
 import PersonalAreaStats from "../shared/PersonalAreaCard/PersonalAreaStats"
@@ -16,7 +15,7 @@ export default function PersonalAreaCard() {
 	const totalCount = allTaskRows.length
 
 	function handleNavigateToPersonal() {
-		navigate({ to: "/personal", search: { view: TasksView.TABLE } })
+		navigate({ to: "/personal" })
 	}
 
 	return (

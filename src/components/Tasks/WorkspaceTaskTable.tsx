@@ -20,7 +20,6 @@ import { useFilteredTasks } from "src/hooks/useFilteredTasks"
 import { useTaskArchive } from "src/hooks/useTaskArchive"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
 import { invalidateQueries } from "src/query-client"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import {
 	ACTIVE_QUICK_FILTERS,
 	ARCHIVE_QUICK_FILTERS,
@@ -35,12 +34,10 @@ import { useTasksFilters } from "../../providers/TasksFiltersProvider"
 import { CreateTaskButton } from "../shared/CreateTaskButton"
 import { TasksDatePicker } from "../shared/TasksDatePicker/TasksDatePicker"
 import { TooltipProvider } from "../ui/tooltip"
-import { TaskCardGrid } from "./TaskCardGrid"
 import { FilterSeparator, TaskFilters } from "./TaskFilters"
 import { TaskTable } from "./TaskTable"
 
 export interface WorkspaceTaskTableProps {
-	view?: TasksView
 	statusFilter?: WorkspaceStatusType[]
 	deadlineTypeFilter?: DeadlineType[]
 	isArchived?: boolean
@@ -56,7 +53,6 @@ export interface WorkspaceTaskTableProps {
 }
 
 function WorkspaceTaskTable({
-	view = TasksView.TABLE,
 	statusFilter = EMPTY_LIST,
 	deadlineTypeFilter = EMPTY_LIST,
 	isArchived = false,
@@ -153,37 +149,33 @@ function WorkspaceTaskTable({
 							<ButtonGroup>
 								<FilterSeparator />
 
-								<CreateTaskButton view={view} />
+								<CreateTaskButton />
 							</ButtonGroup>
 						)
 					}
 				/>
 
 				<ContentArea>
-					{!isArchived && view === TasksView.CARDS ? (
-						<TaskCardGrid taskRows={filteredTaskRows} />
-					) : (
-						<TaskTable
-							onChangeSuccess={handleChangeSuccess}
-							tasks={filteredTaskRows}
-							statuses={statusList}
-							onEdit={onEdit}
-							statusFilter={statusFilter}
-							deadlineTypeFilter={deadlineTypeFilter}
-							onFiltersChange={onColumnFilterChange}
-							onClick={onOpenTask}
-							isLoading={isLoading}
-							getPermissionType={() => myPermission?.type}
-							columnOrder={noWorkspaceColumnOrder}
-							hiddenColumns={noWorkspaceHiddenColumns}
-							extraColumns={extraColumns}
-							allowDelete={isManager}
-							onArchive={onArchive}
-							onUnarchive={onUnarchive}
-							// hideStatusAction={isArchived}
-							// showActionsColumn={isArchived}
-						/>
-					)}
+					<TaskTable
+						onChangeSuccess={handleChangeSuccess}
+						tasks={filteredTaskRows}
+						statuses={statusList}
+						onEdit={onEdit}
+						statusFilter={statusFilter}
+						deadlineTypeFilter={deadlineTypeFilter}
+						onFiltersChange={onColumnFilterChange}
+						onClick={onOpenTask}
+						isLoading={isLoading}
+						getPermissionType={() => myPermission?.type}
+						columnOrder={noWorkspaceColumnOrder}
+						hiddenColumns={noWorkspaceHiddenColumns}
+						extraColumns={extraColumns}
+						allowDelete={isManager}
+						onArchive={onArchive}
+						onUnarchive={onUnarchive}
+						// hideStatusAction={isArchived}
+						// showActionsColumn={isArchived}
+					/>
 				</ContentArea>
 			</TasksRoot>
 			<Outlet />

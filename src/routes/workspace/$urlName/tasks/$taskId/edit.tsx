@@ -1,4 +1,4 @@
-import { createFileRoute, useSearch } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import { PermissionType } from "src/api/model"
 import { useTaskDetail } from "src/hooks/useTaskDetail"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
@@ -11,7 +11,6 @@ export const Route = createFileRoute("/workspace/$urlName/tasks/$taskId/edit")({
 
 function TaskEdit() {
 	const { urlName, taskId } = Route.useParams()
-	const { view } = useSearch({ from: "/workspace/$urlName/tasks" })
 	const { workspace } = useWorkspace()
 
 	const { task } = useTaskDetail(taskId)
@@ -26,12 +25,10 @@ function TaskEdit() {
 				closeTo={{
 					to: "/workspace/$urlName/tasks",
 					params: { urlName },
-					search: { view },
 				}}
 				viewTo={{
 					to: "/workspace/$urlName/tasks/$taskId",
 					params: { urlName, taskId },
-					search: { view },
 				}}
 			/>
 		</AuthorizationWrapper>
