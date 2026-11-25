@@ -106,7 +106,7 @@ function TaskDetailPanel({
 	const { data: myPermission } = useGetMyPermission({ workspaceId })
 	const isManager = myPermission?.type === PermissionType.MANAGER
 	const canArchive = isPersonal || isManager
-	const canShowArchiveAction = canArchive && assigneeStatuses.length === 0
+	const canShowArchiveAction = canArchive && assigneeStatuses.length <= 1
 	const allTags = uniqBy(concat(tags, source?.tags ?? []), "id")
 
 	const { data: history } = useListTaskHistory({ taskId: id })
@@ -225,7 +225,9 @@ function TaskDetailPanel({
 				})
 			}
 		} else {
-			toggleWorkspaceArchive({ params: { taskId: id } })
+			toggleWorkspaceArchive({
+				params: { taskId: id, assigneeId: assigneeStatuses[0]?.assignee.id },
+			})
 		}
 	}
 
