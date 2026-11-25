@@ -139,7 +139,7 @@ export default function SourceField({
 									placeholder='לדוגמה: חתמ"צ שבועי'
 									dir="rtl"
 								/>
-								{linkedSource && !!linkedSource?.attachmentKey && (
+								{linkedSource && linkedSource.attachments.length > 0 && (
 									<Paperclip size={16} />
 								)}
 							</SourceInputBox>

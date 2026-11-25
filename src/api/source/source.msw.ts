@@ -6,9 +6,19 @@
  * OpenAPI spec version: 1.0
  */
 import { faker } from "@faker-js/faker"
-import type { RequestHandlerOptions } from "msw"
+import type {
+	HttpResponseResolver,
+	PathParams,
+	RequestHandlerOptions,
+} from "msw"
 import { HttpResponse, http } from "msw"
-import type { SourceDto, SourceWithTasksDto } from "../model"
+import type {
+	CreateSourceDto,
+	GetAIExtractionCallbackDto,
+	SourceDto,
+	SourceWithTasksDto,
+	UpdateSourceDto,
+} from "../model"
 import {
 	DeadlineType,
 	ExtractionStatus,
@@ -91,19 +101,64 @@ export const getCreateSourceResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	attachmentKey: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
-	attachmentName: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
+	attachments: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1,
+	).map(() => ({
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		createdBy: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+		},
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		updatedBy: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+		},
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		extractionStatus: faker.helpers.arrayElement([
+			faker.helpers.arrayElement(Object.values(ExtractionStatus)),
+			null,
+		]),
+		visibleToAssignees: faker.datatype.boolean(),
+		sourceId: faker.number.float({ fractionDigits: 2 }),
+	})),
 	draft: faker.datatype.boolean(),
-	extractionStatus: faker.helpers.arrayElement([
-		faker.helpers.arrayElement(Object.values(ExtractionStatus)),
-		null,
-	]),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -242,19 +297,64 @@ export const getListSourcesResponseMock = (): SourceDto[] =>
 			null,
 		]),
 		workspaceId: faker.number.float({ fractionDigits: 2 }),
-		attachmentKey: faker.helpers.arrayElement([
-			faker.string.alpha({ length: { min: 10, max: 20 } }),
-			null,
-		]),
-		attachmentName: faker.helpers.arrayElement([
-			faker.string.alpha({ length: { min: 10, max: 20 } }),
-			null,
-		]),
+		attachments: Array.from(
+			{ length: faker.number.int({ min: 1, max: 10 }) },
+			(_, i) => i + 1,
+		).map(() => ({
+			createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			createdBy: {
+				id: faker.number.float({ fractionDigits: 2 }),
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				info: {
+					...{
+						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						displayName: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						name: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						isBI: faker.helpers.arrayElement([
+							faker.datatype.boolean(),
+							undefined,
+						]),
+					},
+				},
+			},
+			updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+			updatedBy: {
+				id: faker.number.float({ fractionDigits: 2 }),
+				upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+				info: {
+					...{
+						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						displayName: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						name: faker.helpers.arrayElement([
+							faker.string.alpha({ length: { min: 10, max: 20 } }),
+							undefined,
+						]),
+						isBI: faker.helpers.arrayElement([
+							faker.datatype.boolean(),
+							undefined,
+						]),
+					},
+				},
+			},
+			id: faker.number.float({ fractionDigits: 2 }),
+			name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			extractionStatus: faker.helpers.arrayElement([
+				faker.helpers.arrayElement(Object.values(ExtractionStatus)),
+				null,
+			]),
+			visibleToAssignees: faker.datatype.boolean(),
+			sourceId: faker.number.float({ fractionDigits: 2 }),
+		})),
 		draft: faker.datatype.boolean(),
-		extractionStatus: faker.helpers.arrayElement([
-			faker.helpers.arrayElement(Object.values(ExtractionStatus)),
-			null,
-		]),
 		tags: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1,
@@ -384,19 +484,64 @@ export const getGetSourceResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	attachmentKey: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
-	attachmentName: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
+	attachments: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1,
+	).map(() => ({
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		createdBy: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+		},
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		updatedBy: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+		},
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		extractionStatus: faker.helpers.arrayElement([
+			faker.helpers.arrayElement(Object.values(ExtractionStatus)),
+			null,
+		]),
+		visibleToAssignees: faker.datatype.boolean(),
+		sourceId: faker.number.float({ fractionDigits: 2 }),
+	})),
 	draft: faker.datatype.boolean(),
-	extractionStatus: faker.helpers.arrayElement([
-		faker.helpers.arrayElement(Object.values(ExtractionStatus)),
-		null,
-	]),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -634,19 +779,68 @@ export const getGetSourceResponseMock = (
 					null,
 				]),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
-				attachmentKey: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					null,
-				]),
-				attachmentName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					null,
-				]),
+				attachments: Array.from(
+					{ length: faker.number.int({ min: 1, max: 10 }) },
+					(_, i) => i + 1,
+				).map(() => ({
+					createdAt: new Date(
+						faker.date.past().toISOString().slice(0, 19) + "Z",
+					),
+					createdBy: {
+						id: faker.number.float({ fractionDigits: 2 }),
+						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						info: {
+							...{
+								upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+								displayName: faker.helpers.arrayElement([
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
+								]),
+								name: faker.helpers.arrayElement([
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
+								]),
+								isBI: faker.helpers.arrayElement([
+									faker.datatype.boolean(),
+									undefined,
+								]),
+							},
+						},
+					},
+					updatedAt: new Date(
+						faker.date.past().toISOString().slice(0, 19) + "Z",
+					),
+					updatedBy: {
+						id: faker.number.float({ fractionDigits: 2 }),
+						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						info: {
+							...{
+								upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+								displayName: faker.helpers.arrayElement([
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
+								]),
+								name: faker.helpers.arrayElement([
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
+								]),
+								isBI: faker.helpers.arrayElement([
+									faker.datatype.boolean(),
+									undefined,
+								]),
+							},
+						},
+					},
+					id: faker.number.float({ fractionDigits: 2 }),
+					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					extractionStatus: faker.helpers.arrayElement([
+						faker.helpers.arrayElement(Object.values(ExtractionStatus)),
+						null,
+					]),
+					visibleToAssignees: faker.datatype.boolean(),
+					sourceId: faker.number.float({ fractionDigits: 2 }),
+				})),
 				draft: faker.datatype.boolean(),
-				extractionStatus: faker.helpers.arrayElement([
-					faker.helpers.arrayElement(Object.values(ExtractionStatus)),
-					null,
-				]),
 				tags: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
 					(_, i) => i + 1,
@@ -1073,19 +1267,64 @@ export const getUpdateSourceResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	attachmentKey: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
-	attachmentName: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
+	attachments: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1,
+	).map(() => ({
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		createdBy: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+		},
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		updatedBy: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+		},
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		extractionStatus: faker.helpers.arrayElement([
+			faker.helpers.arrayElement(Object.values(ExtractionStatus)),
+			null,
+		]),
+		visibleToAssignees: faker.datatype.boolean(),
+		sourceId: faker.number.float({ fractionDigits: 2 }),
+	})),
 	draft: faker.datatype.boolean(),
-	extractionStatus: faker.helpers.arrayElement([
-		faker.helpers.arrayElement(Object.values(ExtractionStatus)),
-		null,
-	]),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -1216,19 +1455,64 @@ export const getDeleteSourceResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	attachmentKey: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
-	attachmentName: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
+	attachments: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1,
+	).map(() => ({
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		createdBy: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+		},
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		updatedBy: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+		},
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		extractionStatus: faker.helpers.arrayElement([
+			faker.helpers.arrayElement(Object.values(ExtractionStatus)),
+			null,
+		]),
+		visibleToAssignees: faker.datatype.boolean(),
+		sourceId: faker.number.float({ fractionDigits: 2 }),
+	})),
 	draft: faker.datatype.boolean(),
-	extractionStatus: faker.helpers.arrayElement([
-		faker.helpers.arrayElement(Object.values(ExtractionStatus)),
-		null,
-	]),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -1359,19 +1643,64 @@ export const getExtractSourceResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	attachmentKey: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
-	attachmentName: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
+	attachments: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1,
+	).map(() => ({
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		createdBy: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+		},
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		updatedBy: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+		},
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		extractionStatus: faker.helpers.arrayElement([
+			faker.helpers.arrayElement(Object.values(ExtractionStatus)),
+			null,
+		]),
+		visibleToAssignees: faker.datatype.boolean(),
+		sourceId: faker.number.float({ fractionDigits: 2 }),
+	})),
 	draft: faker.datatype.boolean(),
-	extractionStatus: faker.helpers.arrayElement([
-		faker.helpers.arrayElement(Object.values(ExtractionStatus)),
-		null,
-	]),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -1502,19 +1831,64 @@ export const getAiExtractionCallbackResponseMock = (
 		null,
 	]),
 	workspaceId: faker.number.float({ fractionDigits: 2 }),
-	attachmentKey: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
-	attachmentName: faker.helpers.arrayElement([
-		faker.string.alpha({ length: { min: 10, max: 20 } }),
-		null,
-	]),
+	attachments: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1,
+	).map(() => ({
+		createdAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		createdBy: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+		},
+		updatedAt: new Date(faker.date.past().toISOString().slice(0, 19) + "Z"),
+		updatedBy: {
+			id: faker.number.float({ fractionDigits: 2 }),
+			upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+			info: {
+				...{
+					upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					displayName: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					name: faker.helpers.arrayElement([
+						faker.string.alpha({ length: { min: 10, max: 20 } }),
+						undefined,
+					]),
+					isBI: faker.helpers.arrayElement([
+						faker.datatype.boolean(),
+						undefined,
+					]),
+				},
+			},
+		},
+		id: faker.number.float({ fractionDigits: 2 }),
+		name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+		extractionStatus: faker.helpers.arrayElement([
+			faker.helpers.arrayElement(Object.values(ExtractionStatus)),
+			null,
+		]),
+		visibleToAssignees: faker.datatype.boolean(),
+		sourceId: faker.number.float({ fractionDigits: 2 }),
+	})),
 	draft: faker.datatype.boolean(),
-	extractionStatus: faker.helpers.arrayElement([
-		faker.helpers.arrayElement(Object.values(ExtractionStatus)),
-		null,
-	]),
 	tags: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1,
@@ -1752,19 +2126,68 @@ export const getAiExtractionCallbackResponseMock = (
 					null,
 				]),
 				workspaceId: faker.number.float({ fractionDigits: 2 }),
-				attachmentKey: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					null,
-				]),
-				attachmentName: faker.helpers.arrayElement([
-					faker.string.alpha({ length: { min: 10, max: 20 } }),
-					null,
-				]),
+				attachments: Array.from(
+					{ length: faker.number.int({ min: 1, max: 10 }) },
+					(_, i) => i + 1,
+				).map(() => ({
+					createdAt: new Date(
+						faker.date.past().toISOString().slice(0, 19) + "Z",
+					),
+					createdBy: {
+						id: faker.number.float({ fractionDigits: 2 }),
+						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						info: {
+							...{
+								upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+								displayName: faker.helpers.arrayElement([
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
+								]),
+								name: faker.helpers.arrayElement([
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
+								]),
+								isBI: faker.helpers.arrayElement([
+									faker.datatype.boolean(),
+									undefined,
+								]),
+							},
+						},
+					},
+					updatedAt: new Date(
+						faker.date.past().toISOString().slice(0, 19) + "Z",
+					),
+					updatedBy: {
+						id: faker.number.float({ fractionDigits: 2 }),
+						upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+						info: {
+							...{
+								upn: faker.string.alpha({ length: { min: 10, max: 20 } }),
+								displayName: faker.helpers.arrayElement([
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
+								]),
+								name: faker.helpers.arrayElement([
+									faker.string.alpha({ length: { min: 10, max: 20 } }),
+									undefined,
+								]),
+								isBI: faker.helpers.arrayElement([
+									faker.datatype.boolean(),
+									undefined,
+								]),
+							},
+						},
+					},
+					id: faker.number.float({ fractionDigits: 2 }),
+					name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+					extractionStatus: faker.helpers.arrayElement([
+						faker.helpers.arrayElement(Object.values(ExtractionStatus)),
+						null,
+					]),
+					visibleToAssignees: faker.datatype.boolean(),
+					sourceId: faker.number.float({ fractionDigits: 2 }),
+				})),
 				draft: faker.datatype.boolean(),
-				extractionStatus: faker.helpers.arrayElement([
-					faker.helpers.arrayElement(Object.values(ExtractionStatus)),
-					null,
-				]),
 				tags: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
 					(_, i) => i + 1,
@@ -2120,13 +2543,15 @@ export const getCreateSourceMockHandler = (
 	overrideResponse?:
 		| SourceDto
 		| ((
-				info: Parameters<Parameters<typeof http.post>[1]>[0],
+				info: Parameters<HttpResponseResolver<PathParams, CreateSourceDto>>[0],
 		  ) => Promise<SourceDto> | SourceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post(
+	return http.post<PathParams, CreateSourceDto>(
 		"*/source",
-		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+		async (
+			info: Parameters<HttpResponseResolver<PathParams, CreateSourceDto>>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2144,13 +2569,13 @@ export const getListSourcesMockHandler = (
 	overrideResponse?:
 		| SourceDto[]
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver>[0],
 		  ) => Promise<SourceDto[]> | SourceDto[]),
 	options?: RequestHandlerOptions,
 ) => {
 	return http.get(
 		"*/source",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2168,13 +2593,13 @@ export const getGetSourceMockHandler = (
 	overrideResponse?:
 		| SourceWithTasksDto
 		| ((
-				info: Parameters<Parameters<typeof http.get>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<SourceWithTasksDto> | SourceWithTasksDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.get(
+	return http.get<{ id: string }>(
 		"*/source/:id",
-		async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2192,13 +2617,19 @@ export const getUpdateSourceMockHandler = (
 	overrideResponse?:
 		| SourceDto
 		| ((
-				info: Parameters<Parameters<typeof http.put>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<{ id: string }, UpdateSourceDto>
+				>[0],
 		  ) => Promise<SourceDto> | SourceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.put(
+	return http.put<{ id: string }, UpdateSourceDto>(
 		"*/source/:id",
-		async (info: Parameters<Parameters<typeof http.put>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<{ id: string }, UpdateSourceDto>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2216,13 +2647,13 @@ export const getDeleteSourceMockHandler = (
 	overrideResponse?:
 		| SourceDto
 		| ((
-				info: Parameters<Parameters<typeof http.delete>[1]>[0],
+				info: Parameters<HttpResponseResolver<{ id: string }>>[0],
 		  ) => Promise<SourceDto> | SourceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.delete(
+	return http.delete<{ id: string }>(
 		"*/source/:id",
-		async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
+		async (info: Parameters<HttpResponseResolver<{ id: string }>>[0]) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2240,13 +2671,19 @@ export const getExtractSourceMockHandler = (
 	overrideResponse?:
 		| SourceDto
 		| ((
-				info: Parameters<Parameters<typeof http.post>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<{ id: string; attachmentId: string }>
+				>[0],
 		  ) => Promise<SourceDto> | SourceDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post(
-		"*/source/:id/extract",
-		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+	return http.post<{ id: string; attachmentId: string }>(
+		"*/source/:id/extract/:attachmentId",
+		async (
+			info: Parameters<
+				HttpResponseResolver<{ id: string; attachmentId: string }>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"
@@ -2264,13 +2701,19 @@ export const getAiExtractionCallbackMockHandler = (
 	overrideResponse?:
 		| SourceWithTasksDto
 		| ((
-				info: Parameters<Parameters<typeof http.post>[1]>[0],
+				info: Parameters<
+					HttpResponseResolver<{ id: string }, GetAIExtractionCallbackDto>
+				>[0],
 		  ) => Promise<SourceWithTasksDto> | SourceWithTasksDto),
 	options?: RequestHandlerOptions,
 ) => {
-	return http.post(
+	return http.post<{ id: string }, GetAIExtractionCallbackDto>(
 		"*/source/:id/ai-result",
-		async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+		async (
+			info: Parameters<
+				HttpResponseResolver<{ id: string }, GetAIExtractionCallbackDto>
+			>[0],
+		) => {
 			return HttpResponse.json(
 				overrideResponse !== undefined
 					? typeof overrideResponse === "function"

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import type { CreateSourceDto, UpdateSourceDto } from "src/api/model"
+import type { CreateSourceDto, SourceAttachmentDto } from "src/api/model"
 import SourceField, {
 	type SourceFieldValidation,
 } from "../CreateTasks/SourceField"
@@ -8,16 +8,19 @@ import FileUploadField from "./FileUploadField"
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
+export type DiscussionFormValues = Partial<
+	Pick<CreateSourceDto, "name" | "date" | "tags" | "attachment">
+>
+
 interface DiscussionFormProps {
 	workspaceId: number
-	form: CreateSourceDto | UpdateSourceDto
+	form: DiscussionFormValues
 	onNameChange: (name: string) => void
 	onDateChange: (date: Date | undefined) => void
 	onTagSelect: (tag: string) => void
 	onTagRemove: (tag: string) => void
 	onFileChange: (file: File | null) => void
-	existingAttachmentKey?: string | null
-	existingAttachmentName?: string | null
+	existingAttachment?: SourceAttachmentDto | null
 	fields?: SourceFieldValidation
 }
 
@@ -31,8 +34,7 @@ function DiscussionForm({
 	onTagSelect,
 	onTagRemove,
 	onFileChange,
-	existingAttachmentKey,
-	existingAttachmentName,
+	existingAttachment,
 	fields,
 }: DiscussionFormProps) {
 	return (
@@ -62,8 +64,7 @@ function DiscussionForm({
 
 			<FileUploadField
 				file={form.attachment as File | null | undefined}
-				existingAttachmentKey={existingAttachmentKey}
-				existingAttachmentName={existingAttachmentName}
+				existingAttachment={existingAttachment}
 				onFileChange={onFileChange}
 			/>
 		</FormContainer>

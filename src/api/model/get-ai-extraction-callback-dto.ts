@@ -9,6 +9,7 @@ import type { ExtractionErrorStatus } from "./extraction-error-status"
 import type { GetAIExtractedTaskDto } from "./get-ai-extracted-task-dto"
 
 export interface GetAIExtractionCallbackDto {
+	attachmentId: number
 	error?: ExtractionErrorStatus
 	tasks?: GetAIExtractedTaskDto[]
 }

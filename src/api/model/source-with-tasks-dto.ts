@@ -5,7 +5,7 @@
  * The Vector API
  * OpenAPI spec version: 1.0
  */
-import type { ExtractionStatus } from "./extraction-status"
+import type { SourceAttachmentDto } from "./source-attachment-dto"
 import type { TagDto } from "./tag-dto"
 import type { TaskDto } from "./task-dto"
 import type { UserDto } from "./user-dto"
@@ -24,12 +24,8 @@ export interface SourceWithTasksDto {
 	/** @nullable */
 	date: Date | null
 	workspaceId: number
-	/** @nullable */
-	attachmentKey: string | null
-	/** @nullable */
-	attachmentName: string | null
+	attachments: SourceAttachmentDto[]
 	draft: boolean
-	extractionStatus: ExtractionStatus | null
 	tags: TagDto[]
 	tasks: TaskDto[]
 }

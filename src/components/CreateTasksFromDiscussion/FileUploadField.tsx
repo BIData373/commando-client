@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { FileText, Inbox, Trash2 } from "lucide-react"
 import { useRef, useState } from "react"
+import type { SourceAttachmentDto } from "src/api/model"
 import { TEST_IDS } from "src/consts/test-ids"
 import { useAttachmentDownload } from "../../hooks/useAttachmentDownload"
 import { SpinIcon } from "../shared/SpinIcon"
@@ -9,8 +10,7 @@ import { SpinIcon } from "../shared/SpinIcon"
 
 interface FileUploadFieldProps {
 	file: File | null | undefined
-	existingAttachmentKey?: string | null
-	existingAttachmentName?: string | null
+	existingAttachment?: SourceAttachmentDto | null
 	onFileChange: (file: File | null) => void
 }
 
@@ -28,19 +28,18 @@ const MAX_FILE_SIZE = 30 * 1024 * 1024
 
 function FileUploadField({
 	file,
-	existingAttachmentKey,
-	existingAttachmentName,
+	existingAttachment,
 	onFileChange,
 }: FileUploadFieldProps) {
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const [isDragOver, setIsDragOver] = useState(false)
 	const [fileError, setFileError] = useState("")
 
-	const showExisting = file === undefined && !!existingAttachmentKey
+	const showExisting = file === undefined && !!existingAttachment
 	const { isDownloading, download } = useAttachmentDownload()
 
 	function handleDownload() {
-		download(existingAttachmentKey, existingAttachmentName)
+		download(existingAttachment)
 	}
 
 	function validateFile(f: File): string | null {
@@ -118,7 +117,7 @@ function FileUploadField({
 						onClick={handleDownload}
 						disabled={isDownloading}
 					>
-						{existingAttachmentName}
+						{existingAttachment?.name}
 						{isDownloading ? <SpinIcon size={14} /> : null}
 					</FileDownloadButton>
 					<FileThumbnail>

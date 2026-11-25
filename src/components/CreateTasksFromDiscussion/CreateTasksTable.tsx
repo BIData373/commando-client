@@ -77,18 +77,23 @@ function CreateTasksTable({
 	const { mutateAsync: extractSource, isPending: isRetrying } =
 		useExtractSource({ mutation: { meta: { toast: { error: true } } } })
 
+	const extractionAttachment = source?.attachments[0]
+	const extractionStatus = extractionAttachment?.extractionStatus ?? null
+
 	const isExtracting =
 		sourceId !== undefined &&
 		finalStatus === null &&
 		source?.draft &&
-		source?.extractionStatus !== null &&
-		ACTIVE_EXTRACTION_STATUSES.has(source?.extractionStatus)
+		extractionStatus !== null &&
+		ACTIVE_EXTRACTION_STATUSES.has(extractionStatus)
 
 	async function handleRetry() {
-		if (sourceId !== undefined) {
+		if (sourceId !== undefined && extractionAttachment) {
 			setFinalStatus(null)
 			setAlertDismissed(false)
-			await extractSource({ pathParams: { id: sourceId } })
+			await extractSource({
+				pathParams: { id: sourceId, attachmentId: extractionAttachment.id },
+			})
 		}
 	}
 
@@ -139,10 +144,15 @@ function CreateTasksTable({
 
 				invalidateQueries([getGetSourceQueryKey({ id: sourceId })])
 
-				setFinalStatus(dto.extractionStatus)
+				const finishedAttachment =
+					dto.attachments.find(({ id }) => id === extractionAttachment?.id) ??
+					dto.attachments[0]
+				const finishedStatus = finishedAttachment?.extractionStatus ?? null
+
+				setFinalStatus(finishedStatus)
 				setAlertDismissed(false)
 
-				if (dto.extractionStatus === ExtractionStatus.FINISHED_WITH_TASKS) {
+				if (finishedStatus === ExtractionStatus.FINISHED_WITH_TASKS) {
 					setExtractedCount(dto.tasks.length)
 					setRows([...map(dto.tasks, mapTaskDtoToRow), createEmptyRow()])
 				}
@@ -151,7 +161,7 @@ function CreateTasksTable({
 	})
 
 	useEffect(() => {
-		if (!source?.extractionStatus) {
+		if (!source || !extractionStatus) {
 			return
 		}
 
@@ -162,10 +172,10 @@ function CreateTasksTable({
 			setRows([...mapped, createEmptyRow()])
 		}
 
-		if (TERMINAL_EXTRACTION_STATUSES.has(source.extractionStatus)) {
-			setFinalStatus(source.extractionStatus)
+		if (TERMINAL_EXTRACTION_STATUSES.has(extractionStatus)) {
+			setFinalStatus(extractionStatus)
 		}
-	}, [source, createEmptyRow, mapTaskDtoToRow])
+	}, [source, extractionStatus, createEmptyRow, mapTaskDtoToRow])
 
 	const [rows, setRows] = useState<NewTaskRow[]>([createEmptyRow()])
 	const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set())

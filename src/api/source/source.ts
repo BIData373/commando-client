@@ -423,13 +423,12 @@ export const updateSource = (
 	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
-	const formData = serializeFormData(updateSourceDto)
 	return sendRequest<SourceDto>(
 		{
 			url: `/source/${id}`,
 			method: "PUT",
-			headers: { "Content-Type": "multipart/form-data" },
-			data: formData,
+			headers: { "Content-Type": "application/json" },
+			data: updateSourceDto,
 			signal,
 		},
 		options,
@@ -591,12 +590,12 @@ export const useDeleteSource = <
 	return useMutation(getDeleteSourceMutationOptions(options), queryClient)
 }
 export const extractSource = (
-	{ id }: ExtractSourcePathParameters,
+	{ id, attachmentId }: ExtractSourcePathParameters,
 	options?: SecondParameter<typeof sendRequest>,
 	signal?: AbortSignal,
 ) => {
 	return sendRequest<SourceDto>(
-		{ url: `/source/${id}/extract`, method: "POST", signal },
+		{ url: `/source/${id}/extract/${attachmentId}`, method: "POST", signal },
 		options,
 	)
 }

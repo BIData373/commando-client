@@ -157,9 +157,10 @@ function TaskDetailPanel({
 	const handleUpdateTaskStatus = useUpdateTaskStatus({ notify: true })
 
 	const { isDownloading, download } = useAttachmentDownload()
+	const attachment = source?.attachments[0]
 
 	function handleAttachmentDownload() {
-		download(source?.attachmentKey, source?.attachmentName)
+		download(attachment)
 	}
 
 	function handleScroll() {
@@ -349,7 +350,7 @@ function TaskDetailPanel({
 									)}
 								</SourceRow>
 								<InfoAttachment>
-									{source.attachmentKey && (
+									{attachment && (
 										<>
 											<Paperclip size={16} />
 											<AttachmentDownloadButton
@@ -357,7 +358,7 @@ function TaskDetailPanel({
 												onClick={handleAttachmentDownload}
 												disabled={isDownloading}
 											>
-												{source.attachmentName}
+												{attachment.name}
 												{isDownloading && <SpinIcon size={12} />}
 											</AttachmentDownloadButton>
 										</>

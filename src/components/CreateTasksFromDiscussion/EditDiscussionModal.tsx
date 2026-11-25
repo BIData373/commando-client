@@ -13,6 +13,7 @@ import {
 	useGetSource,
 	useUpdateSource,
 } from "../../api/source/source"
+import { useReplaceSourceAttachment } from "../../hooks/useReplaceSourceAttachment"
 import { ModalContent } from "../shared/ModalContent"
 import { PrimaryButton } from "../shared/PrimaryButton"
 import { Dialog } from "../ui/dialog"
@@ -28,6 +29,11 @@ interface EditDiscussionModalProps {
 	onSuccess(): void
 }
 
+interface EditDiscussionFormValues extends UpdateSourceDto {
+	attachment?: Blob | File | null
+	deleteAttachment?: boolean
+}
+
 function EditDiscussionModal({
 	sourceId,
 	workspaceId,
@@ -41,20 +47,25 @@ function EditDiscussionModal({
 			meta: { toast: { success: updateDiscussionMessage, error: true } },
 		},
 	})
+	const { replaceAttachment } = useReplaceSourceAttachment()
 	const [showConfirmation, setShowConfirmation] = useState(false)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 
-	const defaultValues: UpdateSourceDto = {
+	const existingAttachment = source?.attachments[0]
+
+	const defaultValues: EditDiscussionFormValues = {
 		name: source?.name ?? "",
 		date: source?.date ?? null,
 		tags: source?.tags.map((t) => t.name) ?? [],
-		attachment: source?.attachmentKey ? undefined : null,
+		attachment: existingAttachment ? undefined : null,
 		deleteAttachment: false,
 	}
 
 	const form = useForm({
 		defaultValues,
-		onSubmit: async ({ value: { tags, ...value } }) => {
+		onSubmit: async ({
+			value: { tags, attachment, deleteAttachment, ...value },
+		}) => {
 			const data: UpdateSourceDto = { tags }
 			if (value.name && value.name.trim() !== defaultValues.name) {
 				data.name = value.name.trim()
@@ -62,18 +73,17 @@ function EditDiscussionModal({
 			if (value.date?.getTime() !== defaultValues.date?.getTime()) {
 				data.date = value.date ?? undefined
 			}
-			if (value.attachment !== defaultValues.attachment) {
-				data.attachment = value.attachment ?? undefined
-			}
-			if (value.deleteAttachment) {
-				data.deleteAttachment = true
-			}
-
-			if (Object.keys(data).length === 0) {
-				return
-			}
+			const isAttachmentChanged = attachment instanceof File || deleteAttachment
 
 			try {
+				if (isAttachmentChanged) {
+					await replaceAttachment(
+						sourceId,
+						attachment instanceof File ? attachment : null,
+						existingAttachment,
+					)
+				}
+
 				await updateSource({ pathParams: { id: sourceId }, data })
 
 				invalidateQueries([getGetSourceQueryKey({ id: sourceId })])
@@ -118,7 +128,7 @@ function EditDiscussionModal({
 
 	function handleFileChange(file: File | null) {
 		form.setFieldValue("attachment", file)
-		form.setFieldValue("deleteAttachment", !file && !!source?.attachmentKey)
+		form.setFieldValue("deleteAttachment", !file && !!existingAttachment)
 	}
 
 	function handleOpenChange(open: boolean) {
@@ -162,8 +172,7 @@ function EditDiscussionModal({
 						onTagSelect={handleTagSelect}
 						onTagRemove={handleTagRemove}
 						onFileChange={handleFileChange}
-						existingAttachmentKey={source.attachmentKey}
-						existingAttachmentName={source.attachmentName}
+						existingAttachment={existingAttachment}
 					/>
 
 					<EditFooter>

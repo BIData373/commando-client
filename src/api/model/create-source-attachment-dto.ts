@@ -6,7 +6,8 @@
  * OpenAPI spec version: 1.0
  */
 
-export type GetAttachmentSignedUrlParams = {
-	key: string
-	filename?: string
+export interface CreateSourceAttachmentDto {
+	visibleToAssignees?: boolean
+	sourceId: number
+	attachment: Blob | File
 }

@@ -13,10 +13,6 @@ export interface UpdateSourceDto {
 	/** @nullable */
 	date?: Date | null
 	tags?: string[]
-	/** @nullable */
-	attachment?: Blob | File | null
-	aiExtraction?: boolean
 	draft?: boolean
 	tasks?: CreateSourceTaskDto[]
-	deleteAttachment?: boolean
 }

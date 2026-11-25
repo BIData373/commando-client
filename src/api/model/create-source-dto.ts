@@ -13,9 +13,10 @@ export interface CreateSourceDto {
 	/** @nullable */
 	date?: Date | null
 	tags?: string[]
-	/** @nullable */
-	attachment?: Blob | File | null
-	aiExtraction?: boolean
 	draft?: boolean
 	tasks?: CreateSourceTaskDto[]
+	/** @nullable */
+	attachment?: Blob | File | null
+	attachmentVisibleToAssignees?: boolean
+	aiExtraction?: boolean
 }

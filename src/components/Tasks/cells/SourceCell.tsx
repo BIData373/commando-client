@@ -26,7 +26,7 @@ export function SourceCell<TTask extends TaskRowDto, TValue>({
 
 	return (
 		<CellRoot>
-			{source.attachmentKey && <SourceAttachmentIcon size={18} />}
+			{source.attachments.length > 0 && <SourceAttachmentIcon size={18} />}
 
 			{sourceText && (
 				<SourceText>

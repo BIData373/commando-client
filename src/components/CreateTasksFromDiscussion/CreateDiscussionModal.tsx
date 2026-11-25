@@ -13,11 +13,12 @@ import {
 	type CreateSourceDto,
 	DeadlineType,
 	TaskCreationType,
-	type UpdateSourceDto,
 } from "../../api/model"
 import {
+	getGetSourceQueryKey,
 	getListSourcesQueryKey,
 	useCreateSource,
+	useExtractSource,
 	useGetSource,
 	useUpdateSource,
 } from "../../api/source/source"
@@ -27,6 +28,7 @@ import {
 	useDeleteTask,
 } from "../../api/task/task"
 import { formatDate } from "../../functions/date-utils"
+import { useReplaceSourceAttachment } from "../../hooks/useReplaceSourceAttachment"
 import { useSaveTasks } from "../../hooks/useSaveTasks"
 import { invalidateQueries } from "../../query-client"
 import { ModalContent } from "../shared/ModalContent"
@@ -51,6 +53,10 @@ enum Steps {
 interface CreateDiscussionModalProps {
 	onClose: () => void
 	sourceId?: number
+}
+
+interface DiscussionSubmitMeta {
+	aiExtraction: boolean
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -82,6 +88,11 @@ function CreateDiscussionModal({
 				},
 			},
 		})
+	const { mutateAsync: extractSource, isPending: isExtractSource } =
+		useExtractSource({
+			mutation: { meta: { toast: { error: true } } },
+		})
+	const { replaceAttachment } = useReplaceSourceAttachment()
 	const { mutate: deleteTask } = useDeleteTask({
 		mutation: { meta: { toast: { error: true } } },
 	})
@@ -112,9 +123,9 @@ function CreateDiscussionModal({
 
 	const form = useForm({
 		defaultValues,
-		onSubmitMeta: { aiExtraction: false } as Partial<UpdateSourceDto>,
+		onSubmitMeta: { aiExtraction: false } as DiscussionSubmitMeta,
 		onSubmit: async ({ meta }) => {
-			await createAndAdvance(!!meta.aiExtraction)
+			await createAndAdvance(meta.aiExtraction)
 		},
 	})
 
@@ -134,15 +145,16 @@ function CreateDiscussionModal({
 	const isDiscussionIncomplete = !values.name.trim() || !values.date
 	const hasAttachment =
 		values.attachment === undefined
-			? !!source?.attachmentKey
+			? !!source?.attachments.length
 			: !!values.attachment
-	const alreadyExtracted = source?.extractionStatus != null
+	const alreadyExtracted = source?.attachments[0]?.extractionStatus != null
 	const isAiExtractDisabled =
 		isDiscussionIncomplete ||
 		!hasAttachment ||
 		alreadyExtracted ||
 		isCreateSource ||
-		isUpdateSource
+		isUpdateSource ||
+		isExtractSource
 
 	// ─── Handlers ─────────────────────────────────────────────────────────────
 
@@ -197,17 +209,36 @@ function CreateDiscussionModal({
 		}
 
 		try {
-			const source = sourceId
-				? await updateSource({
-						pathParams: { id: sourceId },
-						data: { ...values, aiExtraction },
-					})
-				: await createSource({ data: { ...values, aiExtraction } })
-			navigate({ search: (prev) => ({ ...prev, sourceId: source.id }) })
+			const id = sourceId
+				? await updateExistingSource(sourceId, aiExtraction)
+				: (await createSource({ data: { ...values, aiExtraction } })).id
+			navigate({ search: (prev) => ({ ...prev, sourceId: id }) })
 			setStep(Steps.Tasks)
 		} catch (error) {
 			console.error("createSource failed:", error)
 		}
+	}
+
+	async function updateExistingSource(id: number, aiExtraction: boolean) {
+		const { name, date, tags, attachment } = values
+		const existingAttachment = source?.attachments[0]
+
+		await updateSource({ pathParams: { id }, data: { name, date, tags } })
+
+		const extractionAttachment =
+			attachment instanceof File
+				? await replaceAttachment(id, attachment, existingAttachment)
+				: existingAttachment
+
+		if (aiExtraction && extractionAttachment) {
+			await extractSource({
+				pathParams: { id, attachmentId: extractionAttachment.id },
+			})
+		}
+
+		invalidateQueries([getGetSourceQueryKey({ id })])
+
+		return id
 	}
 
 	function resolveCreationType(
@@ -358,8 +389,7 @@ function CreateDiscussionModal({
 											onTagSelect={handleTagSelect}
 											onTagRemove={handleTagRemove}
 											onFileChange={handleFileChange}
-											existingAttachmentKey={source?.attachmentKey}
-											existingAttachmentName={source?.attachmentName}
+											existingAttachment={source?.attachments[0]}
 											fields={{ name: nameField, date: dateField }}
 										/>
 									)}
@@ -406,7 +436,12 @@ function CreateDiscussionModal({
 							onSave={handleSave}
 							onDeleteRow={handleDeleteRow}
 							onBack={handleBack}
-							isLoading={isCreateTasks || isCreateSource || isUpdateSource}
+							isLoading={
+								isCreateTasks ||
+								isCreateSource ||
+								isUpdateSource ||
+								isExtractSource
+							}
 							sourceId={sourceId}
 							sourceTags={values.tags ?? []}
 						/>

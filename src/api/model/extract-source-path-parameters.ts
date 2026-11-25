@@ -8,4 +8,5 @@
 
 export type ExtractSourcePathParameters = {
 	id: number
+	attachmentId: number
 }
