@@ -3,7 +3,6 @@ import { TEST_IDS } from "../../consts/test-ids"
 import { DiscussionsView } from "../../routes/workspace/$urlName/discussions"
 import { CreateButton } from "../shared/CreateButton"
 import { ViewToggle, type ViewToggleOption } from "../shared/ViewToggle"
-import { DiscussionsToolbar } from "./DiscussionsToolbar"
 
 const VIEW_OPTIONS: ViewToggleOption<DiscussionsView>[] = [
 	{
@@ -29,21 +28,17 @@ export function DiscussionsLayout({
 }: DiscussionsLayoutProps) {
 	return (
 		<Root data-testid={TEST_IDS.discussions.page}>
-			<DiscussionsToolbar
-				startContent={
-					<ViewToggle
-						options={VIEW_OPTIONS}
-						view={view}
-						onViewChange={onViewChange}
-					/>
-				}
-				endContent={
-					<CreateButton
-						data-testid={TEST_IDS.discussions.createButton}
-						label="צור דיון"
-					/>
-				}
-			/>
+			<Header>
+				<ViewToggle
+					options={VIEW_OPTIONS}
+					view={view}
+					onViewChange={onViewChange}
+				/>
+				<CreateButton
+					data-testid={TEST_IDS.discussions.createButton}
+					label="צור דיון"
+				/>
+			</Header>
 		</Root>
 	)
 }
@@ -56,4 +51,10 @@ const Root = styled.div`
   padding-block: 24px;
   box-sizing: border-box;
   overflow: hidden;
+`
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `
