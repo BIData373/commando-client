@@ -15,6 +15,7 @@ export const TEST_IDS = {
 		userMenuMore: "header-user-menu-more",
 		tabSettings: "header-tab-settings",
 		tabDashboard: "header-tab-dashboard",
+		tabDiscussions: "header-tab-discussions",
 		tabSection: "header-tab-section",
 		sectionChevron: "header-section-chevron",
 		sectionOption: "header-section-option",
@@ -78,8 +79,6 @@ export const TEST_IDS = {
 		filterDropdownOption: "filter-dropdown-option",
 		filterDropdownApply: "filter-dropdown-apply",
 		filterDropdownReset: "filter-dropdown-reset",
-		viewToggleCards: "view-toggle-cards",
-		viewToggleTable: "view-toggle-table",
 		createTaskButton: "create-task-button",
 		createTaskSingle: "create-task-single",
 		createTaskDiscussion: "create-task-discussion",
@@ -88,8 +87,6 @@ export const TEST_IDS = {
 	},
 	tasks: {
 		table: "tasks-table",
-		cardGrid: "tasks-card-grid",
-		card: "tasks-card",
 		filters: "tasks-filters",
 		search: "tasks-search",
 		quickFilterAll: "tasks-quick-filter-all",
@@ -159,6 +156,12 @@ export const TEST_IDS = {
 		notes: "create-task-notes",
 		submit: "create-task-submit",
 		cancel: "create-task-cancel",
+	},
+	discussions: {
+		page: "discussions-page",
+		createButton: "discussions-create-button",
+		viewToggleCalendar: "discussions-view-toggle-calendar",
+		viewToggleCards: "discussions-view-toggle-cards",
 	},
 	discussion: {
 		modal: "discussion-modal",

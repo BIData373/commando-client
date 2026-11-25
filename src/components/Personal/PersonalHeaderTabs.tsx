@@ -2,7 +2,6 @@ import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
 import { useMemo } from "react"
 import { useRenderInHeader } from "src/providers/HeaderProvider"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { HeaderNavTab } from "../shared/HeaderNavTab"
 import {
 	NavigationMenu,
@@ -22,9 +21,7 @@ export function PersonalHeaderTabs() {
 					</NavigationMenuItem>
 					<NavigationMenuItem>
 						<NavMenuLink asChild>
-							<Link to="/personal/tasks" search={{ view: TasksView.TABLE }}>
-								הנחיות
-							</Link>
+							<Link to="/personal/tasks">הנחיות</Link>
 						</NavMenuLink>
 					</NavigationMenuItem>
 				</NavigationMenuList>

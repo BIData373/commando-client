@@ -2,7 +2,6 @@ import { PermissionType } from "src/api/model"
 import CreateTaskModal from "src/components/CreateTasks/CreateTaskModal"
 import CreateDiscussionModal from "src/components/CreateTasksFromDiscussion/CreateDiscussionModal"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { AuthorizationWrapper } from "src/wrappers/AuthorizationWrapper"
 import { z } from "zod"
 
@@ -13,7 +12,6 @@ export enum NewTaskMode {
 
 export const newTaskSearchSchema = z.object({
 	mode: z.nativeEnum(NewTaskMode).default(NewTaskMode.SINGLE),
-	view: z.nativeEnum(TasksView).default(TasksView.TABLE),
 	sourceId: z.number().optional(),
 })
 

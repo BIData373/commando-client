@@ -5,7 +5,6 @@ import type { DeadlineType, WorkspaceStatusType } from "src/api/model"
 import type { QuickFilter } from "src/api/model/quick-filter"
 import { TEST_IDS } from "src/consts/test-ids"
 import { useWorkspace } from "src/providers/WorkspaceProvider"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 
 interface IViewInstruction {
 	quickFilter?: QuickFilter
@@ -29,7 +28,6 @@ export const ViewMoreInstructions = ({
 			to: "/workspace/$urlName/tasks",
 			params: { urlName },
 			search: {
-				view: TasksView.TABLE,
 				quickFilter: quickFilter ? [quickFilter] : [],
 				statusFilter,
 				deadlineTypeFilter,

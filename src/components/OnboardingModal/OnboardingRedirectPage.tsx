@@ -1,7 +1,6 @@
 import styled from "@emotion/styled"
 import { Link } from "@tanstack/react-router"
 import { TEST_IDS } from "src/consts/test-ids"
-import { TasksView } from "src/routes/workspace/$urlName/tasks"
 import { openUserGuide } from "src/utils/redirect-utils"
 import createWorkspace from "../../assets/create-workspace.svg"
 import toPersonalSpace from "../../assets/to-personal-space.svg"
@@ -29,7 +28,6 @@ export function OnboardingRedirectPage({
 					<Link
 						data-testid={TEST_IDS.onboarding.toPersonal}
 						to="/personal/tasks"
-						search={{ view: TasksView.TABLE }}
 						onClick={onRedirect}
 					>
 						<Card src={toPersonalSpace} />

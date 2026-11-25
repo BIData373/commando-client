@@ -25,6 +25,7 @@ import { Route as PersonalTasksTaskIdRouteImport } from './routes/personal/tasks
 import { Route as WorkspaceUrlNameIndexRouteImport } from './routes/workspace/$urlName/index'
 import { Route as WorkspaceUrlNameArchiveRouteImport } from './routes/workspace/$urlName/archive'
 import { Route as WorkspaceUrlNameDashboardRouteImport } from './routes/workspace/$urlName/dashboard'
+import { Route as WorkspaceUrlNameDiscussionsRouteImport } from './routes/workspace/$urlName/discussions'
 import { Route as WorkspaceUrlNameSettingsRouteImport } from './routes/workspace/$urlName/settings'
 import { Route as WorkspaceUrlNameTasksRouteImport } from './routes/workspace/$urlName/tasks'
 import { Route as PersonalArchiveTaskIdIndexRouteImport } from './routes/personal/archive/$taskId/index'
@@ -130,6 +131,12 @@ const WorkspaceUrlNameDashboardRoute =
   WorkspaceUrlNameDashboardRouteImport.update({
     id: '/dashboard',
     path: '/dashboard',
+    getParentRoute: () => WorkspaceUrlNameRouteRoute,
+  } as any)
+const WorkspaceUrlNameDiscussionsRoute =
+  WorkspaceUrlNameDiscussionsRouteImport.update({
+    id: '/discussions',
+    path: '/discussions',
     getParentRoute: () => WorkspaceUrlNameRouteRoute,
   } as any)
 const WorkspaceUrlNameSettingsRoute =
@@ -299,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/personal/tasks/$taskId': typeof PersonalTasksTaskIdRouteWithChildren
   '/workspace/$urlName/archive': typeof WorkspaceUrlNameArchiveRouteWithChildren
   '/workspace/$urlName/dashboard': typeof WorkspaceUrlNameDashboardRouteWithChildren
+  '/workspace/$urlName/discussions': typeof WorkspaceUrlNameDiscussionsRoute
   '/workspace/$urlName/settings': typeof WorkspaceUrlNameSettingsRouteWithChildren
   '/workspace/$urlName/tasks': typeof WorkspaceUrlNameTasksRouteWithChildren
   '/personal/tasks/': typeof PersonalTasksIndexRoute
@@ -337,6 +345,7 @@ export interface FileRoutesByTo {
   '/personal': typeof PersonalIndexRoute
   '/workspace/$urlName/archive': typeof WorkspaceUrlNameArchiveRouteWithChildren
   '/workspace/$urlName/dashboard': typeof WorkspaceUrlNameDashboardRouteWithChildren
+  '/workspace/$urlName/discussions': typeof WorkspaceUrlNameDiscussionsRoute
   '/personal/tasks': typeof PersonalTasksIndexRoute
   '/workspace/$urlName': typeof WorkspaceUrlNameIndexRoute
   '/personal/task/$taskId/edit': typeof PersonalTaskTaskIdEditRoute
@@ -376,6 +385,7 @@ export interface FileRoutesById {
   '/personal/tasks/$taskId': typeof PersonalTasksTaskIdRouteWithChildren
   '/workspace/$urlName/archive': typeof WorkspaceUrlNameArchiveRouteWithChildren
   '/workspace/$urlName/dashboard': typeof WorkspaceUrlNameDashboardRouteWithChildren
+  '/workspace/$urlName/discussions': typeof WorkspaceUrlNameDiscussionsRoute
   '/workspace/$urlName/settings': typeof WorkspaceUrlNameSettingsRouteWithChildren
   '/workspace/$urlName/tasks': typeof WorkspaceUrlNameTasksRouteWithChildren
   '/personal/tasks/': typeof PersonalTasksIndexRoute
@@ -421,6 +431,7 @@ export interface FileRouteTypes {
     | '/personal/tasks/$taskId'
     | '/workspace/$urlName/archive'
     | '/workspace/$urlName/dashboard'
+    | '/workspace/$urlName/discussions'
     | '/workspace/$urlName/settings'
     | '/workspace/$urlName/tasks'
     | '/personal/tasks/'
@@ -459,6 +470,7 @@ export interface FileRouteTypes {
     | '/personal'
     | '/workspace/$urlName/archive'
     | '/workspace/$urlName/dashboard'
+    | '/workspace/$urlName/discussions'
     | '/personal/tasks'
     | '/workspace/$urlName'
     | '/personal/task/$taskId/edit'
@@ -497,6 +509,7 @@ export interface FileRouteTypes {
     | '/personal/tasks/$taskId'
     | '/workspace/$urlName/archive'
     | '/workspace/$urlName/dashboard'
+    | '/workspace/$urlName/discussions'
     | '/workspace/$urlName/settings'
     | '/workspace/$urlName/tasks'
     | '/personal/tasks/'
@@ -646,6 +659,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/workspace/$urlName/dashboard'
       preLoaderRoute: typeof WorkspaceUrlNameDashboardRouteImport
+      parentRoute: typeof WorkspaceUrlNameRouteRoute
+    }
+    '/workspace/$urlName/discussions': {
+      id: '/workspace/$urlName/discussions'
+      path: '/discussions'
+      fullPath: '/workspace/$urlName/discussions'
+      preLoaderRoute: typeof WorkspaceUrlNameDiscussionsRouteImport
       parentRoute: typeof WorkspaceUrlNameRouteRoute
     }
     '/workspace/$urlName/settings': {
@@ -1080,6 +1100,7 @@ const WorkspaceUrlNameTasksRouteWithChildren =
 interface WorkspaceUrlNameRouteRouteChildren {
   WorkspaceUrlNameArchiveRoute: typeof WorkspaceUrlNameArchiveRouteWithChildren
   WorkspaceUrlNameDashboardRoute: typeof WorkspaceUrlNameDashboardRouteWithChildren
+  WorkspaceUrlNameDiscussionsRoute: typeof WorkspaceUrlNameDiscussionsRoute
   WorkspaceUrlNameSettingsRoute: typeof WorkspaceUrlNameSettingsRouteWithChildren
   WorkspaceUrlNameTasksRoute: typeof WorkspaceUrlNameTasksRouteWithChildren
   WorkspaceUrlNameIndexRoute: typeof WorkspaceUrlNameIndexRoute
@@ -1088,6 +1109,7 @@ interface WorkspaceUrlNameRouteRouteChildren {
 const WorkspaceUrlNameRouteRouteChildren: WorkspaceUrlNameRouteRouteChildren = {
   WorkspaceUrlNameArchiveRoute: WorkspaceUrlNameArchiveRouteWithChildren,
   WorkspaceUrlNameDashboardRoute: WorkspaceUrlNameDashboardRouteWithChildren,
+  WorkspaceUrlNameDiscussionsRoute: WorkspaceUrlNameDiscussionsRoute,
   WorkspaceUrlNameSettingsRoute: WorkspaceUrlNameSettingsRouteWithChildren,
   WorkspaceUrlNameTasksRoute: WorkspaceUrlNameTasksRouteWithChildren,
   WorkspaceUrlNameIndexRoute: WorkspaceUrlNameIndexRoute,
