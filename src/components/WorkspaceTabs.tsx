@@ -20,7 +20,7 @@ export function WorkspaceTabs() {
 		() => (
 			<NavigationMenu viewport={false}>
 				<NavigationMenuList>
-					<NavigationMenuItem>
+					{/* <NavigationMenuItem>
 						<NavMenuLink asChild>
 							<Link
 								data-testid={TEST_IDS.header.tabDiscussions}
@@ -30,7 +30,7 @@ export function WorkspaceTabs() {
 								דיונים
 							</Link>
 						</NavMenuLink>
-					</NavigationMenuItem>
+					</NavigationMenuItem> */}
 
 					<NavigationMenuItem>
 						<NavMenuLink asChild>
