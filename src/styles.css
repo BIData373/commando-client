@@ -204,6 +204,11 @@ body,
   --Colors-Base-Blue-3: oklch(80.61% 0.11 241.5);
   --Colors-Base-Blue-6: oklch(52.19% 0.23 241.5);
 
+  --Colors-Base-Purple-1: #f9f0ff;
+  --Colors-Base-Purple-2: #efdbff;
+  --Colors-Base-Purple-3: #d3adf7;
+  --Colors-Base-Purple-6: #722ed1;
+
   --Colors-Base-Neutral-8: #595959;
   --Colors-Neutral-Bg-colorBgSolidHover: rgba(0, 0, 0, 0.75);
   --Colors-Neutral-Border-colorSplit: rgba(0, 0, 0, 0.06);

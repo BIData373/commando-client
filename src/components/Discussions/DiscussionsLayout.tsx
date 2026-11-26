@@ -3,6 +3,7 @@ import { TEST_IDS } from "../../consts/test-ids"
 import { DiscussionsView } from "../../routes/workspace/$urlName/discussions"
 import { CreateButton } from "../shared/CreateButton"
 import { ViewToggle, type ViewToggleOption } from "../shared/ViewToggle"
+import { CalendarView } from "./Calendar/CalendarView"
 
 const VIEW_OPTIONS: ViewToggleOption<DiscussionsView>[] = [
 	{
@@ -39,6 +40,8 @@ export function DiscussionsLayout({
 					label="צור דיון"
 				/>
 			</Header>
+
+			{view === DiscussionsView.CALENDAR && <CalendarView />}
 		</Root>
 	)
 }
